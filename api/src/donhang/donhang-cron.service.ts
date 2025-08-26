@@ -12,13 +12,13 @@ export class DonhangCronService {
   ) {}
 
 
-  @Cron('0 14 * * *', {
+  @Cron('0 13 * * *', {
     name: 'auto-complete-orders',
     timeZone: 'Asia/Ho_Chi_Minh', // Giờ Việt Nam
   })
   async autoCompleteOrdersDaily() {
     try {
-      this.logger.log('Starting auto-complete orders cron job at 14:00 Vietnam time');
+      this.logger.log('Starting auto-complete orders cron job at 13:00 Vietnam time');
 
       // Lấy ngày hiện tại và tạo startOfDay/endOfDay trực tiếp (UTC)
       const now = new Date();

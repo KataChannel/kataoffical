@@ -22,7 +22,7 @@ let DonhangCronService = DonhangCronService_1 = class DonhangCronService {
     }
     async autoCompleteOrdersDaily() {
         try {
-            this.logger.log('Starting auto-complete orders cron job at 14:00 Vietnam time');
+            this.logger.log('Starting auto-complete orders cron job at 13:00 Vietnam time');
             const now = new Date();
             const startOfDay = moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
             const endOfDay = moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
@@ -386,7 +386,7 @@ let DonhangCronService = DonhangCronService_1 = class DonhangCronService {
 };
 exports.DonhangCronService = DonhangCronService;
 __decorate([
-    (0, schedule_1.Cron)('0 14 * * *', {
+    (0, schedule_1.Cron)('0 13 * * *', {
         name: 'auto-complete-orders',
         timeZone: 'Asia/Ho_Chi_Minh',
     }),

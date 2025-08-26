@@ -17,6 +17,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
@@ -56,6 +57,7 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
+    MatButtonToggleModule,
     CommonModule,
     FormsModule,
     MatTooltipModule,
@@ -64,6 +66,7 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
     // SharepaginationComponent,
     MatProgressSpinnerModule,
     MatCheckboxModule,
+    
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -114,7 +117,7 @@ export class ListDonhangComponent {
   SearchParams: any = {
     Batdau: moment().startOf('day').toDate(),
     Ketthuc: moment().endOf('day').toDate(),
-    Type: 'khachsi',
+    Type: 'all',
     pageSize: 10,
     pageNumber: 1,
   };
@@ -247,9 +250,11 @@ export class ListDonhangComponent {
             gte: this.SearchParams.Batdau,
             lte: this.SearchParams.Ketthuc,
           },
-          khachhang: {
+          ...(this.SearchParams.Type !== 'all' && {
+            khachhang: {
               loaikh: this.SearchParams.Type,
-          },
+            },
+          }),
         },
       })
         
@@ -305,6 +310,22 @@ export class ListDonhangComponent {
     } catch (error) {
       console.error('Error changing time selection:', error);
       this._snackBar.open('Lỗi khi thay đổi thời gian', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+  async onTypeChange(value: string): Promise<void> {
+    this.isLoading.set(true);
+    try {
+      this.SearchParams.Type = value;
+      await this.LoadData();
+    } catch (error) {
+      console.error('Error changing type selection:', error);
+      this._snackBar.open('Lỗi khi thay đổi loại đơn hàng', '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',

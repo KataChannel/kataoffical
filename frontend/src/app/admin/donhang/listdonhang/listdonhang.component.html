@@ -77,20 +77,21 @@
                 </button>
             </div>
         </div>
-        <div class="w-full grid lg:grid-cols-4 grid-cols-2 gap-2 items-center">
-            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-                <mat-label>Loại Đơn</mat-label>
-                <mat-select [(ngModel)]="SearchParams.Type" [ngModelOptions]="{standalone: true}"
-                    (selectionChange)="onSelectionChange($event)">
-                    @for (item of [
-                    {id:1,Title:'Đơn Sỉ',value:'khachsi'},
-                    {id:2,Title:'Đơn Lẻ',value:'khachle'},
-                    ]; track item) {
-                    <mat-option [value]="item.value">{{item.Title}}</mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
-
+        <div class="w-full flex lg:flex-row flex-col items-center gap-2">
+            <mat-button-toggle-group 
+                    [(ngModel)]="SearchParams.Type" 
+                    [ngModelOptions]="{standalone: true}"
+                    (change)="onTypeChange($event.value)">
+                    <mat-button-toggle value="all">
+                        All
+                    </mat-button-toggle>
+                    <mat-button-toggle value="khachsi">
+                        Sỉ
+                    </mat-button-toggle>
+                    <mat-button-toggle value="khachle">
+                        Lẻ
+                    </mat-button-toggle>
+            </mat-button-toggle-group>
             <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
                 <mat-label>Bắt Đầu</mat-label>
                 <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau"
