@@ -123,10 +123,19 @@
             <div class="w-full flex flex-row space-x-2 items-center">
               <button mat-flat-button color="primary" [disabled]="!isEdit()" [matMenuTriggerFor]="menu"
                 #menuTrigger="matMenuTrigger">
-                {{ListFilter.length}} Sản Phẩm
+                <mat-icon>shopping_cart</mat-icon>
+                {{ListFilter.length}} Sản Phẩm Đã Chọn
               </button>
               <mat-menu #menu="matMenu">
                 <div (click)="$event.stopPropagation()" class="cursor-pointer flex flex-col space-y-4 p-3">
+                  <div class="bg-blue-50 p-2 rounded-lg">
+                    <div class="text-sm font-medium text-blue-800">Tình trạng sản phẩm:</div>
+                    <div class="text-xs text-blue-600">
+                      • {{ListFilter.length}} sản phẩm đã chọn
+                      • {{filterSanpham.length}} sản phẩm khả dụng
+                      • {{ListSanpham.length}} tổng sản phẩm
+                    </div>
+                  </div>
                   <div class="relative w-full">
                     <input type="text" placeholder="Tìm Kiếm..." (keyup)="doFilterSanpham($event)" #searchInput
                       class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
@@ -137,17 +146,24 @@
                   <div class="flex flex-row space-x-2 items-center justify-between">
                     <div class="flex flex-row space-x-2 items-center">
                       <span class="text-xs text-blue-600 underline" (click)="ChosenAll(filterSanpham)">Chọn Tất Cả
-                        {{ListFilter.length}}</span>
-                      <span class="text-xs text-blue-600 underline" (click)="EmptyFiter()">Xoá</span>
+                        ({{filterSanpham.length}} sản phẩm khả dụng)</span>
+                      <span class="text-xs text-red-600 underline" (click)="EmptyFiter()">Xoá Tất Cả</span>
                     </div>
 
-                    <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
+                    <span class="text-xs text-green-600 underline" (click)="ResetFilter()">Làm Mới</span>
                   </div>
                   <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
                     <div *ngFor="let item of filterSanpham; trackBy:trackByFn" (click)="ChosenItem(item)"
-                      class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
-                      <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>
-                      {{item.title ||'Chưa Có Tên'}}
+                      class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100 cursor-pointer">
+                      <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-green-600">check_box</span>
+                      <span *ngIf="!CheckItem(item)" class="material-symbols-outlined text-gray-400">check_box_outline_blank</span>
+                      <div class="flex flex-col flex-1">
+                        <span class="font-medium">{{item.title || 'Chưa Có Tên'}}</span>
+                        <span class="text-xs text-gray-500">Mã: {{item.masp}} - ĐVT: {{item.dvt}}</span>
+                      </div>
+                    </div>
+                    <div *ngIf="filterSanpham.length === 0" class="text-center text-gray-500 p-4">
+                      Không có sản phẩm khả dụng
                     </div>
                   </div>
                   <div class="flex flex-row space-x-2 items-end justify-end">

@@ -215,12 +215,20 @@ export class DetailDonhangComponent {
       this._ListdonhangComponent.drawer.open();
       this.isEdit.set(true);
       this.ListFilter = [];
+      
+      // Initialize available products (all products since no selection yet)
+      this.filterSanpham = [...this.ListSanpham];
+      
       this._router.navigate(['/admin/donhang', 'new']);
     } else {
       await this._DonhangService.getDonhangByid(id);
-      this.ListFilter = this.DetailDonhang().sanpham;
-      this.dataSource().data = this.DetailDonhang().sanpham;
-      this.dataSource().data.sort((a, b) => a.order - b.order);
+      this.ListFilter = this.DetailDonhang().sanpham || [];
+      this.dataSource().data = this.DetailDonhang().sanpham || [];
+      this.dataSource().data.sort((a, b) => (a.order || 0) - (b.order || 0));
+      
+      // Update available products to exclude already selected ones
+      this.updateAvailableProducts();
+      
       this._ListdonhangComponent.drawer.open();
       this._router.navigate(['/admin/donhang', id]);
     }
@@ -239,11 +247,52 @@ export class DetailDonhangComponent {
       return;
     }
 
+    // ✅ FIX: Ensure DetailDonhang.sanpham is properly synchronized with ListFilter
+    this.synchronizeProductData();
+
     if (this.donhangId() === 'new') {
       await this.createDonhang();
     } else {
       await this.updateDonhang();
     }
+  }
+
+  // ✅ NEW METHOD: Synchronize product data to prevent duplications
+  private synchronizeProductData() {
+    // Remove duplicates from ListFilter based on product ID
+    const uniqueProducts = this.removeDuplicateProducts(this.ListFilter);
+    
+    // Update ListFilter with unique products
+    this.ListFilter = uniqueProducts;
+    
+    // Update DetailDonhang.sanpham with the cleaned product list
+    this.DetailDonhang.update((v: any) => ({
+      ...v,
+      sanpham: [...uniqueProducts] // Create a copy to avoid reference issues
+    }));
+    
+    // Update dataSource
+    this.dataSource().data = [...uniqueProducts];
+    this.dataSource().data.sort((a, b) => (a.order || 0) - (b.order || 0));
+    
+    console.log(`Synchronized ${uniqueProducts.length} unique products`);
+  }
+
+  // ✅ NEW METHOD: Remove duplicate products from product list
+  private removeDuplicateProducts(products: any[]): any[] {
+    const seen = new Set();
+    const uniqueProducts = [];
+    
+    for (const product of products) {
+      if (!seen.has(product.id)) {
+        seen.add(product.id);
+        uniqueProducts.push(product);
+      } else {
+        console.warn(`Removed duplicate product: ${product.title} (ID: ${product.id})`);
+      }
+    }
+    
+    return uniqueProducts;
   }
 
   private validateDonhang(): string | null {
@@ -266,6 +315,13 @@ export class DetailDonhangComponent {
     // Validate sản phẩm
     if (!donhang.sanpham || donhang.sanpham.length === 0) {
       return 'Vui lòng thêm ít nhất một sản phẩm';
+    }
+
+    // ✅ NEW: Check for duplicate products
+    const productIds = donhang.sanpham.map((sp: any) => sp.id);
+    const uniqueProductIds = [...new Set(productIds)];
+    if (productIds.length !== uniqueProductIds.length) {
+      return 'Có sản phẩm trùng lặp trong đơn hàng. Vui lòng kiểm tra lại.';
     }
 
     // Validate số lượng sản phẩm và ID
@@ -301,16 +357,41 @@ export class DetailDonhangComponent {
 
   private async createDonhang() {
     try {
-      this.DetailDonhang.update((v: any) => ({
-        ...v,
+      // ✅ FIX: Prepare proper GraphQL format data instead of sending raw DetailDonhang
+      const donhangData = this.DetailDonhang();
+      const { khachhang, banggia, id, createdAt, updatedAt, sanpham, ...cleanDonhangData } = donhangData;
+      
+      const createPayload = {
+        ...cleanDonhangData,
         type: 'donsi',
         status: 'dadat',
         tongvat: this.calculateTotalVat(),
         tongtien: this.calculateTotalAmount(),
         isActive: true,
-      }));
+        // ✅ FIX: Properly format sanpham for GraphQL nested create
+        sanpham: {
+          create: (sanpham || []).map((sp: any, index: number) => ({
+            idSP: sp.id,
+            giaban: parseFloat(sp.giaban?.toString() || '0'),
+            sldat: parseFloat(sp.sldat?.toString() || '0'),
+            slgiao: parseFloat(sp.slgiao?.toString() || '0'), 
+            slnhan: parseFloat(sp.slnhan?.toString() || '0'),
+            slhuy: parseFloat(sp.slhuy?.toString() || '0'),
+            ttdat: parseFloat(sp.ttdat?.toString() || '0'),
+            ttgiao: parseFloat(sp.ttgiao?.toString() || '0'),
+            ttnhan: parseFloat(sp.ttnhan?.toString() || '0'),
+            vat: parseFloat(sp.vat?.toString() || '0'),
+            ttsauvat: parseFloat(sp.ttsauvat?.toString() || '0'),
+            ghichu: sp.ghichu || null,
+            order: index + 1,
+            isActive: true
+          }))
+        }
+      };
       
-      const result = await this._DonhangService.CreateDonhang(this.DetailDonhang());
+      console.log('Create payload:', createPayload);
+      
+      const result = await this._DonhangService.CreateDonhang(createPayload);
 
       if (result && result.id) {
         this._snackBar.open('Tạo Đơn Hàng Thành Công', '', {
@@ -1122,9 +1203,19 @@ export class DetailDonhangComponent {
       v.sanpham = [];
       return v;
     });
-    this.dataSource().data = this.DetailDonhang().sanpham;
+    this.dataSource().data = [];
     this.ListFilter = [];
-    this.reloadfilter();
+    
+    // Auto-calculate totals after emptying cart
+    this.updateTotals();
+    
+    // Update available products to show all products again
+    this.filterSanpham = [...this.ListSanpham];
+    
+    // Mark that sanpham data has changed
+    this.sanphamDataChanged = true;
+    
+    console.log('Emptied all products from cart');
   }
   getName(id: any) {
     return this.ListKhachhang.find((v: any) => v.id === id);
@@ -1167,15 +1258,28 @@ export class DetailDonhangComponent {
 
   // }
   RemoveSanpham(item: any) {
+    // Remove from DetailDonhang.sanpham
     this.DetailDonhang.update((v: any) => {
       v.sanpham = v.sanpham.filter((v1: any) => v1.id !== item.id);
-      this.reloadfilter();
       return v;
     });
-    this.ListFilter = this.dataSource().data = this.DetailDonhang().sanpham;
+    
+    // Remove from ListFilter
+    this.ListFilter = this.ListFilter.filter((v1: any) => v1.id !== item.id);
+    
+    // Update dataSource
+    this.dataSource().data = this.DetailDonhang().sanpham;
     
     // Auto-calculate totals after removing product
     this.updateTotals();
+    
+    // Update available products to include the removed product
+    this.updateAvailableProducts();
+    
+    // Mark that sanpham data has changed
+    this.sanphamDataChanged = true;
+    
+    console.log(`Removed product: ${item.title}`);
   }
 
   async CoppyDon() {
@@ -1349,14 +1453,24 @@ export class DetailDonhangComponent {
     const value = event.target.value.trim().toLowerCase();
 
     if (value.length < 2) {
-      this.filterSanpham = [...this.ListSanpham];
+      // Show only available products (not already selected)
+      this.filterSanpham = this.ListSanpham.filter((item: any) => 
+        !this.ListFilter.find((selected: any) => selected.id === item.id)
+      );
       return;
     }
 
     const normalizedValue = removeVietnameseAccents(value);
 
+    // Filter and exclude already selected products
     this.filterSanpham = this.ListSanpham
       .filter((product: any) => {
+        // First check if product is not already selected
+        const isAlreadySelected = this.ListFilter.find((selected: any) => selected.id === product.id);
+        if (isAlreadySelected) {
+          return false; // Don't show already selected products
+        }
+
         const normalizedTitle = removeVietnameseAccents(
           product.title?.toLowerCase() || ''
         );
@@ -1390,55 +1504,158 @@ export class DetailDonhangComponent {
     if (event.key === 'Enter') {
       if (this.filterSanpham.length > 0) {
         this.ChosenItem(this.filterSanpham[0]);
-        // this.filterSanpham = [...this._SanphamService.ListSanpham];
+        // Reset search after adding product
+        event.target.value = '';
+        this.updateAvailableProducts();
       }
     }
   }
   ChosenItem(item: any) {
     let CheckItem = this.filterSanpham.find((v: any) => v.id === item.id);
     let CheckItem1 = this.ListFilter.find((v: any) => v.id === item.id);
+    
     if (CheckItem1) {
+      // Product is already selected, remove it from ListFilter
       this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
+      console.log(`Removed product: ${item.title}`);
     } else {
-      // Create a copy of the object to avoid read-only property error
-      const itemCopy = { ...CheckItem };
-      itemCopy.order = this.ListFilter.length + 1;
-      this.ListFilter.push(itemCopy);
+      // Product is not selected yet, add it to ListFilter
+      if (CheckItem) {
+        // Create a copy of the object to avoid read-only property error
+        const itemCopy = { ...CheckItem };
+        // Initialize default quantities if not present
+        itemCopy.sldat = itemCopy.sldat || 1;
+        itemCopy.slgiao = itemCopy.slgiao || 1;
+        itemCopy.slnhan = itemCopy.slnhan || 1;
+        itemCopy.slhuy = itemCopy.slhuy || 0;
+        itemCopy.ttdat = itemCopy.ttdat || 0;
+        itemCopy.ttgiao = itemCopy.ttgiao || 0;
+        itemCopy.ttnhan = itemCopy.ttnhan || 0;
+        itemCopy.ttsauvat = itemCopy.ttsauvat || 0;
+        itemCopy.vat = itemCopy.vat || 0;
+        itemCopy.ghichu = itemCopy.ghichu || '';
+        itemCopy.order = this.ListFilter.length + 1;
+        this.ListFilter.push(itemCopy);
+        console.log(`Added product: ${item.title}`);
+      }
     }
+    
+    // Mark that sanpham data has changed for future updates
+    this.sanphamDataChanged = true;
   }
 
   ChosenAll(list: any) {
-    this.ListFilter = list;
+    // Prevent duplicates by only adding products that are not already in ListFilter
+    const uniqueProducts = list.filter((item: any) => 
+      !this.ListFilter.find((existing: any) => existing.id === item.id)
+    );
+    
+    // Add all unique products with default quantities
+    const newProducts = uniqueProducts.map((item: any, index: number) => {
+      const itemCopy = { ...item };
+      // Initialize default quantities if not present
+      itemCopy.sldat = itemCopy.sldat || 1;
+      itemCopy.slgiao = itemCopy.slgiao || 1;
+      itemCopy.slnhan = itemCopy.slnhan || 1;
+      itemCopy.slhuy = itemCopy.slhuy || 0;
+      itemCopy.ttdat = itemCopy.ttdat || 0;
+      itemCopy.ttgiao = itemCopy.ttgiao || 0;
+      itemCopy.ttnhan = itemCopy.ttnhan || 0;
+      itemCopy.ttsauvat = itemCopy.ttsauvat || 0;
+      itemCopy.vat = itemCopy.vat || 0;
+      itemCopy.ghichu = itemCopy.ghichu || '';
+      itemCopy.order = this.ListFilter.length + index + 1;
+      return itemCopy;
+    });
+    
+    // Add new products to existing ListFilter
+    this.ListFilter = [...this.ListFilter, ...newProducts];
+    
+    // Mark that sanpham data has changed
+    this.sanphamDataChanged = true;
+    
+    console.log(`Added ${newProducts.length} unique products. Total: ${this.ListFilter.length} products`);
   }
   ResetFilter() {
-    this.ListFilter = this.ListSanpham;
-    this.dataSource().data = this.filterSanpham;
+    // Reset to only show available products (not already selected)
+    this.filterSanpham = this.ListSanpham.filter((item: any) => 
+      !this.ListFilter.find((selected: any) => selected.id === item.id)
+    );
+    console.log(`Reset filter. Showing ${this.filterSanpham.length} available products`);
   }
   EmptyFiter() {
     this.ListFilter = [];
+    this.sanphamDataChanged = true;
+    this.updateAvailableProducts();
+    console.log('Cleared all selected products');
+  }
+  
+  // New method to update available products (excluding already selected ones)
+  updateAvailableProducts() {
+    this.filterSanpham = this.ListSanpham.filter((item: any) => 
+      !this.ListFilter.find((selected: any) => selected.id === item.id)
+    );
   }
   CheckItem(item: any) {
     return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
   ApplyFilterColum(menu: any) {
+    // ✅ FIX: Remove duplicates from ListFilter before processing
+    const uniqueProducts = this.removeDuplicateProducts(this.ListFilter);
+    this.ListFilter = uniqueProducts;
+    
+    // Preserve existing quantities when applying filter
     this.ListFilter.forEach((v) => {
       const exists = this.dataSource().data.find((d: any) => d.id === v.id);
-      v.sldat = exists?.sldat || 1;
-      v.slgiao = exists?.slgiao || 1;
-      v.slnhan = exists?.slnhan || 1;
+      if (exists) {
+        // Keep existing quantities if product was already in the order
+        v.sldat = exists.sldat || v.sldat || 1;
+        v.slgiao = exists.slgiao || v.slgiao || 1;
+        v.slnhan = exists.slnhan || v.slnhan || 1;
+        v.slhuy = exists.slhuy || v.slhuy || 0;
+        v.ttdat = exists.ttdat || v.ttdat || 0;
+        v.ttgiao = exists.ttgiao || v.ttgiao || 0;
+        v.ttnhan = exists.ttnhan || v.ttnhan || 0;
+        v.vat = exists.vat || v.vat || 0;
+        v.ttsauvat = exists.ttsauvat || v.ttsauvat || 0;
+        v.ghichu = exists.ghichu || v.ghichu || '';
+      } else {
+        // Set default quantities for new products
+        v.sldat = v.sldat || 1;
+        v.slgiao = v.slgiao || 1;
+        v.slnhan = v.slnhan || 1;
+        v.slhuy = v.slhuy || 0;
+        v.ttdat = v.ttdat || 0;
+        v.ttgiao = v.ttgiao || 0;
+        v.ttnhan = v.ttnhan || 0;
+        v.vat = v.vat || 0;
+        v.ttsauvat = v.ttsauvat || 0;
+        v.ghichu = v.ghichu || '';
+      }
+      // ✅ FIX: Ensure proper order index
+      v.order = v.order || (this.ListFilter.indexOf(v) + 1);
     });
+    
+    // Update DetailDonhang with selected products (ensuring no duplicates)
     this.DetailDonhang.update((v: any) => {
-      v.sanpham = this.ListFilter;
+      v.sanpham = [...this.ListFilter]; // Create a copy to avoid reference issues
       return v;
     });
     
     // Auto-calculate totals when products are applied
     this.updateTotals();
     
-    console.log(this.DetailDonhang());
-
-    this.dataSource().data = this.ListFilter;
-    this.dataSource().data.sort((a, b) => a.order - b.order);
+    // Update data source and sort by order
+    this.dataSource().data = [...this.ListFilter];
+    this.dataSource().data.sort((a, b) => (a.order || 0) - (b.order || 0));
+    
+    // Mark that sanpham data has changed
+    this.sanphamDataChanged = true;
+    
+    // Update filter list to remove selected products from available list
+    this.updateAvailableProducts();
+    
+    console.log(`Applied ${this.ListFilter.length} unique products to order`);
     menu.closeMenu();
   }
 
