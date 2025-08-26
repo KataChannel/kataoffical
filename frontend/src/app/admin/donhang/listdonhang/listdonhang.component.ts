@@ -114,7 +114,7 @@ export class ListDonhangComponent {
   SearchParams: any = {
     Batdau: moment().startOf('day').toDate(),
     Ketthuc: moment().endOf('day').toDate(),
-    Type: 'donsi',
+    Type: 'khachsi',
     pageSize: 10,
     pageNumber: 1,
   };
