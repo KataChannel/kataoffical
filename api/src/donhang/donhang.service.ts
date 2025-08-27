@@ -178,11 +178,13 @@ export class DonhangService {
         ? { in: params.Status }
         : params.Status,
     };
-
+    if (Type && Type !== 'all') {
+      where.khachhang = { loaikh: Type };
+    }
     if (query) {
       where.OR = [
-        { madonhang: { contains: query, mode: 'insensitive' } },
-        { khachhang: { name: { contains: query, mode: 'insensitive' } } },
+      { madonhang: { contains: query, mode: 'insensitive' } },
+      { khachhang: { name: { contains: query, mode: 'insensitive' } } },
       ];
     }
 
