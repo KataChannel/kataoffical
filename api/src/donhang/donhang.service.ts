@@ -1717,12 +1717,12 @@ export class DonhangService {
       for (const sp of dto.sanpham) {
         const incrementValue = parseFloat((sp.sldat ?? 0).toFixed(3));
         await prisma.tonKho.upsert({
-          where: { sanphamId: sp.id },
+          where: { sanphamId: sp.idSP || sp.id },
           update: {
             slchogiao: { increment: incrementValue },
           },
           create: {
-            sanphamId: sp.id,
+            sanphamId: sp.idSP || sp.id,
             slchogiao: incrementValue,
           },
         });

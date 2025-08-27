@@ -19,6 +19,7 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
@@ -56,6 +57,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
+    MatButtonToggleModule,
     CommonModule,
     FormsModule,
     MatTooltipModule,
@@ -118,7 +120,7 @@ export class ListPhieugiaohangComponent {
   SearchParams: any = {
     Batdau: DateHelpers.now(),
     Ketthuc: DateHelpers.now(),
-    Type: 'donsi',
+    Type: 'all',
     Status: ['dadat', 'dagiao','danhan','hoanthanh'],
     pageSize: 10,
     pageNumber: 1,
@@ -242,6 +244,13 @@ export class ListPhieugiaohangComponent {
     this.SearchParams.pageNumber = 1; // Reset to first page
     this.LoadData();
   }
+
+  async onTypeChange(value: string): Promise<void> {
+    this.SearchParams.Type = value;
+    this.SearchParams.pageNumber = 1; // Reset to first page
+    await this.LoadData();
+  }
+
   onDateChange(event: any): void {
     this.SearchParams.pageNumber = 1; // Reset to first page
     this.LoadData();
