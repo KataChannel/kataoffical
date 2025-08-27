@@ -52,11 +52,11 @@ import { MatMenuModule } from '@angular/material/menu';
           this._router.navigate(['/admin/user']);
           this._ListuserComponent.drawer.close();
         }
-        if(id === '0'){
+        if(id === 'new'){
           this.DetailUser.set({ title: GenId(8, false), slug: GenId(8, false) });
           this._ListuserComponent.drawer.open();
           this.isEdit.update(value => !value);
-          this._router.navigate(['/admin/user', "0"]);
+          this._router.navigate(['/admin/user', "new"]);
         }
         else{
             await this._UserService.getUserByid(id);
@@ -84,7 +84,7 @@ import { MatMenuModule } from '@angular/material/menu';
       
     }
     async handleUserAction() {
-      if (this.userId() === '0') {
+      if (this.userId() === 'new') {
         await this.createUser();
       }
       else {

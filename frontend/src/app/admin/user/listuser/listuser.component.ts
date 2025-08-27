@@ -194,7 +194,7 @@ export class ListUserComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/user/add'], { relativeTo: null });
+    this.router.navigate(['/admin/user/new'], { relativeTo: null });
   }
 
   goToDetail(user: User): void {
