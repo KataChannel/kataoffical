@@ -32,11 +32,11 @@
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handlePhieugiaohangAction()">
       <mat-icon>save</mat-icon>
     </button>
-    @if(this.DetailPhieugiaohang().status !=='danhan' || this.profile().roles.includes('Admin')){
+    <!-- @if(this.DetailPhieugiaohang().status !=='danhan' || this.profile().roles.includes('Admin')){ -->
     <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
-    }
+    <!-- } -->
   </div>
 </div>
 
