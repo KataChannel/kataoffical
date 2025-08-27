@@ -357,7 +357,7 @@ export class DetailDonhangComponent {
 
   private async createDonhang() {
     try {
-      // ✅ FIX: Prepare proper GraphQL format data instead of sending raw DetailDonhang
+      // ✅ FIX: Prepare data in simple array format that backend expects
       const donhangData = this.DetailDonhang();
       const { khachhang, banggia, id, createdAt, updatedAt, sanpham, ...cleanDonhangData } = donhangData;
       
@@ -368,28 +368,26 @@ export class DetailDonhangComponent {
         tongvat: this.calculateTotalVat(),
         tongtien: this.calculateTotalAmount(),
         isActive: true,
-        // ✅ FIX: Properly format sanpham for GraphQL nested create
-        sanpham: {
-          create: (sanpham || []).map((sp: any, index: number) => ({
-            idSP: sp.id,
-            giaban: parseFloat(sp.giaban?.toString() || '0'),
-            sldat: parseFloat(sp.sldat?.toString() || '0'),
-            slgiao: parseFloat(sp.slgiao?.toString() || '0'), 
-            slnhan: parseFloat(sp.slnhan?.toString() || '0'),
-            slhuy: parseFloat(sp.slhuy?.toString() || '0'),
-            ttdat: parseFloat(sp.ttdat?.toString() || '0'),
-            ttgiao: parseFloat(sp.ttgiao?.toString() || '0'),
-            ttnhan: parseFloat(sp.ttnhan?.toString() || '0'),
-            vat: parseFloat(sp.vat?.toString() || '0'),
-            ttsauvat: parseFloat(sp.ttsauvat?.toString() || '0'),
-            ghichu: sp.ghichu || null,
-            order: index + 1,
-            isActive: true
-          }))
-        }
+        // ✅ FIX: Send sanpham as direct array, not nested GraphQL format
+        sanpham: (sanpham || []).map((sp: any, index: number) => ({
+          idSP: sp.id,
+          giaban: parseFloat(sp.giaban?.toString() || '0'),
+          sldat: parseFloat(sp.sldat?.toString() || '0'),
+          slgiao: parseFloat(sp.slgiao?.toString() || '0'), 
+          slnhan: parseFloat(sp.slnhan?.toString() || '0'),
+          slhuy: parseFloat(sp.slhuy?.toString() || '0'),
+          ttdat: parseFloat(sp.ttdat?.toString() || '0'),
+          ttgiao: parseFloat(sp.ttgiao?.toString() || '0'),
+          ttnhan: parseFloat(sp.ttnhan?.toString() || '0'),
+          vat: parseFloat(sp.vat?.toString() || '0'),
+          ttsauvat: parseFloat(sp.ttsauvat?.toString() || '0'),
+          ghichu: sp.ghichu || null,
+          order: index + 1,
+          isActive: true
+        }))
       };
       
-      console.log('Create payload:', createPayload);
+      console.log('Create payload (direct array format):', createPayload);
       
       const result = await this._DonhangService.CreateDonhang(createPayload);
 

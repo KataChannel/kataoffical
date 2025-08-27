@@ -1601,22 +1601,34 @@ export class DonhangService {
           ghichu: dto.ghichu,
           isshowvat: khachhang.isshowvat, // Set isshowvat from khachhang
           sanpham: {
-            create: dto?.sanpham?.map((sp) => ({
-              idSP: sp.idSP || sp.id,
-              giaban: parseFloat((sp.giaban || 0).toString()),
-              ghichu: sp.ghichu,
-              sldat: parseFloat((sp.sldat ?? 0).toString()),
-              slgiao: parseFloat((sp.slgiao ?? 0).toString()),
-              slnhan: parseFloat((sp.slnhan ?? 0).toString()),
-              slhuy: parseFloat((sp.slhuy ?? 0).toString()),
-              ttdat: parseFloat((sp.ttdat ?? 0).toString()),
-              ttgiao: parseFloat((sp.ttgiao ?? 0).toString()),
-              ttnhan: parseFloat((sp.ttnhan ?? 0).toString()),
-              vat: parseFloat((sp.vat ?? 0).toString()),
-              ttsauvat: parseFloat((sp.ttsauvat ?? 0).toString()),
-              order: sp.order || 1,
-              isActive: sp.isActive !== undefined ? sp.isActive : true,
-            })) || [],
+            create: (() => {
+              // ✅ FIX: Handle both direct array and GraphQL nested format
+              let sanphamArray;
+              if (Array.isArray(dto?.sanpham)) {
+                sanphamArray = dto.sanpham;
+              } else if (dto?.sanpham?.create && Array.isArray(dto.sanpham.create)) {
+                sanphamArray = dto.sanpham.create;
+              } else {
+                sanphamArray = [];
+              }
+              
+              return sanphamArray.map((sp) => ({
+                idSP: sp.idSP || sp.id,
+                giaban: parseFloat((sp.giaban || 0).toString()),
+                ghichu: sp.ghichu,
+                sldat: parseFloat((sp.sldat ?? 0).toString()),
+                slgiao: parseFloat((sp.slgiao ?? 0).toString()),
+                slnhan: parseFloat((sp.slnhan ?? 0).toString()),
+                slhuy: parseFloat((sp.slhuy ?? 0).toString()),
+                ttdat: parseFloat((sp.ttdat ?? 0).toString()),
+                ttgiao: parseFloat((sp.ttgiao ?? 0).toString()),
+                ttnhan: parseFloat((sp.ttnhan ?? 0).toString()),
+                vat: parseFloat((sp.vat ?? 0).toString()),
+                ttsauvat: parseFloat((sp.ttsauvat ?? 0).toString()),
+                order: sp.order || 1,
+                isActive: sp.isActive !== undefined ? sp.isActive : true,
+              }));
+            })()
           },
         },
         include: {
