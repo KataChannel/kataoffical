@@ -17,6 +17,7 @@ import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -59,6 +60,7 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
     RouterOutlet,
     MatIconModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatSelectModule,
     CommonModule,
     FormsModule,
@@ -171,7 +173,7 @@ export class ListPhieuchiahangComponent {
   async onTypeChange(value: string): Promise<void> {
     this.SearchParams.Type = value;
     this.SearchParams.pageNumber = 1; // Reset to first page
-    await this.LoadData();
+    await this.ngOnInit();
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
