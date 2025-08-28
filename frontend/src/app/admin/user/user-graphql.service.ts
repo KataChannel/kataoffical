@@ -7,7 +7,7 @@ export interface User {
   email: string;
   username: string;
   fullName?: string;
-  phone?: string;
+  sdt?: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -43,6 +43,7 @@ export class UserGraphQLService {
   private _isLoading = signal<boolean>(false);
   private _selectedUsers = signal<Set<string>>(new Set());
   private _statusFilter = signal<'all' | 'active' | 'inactive'>('all');
+  private _currentUser = signal<User | null>(null);
 
   // Public computed signals
   allUsers = this._allUsers.asReadonly();
@@ -52,6 +53,7 @@ export class UserGraphQLService {
   isLoading = this._isLoading.asReadonly();
   selectedUsers = this._selectedUsers.asReadonly();
   statusFilter = this._statusFilter.asReadonly();
+  currentUser = this._currentUser.asReadonly();
 
   // Search and filter results
   filteredUsers = computed(() => {
@@ -65,14 +67,14 @@ export class UserGraphQLService {
       );
     }
 
-    // Apply search term
+    // Search filter
     const term = this._searchTerm().toLowerCase();
     if (term) {
-      filtered = filtered.filter(user =>
-        user.email.toLowerCase().includes(term) ||
-        user.username.toLowerCase().includes(term) ||
+      filtered = filtered.filter(user => 
+        user.email?.toLowerCase().includes(term) ||
+        user.username?.toLowerCase().includes(term) ||
         user.fullName?.toLowerCase().includes(term) ||
-        user.phone?.toLowerCase().includes(term)
+        user.sdt?.toLowerCase().includes(term)
       );
     }
 
@@ -149,7 +151,7 @@ export class UserGraphQLService {
         username: data.username,
         password: data.password,
         fullName: data.fullName,
-        phone: data.phone,
+        sdt: data.sdt,
         isActive: data.isActive ?? true
       };
 
@@ -485,9 +487,20 @@ export class UserGraphQLService {
     this._statusFilter.set('all');
     this._currentPage.set(1);
     this.clearSelection();
+    this._currentUser.set(null);
   }
 
   refreshData(): Promise<User[]> {
     return this.loadAllUsers(true);
+  }
+
+  // ========================= Current User Management =========================
+
+  setCurrentUser(user: User | null): void {
+    this._currentUser.set(user);
+  }
+
+  clearCurrentUser(): void {
+    this._currentUser.set(null);
   }
 }

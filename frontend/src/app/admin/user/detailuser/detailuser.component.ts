@@ -10,11 +10,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { ListUserComponent } from '../listuser/listuser.component';
-import { UserService } from '../user.service';
+import { UserGraphQLService, User } from '../user-graphql.service';
+import { RoleGraphQLService, Role } from '../../role/role-graphql.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
-import { RoleService } from '../../role/role.service';
 import { MatMenuModule } from '@angular/material/menu';
+import { DrawerService } from '../shared/drawer.service';
   @Component({
     selector: 'app-detailuser',
     imports: [
@@ -34,54 +35,99 @@ import { MatMenuModule } from '@angular/material/menu';
   })
   export class DetailUserComponent {
     _ListuserComponent:ListUserComponent = inject(ListUserComponent)
-    _UserService:UserService = inject(UserService)
-    _RoleService:RoleService = inject(RoleService)
+    _UserGraphQLService:UserGraphQLService = inject(UserGraphQLService)
+    _RoleGraphQLService:RoleGraphQLService = inject(RoleGraphQLService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
+    _drawerService:DrawerService = inject(DrawerService)
     constructor(){
+      // Handle route parameter changes for new user or direct navigation
       this._route.paramMap.subscribe((params) => {
         const id = params.get('id');
-        this._UserService.setUserId(id);
+        if (id === 'new') {
+          this.userId.set(id);
+        } else if (id && !this._UserGraphQLService.currentUser()) {
+          // Only set from route if no current user is set (direct navigation)
+          this.userId.set(id);
+        }
       });
+
+      // // React to currentUser changes from service
+      // effect(() => {
+      //   const currentUser = this._UserGraphQLService.currentUser();
+      //   if (currentUser) {
+      //     this.DetailUser.set({
+      //       ...currentUser,
+      //       sdt: currentUser.sdt || '' // Ensure sdt field exists
+      //     });
+      //     this.userId.set(currentUser.id);
+      //     this.isEdit.set(false);
+      //   }
+      // });
   
       effect(async () => {
-        const id = this._UserService.userId();
-      
+        const id = this.userId();
         if (!id){
           this._router.navigate(['/admin/user']);
-          this._ListuserComponent.drawer.close();
+          this._drawerService.close();
         }
         if(id === 'new'){
-          this.DetailUser.set({ title: GenId(8, false), slug: GenId(8, false) });
-          this._ListuserComponent.drawer.open();
+          this.DetailUser.set({ 
+            email: '', 
+            username: '', 
+            password: '',
+            sdt: '',
+            fullName: '',
+            isActive: true,
+            roles: []
+          });
+          this._drawerService.open();
           this.isEdit.update(value => !value);
           this._router.navigate(['/admin/user', "new"]);
         }
-        else{
-            await this._UserService.getUserByid(id);
-            this._ListuserComponent.drawer.open();
+        else if(id){
+            await this.getUserById(id);
+            this._drawerService.open();
             this._router.navigate(['/admin/user', id]);
         }
       });
     }
-    DetailUser: any = this._UserService.DetailUser;
+    
+    DetailUser = signal<any>({});
     isEdit = signal(false);
     isDelete = signal(false);  
-    userId:any = this._UserService.userId
-    ListRole:any = []
-    FilterRole:any = []
+    userId = signal<string | null>(null);
+    ListRole = signal<Role[]>([]);
+    FilterRole = signal<Role[]>([]);
+
+    async getUserById(id: string): Promise<void> {
+      try {
+        const user = await this._UserGraphQLService.getUserById(id);
+        if (user) {
+          this.DetailUser.set({
+            ...user,
+            sdt: user.sdt || ''
+          });
+        }
+      } catch (error) {
+        console.error('Error loading user:', error);
+        this._snackBar.open('Lỗi khi tải thông tin người dùng', 'Đóng', { duration: 3000 });
+      }
+    }
     async ngOnInit() {    
-      await this._RoleService.getAllRole();
-      this.ListRole = this._RoleService.ListRole();
-      this.FilterRole = this.ListRole.filter((v:any)=>
-        this.DetailUser() && this.DetailUser().roles && 
-        !this.DetailUser().roles.some((r:any)=>r.id === v.id)
-      );
-      console.log( this.ListRole);
-      console.log(this.DetailUser().roles);
-      console.log(this.FilterRole);
+      await this._RoleGraphQLService.loadAllRoles();
+      this.ListRole.set(this._RoleGraphQLService.allRoles());
+      this.updateFilterRole();
+    }
+
+    updateFilterRole() {
+      const allRoles = this.ListRole();
+      const userRoles = this.DetailUser()?.roles || [];
       
+      this.FilterRole.set(allRoles.filter((role: Role) =>
+        !userRoles.some((userRole: any) => userRole.roleId === role.id || userRole.role?.id === role.id)
+      ));
     }
     async handleUserAction() {
       if (this.userId() === 'new') {
@@ -103,7 +149,7 @@ import { MatMenuModule } from '@angular/material/menu';
           return;
         }
 
-        if (!this.DetailUser().SDT || this.DetailUser().SDT.trim() === '') {
+        if (!this.DetailUser().sdt || this.DetailUser().sdt.trim() === '') {
           this._snackBar.open('Vui lòng nhập SDT', '', {
             duration: 3000,
             horizontalPosition: 'end',
@@ -113,7 +159,7 @@ import { MatMenuModule } from '@angular/material/menu';
           return;
         }
         
-        await this._UserService.CreateUser(this.DetailUser());
+        await this._UserGraphQLService.createUser(this.DetailUser());
         this._snackBar.open('Tạo Mới Thành Công', '', {
           duration: 1000,
           horizontalPosition: 'end',
@@ -128,7 +174,7 @@ import { MatMenuModule } from '@angular/material/menu';
 
     private async updateUser() {
       try {
-        await this._UserService.updateUser(this.DetailUser());
+        await this._UserGraphQLService.updateUser(this.DetailUser().id, this.DetailUser());
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,
           horizontalPosition: 'end',
@@ -143,7 +189,7 @@ import { MatMenuModule } from '@angular/material/menu';
     async DeleteData()
     {
       try {
-        await this._UserService.DeleteUser(this.DetailUser());
+        await this._UserGraphQLService.deleteUser(this.DetailUser().id);
   
         this._snackBar.open('Xóa Thành Công', '', {
           duration: 1000,
@@ -157,20 +203,6 @@ import { MatMenuModule } from '@angular/material/menu';
         console.error('Lỗi khi xóa user:', error);
       }
     }
-    goBack(){
-      this._router.navigate(['/admin/user'])
-      this._ListuserComponent.drawer.close();
-    }
-    trackByFn(index: number, item: any): any {
-      return item.id;
-    }
-    toggleEdit() {
-      this.isEdit.update(value => !value);
-    }
-    
-    toggleDelete() {
-      this.isDelete.update(value => !value);
-    }
     FillSlug(){
       this.DetailUser.update((v:any)=>{
         v.slug = convertToSlug(v.title);
@@ -178,39 +210,77 @@ import { MatMenuModule } from '@angular/material/menu';
       })
     }
     doFilterHederColumn(event:any){
-      this.FilterRole = this.ListRole.ListRole().filter((v:any)=>v.name.toLowerCase().includes(event.target.value.toLowerCase()));
+      const allRoles = this.ListRole();
+      this.FilterRole.set(allRoles.filter((v:any)=>v.name.toLowerCase().includes(event.target.value.toLowerCase())));
     }
-    handleAddRole(item:any){
-      console.log(item);
-      console.log( this.DetailUser().roles);
-      
-      this.DetailUser.update((v:any)=>{
-        const exits = v.roles.find((r:any)=>r.id === item.id);
-        console.log(exits);
+    
+    async handleAddRole(item:any){
+      try {
+        await this._UserGraphQLService.assignRolesToUser(this.DetailUser().id, [item.id]);
         
-        if(!exits) {
-          v.roles.push(item);
-        }
-        return v;
-      })
-      this._UserService.assignRoleToUser({userId:this.DetailUser().id,roleId:item.id});
-      this.ngOnInit();
-      this._snackBar.open('Thêm Thành Công', '', {
-        duration: 1000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
+        this.DetailUser.update((v:any)=>{
+          const exits = v.roles.find((r:any)=>r.role?.id === item.id || r.roleId === item.id);
+          if(!exits) {
+            v.roles.push({
+              id: GenId(8, false),
+              userId: this.DetailUser().id,
+              roleId: item.id,
+              role: item
+            });
+          }
+          return v;
+        });
+        
+        this.updateFilterRole();
+        this._snackBar.open('Thêm Thành Công', '', {
+          duration: 1000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+      } catch (error) {
+        console.error('Error adding role:', error);
+        this._snackBar.open('Lỗi khi thêm vai trò', 'Đóng', { duration: 3000 });
+      }
     }
-    handleRemoveRole(item:any){
-      // this.ListRole = this.ListRole.filter((v:any)=>v.id !== item.id);
-      this._UserService.removeRoleFromUser({userId:this.DetailUser().id,roleId:item.id})
-      this.ngOnInit();
-      this._snackBar.open('Xóa Thành Công', '', {
-        duration: 1000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
+    
+    async handleRemoveRole(item:any){
+      try {
+        await this._UserGraphQLService.removeRoleFromUser(this.DetailUser().id, item.role?.id || item.roleId);
+        
+        this.DetailUser.update((v:any)=>{
+          v.roles = v.roles.filter((r:any)=> (r.role?.id || r.roleId) !== (item.role?.id || item.roleId));
+          return v;
+        });
+        
+        this.updateFilterRole();
+        this._snackBar.open('Xóa Thành Công', '', {
+          duration: 1000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+      } catch (error) {
+        console.error('Error removing role:', error);
+        this._snackBar.open('Lỗi khi xóa vai trò', 'Đóng', { duration: 3000 });
+      }
+    }
+
+    goBack(){
+      this._UserGraphQLService.clearCurrentUser();
+      this._drawerService.close();
+      this._router.navigate(['/admin/user'])
+    }
+    
+    trackByFn(index: number, item: any): any {
+      return item.id;
+    }
+    
+    toggleEdit() {
+      this.isEdit.update(value => !value);
+    }
+    
+    toggleDelete() {
+      this.isDelete.update(value => !value);
     }
   }

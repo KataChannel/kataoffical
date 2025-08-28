@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, TemplateRef, ViewChild, effect, AfterViewInit } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -17,6 +17,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
 import { UserGraphQLService, User } from '../user-graphql.service';
+import { DrawerService } from '../shared/drawer.service';
 
 @Component({
   selector: 'app-listuser',
@@ -42,16 +43,16 @@ import { UserGraphQLService, User } from '../user-graphql.service';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ListUserComponent implements OnInit {
+export class ListUserComponent implements OnInit, AfterViewInit {
   
-  displayedColumns: string[] = ['stt', 'email', 'username', 'fullName', 'phone', 'isActive', 'roles', 'createdAt'];
-  readonly AllColumn: string[] = ['stt', 'email', 'username', 'fullName', 'phone', 'isActive', 'roles', 'createdAt'];
+  displayedColumns: string[] = ['stt', 'email', 'username', 'fullName', 'sdt', 'isActive', 'roles', 'createdAt'];
+  readonly AllColumn: string[] = ['stt', 'email', 'username', 'fullName', 'sdt', 'isActive', 'roles', 'createdAt'];
   readonly ColumnName: Record<string, string> = {
     stt: '#',
     email: 'Email',
     username: 'Tên đăng nhập',
     fullName: 'Họ và tên',
-    phone: 'Số điện thoại',
+    sdt: 'Số điện thoại',
     isActive: 'Trạng thái',
     roles: 'Vai trò',
     createdAt: 'Ngày tạo'
@@ -69,7 +70,8 @@ export class ListUserComponent implements OnInit {
     private userGraphQLService: UserGraphQLService,
     private dialog: MatDialog,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private drawerService: DrawerService
   ) {}
 
   // State - initialized after constructor
@@ -91,6 +93,19 @@ export class ListUserComponent implements OnInit {
     
     this.initializeColumns();
     this.loadUsers();
+  }
+
+  ngAfterViewInit(): void {
+    // React to drawer service state changes after view init
+    effect(() => {
+      if (this.drawer) {
+        if (this.drawerService.isOpen()) {
+          this.drawer.open();
+        } else {
+          this.drawer.close();
+        }
+      }
+    });
   }
 
   initializeColumns(): void {
@@ -198,7 +213,9 @@ export class ListUserComponent implements OnInit {
   }
 
   goToDetail(user: User): void {
-    this.router.navigate(['/admin/user', user.id], { relativeTo: null });
+    // Set selected user and open drawer
+    this.userGraphQLService.setCurrentUser(user);
+    this.drawerService.open();
   }
 
   AddToEdit(user: User): void {

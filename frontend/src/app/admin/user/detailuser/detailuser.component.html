@@ -38,7 +38,7 @@
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Số Điện Thoại</mat-label>
-        <input matInput [(ngModel)]="DetailUser().SDT" [disabled]="!isEdit()" placeholder="Vui lòng nhập Số Điện Thoại" />
+        <input matInput [(ngModel)]="DetailUser().sdt" [disabled]="!isEdit()" placeholder="Vui lòng nhập Số Điện Thoại" />
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Mật Khẩu </mat-label>
@@ -68,7 +68,7 @@
                    </div>
                </div>
                <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
-                    @for (item of FilterRole; track $index) {
+                    @for (item of FilterRole(); track $index) {
                       <button mat-menu-item (click)="handleAddRole(item)">{{item.name}}</button>
                     }
                </div>

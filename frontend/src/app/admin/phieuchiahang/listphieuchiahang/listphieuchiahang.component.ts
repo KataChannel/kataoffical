@@ -168,6 +168,11 @@ export class ListPhieuchiahangComponent {
   onDateChange(event: any): void {
     this.ngOnInit();
   }
+  async onTypeChange(value: string): Promise<void> {
+    this.SearchParams.Type = value;
+    this.SearchParams.pageNumber = 1; // Reset to first page
+    await this.LoadData();
+  }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
       const filterObject = JSON.parse(filter);
