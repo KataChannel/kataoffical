@@ -116,9 +116,9 @@ export class ListPhieuchiahangComponent {
   SearchParams: any = {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
-    Type: 'donsi',
+    Type: 'all',
     Status: 'dadat',
-    pageSize: 1000,
+    pageSize: 99999,
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },

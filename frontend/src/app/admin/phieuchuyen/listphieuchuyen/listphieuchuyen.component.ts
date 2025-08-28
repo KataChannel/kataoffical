@@ -104,7 +104,6 @@ export class ListPhieuchuyenComponent {
   isSearch: boolean = false;  SearchParams: any = {
       Batdau: DateHelpers.now(),
       Ketthuc: DateHelpers.now(),
-      Type: 'donsi',
       Status:'dadat'
     };
   constructor() {
