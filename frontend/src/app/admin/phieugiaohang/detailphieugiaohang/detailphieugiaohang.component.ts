@@ -542,9 +542,49 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   {
 
   }
+  CheckVatDonhang(){
+    console.log(this.DetailPhieugiaohang());
+    if(this.DetailPhieugiaohang().isshowvat){
+
+    const tong = this.DetailPhieugiaohang().sanpham?.reduce((sum:any, item:any) => sum + (Number(item.slgiao) * Number(item.giaban)||0), 0) || 0;
+    const tongtien = tong*(1+Number(this.DetailPhieugiaohang().vat));
+    const tongvat = tong*this.DetailPhieugiaohang().vat;
+        console.log('VAT changed:', 1+this.DetailPhieugiaohang().vat);
+        
+        console.log('tong',tong);
+        console.log('tongtien',tongtien);
+        console.log('tongvat',tongvat);
+        console.log('this.DetailPhieugiaohang().tongtien',this.DetailPhieugiaohang().tongtien);
+        console.log('this.DetailPhieugiaohang().tongvat',this.DetailPhieugiaohang().tongvat);
+
+
+    if(Number(tongtien) !== Number(this.DetailPhieugiaohang().tongtien)){
+      return false;
+    }
+    if(Number(tongvat) !== Number(this.DetailPhieugiaohang().tongvat)){
+      return false;
+    } else {
+      return true;
+    }
+    }
+    else {
+      return true;
+    }
+    
+  }
 
   printContent()
   {
+   const isCheck = this.CheckVatDonhang();
+   if(!isCheck){
+    this._snackBar.open('Vui lòng kiểm tra lại VAT trước khi in phiếu giao hàng', '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-error']
+    });
+    return;
+   }
     const printContent = document.getElementById('printContent');
     if (printContent) {
       const newWindow = window.open('', '_blank');

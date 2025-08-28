@@ -104,7 +104,6 @@ export class VandonComponent {
   SearchParams: any = {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
-    Type: 'donsi',
     Status:'dadat',
     pageSize: 9999,
   };

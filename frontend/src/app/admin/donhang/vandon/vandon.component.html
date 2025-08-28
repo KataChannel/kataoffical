@@ -41,7 +41,7 @@
         <button mat-icon-button color="warn" (click)="isSearch=!isSearch"><mat-icon>cancel</mat-icon></button>
     </div>
       <div class="w-full grid lg:grid-cols-4 grid-cols-2 gap-2 items-center">
-          <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+          <!-- <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
             <mat-label>Loại Đơn</mat-label>
             <mat-select [(ngModel)]="SearchParams.Type" [ngModelOptions]="{standalone: true}"
               (selectionChange)="onSelectionChange($event)">
@@ -52,7 +52,7 @@
               <mat-option [value]="item.value">{{item.Title}}</mat-option>
               }
             </mat-select>
-          </mat-form-field>
+          </mat-form-field> -->
 
           <!-- <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
             <mat-label>Chọn Thời Gian</mat-label>
