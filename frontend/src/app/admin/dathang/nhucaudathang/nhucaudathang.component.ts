@@ -67,8 +67,8 @@ export class NhucaudathangComponent {
     'title',
     'masp',
     'dvt',
-    'mancc',
-    'name',
+    // 'mancc',
+    // 'name',
     // 'slchonhap',
     'SLDat',
     'goiy',
@@ -89,8 +89,8 @@ export class NhucaudathangComponent {
       title: 'Tên Sản Phẩm',
       masp: 'Mã Sản Phẩm',
       dvt:'ĐVT',
-      mancc: 'Mã NCC',
-      name: 'Tên Nhà Cung Cấp',
+      // mancc: 'Mã NCC',
+      // name: 'Tên Nhà Cung Cấp',
       // slchonhap: 'SL Đặt (Chờ Nhập)',
       SLDat: 'SL Đặt (Nhà CC)',
       goiy: 'SL Cần Đặt (Gợi Ý)',
@@ -254,7 +254,7 @@ export class NhucaudathangComponent {
 
       console.log(`Fetching data from ${startDate} to ${endDate}`);
 
-      const [Donhangs, Dathangs, Tonkhos] = await Promise.all([
+      const [Donhangs, Dathangs, Tonkhos,Sanphams] = await Promise.all([
         this._GraphqlService.findAll('donhang', {
           enableParallelFetch: true,
           batchSize: 1000,
@@ -343,11 +343,21 @@ export class NhucaudathangComponent {
             },
           },
         }),
-      ]);
-      console.log('Donhangs:', Donhangs);
-      console.log('Dathangs:', Dathangs);
-      console.log('Tonkhos:', Tonkhos);
 
+        this._GraphqlService.findAll('sanpham', {
+          enableParallelFetch: true,
+          aggressiveCache: true,
+          batchSize: 1000,
+          take: 999999,
+          select: {
+            id: true,
+            title: true,
+            masp: true,
+            dvt:true,
+            haohut:true
+          },
+        }),
+      ]);
       const DonhangsTranfer = Donhangs.data.flatMap((order: any) =>
         order.sanpham.map((sp: any) => ({
           type: 'donhang',
@@ -387,7 +397,6 @@ export class NhucaudathangComponent {
       }));
      console.log('Tonkhos',TonkhosTranfer);
       const tonghopMap = new Map<string, any>();
-
       TonkhosTranfer.forEach((tonkho: any) => {
         tonghopMap.set(tonkho.masp, {
           id: GenId(8, false),
@@ -425,12 +434,30 @@ export class NhucaudathangComponent {
           item.SLGiao += donhang.slnhan;
         }
       });
+      const SanphamsTranfer = Sanphams.data
 
-      const TonghopsFinal = Array.from(tonghopMap.values());
-      this.TonghopsFinal = this.convertData(TonghopsFinal);
-      this.dataSource.data = this.convertData(TonghopsFinal);
-      this.totalItems = TonghopsFinal.length;
-      console.log('TonghopsFinal:', this.TonghopsFinal);
+      console.log('Donhangs:', Donhangs);
+      console.log('Dathangs:', Dathangs);
+      console.log('Tonkhos:', Tonkhos);
+      console.log('Sanphams:', SanphamsTranfer);
+      console.log('DonhangsTranfer:', DonhangsTranfer);
+      console.log('DathangsTranfer:', DathangsTranfer);
+
+
+      this.TonghopsFinal = SanphamsTranfer.map((sp: any) => ({
+        ...sp,
+        Dathangs: DathangsTranfer.filter((dh: any) => dh.masp === sp.masp),
+        Donhangs: DonhangsTranfer.filter((dh: any) => dh.masp === sp.masp),
+        SLDat: DathangsTranfer.reduce((sum: number, dh: any) => dh.masp === sp.masp ? sum + dh.sldat : sum, 0),
+        SLGiao: DonhangsTranfer.reduce((sum: number, dh: any) => dh.masp === sp.masp ? sum + dh.sldat : sum, 0),
+        slton: TonkhosTranfer.reduce((sum: number, tk: any) => tk.masp === sp.masp ? sum + tk.slton : sum, 0),
+      }));
+
+
+      console.log('Sanphams with orders:', this.TonghopsFinal);
+      this.dataSource.data = this.TonghopsFinal;
+      this.totalItems = this.TonghopsFinal.length;
+      // console.log('TonghopsFinal:', this.TonghopsFinal);
       
       this.calculateTotalPages();
       this.updateDisplayData();
