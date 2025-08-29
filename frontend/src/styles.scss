@@ -14,6 +14,33 @@
   ));
 
 }
+
+/* Dialog styles for nested data */
+.nested-data-dialog-panel {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+  }
+  
+  .mat-mdc-dialog-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-height: none !important;
+  }
+  
+  .mat-mdc-dialog-title {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .mat-mdc-dialog-actions {
+    padding: 0 !important;
+    margin: 0 !important;
+    justify-content: stretch !important;
+  }
+}
+
 .font-times {
     font-family: 'Times New Roman', Times, serif !important;
 }
@@ -182,7 +209,10 @@ body {
   color: white;
   border-radius: 5px;
 }
-
+.mat-drawer.mat-drawer-side
+{
+  z-index: 1 !important;
+}
 .text-primary
 {
   // font-family: 'Quicksand', sans-serif !important;
