@@ -25,6 +25,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenu, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import {
   readExcelFile,
+  readExcelFileNoWorker,
   writeExcelFile,
 } from '../../../shared/utils/exceldrive.utils';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -149,7 +150,7 @@ export class NhucaudathangComponent {
 
   // Pagination
   totalItems = 0;
-  pageSize = 500;
+  pageSize = 9999;
   currentPage = 1;
   totalPages = 1;
 
@@ -264,7 +265,6 @@ export class NhucaudathangComponent {
     if(item.SLGiao > item.SLDat) {
       const demand = item.SLGiao - item.SLDat;
       const wastageAmount = demand * (item.haohut || 0) / 100;
-      console.log(wastageAmount);  
       return wastageAmount.toFixed(0);
     }
     else {
@@ -533,8 +533,8 @@ export class NhucaudathangComponent {
       // console.log('Sanphams:', SanphamsTranfer);
       // console.log('DonhangsTranfer:', DonhangsTranfer);
       // console.log('DathangsTranfer:', DathangsTranfer);
-      console.log('Sanphams with orders:', this.TonghopsFinal);
-      console.log('Sanphams with Export:', this.TonghopsExportFinal);
+      // console.log('Sanphams with orders:', this.TonghopsFinal);
+      // console.log('Sanphams with Export:', this.TonghopsExportFinal);
 
       this.dataSource.data = this.TonghopsFinal;
       this.totalItems = this.TonghopsFinal.length;      
@@ -745,7 +745,7 @@ export class NhucaudathangComponent {
   }
 
   async ImporExcel(event: any) {
-    const data = await readExcelFile(event);
+    const data = await readExcelFileNoWorker(event);
     const transformedData = data.map((v: any) => ({
       title: v.title?.trim() || '',
       masp: v.masp?.trim() || '',
@@ -841,6 +841,234 @@ export class NhucaudathangComponent {
     console.log(dulieu);
     const result = dulieu.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
     writeExcelFile(result, title, Object.values(mapping), mapping);
+  }
+
+  // Cập nhật tồn kho từ file Excel
+  async Capnhattonkho() {
+    // Tạo input file element động
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.xlsx,.xls,.csv';
+    fileInput.style.display = 'none';
+    
+    fileInput.onchange = async (event: any) => {
+      try {
+        const file = event.target.files[0];
+        if (!file) {
+          this._snackBar.open('Không có file được chọn', 'Đóng', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+          return;
+        }
+
+        // Hiển thị loading
+        this._snackBar.open('Đang xử lý file Excel...', '', {
+          duration: 0,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-info'],
+        });
+
+        // Đọc file Excel (không sử dụng worker)
+        const excelData = await readExcelFileNoWorker(event);
+        
+        if (!excelData || excelData.length === 0) {
+          this._snackBar.dismiss();
+          this._snackBar.open('File Excel trống hoặc không hợp lệ', 'Đóng', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+          return;
+        }
+
+        // Validate và transform dữ liệu
+        const validData: Array<{masp: string, slton: number}> = [];
+        const errors: string[] = [];
+
+        excelData.forEach((row: any, index: number) => {
+          const masp = row.masp?.toString().trim();
+          let slton = parseFloat(row.slton);
+
+          // Validate required fields
+          if (!masp) {
+            errors.push(`Dòng ${index + 1}: Thiếu mã sản phẩm`);
+            return;
+          }
+
+          // Xử lý slton: nếu NaN, null, undefined hoặc <= 0 thì set về 0
+          if (isNaN(slton) || slton == null || slton <= 0) {
+            slton = 0;
+            console.log(`Dòng ${index + 1} - ${masp}: slton được set về 0 (giá trị gốc: ${row.slton})`);
+          }
+
+          validData.push({ masp, slton });
+        });
+
+        if (errors.length > 0) {
+          this._snackBar.dismiss();
+          this._snackBar.open(`Có ${errors.length} lỗi trong file. Xem console để biết chi tiết.`, 'Đóng', {
+            duration: 5000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+          console.error('Validation errors:', errors);
+          return;
+        }
+
+        // Get all existing TonKho and Sanpham data
+        const [tonkhoResponse, sanphamResponse] = await Promise.all([
+          this._GraphqlService.findAll('tonkho', {
+            take: 999999,
+            select: {
+              id: true,
+              sanphamId: true,
+              slton: true,
+              slchogiao: true,
+              slchonhap: true,
+              sanpham: {
+                select: {
+                  id: true,
+                  masp: true,
+                  title: true
+                }
+              }
+            }
+          }),
+          this._GraphqlService.findAll('sanpham', {
+            take: 999999,
+            select: {
+              id: true,
+              masp: true,
+              title: true
+            }
+          })
+        ]);
+
+        const allTonkho = tonkhoResponse.data || [];
+        const allSanpham = sanphamResponse.data || [];
+
+        // Create maps for quick lookup
+        const tonkhoMap = new Map(allTonkho.map((tk: any) => [tk.sanpham?.masp, tk]));
+        const sanphamMap = new Map(allSanpham.map((sp: any) => [sp.masp, sp]));
+
+        let updatedCount = 0;
+        let createdCount = 0;
+        const processErrors: string[] = [];
+
+        // Process each item từ Excel file
+        for (const item of validData) {
+          try {
+            // Tìm sản phẩm theo mã sản phẩm
+            const sanpham = sanphamMap.get(item.masp);
+            if (!sanpham) {
+              processErrors.push(`Không tìm thấy sản phẩm với mã: ${item.masp}`);
+              continue;
+            }
+
+            // Kiểm tra xem TonKho đã tồn tại chưa
+            const existingTonkho = tonkhoMap.get(item.masp);
+            
+            if (existingTonkho) {
+              // Cập nhật TonKho đã có - bao gồm cả trường hợp slton = 0
+              await this._GraphqlService.updateOne('tonkho', 
+                { id: (existingTonkho as any).id }, 
+                { slton: item.slton }
+              );
+              updatedCount++;
+              console.log(`Updated TonKho for ${item.masp}: slton = ${item.slton}`);
+            } else {
+              // Tạo mới TonKho record - bao gồm cả trường hợp slton = 0
+              await this._GraphqlService.createOne('tonkho', {
+                sanphamId: (sanpham as any).id,
+                slton: item.slton,
+                slchogiao: 0,
+                slchonhap: 0
+              });
+              createdCount++;
+              console.log(`Created new TonKho for ${item.masp}: slton = ${item.slton}`);
+            }
+          } catch (error: any) {
+            processErrors.push(`Lỗi xử lý ${item.masp}: ${error.message}`);
+          }
+        }
+
+        this._snackBar.dismiss();
+
+        // Show results
+        if (processErrors.length > 0) {
+          console.error('Process errors:', processErrors);
+          this._snackBar.open(`Hoàn thành với ${processErrors.length} lỗi. Xem console để biết chi tiết.`, 'Đóng', {
+            duration: 5000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-warning'],
+          });
+        } else {
+          this._snackBar.open(`Cập nhật TonKho thành công: ${updatedCount} cập nhật, ${createdCount} tạo mới (bao gồm cả slton = 0)`, 'Đóng', {
+            duration: 4000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-success'],
+          });
+          console.log(`TonKho update summary: Updated ${updatedCount}, Created ${createdCount}`);
+        }
+
+        // Reload data to reflect changes
+        this.ngOnInit();
+
+      } catch (error: any) {
+        this._snackBar.dismiss();
+        this._snackBar.open(`Lỗi xử lý file: ${error.message}`, 'Đóng', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+        console.error('Error processing Excel file:', error);
+      }
+    };
+
+    // Trigger file selection
+    document.body.appendChild(fileInput);
+    fileInput.click();
+    document.body.removeChild(fileInput);
+  }
+
+  // Tải file Excel mẫu để cập nhật tồn kho
+  async downloadTonkhoTemplate() {
+    const mapping = {
+      masp: 'Mã Sản Phẩm',
+      slton: 'Số Lượng Tồn',
+    };
+    const Sanphams = await this._GraphqlService.findAll('sanpham', {
+            take: 999999,
+            select: {
+              id: true,
+              masp: true,
+              select:{
+                TonKho:{ select:{ slton:true }}
+              }
+              }
+          })
+    const sampleData = Sanphams.data.map((sp: any) => ({
+      masp: sp.masp || '',
+      slton: sp.TonKho?.slton || 0,
+    }));
+    // Tạo file Excel với dữ liệu mẫu
+    writeExcelFile(sampleData, 'MauCapNhatTonKho', Object.values(mapping), mapping);
+    
+    this._snackBar.open('Đã tải file Excel mẫu', 'Đóng', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-info'],
+    });
   }
 
 

@@ -330,20 +330,20 @@ export function readExcelFileNoWorker(event: any, sheetName?: string): Promise<a
     const reader = new FileReader();
     reader.onload = (e: any) => {
       try {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        let result:any;
-        if (sheetName && workbook.SheetNames.includes(sheetName)) {
-          result = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
-        } else {
-          result = {};
-          workbook.SheetNames.forEach(name => {
-            result[name] = XLSX.utils.sheet_to_json(workbook.Sheets[name], { defval: '' });
-          });
-        }
-        resolve(result);
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      let result: any;
+      
+      if (sheetName && workbook.SheetNames.includes(sheetName)) {
+        result = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
+      } else {
+        // Lấy sheet đầu tiên
+        const firstSheetName = workbook.SheetNames[0];
+        result = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName], { defval: '' });
+      }
+      resolve(result);
       } catch (error) {
-        reject(error);
+      reject(error);
       }
     };
     reader.onerror = (err) => reject(err);

@@ -4,7 +4,7 @@
     </mat-drawer>
     <div class="flex flex-col space-y-2 h-screen-16 w-full p-2">
         <div class="border p-1 cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center bg-white rounded-lg">
-            <div class="w-full flex flex-row space-x-2 items-center">               
+            <div class="w-full flex flex-wrap space-x-2 items-center">               
                 <div class="relative">
                     <input type="text" placeholder="Tìm kiếm sản phẩm, mã sản phẩm..." (keyup)="applyGlobalFilter($event)" 
                         class="block pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
@@ -121,7 +121,7 @@
                 <!-- <button matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
                     <mat-icon>cloud_download</mat-icon>
                 </button> -->
-                <span (click)="pageSize = this.TonghopsFinal.length;updateDisplayData()" class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
+                <span (click)="pageSize = this.TonghopsFinal.length;updateDisplayData()" class="flex whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{this.TonghopsFinal.length > 0 ? this.TonghopsFinal.length : this.Listsanpham().length}} Sản Phẩm
                     @if (isDateRangeEnabled) {
                         <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
@@ -129,6 +129,8 @@
                         </span>
                     }
                 </span>
+                <span (click)="Capnhattonkho()" class="whitespace-nowrap p-2 border hover:bg-slate-50 rounded-lg cursor-pointer" matTooltip="Tải file Excel lên để cập nhật tồn kho">📁 Cập Nhật Tồn Kho</span>
+                <span (click)="downloadTonkhoTemplate()" class="whitespace-nowrap p-2 border hover:bg-slate-50 rounded-lg cursor-pointer" matTooltip="Tải file Excel mẫu để cập nhật tồn kho">📄 Mẫu Excel</span>
             </div>
         </div>
         <div class="border rounded-lg w-full h-full overflow-auto">
