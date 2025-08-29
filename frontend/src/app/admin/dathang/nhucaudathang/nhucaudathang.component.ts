@@ -41,6 +41,7 @@ import { DathangService } from '../dathang.service';
 import { DonhangService } from '../../donhang/donhang.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { NestedDataDialogComponent, NestedDataDialogData } from './nested-data-dialog/nested-data-dialog.component';
+import moment from 'moment';
 
 @Component({
   selector: 'app-nhucaudathang',
@@ -257,6 +258,17 @@ export class NhucaudathangComponent {
     }
     else {
       return '0';
+    }
+  }
+  GetSLHaohut(item: any) {
+    if(item.SLGiao > item.SLDat) {
+      const demand = item.SLGiao - item.SLDat;
+      const wastageAmount = demand * (item.haohut || 0) / 100;
+      console.log(wastageAmount);  
+      return wastageAmount.toFixed(0);
+    }
+    else {
+      return 0;
     }
   }
 
@@ -499,13 +511,14 @@ export class NhucaudathangComponent {
           slchogiao: tonkho?.slchogiao || 0,
           slchonhap: tonkho?.slchonhap || 0,
           haohut: tonkho?.haohut || sp.haohut || 0,
-          // Cache related data for nested expansion
+          slhaohut:0,
           Dathangs: DathangsTranfer.filter((dh: any) => dh.masp === sp.masp),
           Donhangs: DonhangsTranfer.filter((dh: any) => dh.masp === sp.masp),
         };
 
         // Calculate suggestion immediately
         transformedItem.goiy = this.GetGoiy(transformedItem);
+        transformedItem.slhaohut = this.GetSLHaohut(transformedItem);
         
         return transformedItem;
       }).filter(sp => sp.masp).sort((a, b) => parseFloat(b.SLDat) - parseFloat(a.SLDat)); // Sort by goiy descending
@@ -514,12 +527,12 @@ export class NhucaudathangComponent {
       const tranferTonghop = (await this.convertData(this.TonghopsFinal)).flat()
       this.TonghopsExportFinal = this.convertKhoData(tranferTonghop)
       
-      console.log('Donhangs:', Donhangs);
-      console.log('Dathangs:', Dathangs);
-      console.log('Tonkhos:', Tonkhos);
-      console.log('Sanphams:', SanphamsTranfer);
-      console.log('DonhangsTranfer:', DonhangsTranfer);
-      console.log('DathangsTranfer:', DathangsTranfer);
+      // console.log('Donhangs:', Donhangs);
+      // console.log('Dathangs:', Dathangs);
+      // console.log('Tonkhos:', Tonkhos);
+      // console.log('Sanphams:', SanphamsTranfer);
+      // console.log('DonhangsTranfer:', DonhangsTranfer);
+      // console.log('DathangsTranfer:', DathangsTranfer);
       console.log('Sanphams with orders:', this.TonghopsFinal);
       console.log('Sanphams with Export:', this.TonghopsExportFinal);
 
@@ -792,16 +805,16 @@ export class NhucaudathangComponent {
       slton: v.slton || 0,
       mancc: v.mancc || '',
       name: v.name || '',
-      ngaynhan: v.ngaynhan || '',
+      ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
       sldat: v.sldat || 0,
       goiy: v.goiy || 0,
-      kho1: v.kho1 || '0',
-      kho2: v.kho2 || '0',  
-      kho3: v.kho3 || '0',
-      kho4: v.kho4 || '0',
-      kho5: v.kho5 || '0',
-      kho6: v.kho6 || '0',
-      slhaohut: Math.round((v.SLGiao || 0) * (v.haohut || 0)) / 100 || 0,
+      kho1: v.kho1 || 0,
+      kho2: v.kho2 || 0,  
+      kho3: v.kho3 || 0,
+      kho4: v.kho4 || 0,
+      kho5: v.kho5 || 0,
+      kho6: v.kho6 || 0,
+      slhaohut: v.slhaohut || 0,
     }));
 
     const mapping: any = {
@@ -826,7 +839,7 @@ export class NhucaudathangComponent {
       slhaohut: 'SL Hao Hụt',
     };
     console.log(dulieu);
-    const result = dulieu.sort((a: any, b: any) => parseFloat(b.title) - parseFloat(a.title));
+    const result = dulieu.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
     writeExcelFile(result, title, Object.values(mapping), mapping);
   }
 
@@ -898,6 +911,7 @@ export class NhucaudathangComponent {
               masp: item.masp,
               dvt: item.dvt,
               haohut: item.haohut,
+              slhaohut: item.slhaohut,
               SLDat: item.SLDat,
               SLGiao: item.SLGiao,
               slton: item.slton,
