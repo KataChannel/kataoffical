@@ -166,7 +166,7 @@
                         <h3 class="text-lg font-semibold text-gray-800">
                             {{ isRefreshing ? 'Đang làm mới...' : 'Đang tải dữ liệu...' }}
                         </h3>
-                        @if (loadingMessage) {
+                        <!-- @if (loadingMessage) {
                             <p class="text-sm text-gray-600 mt-1">{{ loadingMessage }}</p>
                         }
                         @if (progressPercentage > 0 && progressPercentage < 100) {
@@ -175,7 +175,7 @@
                                      [style.width.%]="progressPercentage"></div>
                             </div>
                             <p class="text-xs text-gray-500 mt-1">{{ progressPercentage }}%</p>
-                        }
+                        } -->
                     </div>
                 </div>
             </div>

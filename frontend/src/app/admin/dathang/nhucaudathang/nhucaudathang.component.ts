@@ -27,6 +27,7 @@ import {
   readExcelFile,
   readExcelFileNoWorker,
   writeExcelFile,
+  writeExcelFileSheets,
 } from '../../../shared/utils/exceldrive.utils';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -544,7 +545,6 @@ export class NhucaudathangComponent {
 
       const tranferTonghop = (await this.convertData(this.TonghopsFinal)).flat()
       this.TonghopsExportFinal = this.convertKhoData(tranferTonghop)
-      
       this.progressPercentage = 90;
       this.loadingMessage = 'Hoàn tất...';
       
@@ -853,8 +853,7 @@ export class NhucaudathangComponent {
   async ExportExcel(data: any, title: any) {
     try {
       this.isExportingExcel = true;
-
-      const dulieu = data.map((v: any) => ({
+      const dulieu = this.TonghopsExportFinal.map((v: any) => ({
         title: v.title || '',
         masp: v.masp || '',
         dvt: v.dvt || '',
@@ -899,7 +898,23 @@ export class NhucaudathangComponent {
       };
       console.log(dulieu);
       const result = dulieu.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
-      writeExcelFile(result, title, Object.values(mapping), mapping);
+
+      // Chuẩn bị dữ liệu cho 2 sheets
+      const sheetsData = {
+       'sheet1': {
+          data: this.TonghopsFinal,
+          headers: [] as string[],
+          mapping: {} as { [key: string]: string }
+        },
+        'sheet2': {
+          data: result,
+          headers: Object.values(mapping) as string[],
+          mapping: mapping
+        },
+      };
+
+      // Export file Excel với multiple sheets
+      writeExcelFileSheets(sheetsData, title);
       
       this._snackBar.open('Export Excel thành công!', '', {
         duration: 2000,
