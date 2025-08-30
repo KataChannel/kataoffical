@@ -1,2 +1,0 @@
-import{n as r}from"./chunk-XPJYUAXQ.js";import"./chunk-UAZLFQKL.js";import{Bc as a,bc as m,cc as s,nb as n,zb as i}from"./chunk-QJD4TKMG.js";import"./chunk-EU2KAMEK.js";import"./chunk-66YHNWRR.js";var c=class o{constructor(e){this.route=e}ngOnInit(){let e=this.route.snapshot.data.breadcrumb;console.log(e)}static \u0275fac=function(t){return new(t||o)(n(r))};static \u0275cmp=i({type:o,selectors:[["app-demosite"]],decls:2,vars:0,template:function(t,p){t&1&&(m(0,"p"),a(1,` demosite works!
-`),s())},encapsulation:2})};export{c as DemositeComponent};
