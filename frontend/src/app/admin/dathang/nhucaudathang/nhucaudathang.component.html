@@ -111,8 +111,21 @@
                         }
                     </div>
                 </mat-menu>
-                <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(TonghopsExportFinal,'Tonghop')" color="primary" mat-icon-button>
-                    <mat-icon>file_download</mat-icon>
+                <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(TonghopsExportFinal,'Tonghop')" [disabled]="isExportingExcel" color="primary" mat-icon-button>
+                    @if (isExportingExcel) {
+                        <mat-spinner diameter="20"></mat-spinner>
+                    } @else {
+                        <mat-icon>file_download</mat-icon>
+                    }
+                </button>
+                
+                <!-- Refresh Button -->
+                <button matTooltip="Làm mới dữ liệu" (click)="refresh()" [disabled]="isLoading || isRefreshing" color="primary" mat-icon-button>
+                    @if (isRefreshing) {
+                        <mat-spinner diameter="20"></mat-spinner>
+                    } @else {
+                        <mat-icon>refresh</mat-icon>
+                    }
                 </button>
                 <!-- <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
                     <mat-icon>file_upload</mat-icon>
@@ -129,10 +142,45 @@
                         </span>
                     }
                 </span>
-                <span (click)="Capnhattonkho()" class="whitespace-nowrap p-2 border hover:bg-slate-50 rounded-lg cursor-pointer" matTooltip="Tải file Excel lên để cập nhật tồn kho">📁 Cập Nhật Tồn Kho</span>
+                <span (click)="!isUpdatingStock && Capnhattonkho()" 
+                      [class]="'whitespace-nowrap p-2 border rounded-lg cursor-pointer flex items-center space-x-2 ' + 
+                               (isUpdatingStock ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50')" 
+                      matTooltip="Tải file Excel lên để cập nhật tồn kho">
+                    @if (isUpdatingStock) {
+                        <mat-spinner diameter="16"></mat-spinner>
+                        <span>Đang cập nhật...</span>
+                    } @else {
+                        <span>📁 Cập Nhật Tồn Kho</span>
+                    }
+                </span>
                 <span (click)="downloadTonkhoTemplate()" class="whitespace-nowrap p-2 border hover:bg-slate-50 rounded-lg cursor-pointer" matTooltip="Tải file Excel mẫu để cập nhật tồn kho">📄 Mẫu Excel</span>
             </div>
         </div>
+        
+        <!-- Loading Overlay -->
+        @if (isLoading || isRefreshing) {
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white rounded-lg p-6 flex flex-col items-center space-y-4 max-w-sm w-full mx-4">
+                    <mat-spinner diameter="50" color="primary"></mat-spinner>
+                    <div class="text-center">
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            {{ isRefreshing ? 'Đang làm mới...' : 'Đang tải dữ liệu...' }}
+                        </h3>
+                        @if (loadingMessage) {
+                            <p class="text-sm text-gray-600 mt-1">{{ loadingMessage }}</p>
+                        }
+                        @if (progressPercentage > 0 && progressPercentage < 100) {
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                                <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                                     [style.width.%]="progressPercentage"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">{{ progressPercentage }}%</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        
         <div class="border rounded-lg w-full h-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {

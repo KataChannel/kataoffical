@@ -186,6 +186,15 @@ export class NhucaudathangComponent {
   loadingDathang: Set<string> = new Set();
   loadingDonhang: Set<string> = new Set();
 
+  // Loading states
+  isLoading = false;
+  isExportingExcel = false;
+  isImportingExcel = false;
+  isUpdatingStock = false;
+  isRefreshing = false;
+  loadingMessage = '';
+  progressPercentage = 0;
+
   // Date range properties
   batdau: Date = new Date(); // Start date
   ketthuc: Date = new Date(); // End date
@@ -274,6 +283,10 @@ export class NhucaudathangComponent {
 
   async loadDonhangWithRelations() {
     try {
+      this.isLoading = true;
+      this.loadingMessage = 'Đang tải dữ liệu đơn hàng...';
+      this.progressPercentage = 0;
+      
       // ✅ Sử dụng TimezoneService để xử lý date range đúng cách
       let startDate: string;
       let endDate: string;
@@ -294,6 +307,8 @@ export class NhucaudathangComponent {
         endDate = todayRange.Ketthuc;
       }
 
+      this.progressPercentage = 25;
+      this.loadingMessage = 'Đang xử lý dữ liệu...';
 
       const [Donhangs, Dathangs, Tonkhos,Sanphams] = await Promise.all([
         this._GraphqlService.findAll('donhang', {
@@ -524,8 +539,14 @@ export class NhucaudathangComponent {
       }).filter(sp => sp.masp).sort((a, b) => parseFloat(b.SLDat) - parseFloat(a.SLDat)); // Sort by goiy descending
 
 
+      this.progressPercentage = 75;
+      this.loadingMessage = 'Đang tổng hợp dữ liệu...';
+
       const tranferTonghop = (await this.convertData(this.TonghopsFinal)).flat()
       this.TonghopsExportFinal = this.convertKhoData(tranferTonghop)
+      
+      this.progressPercentage = 90;
+      this.loadingMessage = 'Hoàn tất...';
       
       // console.log('Donhangs:', Donhangs);
       // console.log('Dathangs:', Dathangs);
@@ -540,9 +561,23 @@ export class NhucaudathangComponent {
       this.totalItems = this.TonghopsFinal.length;      
       this.calculateTotalPages();
       this.updateDisplayData();
+      
+      this.progressPercentage = 100;
+      
+      // Short delay to show completion
+      setTimeout(() => {
+        this.isLoading = false;
+        this.loadingMessage = '';
+        this.progressPercentage = 0;
+      }, 500);
+      
     } catch (error) {
       console.error('Error loading data:', error);
-      this._snackBar.open('Lỗi khi tải dữ liệu', '', {
+      this.isLoading = false;
+      this.loadingMessage = '';
+      this.progressPercentage = 0;
+      
+      this._snackBar.open('Lỗi khi tải dữ liệu', 'Đóng', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
@@ -552,10 +587,32 @@ export class NhucaudathangComponent {
   }
 
   async refresh() {
-    // Clear expanded state when refreshing data
-    this.expandedElementId = null;
-    await this._SanphamService.getAllSanpham();
-    await this.loadDonhangWithRelations();
+    this.isRefreshing = true;
+    this.loadingMessage = 'Đang làm mới dữ liệu...';
+    
+    try {
+      // Clear expanded state when refreshing data
+      this.expandedElementId = null;
+      await this._SanphamService.getAllSanpham();
+      await this.loadDonhangWithRelations();
+      
+      this._snackBar.open('Làm mới dữ liệu thành công', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      this._snackBar.open('Lỗi khi làm mới dữ liệu', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isRefreshing = false;
+      this.loadingMessage = '';
+    }
   }
 
   applyFilter(event: Event) {
@@ -794,57 +851,79 @@ export class NhucaudathangComponent {
   }
 
   async ExportExcel(data: any, title: any) {
+    try {
+      this.isExportingExcel = true;
 
-    const dulieu = data.map((v: any) => ({
-      title: v.title || '',
-      masp: v.masp || '',
-      dvt: v.dvt || '',
-      haohut: v.haohut || 0,
-      SLDat: v.SLDat || 0,
-      SLGiao: v.SLGiao || 0,
-      slton: v.slton || 0,
-      mancc: v.mancc || '',
-      name: v.name || '',
-      ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
-      sldat: v.sldat || 0,
-      goiy: v.goiy || 0,
-      kho1: v.kho1 || 0,
-      kho2: v.kho2 || 0,  
-      kho3: v.kho3 || 0,
-      kho4: v.kho4 || 0,
-      kho5: v.kho5 || 0,
-      kho6: v.kho6 || 0,
-      slhaohut: v.slhaohut || 0,
-    }));
+      const dulieu = data.map((v: any) => ({
+        title: v.title || '',
+        masp: v.masp || '',
+        dvt: v.dvt || '',
+        haohut: v.haohut || 0,
+        SLDat: v.SLDat || 0,
+        SLGiao: v.SLGiao || 0,
+        slton: v.slton || 0,
+        mancc: v.mancc || '',
+        name: v.name || '',
+        ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
+        sldat: v.sldat || 0,
+        goiy: v.goiy || 0,
+        kho1: v.kho1 || 0,
+        kho2: v.kho2 || 0,  
+        kho3: v.kho3 || 0,
+        kho4: v.kho4 || 0,
+        kho5: v.kho5 || 0,
+        kho6: v.kho6 || 0,
+        slhaohut: v.slhaohut || 0,
+      }));
 
-    const mapping: any = {
-      ngaynhan: 'Ngày Nhận',
-      title: 'Tên Sản Phẩm',
-      masp: 'Mã Sản Phẩm',
-      dvt: 'ĐVT',
-      mancc: 'Mã NCC',
-      name: 'Tên Nhà Cung Cấp',
-      SLDat: 'SL Đặt (Nhà CC)',
-      goiy: 'SL Cần Đặt (Gợi Ý)',
-      SLGiao: 'SL Giao (Khách)',
-      slton: 'Tồn Kho',
-      sldat: 'SL Đặt (Nhà CC)',
-      kho1: 'TG-LONG AN',
-      kho2: 'Bổ Sung',
-      kho3: 'TG-ĐÀ LẠT',
-      kho4: 'KHO TỔNG - HCM',
-      kho5: 'SG1',
-      kho6: 'SG2',
-      haohut: 'Tỉ Lệ Hao Hụt (%)',
-      slhaohut: 'SL Hao Hụt',
-    };
-    console.log(dulieu);
-    const result = dulieu.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
-    writeExcelFile(result, title, Object.values(mapping), mapping);
+      const mapping: any = {
+        ngaynhan: 'Ngày Nhận',
+        title: 'Tên Sản Phẩm',
+        masp: 'Mã Sản Phẩm',
+        dvt: 'ĐVT',
+        mancc: 'Mã NCC',
+        name: 'Tên Nhà Cung Cấp',
+        SLDat: 'SL Đặt (Nhà CC)',
+        goiy: 'SL Cần Đặt (Gợi Ý)',
+        SLGiao: 'SL Giao (Khách)',
+        slton: 'Tồn Kho',
+        sldat: 'SL Đặt (Nhà CC)',
+        kho1: 'TG-LONG AN',
+        kho2: 'Bổ Sung',
+        kho3: 'TG-ĐÀ LẠT',
+        kho4: 'KHO TỔNG - HCM',
+        kho5: 'SG1',
+        kho6: 'SG2',
+        haohut: 'Tỉ Lệ Hao Hụt (%)',
+        slhaohut: 'SL Hao Hụt',
+      };
+      console.log(dulieu);
+      const result = dulieu.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
+      writeExcelFile(result, title, Object.values(mapping), mapping);
+      
+      this._snackBar.open('Export Excel thành công!', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      console.error('Error exporting Excel:', error);
+      this._snackBar.open('Lỗi khi export Excel', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isExportingExcel = false;
+    }
   }
 
   // Cập nhật tồn kho từ file Excel
   async Capnhattonkho() {
+    this.isUpdatingStock = true;
+    
     // Tạo input file element động
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -861,6 +940,7 @@ export class NhucaudathangComponent {
             verticalPosition: 'top',
             panelClass: ['snackbar-error'],
           });
+          this.isUpdatingStock = false;
           return;
         }
 
@@ -1031,10 +1111,16 @@ export class NhucaudathangComponent {
           panelClass: ['snackbar-error'],
         });
         console.error('Error processing Excel file:', error);
+      } finally {
+        this.isUpdatingStock = false;
       }
     };
 
-    // Trigger file selection
+    // Trigger file selection 
+    fileInput.oncancel = () => {
+      this.isUpdatingStock = false;
+    };
+    
     document.body.appendChild(fileInput);
     fileInput.click();
     document.body.removeChild(fileInput);
