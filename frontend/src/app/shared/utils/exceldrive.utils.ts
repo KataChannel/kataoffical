@@ -26,7 +26,9 @@ export function writeExcelFileSheets(
           headers.forEach((headerKey: string) => {
             // Tìm key tương ứng trong mapping
             const dataKey = Object.keys(mapping).find(key => mapping[key] === headerKey);
-            newItem[headerKey] = dataKey ? item[dataKey] || null : null;
+            const value = dataKey ? item[dataKey] : null;
+            // Nếu giá trị là 0 thì giữ nguyên, ngược lại nếu falsy thì trả về null
+            newItem[headerKey] = value === 0 ? 0 : (value || null);
           });
           return newItem;
         })
@@ -45,6 +47,7 @@ export function writeExcelFileSheets(
     bookType: 'xlsx',
     type: 'array',
   });
+
   saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
 }
 

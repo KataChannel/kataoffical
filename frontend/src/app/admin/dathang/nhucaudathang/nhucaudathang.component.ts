@@ -557,8 +557,6 @@ export class NhucaudathangComponent {
         });
 
       this.TonghopsFinal = this.transformFinalData(transformFinalData, Khos.data);
-      console.log("finalresult",this.TonghopsFinal);
-
       const tranferTonghop = (await this.convertData(transformFinalData)).flat()
       this.TonghopsExportFinal = this.convertKhoData(tranferTonghop)
       this.progressPercentage = 90;
@@ -870,69 +868,68 @@ export class NhucaudathangComponent {
     try {
       this.isExportingExcel = true;
       
-      const dulieu2 = this.TonghopsExportFinal.map((v: any) => ({
-        title: v.title || '',
-        masp: v.masp || '',
-        dvt: v.dvt || '',
-        haohut: v.haohut || 0,
-        SLDat: v.SLDat || 0,
-        SLGiao: v.SLGiao || 0,
-        slton: v.slton || 0,
-        mancc: v.mancc || '',
-        name: v.name || '',
-        ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
-        sldat: v.sldat || 0,
-        goiy: v.goiy || 0,
-        kho1: v.kho1 || 0,
-        kho2: v.kho2 || 0,  
-        kho3: v.kho3 || 0,
-        kho4: v.kho4 || 0,
-        kho5: v.kho5 || 0,
-        kho6: v.kho6 || 0,
-        slhaohut: v.slhaohut || 0,
-      }));
+      // const dulieu2 = this.TonghopsExportFinal.map((v: any) => ({
+      //   title: v.title || '',
+      //   masp: v.masp || '',
+      //   dvt: v.dvt || '',
+      //   haohut: v.haohut || 0,
+      //   SLDat: v.SLDat || 0,
+      //   SLGiao: v.SLGiao || 0,
+      //   slton: v.slton || 0,
+      //   mancc: v.mancc || '',
+      //   name: v.name || '',
+      //   ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
+      //   sldat: v.sldat || 0,
+      //   goiy: v.goiy || 0,
+      //   kho1: v.kho1 || 0,
+      //   kho2: v.kho2 || 0,  
+      //   kho3: v.kho3 || 0,
+      //   kho4: v.kho4 || 0,
+      //   kho5: v.kho5 || 0,
+      //   kho6: v.kho6 || 0,
+      //   slhaohut: v.slhaohut || 0,
+      // }));
 
-      const mapping2: any = {
-        ngaynhan: 'Ngày Nhận',
-        title: 'Tên Sản Phẩm',
-        masp: 'Mã Sản Phẩm',
-        dvt: 'ĐVT',
-        mancc: 'Mã NCC',
-        name: 'Tên Nhà Cung Cấp',
-        SLDat: 'SL Đặt (Nhà CC)',
-        goiy: 'SL Cần Đặt (Gợi Ý)',
-        SLGiao: 'SL Giao (Khách)',
-        slton: 'Tồn Kho',
-        sldat: 'SL Đặt (Nhà CC)',
-        kho1: 'TG-LONG AN',
-        kho2: 'Bổ Sung',
-        kho3: 'TG-ĐÀ LẠT',
-        kho4: 'KHO TỔNG - HCM',
-        kho5: 'SG1',
-        kho6: 'SG2',
-        haohut: 'Tỉ Lệ Hao Hụt (%)',
-        slhaohut: 'SL Hao Hụt',
-      };
+      // const mapping2: any = {
+      //   ngaynhan: 'Ngày Nhận',
+      //   title: 'Tên Sản Phẩm',
+      //   masp: 'Mã Sản Phẩm',
+      //   dvt: 'ĐVT',
+      //   mancc: 'Mã NCC',
+      //   name: 'Tên Nhà Cung Cấp',
+      //   SLDat: 'SL Đặt (Nhà CC)',
+      //   goiy: 'SL Cần Đặt (Gợi Ý)',
+      //   SLGiao: 'SL Giao (Khách)',
+      //   slton: 'Tồn Kho',
+      //   sldat: 'SL Đặt (Nhà CC)',
+      //   kho1: 'TG-LONG AN',
+      //   kho2: 'Bổ Sung',
+      //   kho3: 'TG-ĐÀ LẠT',
+      //   kho4: 'KHO TỔNG - HCM',
+      //   kho5: 'SG1',
+      //   kho6: 'SG2',
+      //   haohut: 'Tỉ Lệ Hao Hụt (%)',
+      //   slhaohut: 'SL Hao Hụt',
+      // };
 
       const dulieu = this.TonghopsFinal.map((v: any) => ({
         title: v.title || '',
         masp: v.masp || '',
         dvt: v.dvt || '',
-        haohut: v.haohut || 0,
-        SLDat: v.SLDat || 0,
-        SLGiao: v.SLGiao || 0,
-        slton: v.slton || 0,
+        haohut: Number(v.haohut || 0),
+        SLDat: Number(v.SLDat || 0),
+        SLGiao: Number(v.SLGiao || 0),
+        slton: Number(v.slton || 0),
         ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
-        goiy: v.goiy || 0,
-        kho1: v.kho1 || 0,
-        kho2: v.kho2 || 0,  
-        kho3: v.kho3 || 0,
-        kho4: v.kho4 || 0,
-        kho5: v.kho5 || 0,
-        kho6: v.kho6 || 0,
-        slhaohut: v.slhaohut || 0,
+        goiy: Number(v.goiy || 0),
+        kho1: Number(v.kho1 || 0),
+        kho2: Number(v.kho2 || 0),
+        kho3: Number(v.kho3 || 0),
+        kho4: Number(v.kho4 || 0),
+        kho5: Number(v.kho5 || 0),
+        kho6: Number(v.kho6 || 0),
+        slhaohut: Number(v.slhaohut || 0),
       }));
-
       const mapping: any = {
         ngaynhan: 'Ngày Nhận',
         title: 'Tên Sản Phẩm',
@@ -953,7 +950,7 @@ export class NhucaudathangComponent {
       };
 
       const result1 = dulieu.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
-      const result2 = dulieu2.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
+      // const result2 = dulieu2.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
       // Chuẩn bị dữ liệu cho 2 sheets
       const sheetsData = {
        'sheet1': {
@@ -961,11 +958,11 @@ export class NhucaudathangComponent {
           headers: Object.values(mapping) as string[],
           mapping: mapping
         },
-        'sheet2': {
-          data: result2,
-          headers: Object.values(mapping2) as string[],
-          mapping: mapping2
-        },
+        // 'sheet2': {
+        //   data: result2,
+        //   headers: Object.values(mapping2) as string[],
+        //   mapping: mapping2
+        // },
       };
 
       // Export file Excel với multiple sheets
@@ -1201,6 +1198,7 @@ export class NhucaudathangComponent {
   async downloadTonkhoTemplate() {
     const mapping = {
       masp: 'masp',
+      title:'title',
       slton: 'slton',
     };
     const Sanphams = await this._GraphqlService.findAll('sanpham', {
@@ -1217,6 +1215,7 @@ export class NhucaudathangComponent {
      })
     const sampleData = Sanphams.data.map((sp: any) => ({
       masp: sp.masp || '',
+      title: sp.title || '',
       slton: sp.TonKho?.slton || 0,
     }));
     // Tạo file Excel với dữ liệu mẫu
