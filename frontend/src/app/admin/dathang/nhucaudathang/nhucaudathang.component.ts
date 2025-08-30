@@ -284,7 +284,7 @@ export class NhucaudathangComponent {
 
   async loadDonhangWithRelations() {
     try {
-      this.isLoading = true;
+      this.isLoading = false;
       this.loadingMessage = 'Đang tải dữ liệu đơn hàng...';
       this.progressPercentage = 0;
       
