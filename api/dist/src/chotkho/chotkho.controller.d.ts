@@ -62,12 +62,12 @@ export declare class ChotkhoController {
             createdAt: Date;
             updatedAt: Date;
             sanphamId: string | null;
-            slthucte: import("@prisma/client/runtime/library").Decimal;
-            slhethong: import("@prisma/client/runtime/library").Decimal;
-            chenhlech: import("@prisma/client/runtime/library").Decimal | null;
             chotkhoId: string;
             tonkhoId: string | null;
             phieukhoId: string | null;
+            slthucte: import("@prisma/client/runtime/library").Decimal;
+            slhethong: import("@prisma/client/runtime/library").Decimal;
+            chenhlech: import("@prisma/client/runtime/library").Decimal | null;
         })[];
     } & {
         id: string;
