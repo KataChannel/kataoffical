@@ -35,7 +35,7 @@ import { AuditService } from './auditlog/auditlog.service';
 import { AuditLogModule } from './auditlog/auditlog.module';
 import { AuditMiddleware } from './auditlog/audit.middleware';
 // import { UploadModule } from './upload/upload.module';
-import { MinioModule } from './minio/minio.module';
+// import { MinioModule } from './minio/minio.module';
 import { GraphQLUniversalModule } from './graphql/graphql.module';
 
 @Module({
@@ -90,7 +90,7 @@ import { GraphQLUniversalModule } from './graphql/graphql.module';
     AuditLogModule,
     // ChotkhoModule,
     // UploadModule,
-    MinioModule,
+    // MinioModule,
     GraphQLUniversalModule,
   ],
   controllers: [AppController],

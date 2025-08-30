@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
-  APIURL: 'https://sandboxapi2.rausachtrangia.com',
-  ImageURL: 'https://storage.rausachtrangia.com/',
+  APIURL: 'http://116.118.49.243:53331',
+  ImageURL: 'https://media.rausachtrangia.com/',
   app_id: '1416835846626859002',
   secret_key: 'HLBWj23hToA9fuiQvQY4',
   zalo_redirect_uri: 'https://zalo.tazaskinclinic.com/admin/zalotoken',

@@ -43,7 +43,6 @@ const audit_interceptor_1 = require("./auditlog/audit.interceptor");
 const auditlog_service_1 = require("./auditlog/auditlog.service");
 const auditlog_module_1 = require("./auditlog/auditlog.module");
 const audit_middleware_1 = require("./auditlog/audit.middleware");
-const minio_module_1 = require("./minio/minio.module");
 const graphql_module_1 = require("./graphql/graphql.module");
 let AppModule = class AppModule {
     configure(consumer) {
@@ -97,7 +96,6 @@ exports.AppModule = AppModule = __decorate([
             userguide_module_1.UserguideModule,
             importdata_module_1.ImportdataModule,
             auditlog_module_1.AuditLogModule,
-            minio_module_1.MinioModule,
             graphql_module_1.GraphQLUniversalModule,
         ],
         controllers: [app_controller_1.AppController],
