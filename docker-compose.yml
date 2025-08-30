@@ -45,8 +45,8 @@ services:
       - ZALO_APP_ID=your-zalo-app-id
       - ZALO_APP_SECRET=your-zalo-app-secret
       - BASE_URL=https://tg.rausachtrangia.com
-      - SERVER_URL=http://116.118.49.243:53331
-      - PORT=53331
+      - SERVER_URL=https://apitg.rausachtrangia.com
+      - PORT=3331
       - REDIS_HOST=redis
       - REDIS_PORT=56379
     depends_on:
