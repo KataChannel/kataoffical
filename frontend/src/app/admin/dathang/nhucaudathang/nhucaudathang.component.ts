@@ -853,7 +853,8 @@ export class NhucaudathangComponent {
   async ExportExcel(data: any, title: any) {
     try {
       this.isExportingExcel = true;
-      const dulieu = this.TonghopsExportFinal.map((v: any) => ({
+      
+      const dulieu2 = this.TonghopsExportFinal.map((v: any) => ({
         title: v.title || '',
         masp: v.masp || '',
         dvt: v.dvt || '',
@@ -875,7 +876,7 @@ export class NhucaudathangComponent {
         slhaohut: v.slhaohut || 0,
       }));
 
-      const mapping: any = {
+      const mapping2: any = {
         ngaynhan: 'Ngày Nhận',
         title: 'Tên Sản Phẩm',
         masp: 'Mã Sản Phẩm',
@@ -896,20 +897,63 @@ export class NhucaudathangComponent {
         haohut: 'Tỉ Lệ Hao Hụt (%)',
         slhaohut: 'SL Hao Hụt',
       };
-      console.log(dulieu);
-      const result = dulieu.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
+
+      const dulieu = this.TonghopsFinal.map((v: any) => ({
+        title: v.title || '',
+        masp: v.masp || '',
+        dvt: v.dvt || '',
+        haohut: v.haohut || 0,
+        SLDat: v.SLDat || 0,
+        SLGiao: v.SLGiao || 0,
+        slton: v.slton || 0,
+        mancc: v.mancc || '',
+        name: v.name || '',
+        ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
+        goiy: v.goiy || 0,
+        kho1: v.kho1 || 0,
+        kho2: v.kho2 || 0,  
+        kho3: v.kho3 || 0,
+        kho4: v.kho4 || 0,
+        kho5: v.kho5 || 0,
+        kho6: v.kho6 || 0,
+        slhaohut: v.slhaohut || 0,
+      }));
+
+      const mapping: any = {
+        ngaynhan: 'Ngày Nhận',
+        title: 'Tên Sản Phẩm',
+        masp: 'Mã Sản Phẩm',
+        dvt: 'ĐVT',
+        mancc: 'Mã NCC',
+        name: 'Tên Nhà Cung Cấp',
+        SLDat: 'SL Đặt (Nhà CC)',
+        goiy: 'SL Cần Đặt (Gợi Ý)',
+        SLGiao: 'SL Giao (Khách)',
+        slton: 'Tồn Kho',
+        kho1: 'TG-LONG AN',
+        kho2: 'Bổ Sung',
+        kho3: 'TG-ĐÀ LẠT',
+        kho4: 'KHO TỔNG - HCM',
+        kho5: 'SG1',
+        kho6: 'SG2',
+        haohut: 'Tỉ Lệ Hao Hụt (%)',
+        slhaohut: 'SL Hao Hụt',
+      };
+
+      const result1 = dulieu.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
+      const result2 = dulieu2.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
 
       // Chuẩn bị dữ liệu cho 2 sheets
       const sheetsData = {
        'sheet1': {
-          data: this.TonghopsFinal,
-          headers: [] as string[],
-          mapping: {} as { [key: string]: string }
-        },
-        'sheet2': {
-          data: result,
+          data: result1,
           headers: Object.values(mapping) as string[],
           mapping: mapping
+        },
+        'sheet2': {
+          data: result2,
+          headers: Object.values(mapping2) as string[],
+          mapping: mapping2
         },
       };
 
