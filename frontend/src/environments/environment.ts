@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  APIURL: 'http://116.118.49.243:53331',
+  APIURL: 'https://apitg.rausachtrangia.com',
   ImageURL: 'https://media.rausachtrangia.com/',
   app_id: '1416835846626859002',
   secret_key: 'HLBWj23hToA9fuiQvQY4',
