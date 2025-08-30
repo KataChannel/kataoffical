@@ -9,6 +9,8 @@ git push
 ssh root@116.118.49.243 << 'EOF'
 cd rausachfinal
 git pull
+sudo rm -f /etc/nginx/sites-available/final.rausachtrangia.com
+sudo rm -f /etc/nginx/sites-enabled/final.rausachtrangia.com
 cp final.rausachtrangia.com /etc/nginx/sites-available/
 sudo ln -s /etc/nginx/sites-available/final.rausachtrangia.com /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
