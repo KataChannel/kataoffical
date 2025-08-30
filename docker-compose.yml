@@ -31,6 +31,7 @@ services:
     command: ["redis-server", "--appendonly", "yes"]      
   berausach:
     build: ./api
+    container_name: rausach-backend
     restart: always
     ports:
       - "53331:3331"
@@ -53,6 +54,7 @@ services:
       - redis      
   ferausach:
     build: ./frontend
+    container_name: rausach-frontend
     restart: always
     ports:
       - "54301:4301"
