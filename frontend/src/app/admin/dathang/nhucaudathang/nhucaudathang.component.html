@@ -195,9 +195,7 @@
                                 {{ ColumnName[column] }}
                             </span>
                             <span class="z-10 material-symbols-outlined text-gray-500 cursor-pointer" 
-                                  [matMenuTriggerFor]="filterMenu" 
-                                  #menuTrigger="matMenuTrigger"
-                                  matTooltip="Filter {{ColumnName[column]}}">
+                                  [matMenuTriggerFor]="filterMenu"  #menuTrigger="matMenuTrigger" matTooltip="Filter {{ColumnName[column]}}">
                                 filter_alt
                             </span>
                         </div>
@@ -264,7 +262,6 @@
                                     </div>
                                 </div>
                                 <div class="flex flex-row space-x-2 items-end justify-end">
-                                    <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
                                     <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)">Áp Dụng</button>
                                 </div>
                             </div>
@@ -407,7 +404,7 @@
                             <mat-form-field appearance="outline" subscriptSizing="dynamic">
                                 <input matInput [(ngModel)]="pageSize"  [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Số Lượng" />
                             </mat-form-field>
-                            <button mat-flat-button color="primary" (click)="onPageSizeChange(pageSize,menuHienthi)">Áp Dụng</button> 
+                            <button mat-flat-button color="primary" (click)="onPageSizeChange(pageSize,menuTrigger)">Áp Dụng</button> 
                          </div>   
                     </mat-menu>          
                 <div class="pagination-controls">

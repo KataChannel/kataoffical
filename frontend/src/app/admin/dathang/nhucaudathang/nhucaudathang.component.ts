@@ -26,6 +26,7 @@ import { MatMenu, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import {
   readExcelFile,
   readExcelFileNoWorker,
+  readExcelFileNoWorkerArray,
   writeExcelFile,
   writeExcelFileSheets,
 } from '../../../shared/utils/exceldrive.utils';
@@ -151,7 +152,7 @@ export class NhucaudathangComponent {
 
   // Pagination
   totalItems = 0;
-  pageSize = 9999;
+  pageSize = 50;
   currentPage = 1;
   totalPages = 1;
 
@@ -513,7 +514,7 @@ export class NhucaudathangComponent {
       });
 
       // Transform data efficiently using maps
-      this.TonghopsFinal = SanphamsTranfer.map((sp: any) => {
+      const transformFinalData = SanphamsTranfer.map((sp: any) => {
         const tonkho = tonkhoMap.get(sp.masp);
         const slDat = dathangMap.get(sp.masp) || 0;
         const slGiao = donhangMap.get(sp.masp) || 0;
@@ -531,19 +532,34 @@ export class NhucaudathangComponent {
           Dathangs: DathangsTranfer.filter((dh: any) => dh.masp === sp.masp),
           Donhangs: DonhangsTranfer.filter((dh: any) => dh.masp === sp.masp),
         };
-
         // Calculate suggestion immediately
         transformedItem.goiy = this.GetGoiy(transformedItem);
         transformedItem.slhaohut = this.GetSLHaohut(transformedItem);
-        
         return transformedItem;
-      }).filter(sp => sp.masp).sort((a, b) => parseFloat(b.SLDat) - parseFloat(a.SLDat)); // Sort by goiy descending
+      }).filter(sp => sp.masp).sort((a, b) => parseFloat(b.Dathangs.length) - parseFloat(a.Dathangs.length)); // Sort by Dathangs length descending
 
+      // SanphamsTranfer.
 
       this.progressPercentage = 75;
       this.loadingMessage = 'Đang tổng hợp dữ liệu...';
+      console.log(this.TonghopsFinal);
+        const Khos = await this._GraphqlService.findAll('kho', {
+          enableParallelFetch: true,
+          batchSize: 1000,
+          take: 999999,
+          aggressiveCache: true,
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            name: true,
+            makho: true,
+          },
+        });
 
-      const tranferTonghop = (await this.convertData(this.TonghopsFinal)).flat()
+      this.TonghopsFinal = this.transformFinalData(transformFinalData, Khos.data);
+      console.log("finalresult",this.TonghopsFinal);
+
+      const tranferTonghop = (await this.convertData(transformFinalData)).flat()
       this.TonghopsExportFinal = this.convertKhoData(tranferTonghop)
       this.progressPercentage = 90;
       this.loadingMessage = 'Hoàn tất...';
@@ -742,7 +758,7 @@ export class NhucaudathangComponent {
       : false;
   }
 
-  ApplyFilterColum(menu: any) {
+  ApplyFilterColum(menu: MatMenuTrigger) {
     const currentData =
       this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
     this.dataSource.data = currentData.filter((v: any) =>
@@ -906,8 +922,6 @@ export class NhucaudathangComponent {
         SLDat: v.SLDat || 0,
         SLGiao: v.SLGiao || 0,
         slton: v.slton || 0,
-        mancc: v.mancc || '',
-        name: v.name || '',
         ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
         goiy: v.goiy || 0,
         kho1: v.kho1 || 0,
@@ -924,8 +938,6 @@ export class NhucaudathangComponent {
         title: 'Tên Sản Phẩm',
         masp: 'Mã Sản Phẩm',
         dvt: 'ĐVT',
-        mancc: 'Mã NCC',
-        name: 'Tên Nhà Cung Cấp',
         SLDat: 'SL Đặt (Nhà CC)',
         goiy: 'SL Cần Đặt (Gợi Ý)',
         SLGiao: 'SL Giao (Khách)',
@@ -942,7 +954,6 @@ export class NhucaudathangComponent {
 
       const result1 = dulieu.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
       const result2 = dulieu2.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
-
       // Chuẩn bị dữ liệu cho 2 sheets
       const sheetsData = {
        'sheet1': {
@@ -1012,7 +1023,7 @@ export class NhucaudathangComponent {
         });
 
         // Đọc file Excel (không sử dụng worker)
-        const excelData = await readExcelFileNoWorker(event);
+        const excelData = await readExcelFileNoWorkerArray(event);
         
         if (!excelData || excelData.length === 0) {
           this._snackBar.dismiss();
@@ -1028,7 +1039,8 @@ export class NhucaudathangComponent {
         // Validate và transform dữ liệu
         const validData: Array<{masp: string, slton: number}> = [];
         const errors: string[] = [];
-
+        console.log(excelData);
+        
         excelData.forEach((row: any, index: number) => {
           const masp = row.masp?.toString().trim();
           let slton = parseFloat(row.slton);
@@ -1188,19 +1200,21 @@ export class NhucaudathangComponent {
   // Tải file Excel mẫu để cập nhật tồn kho
   async downloadTonkhoTemplate() {
     const mapping = {
-      masp: 'Mã Sản Phẩm',
-      slton: 'Số Lượng Tồn',
+      masp: 'masp',
+      slton: 'slton',
     };
     const Sanphams = await this._GraphqlService.findAll('sanpham', {
             take: 999999,
             select: {
               id: true,
               masp: true,
-              select:{
-                TonKho:{ select:{ slton:true }}
+              TonKho: { 
+                select: { 
+                  slton: true 
+                }
               }
-              }
-          })
+            }
+     })
     const sampleData = Sanphams.data.map((sp: any) => ({
       masp: sp.masp || '',
       slton: sp.TonKho?.slton || 0,
@@ -1217,7 +1231,7 @@ export class NhucaudathangComponent {
   }
 
 
-    convertKhoData(inputData: any) {
+  convertKhoData(inputData: any) {
     const warehouses = [
       { name: 'kho1', label: 'TG-LONG AN' },
       { name: 'kho2', label: 'Bổ Sung' },
@@ -1242,11 +1256,81 @@ export class NhucaudathangComponent {
       );
       
       if (matchingWarehouse) {
-      newItem[matchingWarehouse.name] = item.slchonhap || '0';
+      newItem[matchingWarehouse.name] = item.SLDat || '0';
       }
       return newItem;
     });
   }
+
+  transformFinalData(data1: any[], ListKho: any[]) {
+    ListKho = [
+    {
+        "id": "a118c322-ddca-444e-9e41-40602d955e93",
+        "value":"kho5",
+        "name": "SG1",
+        "makho": "TG-SG1"
+    },
+    {
+        "id": "3344758e-c0bc-4562-9390-d58fc5717d03",
+        "value":"kho6",
+        "name": "SG2",
+        "makho": "TG-SG2"
+    },
+    {
+        "id": "75933b1d-2906-4591-8a46-30db60ce9258",
+        "value":"kho2",
+        "name": "Bổ Sung",
+        "makho": "TG-BS"
+    },
+    {
+        "id": "4cc01811-61f5-4bdc-83de-a493764e9258",
+        "value":"kho4",
+        "name": "KHO TỔNG - HCM",
+        "makho": "TG-HCM"
+    },
+    {
+        "id": "929d94e9-9b05-4820-aadb-0c48b991c96c",
+        "value":"kho1",
+        "name": "TG-LONG AN",
+        "makho": "TG-LA"
+    },
+    {
+        "id": "a24363f8-2218-4f80-b2f9-0641ace1b245",
+        "value":"kho3",
+        "name": "TG-ĐÀ LẠT",
+        "makho": "TG-ĐL"
+    }
+]
+    return data1.map(item => {
+        // Start with the base item, removing Dathangs
+        const { Dathangs,Donhangs, ...baseItem } = item;
+        
+        // Initialize all kho values to 0
+        const khoValues:any = {};
+        ListKho.forEach((kho: any) => {
+            khoValues[kho.value] = 0;
+        });
+        
+        // Add ngaynhan from first Dathang if exists
+        const ngaynhan = Dathangs && Dathangs.length > 0 ? Dathangs[0].ngaynhan : null;
+        
+        // Sum sldat by makho
+        if (Dathangs) {
+            Dathangs.forEach((dathang: any) => {
+                const matchingKho = ListKho.find((kho: any) => kho.makho === dathang.makho);
+                if (matchingKho) {
+                    khoValues[matchingKho.value] += dathang.sldat;
+                }
+            });
+        }
+        
+        return {
+            ...baseItem,
+            ...(ngaynhan && { ngaynhan }),
+            ...khoValues
+        };
+    });
+}
 
   async convertData(inputData: any) {
         const Khos = await this._GraphqlService.findAll('kho', {
@@ -1263,7 +1347,7 @@ export class NhucaudathangComponent {
         });
 
     const warehouses = Khos.data    
-    return inputData.filter((v:any)=>v.Dathangs?.length>0).map((item: any) => {  
+    return inputData.map((item: any) => {  
       const result = [...this.transformItemData(warehouses, item)];
       return result;
     });
@@ -1312,7 +1396,7 @@ export class NhucaudathangComponent {
     this.totalPages = Math.ceil(this.totalItems / this.pageSize);
   }
 
-  onPageSizeChange(size: number, menuHienthi: any) {
+  onPageSizeChange(size: number, menuTrigger: MatMenuTrigger) {
     const currentData =
       this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
     if (size > currentData.length) {
@@ -1329,7 +1413,8 @@ export class NhucaudathangComponent {
     this.currentPage = 1;
     this.calculateTotalPages();
     this.updateDisplayData();
-    menuHienthi.closeMenu();
+    
+    menuTrigger.closeMenu();
   }
 
   onPreviousPage() {
@@ -1504,7 +1589,7 @@ export class NhucaudathangComponent {
     this.globalFilterValue = '';
     this.ListFilter = [];
     const currentData =
-      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
     this.dataSource.data = currentData;
     this.totalItems = currentData.length;
     this.calculateTotalPages();

@@ -320,7 +320,7 @@ export function readExcelFile(event: any, sheetName?: any): Promise<any> {
 }
 
 
-export function readExcelFileNoWorker(event: any, sheetName?: string): Promise<any> {
+export function readExcelFileNoWorkerArray(event: any, sheetName?: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const file = event.target?.files?.[0] || event;
     if (!file) {
@@ -351,6 +351,36 @@ export function readExcelFileNoWorker(event: any, sheetName?: string): Promise<a
   });
 }
 
+export function readExcelFileNoWorker(event: any, sheetName?: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const file = event.target?.files?.[0] || event;
+    if (!file) {
+      reject('No file provided');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        let result:any;
+        if (sheetName && workbook.SheetNames.includes(sheetName)) {
+          result = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
+        } else {
+          result = {};
+          workbook.SheetNames.forEach(name => {
+            result[name] = XLSX.utils.sheet_to_json(workbook.Sheets[name], { defval: '' });
+          });
+        }
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+    };
+    reader.onerror = (err) => reject(err);
+    reader.readAsArrayBuffer(file);
+  });
+}
 
 export function excelSerialDateToJSDate(serial: any) {
   const excelEpochOffset = 25569;
