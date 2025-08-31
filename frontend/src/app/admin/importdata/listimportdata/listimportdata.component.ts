@@ -1163,8 +1163,8 @@ export class ListImportdataComponent implements OnInit {
           title: 'Bảng Giá ' + v.mabanggia,
           mabanggia: v.mabanggia,
           type: v.type,
-          batdau: moment(v.batdau, 'DD/MM/YYYY').toDate(),
-          ketthuc: moment(v.ketthuc, 'DD/MM/YYYY').toDate(),
+          batdau: moment(excelSerialDateToJSDate(v.batdau)).toDate(),
+          ketthuc: moment(excelSerialDateToJSDate(v.ketthuc)).toDate(),
           ghichu: v.ghichu,
           status: v.status,
         }))
