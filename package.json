@@ -16,6 +16,7 @@
     "db:updatetonkho": "cd api && npx ts-node prisma/updatetonkho.ts",
     "db:updateoffvat": "cd api && npx ts-node prisma/updateoffvat.ts",
     "db:updatekhachhang": "cd api && npx ts-node prisma/updatekhachhang.ts",
+    "db:seed": "cd api && npx ts-node prisma/seed.ts",
     "db:updatedongbosanphamtonkho": "cd api && npx ts-node prisma/updatedongbosanphamtonkho.ts",
     "db:generate": "cd api && npx prisma generate",
     "db:migrate": "cd api && npx bun prisma migrate dev --name tenfile",
