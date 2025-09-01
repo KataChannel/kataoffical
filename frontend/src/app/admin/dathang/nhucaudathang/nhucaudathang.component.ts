@@ -570,14 +570,18 @@ export class NhucaudathangComponent {
         });
 
       this.TonghopsFinal = this.transformFinalData(transformFinalData, Khos.data);
-      console.log(this.TonghopsFinal);
+
       this.TonghopsFinal.forEach(item => {
         item.tongkho = item.kho1 + item.kho2 + item.kho3 + item.kho4 + item.kho5 + item.kho6 + item.sltontt;
         item.goiy = this.GetGoiy(item);
         item.slhaohut = this.GetSLHaohut(item);
       });
+      console.log('this.transformFinalData', transformFinalData);
+
       const tranferTonghop = (await this.convertData(transformFinalData)).flat()
+      console.log('tranferTonghop', tranferTonghop);
       this.TonghopsExportFinal = this.convertKhoData(tranferTonghop)
+      console.log('TonghopsExportFinal', this.TonghopsExportFinal);
       this.progressPercentage = 90;
       this.loadingMessage = 'Hoàn tất...';
       
@@ -886,51 +890,7 @@ export class NhucaudathangComponent {
   async ExportExcel(data: any, title: any) {
     try {
       this.isExportingExcel = true;
-      
-      // const dulieu2 = this.TonghopsExportFinal.map((v: any) => ({
-      //   title: v.title || '',
-      //   masp: v.masp || '',
-      //   dvt: v.dvt || '',
-      //   haohut: v.haohut || 0,
-      //   SLDat: v.SLDat || 0,
-      //   SLGiao: v.SLGiao || 0,
-      //   slton: v.slton || 0,
-      //   mancc: v.mancc || '',
-      //   name: v.name || '',
-      //   ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
-      //   sldat: v.sldat || 0,
-      //   goiy: v.goiy || 0,
-      //   kho1: v.kho1 || 0,
-      //   kho2: v.kho2 || 0,  
-      //   kho3: v.kho3 || 0,
-      //   kho4: v.kho4 || 0,
-      //   kho5: v.kho5 || 0,
-      //   kho6: v.kho6 || 0,
-      //   slhaohut: v.slhaohut || 0,
-      // }));
-
-      // const mapping2: any = {
-      //   ngaynhan: 'Ngày Nhận',
-      //   title: 'Tên Sản Phẩm',
-      //   masp: 'Mã Sản Phẩm',
-      //   dvt: 'ĐVT',
-      //   mancc: 'Mã NCC',
-      //   name: 'Tên Nhà Cung Cấp',
-      //   SLDat: 'SL Đặt (Nhà CC)',
-      //   goiy: 'SL Cần Đặt (Gợi Ý)',
-      //   SLGiao: 'SL Giao (Khách)',
-      //   slton: 'Tồn Kho',
-      //   sldat: 'SL Đặt (Nhà CC)',
-      //   kho1: 'TG-LONG AN',
-      //   kho2: 'Bổ Sung',
-      //   kho3: 'TG-ĐÀ LẠT',
-      //   kho4: 'KHO TỔNG - HCM',
-      //   kho5: 'SG1',
-      //   kho6: 'SG2',
-      //   haohut: 'Tỉ Lệ Hao Hụt (%)',
-      //   slhaohut: 'SL Hao Hụt',
-      // };
-
+    
       const dulieu = this.TonghopsFinal.map((v: any) => ({
         title: v.title || '',
         masp: v.masp || '',
@@ -972,8 +932,52 @@ export class NhucaudathangComponent {
         slhaohut: 'SL HAO HỤT',
       };
 
+      const dulieu2 = this.TonghopsExportFinal.map((v: any) => ({
+        title: v.title || '',
+        masp: v.masp || '',
+        dvt: v.dvt || '',
+        haohut: v.haohut || 0,
+        sldat: v.sldat || 0,
+        SLDat: v.SLDat || 0,
+        SLGiao: v.SLGiao || 0,
+        sltontt: v.sltontt || 0,
+        mancc: v.mancc || '',
+        name: v.name || '',
+        ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
+        goiy: v.goiy || 0,
+        kho1: v.kho1 || 0,
+        kho2: v.kho2 || 0,  
+        kho3: v.kho3 || 0,
+        kho4: v.kho4 || 0,
+        kho5: v.kho5 || 0,
+        kho6: v.kho6 || 0,
+        slhaohut: v.slhaohut || 0,
+      }));
+
+      const mapping2: any = {
+        ngaynhan: 'Ngày Nhận',
+        title: 'Tên Sản Phẩm',
+        masp: 'Mã Sản Phẩm',
+        dvt: 'ĐVT',
+        mancc: 'Mã NCC',
+        name: 'Tên Nhà Cung Cấp',
+        sldat: 'SL Đặt (Nhà CC)',
+        SLDat: 'Tổng Đặt',
+        goiy: 'SL Cần Đặt (Gợi Ý)',
+        SLGiao: 'SL Giao (Khách)',
+        sltontt: 'Tồn Kho',
+        kho1: 'TG-LONG AN',
+        kho2: 'Bổ Sung',
+        kho3: 'TG-ĐÀ LẠT',
+        kho4: 'KHO TỔNG - HCM',
+        kho5: 'SG1',
+        kho6: 'SG2',
+        haohut: 'Tỉ Lệ Hao Hụt (%)',
+        slhaohut: 'SL Hao Hụt',
+      };
+
       const result1 = dulieu.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
-      // const result2 = dulieu2.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
+      const result2 = dulieu2.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
       // Chuẩn bị dữ liệu cho 2 sheets
       const sheetsData = {
        'sheet1': {
@@ -981,11 +985,11 @@ export class NhucaudathangComponent {
           headers: Object.values(mapping) as string[],
           mapping: mapping
         },
-        // 'sheet2': {
-        //   data: result2,
-        //   headers: Object.values(mapping2) as string[],
-        //   mapping: mapping2
-        // },
+        'sheet2': {
+          data: result2,
+          headers: Object.values(mapping2) as string[],
+          mapping: mapping2
+        },
       };
 
       // Export file Excel với multiple sheets
@@ -1280,51 +1284,51 @@ export class NhucaudathangComponent {
       );
       
       if (matchingWarehouse) {
-      newItem[matchingWarehouse.name] = item.SLDat || '0';
+      newItem[matchingWarehouse.name] = item.sldat || '0';
       }
       return newItem;
     });
   }
 
   transformFinalData(data1: any[], ListKho: any[]) {
-    ListKho = [
-    {
-        "id": "a118c322-ddca-444e-9e41-40602d955e93",
-        "value":"kho5",
-        "name": "SG1",
-        "makho": "TG-SG1"
-    },
-    {
-        "id": "3344758e-c0bc-4562-9390-d58fc5717d03",
-        "value":"kho6",
-        "name": "SG2",
-        "makho": "TG-SG2"
-    },
-    {
-        "id": "75933b1d-2906-4591-8a46-30db60ce9258",
-        "value":"kho2",
-        "name": "Bổ Sung",
-        "makho": "TG-BS"
-    },
-    {
-        "id": "4cc01811-61f5-4bdc-83de-a493764e9258",
-        "value":"kho4",
-        "name": "KHO TỔNG - HCM",
-        "makho": "TG-HCM"
-    },
-    {
-        "id": "929d94e9-9b05-4820-aadb-0c48b991c96c",
-        "value":"kho1",
-        "name": "TG-LONG AN",
-        "makho": "TG-LA"
-    },
-    {
-        "id": "a24363f8-2218-4f80-b2f9-0641ace1b245",
-        "value":"kho3",
-        "name": "TG-ĐÀ LẠT",
-        "makho": "TG-ĐL"
-    }
-]
+          ListKho = [
+          {
+              "id": "a118c322-ddca-444e-9e41-40602d955e93",
+              "value":"kho5",
+              "name": "SG1",
+              "makho": "TG-SG1"
+          },
+          {
+              "id": "3344758e-c0bc-4562-9390-d58fc5717d03",
+              "value":"kho6",
+              "name": "SG2",
+              "makho": "TG-SG2"
+          },
+          {
+              "id": "75933b1d-2906-4591-8a46-30db60ce9258",
+              "value":"kho2",
+              "name": "Bổ Sung",
+              "makho": "TG-BS"
+          },
+          {
+              "id": "4cc01811-61f5-4bdc-83de-a493764e9258",
+              "value":"kho4",
+              "name": "KHO TỔNG - HCM",
+              "makho": "TG-HCM"
+          },
+          {
+              "id": "929d94e9-9b05-4820-aadb-0c48b991c96c",
+              "value":"kho1",
+              "name": "TG-LONG AN",
+              "makho": "TG-LA"
+          },
+          {
+              "id": "a24363f8-2218-4f80-b2f9-0641ace1b245",
+              "value":"kho3",
+              "name": "TG-ĐÀ LẠT",
+              "makho": "TG-ĐL"
+          }
+      ]
     return data1.map(item => {
         // Start with the base item, removing Dathangs
         const { Dathangs,Donhangs, ...baseItem } = item;
@@ -1352,6 +1356,76 @@ export class NhucaudathangComponent {
             ...baseItem,
             ...(ngaynhan && { ngaynhan }),
             ...khoValues
+        };
+    });
+}
+transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
+          ListKho = [
+          {
+              "id": "a118c322-ddca-444e-9e41-40602d955e93",
+              "value":"kho5",
+              "name": "SG1",
+              "makho": "TG-SG1"
+          },
+          {
+              "id": "3344758e-c0bc-4562-9390-d58fc5717d03",
+              "value":"kho6",
+              "name": "SG2",
+              "makho": "TG-SG2"
+          },
+          {
+              "id": "75933b1d-2906-4591-8a46-30db60ce9258",
+              "value":"kho2",
+              "name": "Bổ Sung",
+              "makho": "TG-BS"
+          },
+          {
+              "id": "4cc01811-61f5-4bdc-83de-a493764e9258",
+              "value":"kho4",
+              "name": "KHO TỔNG - HCM",
+              "makho": "TG-HCM"
+          },
+          {
+              "id": "929d94e9-9b05-4820-aadb-0c48b991c96c",
+              "value":"kho1",
+              "name": "TG-LONG AN",
+              "makho": "TG-LA"
+          },
+          {
+              "id": "a24363f8-2218-4f80-b2f9-0641ace1b245",
+              "value":"kho3",
+              "name": "TG-ĐÀ LẠT",
+              "makho": "TG-ĐL"
+          }
+      ]
+    return data1.map(item => {
+        // Start with the base item, removing Dathangs
+        const { Dathangs,Donhangs, ...baseItem } = item;
+        
+        // Initialize all kho values to 0
+        const khoValues:any = {};
+        ListKho.forEach((kho: any) => {
+            khoValues[kho.value] = 0;
+        });
+        
+        // Add ngaynhan from first Dathang if exists
+        const ngaynhan = Dathangs && Dathangs.length > 0 ? Dathangs[0].ngaynhan : null;
+        
+        // Sum sldat by makho
+        if (Dathangs) {
+            Dathangs.forEach((dathang: any) => {
+                const matchingKho = ListKho.find((kho: any) => kho.makho === dathang.makho);
+                if (matchingKho) {
+                    khoValues[matchingKho.value] += dathang.sldat;
+                }
+            });
+        }
+        
+        return {
+            ...baseItem,
+            ...(ngaynhan && { ngaynhan }),
+            ...khoValues,
+            Dathangs
         };
     });
 }
