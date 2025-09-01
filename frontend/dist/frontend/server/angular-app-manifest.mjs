@@ -1082,8 +1082,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72880, hash: '078f53b2bfb4b8ae79d0bf8fb2df4d5d07403662f3a5d8c1dbf8c041a9724e59', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24171, hash: '2f96ac679d9b55f8919da290601fe5fba8e17910e490f77e9f9ee8a622fcd012', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 72880, hash: 'f8d931f2d31d86a9c7cc331895828182d5361b436677475b93b437071fa8b36b', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24171, hash: '73ec281921741f8e5432bef21218b19a9bdf5189478a561e6f0b2dfe196fb6fb', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-HDJL27ZA.css': {size: 159593, hash: 'LyjBo+LKDzA', text: () => import('./assets-chunks/styles-HDJL27ZA_css.mjs').then(m => m.default)}
   },
 };

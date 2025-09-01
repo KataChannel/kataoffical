@@ -406,6 +406,7 @@ export declare class DathangController {
                 id: string;
                 sanphamId: string;
                 slton: import("@prisma/client/runtime/library").Decimal;
+                sltontt: import("@prisma/client/runtime/library").Decimal;
                 slchogiao: import("@prisma/client/runtime/library").Decimal;
                 slchonhap: import("@prisma/client/runtime/library").Decimal;
             } | null;

@@ -399,6 +399,7 @@ model TonKho {
   id        String    @id @default(uuid())
   sanphamId String    @unique
   slton     Decimal   @default(0) @postgres.Decimal(20, 3)
+  sltontt     Decimal   @default(0) @postgres.Decimal(20, 3)
   slchogiao Decimal   @default(0) @postgres.Decimal(20, 3)
   slchonhap Decimal   @default(0) @postgres.Decimal(20, 3)
   ChotkhoDetail ChotkhoDetail[] @relation("ChotkhoDetailTonKho")

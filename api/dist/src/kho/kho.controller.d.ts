@@ -27,6 +27,7 @@ export declare class khoController {
             goiy: number;
             id: string;
             sanphamId: string;
+            sltontt: import("@prisma/client/runtime/library").Decimal;
         }[];
         meta: {
             page: number;

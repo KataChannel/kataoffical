@@ -98,7 +98,8 @@ export class NhucaudathangComponent {
     // 'slchogiao',
     'SLGiao',
     // 'sltontt',
-    'slton',
+    'tongkho',
+    'sltontt',
     'kho1',
     'kho2',
     'kho3',
@@ -121,7 +122,8 @@ export class NhucaudathangComponent {
       // slchogiao: 'SL Bán (Chờ Giao)',
       SLGiao: 'SL Giao (Khách)',
       // sltontt: 'Tồn Kho (Thực Tế)',
-      slton: 'Tồn Kho',
+      tongkho:'Tổng Kho',
+      sltontt: 'Tồn Kho tt',
       kho1: 'TG-LONG AN',
       kho2: 'Bổ Sung',
       kho3: 'TG-ĐÀ LẠT',
@@ -263,19 +265,27 @@ export class NhucaudathangComponent {
 
   GetGoiy(item: any) {
     if(item.SLGiao > item.SLDat) {
-      const demand = item.SLGiao - item.SLDat;
-      const wastageAmount = demand * (item.haohut || 0) / 100;
-      const suggestion = demand + wastageAmount;
+      const suggestion = Math.abs(Number(item.SLDat) + Number(this.GetSLHaohut(item)) - Number(item.tongkho));
       return suggestion.toFixed(0);
     }
+    // if(item.SLGiao > item.SLDat) {
+    //   const demand = item.SLGiao - item.SLDat;
+    //   const wastageAmount = demand * (item.haohut || 0) / 100;
+    //   const suggestion = demand + wastageAmount;
+    //   return suggestion.toFixed(0);
+    // }
     else {
       return '0';
     }
   }
   GetSLHaohut(item: any) {
-    if(item.SLGiao > item.SLDat) {
-      const demand = item.SLGiao - item.SLDat;
-      const wastageAmount = demand * (item.haohut || 0) / 100;
+    // if(item.SLGiao > item.SLDat) {
+    //   const demand = item.SLGiao - item.SLDat;
+    //   const wastageAmount = demand * (item.haohut || 0) / 100;
+    //   return wastageAmount.toFixed(0);
+    // }
+    if(item.SLDat > 0) {
+      const wastageAmount = item.SLDat * (item.haohut || 0) / 100;
       return wastageAmount.toFixed(0);
     }
     else {
@@ -389,6 +399,7 @@ export class NhucaudathangComponent {
             id: true,
             sanphamId: true,
             slton: true,
+            sltontt: true,
             slchogiao: true,
             slchonhap: true,
             sanpham: {
@@ -450,6 +461,7 @@ export class NhucaudathangComponent {
         dvt: sp.sanpham.dvt,
         haohut: sp.sanpham.haohut || 0,
         slton: Number(sp.slton) || 0,
+        sltontt: Number(sp.sltontt) || 0,
         slchogiao: Number(sp.slchogiao) || 0,
         slchonhap: Number(sp.slchonhap) || 0,
       }));
@@ -465,6 +477,7 @@ export class NhucaudathangComponent {
           dvt: tonkho.dvt,
           haohut: tonkho.haohut || 0,
           slton: tonkho.slton,
+          sltontt: tonkho.sltontt,
           slchogiao: tonkho.slchogiao,
           slchonhap: tonkho.slchonhap,
           SLDat: 0,
@@ -525,6 +538,7 @@ export class NhucaudathangComponent {
           SLDat: slDat,
           SLGiao: slGiao,
           slton: tonkho?.slton || 0,
+          sltontt: tonkho?.sltontt || 0,
           slchogiao: tonkho?.slchogiao || 0,
           slchonhap: tonkho?.slchonhap || 0,
           haohut: tonkho?.haohut || sp.haohut || 0,
@@ -542,7 +556,6 @@ export class NhucaudathangComponent {
 
       this.progressPercentage = 75;
       this.loadingMessage = 'Đang tổng hợp dữ liệu...';
-      console.log(this.TonghopsFinal);
         const Khos = await this._GraphqlService.findAll('kho', {
           enableParallelFetch: true,
           batchSize: 1000,
@@ -557,6 +570,12 @@ export class NhucaudathangComponent {
         });
 
       this.TonghopsFinal = this.transformFinalData(transformFinalData, Khos.data);
+      console.log(this.TonghopsFinal);
+      this.TonghopsFinal.forEach(item => {
+        item.tongkho = item.kho1 + item.kho2 + item.kho3 + item.kho4 + item.kho5 + item.kho6 + item.sltontt;
+        item.goiy = this.GetGoiy(item);
+        item.slhaohut = this.GetSLHaohut(item);
+      });
       const tranferTonghop = (await this.convertData(transformFinalData)).flat()
       this.TonghopsExportFinal = this.convertKhoData(tranferTonghop)
       this.progressPercentage = 90;
@@ -919,10 +938,10 @@ export class NhucaudathangComponent {
         haohut: Number(v.haohut || 0),
         SLDat: Number(v.SLDat || 0),
         SLGiao: Number(v.SLGiao || 0),
-        slton: Number(v.slton || 0),
+        sltontt: Number(v.sltontt || 0),
         ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
         goiy: Number(v.goiy || 0),
-        tongkho: Number(v.kho1 + v.kho2 + v.kho3 + v.kho4 + v.kho5 + v.kho6 + v.slton || 0),
+        tongkho: Number(v.tongkho || 0),
         kho1: Number(v.kho1 || 0),
         kho2: Number(v.kho2 || 0),
         kho3: Number(v.kho3 || 0),
@@ -939,8 +958,8 @@ export class NhucaudathangComponent {
         SLDat: 'SL ĐẶT (NHÀ CC)',
         goiy: 'SL CẦN ĐẶT (GỢI Ý)',
         SLGiao: 'SL GIAO (KHÁCH)',
-        slton: 'TỒN KHO',
         tongkho: 'TỔNG KHO',
+        sltontt: 'TỒN KHO',
         kho1: 'TG-LONG AN',
         kho2: 'BỔ SUNG',
         kho3: 'TG-ĐÀ LẠT',
@@ -1079,6 +1098,7 @@ export class NhucaudathangComponent {
               id: true,
               sanphamId: true,
               slton: true,
+              sltontt: true,
               slchogiao: true,
               slchonhap: true,
               sanpham: {
@@ -1128,7 +1148,7 @@ export class NhucaudathangComponent {
               // Cập nhật TonKho đã có - bao gồm cả trường hợp slton = 0
               await this._GraphqlService.updateOne('tonkho', 
                 { id: (existingTonkho as any).id }, 
-                { slton: item.slton }
+                { slton: item.slton, sltontt: item.slton }
               );
               updatedCount++;
               console.log(`Updated TonKho for ${item.masp}: slton = ${item.slton}`);
@@ -1137,6 +1157,7 @@ export class NhucaudathangComponent {
               await this._GraphqlService.createOne('tonkho', {
                 sanphamId: (sanpham as any).id,
                 slton: item.slton,
+                sltontt: item.slton,
                 slchogiao: 0,
                 slchonhap: 0
               });
@@ -1210,7 +1231,7 @@ export class NhucaudathangComponent {
               masp: true,
               TonKho: { 
                 select: { 
-                  slton: true 
+                  slton: true,
                 }
               }
             }
@@ -1372,6 +1393,7 @@ export class NhucaudathangComponent {
               slhaohut: item.slhaohut,
               SLDat: item.SLDat,
               SLGiao: item.SLGiao,
+              sltontt: item.sltontt,
               slton: item.slton,
               slchogiao: item.slchogiao,
               slchonhap: item.slchonhap,
