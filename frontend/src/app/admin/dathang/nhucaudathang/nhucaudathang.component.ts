@@ -35,7 +35,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { trigger, state, style, transition, animate } from '@angular/animations';
+import {
+  trigger,
+  state,
+  style,
+  transition,
+  animate,
+} from '@angular/animations';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { GraphqlService } from '../../../shared/services/graphql.service';
 import { GenId } from '../../../shared/utils/shared.utils';
@@ -43,7 +49,10 @@ import { TimezoneService } from '../../../shared/services/timezone.service';
 import { DathangService } from '../dathang.service';
 import { DonhangService } from '../../donhang/donhang.service';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { NestedDataDialogComponent, NestedDataDialogData } from './nested-data-dialog/nested-data-dialog.component';
+import {
+  NestedDataDialogComponent,
+  NestedDataDialogData,
+} from './nested-data-dialog/nested-data-dialog.component';
 import moment from 'moment';
 
 @Component({
@@ -56,9 +65,12 @@ import moment from 'moment';
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('detailExpand', [
-      state('collapsed', style({height: '0px', minHeight: '0'})),
-      state('expanded', style({height: '*'})),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition(
+        'expanded <=> collapsed',
+        animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')
+      ),
     ]),
   ],
   imports: [
@@ -86,17 +98,20 @@ import moment from 'moment';
 })
 export class NhucaudathangComponent {
   displayedColumns: string[] = [
-    'expand',  // Add expansion column
+    'expand', // Add expansion column
     'title',
     'masp',
     'dvt',
-    // 'mancc',
-    // 'name',
+    'mancc',
+    'name',
     // 'slchonhap',
+    'xSLDat',
     'SLDat',
     'goiy',
     // 'slchogiao',
-    'SLGiao',
+    // 'SLGiao',
+    'khachdat',
+    'khachgiao',
     // 'sltontt',
     'tongkho',
     'sltontt',
@@ -110,29 +125,32 @@ export class NhucaudathangComponent {
     'slhaohut',
   ];
   ColumnName: any = {
-      expand: '',  // No header for expansion column
-      title: 'Tên Sản Phẩm',
-      masp: 'Mã Sản Phẩm',
-      dvt:'ĐVT',
-      // mancc: 'Mã NCC',
-      // name: 'Tên Nhà Cung Cấp',
-      // slchonhap: 'SL Đặt (Chờ Nhập)',
-      SLDat: 'SL Đặt (Nhà CC)',
-      goiy: 'SL Cần Đặt (Gợi Ý)',
-      // slchogiao: 'SL Bán (Chờ Giao)',
-      SLGiao: 'SL Giao (Khách)',
-      // sltontt: 'Tồn Kho (Thực Tế)',
-      tongkho:'Tổng Kho',
-      sltontt: 'Tồn Kho tt',
-      kho1: 'TG-LONG AN',
-      kho2: 'Bổ Sung',
-      kho3: 'TG-ĐÀ LẠT',
-      kho4: 'KHO TỔNG - HCM',
-      kho5: 'SG1',
-      kho6: 'SG2',
-      haohut: 'Tỉ Lệ Hao Hụt',
-      slhaohut: 'SL Hao Hụt',
-   };
+    expand: '', // No header for expansion column
+    title: 'Tên Sản Phẩm',
+    masp: 'Mã Sản Phẩm',
+    dvt: 'ĐVT',
+    mancc: 'Mã NCC',
+    name: 'Tên Nhà Cung Cấp',
+    // slchonhap: 'SL Đặt (Chờ Nhập)',
+    xSLDat: 'SL Đặt (Nhà CC)',
+    SLDat: 'SL Đã Đặt',
+    goiy: 'SL Cần Đặt (Gợi Ý)',
+    // slchogiao: 'SL Bán (Chờ Giao)',
+    // SLGiao: 'SL Giao (Khách)',
+    khachdat: 'TỔNG SL KHÁCH ĐẶT',
+    khachgiao: 'TỔNG SL BÁN',
+    // sltontt: 'Tồn Kho (Thực Tế)',
+    tongkho: 'Tổng Kho',
+    sltontt: 'Tồn Kho tt',
+    kho1: 'TG-LONG AN',
+    kho2: 'Bổ Sung',
+    kho3: 'TG-ĐÀ LẠT',
+    kho4: 'KHO TỔNG - HCM',
+    kho5: 'SG1',
+    kho6: 'SG2',
+    haohut: 'Tỉ Lệ Hao Hụt',
+    slhaohut: 'SL Hao Hụt',
+  };
   // ColumnName: any = {
   //   title: 'Tên Sản Phẩm',
   //   masp: 'Mã Sản Phẩm',
@@ -207,7 +225,8 @@ export class NhucaudathangComponent {
 
   constructor() {
     effect(() => {
-      const currentData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+      const currentData =
+        this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
       this.dataSource.data = currentData;
       this.totalItems = currentData.length;
       this.calculateTotalPages();
@@ -230,32 +249,32 @@ export class NhucaudathangComponent {
     // Custom sorting for specific columns
     this.dataSource.sortingDataAccessor = (item: any, property: string) => {
       switch (property) {
-      case 'slton':
-      case 'slchogiao':
-      case 'slchonhap':
-      case 'SLDat':
-      case 'SLGiao':
-      case 'kho1':
-      case 'kho2':
-      case 'kho3':
-      case 'kho4':
-      case 'kho5':
-      case 'kho6':
-      case 'haohut':
-      case 'slhaohut':
-      return Number(item[property]) || 0;
-      case 'goiy':
-      return parseFloat(this.GetGoiy(item));
-      case 'title':
-      case 'masp':
-      case 'dvt':
-      case 'mancc':
-      case 'name':
-      case 'makho':
-      case 'namekho':
-        return item[property]?.toLowerCase() || '';
-      default:
-        return item[property]?.toString().toLowerCase() || '';
+        case 'slton':
+        case 'slchogiao':
+        case 'slchonhap':
+        case 'SLDat':
+        case 'SLGiao':
+        case 'kho1':
+        case 'kho2':
+        case 'kho3':
+        case 'kho4':
+        case 'kho5':
+        case 'kho6':
+        case 'haohut':
+        case 'slhaohut':
+          return Number(item[property]) || 0;
+        case 'goiy':
+          return parseFloat(this.GetGoiy(item));
+        case 'title':
+        case 'masp':
+        case 'dvt':
+        case 'mancc':
+        case 'name':
+        case 'makho':
+        case 'namekho':
+          return item[property]?.toLowerCase() || '';
+        default:
+          return item[property]?.toString().toLowerCase() || '';
       }
     };
 
@@ -264,8 +283,10 @@ export class NhucaudathangComponent {
   }
 
   GetGoiy(item: any) {
-    if(item.SLGiao > item.SLDat) {
-      const suggestion = Math.abs(Number(item.SLDat) + Number(this.GetSLHaohut(item)) - Number(item.tongkho));
+    if (item.SLGiao > item.SLDat) {
+      const suggestion = Math.abs(
+        Number(item.khachdat) + Number(this.GetSLHaohut(item)) - Number(item.tongkho)
+      );
       return suggestion.toFixed(0);
     }
     // if(item.SLGiao > item.SLDat) {
@@ -284,11 +305,10 @@ export class NhucaudathangComponent {
     //   const wastageAmount = demand * (item.haohut || 0) / 100;
     //   return wastageAmount.toFixed(0);
     // }
-    if(item.SLDat > 0) {
-      const wastageAmount = item.SLDat * (item.haohut || 0) / 100;
+    if (item.khachdat > 0) {
+      const wastageAmount = (item.khachdat * (item.haohut || 0)) / 100;
       return wastageAmount.toFixed(0);
-    }
-    else {
+    } else {
       return 0;
     }
   }
@@ -298,7 +318,7 @@ export class NhucaudathangComponent {
       this.isLoading = false;
       this.loadingMessage = 'Đang tải dữ liệu đơn hàng...';
       this.progressPercentage = 0;
-      
+
       // ✅ Sử dụng TimezoneService để xử lý date range đúng cách
       let startDate: string;
       let endDate: string;
@@ -322,7 +342,7 @@ export class NhucaudathangComponent {
       this.progressPercentage = 25;
       this.loadingMessage = 'Đang xử lý dữ liệu...';
 
-      const [Donhangs, Dathangs, Tonkhos,Sanphams] = await Promise.all([
+      const [Donhangs, Dathangs, Tonkhos, Sanphams] = await Promise.all([
         this._GraphqlService.findAll('donhang', {
           enableParallelFetch: true,
           batchSize: 1000,
@@ -350,7 +370,7 @@ export class NhucaudathangComponent {
             },
           },
         }),
-        
+
         this._GraphqlService.findAll('dathang', {
           enableParallelFetch: true,
           batchSize: 1000,
@@ -406,8 +426,8 @@ export class NhucaudathangComponent {
               select: {
                 title: true,
                 masp: true,
-                dvt:true,
-                haohut:true
+                dvt: true,
+                haohut: true,
               },
             },
           },
@@ -422,8 +442,8 @@ export class NhucaudathangComponent {
             id: true,
             title: true,
             masp: true,
-            dvt:true,
-            haohut:true
+            dvt: true,
+            haohut: true,
           },
         }),
       ]);
@@ -453,7 +473,7 @@ export class NhucaudathangComponent {
           makho: order.kho.makho,
           namekho: order.kho.name,
         }));
-      });            
+      });
       const TonkhosTranfer = Tonkhos.data.map((sp: any) => ({
         type: 'tonkho',
         masp: sp.sanpham.masp,
@@ -504,7 +524,7 @@ export class NhucaudathangComponent {
           item.SLGiao += donhang.slnhan;
         }
       });
-      const SanphamsTranfer = Sanphams.data
+      const SanphamsTranfer = Sanphams.data;
 
       // Create efficient lookup maps for better performance
       const dathangMap = new Map<string, number>();
@@ -531,7 +551,7 @@ export class NhucaudathangComponent {
         const tonkho = tonkhoMap.get(sp.masp);
         const slDat = dathangMap.get(sp.masp) || 0;
         const slGiao = donhangMap.get(sp.masp) || 0;
-        
+
         const transformedItem = {
           ...sp,
           id: sp.id || GenId(8, false),
@@ -542,7 +562,7 @@ export class NhucaudathangComponent {
           slchogiao: tonkho?.slchogiao || 0,
           slchonhap: tonkho?.slchonhap || 0,
           haohut: tonkho?.haohut || sp.haohut || 0,
-          slhaohut:0,
+          slhaohut: 0,
           Dathangs: DathangsTranfer.filter((dh: any) => dh.masp === sp.masp),
           Donhangs: DonhangsTranfer.filter((dh: any) => dh.masp === sp.masp),
         };
@@ -550,70 +570,77 @@ export class NhucaudathangComponent {
         transformedItem.goiy = this.GetGoiy(transformedItem);
         transformedItem.slhaohut = this.GetSLHaohut(transformedItem);
         return transformedItem;
-      }).filter(sp => sp.masp).sort((a, b) => parseFloat(b.Dathangs.length) - parseFloat(a.Dathangs.length)); // Sort by Dathangs length descending
+      })
+        .filter((sp) => sp.masp)
+        .sort(
+          (a, b) =>
+            parseFloat(b.Dathangs.length) - parseFloat(a.Dathangs.length)
+        ); // Sort by Dathangs length descending
 
       // SanphamsTranfer.
 
       this.progressPercentage = 75;
       this.loadingMessage = 'Đang tổng hợp dữ liệu...';
-        const Khos = await this._GraphqlService.findAll('kho', {
-          enableParallelFetch: true,
-          batchSize: 1000,
-          take: 999999,
-          aggressiveCache: true,
-          orderBy: { createdAt: 'desc' },
-          select: {
-            id: true,
-            name: true,
-            makho: true,
-          },
-        });
+      const Khos = await this._GraphqlService.findAll('kho', {
+        enableParallelFetch: true,
+        batchSize: 1000,
+        take: 999999,
+        aggressiveCache: true,
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          name: true,
+          makho: true,
+        },
+      });
 
-      this.TonghopsFinal = this.transformFinalData(transformFinalData, Khos.data);
+      this.TonghopsFinal = this.transformFinalData(
+        transformFinalData,
+        Khos.data
+      );
+      console.log('this.TonghopsFinal', this.TonghopsFinal);
 
-      this.TonghopsFinal.forEach(item => {
-        item.tongkho = item.kho1 + item.kho2 + item.kho3 + item.kho4 + item.kho5 + item.kho6 + item.sltontt;
+      this.TonghopsFinal.forEach((item) => {
+        item.tongkho = parseFloat((
+          item.kho1 +
+          item.kho2 +
+          item.kho3 +
+          item.kho4 +
+          item.kho5 +
+          item.kho6 +
+          item.sltontt
+        ).toFixed(3));
         item.goiy = this.GetGoiy(item);
         item.slhaohut = this.GetSLHaohut(item);
       });
       console.log('this.transformFinalData', transformFinalData);
 
-      const tranferTonghop = (await this.convertData(transformFinalData)).flat()
-      console.log('tranferTonghop', tranferTonghop);
-      this.TonghopsExportFinal = this.convertKhoData(tranferTonghop)
-      console.log('TonghopsExportFinal', this.TonghopsExportFinal);
+      const tranferTonghop = (
+        await this.convertData(transformFinalData)
+      ).flat();
+      this.TonghopsExportFinal = this.convertKhoData(tranferTonghop);
       this.progressPercentage = 90;
       this.loadingMessage = 'Hoàn tất...';
-      
-      // console.log('Donhangs:', Donhangs);
-      // console.log('Dathangs:', Dathangs);
-      // console.log('Tonkhos:', Tonkhos);
-      // console.log('Sanphams:', SanphamsTranfer);
-      // console.log('DonhangsTranfer:', DonhangsTranfer);
-      // console.log('DathangsTranfer:', DathangsTranfer);
-      // console.log('Sanphams with orders:', this.TonghopsFinal);
-      // console.log('Sanphams with Export:', this.TonghopsExportFinal);
 
       this.dataSource.data = this.TonghopsFinal;
-      this.totalItems = this.TonghopsFinal.length;      
+      this.totalItems = this.TonghopsFinal.length;
       this.calculateTotalPages();
       this.updateDisplayData();
-      
+
       this.progressPercentage = 100;
-      
+
       // Short delay to show completion
       setTimeout(() => {
         this.isLoading = false;
         this.loadingMessage = '';
         this.progressPercentage = 0;
       }, 500);
-      
     } catch (error) {
       console.error('Error loading data:', error);
       this.isLoading = false;
       this.loadingMessage = '';
       this.progressPercentage = 0;
-      
+
       this._snackBar.open('Lỗi khi tải dữ liệu', 'Đóng', {
         duration: 3000,
         horizontalPosition: 'end',
@@ -626,13 +653,13 @@ export class NhucaudathangComponent {
   async refresh() {
     this.isRefreshing = true;
     this.loadingMessage = 'Đang làm mới dữ liệu...';
-    
+
     try {
       // Clear expanded state when refreshing data
       this.expandedElementId = null;
       await this._SanphamService.getAllSanpham();
       await this.loadDonhangWithRelations();
-      
+
       this._snackBar.open('Làm mới dữ liệu thành công', '', {
         duration: 2000,
         horizontalPosition: 'end',
@@ -890,18 +917,20 @@ export class NhucaudathangComponent {
   async ExportExcel(data: any, title: any) {
     try {
       this.isExportingExcel = true;
-    
+
       const dulieu = this.TonghopsFinal.map((v: any) => ({
         title: v.title || '',
         masp: v.masp || '',
         dvt: v.dvt || '',
         ghichu: v.ghichu || '',
         haohut: Number(v.haohut || 0),
-        SLDat: Number(v.SLDat || 0),
-        SLGiao: Number(v.SLGiao || 0),
+        SLDat: 0,
+        // SLGiao: Number(v.SLGiao || 0),
         sltontt: Number(v.sltontt || 0),
         ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
         goiy: Number(v.goiy || 0),
+        khachdat: Number(v.khachdat || 0),
+        khachgiao: Number(v.khachgiao || 0),
         tongkho: Number(v.tongkho || 0),
         kho1: Number(v.kho1 || 0),
         kho2: Number(v.kho2 || 0),
@@ -919,7 +948,9 @@ export class NhucaudathangComponent {
         ghichu: 'GHI CHÚ',
         SLDat: 'SL ĐẶT (NHÀ CC)',
         goiy: 'SL CẦN ĐẶT (GỢI Ý)',
-        SLGiao: 'SL GIAO (KHÁCH)',
+        khachdat: 'TỔNG SL KHÁCH ĐẶT',
+        khachgiao: 'TỔNG SL BÁN',
+        // SLGiao: 'SL GIAO (KHÁCH)',
         tongkho: 'TỔNG KHO',
         sltontt: 'TỒN KHO',
         kho1: 'TG-LONG AN',
@@ -946,7 +977,7 @@ export class NhucaudathangComponent {
         ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
         goiy: v.goiy || 0,
         kho1: v.kho1 || 0,
-        kho2: v.kho2 || 0,  
+        kho2: v.kho2 || 0,
         kho3: v.kho3 || 0,
         kho4: v.kho4 || 0,
         kho5: v.kho5 || 0,
@@ -976,25 +1007,29 @@ export class NhucaudathangComponent {
         slhaohut: 'SL Hao Hụt',
       };
 
-      const result1 = dulieu.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
-      const result2 = dulieu2.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
+      const result1 = dulieu.sort(
+        (a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp)
+      );
+      const result2 = dulieu2.sort(
+        (a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp)
+      );
       // Chuẩn bị dữ liệu cho 2 sheets
       const sheetsData = {
-       'sheet1': {
+        sheet1: {
           data: result1,
           headers: Object.values(mapping) as string[],
-          mapping: mapping
+          mapping: mapping,
         },
-        'sheet2': {
+        sheet2: {
           data: result2,
           headers: Object.values(mapping2) as string[],
-          mapping: mapping2
+          mapping: mapping2,
         },
       };
 
       // Export file Excel với multiple sheets
       writeExcelFileSheets(sheetsData, title);
-      
+
       this._snackBar.open('Export Excel thành công!', '', {
         duration: 2000,
         horizontalPosition: 'end',
@@ -1017,13 +1052,13 @@ export class NhucaudathangComponent {
   // Cập nhật tồn kho từ file Excel
   async Capnhattonkho() {
     this.isUpdatingStock = true;
-    
+
     // Tạo input file element động
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = '.xlsx,.xls,.csv';
     fileInput.style.display = 'none';
-    
+
     fileInput.onchange = async (event: any) => {
       try {
         const file = event.target.files[0];
@@ -1048,7 +1083,7 @@ export class NhucaudathangComponent {
 
         // Đọc file Excel (không sử dụng worker)
         const excelData = await readExcelFileNoWorkerArray(event);
-        
+
         if (!excelData || excelData.length === 0) {
           this._snackBar.dismiss();
           this._snackBar.open('File Excel trống hoặc không hợp lệ', 'Đóng', {
@@ -1061,10 +1096,10 @@ export class NhucaudathangComponent {
         }
 
         // Validate và transform dữ liệu
-        const validData: Array<{masp: string, slton: number}> = [];
+        const validData: Array<{ masp: string; slton: number }> = [];
         const errors: string[] = [];
         console.log(excelData);
-        
+
         excelData.forEach((row: any, index: number) => {
           const masp = row.masp?.toString().trim();
           let slton = parseFloat(row.slton);
@@ -1078,7 +1113,11 @@ export class NhucaudathangComponent {
           // Xử lý slton: nếu NaN, null, undefined hoặc <= 0 thì set về 0
           if (isNaN(slton) || slton == null || slton <= 0) {
             slton = 0;
-            console.log(`Dòng ${index + 1} - ${masp}: slton được set về 0 (giá trị gốc: ${row.slton})`);
+            console.log(
+              `Dòng ${index + 1} - ${masp}: slton được set về 0 (giá trị gốc: ${
+                row.slton
+              })`
+            );
           }
 
           validData.push({ masp, slton });
@@ -1086,12 +1125,16 @@ export class NhucaudathangComponent {
 
         if (errors.length > 0) {
           this._snackBar.dismiss();
-          this._snackBar.open(`Có ${errors.length} lỗi trong file. Xem console để biết chi tiết.`, 'Đóng', {
-            duration: 5000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['snackbar-error'],
-          });
+          this._snackBar.open(
+            `Có ${errors.length} lỗi trong file. Xem console để biết chi tiết.`,
+            'Đóng',
+            {
+              duration: 5000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-error'],
+            }
+          );
           console.error('Validation errors:', errors);
           return;
         }
@@ -1111,26 +1154,28 @@ export class NhucaudathangComponent {
                 select: {
                   id: true,
                   masp: true,
-                  title: true
-                }
-              }
-            }
+                  title: true,
+                },
+              },
+            },
           }),
           this._GraphqlService.findAll('sanpham', {
             take: 999999,
             select: {
               id: true,
               masp: true,
-              title: true
-            }
-          })
+              title: true,
+            },
+          }),
         ]);
 
         const allTonkho = tonkhoResponse.data || [];
         const allSanpham = sanphamResponse.data || [];
 
         // Create maps for quick lookup
-        const tonkhoMap = new Map(allTonkho.map((tk: any) => [tk.sanpham?.masp, tk]));
+        const tonkhoMap = new Map(
+          allTonkho.map((tk: any) => [tk.sanpham?.masp, tk])
+        );
         const sanphamMap = new Map(allSanpham.map((sp: any) => [sp.masp, sp]));
 
         let updatedCount = 0;
@@ -1143,21 +1188,26 @@ export class NhucaudathangComponent {
             // Tìm sản phẩm theo mã sản phẩm
             const sanpham = sanphamMap.get(item.masp);
             if (!sanpham) {
-              processErrors.push(`Không tìm thấy sản phẩm với mã: ${item.masp}`);
+              processErrors.push(
+                `Không tìm thấy sản phẩm với mã: ${item.masp}`
+              );
               continue;
             }
 
             // Kiểm tra xem TonKho đã tồn tại chưa
             const existingTonkho = tonkhoMap.get(item.masp);
-            
+
             if (existingTonkho) {
               // Cập nhật TonKho đã có - bao gồm cả trường hợp slton = 0
-              await this._GraphqlService.updateOne('tonkho', 
-                { id: (existingTonkho as any).id }, 
+              await this._GraphqlService.updateOne(
+                'tonkho',
+                { id: (existingTonkho as any).id },
                 { slton: item.slton, sltontt: item.slton }
               );
               updatedCount++;
-              console.log(`Updated TonKho for ${item.masp}: slton = ${item.slton}`);
+              console.log(
+                `Updated TonKho for ${item.masp}: slton = ${item.slton}`
+              );
             } else {
               // Tạo mới TonKho record - bao gồm cả trường hợp slton = 0
               await this._GraphqlService.createOne('tonkho', {
@@ -1165,10 +1215,12 @@ export class NhucaudathangComponent {
                 slton: item.slton,
                 sltontt: item.slton,
                 slchogiao: 0,
-                slchonhap: 0
+                slchonhap: 0,
               });
               createdCount++;
-              console.log(`Created new TonKho for ${item.masp}: slton = ${item.slton}`);
+              console.log(
+                `Created new TonKho for ${item.masp}: slton = ${item.slton}`
+              );
             }
           } catch (error: any) {
             processErrors.push(`Lỗi xử lý ${item.masp}: ${error.message}`);
@@ -1180,25 +1232,34 @@ export class NhucaudathangComponent {
         // Show results
         if (processErrors.length > 0) {
           console.error('Process errors:', processErrors);
-          this._snackBar.open(`Hoàn thành với ${processErrors.length} lỗi. Xem console để biết chi tiết.`, 'Đóng', {
-            duration: 5000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['snackbar-warning'],
-          });
+          this._snackBar.open(
+            `Hoàn thành với ${processErrors.length} lỗi. Xem console để biết chi tiết.`,
+            'Đóng',
+            {
+              duration: 5000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-warning'],
+            }
+          );
         } else {
-          this._snackBar.open(`Cập nhật TonKho thành công: ${updatedCount} cập nhật, ${createdCount} tạo mới (bao gồm cả slton = 0)`, 'Đóng', {
-            duration: 4000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['snackbar-success'],
-          });
-          console.log(`TonKho update summary: Updated ${updatedCount}, Created ${createdCount}`);
+          this._snackBar.open(
+            `Cập nhật TonKho thành công: ${updatedCount} cập nhật, ${createdCount} tạo mới (bao gồm cả slton = 0)`,
+            'Đóng',
+            {
+              duration: 4000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-success'],
+            }
+          );
+          console.log(
+            `TonKho update summary: Updated ${updatedCount}, Created ${createdCount}`
+          );
         }
 
         // Reload data to reflect changes
         this.ngOnInit();
-
       } catch (error: any) {
         this._snackBar.dismiss();
         this._snackBar.open(`Lỗi xử lý file: ${error.message}`, 'Đóng', {
@@ -1213,11 +1274,11 @@ export class NhucaudathangComponent {
       }
     };
 
-    // Trigger file selection 
+    // Trigger file selection
     fileInput.oncancel = () => {
       this.isUpdatingStock = false;
     };
-    
+
     document.body.appendChild(fileInput);
     fileInput.click();
     document.body.removeChild(fileInput);
@@ -1227,29 +1288,34 @@ export class NhucaudathangComponent {
   async downloadTonkhoTemplate() {
     const mapping = {
       masp: 'masp',
-      title:'title',
+      title: 'title',
       slton: 'slton',
     };
     const Sanphams = await this._GraphqlService.findAll('sanpham', {
-            take: 999999,
-            select: {
-              id: true,
-              masp: true,
-              TonKho: { 
-                select: { 
-                  slton: true,
-                }
-              }
-            }
-     })
+      take: 999999,
+      select: {
+        id: true,
+        masp: true,
+        TonKho: {
+          select: {
+            slton: true,
+          },
+        },
+      },
+    });
     const sampleData = Sanphams.data.map((sp: any) => ({
       masp: sp.masp || '',
       title: sp.title || '',
       slton: sp.TonKho?.slton || 0,
     }));
     // Tạo file Excel với dữ liệu mẫu
-    writeExcelFile(sampleData, 'MauCapNhatTonKho', Object.values(mapping), mapping);
-    
+    writeExcelFile(
+      sampleData,
+      'MauCapNhatTonKho',
+      Object.values(mapping),
+      mapping
+    );
+
     this._snackBar.open('Đã tải file Excel mẫu', 'Đóng', {
       duration: 2000,
       horizontalPosition: 'end',
@@ -1257,7 +1323,6 @@ export class NhucaudathangComponent {
       panelClass: ['snackbar-info'],
     });
   }
-
 
   convertKhoData(inputData: any) {
     const warehouses = [
@@ -1272,220 +1337,241 @@ export class NhucaudathangComponent {
     return inputData.map((item: any) => {
       // Create a new object with all original fields
       const newItem = { ...item };
-      
+
       // Initialize all warehouse fields with 0
       warehouses.forEach((warehouse) => {
-      newItem[warehouse.name] = '0';
+        newItem[warehouse.name] = '0';
       });
-      
+
       // Find the matching warehouse by label and set the value
       const matchingWarehouse = warehouses.find(
-      (warehouse) => warehouse.label === item.namekho
+        (warehouse) => warehouse.label === item.namekho
       );
-      
+
       if (matchingWarehouse) {
-      newItem[matchingWarehouse.name] = item.sldat || '0';
+        newItem[matchingWarehouse.name] = item.sldat || '0';
       }
       return newItem;
     });
   }
 
   transformFinalData(data1: any[], ListKho: any[]) {
-          ListKho = [
-          {
-              "id": "a118c322-ddca-444e-9e41-40602d955e93",
-              "value":"kho5",
-              "name": "SG1",
-              "makho": "TG-SG1"
-          },
-          {
-              "id": "3344758e-c0bc-4562-9390-d58fc5717d03",
-              "value":"kho6",
-              "name": "SG2",
-              "makho": "TG-SG2"
-          },
-          {
-              "id": "75933b1d-2906-4591-8a46-30db60ce9258",
-              "value":"kho2",
-              "name": "Bổ Sung",
-              "makho": "TG-BS"
-          },
-          {
-              "id": "4cc01811-61f5-4bdc-83de-a493764e9258",
-              "value":"kho4",
-              "name": "KHO TỔNG - HCM",
-              "makho": "TG-HCM"
-          },
-          {
-              "id": "929d94e9-9b05-4820-aadb-0c48b991c96c",
-              "value":"kho1",
-              "name": "TG-LONG AN",
-              "makho": "TG-LA"
-          },
-          {
-              "id": "a24363f8-2218-4f80-b2f9-0641ace1b245",
-              "value":"kho3",
-              "name": "TG-ĐÀ LẠT",
-              "makho": "TG-ĐL"
+    ListKho = [
+      {
+        id: 'a118c322-ddca-444e-9e41-40602d955e93',
+        value: 'kho5',
+        name: 'SG1',
+        makho: 'TG-SG1',
+      },
+      {
+        id: '3344758e-c0bc-4562-9390-d58fc5717d03',
+        value: 'kho6',
+        name: 'SG2',
+        makho: 'TG-SG2',
+      },
+      {
+        id: '75933b1d-2906-4591-8a46-30db60ce9258',
+        value: 'kho2',
+        name: 'Bổ Sung',
+        makho: 'TG-BS',
+      },
+      {
+        id: '4cc01811-61f5-4bdc-83de-a493764e9258',
+        value: 'kho4',
+        name: 'KHO TỔNG - HCM',
+        makho: 'TG-HCM',
+      },
+      {
+        id: '929d94e9-9b05-4820-aadb-0c48b991c96c',
+        value: 'kho1',
+        name: 'TG-LONG AN',
+        makho: 'TG-LA',
+      },
+      {
+        id: 'a24363f8-2218-4f80-b2f9-0641ace1b245',
+        value: 'kho3',
+        name: 'TG-ĐÀ LẠT',
+        makho: 'TG-ĐL',
+      },
+    ];
+    return data1.map((item) => {
+      // Start with the base item, removing Dathangs
+      const { Dathangs, Donhangs, ...baseItem } = item;
+
+      // Initialize all kho values to 0
+      const khoValues: any = {};
+      ListKho.forEach((kho: any) => {
+        khoValues[kho.value] = 0;
+      });
+
+      // Add ngaynhan from first Dathang if exists
+      const ngaynhan =
+        Dathangs && Dathangs.length > 0 ? Dathangs[0].ngaynhan : null;
+
+      // Sum sldat by makho
+      if (Dathangs) {
+        Dathangs.forEach((dathang: any) => {
+          const matchingKho = ListKho.find(
+            (kho: any) => kho.makho === dathang.makho
+          );
+          if (matchingKho) {
+            khoValues[matchingKho.value] += dathang.sldat;
           }
-      ]
-    return data1.map(item => {
-        // Start with the base item, removing Dathangs
-        const { Dathangs,Donhangs, ...baseItem } = item;
-        
-        // Initialize all kho values to 0
-        const khoValues:any = {};
-        ListKho.forEach((kho: any) => {
-            khoValues[kho.value] = 0;
         });
-        
-        // Add ngaynhan from first Dathang if exists
-        const ngaynhan = Dathangs && Dathangs.length > 0 ? Dathangs[0].ngaynhan : null;
-        
-        // Sum sldat by makho
-        if (Dathangs) {
-            Dathangs.forEach((dathang: any) => {
-                const matchingKho = ListKho.find((kho: any) => kho.makho === dathang.makho);
-                if (matchingKho) {
-                    khoValues[matchingKho.value] += dathang.sldat;
-                }
-            });
-        }
-        
-        return {
-            ...baseItem,
-            ...(ngaynhan && { ngaynhan }),
-            ...khoValues
-        };
+      }
+
+      const khachdat = Donhangs.filter((v: any) => v.status === 'dadat').reduce(
+        (acc: number, curr: any) => {
+          return Number((acc + (curr.sldat || 0)).toFixed(2)) || 0;
+        },
+        0
+      );
+
+      const khachgiao = Donhangs.filter(
+        (v: any) => v.status !== 'dadat'
+      ).reduce((acc: number, curr: any) => {
+        return Number((acc + (curr.sldat || 0)).toFixed(2)) || 0;
+      }, 0);
+
+      return {
+        khachdat,
+        khachgiao,
+        ...baseItem,
+        ...(ngaynhan && { ngaynhan }),
+        ...khoValues,
+      };
     });
-}
-transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
-          ListKho = [
-          {
-              "id": "a118c322-ddca-444e-9e41-40602d955e93",
-              "value":"kho5",
-              "name": "SG1",
-              "makho": "TG-SG1"
-          },
-          {
-              "id": "3344758e-c0bc-4562-9390-d58fc5717d03",
-              "value":"kho6",
-              "name": "SG2",
-              "makho": "TG-SG2"
-          },
-          {
-              "id": "75933b1d-2906-4591-8a46-30db60ce9258",
-              "value":"kho2",
-              "name": "Bổ Sung",
-              "makho": "TG-BS"
-          },
-          {
-              "id": "4cc01811-61f5-4bdc-83de-a493764e9258",
-              "value":"kho4",
-              "name": "KHO TỔNG - HCM",
-              "makho": "TG-HCM"
-          },
-          {
-              "id": "929d94e9-9b05-4820-aadb-0c48b991c96c",
-              "value":"kho1",
-              "name": "TG-LONG AN",
-              "makho": "TG-LA"
-          },
-          {
-              "id": "a24363f8-2218-4f80-b2f9-0641ace1b245",
-              "value":"kho3",
-              "name": "TG-ĐÀ LẠT",
-              "makho": "TG-ĐL"
+  }
+
+  transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
+    ListKho = [
+      {
+        id: 'a118c322-ddca-444e-9e41-40602d955e93',
+        value: 'kho5',
+        name: 'SG1',
+        makho: 'TG-SG1',
+      },
+      {
+        id: '3344758e-c0bc-4562-9390-d58fc5717d03',
+        value: 'kho6',
+        name: 'SG2',
+        makho: 'TG-SG2',
+      },
+      {
+        id: '75933b1d-2906-4591-8a46-30db60ce9258',
+        value: 'kho2',
+        name: 'Bổ Sung',
+        makho: 'TG-BS',
+      },
+      {
+        id: '4cc01811-61f5-4bdc-83de-a493764e9258',
+        value: 'kho4',
+        name: 'KHO TỔNG - HCM',
+        makho: 'TG-HCM',
+      },
+      {
+        id: '929d94e9-9b05-4820-aadb-0c48b991c96c',
+        value: 'kho1',
+        name: 'TG-LONG AN',
+        makho: 'TG-LA',
+      },
+      {
+        id: 'a24363f8-2218-4f80-b2f9-0641ace1b245',
+        value: 'kho3',
+        name: 'TG-ĐÀ LẠT',
+        makho: 'TG-ĐL',
+      },
+    ];
+    return data1.map((item) => {
+      // Start with the base item, removing Dathangs
+      const { Dathangs, Donhangs, ...baseItem } = item;
+
+      // Initialize all kho values to 0
+      const khoValues: any = {};
+      ListKho.forEach((kho: any) => {
+        khoValues[kho.value] = 0;
+      });
+
+      // Add ngaynhan from first Dathang if exists
+      const ngaynhan =
+        Dathangs && Dathangs.length > 0 ? Dathangs[0].ngaynhan : null;
+
+      // Sum sldat by makho
+      if (Dathangs) {
+        Dathangs.forEach((dathang: any) => {
+          const matchingKho = ListKho.find(
+            (kho: any) => kho.makho === dathang.makho
+          );
+          if (matchingKho) {
+            khoValues[matchingKho.value] += dathang.sldat;
           }
-      ]
-    return data1.map(item => {
-        // Start with the base item, removing Dathangs
-        const { Dathangs,Donhangs, ...baseItem } = item;
-        
-        // Initialize all kho values to 0
-        const khoValues:any = {};
-        ListKho.forEach((kho: any) => {
-            khoValues[kho.value] = 0;
         });
-        
-        // Add ngaynhan from first Dathang if exists
-        const ngaynhan = Dathangs && Dathangs.length > 0 ? Dathangs[0].ngaynhan : null;
-        
-        // Sum sldat by makho
-        if (Dathangs) {
-            Dathangs.forEach((dathang: any) => {
-                const matchingKho = ListKho.find((kho: any) => kho.makho === dathang.makho);
-                if (matchingKho) {
-                    khoValues[matchingKho.value] += dathang.sldat;
-                }
-            });
-        }
-        
-        return {
-            ...baseItem,
-            ...(ngaynhan && { ngaynhan }),
-            ...khoValues,
-            Dathangs
-        };
+      }
+
+      return {
+        ...baseItem,
+        ...(ngaynhan && { ngaynhan }),
+        ...khoValues,
+        Dathangs,
+      };
     });
-}
+  }
 
   async convertData(inputData: any) {
-        const Khos = await this._GraphqlService.findAll('kho', {
-          enableParallelFetch: true,
-          batchSize: 1000,
-          take: 999999,
-          aggressiveCache: true,
-          orderBy: { createdAt: 'desc' },
-          select: {
-            id: true,
-            name: true,
-            makho: true,
-          },
-        });
+    const Khos = await this._GraphqlService.findAll('kho', {
+      enableParallelFetch: true,
+      batchSize: 1000,
+      take: 999999,
+      aggressiveCache: true,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        makho: true,
+      },
+    });
 
-    const warehouses = Khos.data    
-    return inputData.map((item: any) => {  
+    const warehouses = Khos.data;
+    return inputData.map((item: any) => {
       const result = [...this.transformItemData(warehouses, item)];
       return result;
     });
   }
 
-  transformItemData(warehouses: any[], item: any): any[] {    
-      const result: any[] = [];   
-      // Get warehouse lookup map for faster access
-      const warehouseMap: { [key: string]: string } = {};
-      warehouses.forEach((warehouse: any) => {
-          warehouseMap[warehouse.makho] = warehouse.name;          
-      });      
-      // Process each order in Dathangs array
-      item.Dathangs.forEach((order: any) => {       
-          const transformedItem = {
-              id: item.id,
-              title: item.title,
-              masp: item.masp,
-              dvt: item.dvt,
-              haohut: item.haohut,
-              slhaohut: item.slhaohut,
-              SLDat: item.SLDat,
-              SLGiao: item.SLGiao,
-              sltontt: item.sltontt,
-              slton: item.slton,
-              slchogiao: item.slchogiao,
-              slchonhap: item.slchonhap,
-              mancc: order.mancc,
-              name: order.name,
-              ngaynhan: order.ngaynhan,
-              sldat: order.sldat,
-              makho: order.makho,
-              namekho: warehouseMap[order.makho] || order.namekho,
-              goiy: item.goiy
-          };          
-          result.push(transformedItem);
-      });   
-      return result;
+  transformItemData(warehouses: any[], item: any): any[] {
+    const result: any[] = [];
+    // Get warehouse lookup map for faster access
+    const warehouseMap: { [key: string]: string } = {};
+    warehouses.forEach((warehouse: any) => {
+      warehouseMap[warehouse.makho] = warehouse.name;
+    });
+    // Process each order in Dathangs array
+    item.Dathangs.forEach((order: any) => {
+      const transformedItem = {
+        id: item.id,
+        title: item.title,
+        masp: item.masp,
+        dvt: item.dvt,
+        haohut: item.haohut,
+        slhaohut: item.slhaohut,
+        SLDat: item.SLDat,
+        SLGiao: item.SLGiao,
+        sltontt: item.sltontt,
+        slton: item.slton,
+        slchogiao: item.slchogiao,
+        slchonhap: item.slchonhap,
+        mancc: order.mancc,
+        name: order.name,
+        ngaynhan: order.ngaynhan,
+        sldat: order.sldat,
+        makho: order.makho,
+        namekho: warehouseMap[order.makho] || order.namekho,
+        goiy: item.goiy,
+      };
+      result.push(transformedItem);
+    });
+    return result;
   }
-
 
   trackByFn(index: number, item: any): any {
     return item.masp || item.id;
@@ -1512,7 +1598,7 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
     this.currentPage = 1;
     this.calculateTotalPages();
     this.updateDisplayData();
-    
+
     menuTrigger.closeMenu();
   }
 
@@ -1532,7 +1618,7 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
 
   updateDisplayData() {
     const currentData =
-    this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     const pageData = currentData.slice(startIndex, endIndex);
@@ -1688,7 +1774,7 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
     this.globalFilterValue = '';
     this.ListFilter = [];
     const currentData =
-    this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
     this.dataSource.data = currentData;
     this.totalItems = currentData.length;
     this.calculateTotalPages();
@@ -1898,7 +1984,7 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
   }
 
   // ====== NESTED TABLE METHODS ======
-  
+
   /**
    * Toggle expanded state for a row and load nested data if needed
    */
@@ -1910,13 +1996,12 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
    * Open dialog to show nested data
    */
   async openNestedDataDialog(element: any): Promise<void> {
-    
     // Prepare dialog data
     const dialogData: NestedDataDialogData = {
       product: element,
       dathangData: [],
       donhangData: [],
-      loading: true
+      loading: true,
     };
 
     // Open the dialog
@@ -1928,32 +2013,31 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
       data: dialogData,
       disableClose: false,
       autoFocus: false,
-      panelClass: ['nested-data-dialog-panel']
+      panelClass: ['nested-data-dialog-panel'],
     });
 
     try {
       // Load nested data after dialog opens
       await this.loadNestedData(element);
-      
+
       // Update dialog data
       dialogData.dathangData = this.getDathangData(element.masp);
       dialogData.donhangData = this.getDonhangData(element.masp);
       dialogData.loading = false;
-      
+
       // Trigger change detection in dialog component
       if (dialogData.triggerChangeDetection) {
         dialogData.triggerChangeDetection();
       }
-
     } catch (error) {
       console.error('Error loading nested data:', error);
       dialogData.loading = false;
-      
+
       // Trigger change detection even on error
       if (dialogData.triggerChangeDetection) {
         dialogData.triggerChangeDetection();
       }
-      
+
       // Show error message to user
       this._snackBar.open('Lỗi khi tải dữ liệu. Vui lòng thử lại.', '', {
         duration: 3000,
@@ -1974,13 +2058,8 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
       return;
     }
 
-
     // Load both dathang and donhang data in parallel
-    await Promise.all([
-      this.loadDathangData(masp),
-      this.loadDonhangData(masp)
-    ]);
-
+    await Promise.all([this.loadDathangData(masp), this.loadDonhangData(masp)]);
   }
 
   /**
@@ -1992,7 +2071,7 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
     }
 
     this.loadingDathang.add(masp);
-    
+
     try {
       let startDate: string;
       let endDate: string;
@@ -2024,14 +2103,14 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
             some: {
               sanpham: {
                 masp: {
-                  equals: masp
-                }
-              }
-            }
+                  equals: masp,
+                },
+              },
+            },
           },
           ngaynhan: {
-              gte: startDate,
-              lte: endDate,
+            gte: startDate,
+            lte: endDate,
           },
         },
         select: {
@@ -2047,16 +2126,16 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
               name: true,
               mancc: true,
               diachi: true,
-              sdt: true
-            }
+              sdt: true,
+            },
           },
           sanpham: {
             where: {
               sanpham: {
                 masp: {
-                  equals: masp
-                }
-              }
+                  equals: masp,
+                },
+              },
             },
             select: {
               id: true,
@@ -2069,24 +2148,24 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
                   id: true,
                   title: true,
                   masp: true,
-                  dvt: true
-                }
-              }
-            }
+                  dvt: true,
+                },
+              },
+            },
           },
           kho: {
             select: {
               id: true,
               name: true,
               makho: true,
-              diachi: true
-            }
-          }
-        }
+              diachi: true,
+            },
+          },
+        },
       });
 
       // Transform the data to match the expected format
-      const transformedData = dathangResult.data.flatMap((dathang: any) => 
+      const transformedData = dathangResult.data.flatMap((dathang: any) =>
         dathang.sanpham.map((sp: any) => ({
           id: dathang.id,
           madncc: dathang.madncc,
@@ -2094,13 +2173,13 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
           createdAt: dathang.createdAt,
           updatedAt: dathang.updatedAt,
           status: dathang.status,
-          
+
           // Product information
           sanphamId: sp.sanpham.id,
           title: sp.sanpham.title,
           masp: sp.sanpham.masp,
           dvt: sp.sanpham.dvt,
-          
+
           // Quantities and pricing
           sldat: Number(sp.sldat) || 0,
           slgiao: Number(sp.slgiao) || 0,
@@ -2111,18 +2190,17 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
           nhacungcap: dathang.nhacungcap,
           mancc: dathang.nhacungcap?.mancc || '',
           name: dathang.nhacungcap?.name || '',
-          
+
           // Warehouse information
           // Type identifier
-          type: 'dathang'
+          type: 'dathang',
         }))
       );
       this.dathangDataMap.set(masp, transformedData);
-      
     } catch (error) {
       console.error('Error loading dathang data:', error);
       this.dathangDataMap.set(masp, []);
-      
+
       // Show error to user
       this._snackBar.open(`Lỗi tải dữ liệu đặt hàng cho ${masp}`, '', {
         duration: 3000,
@@ -2144,7 +2222,7 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
     }
 
     this.loadingDonhang.add(masp);
-    
+
     try {
       let startDate: string;
       let endDate: string;
@@ -2176,14 +2254,14 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
             some: {
               sanpham: {
                 masp: {
-                  equals: masp
-                }
-              }
-            }
+                  equals: masp,
+                },
+              },
+            },
           },
           ngaygiao: {
-              gte: startDate,
-              lte: endDate,
+            gte: startDate,
+            lte: endDate,
           },
         },
         select: {
@@ -2199,16 +2277,16 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
               name: true,
               sdt: true,
               diachi: true,
-              makh: true
-            }
+              makh: true,
+            },
           },
           sanpham: {
             where: {
               sanpham: {
                 masp: {
-                  equals: masp
-                }
-              }
+                  equals: masp,
+                },
+              },
             },
             select: {
               id: true,
@@ -2222,16 +2300,16 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
                   id: true,
                   title: true,
                   masp: true,
-                  dvt: true
-                }
-              }
-            }
-          }
-        }
+                  dvt: true,
+                },
+              },
+            },
+          },
+        },
       });
 
       // Transform the data to match the expected format
-      const transformedData = donhangResult.data.flatMap((donhang: any) => 
+      const transformedData = donhangResult.data.flatMap((donhang: any) =>
         donhang.sanpham.map((sp: any) => ({
           id: donhang.id,
           madonhang: donhang.madonhang,
@@ -2239,13 +2317,13 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
           createdAt: donhang.createdAt,
           updatedAt: donhang.updatedAt,
           status: donhang.status,
-          
+
           // Product information
           sanphamId: sp.sanpham.id,
           title: sp.sanpham.title,
           masp: sp.sanpham.masp,
           dvt: sp.sanpham.dvt,
-          
+
           // Quantities and pricing
           sldat: Number(sp.sldat) || 0,
           slgiao: Number(sp.slgiao) || 0,
@@ -2258,16 +2336,15 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
           makh: donhang.khachhang?.makh || '',
           name: donhang.khachhang?.name || '',
           // Type identifier
-          type: 'donhang'
+          type: 'donhang',
         }))
       );
 
       this.donhangDataMap.set(masp, transformedData);
-      
     } catch (error) {
       console.error('Error loading donhang data:', error);
       this.donhangDataMap.set(masp, []);
-      
+
       // Show error to user
       this._snackBar.open(`Lỗi tải dữ liệu đơn hàng cho ${masp}`, '', {
         duration: 3000,
@@ -2339,8 +2416,8 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
    * Expand element by ID - Now opens dialog
    */
   expandById(id: string, masp?: string): void {
-    const element = this.dataSource.data.find(item => 
-      (item.id || item.masp) === id || item.masp === masp
+    const element = this.dataSource.data.find(
+      (item) => (item.id || item.masp) === id || item.masp === masp
     );
     if (element) {
       this.openNestedDataDialog(element);
@@ -2385,7 +2462,7 @@ transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
       loadingDathang: Array.from(this.loadingDathang),
       loadingDonhang: Array.from(this.loadingDonhang),
       cachedDathang: Array.from(this.dathangDataMap.keys()),
-      cachedDonhang: Array.from(this.donhangDataMap.keys())
+      cachedDonhang: Array.from(this.donhangDataMap.keys()),
     };
   }
 }
