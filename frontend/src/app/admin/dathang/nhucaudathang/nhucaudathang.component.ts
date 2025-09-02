@@ -924,7 +924,7 @@ export class NhucaudathangComponent {
         dvt: v.dvt || '',
         ghichu: v.ghichu || '',
         haohut: Number(v.haohut || 0),
-        xSLDat: 'SL ĐẶT (NHÀ CC)',
+        xSLDat: '',
         SLDat: v.SLDat || 0,
         // SLGiao: Number(v.SLGiao || 0),
         sltontt: Number(v.sltontt || 0),
