@@ -444,9 +444,15 @@ export class NhucaudathangComponent {
             masp: true,
             dvt: true,
             haohut: true,
-          },
+            Nhacungcap:{
+              select:{mancc:true,name:true}
+            },
+          }
         }),
+        
       ]);
+
+
       const DonhangsTranfer = Donhangs.data.flatMap((order: any) =>
         order.sanpham.map((sp: any) => ({
           type: 'donhang',
@@ -555,6 +561,8 @@ export class NhucaudathangComponent {
         const transformedItem = {
           ...sp,
           id: sp.id || GenId(8, false),
+          mancc: sp.Nhacungcap?.[0]?.mancc || '',
+          name: sp.Nhacungcap?.[0]?.name || '',
           SLDat: slDat,
           SLGiao: slGiao,
           slton: tonkho?.slton || 0,
@@ -598,6 +606,7 @@ export class NhucaudathangComponent {
         transformFinalData,
         Khos.data
       );
+      console.log('transformFinalData', transformFinalData);
       console.log('this.TonghopsFinal', this.TonghopsFinal);
 
       this.TonghopsFinal.forEach((item) => {
