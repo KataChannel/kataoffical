@@ -324,7 +324,7 @@
                                 <td class="text-end px-2 border" *ngFor="let kh of Phieuchia">
                                     <div class="!w-20 flex justify-between items-center">
                                         <span class="w-1/2 px-2 h-8"></span>
-                                        <span class="w-1/2 flex items-center justify-end px-2 h-8">{{ getProductQuantity(Phieuchia,product, kh.makh)?.slgiao || '' }}</span>
+                                        <span class="w-1/2 flex items-center justify-end px-2 h-8">{{ getProductQuantity(Phieuchia,product, kh.makh,kh.madonhang)?.slgiao || '' }}</span>
                                       </div>
                                 </td>
                             </tr>

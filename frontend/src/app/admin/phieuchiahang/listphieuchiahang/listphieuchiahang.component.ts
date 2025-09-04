@@ -411,9 +411,13 @@ export class ListPhieuchiahangComponent {
     return Array.from(products).sort((a, b) => a.localeCompare(b, 'vi'));
   }
 
-  getProductQuantity(list: any[], product: string, makh: string) {
-    const customer = list.find((kh) => kh.makh === makh);
+  getProductQuantity(list: any[], product: string, makh: string,madonhang:string) {
+    const customer = list.find((kh) => kh.makh === makh && kh.madonhang === madonhang);
     const item = customer?.sanpham.find((sp: any) => sp.title === product);
+    // console.log('list',list);
+    // console.log('customer',customer);
+    // console.log('item',item);
+    
     return item ? item : '';
   }
   getDvtForProduct(list: any[], product: string) {

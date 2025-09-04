@@ -263,9 +263,8 @@ export class ListImportdataComponent implements OnInit {
             select:{masp:true}
           }     
       }})
-      this.rawListNCC = Nhacungcaps.data
-      console.log('Nhacungcaps',this.rawListNCC);
-      
+      this.rawListNCC = Nhacungcaps.data   
+         
       this.loadingMessage.set('Đang tải bảng giá...');
       await this._BanggiaService.getAllBanggia();
       this.rawListBG = this._BanggiaService.ListBanggia();
@@ -841,9 +840,6 @@ export class ListImportdataComponent implements OnInit {
   }
 
   async ImportExcel(event: any) {
-    console.log(event);
-    console.log(this.isImporting());
-
     if (this.isImporting()) return;
 
     this.isImporting.set(true);
@@ -1497,6 +1493,8 @@ export class ListImportdataComponent implements OnInit {
           panelClass: ['snackbar-warning'],
         }
       );
+      console.log('ListNCCSP for import:', ListNCCSP);
+      
       await this._NhacungcapService.ImportNhacungcap(ListNCCSP);
       importSnackbar.dismiss();
       this._snackBar.open('Import Nhà cung cấp sản phẩm thành công!', '', {
