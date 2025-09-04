@@ -5,8 +5,6 @@ import { StorageService } from '../../shared/utils/storage.service';
 export interface Role {
   id: string;
   name: string;
-  description?: string;
-  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
   permissions?: RolePermission[];
@@ -20,8 +18,10 @@ export interface RolePermission {
   permission: {
     id: string;
     name: string;
-    code: string;
-    module: string;
+    codeId?: string;
+    group?: string;
+    description?: string;
+    order?: number;
   };
 }
 
@@ -31,17 +31,24 @@ export interface UserRole {
   roleId: string;
   user: {
     id: string;
-    email: string;
-    username: string;
-    fullName?: string;
+    email?: string;
+    SDT?: string;
+    isActive: boolean;
+    profile?: {
+      name: string;
+      avatar?: string;
+      bio?: string;
+    };
   };
 }
 
 interface Permission {
   id: string;
   name: string;
-  code: string;
-  module: string;
+  codeId?: string;
+  group?: string;
+  description?: string;
+  order?: number;
 }
 
 @Injectable({
@@ -50,17 +57,31 @@ interface Permission {
 export class RoleGraphQLService {
   // Signals for state management
   private _allRoles = signal<Role[]>([]);
-  private _filteredRoles = signal<Role[]>([]);
   private _searchTerm = signal<string>('');
   private _currentPage = signal<number>(1);
   private _pageSize = signal<number>(50);
   private _isLoading = signal<boolean>(false);
   private _selectedRoles = signal<Set<string>>(new Set());
-  private _statusFilter = signal<'all' | 'active' | 'inactive'>('all');
+  private _statusFilter = signal<'all'>('all');
+
+  // Search and filter - computed signal that returns filtered data
+  searchResults = computed(() => {
+    let filtered = this._allRoles();
+
+    // Apply search term (only search by name since description doesn't exist in schema)
+    const term = this._searchTerm().toLowerCase();
+    if (term) {
+      filtered = filtered.filter(role =>
+        role.name.toLowerCase().includes(term)
+      );
+    }
+
+    return filtered;
+  });
 
   // Public computed signals
   allRoles = this._allRoles.asReadonly();
-  filteredRoles = this._filteredRoles.asReadonly();
+  filteredRoles = this.searchResults; // Use searchResults directly
   searchTerm = this._searchTerm.asReadonly();
   currentPage = this._currentPage.asReadonly();
   pageSize = this._pageSize.asReadonly();
@@ -69,46 +90,20 @@ export class RoleGraphQLService {
   statusFilter = this._statusFilter.asReadonly();
 
   // Computed pagination
-  totalItems = computed(() => this._filteredRoles().length);
+  totalItems = computed(() => this.searchResults().length);
   totalPages = computed(() => Math.ceil(this.totalItems() / this._pageSize()));
   
   // Client-side pagination
   paginatedRoles = computed(() => {
     const start = (this._currentPage() - 1) * this._pageSize();
     const end = start + this._pageSize();
-    return this._filteredRoles().slice(start, end);
-  });
-
-  // Search and filter
-  searchResults = computed(() => {
-    let filtered = this._allRoles();
-
-    // Apply status filter
-    const status = this._statusFilter();
-    if (status !== 'all') {
-      filtered = filtered.filter(role => 
-        status === 'active' ? role.isActive : !role.isActive
-      );
-    }
-
-    // Apply search term
-    const term = this._searchTerm().toLowerCase();
-    if (term) {
-      filtered = filtered.filter(role =>
-        role.name.toLowerCase().includes(term) ||
-        role.description?.toLowerCase().includes(term)
-      );
-    }
-
-    this._filteredRoles.set(filtered);
-    return filtered;
+    return this.searchResults().slice(start, end);
   });
 
   constructor(
     private storageService: StorageService
   ) {
-    // Auto-update filtered data when search term or filters change
-    this.searchResults(); // Initialize computed
+    // Computed signals are automatically initialized when accessed
   }
 
   private graphqlService = inject(GraphqlService);
@@ -132,8 +127,7 @@ export class RoleGraphQLService {
                 select: {
                   id: true,
                   name: true,
-                  code: true,
-                  module: true
+                  codeId: true,
                 }
               }
             }
@@ -141,11 +135,14 @@ export class RoleGraphQLService {
           users: {
             include: {
               user: {
-                select: {
-                  id: true,
-                  email: true,
-                  username: true,
-                  fullName: true
+                include: {
+                  profile: {
+                    select: {
+                      name: true,
+                      avatar: true,
+                      bio: true
+                    }
+                  }
                 }
               }
             }
@@ -155,7 +152,6 @@ export class RoleGraphQLService {
 
       const roles = await this.graphqlService.findMany<Role>('role', options) as Role[];
       this._allRoles.set(roles);
-      this._filteredRoles.set(roles);
       
       // Reset to first page
       this._currentPage.set(1);
@@ -174,9 +170,7 @@ export class RoleGraphQLService {
     
     try {
       const roleData = {
-        name: data.name,
-        description: data.description,
-        isActive: data.isActive ?? true
+        name: data.name
       };
 
       const newRole = await this.graphqlService.createOne<Role>('role', {
@@ -188,8 +182,7 @@ export class RoleGraphQLService {
                 select: {
                   id: true,
                   name: true,
-                  code: true,
-                  module: true
+                  codeId: true,
                 }
               }
             }
@@ -197,11 +190,15 @@ export class RoleGraphQLService {
           users: {
             include: {
               user: {
-                select: {
-                  id: true,
-                  email: true,
-                  username: true,
-                  fullName: true
+
+                include: {
+                  profile: {
+                    select: {
+                      name: true,
+                      avatar: true,
+                      bio: true
+                    }
+                  }
                 }
               }
             }
@@ -246,8 +243,7 @@ export class RoleGraphQLService {
                 select: {
                   id: true,
                   name: true,
-                  code: true,
-                  module: true
+                  codeId: true,
                 }
               }
             }
@@ -255,11 +251,15 @@ export class RoleGraphQLService {
           users: {
             include: {
               user: {
-                select: {
-                  id: true,
-                  email: true,
-                  username: true,
-                  fullName: true
+
+                include: {
+                  profile: {
+                    select: {
+                      name: true,
+                      avatar: true,
+                      bio: true
+                    }
+                  }
                 }
               }
             }
@@ -319,8 +319,7 @@ export class RoleGraphQLService {
                 select: {
                   id: true,
                   name: true,
-                  code: true,
-                  module: true
+                  codeId: true,
                 }
               }
             }
@@ -328,11 +327,15 @@ export class RoleGraphQLService {
           users: {
             include: {
               user: {
-                select: {
-                  id: true,
-                  email: true,
-                  username: true,
-                  fullName: true
+
+                include: {
+                  profile: {
+                    select: {
+                      name: true,
+                      avatar: true,
+                      bio: true
+                    }
+                  }
                 }
               }
             }
@@ -420,7 +423,7 @@ export class RoleGraphQLService {
     this._currentPage.set(1);
   }
 
-  setStatusFilter(status: 'all' | 'active' | 'inactive'): void {
+  setStatusFilter(status: 'all'): void {
     this._statusFilter.set(status);
     this._currentPage.set(1);
   }
@@ -504,10 +507,6 @@ export class RoleGraphQLService {
     );
   }
 
-  getActiveRoles(): Role[] {
-    return this._allRoles().filter(r => r.isActive);
-  }
-
   getRolePermissions(roleId: string): Permission[] {
     const role = this.findRoleById(roleId);
     if (!role || !role.permissions) return [];
@@ -517,12 +516,12 @@ export class RoleGraphQLService {
 
   hasPermission(roleId: string, permissionCode: string): boolean {
     const permissions = this.getRolePermissions(roleId);
-    return permissions.some(p => p.code === permissionCode);
+    return permissions.some(p => p.codeId === permissionCode);
   }
 
-  getRolesByModule(module: string): Role[] {
+  getRolesByGroup(group: string): Role[] {
     return this._allRoles().filter(role => 
-      role.permissions?.some(rp => rp.permission.module === module)
+      role.permissions?.some(rp => rp.permission.group === group)
     );
   }
 
@@ -537,9 +536,7 @@ export class RoleGraphQLService {
 
   clearCache(): void {
     this._allRoles.set([]);
-    this._filteredRoles.set([]);
     this._searchTerm.set('');
-    this._statusFilter.set('all');
     this._currentPage.set(1);
     this.clearSelection();
   }

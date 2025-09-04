@@ -69,6 +69,7 @@ import {
 } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ImportDataValidationService } from '../../../shared/services/import-data-validation.service';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 @Component({
   selector: 'app-listimportdata',
   standalone: true,
@@ -131,6 +132,7 @@ export class ListImportdataComponent implements OnInit {
   private _UserService: UserService = inject(UserService);
   private _KhoService: KhoService = inject(KhoService);
   private _ImportdataService: ImportdataService = inject(ImportdataService);
+  private _GraphqlService: GraphqlService = inject(GraphqlService);
   private _dialog: MatDialog = inject(MatDialog);
   private _snackBar: MatSnackBar = inject(MatSnackBar);
 
@@ -246,9 +248,24 @@ export class ListImportdataComponent implements OnInit {
       this.rawListKH = this._KhachhangService.ListKhachhang();
 
       this.loadingMessage.set('Đang tải danh sách nhà cung cấp...');
-      await this._NhacungcapService.getNhacungcapBy({ pageSize: 99999 });
-      this.rawListNCC = this._NhacungcapService.ListNhacungcap();
+      // await this._NhacungcapService.getNhacungcapBy({ pageSize: 99999 });
+      // this.rawListNCC = this._NhacungcapService.ListNhacungcap();
 
+     const Nhacungcaps = await this._GraphqlService.findAll('nhacungcap',{
+        take:99999,
+        enableParallelFetch:true,
+        aggressiveCache:true,
+        select : {
+          id:true,
+          name:true,   
+          mancc:true,
+          Sanpham:{
+            select:{masp:true}
+          }     
+      }})
+      this.rawListNCC = Nhacungcaps.data
+      console.log('Nhacungcaps',this.rawListNCC);
+      
       this.loadingMessage.set('Đang tải bảng giá...');
       await this._BanggiaService.getAllBanggia();
       this.rawListBG = this._BanggiaService.ListBanggia();
@@ -618,7 +635,9 @@ export class ListImportdataComponent implements OnInit {
         }
         return result;
       });
-
+      console.log('dynamicKeys', dynamicKeys);
+      console.log('ListNCCSP1123', ListNCCSP);
+      
       const ListTonkho = filteredData.ListTonkho.map((v: any) => ({
         masp: v.masp,
         title: v.title,
@@ -678,6 +697,8 @@ export class ListImportdataComponent implements OnInit {
         this.ListEdit().some((item: any) => item.value === 'nhacungcapsanpham')
       ) {
         Exportdata['nhacungcapsanpham'] = { data: ListNCCSP };
+        console.log('ListNCCSP', ListNCCSP);
+        
       }
       if (this.ListEdit().some((item: any) => item.value === 'xuatnhapton')) {
         Exportdata['xuatnhapton'] = { data: ListTonkho };

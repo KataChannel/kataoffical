@@ -40,7 +40,6 @@ import { DrawerService } from '../shared/drawer.service';
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
-    _drawerService:DrawerService = inject(DrawerService)
     constructor(){
       // Handle route parameter changes for new user or direct navigation
       this._route.paramMap.subscribe((params) => {
@@ -66,32 +65,36 @@ import { DrawerService } from '../shared/drawer.service';
       //   }
       // });
   
-      effect(async () => {
-        const id = this.userId();
-        if (!id){
-          this._router.navigate(['/admin/user']);
-          this._drawerService.close();
-        }
-        if(id === 'new'){
-          this.DetailUser.set({ 
-            email: '', 
-            username: '', 
-            password: '',
-            sdt: '',
-            fullName: '',
-            isActive: true,
-            roles: []
-          });
-          this._drawerService.open();
-          this.isEdit.update(value => !value);
-          this._router.navigate(['/admin/user', "new"]);
-        }
-        else if(id){
-            await this.getUserById(id);
-            this._drawerService.open();
-            this._router.navigate(['/admin/user', id]);
-        }
-      });
+      // effect(async () => {
+      //   const id = this.userId();
+      //   if (!id){
+      //     this._router.navigate(['/admin/user']);
+      //     this._ListuserComponent.drawer.close();
+      //     return;        
+      //   }
+      //   if(id === 'new'){
+      //     this.DetailUser.set({ 
+      //       email: '', 
+      //       password: '',
+      //       SDT: '',
+      //       isActive: true,
+      //       roles: [],
+      //       profile: {
+      //         name: '',
+      //         avatar: '',
+      //         bio: ''
+      //       }
+      //     });
+      //     this._ListuserComponent?.drawer?.open();
+      //     this.isEdit.update(value => !value);
+      //     // this._router.navigate(['/admin/user', 'new']);
+      //   }
+      //   else if(id){
+      //       await this.getUserById(id);
+      //       this._ListuserComponent?.drawer?.open();
+      //       this._router.navigate(['/admin/user', id]);
+      //   }
+      // });
     }
     
     DetailUser = signal<any>({});
@@ -107,7 +110,7 @@ import { DrawerService } from '../shared/drawer.service';
         if (user) {
           this.DetailUser.set({
             ...user,
-            sdt: user.sdt || ''
+            SDT: user.SDT || ''
           });
         }
       } catch (error) {
@@ -116,6 +119,35 @@ import { DrawerService } from '../shared/drawer.service';
       }
     }
     async ngOnInit() {    
+     const id = this.userId();
+        if (!id){
+          this._router.navigate(['/admin/user']);
+          this._ListuserComponent.drawer.close();
+          return;        
+        }
+        if(id === 'new'){
+          this.DetailUser.set({ 
+            email: '', 
+            password: '',
+            SDT: '',
+            isActive: true,
+            roles: [],
+            profile: {
+              name: '',
+              avatar: '',
+              bio: ''
+            }
+          });
+          this._ListuserComponent?.drawer?.open();
+          this.isEdit.update(value => !value);
+          // this._router.navigate(['/admin/user', 'new']);
+        }
+        else if(id){
+            await this.getUserById(id);
+            this._ListuserComponent?.drawer?.open();
+            this._router.navigate(['/admin/user', id]);
+        }
+
       await this._RoleGraphQLService.loadAllRoles();
       this.ListRole.set(this._RoleGraphQLService.allRoles());
       this.updateFilterRole();
@@ -149,7 +181,7 @@ import { DrawerService } from '../shared/drawer.service';
           return;
         }
 
-        if (!this.DetailUser().sdt || this.DetailUser().sdt.trim() === '') {
+        if (!this.DetailUser().SDT || this.DetailUser().SDT.trim() === '') {
           this._snackBar.open('Vui lòng nhập SDT', '', {
             duration: 3000,
             horizontalPosition: 'end',
@@ -268,7 +300,7 @@ import { DrawerService } from '../shared/drawer.service';
 
     goBack(){
       this._UserGraphQLService.clearCurrentUser();
-      this._drawerService.close();
+      this._ListuserComponent.drawer.close();
       this._router.navigate(['/admin/user'])
     }
     

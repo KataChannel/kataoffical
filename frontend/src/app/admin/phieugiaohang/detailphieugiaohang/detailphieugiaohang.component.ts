@@ -148,6 +148,13 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
           ttgiao: (Number(item.slgiao) || 0) * (Number(item.giaban) || 0)
         })) || [];
         
+        // Sort by title A-Z
+        processedSanpham.sort((a: any, b: any) => {
+          const titleA = a.sanpham?.title || a.title || '';
+          const titleB = b.sanpham?.title || b.title || '';
+          return titleA.localeCompare(titleB, 'vi', { sensitivity: 'base' });
+        });
+        
         // Update the signal with processed data
         this.DetailPhieugiaohang.update((data: any) => ({
           ...data,
@@ -189,6 +196,13 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
         ...item,
         ttgiao: (Number(item.slgiao) || 0) * (Number(item.giaban) || 0)
       }));
+
+      // Sort by title A-Z
+      processedSanpham.sort((a: any, b: any) => {
+        const titleA = a.sanpham?.title || a.title || '';
+        const titleB = b.sanpham?.title || b.title || '';
+        return titleA.localeCompare(titleB, 'vi', { sensitivity: 'base' });
+      });
 
       // Update signal with processed data
       this.DetailPhieugiaohang.update((data: any) => ({
@@ -520,7 +534,9 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       v.sanpham = []
       return v;
     })
-    // this.updateDataSource();
+    
+    // Update dataSource to reflect changes in the table
+    this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
   }
 
   RemoveSanpham(item:any){
@@ -531,7 +547,9 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       this.reloadfilter();
       return v;
     })
-    // this.updateDataSource();
+    
+    // Update dataSource to reflect changes in the table
+    this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
   }
   reloadfilter(){
     this.filterSanpham = this.ListSanpham().filter((v:any) => !this.DetailPhieugiaohang().sanpham.some((v2:any) => v2.id === v.id));

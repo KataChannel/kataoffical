@@ -1996,6 +1996,23 @@ let DonhangService = class DonhangService {
                         sanpham: true,
                     },
                 });
+                const currentSanpham = await prisma.donhangsanpham.findMany({
+                    where: { donhangId: id },
+                    select: { idSP: true }
+                });
+                const currentSanphamIds = currentSanpham.map(sp => sp.idSP);
+                const newSanphamIds = data.sanpham.map((sp) => sp.id);
+                const sanphamToDelete = currentSanphamIds.filter(spId => !newSanphamIds.includes(spId));
+                if (sanphamToDelete.length > 0) {
+                    await prisma.donhangsanpham.deleteMany({
+                        where: {
+                            donhangId: id,
+                            idSP: {
+                                in: sanphamToDelete
+                            }
+                        }
+                    });
+                }
                 for (const sp of data.sanpham) {
                     await prisma.donhangsanpham.updateMany({
                         where: {

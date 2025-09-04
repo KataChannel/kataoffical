@@ -45,14 +45,13 @@ import { DrawerService } from '../shared/drawer.service';
 })
 export class ListUserComponent implements OnInit, AfterViewInit {
   
-  displayedColumns: string[] = ['stt', 'email', 'username', 'fullName', 'sdt', 'isActive', 'roles', 'createdAt'];
-  readonly AllColumn: string[] = ['stt', 'email', 'username', 'fullName', 'sdt', 'isActive', 'roles', 'createdAt'];
+  displayedColumns: string[] = ['stt', 'email', 'profile.name', 'SDT', 'isActive', 'roles', 'createdAt'];
+  readonly AllColumn: string[] = ['stt', 'email', 'profile.name', 'SDT', 'isActive', 'roles', 'createdAt'];
   readonly ColumnName: Record<string, string> = {
     stt: '#',
     email: 'Email',
-    username: 'Tên đăng nhập',
-    fullName: 'Họ và tên',
-    sdt: 'Số điện thoại',
+    'profile.name': 'Họ và tên',
+    SDT: 'Số điện thoại',
     isActive: 'Trạng thái',
     roles: 'Vai trò',
     createdAt: 'Ngày tạo'
@@ -72,7 +71,17 @@ export class ListUserComponent implements OnInit, AfterViewInit {
     private router: Router,
     private snackBar: MatSnackBar,
     private drawerService: DrawerService
-  ) {}
+  ) {
+    //   effect(() => {
+    //   if (this.drawer) {
+    //     if (this.drawerService.isOpen()) {
+    //       this.drawer.open();
+    //     } else {
+    //       this.drawer.close();
+    //     }
+    //   }
+    // });
+  }
 
   // State - initialized after constructor
   Listuser!: () => User[];
@@ -97,15 +106,15 @@ export class ListUserComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     // React to drawer service state changes after view init
-    effect(() => {
-      if (this.drawer) {
-        if (this.drawerService.isOpen()) {
-          this.drawer.open();
-        } else {
-          this.drawer.close();
-        }
-      }
-    });
+    // effect(() => {
+    //   if (this.drawer) {
+    //     if (this.drawerService.isOpen()) {
+    //       this.drawer.open();
+    //     } else {
+    //       this.drawer.close();
+    //     }
+    //   }
+    // });
   }
 
   initializeColumns(): void {
@@ -214,8 +223,7 @@ export class ListUserComponent implements OnInit, AfterViewInit {
 
   goToDetail(user: User): void {
     // Set selected user and open drawer
-    this.userGraphQLService.setCurrentUser(user);
-    this.drawerService.open();
+      this.router.navigate(['/admin/user/'+user.id], { relativeTo: null });
   }
 
   AddToEdit(user: User): void {

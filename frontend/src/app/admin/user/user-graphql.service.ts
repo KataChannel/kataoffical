@@ -1,17 +1,23 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { GraphqlService, OptimizedFindManyOptions } from '../../shared/services/graphql.service';
+import {
+  GraphqlService,
+  OptimizedFindManyOptions,
+} from '../../shared/services/graphql.service';
 import { StorageService } from '../../shared/utils/storage.service';
 
 export interface User {
   id: string;
-  email: string;
-  username: string;
-  fullName?: string;
-  sdt?: string;
+  email?: string;
+  SDT?: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
   roles?: UserRole[];
+  profile?: {
+    name: string;
+    avatar?: string;
+    bio?: string;
+  };
 }
 
 export interface UserRole {
@@ -28,11 +34,14 @@ export interface UserRole {
 interface Permission {
   id: string;
   name: string;
-  code: string;
+  codeId?: string;
+  group?: string;
+  description?: string;
+  order?: number;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserGraphQLService {
   // Signals for state management
@@ -62,7 +71,7 @@ export class UserGraphQLService {
     // Apply status filter
     const status = this._statusFilter();
     if (status !== 'all') {
-      filtered = filtered.filter(user => 
+      filtered = filtered.filter((user) =>
         status === 'active' ? user.isActive : !user.isActive
       );
     }
@@ -70,11 +79,11 @@ export class UserGraphQLService {
     // Search filter
     const term = this._searchTerm().toLowerCase();
     if (term) {
-      filtered = filtered.filter(user => 
-        user.email?.toLowerCase().includes(term) ||
-        user.username?.toLowerCase().includes(term) ||
-        user.fullName?.toLowerCase().includes(term) ||
-        user.sdt?.toLowerCase().includes(term)
+      filtered = filtered.filter(
+        (user) =>
+          user.email?.toLowerCase().includes(term) ||
+          user.profile?.name?.toLowerCase().includes(term) ||
+          user.SDT?.toLowerCase().includes(term)
       );
     }
 
@@ -84,7 +93,7 @@ export class UserGraphQLService {
   // Computed pagination
   totalItems = computed(() => this.filteredUsers().length);
   totalPages = computed(() => Math.ceil(this.totalItems() / this._pageSize()));
-  
+
   // Client-side pagination
   paginatedUsers = computed(() => {
     const start = (this._currentPage() - 1) * this._pageSize();
@@ -92,9 +101,7 @@ export class UserGraphQLService {
     return this.filteredUsers().slice(start, end);
   });
 
-  constructor(
-    private storageService: StorageService
-  ) {
+  constructor(private storageService: StorageService) {
     // Computed signals are automatically initialized
   }
 
@@ -108,7 +115,7 @@ export class UserGraphQLService {
     }
 
     this._isLoading.set(true);
-    
+
     try {
       const options: OptimizedFindManyOptions = {
         orderBy: { createdAt: 'desc' },
@@ -118,21 +125,24 @@ export class UserGraphQLService {
               role: {
                 include: {
                   permissions: {
-                    include: { permission: true }
-                  }
-                }
-              }
-            }
-          }
-        }
+                    include: { permission: true },
+                  },
+                },
+              },
+            },
+          },
+        },
       };
 
-      const users = await this.graphqlService.findMany<User>('user', options) as User[];
+      const users = (await this.graphqlService.findMany<User>(
+        'user',
+        options
+      )) as User[];
       this._allUsers.set(users);
-      
+
       // Reset to first page
       this._currentPage.set(1);
-      
+
       return users;
     } catch (error) {
       console.error('Error loading users:', error);
@@ -142,20 +152,24 @@ export class UserGraphQLService {
     }
   }
 
-  async createUser(data: Partial<User> & { password: string, roleIds?: string[] }): Promise<User> {
+  async createUser(
+    data: Partial<User> & {
+      password: string;
+      roleIds?: string[];
+      name?: string;
+    }
+  ): Promise<User> {
     this._isLoading.set(true);
-    
+
     try {
       const userData = {
         email: data.email,
-        username: data.username,
         password: data.password,
-        fullName: data.fullName,
-        sdt: data.sdt,
-        isActive: data.isActive ?? true
+        SDT: data.SDT,
+        isActive: data.isActive ?? true,
       };
 
-      const newUser = await this.graphqlService.createOne<User>('user', {
+      const newUser = (await this.graphqlService.createOne<User>('user', {
         data: userData,
         include: {
           roles: {
@@ -163,18 +177,22 @@ export class UserGraphQLService {
               role: {
                 include: {
                   permissions: {
-                    select: {
-                      id: true,
-                      name: true,
-                      code: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }) as User;
+                    include: {
+                      permission: {
+                        select: {
+                          id: true,
+                          name: true,
+                          codeId: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      })) as User;
 
       // Assign roles if provided
       if (data.roleIds && data.roleIds.length > 0) {
@@ -183,7 +201,10 @@ export class UserGraphQLService {
         const userWithRoles = await this.getUserById(newUser.id);
         if (userWithRoles) {
           const currentUsers = this._allUsers();
-          this._allUsers.set([userWithRoles, ...currentUsers.filter(u => u.id !== newUser.id)]);
+          this._allUsers.set([
+            userWithRoles,
+            ...currentUsers.filter((u) => u.id !== newUser.id),
+          ]);
           return userWithRoles;
         }
       }
@@ -191,7 +212,7 @@ export class UserGraphQLService {
       // Update local state
       const currentUsers = this._allUsers();
       this._allUsers.set([newUser, ...currentUsers]);
-      
+
       return newUser;
     } catch (error) {
       console.error('Error creating user:', error);
@@ -203,37 +224,42 @@ export class UserGraphQLService {
 
   async updateUser(id: string, data: Partial<User>): Promise<User> {
     this._isLoading.set(true);
-    
+
     try {
-      const updatedUser = await this.graphqlService.updateOne<User>('user', { id }, data, {
-        include: {
-          roles: {
-            include: {
-              role: {
-                include: {
-                  permissions: {
-                    select: {
-                      id: true,
-                      name: true,
-                      code: true
-                    }
-                  }
-                }
-              }
-            }
-          }
+      const updatedUser = (await this.graphqlService.updateOne<User>(
+        'user',
+        { id },
+        data,
+        {
+          include: {
+            roles: {
+              include: {
+                role: {
+                  include: {
+                    permissions: {
+                      select: {
+                        id: true,
+                        name: true,
+                        code: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         }
-      }) as User;
+      )) as User;
 
       // Update local state
       const currentUsers = this._allUsers();
-      const index = currentUsers.findIndex(u => u.id === id);
+      const index = currentUsers.findIndex((u) => u.id === id);
       if (index !== -1) {
         const updated = [...currentUsers];
         updated[index] = updatedUser;
         this._allUsers.set(updated);
       }
-      
+
       return updatedUser;
     } catch (error) {
       console.error('Error updating user:', error);
@@ -245,20 +271,19 @@ export class UserGraphQLService {
 
   async deleteUser(id: string): Promise<void> {
     this._isLoading.set(true);
-    
+
     try {
-      await this.graphqlService.deleteOne('user', { id }) as any;
+      (await this.graphqlService.deleteOne('user', { id })) as any;
 
       // Update local state
       const currentUsers = this._allUsers();
-      const filtered = currentUsers.filter(u => u.id !== id);
+      const filtered = currentUsers.filter((u) => u.id !== id);
       this._allUsers.set(filtered);
-      
+
       // Remove from selected if exists
       const selected = new Set(this._selectedUsers());
       selected.delete(id);
       this._selectedUsers.set(selected);
-      
     } catch (error) {
       console.error('Error deleting user:', error);
       throw error;
@@ -269,25 +294,33 @@ export class UserGraphQLService {
 
   async getUserById(id: string): Promise<User | null> {
     try {
-      const user = await this.graphqlService.findUnique<User>('user', { id }, {
-        include: {
-          roles: {
-            include: {
-              role: {
-                include: {
-                  permissions: {
-                    select: {
-                      id: true,
-                      name: true,
-                      code: true
-                    }
-                  }
-                }
-              }
-            }
-          }
+      const user = (await this.graphqlService.findUnique<User>(
+        'user',
+        { id },
+        {
+          include: {
+            roles: {
+              include: {
+                role: {
+                  include: {
+                    permissions: {
+                      include: {
+                        permission: {
+                          select: {
+                            id: true,
+                            name: true,
+                            codeId: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         }
-      }) as User;
+      )) as User;
 
       return user;
     } catch (error) {
@@ -300,28 +333,27 @@ export class UserGraphQLService {
 
   async assignRolesToUser(userId: string, roleIds: string[]): Promise<void> {
     this._isLoading.set(true);
-    
+
     try {
       // Create new roles using batchCreate
-      const roleData = roleIds.map(roleId => ({
+      const roleData = roleIds.map((roleId) => ({
         userId,
-        roleId
+        roleId,
       }));
 
-      await this.graphqlService.batchCreate('userRole', roleData) as any;
+      (await this.graphqlService.batchCreate('userRole', roleData)) as any;
 
       // Update local user data
       const updatedUser = await this.getUserById(userId);
       if (updatedUser) {
         const currentUsers = this._allUsers();
-        const index = currentUsers.findIndex(u => u.id === userId);
+        const index = currentUsers.findIndex((u) => u.id === userId);
         if (index !== -1) {
           const updated = [...currentUsers];
           updated[index] = updatedUser;
           this._allUsers.set(updated);
         }
       }
-      
     } catch (error) {
       console.error('Error assigning roles to user:', error);
       throw error;
@@ -332,20 +364,22 @@ export class UserGraphQLService {
 
   async removeRoleFromUser(userId: string, roleId: string): Promise<void> {
     this._isLoading.set(true);
-    
+
     try {
       // Find the userRole record to delete
       const user = await this.getUserById(userId);
-      const userRole = user?.roles?.find(ur => ur.roleId === roleId);
-      
+      const userRole = user?.roles?.find((ur) => ur.roleId === roleId);
+
       if (userRole) {
-        await this.graphqlService.deleteOne('userRole', { id: userRole.id }) as any;
+        (await this.graphqlService.deleteOne('userRole', {
+          id: userRole.id,
+        })) as any;
 
         // Update local user data
         const updatedUser = await this.getUserById(userId);
         if (updatedUser) {
           const currentUsers = this._allUsers();
-          const index = currentUsers.findIndex(u => u.id === userId);
+          const index = currentUsers.findIndex((u) => u.id === userId);
           if (index !== -1) {
             const updated = [...currentUsers];
             updated[index] = updatedUser;
@@ -353,7 +387,6 @@ export class UserGraphQLService {
           }
         }
       }
-      
     } catch (error) {
       console.error('Error removing role from user:', error);
       throw error;
@@ -411,7 +444,7 @@ export class UserGraphQLService {
 
   selectAllCurrentPage(): void {
     const selected = new Set(this._selectedUsers());
-    this.paginatedUsers().forEach(user => {
+    this.paginatedUsers().forEach((user) => {
       selected.add(user.id);
     });
     this._selectedUsers.set(selected);
@@ -419,7 +452,7 @@ export class UserGraphQLService {
 
   deselectAllCurrentPage(): void {
     const selected = new Set(this._selectedUsers());
-    this.paginatedUsers().forEach(user => {
+    this.paginatedUsers().forEach((user) => {
       selected.delete(user.id);
     });
     this._selectedUsers.set(selected);
@@ -444,17 +477,17 @@ export class UserGraphQLService {
   // ========================= Utility Methods =========================
 
   findUserById(id: string): User | undefined {
-    return this._allUsers().find(u => u.id === id);
+    return this._allUsers().find((u) => u.id === id);
   }
 
   getUsersByRole(roleId: string): User[] {
-    return this._allUsers().filter(user => 
-      user.roles?.some(userRole => userRole.roleId === roleId)
+    return this._allUsers().filter((user) =>
+      user.roles?.some((userRole) => userRole.roleId === roleId)
     );
   }
 
   getActiveUsers(): User[] {
-    return this._allUsers().filter(u => u.isActive);
+    return this._allUsers().filter((u) => u.isActive);
   }
 
   getUserPermissions(userId: string): Permission[] {
@@ -462,21 +495,22 @@ export class UserGraphQLService {
     if (!user || !user.roles) return [];
 
     const permissions: Permission[] = [];
-    user.roles.forEach(userRole => {
+    user.roles.forEach((userRole) => {
       if (userRole.role.permissions) {
         permissions.push(...userRole.role.permissions);
       }
     });
 
     // Remove duplicates
-    return permissions.filter((permission, index, self) => 
-      index === self.findIndex(p => p.id === permission.id)
+    return permissions.filter(
+      (permission, index, self) =>
+        index === self.findIndex((p) => p.id === permission.id)
     );
   }
 
   hasPermission(userId: string, permissionCode: string): boolean {
     const permissions = this.getUserPermissions(userId);
-    return permissions.some(p => p.code === permissionCode);
+    return permissions.some((p) => p.codeId === permissionCode);
   }
 
   // ========================= Cache Management =========================
