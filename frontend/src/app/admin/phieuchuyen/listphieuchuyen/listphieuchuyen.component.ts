@@ -23,6 +23,7 @@ import { DonhangService } from '../../donhang/donhang.service';
 import moment from 'moment';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateHelpers } from '../../../shared/utils/date-helpers';
+import { TrangThaiDon } from '../../../shared/utils/trangthai';
 @Component({
   selector: 'app-listphieuchuyen',
   templateUrl: './listphieuchuyen.component.html',
@@ -56,6 +57,7 @@ export class ListPhieuchuyenComponent {
     'soluongtt',
     'loadpoint',
     'chuyen',
+    'status',
     'diachi',
     'sdt',
     'gionhanhang',
@@ -72,6 +74,7 @@ export class ListPhieuchuyenComponent {
     soluongtt: 'Số lượng TT',
     loadpoint: 'Trọng Tải',
     chuyen: 'Chuyến',
+    status: 'Trạng Thái',
     sdt: 'Số điện thoại',
     gionhanhang: 'Giờ nhận hàng',
     diachi: 'Địa chỉ',
@@ -84,6 +87,7 @@ export class ListPhieuchuyenComponent {
     localStorage.getItem('PhieuchuyenColFilter') || '[]'
   );
   Columns: any[] = [];
+  Trangthaidon: any = TrangThaiDon;
   //pagination
   totalItems = 0;
   pageSize = 100;
@@ -106,7 +110,7 @@ export class ListPhieuchuyenComponent {
   isSearch: boolean = false;  SearchParams: any = {
       Batdau: DateHelpers.now(),
       Ketthuc: DateHelpers.now(),
-      Status:'dadat'
+      // Status:'dadat'
     };
   constructor() {
     this.displayedColumns.forEach(column => {

@@ -23,6 +23,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { TrangThaiDon } from '../../../shared/utils/trangthai';
 @Component({
   selector: 'app-vandon',
   templateUrl: './vandon.component.html',
@@ -53,6 +54,7 @@ export class VandonComponent {
     'khachhang',
     'diachi',
     'sdt',
+    'status',
     'masp',
     'title',
     'giagoc',
@@ -68,6 +70,7 @@ export class VandonComponent {
     khachhang: 'Khách Hàng',
     diachi: 'Địa Chỉ',
     sdt: 'Số Điện Thoại',
+    status: 'Trạng Thái',
     masp: 'Mã Sản Phẩm',
     title: 'Tên Sản Phẩm',
     giagoc: 'Giá Gốc',
@@ -82,6 +85,7 @@ export class VandonComponent {
     localStorage.getItem('VandonColFilter') || '[]'
   );
   Columns: any[] = [];
+  Trangthaidon: any = TrangThaiDon;
   isFilter: boolean = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -104,7 +108,7 @@ export class VandonComponent {
   SearchParams: any = {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
-    Status:'dadat',
+    // Status:'dadat',
     pageSize: 9999,
   };
   ListDate: any[] = [
@@ -180,13 +184,16 @@ export class VandonComponent {
         diachi: item.khachhang?.diachi,
         createdAt: item.createdAt,
         isActive: item.isActive,
-        ngaygiao: item.ngaygiao
+        ngaygiao: item.ngaygiao,
+        status: item.status,
       }))
     ).map((v:any, i:any) => ({ ...v, id: i + 1 }));   
     this.dataSource().data = this.Listvandon;
     this.dataSource().paginator = this.paginator
     this.initializeColumns();
     this.setupDrawer();
+    console.log(this.dataSource().data);
+    
     this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
     this.paginator._intl.nextPageLabel = 'Tiếp Theo';
     this.paginator._intl.previousPageLabel = 'Về Trước';

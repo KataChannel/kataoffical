@@ -136,6 +136,18 @@
                             {{ row.soluongtt|number:'1.0-0'}}
                         </span>
                         }
+                       @case ('status') {
+                        <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
+                          'text-blue-500': row[column] === 'dadat',
+                          'text-yellow-500': row[column] === 'dagiao',
+                          'text-green-500': row[column] === 'danhan',
+                          'text-purple-500': row[column] === 'hoanthanh',
+                          'text-red-500': row[column] === 'huy'
+                        }
+                        ">
+                            {{Trangthaidon[row[column]]}}
+                        </span>
+                        }
                         @case ('isActive') {
                         <span class="max-w-40 line-clamp-4">
                             @if (row[column]) {
