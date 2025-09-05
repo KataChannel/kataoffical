@@ -220,6 +220,53 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       });
     }
     this.dataSource = new MatTableDataSource(this.DetailPhieugiaohang().sanpham);
+
+   // Sort by title A-Z
+    this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+      console.log(item, property);
+      
+      switch (property) {
+      case 'title':
+      return (item.sanpham?.title || item.title || '');
+      default:
+      return item[property] || '';
+      }
+    };
+
+    // Custom sort for Vietnamese
+    this.dataSource.sortData = (data: any[], sort: MatSort) => {
+      const active = sort.active;
+      const direction = sort.direction;
+      
+      if (!active || direction === '') {
+      return data;
+      }
+
+      return data.sort((a, b) => {
+      let valueA = this.dataSource.sortingDataAccessor(a, active);
+      let valueB = this.dataSource.sortingDataAccessor(b, active);
+
+      // Use Vietnamese locale comparison for strings
+      if (typeof valueA === 'string' && typeof valueB === 'string') {
+        const comparison = valueA.localeCompare(valueB, 'vi', { 
+        sensitivity: 'base',
+        numeric: true,
+        ignorePunctuation: true
+        });
+        return direction === 'asc' ? comparison : -comparison;
+      }
+
+      // Numeric comparison
+      if (typeof valueA === 'number' && typeof valueB === 'number') {
+        return direction === 'asc' ? valueA - valueB : valueB - valueA;
+      }
+
+      // Default comparison
+      const comparison = valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+      return direction === 'asc' ? comparison : -comparison;
+      });
+    };
+
     setTimeout(() => {
       this.dataSource.sort = this.sort;
     }, 300);

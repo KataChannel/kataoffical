@@ -1034,11 +1034,7 @@ export class DonhangService {
       sdt: khachhang?.sdt,
       gionhanhang: khachhang?.gionhanhang,
       tongsomon: sanpham.length,
-      soluongtt: parseFloat(
-        sanpham
-          .reduce((total, item: any) => total + Number(item.slgiao || 0), 0)
-          .toFixed(3),
-      ),
+      soluongtt: parseFloat(sanpham.reduce((total, item: any) => total + Number(item.slgiao || 0), 0).toFixed(3)),
     }));
   }
 
