@@ -52,6 +52,7 @@ export class ListSanphamComponent implements OnInit {
     title2: 'Tên Sản Phẩm 2',
     giaban: 'Giá Bán',
     giagoc: 'Giá Gốc',
+    loadpoint: 'Trọng Tải',
     dvt: 'Đơn Vị Tính',
     vat: 'VAT',
     haohut: 'Hao Hụt',

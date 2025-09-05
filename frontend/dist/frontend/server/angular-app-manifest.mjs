@@ -1082,8 +1082,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72880, hash: 'c184c3c43fd1abeea235b0a0d865ab854779b487c4a9825ab7e1282e94dc8ac2', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24171, hash: '9ded5c2d839baaed82c05cda3f6d2767976bb35ffbefc0cd203a366c438c1997', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 72880, hash: '3e8608a8b8febb70c34c6e125889a64f4d4f208d5e8ab92fc7068961e9be1d18', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24171, hash: '4061cf61d1713dac81f7edebce0bd8346edcda0bf26764cafdf7a29a31cadfa0', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-HDJL27ZA.css': {size: 159593, hash: 'LyjBo+LKDzA', text: () => import('./assets-chunks/styles-HDJL27ZA_css.mjs').then(m => m.default)}
   },
 };
