@@ -295,7 +295,13 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       this.dataSource.sort = this.sort;
     }
   }
-
+  SortByVi(ListItem:any[], field:string) {
+      return ListItem.sort((a:any,b:any) => {
+        const nameA = (a.sanpham?.[field] || a[field] || '').toLowerCase();
+        const nameB = (b.sanpham?.[field] || b[field] || '').toLowerCase();
+        return nameA.localeCompare(nameB, 'vi', { sensitivity: 'base' });
+      });
+  }
   GetDVT(item:any) {
     if(item?.sanpham?.length > 0) {
       return item?.sanpham[0]?.dvt || '';

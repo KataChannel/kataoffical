@@ -85,6 +85,7 @@ export declare class DonhangService {
         gionhanhang: string | null | undefined;
         tongsomon: number;
         soluongtt: number;
+        loadpoint: number;
         id: string;
         title: string | null;
         ghichu: string | null;

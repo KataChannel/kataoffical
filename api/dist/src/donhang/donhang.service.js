@@ -796,15 +796,19 @@ let DonhangService = class DonhangService {
             },
             orderBy: { createdAt: 'desc' },
         });
-        return result.map(({ khachhang, sanpham, ...donhang }) => ({
-            ...donhang,
-            name: khachhang?.name,
-            diachi: khachhang?.diachi,
-            sdt: khachhang?.sdt,
-            gionhanhang: khachhang?.gionhanhang,
-            tongsomon: sanpham.length,
-            soluongtt: parseFloat(sanpham.reduce((total, item) => total + Number(item.slgiao || 0), 0).toFixed(3)),
-        }));
+        return result.map(({ khachhang, sanpham, ...donhang }) => {
+            console.log('sanpham', sanpham);
+            return {
+                ...donhang,
+                name: khachhang?.name,
+                diachi: khachhang?.diachi,
+                sdt: khachhang?.sdt,
+                gionhanhang: khachhang?.gionhanhang,
+                tongsomon: sanpham.length,
+                soluongtt: parseFloat(sanpham.reduce((total, item) => total + Number(item.slgiao || 0), 0).toFixed(3)),
+                loadpoint: parseFloat(sanpham.reduce((total, item) => total + (Number(item.sanpham?.loadpoint || 0) * Number(item.sldat || 0)), 0).toFixed(3)),
+            };
+        });
     }
     async phieugiao(params) {
         const result = await this.prisma.donhang.findUnique({
