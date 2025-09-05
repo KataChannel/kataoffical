@@ -217,12 +217,14 @@ export class DetailKhachhangComponent {
   }
 
   onBanggiaSelected(banggia: any) {
+    console.log('banggia selected:', banggia);
+    
     if (banggia) {
       this.selectedBanggia.set(banggia);
-      this.DetailKhachhang.update((v: any) => {
-        v.banggiaId = banggia.id;
-        return v;
-      });
+      this.DetailKhachhang.update((v: any) => ({
+        ...v,
+        banggiaId: banggia.id
+      }));
     }
   }
 
