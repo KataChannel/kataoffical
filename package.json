@@ -5,6 +5,7 @@
   },
   "scripts": {
     "build": "cd api && npx bun run build && cd ../frontend && bun run build",
+    "dev": "cd api && npx bun start && cd ../frontend && bun start",
     "autorun": "./autorun.sh",
     "db:backup": "cd api && npx ts-node prisma/backup.ts",
     "db:restore": "cd api && npx ts-node prisma/restore.ts",

@@ -105,6 +105,7 @@ export class NhucaudathangComponent {
     'mancc',
     'name',
     // 'slchonhap',
+    'ghichu',
     'xSLDat',
     'SLDat',
     'goiy',
@@ -131,6 +132,7 @@ export class NhucaudathangComponent {
     dvt: 'ĐVT',
     mancc: 'Mã NCC',
     name: 'Tên Nhà Cung Cấp',
+    ghichu: 'Ghi Chú',
     // slchonhap: 'SL Đặt (Chờ Nhập)',
     xSLDat: 'SL Đặt (Nhà CC)',
     SLDat: 'SL Đã Đặt',
@@ -926,7 +928,6 @@ export class NhucaudathangComponent {
   async ExportExcel(data: any, title: any) {
     try {
       this.isExportingExcel = true;
-
       const dulieu = this.TonghopsFinal.map((v: any) => ({
         title: v.title || '',
         masp: v.masp || '',
@@ -1116,8 +1117,8 @@ export class NhucaudathangComponent {
         console.log(excelData);
 
         excelData.forEach((row: any, index: number) => {
-          const masp = row.masp?.toString().trim();
-          let slton = parseFloat(row.slton);
+          const masp = row.masp?.toString().trim() || row.ITEMCODE?.toString().trim();
+          let slton = parseFloat(row.slton || row.QUANTITY || '0');
 
           // Validate required fields
           if (!masp) {
