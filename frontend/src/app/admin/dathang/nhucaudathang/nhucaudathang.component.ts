@@ -320,7 +320,7 @@ export class NhucaudathangComponent {
     // }
     if (item.khachdat > 0) {
       const wastageAmount = (item.khachdat * (item.haohut || 0)) / 100;
-      return wastageAmount.toFixed(0);
+      return wastageAmount.toFixed(3);
     } else {
       return 0;
     }
@@ -488,9 +488,11 @@ export class NhucaudathangComponent {
           name: order.nhacungcap.name,
           ngaynhan: order.ngaynhan,
           masp: sp.sanpham.masp,
+
           sldat: Number(sp.sldat) || 0,
           slgiao: Number(sp.slgiao) || 0,
           slnhan: Number(sp.slnhan) || 0,
+
           makho: order.kho.makho,
           namekho: order.kho.name,
         }));
@@ -623,14 +625,16 @@ export class NhucaudathangComponent {
 
       this.TonghopsFinal.forEach((item) => {
         item.tongkho = parseFloat((
-          item.kho1 +
-          item.kho2 +
-          item.kho3 +
-          item.kho4 +
-          item.kho5 +
-          item.kho6 +
-          item.sltontt
+          (Number(item.kho1) || 0) +
+          (Number(item.kho2) || 0) +
+          (Number(item.kho3) || 0) +
+          (Number(item.kho4) || 0) +
+          (Number(item.kho5) || 0) +
+          (Number(item.kho6) || 0) +
+          (Number(item.sltontt) || 0)
         ).toFixed(3));
+
+
         item.goiy = this.GetGoiy(item);
         item.slhaohut = this.GetSLHaohut(item);
       });
@@ -1446,7 +1450,7 @@ export class NhucaudathangComponent {
 
       const khachdat = Donhangs.filter((v: any) => v.status === 'dadat').reduce(
         (acc: number, curr: any) => {
-          return Number((acc + (curr.sldat || 0)).toFixed(2)) || 0;
+          return Number((acc + Number(curr.sldat || 0)).toFixed(3)) || 0;
         },
         0
       );
@@ -1455,7 +1459,7 @@ export class NhucaudathangComponent {
       const khachgiao = Donhangs.filter(
         (v: any) => v.status !== 'dadat'
       ).reduce((acc: number, curr: any) => {
-        return Number((acc + (curr.sldat || 0)).toFixed(2)) || 0;
+        return Number((acc + Number(curr.sldat || 0)).toFixed(2)) || 0;
       }, 0);
 
       return {
