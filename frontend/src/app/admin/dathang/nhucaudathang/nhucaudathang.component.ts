@@ -293,21 +293,24 @@ export class NhucaudathangComponent {
   }
 
   GetGoiy(item: any) {
-    if (item.SLGiao > item.SLDat) {
-      const suggestion = Math.abs(
-        Number(item.khachdat) + Number(this.GetSLHaohut(item)) - Number(item.tongkho)
-      );
-      return suggestion.toFixed(0);
+    const suggestion = Number(item.khachdat) + Number(this.GetSLHaohut(item)) - Number(item.tongkho);
+    if(suggestion > 0) {
+      return suggestion.toFixed(3);
     }
-    // if(item.SLGiao > item.SLDat) {
-    //   const demand = item.SLGiao - item.SLDat;
-    //   const wastageAmount = demand * (item.haohut || 0) / 100;
-    //   const suggestion = demand + wastageAmount;
+    else {
+      return '('+Math.abs(suggestion).toFixed(3)+')';
+    }
+
+
+    // if (item.SLGiao > item.SLDat) {
+    //   const suggestion = Math.abs(
+    //     Number(item.khachdat) + Number(this.GetSLHaohut(item)) - Number(item.tongkho)
+    //   );
     //   return suggestion.toFixed(0);
     // }
-    else {
-      return '0';
-    }
+    // else {
+    //   return '0';
+    // }
   }
   GetSLHaohut(item: any) {
     // if(item.SLGiao > item.SLDat) {
@@ -946,7 +949,7 @@ export class NhucaudathangComponent {
         ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
         mancc: v.mancc || '',
         name: v.name || '',
-        goiy: Number(v.goiy || 0),
+        goiy: v.goiy || 0,
         khachdat: Number(v.khachdat || 0),
         khachgiao: Number(v.khachgiao || 0),
         tongkho: Number(v.tongkho || 0),
