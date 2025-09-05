@@ -225,6 +225,11 @@ export class NhucaudathangComponent {
   isDateRangeEnabled: boolean = false;
   hasUnappliedDateChanges: boolean = false; // Track if there are changes not yet applied
 
+  // Inline edit properties
+  editingRows: Map<string, any> = new Map(); // Track editing state for each row
+  tempStorage: Map<string, any> = new Map(); // Store temporary edits
+  STORAGE_KEY = 'nhucau_temp_edits'; // LocalStorage key for temporary edits
+
   constructor() {
     effect(() => {
       const currentData =
@@ -240,6 +245,9 @@ export class NhucaudathangComponent {
     const today = new Date();
     this.batdau = new Date(today);
     this.ketthuc = new Date(today);
+
+    // Load temporary edits from localStorage
+    this.loadTempEditsFromStorage();
 
     this.updateDisplayData();
     this.loadDonhangWithRelations();
@@ -934,7 +942,7 @@ export class NhucaudathangComponent {
         dvt: v.dvt || '',
         ghichu: v.ghichu || '',
         haohut: Number(v.haohut || 0),
-        xSLDat: '',
+        xSLDat: v.xSLDat || 0,
         SLDat: v.SLDat || 0,
         // SLGiao: Number(v.SLGiao || 0),
         sltontt: Number(v.sltontt || 0),
@@ -2480,6 +2488,295 @@ export class NhucaudathangComponent {
       cachedDathang: Array.from(this.dathangDataMap.keys()),
       cachedDonhang: Array.from(this.donhangDataMap.keys()),
     };
+  }
+
+  // ====== INLINE EDIT METHODS ======
+
+  /**
+   * Load temporary edits from localStorage
+   */
+  loadTempEditsFromStorage(): void {
+    try {
+      const storedData = localStorage.getItem(this.STORAGE_KEY);
+      if (storedData) {
+        const parsedData = JSON.parse(storedData);
+        this.tempStorage = new Map(Object.entries(parsedData));
+      }
+    } catch (error) {
+      console.error('Error loading temp edits from storage:', error);
+      this.tempStorage = new Map();
+    }
+  }
+
+  /**
+   * Save temporary edits to localStorage
+   */
+  saveTempEditsToStorage(): void {
+    try {
+      const dataToStore = Object.fromEntries(this.tempStorage);
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(dataToStore));
+    } catch (error) {
+      console.error('Error saving temp edits to storage:', error);
+    }
+  }
+
+  /**
+   * Start editing a row
+   */
+  startEdit(row: any, field: string): void {
+    const key = this.getRowKey(row);
+    if (!this.editingRows.has(key)) {
+      this.editingRows.set(key, {});
+    }
+    this.editingRows.get(key)[field] = true;
+  }
+
+  /**
+   * Stop editing a row
+   */
+  stopEdit(row: any, field: string): void {
+    const key = this.getRowKey(row);
+    if (this.editingRows.has(key)) {
+      delete this.editingRows.get(key)[field];
+      if (Object.keys(this.editingRows.get(key)).length === 0) {
+        this.editingRows.delete(key);
+      }
+    }
+  }
+
+  /**
+   * Check if a field is being edited
+   */
+  isEditing(row: any, field: string): boolean {
+    const key = this.getRowKey(row);
+    return this.editingRows.has(key) && this.editingRows.get(key)[field] === true;
+  }
+
+  /**
+   * Save field value to temporary storage
+   */
+  saveFieldValue(row: any, field: string, value: any): void {
+    const key = this.getRowKey(row);
+    
+    if (!this.tempStorage.has(key)) {
+      this.tempStorage.set(key, {
+        masp: row.masp,
+        title: row.title,
+        changes: {}
+      });
+    }
+    
+    const tempData = this.tempStorage.get(key);
+    tempData.changes[field] = value;
+    tempData.lastModified = new Date().toISOString();
+    
+    this.saveTempEditsToStorage();
+    this.stopEdit(row, field);
+    
+    this._snackBar.open(`Đã lưu tạm ${field}`, '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-info'],
+    });
+  }
+
+  /**
+   * Get value from temp storage or original row
+   */
+  getFieldValue(row: any, field: string): any {
+    const key = this.getRowKey(row);
+    if (this.tempStorage.has(key) && this.tempStorage.get(key).changes[field] !== undefined) {
+      return this.tempStorage.get(key).changes[field];
+    }
+    return row[field] || '';
+  }
+
+  /**
+   * Check if field has temporary changes
+   */
+  hasFieldChanged(row: any, field: string): boolean {
+    const key = this.getRowKey(row);
+    return this.tempStorage.has(key) && 
+           this.tempStorage.get(key).changes[field] !== undefined;
+  }
+
+  /**
+   * Get row key for tracking
+   */
+  getRowKey(row: any): string {
+    return row.masp || row.id || '';
+  }
+
+  /**
+   * Get count of items with temporary changes
+   */
+  getTempChangesCount(): number {
+    return this.tempStorage.size;
+  }
+
+  /**
+   * Export temp data to Excel
+   */
+  async exportTempChanges(): Promise<void> {
+    if (this.tempStorage.size === 0) {
+      this._snackBar.open('Không có dữ liệu tạm thời để xuất', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    try {
+      const tempData = Array.from(this.tempStorage.values()).map((item: any) => ({
+        masp: item.masp || '',
+        title: item.title || '',
+        ghichu_moi: item.changes.ghichu || '',
+        xSLDat_moi: item.changes.xSLDat || '',
+        lastModified: item.lastModified || '',
+      }));
+
+      const mapping = {
+        masp: 'Mã Sản Phẩm',
+        title: 'Tên Sản Phẩm',
+        ghichu_moi: 'Ghi Chú Mới',
+        xSLDat_moi: 'SL Đặt (NCC) Mới',
+        lastModified: 'Thời Gian Sửa',
+      };
+
+      // Use existing writeExcelFile function
+      (window as any).writeExcelFile(
+        tempData,
+        'DuLieuTamThoi_' + new Date().toISOString().split('T')[0],
+        Object.values(mapping),
+        mapping
+      );
+
+      this._snackBar.open('Xuất dữ liệu tạm thời thành công!', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+
+    } catch (error) {
+      console.error('Error exporting temp changes:', error);
+      this._snackBar.open('Lỗi khi xuất dữ liệu tạm thời', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+  /**
+   * Apply temp changes to main data and clear storage
+   */
+  async applyTempChanges(): Promise<void> {
+    if (this.tempStorage.size === 0) {
+      this._snackBar.open('Không có thay đổi tạm thời để áp dụng', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    try {
+      const tempCount = this.tempStorage.size;
+      
+      // Apply changes to dataSource.data (synchronize with tempStorage)
+      const currentData = [...this.dataSource.data];
+      
+      for (const [key, tempData] of this.tempStorage.entries()) {
+        const rowIndex = currentData.findIndex((item: any) => this.getRowKey(item) === key);
+        if (rowIndex !== -1) {
+          // Apply changes to the row in dataSource
+          Object.assign(currentData[rowIndex], tempData.changes);
+        }
+      }
+
+      // Update data source with synchronized data
+      this.dataSource.data = currentData;
+
+      // Clear temp storage after successful sync
+      this.tempStorage.clear();
+      this.editingRows.clear();
+      // localStorage.removeItem(this.STORAGE_KEY);
+
+      this._snackBar.open(`Đã áp dụng ${tempCount} thay đổi vào dữ liệu chính!`, '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+
+    } catch (error) {
+      console.error('Error applying temp changes:', error);
+      this._snackBar.open('Lỗi khi áp dụng thay đổi', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+  /**
+   * Clear all temporary storage and restore original data
+   */
+  clearTempStorage(): void {
+    if (this.tempStorage.size === 0) {
+      this._snackBar.open('Không có dữ liệu tạm thời để xóa', '', {
+        duration: 1500,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-info'],
+      });
+      return;
+    }
+
+    const tempCount = this.tempStorage.size;
+
+    // Clear temp storage
+    this.tempStorage.clear();
+    this.editingRows.clear();
+    localStorage.removeItem(this.STORAGE_KEY);
+
+    // Restore dataSource.data to original data (remove temp changes)
+    const originalData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    this.dataSource.data = [...originalData];
+
+    this._snackBar.open(`Đã xóa ${tempCount} thay đổi tạm thời và khôi phục dữ liệu gốc`, '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-info'],
+    });
+  }
+
+  /**
+   * Handle Enter key for inline editing
+   */
+  onFieldKeyDown(event: KeyboardEvent, row: any, field: string): void {
+    if (event.key === 'Enter') {
+      const target = event.target as HTMLInputElement;
+      this.saveFieldValue(row, field, target.value);
+    } else if (event.key === 'Escape') {
+      this.stopEdit(row, field);
+    }
+  }
+
+  /**
+   * Handle blur for inline editing
+   */
+  onFieldBlur(event: FocusEvent, row: any, field: string): void {
+    const target = event.target as HTMLInputElement;
+    this.saveFieldValue(row, field, target.value);
   }
 }
 

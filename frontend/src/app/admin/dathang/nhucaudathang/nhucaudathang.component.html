@@ -12,6 +12,40 @@
                         <span class="material-symbols-outlined text-gray-500">search</span>
                     </div>
                 </div>
+                
+                <!-- Temp Storage Management Buttons -->
+                <div class="flex space-x-2 items-center">
+                    <!-- <button matTooltip="Xuất dữ liệu tạm thời" 
+                            mat-stroked-button 
+                            color="primary" 
+                            (click)="exportTempChanges()"
+                            [disabled]="getTempChangesCount() === 0"
+                            class="text-sm">
+                        <mat-icon>download</mat-icon>
+                        Xuất tạm ({{ getTempChangesCount() }})
+                    </button>
+                     -->
+                    <button matTooltip="Áp dụng thay đổi tạm thời" 
+                            mat-raised-button 
+                            color="accent" 
+                            (click)="applyTempChanges()"
+                            [disabled]="getTempChangesCount() === 0"
+                            class="text-sm">
+                        <mat-icon>check</mat-icon>
+                        Áp dụng ({{ getTempChangesCount() }})
+                    </button>
+                    
+                    <button matTooltip="Xóa dữ liệu tạm thời" 
+                            mat-stroked-button 
+                            color="warn" 
+                            (click)="clearTempStorage()"
+                            [disabled]="getTempChangesCount() === 0"
+                            class="text-sm">
+                        <mat-icon>delete</mat-icon>
+                        Xóa tạm
+                    </button>
+                </div>
+                
                 <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
                     <mat-icon>tune</mat-icon>
                 </button>
@@ -367,6 +401,62 @@
                                         <mat-icon class="text-red-500">cancel</mat-icon>
                                     }
                                 </span>
+                            }
+                            @case ('ghichu') {
+                                <div class="max-w-48 relative" (click)="$event.stopPropagation()">
+                                    @if (isEditing(row, 'ghichu')) {
+                                        <input 
+                                            type="text" 
+                                            [value]="getFieldValue(row, 'ghichu')"
+                                            (keydown)="onFieldKeyDown($event, row, 'ghichu')"
+                                            (blur)="onFieldBlur($event, row, 'ghichu')"
+                                            class="w-full px-2 py-1 border border-blue-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            placeholder="Nhập ghi chú..."
+                                            autofocus>
+                                    } @else {
+                                        <div 
+                                            (click)="startEdit(row, 'ghichu')" 
+                                            class="cursor-text px-2 py-1 min-h-[28px] rounded hover:bg-gray-100 border border-transparent hover:border-gray-300 transition-all"
+                                            [class.bg-yellow-50]="hasFieldChanged(row, 'ghichu')"
+                                            [class.border-yellow-400]="hasFieldChanged(row, 'ghichu')"
+                                            [matTooltip]="getFieldValue(row, 'ghichu') || 'Click để chỉnh sửa'">
+                                            <span class="line-clamp-2">
+                                                {{ getFieldValue(row, 'ghichu') || '---' }}
+                                            </span>
+                                            @if (hasFieldChanged(row, 'ghichu')) {
+                                                <mat-icon class="text-orange-500 text-sm absolute -top-1 -right-1">edit</mat-icon>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            @case ('xSLDat') {
+                                <div class="max-w-24 relative" (click)="$event.stopPropagation()">
+                                    @if (isEditing(row, 'xSLDat')) {
+                                        <input 
+                                            type="number" 
+                                            [value]="getFieldValue(row, 'xSLDat')"
+                                            (keydown)="onFieldKeyDown($event, row, 'xSLDat')"
+                                            (blur)="onFieldBlur($event, row, 'xSLDat')"
+                                            class="w-full px-2 py-1 border border-blue-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 text-right"
+                                            placeholder="0"
+                                            min="0"
+                                            autofocus>
+                                    } @else {
+                                        <div 
+                                            (click)="startEdit(row, 'xSLDat')" 
+                                            class="cursor-text px-2 py-1 min-h-[28px] rounded hover:bg-gray-100 border border-transparent hover:border-gray-300 transition-all text-right font-semibold"
+                                            [class.bg-yellow-50]="hasFieldChanged(row, 'xSLDat')"
+                                            [class.border-yellow-400]="hasFieldChanged(row, 'xSLDat')"
+                                            [class.text-purple-600]="getFieldValue(row, 'xSLDat') > 0"
+                                            matTooltip="Click để chỉnh sửa SL đặt">
+                                            {{ getFieldValue(row, 'xSLDat') || 0 | number:'1.0-0' }}
+                                            @if (hasFieldChanged(row, 'xSLDat')) {
+                                                <mat-icon class="text-orange-500 text-sm absolute -top-1 -right-1">edit</mat-icon>
+                                            }
+                                        </div>
+                                    }
+                                </div>
                             }
                             @default {
                                 <span class="max-w-32 line-clamp-2" [matTooltip]="row[column]">
