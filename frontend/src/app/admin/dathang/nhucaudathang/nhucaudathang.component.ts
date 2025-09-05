@@ -369,6 +369,7 @@ export class NhucaudathangComponent {
             id: true,
             madonhang: true,
             ngaygiao: true,
+            status:true,
             sanpham: {
               select: {
                 giaban: true,
@@ -466,6 +467,7 @@ export class NhucaudathangComponent {
       const DonhangsTranfer = Donhangs.data.flatMap((order: any) =>
         order.sanpham.map((sp: any) => ({
           type: 'donhang',
+          status: order.status,
           madonhang: order.madonhang,
           ngaygiao: order.ngaygiao,
           masp: sp.sanpham.masp,
@@ -612,10 +614,7 @@ export class NhucaudathangComponent {
         },
       });
 
-      this.TonghopsFinal = this.transformFinalData(
-        transformFinalData,
-        Khos.data
-      );
+      this.TonghopsFinal = this.transformFinalData(transformFinalData, Khos.data);
       console.log('transformFinalData', transformFinalData);
       console.log('this.TonghopsFinal', this.TonghopsFinal);
 
@@ -634,9 +633,7 @@ export class NhucaudathangComponent {
       });
       console.log('this.transformFinalData', transformFinalData);
 
-      const tranferTonghop = (
-        await this.convertData(transformFinalData)
-      ).flat();
+      const tranferTonghop = (await this.convertData(transformFinalData)).flat();
       this.TonghopsExportFinal = this.convertKhoData(tranferTonghop);
       this.progressPercentage = 90;
       this.loadingMessage = 'Hoàn tất...';
@@ -1450,7 +1447,8 @@ export class NhucaudathangComponent {
         },
         0
       );
-
+      console.log('Donhangs', Donhangs);
+      
       const khachgiao = Donhangs.filter(
         (v: any) => v.status !== 'dadat'
       ).reduce((acc: number, curr: any) => {
