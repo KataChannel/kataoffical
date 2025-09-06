@@ -188,7 +188,7 @@ export class KhachhangGraphqlService {
       this.error.set(null);
 
       const createData = {
-        makh: dulieu.makh || this.generateMaKhachHang(),
+        // makh: dulieu.makh || this.generateMaKhachHang(),
         subtitle: dulieu.subtitle || '',
         tenfile: dulieu.tenfile || '',
         name: dulieu.name,
