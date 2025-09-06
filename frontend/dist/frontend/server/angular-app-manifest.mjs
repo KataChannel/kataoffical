@@ -1082,8 +1082,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72880, hash: '06806e60eff2db1044b47337a6de57b27be7bee54170b524e7e027eeaf129a24', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24171, hash: '7b826f5534d9f8ec366beba836288e231b562b293019e852537cf30ab305fc80', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 72880, hash: '2762c4fb4aedf4ea16fb3649757cdbc8971badde48c5853d68a13ee6a2f2ef9b', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24171, hash: '1092904823b6c375d2f48d0a6f355f48d730c2a2fd42b8af9b64fdfa3360cfc1', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-AAKBTIMU.css': {size: 159808, hash: 'jX522z7m+c0', text: () => import('./assets-chunks/styles-AAKBTIMU_css.mjs').then(m => m.default)}
   },
 };

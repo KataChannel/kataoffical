@@ -629,11 +629,13 @@ export class NhucaudathangComponent {
           (Number(item.kho6) || 0) +
           (Number(item.sltontt) || 0)
         ).toFixed(3));
-
-
         item.goiy = this.GetGoiy(item);
         item.slhaohut = this.GetSLHaohut(item);
       });
+
+      // Sort by goiy from large to small
+      this.TonghopsFinal.sort((a, b) => parseFloat(b.goiy) - parseFloat(a.goiy));
+
       console.log('this.transformFinalData', transformFinalData);
 
       const tranferTonghop = (await this.convertData(transformFinalData)).flat();
@@ -1031,16 +1033,12 @@ export class NhucaudathangComponent {
         slhaohut: 'SL Hao Hụt',
       };
 
-      const result1 = dulieu.sort(
-        (a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp)
-      );
-      const result2 = dulieu2.sort(
-        (a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp)
-      );
+      // const result1 = dulieu.sort((a: any, b: any) => parseFloat(b.goiy) - parseFloat(a.goiy));
+      const result2 = dulieu2.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
       // Chuẩn bị dữ liệu cho 2 sheets
       const sheetsData = {
         sheet1: {
-          data: result1,
+          data: dulieu,
           headers: Object.values(mapping) as string[],
           mapping: mapping,
         },
