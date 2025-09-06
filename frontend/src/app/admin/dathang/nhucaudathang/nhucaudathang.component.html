@@ -368,13 +368,22 @@
                                     {{ row[column]|number:'1.0-0' }}
                                 </span>
                             }
-                            @case ('goiy') {
+                            <!-- @case ('goiy') {
                                 <span class="max-w-20 line-clamp-1 text-end font-bold" 
                                       [class.text-red-600]="(parseFloat(GetGoiy(row)) > 0)"
                                       [class.text-gray-400]="(parseFloat(GetGoiy(row)) == 0)">
                                     {{ GetGoiy(row) }}
                                 </span>
-                            }
+                            } -->
+                           @case ('goiy') {
+                                 @if(row[column] > 0) {
+                                  <span class="text-red-600 font-bold">{{row[column]|number:'1.0-0'}}</span> 
+                              } @else if(row[column] < 0) {
+                                  <span class="text-green-600 font-bold">({{GetAbs(row[column])|number:'1.0-0'}})</span> 
+                              } @else {
+                                  <span class="text-gray-400 font-bold">{{GetAbs(row[column])|number:'1.0-0'}}</span> 
+                              }
+                           }
                             @case ('createdAt') {
                                 <span class="max-w-28 line-clamp-1 text-sm">
                                     {{ formatDateForDisplay(row[column], 'DD/MM/YYYY') }}

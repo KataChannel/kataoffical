@@ -294,14 +294,7 @@ export class NhucaudathangComponent {
 
   GetGoiy(item: any) {
     const suggestion = Number(item.khachdat) + Number(this.GetSLHaohut(item)) - Number(item.tongkho);
-    if(suggestion > 0) {
-      return suggestion.toFixed(3);
-    }
-    else {
-      return '('+Math.abs(suggestion).toFixed(3)+')';
-    }
-
-
+    return suggestion.toFixed(3);
     // if (item.SLGiao > item.SLDat) {
     //   const suggestion = Math.abs(
     //     Number(item.khachdat) + Number(this.GetSLHaohut(item)) - Number(item.tongkho)
@@ -311,6 +304,9 @@ export class NhucaudathangComponent {
     // else {
     //   return '0';
     // }
+  }
+  GetAbs(value: any) {
+    return Math.abs(Number(value) || 0).toFixed(3);
   }
   GetSLHaohut(item: any) {
     // if(item.SLGiao > item.SLDat) {
