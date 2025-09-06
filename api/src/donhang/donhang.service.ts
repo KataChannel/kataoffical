@@ -1202,13 +1202,6 @@ export class DonhangService {
     const result = {
       ...donhang,
       sanpham: donhang.sanpham.map((item) => {
-        // const priceFromBanggia = donhang.khachhang?.banggia
-        //   ? donhang.khachhang.banggia.sanpham.find(
-        //       (sp) => sp.sanphamId === item.idSP,
-        //     )?.giaban
-        //   : 0;
-        // const giaban =
-        //   priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
         return {
           ...item.sanpham,
           idSP: item.idSP,

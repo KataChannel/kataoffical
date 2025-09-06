@@ -253,6 +253,7 @@
               <th class="border p-2">STT</th>
               <th class="border p-2">Tên sản phẩm</th>
               <th class="border p-2">ĐVT</th>
+              <th class="border p-2">Giá Bán</th>
               <th class="border p-2 max-w-10">SL Đặt</th>
               <th class="border p-2 max-w-10">SL Giao</th>
               <th class="border p-2 max-w-10">SL Nhận</th>
@@ -265,6 +266,7 @@
               <td class="border p-2 text-center">{{idx+1}}</td>
               <td class="border p-2">{{item.title}}</td>
               <td class="border p-2 text-center">{{item.dvt}}</td>
+              <td class="border p-2 text-center">{{item.giaban|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-10">{{item.sldat|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-">{{item.slgiao|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-10">{{item.slnhan|number:'1.0-2'}}</td>
@@ -273,6 +275,7 @@
             }
             <tr class="border">
               <td colspan="3" class="border p-2 text-start">Tổng:</td>
+              <td class="border p-2 text-end font-bold"></td>
               <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'sldat')|number:'1.0-2'}}
               </td>
               <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'slgiao')|number:'1.0-2'}}

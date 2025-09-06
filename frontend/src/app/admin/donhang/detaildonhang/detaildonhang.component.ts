@@ -110,7 +110,7 @@ export class DetailDonhangComponent {
   filterKhachhang: any = [];
   filterBanggia: any[] = [];
   filterSanpham: any[] = [];
-  ListSanpham:any [] = []
+  ListSanpham: any[] = [];
   donhangId: any = this._DonhangService.donhangId;
   permissions: any = [];
 
@@ -122,7 +122,7 @@ export class DetailDonhangComponent {
   set selectedKhachhangId(value: string | null) {
     this.DetailDonhang.update((v: any) => ({
       ...v,
-      khachhangId: value
+      khachhangId: value,
     }));
   }
 
@@ -134,7 +134,7 @@ export class DetailDonhangComponent {
   set selectedBanggiaId(value: string | null) {
     this.DetailDonhang.update((v: any) => ({
       ...v,
-      banggiaId: value
+      banggiaId: value,
     }));
   }
   async ngOnInit() {
@@ -178,9 +178,9 @@ export class DetailDonhangComponent {
         id: true,
         makh: true,
         name: true,
-        diachi:true,
-        sdt:true,
-        ghichu:true,
+        diachi: true,
+        sdt: true,
+        ghichu: true,
         banggia: {
           select: {
             id: true,
@@ -210,25 +210,25 @@ export class DetailDonhangComponent {
         vat: 0.05, // Default 10% VAT rate
         tongvat: 0,
         tongtien: 0,
-        sanpham: []
+        sanpham: [],
       });
       this._ListdonhangComponent.drawer.open();
       this.isEdit.set(true);
       this.ListFilter = [];
-      
+
       // Initialize available products (all products since no selection yet)
       this.filterSanpham = [...this.ListSanpham];
-      
+
       this._router.navigate(['/admin/donhang', 'new']);
     } else {
       await this._DonhangService.getDonhangByid(id);
       this.ListFilter = this.DetailDonhang().sanpham || [];
       this.dataSource().data = this.DetailDonhang().sanpham || [];
       this.dataSource().data.sort((a, b) => (a.order || 0) - (b.order || 0));
-      
+
       // Update available products to exclude already selected ones
       this.updateAvailableProducts();
-      
+
       this._ListdonhangComponent.drawer.open();
       this._router.navigate(['/admin/donhang', id]);
     }
@@ -261,20 +261,20 @@ export class DetailDonhangComponent {
   private synchronizeProductData() {
     // Remove duplicates from ListFilter based on product ID
     const uniqueProducts = this.removeDuplicateProducts(this.ListFilter);
-    
+
     // Update ListFilter with unique products
     this.ListFilter = uniqueProducts;
-    
+
     // Update DetailDonhang.sanpham with the cleaned product list
     this.DetailDonhang.update((v: any) => ({
       ...v,
-      sanpham: [...uniqueProducts] // Create a copy to avoid reference issues
+      sanpham: [...uniqueProducts], // Create a copy to avoid reference issues
     }));
-    
+
     // Update dataSource
     this.dataSource().data = [...uniqueProducts];
     this.dataSource().data.sort((a, b) => (a.order || 0) - (b.order || 0));
-    
+
     console.log(`Synchronized ${uniqueProducts.length} unique products`);
   }
 
@@ -282,16 +282,18 @@ export class DetailDonhangComponent {
   private removeDuplicateProducts(products: any[]): any[] {
     const seen = new Set();
     const uniqueProducts = [];
-    
+
     for (const product of products) {
       if (!seen.has(product.id)) {
         seen.add(product.id);
         uniqueProducts.push(product);
       } else {
-        console.warn(`Removed duplicate product: ${product.title} (ID: ${product.id})`);
+        console.warn(
+          `Removed duplicate product: ${product.title} (ID: ${product.id})`
+        );
       }
     }
-    
+
     return uniqueProducts;
   }
 
@@ -359,8 +361,16 @@ export class DetailDonhangComponent {
     try {
       // ✅ FIX: Prepare data in simple array format that backend expects
       const donhangData = this.DetailDonhang();
-      const { khachhang, banggia, id, createdAt, updatedAt, sanpham, ...cleanDonhangData } = donhangData;
-      
+      const {
+        khachhang,
+        banggia,
+        id,
+        createdAt,
+        updatedAt,
+        sanpham,
+        ...cleanDonhangData
+      } = donhangData;
+
       const createPayload = {
         ...cleanDonhangData,
         type: 'donsi',
@@ -373,7 +383,7 @@ export class DetailDonhangComponent {
           idSP: sp.id,
           giaban: parseFloat(sp.giaban?.toString() || '0'),
           sldat: parseFloat(sp.sldat?.toString() || '0'),
-          slgiao: parseFloat(sp.slgiao?.toString() || '0'), 
+          slgiao: parseFloat(sp.slgiao?.toString() || '0'),
           slnhan: parseFloat(sp.slnhan?.toString() || '0'),
           slhuy: parseFloat(sp.slhuy?.toString() || '0'),
           ttdat: parseFloat(sp.ttdat?.toString() || '0'),
@@ -383,12 +393,12 @@ export class DetailDonhangComponent {
           ttsauvat: parseFloat(sp.ttsauvat?.toString() || '0'),
           ghichu: sp.ghichu || null,
           order: index + 1,
-          isActive: true
-        }))
+          isActive: true,
+        })),
       };
-      
+
       console.log('Create payload (direct array format):', createPayload);
-      
+
       const result = await this._DonhangService.CreateDonhang(createPayload);
 
       if (result && result.id) {
@@ -398,24 +408,23 @@ export class DetailDonhangComponent {
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
         });
-        
+
         // Navigate to the new donhang detail page
         this._router.navigate(['/admin/donhang', result.id]);
         this.isEdit.set(false);
       } else {
         throw new Error('Không nhận được kết quả từ server');
       }
-
     } catch (error: any) {
       console.error('Lỗi khi tạo donhang:', error);
-      
+
       let errorMessage = 'Lỗi khi tạo đơn hàng';
       if (error?.message) {
-        errorMessage = error.message.includes('sanpham') 
+        errorMessage = error.message.includes('sanpham')
           ? 'Lỗi dữ liệu sản phẩm. Vui lòng kiểm tra lại.'
           : error.message;
       }
-      
+
       this._snackBar.open(errorMessage, '', {
         duration: 3000,
         horizontalPosition: 'end',
@@ -425,17 +434,16 @@ export class DetailDonhangComponent {
     }
   }
 
-
-
-
   // Helper methods for calculations
   private calculateTotal(): number {
     // tong = sum (sanpham.giaban * sanpham.slnhan)
-    return this.DetailDonhang().sanpham?.reduce((total: number, sp: any) => {
-      const giaban = parseFloat(sp.giaban?.toString() || '0');
-      const slnhan = parseFloat(sp.slnhan?.toString() || '0');
-      return total + (giaban * slnhan);
-    }, 0) || 0;
+    return (
+      this.DetailDonhang().sanpham?.reduce((total: number, sp: any) => {
+        const giaban = parseFloat(sp.giaban?.toString() || '0');
+        const slnhan = parseFloat(sp.slnhan?.toString() || '0');
+        return total + giaban * slnhan;
+      }, 0) || 0
+    );
   }
 
   private calculateTotalVat(): number {
@@ -457,7 +465,7 @@ export class DetailDonhangComponent {
     this.DetailDonhang.update((v: any) => ({
       ...v,
       tongvat: this.calculateTotalVat(),
-      tongtien: this.calculateTotalAmount()
+      tongtien: this.calculateTotalAmount(),
     }));
   }
 
@@ -465,7 +473,7 @@ export class DetailDonhangComponent {
   updateVatRate(newVatRate: number): void {
     this.DetailDonhang.update((v: any) => ({
       ...v,
-      vat: newVatRate
+      vat: newVatRate,
     }));
     this.updateTotals();
   }
@@ -474,34 +482,36 @@ export class DetailDonhangComponent {
   debugCreatePayload() {
     console.log('=== DEBUG CREATE PAYLOAD ===');
     console.log('Current DetailDonhang:', this.DetailDonhang());
-    
-    const { khachhang, banggia, id, createdAt, updatedAt, ...donhangData } = this.DetailDonhang();
-    
+
+    const { khachhang, banggia, id, createdAt, updatedAt, ...donhangData } =
+      this.DetailDonhang();
+
     const createData = {
       ...donhangData,
       ngaygiao: donhangData.ngaygiao,
       tongvat: this.calculateTotalVat(),
       tongtien: this.calculateTotalAmount(),
       sanpham: {
-        create: this.DetailDonhang().sanpham?.map((sp: any, index: number) => ({
-          idSP: sp.id,
-          giaban: parseFloat(sp.giaban?.toString() || '0'),
-          sldat: parseFloat(sp.sldat?.toString() || '0'),
-          slgiao: parseFloat(sp.slgiao?.toString() || '0'), 
-          slnhan: parseFloat(sp.slnhan?.toString() || '0'),
-          slhuy: parseFloat(sp.slhuy?.toString() || '0'),
-          ttdat: parseFloat(sp.ttdat?.toString() || '0'),
-          ttgiao: parseFloat(sp.ttgiao?.toString() || '0'),
-          ttnhan: parseFloat(sp.ttnhan?.toString() || '0'),
-          vat: parseFloat(sp.vat?.toString() || '0'),
-          ttsauvat: parseFloat(sp.ttsauvat?.toString() || '0'),
-          ghichu: sp.ghichu || null,
-          order: index + 1,
-          isActive: true
-        })) || []
-      }
+        create:
+          this.DetailDonhang().sanpham?.map((sp: any, index: number) => ({
+            idSP: sp.id,
+            giaban: parseFloat(sp.giaban?.toString() || '0'),
+            sldat: parseFloat(sp.sldat?.toString() || '0'),
+            slgiao: parseFloat(sp.slgiao?.toString() || '0'),
+            slnhan: parseFloat(sp.slnhan?.toString() || '0'),
+            slhuy: parseFloat(sp.slhuy?.toString() || '0'),
+            ttdat: parseFloat(sp.ttdat?.toString() || '0'),
+            ttgiao: parseFloat(sp.ttgiao?.toString() || '0'),
+            ttnhan: parseFloat(sp.ttnhan?.toString() || '0'),
+            vat: parseFloat(sp.vat?.toString() || '0'),
+            ttsauvat: parseFloat(sp.ttsauvat?.toString() || '0'),
+            ghichu: sp.ghichu || null,
+            order: index + 1,
+            isActive: true,
+          })) || [],
+      },
     };
-    
+
     console.log('Final GraphQL Create Payload:', createData);
     console.log('=== END DEBUG ===');
     return createData;
@@ -520,8 +530,15 @@ export class DetailDonhangComponent {
 
       // Prepare data for GraphQL update mutation
       const currentDonhang = this.DetailDonhang();
-      const { khachhang, banggia, createdAt, updatedAt, sanpham, ...donhangData } = currentDonhang;
-      
+      const {
+        khachhang,
+        banggia,
+        createdAt,
+        updatedAt,
+        sanpham,
+        ...donhangData
+      } = currentDonhang;
+
       // Build update payload - KHÔNG bao gồm sanpham trong update chính
       const updateData = {
         ...donhangData,
@@ -536,13 +553,14 @@ export class DetailDonhangComponent {
       console.log('GraphQL Update Data (without sanpham):', updateData);
 
       // Update Donhang via GraphQL (không bao gồm sanpham)
-      const result = await this._GraphqlService.updateOne('donhang', 
-        { id: currentDonhang.id }, 
+      const result = await this._GraphqlService.updateOne(
+        'donhang',
+        { id: currentDonhang.id },
         updateData
       );
-      
+
       console.log('Updated Donhang Result:', result);
-      
+
       if (result && result.id) {
         // ALWAYS update sanpham when updating donhang
         // This handles all cases: thay đổi khách hàng, bảng giá, sản phẩm, số lượng, ghi chú
@@ -553,7 +571,7 @@ export class DetailDonhangComponent {
           ...v,
           ...result,
           sanpham: currentDonhang.sanpham, // Giữ nguyên sanpham local
-          updatedAt: result.updatedAt || new Date().toISOString()
+          updatedAt: result.updatedAt || new Date().toISOString(),
         }));
 
         this._snackBar.open('Cập Nhật Thành Công', '', {
@@ -566,17 +584,16 @@ export class DetailDonhangComponent {
       } else {
         throw new Error('Không nhận được kết quả từ server');
       }
-
     } catch (error: any) {
       console.error('Lỗi khi cập nhật donhang:', error);
-      
+
       let errorMessage = 'Lỗi khi cập nhật đơn hàng';
       if (error?.message) {
-        errorMessage = error.message.includes('sanpham') 
+        errorMessage = error.message.includes('sanpham')
           ? 'Lỗi dữ liệu sản phẩm. Vui lòng kiểm tra lại.'
           : error.message;
       }
-      
+
       this._snackBar.open(errorMessage, '', {
         duration: 3000,
         horizontalPosition: 'end',
@@ -593,7 +610,7 @@ export class DetailDonhangComponent {
   /**
    * Comprehensive sanpham update with all change scenarios:
    * - Thay đổi khách hàng: Cập nhật lại giá theo bảng giá mới
-   * - Thay đổi bảng giá: Áp dụng giá mới cho tất cả sản phẩm 
+   * - Thay đổi bảng giá: Áp dụng giá mới cho tất cả sản phẩm
    * - Sửa sldat, ghichu: Cập nhật từng sản phẩm
    * - Thêm/bớt sản phẩm: Xử lý danh sách sản phẩm hoàn toàn mới
    */
@@ -605,20 +622,26 @@ export class DetailDonhangComponent {
         return;
       }
 
-      console.log('Starting comprehensive sanpham update for donhang:', currentDonhang.id);
+      console.log(
+        'Starting comprehensive sanpham update for donhang:',
+        currentDonhang.id
+      );
 
       // Get existing sanpham records to compare changes
-      const existingSanpham = await this._GraphqlService.findMany('donhangsanpham', {
-        where: { donhangId: currentDonhang.id },
-        select: { 
-          id: true, 
-          idSP: true, 
-          giaban: true, 
-          sldat: true, 
-          ghichu: true,
-          order: true
+      const existingSanpham = await this._GraphqlService.findMany(
+        'donhangsanpham',
+        {
+          where: { donhangId: currentDonhang.id },
+          select: {
+            id: true,
+            idSP: true,
+            giaban: true,
+            sldat: true,
+            ghichu: true,
+            order: true,
+          },
         }
-      });
+      );
 
       const currentSanphamList = currentDonhang.sanpham || [];
 
@@ -631,18 +654,21 @@ export class DetailDonhangComponent {
 
       // 2. SCENARIO: Thêm/bớt sản phẩm
       // Compare existing vs current product lists
-      const { toAdd, toUpdate, toDelete } = this.compareSanphamLists(existingSanpham, currentSanphamList);
+      const { toAdd, toUpdate, toDelete } = this.compareSanphamLists(
+        existingSanpham,
+        currentSanphamList
+      );
 
       console.log('Sanpham changes detected:', {
         toAdd: toAdd.length,
         toUpdate: toUpdate.length,
-        toDelete: toDelete.length
+        toDelete: toDelete.length,
       });
       console.log(toDelete);
-      
+
       // 3. DELETE: Remove products that are no longer in the list
       if (toDelete.length > 0) {
-        const idsToDelete = toDelete.map(sp => sp.id);
+        const idsToDelete = toDelete.map((sp) => sp.id);
         await this._GraphqlService.batchDelete('donhangsanpham', idsToDelete);
         console.log(`Deleted ${toDelete.length} sanpham records`);
       }
@@ -670,7 +696,7 @@ export class DetailDonhangComponent {
           ttsauvat: this.parseNumericValue(sp.ttsauvat),
           ghichu: sp.ghichu || null,
           order: existingSanpham.length + index + 1,
-          isActive: true
+          isActive: true,
         }));
 
         await this._GraphqlService.batchCreate('donhangsanpham', createData);
@@ -681,7 +707,6 @@ export class DetailDonhangComponent {
 
       // Reset change flags after successful update
       this.sanphamDataChanged = false;
-      
     } catch (error) {
       console.error('Lỗi khi cập nhật sanpham trong donhang:', error);
       throw error;
@@ -701,16 +726,21 @@ export class DetailDonhangComponent {
    * Update all sanpham prices based on new customer or price list
    */
   private async updateAllSanphamPrices(donhang: any, sanphamList: any[]) {
-    console.log('Recalculating all sanpham prices due to customer/price list change');
-    
+    console.log(
+      'Recalculating all sanpham prices due to customer/price list change'
+    );
+
     // Delete all existing sanpham
-    const existingSanpham = await this._GraphqlService.findMany('donhangsanpham', {
-      where: { donhangId: donhang.id },
-      select: { id: true }
-    });
+    const existingSanpham = await this._GraphqlService.findMany(
+      'donhangsanpham',
+      {
+        where: { donhangId: donhang.id },
+        select: { id: true },
+      }
+    );
 
     if (existingSanpham.length > 0) {
-      const idsToDelete = existingSanpham.map(sp => sp.id);
+      const idsToDelete = existingSanpham.map((sp) => sp.id);
       await this._GraphqlService.batchDelete('donhangsanpham', idsToDelete);
     }
 
@@ -731,7 +761,7 @@ export class DetailDonhangComponent {
         ttsauvat: this.parseNumericValue(sp.ttsauvat),
         ghichu: sp.ghichu || null,
         order: index + 1,
-        isActive: true
+        isActive: true,
       }));
 
       await this._GraphqlService.batchCreate('donhangsanpham', createData);
@@ -752,29 +782,31 @@ export class DetailDonhangComponent {
     const toDelete: any[] = [];
 
     // Find products to add (in current but not in existing)
-    current.forEach(currentSP => {
-      const existingSP = existing.find(e => e.idSP === currentSP.id);
+    current.forEach((currentSP) => {
+      const existingSP = existing.find((e) => e.idSP === currentSP.id);
       if (!existingSP) {
         toAdd.push(currentSP);
       } else {
         // Check if product needs update (sldat, ghichu changes)
-        const needsUpdate = 
-          this.parseNumericValue(existingSP.sldat) !== this.parseNumericValue(currentSP.sldat) ||
+        const needsUpdate =
+          this.parseNumericValue(existingSP.sldat) !==
+            this.parseNumericValue(currentSP.sldat) ||
           existingSP.ghichu !== (currentSP.ghichu || null) ||
-          this.parseNumericValue(existingSP.giaban) !== this.parseNumericValue(currentSP.giaban);
+          this.parseNumericValue(existingSP.giaban) !==
+            this.parseNumericValue(currentSP.giaban);
 
         if (needsUpdate) {
           toUpdate.push({
             existingId: existingSP.id,
-            currentData: currentSP
+            currentData: currentSP,
           });
         }
       }
     });
 
     // Find products to delete (in existing but not in current)
-    existing.forEach(existingSP => {
-      const currentSP = current.find(c => c.id === existingSP.idSP);
+    existing.forEach((existingSP) => {
+      const currentSP = current.find((c) => c.id === existingSP.idSP);
       if (!currentSP) {
         toDelete.push(existingSP);
       }
@@ -789,7 +821,7 @@ export class DetailDonhangComponent {
   private async batchUpdateExistingSanpham(updateList: any[]) {
     for (const update of updateList) {
       const { existingId, currentData } = update;
-      
+
       const updateData = {
         giaban: this.parseNumericValue(currentData.giaban),
         sldat: this.parseNumericValue(currentData.sldat),
@@ -801,10 +833,11 @@ export class DetailDonhangComponent {
         ttnhan: this.parseNumericValue(currentData.ttnhan),
         vat: this.parseNumericValue(currentData.vat),
         ttsauvat: this.parseNumericValue(currentData.ttsauvat),
-        ghichu: currentData.ghichu || null
+        ghichu: currentData.ghichu || null,
       };
 
-      await this._GraphqlService.updateOne('donhangsanpham', 
+      await this._GraphqlService.updateOne(
+        'donhangsanpham',
         { id: existingId },
         updateData
       );
@@ -832,15 +865,38 @@ export class DetailDonhangComponent {
    */
   onCustomerChange() {
     this.customerChanged = true;
-    console.log('Customer change detected, will recalculate prices on next update');
+    console.log(
+      'Customer change detected, will recalculate prices on next update'
+    );
   }
 
   /**
    * Call this method when price list changes
    */
-  onPriceListChange() {
+  async onPriceListChange(id: any) {
+    console.log('Selected price list:', id);
+
     this.priceListChanged = true;
-    console.log('Price list change detected, will recalculate prices on next update');
+    const Banggia = await this.GetBanggiaById(id);
+    console.log('Banggia', Banggia);
+    if (Banggia && Banggia.sanpham && Banggia.sanpham.length > 0) {
+      const newGiaban = new Map(
+        Banggia?.sanpham?.map(({ sanphamId, giaban }: any) => [sanphamId, giaban])
+      );
+      console.log(newGiaban.get("74414ab9-d7aa-4790-aa23-f39c4243bf88"));
+      
+      this.DetailDonhang.update((v: any) => {
+        const updatedSanpham = (v.sanpham || []).map((sp: any) => ({
+          ...sp,
+          giaban: Number(newGiaban.get(sp.id) || sp.giaban),
+        }));
+        return { ...v, sanpham: updatedSanpham };
+      });
+      this.dataSource().data = this.DetailDonhang().sanpham;
+      this.reloadfilter();
+    }
+    console.log(this.DetailDonhang());
+    
   }
 
   /**
@@ -851,12 +907,11 @@ export class DetailDonhangComponent {
     try {
       // First update the main donhang record
       await this.updateDonhang(status);
-      
+
       // Then update sanpham separately
       await this.updateDonhangSanpham();
-      
+
       console.log('Complete donhang with sanpham update successful');
-      
     } catch (error) {
       console.error('Lỗi khi cập nhật donhang với sanpham:', error);
       throw error;
@@ -872,8 +927,10 @@ export class DetailDonhangComponent {
       console.log('Deleting Donhang:', currentDonhang);
 
       // Delete Donhang via GraphQL
-      const result = await this._GraphqlService.deleteOne('donhang', { id: currentDonhang.id });
-      
+      const result = await this._GraphqlService.deleteOne('donhang', {
+        id: currentDonhang.id,
+      });
+
       console.log('Deleted Donhang Result:', result);
 
       this._snackBar.open('Xóa Thành Công', '', {
@@ -886,14 +943,14 @@ export class DetailDonhangComponent {
       this._router.navigate(['/admin/donhang']);
     } catch (error: any) {
       console.error('Lỗi khi xóa donhang:', error);
-      
+
       let errorMessage = 'Lỗi khi xóa đơn hàng';
       if (error?.message) {
-        errorMessage = error.message.includes('constraint') 
+        errorMessage = error.message.includes('constraint')
           ? 'Không thể xóa đơn hàng do có ràng buộc dữ liệu'
           : error.message;
       }
-      
+
       this._snackBar.open(errorMessage, '', {
         duration: 3000,
         horizontalPosition: 'end',
@@ -937,7 +994,7 @@ export class DetailDonhangComponent {
   isLoadingKhachhang = signal(false);
   @Debounce(100)
   async DoFindKhachhang(event: any) {
-    const value = event.target.value    
+    const value = event.target.value;
     try {
       if (value.length < 1) {
         this.filterKhachhang = this.ListKhachhang;
@@ -945,8 +1002,12 @@ export class DetailDonhangComponent {
       }
       this.filterKhachhang = this.ListKhachhang.filter(
         (v: any) =>
-          removeVietnameseAccents(v.makh.toLowerCase()).includes(removeVietnameseAccents(value)) ||
-          removeVietnameseAccents(v.name.toLowerCase()).includes(removeVietnameseAccents(value))
+          removeVietnameseAccents(v.makh.toLowerCase()).includes(
+            removeVietnameseAccents(value)
+          ) ||
+          removeVietnameseAccents(v.name.toLowerCase()).includes(
+            removeVietnameseAccents(value)
+          )
       );
     } catch (error) {
       console.error('Lỗi khi tìm kiếm khách hàng:', error);
@@ -980,17 +1041,19 @@ export class DetailDonhangComponent {
   }
   SelectBanggia(event: any) {
     console.log('Selecting new banggia:', event.value);
-    
+
     // Mark that price list has changed for comprehensive update
-    this.onPriceListChange();
-    
+    this.onPriceListChange(event.value);
+
     // Update the donhang with new banggia
     this.DetailDonhang.update((v: any) => ({
       ...v,
-      banggiaId: event.value
+      banggiaId: event.value,
     }));
-    
-    console.log('Price list change detected, products will be repriced on next update');
+
+    console.log(
+      'Price list change detected, products will be repriced on next update'
+    );
   }
   Chonkhachhang(item: any) {
     this.DetailDonhang.update((v: any) => {
@@ -1019,12 +1082,12 @@ export class DetailDonhangComponent {
 
     // Mark that sanpham data has changed
     this.sanphamDataChanged = true;
-    
+
     // Auto-calculate totals when giaban or slnhan changes
     if (field === 'giaban' || field === 'slnhan') {
       this.updateTotals();
     }
-    
+
     console.log('Sanpham data changed, will be updated on next save');
   }
 
@@ -1048,13 +1111,15 @@ export class DetailDonhangComponent {
 
     // Mark that sanpham data has changed
     this.sanphamDataChanged = true;
-    
+
     // Auto-calculate totals when giaban or slnhan changes
     if (field === 'giaban' || field === 'slnhan') {
       this.updateTotals();
     }
-    
-    console.log('Sanpham data changed (blur event), will be updated on next save');
+
+    console.log(
+      'Sanpham data changed (blur event), will be updated on next save'
+    );
 
     // Update dataSource to reflect changes
     this.dataSource.update((ds) => {
@@ -1081,22 +1146,22 @@ export class DetailDonhangComponent {
       (v: any) => v.id === event.value
     );
     console.log('Selected Khachhang:', selectedKhachhang);
-    
+
     if (selectedKhachhang) {
       // Mark that customer has changed for comprehensive update
       this.onCustomerChange();
-      
+
       // Check if banggia is expired
       const isExpired = selectedKhachhang?.banggia?.ketthuc
         ? moment().isAfter(moment(selectedKhachhang.banggia.ketthuc))
         : false;
-        
+
       if (isExpired) {
         const dialogRef = this._dialog.open(this.BgHethanDialog, {
           hasBackdrop: true,
           disableClose: true,
         });
-        
+
         dialogRef.afterClosed().subscribe((result) => {
           if (result === 'true') {
             this.updateKhachhangSelection(selectedKhachhang);
@@ -1108,25 +1173,64 @@ export class DetailDonhangComponent {
     }
   }
 
-  private updateKhachhangSelection(selectedKhachhang: any) {
+  private async updateKhachhangSelection(selectedKhachhang: any) {
     // Mark that customer has changed for comprehensive update
     this.onCustomerChange();
-    
+
     this.DetailDonhang.update((v: any) => ({
       ...v,
       khachhangId: selectedKhachhang.id,
       banggiaId: selectedKhachhang?.banggia?.id || null,
       khachhang: selectedKhachhang,
-      banggia: selectedKhachhang?.banggia || null
-    }));    
-    console.log('Updated DetailDonhang with new customer:', this.DetailDonhang());
+      banggia: selectedKhachhang?.banggia || null,
+    }));
+    const Banggia: any = this.GetBanggiaById(selectedKhachhang?.banggia?.id);
+    console.log('Banggia', Banggia);
+    if (Banggia && Banggia.sanpham && Banggia.sanpham.length > 0) {
+      const newGiaban = new Map(
+        Banggia?.sanpham?.map(({ sanphamId, giaban }: any) => [sanphamId, giaban])
+      );
+      this.DetailDonhang.update((v: any) => {
+        const updatedSanpham = (v.sanpham || []).map((sp: any) => ({
+          ...sp,
+          giaban: newGiaban.get(sp.id) || sp.giaban,
+        }));
+        return { ...v, sanpham: updatedSanpham };
+      });
+      this.dataSource().data = this.DetailDonhang().sanpham;
+      this.reloadfilter();
+    }
+    console.log(
+      'Updated DetailDonhang with new customer:',
+      this.DetailDonhang()
+    );
   }
-
+  async GetBanggiaById(id: any) {
+    const Banggia = await this._GraphqlService.findUnique(
+      'banggia',
+      { id: id },
+      {
+        select: {
+          id: true,
+          title: true,
+          sanpham: {
+            select: {
+              id: true,
+              sanphamId: true,
+              giaban: true,
+            },
+          },
+        },
+      }
+    );
+    return Banggia;
+  }
   displayedColumns: string[] = [
     'STT',
     'title',
     'masp',
     'dvt',
+    'giaban',
     'sldat',
     'slgiao',
     'slnhan',
@@ -1137,6 +1241,7 @@ export class DetailDonhangComponent {
     title: 'Tiêu Đề',
     masp: 'Mã SP',
     dvt: 'Đơn Vị Tính',
+    giaban: 'Giá Bán',
     sldat: 'SL Đặt',
     slgiao: 'SL Giao',
     slnhan: 'SL Nhận',
@@ -1203,16 +1308,16 @@ export class DetailDonhangComponent {
     });
     this.dataSource().data = [];
     this.ListFilter = [];
-    
+
     // Auto-calculate totals after emptying cart
     this.updateTotals();
-    
+
     // Update available products to show all products again
     this.filterSanpham = [...this.ListSanpham];
-    
+
     // Mark that sanpham data has changed
     this.sanphamDataChanged = true;
-    
+
     console.log('Emptied all products from cart');
   }
   getName(id: any) {
@@ -1261,22 +1366,22 @@ export class DetailDonhangComponent {
       v.sanpham = v.sanpham.filter((v1: any) => v1.id !== item.id);
       return v;
     });
-    
+
     // Remove from ListFilter
     this.ListFilter = this.ListFilter.filter((v1: any) => v1.id !== item.id);
-    
+
     // Update dataSource
     this.dataSource().data = this.DetailDonhang().sanpham;
-    
+
     // Auto-calculate totals after removing product
     this.updateTotals();
-    
+
     // Update available products to include the removed product
     this.updateAvailableProducts();
-    
+
     // Mark that sanpham data has changed
     this.sanphamDataChanged = true;
-    
+
     console.log(`Removed product: ${item.title}`);
   }
 
@@ -1289,34 +1394,35 @@ export class DetailDonhangComponent {
     });
 
     try {
-      // Get max order number using aggregate for better performance  
+      // Get max order number using aggregate for better performance
       const maxOrderResult = await this._GraphqlService.aggregate('donhang', {
-        _max: { order: true }
+        _max: { order: true },
       });
 
       // Extract max order value from aggregate result
       let maxOrder = maxOrderResult._max?.order || 0;
       let newOrder = maxOrder + 1;
       let madonhang = DonhangnumberToCode(newOrder);
-      
+
       // Check for duplicate madonhang like backend implementation
       let existingDonhang = await this._GraphqlService.findUnique('donhang', {
-        where: { madonhang }
+        where: { madonhang },
       });
-      
+
       // If madonhang already exists, increment order until we find an unused one
       while (existingDonhang) {
         newOrder++;
         madonhang = DonhangnumberToCode(newOrder);
         existingDonhang = await this._GraphqlService.findUnique('donhang', {
-          where: { madonhang }
+          where: { madonhang },
         });
       }
 
       // Prepare copy data
       const originalDonhang = this.DetailDonhang();
-      const { id, khachhang, banggia, createdAt, updatedAt, ...donhangData } = originalDonhang;
-      
+      const { id, khachhang, banggia, createdAt, updatedAt, ...donhangData } =
+        originalDonhang;
+
       const copyData = {
         ...donhangData,
         title: `${originalDonhang.title} - Copy`,
@@ -1333,32 +1439,33 @@ export class DetailDonhangComponent {
         tongtien: this.calculateTotalAmount(),
         // Nested create for sanpham relation
         sanpham: {
-          create: originalDonhang.sanpham?.map((sp: any, index: number) => ({
-            idSP: sp.id,
-            giaban: parseFloat(sp.giaban?.toString() || '0'),
-            sldat: parseFloat(sp.sldat?.toString() || '0'),
-            slgiao: parseFloat(sp.slgiao?.toString() || '0'), 
-            slnhan: parseFloat(sp.slnhan?.toString() || '0'),
-            slhuy: parseFloat(sp.slhuy?.toString() || '0'),
-            ttdat: parseFloat(sp.ttdat?.toString() || '0'),
-            ttgiao: parseFloat(sp.ttgiao?.toString() || '0'),
-            ttnhan: parseFloat(sp.ttnhan?.toString() || '0'),
-            vat: parseFloat(sp.vat?.toString() || '0'),
-            ttsauvat: parseFloat(sp.ttsauvat?.toString() || '0'),
-            ghichu: sp.ghichu || null,
-            order: index + 1,
-            isActive: true
-          })) || []
-        }
+          create:
+            originalDonhang.sanpham?.map((sp: any, index: number) => ({
+              idSP: sp.id,
+              giaban: parseFloat(sp.giaban?.toString() || '0'),
+              sldat: parseFloat(sp.sldat?.toString() || '0'),
+              slgiao: parseFloat(sp.slgiao?.toString() || '0'),
+              slnhan: parseFloat(sp.slnhan?.toString() || '0'),
+              slhuy: parseFloat(sp.slhuy?.toString() || '0'),
+              ttdat: parseFloat(sp.ttdat?.toString() || '0'),
+              ttgiao: parseFloat(sp.ttgiao?.toString() || '0'),
+              ttnhan: parseFloat(sp.ttnhan?.toString() || '0'),
+              vat: parseFloat(sp.vat?.toString() || '0'),
+              ttsauvat: parseFloat(sp.ttsauvat?.toString() || '0'),
+              ghichu: sp.ghichu || null,
+              order: index + 1,
+              isActive: true,
+            })) || [],
+        },
       };
 
       console.log('Copy Donhang Data:', copyData);
 
       // Create copy via GraphQL
       const result = await this._GraphqlService.createOne('donhang', copyData);
-      
+
       console.log('Copy Donhang Result:', result);
-      
+
       if (result && result.id) {
         this._snackBar.open('Coppy Đơn Hàng Thành Công', '', {
           duration: 1000,
@@ -1370,17 +1477,16 @@ export class DetailDonhangComponent {
       } else {
         throw new Error('Không nhận được kết quả từ server');
       }
-
     } catch (error: any) {
       console.error('Lỗi khi copy donhang:', error);
-      
+
       let errorMessage = 'Lỗi khi copy đơn hàng';
       if (error?.message) {
-        errorMessage = error.message.includes('sanpham') 
+        errorMessage = error.message.includes('sanpham')
           ? 'Lỗi dữ liệu sản phẩm. Vui lòng kiểm tra lại.'
           : error.message;
       }
-      
+
       this._snackBar.open(errorMessage, '', {
         duration: 3000,
         horizontalPosition: 'end',
@@ -1431,7 +1537,7 @@ export class DetailDonhangComponent {
           v.printCount = v.printCount + 1;
           return v;
         });
-        
+
         // Update printCount via GraphQL
         this.updateDonhang(); // This will update printCount to server
       } else {
@@ -1452,8 +1558,9 @@ export class DetailDonhangComponent {
 
     if (value.length < 2) {
       // Show only available products (not already selected)
-      this.filterSanpham = this.ListSanpham.filter((item: any) => 
-        !this.ListFilter.find((selected: any) => selected.id === item.id)
+      this.filterSanpham = this.ListSanpham.filter(
+        (item: any) =>
+          !this.ListFilter.find((selected: any) => selected.id === item.id)
       );
       return;
     }
@@ -1461,43 +1568,43 @@ export class DetailDonhangComponent {
     const normalizedValue = removeVietnameseAccents(value);
 
     // Filter and exclude already selected products
-    this.filterSanpham = this.ListSanpham
-      .filter((product: any) => {
-        // First check if product is not already selected
-        const isAlreadySelected = this.ListFilter.find((selected: any) => selected.id === product.id);
-        if (isAlreadySelected) {
-          return false; // Don't show already selected products
-        }
+    this.filterSanpham = this.ListSanpham.filter((product: any) => {
+      // First check if product is not already selected
+      const isAlreadySelected = this.ListFilter.find(
+        (selected: any) => selected.id === product.id
+      );
+      if (isAlreadySelected) {
+        return false; // Don't show already selected products
+      }
 
-        const normalizedTitle = removeVietnameseAccents(
-          product.title?.toLowerCase() || ''
-        );
-        const normalizedMasp = removeVietnameseAccents(
-          product.masp?.toLowerCase() || ''
-        );
+      const normalizedTitle = removeVietnameseAccents(
+        product.title?.toLowerCase() || ''
+      );
+      const normalizedMasp = removeVietnameseAccents(
+        product.masp?.toLowerCase() || ''
+      );
 
-        return (
-          normalizedTitle.includes(normalizedValue) ||
-          normalizedMasp.includes(normalizedValue) ||
-          product.title?.toLowerCase().includes(value) ||
-          product.masp?.toLowerCase().includes(value)
-        );
-      })
-      .sort((a: any, b: any) => {
-        // Prioritize exact matches
-        const aExactMatch =
-          a.masp?.toLowerCase() === value || a.title?.toLowerCase() === value;
-        const bExactMatch =
-          b.masp?.toLowerCase() === value || b.title?.toLowerCase() === value;
+      return (
+        normalizedTitle.includes(normalizedValue) ||
+        normalizedMasp.includes(normalizedValue) ||
+        product.title?.toLowerCase().includes(value) ||
+        product.masp?.toLowerCase().includes(value)
+      );
+    }).sort((a: any, b: any) => {
+      // Prioritize exact matches
+      const aExactMatch =
+        a.masp?.toLowerCase() === value || a.title?.toLowerCase() === value;
+      const bExactMatch =
+        b.masp?.toLowerCase() === value || b.title?.toLowerCase() === value;
 
-        if (aExactMatch && !bExactMatch) return -1;
-        if (!aExactMatch && bExactMatch) return 1;
+      if (aExactMatch && !bExactMatch) return -1;
+      if (!aExactMatch && bExactMatch) return 1;
 
-        // Then sort alphabetically by title
-        const titleA = removeVietnameseAccents(a.title || '').toLowerCase();
-        const titleB = removeVietnameseAccents(b.title || '').toLowerCase();
-        return titleA.localeCompare(titleB);
-      });
+      // Then sort alphabetically by title
+      const titleA = removeVietnameseAccents(a.title || '').toLowerCase();
+      const titleB = removeVietnameseAccents(b.title || '').toLowerCase();
+      return titleA.localeCompare(titleB);
+    });
 
     if (event.key === 'Enter') {
       if (this.filterSanpham.length > 0) {
@@ -1511,7 +1618,7 @@ export class DetailDonhangComponent {
   ChosenItem(item: any) {
     let CheckItem = this.filterSanpham.find((v: any) => v.id === item.id);
     let CheckItem1 = this.ListFilter.find((v: any) => v.id === item.id);
-    
+
     if (CheckItem1) {
       // Product is already selected, remove it from ListFilter
       this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
@@ -1537,17 +1644,18 @@ export class DetailDonhangComponent {
         console.log(`Added product: ${item.title}`);
       }
     }
-    
+
     // Mark that sanpham data has changed for future updates
     this.sanphamDataChanged = true;
   }
 
   ChosenAll(list: any) {
     // Prevent duplicates by only adding products that are not already in ListFilter
-    const uniqueProducts = list.filter((item: any) => 
-      !this.ListFilter.find((existing: any) => existing.id === item.id)
+    const uniqueProducts = list.filter(
+      (item: any) =>
+        !this.ListFilter.find((existing: any) => existing.id === item.id)
     );
-    
+
     // Add all unique products with default quantities
     const newProducts = uniqueProducts.map((item: any, index: number) => {
       const itemCopy = { ...item };
@@ -1565,21 +1673,26 @@ export class DetailDonhangComponent {
       itemCopy.order = this.ListFilter.length + index + 1;
       return itemCopy;
     });
-    
+
     // Add new products to existing ListFilter
     this.ListFilter = [...this.ListFilter, ...newProducts];
-    
+
     // Mark that sanpham data has changed
     this.sanphamDataChanged = true;
-    
-    console.log(`Added ${newProducts.length} unique products. Total: ${this.ListFilter.length} products`);
+
+    console.log(
+      `Added ${newProducts.length} unique products. Total: ${this.ListFilter.length} products`
+    );
   }
   ResetFilter() {
     // Reset to only show available products (not already selected)
-    this.filterSanpham = this.ListSanpham.filter((item: any) => 
-      !this.ListFilter.find((selected: any) => selected.id === item.id)
+    this.filterSanpham = this.ListSanpham.filter(
+      (item: any) =>
+        !this.ListFilter.find((selected: any) => selected.id === item.id)
     );
-    console.log(`Reset filter. Showing ${this.filterSanpham.length} available products`);
+    console.log(
+      `Reset filter. Showing ${this.filterSanpham.length} available products`
+    );
   }
   EmptyFiter() {
     this.ListFilter = [];
@@ -1587,11 +1700,12 @@ export class DetailDonhangComponent {
     this.updateAvailableProducts();
     console.log('Cleared all selected products');
   }
-  
+
   // New method to update available products (excluding already selected ones)
   updateAvailableProducts() {
-    this.filterSanpham = this.ListSanpham.filter((item: any) => 
-      !this.ListFilter.find((selected: any) => selected.id === item.id)
+    this.filterSanpham = this.ListSanpham.filter(
+      (item: any) =>
+        !this.ListFilter.find((selected: any) => selected.id === item.id)
     );
   }
   CheckItem(item: any) {
@@ -1601,7 +1715,7 @@ export class DetailDonhangComponent {
     // ✅ FIX: Remove duplicates from ListFilter before processing
     const uniqueProducts = this.removeDuplicateProducts(this.ListFilter);
     this.ListFilter = uniqueProducts;
-    
+
     // Preserve existing quantities when applying filter
     this.ListFilter.forEach((v) => {
       const exists = this.dataSource().data.find((d: any) => d.id === v.id);
@@ -1631,28 +1745,28 @@ export class DetailDonhangComponent {
         v.ghichu = v.ghichu || '';
       }
       // ✅ FIX: Ensure proper order index
-      v.order = v.order || (this.ListFilter.indexOf(v) + 1);
+      v.order = v.order || this.ListFilter.indexOf(v) + 1;
     });
-    
+
     // Update DetailDonhang with selected products (ensuring no duplicates)
     this.DetailDonhang.update((v: any) => {
       v.sanpham = [...this.ListFilter]; // Create a copy to avoid reference issues
       return v;
     });
-    
+
     // Auto-calculate totals when products are applied
     this.updateTotals();
-    
+
     // Update data source and sort by order
     this.dataSource().data = [...this.ListFilter];
     this.dataSource().data.sort((a, b) => (a.order || 0) - (b.order || 0));
-    
+
     // Mark that sanpham data has changed
     this.sanphamDataChanged = true;
-    
+
     // Update filter list to remove selected products from available list
     this.updateAvailableProducts();
-    
+
     console.log(`Applied ${this.ListFilter.length} unique products to order`);
     menu.closeMenu();
   }
