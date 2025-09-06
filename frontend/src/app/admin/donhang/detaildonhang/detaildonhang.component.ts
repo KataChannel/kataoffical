@@ -879,24 +879,64 @@ export class DetailDonhangComponent {
     this.priceListChanged = true;
     const Banggia = await this.GetBanggiaById(id);
     console.log('Banggia', Banggia);
-    if (Banggia && Banggia.sanpham && Banggia.sanpham.length > 0) {
-      const newGiaban = new Map(
-        Banggia?.sanpham?.map(({ sanphamId, giaban }: any) => [sanphamId, giaban])
-      );
-      console.log(newGiaban.get("74414ab9-d7aa-4790-aa23-f39c4243bf88"));
-      
-      this.DetailDonhang.update((v: any) => {
-        const updatedSanpham = (v.sanpham || []).map((sp: any) => ({
-          ...sp,
-          giaban: Number(newGiaban.get(sp.id) || sp.giaban),
-        }));
-        return { ...v, sanpham: updatedSanpham };
-      });
-      this.dataSource().data = this.DetailDonhang().sanpham;
-      this.reloadfilter();
-    }
-    console.log(this.DetailDonhang());
     
+    if (Banggia && Banggia.sanpham && Banggia.sanpham.length > 0) {
+      // Update prices for existing products in the order
+      await this.updateProductPricesFromBanggia(Banggia);
+    }
+    
+    console.log('Updated DetailDonhang with new prices:', this.DetailDonhang());
+  }
+
+  /**
+   * Update product prices based on banggia data
+   */
+  private async updateProductPricesFromBanggia(Banggia: any) {
+    const priceMap = new Map(
+      Banggia.sanpham.map(({ sanphamId, giaban }: any) => [sanphamId, giaban])
+    );
+    
+    console.log('Price map from banggia:', priceMap);
+
+    // Update DetailDonhang.sanpham with new prices
+    this.DetailDonhang.update((v: any) => {
+      const updatedSanpham = (v.sanpham || []).map((sp: any) => {
+        const newPrice = priceMap.get(sp.id);
+        if (newPrice !== undefined) {
+          console.log(`Updating price for ${sp.title}: ${sp.giaban} -> ${newPrice}`);
+          return {
+            ...sp,
+            giaban: Number(newPrice)
+          };
+        }
+        return sp;
+      });
+      
+      return { 
+        ...v, 
+        sanpham: updatedSanpham 
+      };
+    });
+
+    // Update ListFilter with new prices
+    this.ListFilter = this.ListFilter.map((item: any) => {
+      const newPrice = priceMap.get(item.id);
+      if (newPrice !== undefined) {
+        return {
+          ...item,
+          giaban: Number(newPrice)
+        };
+      }
+      return item;
+    });
+
+    // Update dataSource
+    this.dataSource().data = [...this.DetailDonhang().sanpham];
+    
+    // Recalculate totals
+    this.updateTotals();
+    
+    console.log('Updated product prices successfully');
   }
 
   /**
@@ -1177,6 +1217,7 @@ export class DetailDonhangComponent {
     // Mark that customer has changed for comprehensive update
     this.onCustomerChange();
 
+    // Update customer and banggia information
     this.DetailDonhang.update((v: any) => ({
       ...v,
       khachhangId: selectedKhachhang.id,
@@ -1184,26 +1225,18 @@ export class DetailDonhangComponent {
       khachhang: selectedKhachhang,
       banggia: selectedKhachhang?.banggia || null,
     }));
-    const Banggia: any = this.GetBanggiaById(selectedKhachhang?.banggia?.id);
-    console.log('Banggia', Banggia);
-    if (Banggia && Banggia.sanpham && Banggia.sanpham.length > 0) {
-      const newGiaban = new Map(
-        Banggia?.sanpham?.map(({ sanphamId, giaban }: any) => [sanphamId, giaban])
-      );
-      this.DetailDonhang.update((v: any) => {
-        const updatedSanpham = (v.sanpham || []).map((sp: any) => ({
-          ...sp,
-          giaban: newGiaban.get(sp.id) || sp.giaban,
-        }));
-        return { ...v, sanpham: updatedSanpham };
-      });
-      this.dataSource().data = this.DetailDonhang().sanpham;
-      this.reloadfilter();
+    
+    // Update product prices based on customer's banggia
+    if (selectedKhachhang?.banggia?.id) {
+      const Banggia = await this.GetBanggiaById(selectedKhachhang.banggia.id);
+      console.log('Customer Banggia:', Banggia);
+      
+      if (Banggia && Banggia.sanpham && Banggia.sanpham.length > 0) {
+        await this.updateProductPricesFromBanggia(Banggia);
+      }
     }
-    console.log(
-      'Updated DetailDonhang with new customer:',
-      this.DetailDonhang()
-    );
+    
+    console.log('Updated DetailDonhang with new customer:', this.DetailDonhang());
   }
   async GetBanggiaById(id: any) {
     const Banggia = await this._GraphqlService.findUnique(
@@ -1615,6 +1648,31 @@ export class DetailDonhangComponent {
       }
     }
   }
+  /**
+   * Get the correct price for a product based on current banggia
+   */
+  private async getProductPriceFromBanggia(productId: string, defaultPrice: number = 0): Promise<number> {
+    const banggiaId = this.DetailDonhang()?.banggiaId;
+    
+    if (!banggiaId) {
+      return defaultPrice;
+    }
+
+    try {
+      const Banggia = await this.GetBanggiaById(banggiaId);
+      if (Banggia && Banggia.sanpham && Banggia.sanpham.length > 0) {
+        const priceInfo = Banggia.sanpham.find((sp: any) => sp.sanphamId === productId);
+        if (priceInfo) {
+          return Number(priceInfo.giaban);
+        }
+      }
+    } catch (error) {
+      console.warn('Error getting price from banggia:', error);
+    }
+
+    return defaultPrice;
+  }
+
   ChosenItem(item: any) {
     let CheckItem = this.filterSanpham.find((v: any) => v.id === item.id);
     let CheckItem1 = this.ListFilter.find((v: any) => v.id === item.id);
@@ -1628,20 +1686,31 @@ export class DetailDonhangComponent {
       if (CheckItem) {
         // Create a copy of the object to avoid read-only property error
         const itemCopy = { ...CheckItem };
-        // Initialize default quantities if not present
-        itemCopy.sldat = itemCopy.sldat || 1;
-        itemCopy.slgiao = itemCopy.slgiao || 1;
-        itemCopy.slnhan = itemCopy.slnhan || 1;
-        itemCopy.slhuy = itemCopy.slhuy || 0;
-        itemCopy.ttdat = itemCopy.ttdat || 0;
-        itemCopy.ttgiao = itemCopy.ttgiao || 0;
-        itemCopy.ttnhan = itemCopy.ttnhan || 0;
-        itemCopy.ttsauvat = itemCopy.ttsauvat || 0;
-        itemCopy.vat = itemCopy.vat || 0;
-        itemCopy.ghichu = itemCopy.ghichu || '';
-        itemCopy.order = this.ListFilter.length + 1;
-        this.ListFilter.push(itemCopy);
-        console.log(`Added product: ${item.title}`);
+        
+        // Get correct price from banggia
+        this.getProductPriceFromBanggia(item.id, item.giaban || 0).then(correctPrice => {
+          itemCopy.giaban = correctPrice;
+          
+          // Initialize default quantities if not present
+          itemCopy.sldat = itemCopy.sldat || 1;
+          itemCopy.slgiao = itemCopy.slgiao || 1;
+          itemCopy.slnhan = itemCopy.slnhan || 1;
+          itemCopy.slhuy = itemCopy.slhuy || 0;
+          itemCopy.ttdat = itemCopy.ttdat || 0;
+          itemCopy.ttgiao = itemCopy.ttgiao || 0;
+          itemCopy.ttnhan = itemCopy.ttnhan || 0;
+          itemCopy.ttsauvat = itemCopy.ttsauvat || 0;
+          itemCopy.vat = itemCopy.vat || 0;
+          itemCopy.ghichu = itemCopy.ghichu || '';
+          itemCopy.order = this.ListFilter.length + 1;
+          
+          // Update ListFilter at the correct position
+          const existingIndex = this.ListFilter.findIndex(existing => existing.id === item.id);
+          if (existingIndex === -1) {
+            this.ListFilter.push(itemCopy);
+            console.log(`Added product: ${item.title} with price: ${correctPrice}`);
+          }
+        });
       }
     }
 
@@ -1649,16 +1718,40 @@ export class DetailDonhangComponent {
     this.sanphamDataChanged = true;
   }
 
-  ChosenAll(list: any) {
+  async ChosenAll(list: any) {
     // Prevent duplicates by only adding products that are not already in ListFilter
     const uniqueProducts = list.filter(
       (item: any) =>
         !this.ListFilter.find((existing: any) => existing.id === item.id)
     );
 
-    // Add all unique products with default quantities
+    // Get current banggia for price lookup
+    const banggiaId = this.DetailDonhang()?.banggiaId;
+    let priceMap = new Map();
+    
+    if (banggiaId) {
+      try {
+        const Banggia = await this.GetBanggiaById(banggiaId);
+        if (Banggia && Banggia.sanpham && Banggia.sanpham.length > 0) {
+          priceMap = new Map(
+            Banggia.sanpham.map(({ sanphamId, giaban }: any) => [sanphamId, giaban])
+          );
+        }
+      } catch (error) {
+        console.warn('Error getting banggia prices for bulk add:', error);
+      }
+    }
+
+    // Add all unique products with default quantities and correct prices
     const newProducts = uniqueProducts.map((item: any, index: number) => {
       const itemCopy = { ...item };
+      
+      // Apply correct price from banggia if available
+      const correctPrice = priceMap.get(item.id);
+      if (correctPrice !== undefined) {
+        itemCopy.giaban = Number(correctPrice);
+      }
+      
       // Initialize default quantities if not present
       itemCopy.sldat = itemCopy.sldat || 1;
       itemCopy.slgiao = itemCopy.slgiao || 1;
@@ -1681,7 +1774,7 @@ export class DetailDonhangComponent {
     this.sanphamDataChanged = true;
 
     console.log(
-      `Added ${newProducts.length} unique products. Total: ${this.ListFilter.length} products`
+      `Added ${newProducts.length} unique products with banggia prices. Total: ${this.ListFilter.length} products`
     );
   }
   ResetFilter() {
