@@ -137,6 +137,7 @@ let EnhancedUniversalService = class EnhancedUniversalService {
                 ...queryOptions
             };
             const startTime = Date.now();
+            console.log('createOptions', createOptions);
             const result = await model.create(createOptions);
             const queryTime = Date.now() - startTime;
             this.dataLoader.clearLoaderCache(modelName);

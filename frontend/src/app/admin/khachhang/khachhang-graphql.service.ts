@@ -182,13 +182,15 @@ export class KhachhangGraphqlService {
   /**
    * Tạo khách hàng mới với GraphQL
    */
+
+
   async createKhachhang(dulieu: any) {
     try {
       this.loading.set(true);
       this.error.set(null);
 
       const createData = {
-        // makh: dulieu.makh || this.generateMaKhachHang(),
+        makh: dulieu.makh || await this.generateMaKhachHang(dulieu.loaikh),
         subtitle: dulieu.subtitle || '',
         tenfile: dulieu.tenfile || '',
         name: dulieu.name,
@@ -357,16 +359,31 @@ export class KhachhangGraphqlService {
   }
 
   /**
-   * Import khách hàng với batch operation
+   * Import khách hàng với batch operation và xử lý trùng lặp mã
    */
   async importKhachhang(dulieu: any[]) {
     try {
       this.loading.set(true);
       this.error.set(null);
 
-      // Chuẩn bị data cho batch create
-      const batchData = dulieu.map(item => ({
-        makh: item.makh || this.generateMaKhachHang(),
+      // Add index to each customer for mapping codes back
+      const customersWithIndex = dulieu.map((item, index) => ({ ...item, index }));
+      
+      // Filter customers that need code generation
+      const customersNeedingCodes = customersWithIndex.filter(item => !item.makh);
+      const customersWithCodes = customersWithIndex.filter(item => item.makh);
+
+      let generatedCodeMap: { [key: string]: string } = {};
+
+      // Generate codes for customers that need them
+      if (customersNeedingCodes.length > 0) {
+        console.log(`Generating codes for ${customersNeedingCodes.length} customers...`);
+        generatedCodeMap = await this.generateBatchMaKhachHang(customersNeedingCodes);
+      }
+
+      // Prepare data for batch create
+      const batchData = customersWithIndex.map((item) => ({
+        makh: item.makh || generatedCodeMap[item.index] || `FALLBACK-${item.index}-${Date.now()}`,
         name: item.name,
         diachi: item.diachi || '',
         quan: item.quan || '',
@@ -380,6 +397,7 @@ export class KhachhangGraphqlService {
         banggiaId: item.banggiaId || null
       }));
 
+      console.log(`Creating ${batchData.length} customers...`);
       const result = await this._GraphqlService.batchCreate('khachhang', batchData);
       
       // Refresh list
@@ -452,13 +470,194 @@ export class KhachhangGraphqlService {
   }
 
   /**
-   * Generate mã khách hàng tự động
+   * Generate mã khách hàng tự động theo logic backend với xử lý trùng lặp
    */
-  private generateMaKhachHang(): string {
+  async generateMaKhachHang(loaikh: string = 'khachle', maxRetries: number = 10): Promise<string> {
+    const prefix = loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
+    let attempts = 0;
+
+    while (attempts < maxRetries) {
+      try {
+        // Tìm mã khách hàng cuối cùng với prefix tương ứng
+        const latestRecords = await this._GraphqlService.findMany('khachhang', {
+          where: { 
+            makh: { 
+              startsWith: prefix 
+            } 
+          },
+          orderBy: { makh: 'desc' },
+          select: { makh: true },
+          take: 1
+        });
+
+        let nextNumber = 1;
+        if (latestRecords && latestRecords.length > 0 && latestRecords[0].makh) {
+          const lastNumber = parseInt(latestRecords[0].makh.slice(prefix.length), 10);
+          if (!isNaN(lastNumber)) {
+            nextNumber = lastNumber + 1;
+          }
+        }
+
+        // Thêm offset để tránh trùng lặp trong trường hợp tạo đồng thời
+        nextNumber += attempts;
+        const newMakh = `${prefix}${nextNumber.toString().padStart(5, '0')}`;
+
+        // Kiểm tra xem mã đã tồn tại chưa
+        const existingCustomer = await this._GraphqlService.findMany('khachhang', {
+          where: { makh: newMakh },
+          select: { id: true },
+          take: 1
+        });
+
+        // Nếu không có trùng lặp, trả về mã này
+        if (!existingCustomer || existingCustomer.length === 0) {
+          console.log(`Generated unique customer code: ${newMakh} (attempt ${attempts + 1})`);
+          return newMakh;
+        }
+
+        console.warn(`Customer code ${newMakh} already exists, retrying... (attempt ${attempts + 1})`);
+        attempts++;
+
+      } catch (error) {
+        console.error(`Error generating customer code (attempt ${attempts + 1}):`, error);
+        attempts++;
+        
+        // Nếu là lần thử cuối cùng, sử dụng fallback
+        if (attempts >= maxRetries) {
+          break;
+        }
+        
+        // Đợi một chút trước khi thử lại
+        await new Promise(resolve => setTimeout(resolve, 100 * attempts));
+      }
+    }
+
+    // Fallback: Sử dụng timestamp và random để đảm bảo tính duy nhất
+    console.warn('Max retries reached, using fallback generation method');
     const timestamp = Date.now().toString(36);
-    const random = Math.random().toString(36).substr(2, 5);
-    return `KH${timestamp}${random}`.toUpperCase();
+    const random = Math.random().toString(36).substr(2, 3);
+    const fallbackCode = `${prefix}${timestamp}${random}`.toUpperCase();
+    
+    // Kiểm tra fallback code có trùng không (chỉ check 1 lần)
+    try {
+      const existingFallback = await this._GraphqlService.findMany('khachhang', {
+        where: { makh: fallbackCode },
+        select: { id: true },
+        take: 1
+      });
+      
+      if (existingFallback && existingFallback.length > 0) {
+        // Nếu vẫn trùng, thêm timestamp hiện tại vào cuối
+        const uniqueCode = `${prefix}${timestamp}${random}${Date.now().toString(36).slice(-2)}`.toUpperCase();
+        console.warn(`Fallback code collision, using: ${uniqueCode}`);
+        return uniqueCode;
+      }
+      
+      return fallbackCode;
+    } catch (error) {
+      // Nếu không thể check, trả về fallback code với timestamp bổ sung
+      const uniqueCode = `${prefix}${timestamp}${random}${Date.now().toString(36).slice(-2)}`.toUpperCase();
+      console.error('Error checking fallback code, using ultimate fallback:', uniqueCode);
+      return uniqueCode;
+    }
   }
+
+  /**
+   * Batch generate unique customer codes for import operations
+   */
+  async generateBatchMaKhachHang(customers: any[]): Promise<{ [key: string]: string }> {
+    const codeMap: { [key: string]: string } = {};
+    const generatedCodes = new Set<string>();
+    
+    try {
+      // Group customers by type
+      const khachsiCustomers = customers.filter(c => c.loaikh === 'khachsi');
+      const khachleCustomers = customers.filter(c => c.loaikh !== 'khachsi');
+      
+      // Get current max numbers for both prefixes
+      const [ksRecords, klRecords] = await Promise.all([
+        this._GraphqlService.findMany('khachhang', {
+          where: { makh: { startsWith: 'TG-KS' } },
+          orderBy: { makh: 'desc' },
+          select: { makh: true },
+          take: 1
+        }),
+        this._GraphqlService.findMany('khachhang', {
+          where: { makh: { startsWith: 'TG-KL' } },
+          orderBy: { makh: 'desc' },
+          select: { makh: true },
+          take: 1
+        })
+      ]);
+
+      let ksNextNumber = 1;
+      let klNextNumber = 1;
+
+      if (ksRecords?.[0]?.makh) {
+        const lastKsNumber = parseInt(ksRecords[0].makh.slice(5), 10);
+        ksNextNumber = isNaN(lastKsNumber) ? 1 : lastKsNumber + 1;
+      }
+
+      if (klRecords?.[0]?.makh) {
+        const lastKlNumber = parseInt(klRecords[0].makh.slice(5), 10);
+        klNextNumber = isNaN(lastKlNumber) ? 1 : lastKlNumber + 1;
+      }
+
+      // Generate sequential codes for each group
+      for (let i = 0; i < khachsiCustomers.length; i++) {
+        const customer = khachsiCustomers[i];
+        let attempts = 0;
+        let code: string;
+        
+        do {
+          code = `TG-KS${(ksNextNumber + i + attempts).toString().padStart(5, '0')}`;
+          attempts++;
+        } while (generatedCodes.has(code) && attempts < 100);
+        
+        generatedCodes.add(code);
+        codeMap[customer.index || i] = code;
+      }
+
+      for (let i = 0; i < khachleCustomers.length; i++) {
+        const customer = khachleCustomers[i];
+        let attempts = 0;
+        let code: string;
+        
+        do {
+          code = `TG-KL${(klNextNumber + i + attempts).toString().padStart(5, '0')}`;
+          attempts++;
+        } while (generatedCodes.has(code) && attempts < 100);
+        
+        generatedCodes.add(code);
+        codeMap[customer.index || (i + khachsiCustomers.length)] = code;
+      }
+
+      console.log(`Generated ${Object.keys(codeMap).length} unique customer codes for batch import`);
+      return codeMap;
+      
+    } catch (error) {
+      console.error('Error in batch code generation, falling back to individual generation:', error);
+      
+      // Fallback: Generate codes individually
+      for (let i = 0; i < customers.length; i++) {
+        const customer = customers[i];
+        try {
+          const code = await this.generateMaKhachHang(customer.loaikh);
+          codeMap[customer.index || i] = code;
+        } catch (err) {
+          console.error(`Failed to generate code for customer ${i}:`, err);
+          // Use timestamp-based fallback
+          const timestamp = Date.now().toString(36);
+          const random = Math.random().toString(36).substr(2, 3);
+          const prefix = customer.loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
+          codeMap[customer.index || i] = `${prefix}${timestamp}${random}${i}`.toUpperCase();
+        }
+      }
+      
+      return codeMap;
+    }
+  }
+
 
   /**
    * Lấy các mã đã được cập nhật (legacy support)
