@@ -169,8 +169,7 @@ export class UserGraphQLService {
         isActive: data.isActive ?? true,
       };
 
-      const newUser = (await this.graphqlService.createOne<User>('user', {
-        data: userData,
+      const newUser = (await this.graphqlService.createOne<User>('user',userData, {
         include: {
           roles: {
             include: {

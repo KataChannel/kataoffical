@@ -380,7 +380,84 @@ let DonhangService = class DonhangService {
             { key: 'tongcong', header: 'Tổng Cộng Khách Hàng', width: 25 }
         ];
         worksheet.columns = columns;
-        const headerRow = worksheet.getRow(1);
+        const setFallbackLogo = () => {
+            const logoCell = worksheet.getCell('A1');
+            logoCell.value = 'TRAN GIA';
+            logoCell.font = {
+                bold: true,
+                size: 16,
+                color: { argb: 'FFFF0000' }
+            };
+            logoCell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFFFCC00' }
+            };
+            logoCell.alignment = { horizontal: 'left', vertical: 'middle' };
+            logoCell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+            worksheet.getRow(1).height = 30;
+        };
+        try {
+            const response = await fetch('https://tg.rausachtrangia.com/images/logo-full.png');
+            if (response.ok) {
+                const imageBuffer = await response.arrayBuffer();
+                const imageId = workbook.addImage({
+                    buffer: imageBuffer,
+                    extension: 'png',
+                });
+                worksheet.mergeCells('A1:P1');
+                worksheet.addImage(imageId, {
+                    tl: { col: 0, row: 0 },
+                    ext: { width: 200, height: 60 }
+                });
+                worksheet.getRow(1).height = 60 * 0.75;
+            }
+            else {
+                worksheet.mergeCells('A1:P1');
+                setFallbackLogo();
+            }
+        }
+        catch (error) {
+            console.error('Error loading logo image:', error);
+            worksheet.mergeCells('A1:H1');
+            worksheet.mergeCells('I1:P1');
+            setFallbackLogo();
+        }
+        worksheet.getCell('A4').value = 'Tên Khách Hàng :';
+        worksheet.getCell('A5').value = 'Địa chỉ: ';
+        worksheet.getCell('A6').value = 'Điện thoại:';
+        worksheet.getCell('A7').value = 'Người Liên Hệ:';
+        worksheet.getCell('I7').value = 'Email:';
+        worksheet.mergeCells('A4:P4');
+        worksheet.mergeCells('A5:P5');
+        worksheet.mergeCells('A6:P6');
+        worksheet.mergeCells('A7:H7');
+        worksheet.mergeCells('I7:P7');
+        const titleCell = worksheet.getCell('A2');
+        titleCell.value = 'BÁO CÁO CÔNG NỢ KHÁCH HÀNG';
+        titleCell.font = { bold: true, size: 14 };
+        titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+        worksheet.mergeCells('A2:P2');
+        if (params.Batdau || params.Ketthuc) {
+            const dateRange = `Từ ngày: ${params.Batdau ? moment(params.Batdau).format('DD/MM/YYYY') : 'N/A'} - Đến ngày: ${params.Ketthuc ? moment(params.Ketthuc).format('DD/MM/YYYY') : 'N/A'}`;
+            const dateCell = worksheet.getCell('A3');
+            dateCell.value = dateRange;
+            dateCell.alignment = { horizontal: 'center', vertical: 'middle' };
+            worksheet.mergeCells('A3:P3');
+        }
+        worksheet.getRow(1).height = 30;
+        worksheet.getRow(2).height = 25;
+        worksheet.getRow(3).height = 20;
+        columns.forEach((column, index) => {
+            const cell = worksheet.getCell(10, index + 1);
+            cell.value = column.header;
+        });
+        const headerRow = worksheet.getRow(10);
         headerRow.font = { bold: true, color: { argb: 'FFFFFF' } };
         headerRow.fill = {
             type: 'pattern',
@@ -390,7 +467,7 @@ let DonhangService = class DonhangService {
         headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
         headerRow.height = 25;
         const groupedData = this.groupDataByCustomerAndDate(data);
-        let currentRow = 2;
+        let currentRow = 11;
         const mergeRanges = [];
         for (const customerData of groupedData) {
             const customerStartRow = currentRow;
@@ -481,11 +558,20 @@ let DonhangService = class DonhangService {
                 });
             }
         }
+        const appliedRanges = new Set();
         mergeRanges.forEach(merge => {
-            worksheet.mergeCells(merge.range);
-            const cell = worksheet.getCell(merge.range.split(':')[0]);
-            cell.alignment = { horizontal: 'center', vertical: 'middle' };
-            cell.font = { bold: true };
+            if (!appliedRanges.has(merge.range)) {
+                try {
+                    worksheet.mergeCells(merge.range);
+                    appliedRanges.add(merge.range);
+                    const cell = worksheet.getCell(merge.range.split(':')[0]);
+                    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    cell.font = { bold: true };
+                }
+                catch (error) {
+                    console.warn(`Warning: Could not merge range ${merge.range}:`, error.message);
+                }
+            }
         });
         worksheet.eachRow((row, rowNumber) => {
             row.eachCell((cell) => {
