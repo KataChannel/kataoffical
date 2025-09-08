@@ -3,6 +3,14 @@
       <router-outlet></router-outlet>
   </mat-drawer>
   <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
+    <!-- Loading Progress Bar -->
+    <mat-progress-bar *ngIf="loading()" mode="indeterminate" color="primary"></mat-progress-bar>
+    
+    <!-- Error Display -->
+    <div *ngIf="error()" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+      <span class="font-bold">Lỗi:</span> {{error()}}
+    </div>
+    
     <div *ngIf="!isSearch" class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
         <div class="flex flex-row space-x-2 items-center">
             <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
@@ -27,9 +35,21 @@
             <button matTooltip="Tìm Kiếm" color="primary" (click)="isSearch = !isSearch" mat-icon-button>
                 <mat-icon>search</mat-icon>
             </button>
+            
+            <!-- Export Excel Buttons -->
+            <button matTooltip="Xuất Excel (Dữ liệu hiển thị)" mat-icon-button color="accent" 
+                    [disabled]="loading()" (click)="exportVandonToExcel()">
+                <mat-icon>file_download</mat-icon>
+            </button>
+            <!-- <button matTooltip="Xuất Excel (Toàn bộ)" mat-icon-button color="warn" 
+                    [disabled]="loading()" (click)="exportAllToExcel()">
+                <mat-icon>download</mat-icon>
+            </button> -->
+            
             <input class="hidden" (change)="ImporExcel($event)" type="file" #uploadfile>
             <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                 {{CountItem}} Đơn Hàng
+                <span *ngIf="loading()" class="ml-2 animate-pulse text-blue-600">(Đang tải...)</span>
             </span>
         </div>
     </div>
@@ -78,7 +98,15 @@
             <mat-datepicker #pickerKetthuc></mat-datepicker>
           </mat-form-field>
         </div>
-      <div class="w-full overflow-auto">
+      <div class="w-full overflow-auto relative">
+          <!-- Loading Overlay -->
+          <div *ngIf="loading()" class="absolute inset-0 bg-white bg-opacity-75 z-10 flex items-center justify-center">
+            <div class="text-center">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p class="mt-2 text-gray-600">Đang tải dữ liệu...</p>
+            </div>
+          </div>
+          
           <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource()" matSort>
               @for (column of displayedColumns; track column) {
               <ng-container [matColumnDef]="column">
@@ -111,14 +139,20 @@
                                             <div *ngFor="let item of FilterHederColumn(dataSource().filteredData,column); trackBy:trackByFn" (click)="ChosenItem(item,column)" class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
                                                <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>
                                                @switch (column) {
-                                                   @case ('createdAt') {
+                                                   @case ('ngaygiao') {
                                                     <span>{{item[column]|date:'dd/MM/yyyy'}}</span> 
                                                    }
-                                                   @case ('updatedAt') {
-                                                    <span>{{item[column]|date:'dd/MM/yyyy'}}</span> 
+                                                   @case ('sldat') {
+                                                    <span>{{item[column] | number:'1.0-2'}}</span> 
                                                    }
-                                                   @case ('haohut') {
-                                                    <span>{{item[column]}}%</span> 
+                                                   @case ('slgiao') {
+                                                    <span>{{item[column] | number:'1.0-2'}}</span> 
+                                                   }
+                                                   @case ('slnhan') {
+                                                    <span>{{item[column] | number:'1.0-2'}}</span> 
+                                                   }
+                                                   @case ('status') {
+                                                    <span>{{Trangthaidon[item[column]] || item[column]}}</span> 
                                                    }
                                                    @default {
                                                    <span> {{item[column]||'Trống'}}</span>
@@ -142,41 +176,35 @@
                           {{ idx + 1 }}
                       </span>
                       }
-                      @case ('createdAt') {
-                      <span class="max-w-40 line-clamp-4">
-                          {{ row[column]|date:'dd/MM/yyyy'}}
-                      </span>
-                      }
                       @case ('ngaygiao') {
                       <span class="max-w-40 line-clamp-4">
                           {{ row[column]|date:'dd/MM/yyyy'}}
                       </span>
                       }
-                      @case ('isActive') {
-                      <span class="max-w-40 line-clamp-4">
-                          @if (row[column]) {
-                          <mat-icon class="text-green-500">check_circle</mat-icon>
-                          }
-                          @else {
-                          <mat-icon class="text-red-500">cancel</mat-icon>
-                          }
-                      </span>
-                      }
-                @case ('status') {
+                      @case ('status') {
                         <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
                           'text-blue-500': row[column] === 'dadat',
                           'text-yellow-500': row[column] === 'dagiao',
                           'text-green-500': row[column] === 'danhan',
                           'text-purple-500': row[column] === 'hoanthanh',
                           'text-red-500': row[column] === 'huy'
-                        }
-                        ">
+                        }">
                             {{Trangthaidon[row[column]]}}
                         </span>
-                        }
-                      @case ('updatedAt') {
-                      <span class="max-w-40 line-clamp-4">
-                          {{ row[column]|date:'dd/MM/yyyy'}}
+                      }
+                      @case ('sldat') {
+                      <span class="max-w-40 line-clamp-4 text-right text-blue-600">
+                          {{ row[column] | number:'1.0-2' }}
+                      </span>
+                      }
+                      @case ('slgiao') {
+                      <span class="max-w-40 line-clamp-4 text-right text-orange-600">
+                          {{ row[column] | number:'1.0-2' }}
+                      </span>
+                      }
+                      @case ('slnhan') {
+                      <span class="max-w-40 line-clamp-4 text-right text-green-600">
+                          {{ row[column] | number:'1.0-2' }}
                       </span>
                       }
                       @default {
@@ -189,12 +217,21 @@
               </ng-container>
               }
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{donhangId()==row.id?'!bg-slate-200':''}}"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{donhangId()==row.id?'!bg-slate-200':''}}" [attr.data-id]="row.id"></tr>
               <tr class="mat-row" *matNoDataRow>
-                  <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
+                  <td class="mat-cell p-4" colspan="4">
+                    @if (loading()) {
+                      <div class="text-center py-4">
+                        <mat-spinner diameter="30"></mat-spinner>
+                        <p class="mt-2">Đang tải dữ liệu...</p>
+                      </div>
+                    } @else {
+                      Không tìm thấy
+                    }
+                  </td>
               </tr>
           </table> 
       </div>
-       <mat-paginator [pageSizeOptions]="[200,dataSource().data.length]" [pageSize]="200"></mat-paginator>
+       <mat-paginator [pageSizeOptions]="[50,100,dataSource().data.length]" [pageSize]="50"></mat-paginator>
   </div>
 </mat-drawer-container>

@@ -93,6 +93,7 @@ export class DetailDonhangComponent {
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   @ViewChild('BgHethanDialog') BgHethanDialog!: TemplateRef<any>;
+  @ViewChild('confirmRemoveDialog') confirmRemoveDialog!: TemplateRef<any>;
   ListFilter: any[] = [];
   constructor() {
     this._route.paramMap.subscribe(async (params) => {
@@ -1393,7 +1394,28 @@ export class DetailDonhangComponent {
   //   this.dataSource().data = this.DetailDonhang().sanpham;
 
   // }
+  // Store item to be removed for dialog
+  itemToRemove: any = null;
+
   RemoveSanpham(item: any) {
+    // Store the item to be removed
+    this.itemToRemove = item;
+    
+    // Show confirmation dialog
+    const dialogRef = this._dialog.open(this.confirmRemoveDialog, {
+      width: '400px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'confirm') {
+        this.confirmRemoveSanpham(this.itemToRemove);
+      }
+      this.itemToRemove = null;
+    });
+  }
+
+  private confirmRemoveSanpham(item: any) {
     // Remove from DetailDonhang.sanpham
     this.DetailDonhang.update((v: any) => {
       v.sanpham = v.sanpham.filter((v1: any) => v1.id !== item.id);
@@ -1414,6 +1436,14 @@ export class DetailDonhangComponent {
 
     // Mark that sanpham data has changed
     this.sanphamDataChanged = true;
+
+    // Show success message
+    this._snackBar.open(`Đã xóa sản phẩm: ${item.title}`, 'Đóng', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
 
     console.log(`Removed product: ${item.title}`);
   }

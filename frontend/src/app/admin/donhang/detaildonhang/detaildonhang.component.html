@@ -317,3 +317,38 @@
     </div>
   </mat-dialog-content>
 </ng-template>
+
+<ng-template #confirmRemoveDialog>
+  <mat-dialog-content class="!relative !flex flex-col space-y-6 items-center justify-center p-6">
+    <div class="flex flex-row space-x-3 items-center">
+      <mat-icon class="text-amber-500 text-3xl">warning</mat-icon>
+      <div class="text-lg font-medium">Xác nhận xóa sản phẩm</div>
+    </div>
+    
+    <div class="text-center">
+      <div class="text-gray-700">Bạn có chắc chắn muốn xóa sản phẩm</div>
+      <div class="font-bold text-blue-600 mt-2" *ngIf="itemToRemove">
+        "{{ itemToRemove?.title || 'Không có tên' }}"
+      </div>
+      <div class="text-gray-700 mt-2">khỏi đơn hàng này?</div>
+    </div>
+    
+    <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+      <div class="text-sm text-yellow-800">
+        <mat-icon class="text-yellow-600 text-sm mr-1">info</mat-icon>
+        Hành động này sẽ xóa sản phẩm khỏi đơn hàng hiện tại và có thể được hoàn tác bằng cách thêm lại sản phẩm.
+      </div>
+    </div>
+    
+    <div class="flex flex-row space-x-3 items-center justify-center">
+      <button mat-flat-button color="warn" mat-dialog-close="confirm">
+        <mat-icon>delete</mat-icon>
+        Xóa sản phẩm
+      </button>
+      <button mat-flat-button mat-dialog-close="cancel">
+        <mat-icon>cancel</mat-icon>
+        Hủy bỏ
+      </button>
+    </div>
+  </mat-dialog-content>
+</ng-template>

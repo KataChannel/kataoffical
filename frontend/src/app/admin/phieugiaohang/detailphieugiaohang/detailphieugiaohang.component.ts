@@ -8,6 +8,7 @@ import {
   OnInit,
   signal,
   ViewChild,
+  TemplateRef,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,7 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { ListPhieugiaohangComponent } from '../listphieugiaohang/listphieugiaohang.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -72,6 +73,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
+  _dialog: MatDialog = inject(MatDialog);
     displayedColumns: string[] = [
     'STT',
     'title',
@@ -102,6 +104,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   CountItem = computed(() => this.dataSource.data.length);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('confirmRemoveDialog') confirmRemoveDialog!: TemplateRef<any>;
   DetailPhieugiaohang: any = this._PhieugiaohangService.DetailDonhang;
   profile: any = this._UserService.profile;
   // ListKhachhang: any = this._KhachhangService.ListKhachhang;
@@ -112,6 +115,9 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   filterSanpham: any[] = [];
   phieugiaohangId: any = this._PhieugiaohangService.donhangId;
   ListSanpham: any = this._SanphamService.ListSanpham;
+  
+  // Store item to be removed for dialog
+  itemToRemove: any = null;
   Trangthai: any = [
     { value: 'dadat', title: 'Đã Đặt' },
     { value: 'dagiao', title: 'Đã Giao' },
@@ -592,17 +598,45 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
     this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
   }
 
-  RemoveSanpham(item:any){
+  RemoveSanpham(item: any) {
+    // Store the item to be removed
+    this.itemToRemove = item;
+    
+    // Show confirmation dialog
+    const dialogRef = this._dialog.open(this.confirmRemoveDialog, {
+      width: '400px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'confirm') {
+        this.confirmRemoveSanpham(this.itemToRemove);
+      }
+      this.itemToRemove = null;
+    });
+  }
+
+  private confirmRemoveSanpham(item: any) {
     console.log(item);
     
-    this.DetailPhieugiaohang.update((v:any)=>{
-      v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
+    this.DetailPhieugiaohang.update((v: any) => {
+      v.sanpham = v.sanpham.filter((v1: any) => v1.id !== item.id);
       this.reloadfilter();
       return v;
-    })
+    });
     
     // Update dataSource to reflect changes in the table
     this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
+
+    // Show success message
+    this._snackBar.open(`Đã xóa sản phẩm: ${item.title}`, 'Đóng', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+
+    console.log(`Removed product: ${item.title}`);
   }
   reloadfilter(){
     this.filterSanpham = this.ListSanpham().filter((v:any) => !this.DetailPhieugiaohang().sanpham.some((v2:any) => v2.id === v.id));

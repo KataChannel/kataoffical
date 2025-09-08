@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, computed, effect, inject, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -14,13 +14,14 @@ import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DonhangService } from '../donhang.service';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { DonhangGraphqlService } from '../donhang-graphql.service';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
@@ -28,6 +29,7 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
   selector: 'app-vandon',
   templateUrl: './vandon.component.html',
   styleUrls: ['./vandon.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatFormFieldModule,
     MatInputModule,
@@ -43,27 +45,23 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
     CommonModule,
     FormsModule,
     MatTooltipModule,
-    MatDatepickerModule
-  ],
-  // providers:[provideNativeDateAdapter()]
+    MatDatepickerModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule
+  ]
 })
 export class VandonComponent {
   Detail: any = {};
   displayedColumns: string[] = [
     'madonhang',
     'khachhang',
-    'diachi',
-    'sdt',
-    'status',
-    'masp',
     'title',
-    'giagoc',
     'dvt',
     'sldat',
     'slgiao',
     'slnhan',
-    'order',
-    'ngaygiao'
+    'ngaygiao',
+    'status'
   ];
   ColumnName: any = {
     madonhang: 'Mã Đơn Hàng',
@@ -74,11 +72,19 @@ export class VandonComponent {
     masp: 'Mã Sản Phẩm',
     title: 'Tên Sản Phẩm',
     giagoc: 'Giá Gốc',
+    giaban: 'Giá Bán',
     dvt: 'Đơn Vị Tính',
     sldat: 'SL Đặt',
     slgiao: 'SL Giao',
     slnhan: 'SL Nhận',
+    slhuy: 'SL Hủy',
+    ttdat: 'TT Đặt',
+    ttgiao: 'TT Giao',
+    ttnhan: 'TT Nhận',
+    ttsauvat: 'TT Sau VAT',
+    vat: 'VAT (%)',
     order: 'Thứ Tự',
+    ghichu: 'Ghi Chú',
     ngaygiao: 'Ngày Giao',
   };
   FilterColumns: any[] = JSON.parse(
@@ -91,24 +97,34 @@ export class VandonComponent {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
-  private _DonhangService: DonhangService = inject(DonhangService);
+  
+  // GraphQL Service injection
+  private _DonhangGraphqlService: DonhangGraphqlService = inject(DonhangGraphqlService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
+  private _snackBar: MatSnackBar = inject(MatSnackBar);
+
+  // Computed data source using GraphQL service với lazy loading
   dataSource = computed(() => {   
     const ds = new MatTableDataSource(this.Listvandon);
     ds.filterPredicate = this.createFilter();
-    //ds.paginator = this.paginator;
-    ds.sort = this.sort;
+    // Cấu hình sort với cache
+    if (this.sort) {
+      ds.sort = this.sort;
+    }
     return ds;
   });
-  donhangId:any = this._DonhangService.donhangId;
-  _snackBar: MatSnackBar = inject(MatSnackBar);
+
+  // Get signals from GraphQL service
+  donhangId = this._DonhangGraphqlService.donhangId;
+  loading = this._DonhangGraphqlService.loading;
+  error = this._DonhangGraphqlService.error;
+  
   CountItem: any = 0;
   SearchParams: any = {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
-    // Status:'dadat',
     pageSize: 9999,
   };
   ListDate: any[] = [
@@ -119,38 +135,25 @@ export class VandonComponent {
   ];
   Chonthoigian: any = 'day';
   isSearch: boolean = false;
+  
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
     });
   }
-  onSelectionChange(event: MatSelectChange): void {
-    // const timeFrames: { [key: string]: () => void } = {
-    //   day: () => {
-    //     this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment().endOf('day').add(1,'day').format('YYYY-MM-DD');
-    //   },
-    //   week: () => {
-    //     this.SearchParams.Batdau = moment().startOf('week').format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
-    //   },
-    //   month: () => {
-    //     this.SearchParams.Batdau = moment().startOf('month').format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment().endOf('month').format('YYYY-MM-DD');
-    //   },
-    //   year: () => {
-    //     this.SearchParams.Batdau = moment().startOf('year').format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
-    //   },
-    // };
 
-    // timeFrames[event.value]?.();
-    // this.refresh();
+  // Get vandon list from GraphQL service
+  get Listvandon() {
+    return this._DonhangGraphqlService.ListVandon();
+  }
+  onSelectionChange(event: MatSelectChange): void {
     this.ngOnInit()
   }
+  
   onDateChange(event: any): void {
     this.ngOnInit()
   }
+  
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
       const filterObject = JSON.parse(filter);
@@ -164,6 +167,7 @@ export class VandonComponent {
       return isMatch;
     };
   }
+  
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource().filter = filterValue.trim().toLowerCase();
@@ -171,50 +175,62 @@ export class VandonComponent {
       this.dataSource()?.paginator?.firstPage();
     }
   }
-  Listvandon:any[]=[]
+  
   async ngOnInit(): Promise<void> {    
-    await this._DonhangService.searchDonhang(this.SearchParams);
-    this.CountItem = this._DonhangService.ListDonhang().length;
-    this.Listvandon = this._DonhangService.ListDonhang().flatMap((item:any, index:any) =>
-      item.sanpham.map((v:any) => ({
-        ...v,
-        madonhang: item.madonhang,
-        khachhang: item.khachhang?.name,
-        sdt: item.khachhang?.sdt,
-        diachi: item.khachhang?.diachi,
-        createdAt: item.createdAt,
-        isActive: item.isActive,
-        ngaygiao: item.ngaygiao,
-        status: item.status,
-      }))
-    ).map((v:any, i:any) => ({ ...v, id: i + 1 }));   
-    this.dataSource().data = this.Listvandon;
-    this.dataSource().paginator = this.paginator
-    this.initializeColumns();
-    this.setupDrawer();
-    console.log(this.dataSource().data);
-    
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    try {
+      // Khởi tạo columns trước để tránh delay UI
+      this.initializeColumns();
+      this.setupDrawer();
+      
+      // Dùng setTimeout để tránh blocking UI thread
+      setTimeout(async () => {
+        await this._DonhangGraphqlService.searchDonhang(this.SearchParams);
+        this.CountItem = this._DonhangGraphqlService.ListDonhang().length;
+        
+        // Sử dụng requestAnimationFrame để smooth update
+        requestAnimationFrame(() => {
+          const dataSource = this.dataSource();
+          dataSource.data = this.Listvandon;
+          dataSource.paginator = this.paginator;
+          
+          // Cấu hình paginator
+          this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+          this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+          this.paginator._intl.previousPageLabel = 'Về Trước';
+          this.paginator._intl.firstPageLabel = 'Trang Đầu';
+          this.paginator._intl.lastPageLabel = 'Trang Cuối';
+        });
+      }, 0);
+      
+    } catch (error) {
+      console.error('Lỗi khi tải dữ liệu:', error);
+    }
   }
+  
   async refresh() {
-    await this._DonhangService.searchDonhang(this.SearchParams);
+    await this._DonhangGraphqlService.searchDonhang(this.SearchParams);
   }
   private initializeColumns(): void {
-    this.Columns = Object.keys(this.ColumnName).map((key) => ({
+    // Chỉ tạo columns cho các trường được hiển thị để tối ưu performance
+    const allowedColumns = [
+      'madonhang', 'khachhang', 'title', 'dvt', 
+      'sldat', 'slgiao', 'slnhan', 'ngaygiao', 'status'
+    ];
+    
+    this.Columns = allowedColumns.map((key) => ({
       key,
       value: this.ColumnName[key],
-      isShow: true,
+      isShow: this.displayedColumns.includes(key),
     }));
+    
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('VandonColFilter',JSON.stringify(this.FilterColumns)
-      );
+      // Lọc FilterColumns chỉ giữ các columns được phép
+      this.FilterColumns = this.FilterColumns.filter(col => allowedColumns.includes(col.key));
+      localStorage.setItem('VandonColFilter',JSON.stringify(this.FilterColumns));
     }
+    
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
     );
@@ -291,61 +307,80 @@ export class VandonComponent {
     //   //  window.location.reload();
     // });
   }
-  DoImportData(data:any)
-  {
+  DoImportData(data: any) {
     console.log(data);
     
     const transformedData = data.map((v: any) => ({
-      title: v.title?.trim()||'',
-      masp: v.masp?.trim()||'',
-      slug:`${convertToSlug(v?.title?.trim()||'')}_${GenId(5,false)}`,
-      giagoc: Number(v.giagoc)||0,
-      dvt: v.dvt||'',
-      soluong: Number(v.soluong)||0,
-      soluongkho: Number(v.soluongkho)||0,
-      ghichu: v.ghichu||'',
-      order: Number(v.order)||0,
-   }));
-   // Filter out duplicate masp values
-   const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
-      index === self.findIndex((t:any) => (
+      title: v.title?.trim() || '',
+      masp: v.masp?.trim() || '',
+      slug: `${convertToSlug(v?.title?.trim() || '')}_${GenId(5, false)}`,
+      giagoc: Number(v.giagoc) || 0,
+      dvt: v.dvt || '',
+      soluong: Number(v.soluong) || 0,
+      soluongkho: Number(v.soluongkho) || 0,
+      ghichu: v.ghichu || '',
+      order: Number(v.order) || 0,
+    }));
+    
+    // Filter out duplicate masp values
+    const uniqueData = transformedData.filter((value: any, index: any, self: any) =>
+      index === self.findIndex((t: any) => (
         t.masp === value.masp
       ))
-   )
+    );
+    
     const listId2 = uniqueData.map((v: any) => v.masp);
-    const listId1 = this._DonhangService.ListDonhang().map((v: any) => v.masp);
-    const listId3 = listId2.filter((item:any) => !listId1.includes(item));
+    const listId1 = this._DonhangGraphqlService.ListDonhang().map((v: any) => v.masp);
+    const listId3 = listId2.filter((item: any) => !listId1.includes(item));
+    
     const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._DonhangService.ListDonhang().find((v1) => v1.masp === v.masp);
-        if (item) {
-          const item1 = { ...item, ...v };
-          await this._DonhangService.updateDonhang(item1);
-        }
-        else{
-          await this._DonhangService.CreateDonhang(v);
-        }
-      });
-     const disableItem = listId3.map(async (v: any) => {
-        const item = this._DonhangService.ListDonhang().find((v1) => v1.masp === v);
+      const item = this._DonhangGraphqlService.ListDonhang().find((v1: any) => v1.masp === v.masp);
+      if (item) {
+        const item1 = { ...item, ...v };
+        await this._DonhangGraphqlService.updateDonhang(item1);
+      } else {
+        await this._DonhangGraphqlService.CreateDonhang(v);
+      }
+    });
+    
+    const disableItem = listId3.map(async (v: any) => {
+      const item = this._DonhangGraphqlService.ListDonhang().find((v1: any) => v1.masp === v);
+      if (item) {
         item.isActive = false;
-        await this._DonhangService.updateDonhang(item);
+        await this._DonhangGraphqlService.updateDonhang(item);
+      }
+    });
+    
+    Promise.all([...createuppdateitem, ...disableItem]).then(() => {
+      this._snackBar.open('Cập Nhật Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
       });
-      Promise.all([...createuppdateitem, ...disableItem]).then(() => {
-        this._snackBar.open('Cập Nhật Thành Công', '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-       // window.location.reload();
-      });
+    });
   }
   async ImporExcel(event: any) {
-  const data = await readExcelFile(event)
-  this.DoImportData(data);
-  }   
-  ExportExcel(data:any,title:any) {
-    writeExcelFile(data,title);
+    const data = await readExcelFile(event)
+    this.DoImportData(data);
+  }
+  
+  ExportExcel(data: any, title: any) {
+    writeExcelFile(data, title);
+  }
+
+  /**
+   * Xuất Excel danh sách vận đơn với loading
+   */
+  async exportVandonToExcel() {
+    await this._DonhangGraphqlService.exportVandonToExcel(this.dataSource().filteredData || this.Listvandon);
+  }
+
+  /**
+   * Xuất Excel toàn bộ danh sách
+   */
+  async exportAllToExcel() {
+    await this._DonhangGraphqlService.exportVandonToExcel();
   }
 
 
@@ -354,72 +389,87 @@ export class VandonComponent {
 
 
   @memoize()
-  FilterHederColumn(list:any,column:any)
-  {
-    const uniqueList = list.filter((obj: any, index: number, self: any) => 
-      index === self.findIndex((t: any) => t[column] === obj[column])
-    );
-    return uniqueList
+  FilterHederColumn(list: any, column: any) {
+    if (!list || list.length === 0) return [];
+    // Tối ưu với weakmap cache và giới hạn kết quả
+    const uniqueList = list
+      .filter((obj: any, index: number, self: any) => 
+        index === self.findIndex((t: any) => t[column] === obj[column])
+      )
+      .slice(0, 100); // Giới hạn 100 items để tăng performance
+    return uniqueList;
   }
-  @Debounce(300)
+  
+  @Debounce(500) // Tăng debounce để giảm số lần gọi
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource().filteredData = this.Listvandon.filter((v: any) => 
-      removeVietnameseAccents(v[column]).toLowerCase().includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase())
-  );  
-    const query = event.target.value.toLowerCase();  
-  }
-  trackByFn(index: number, item: any): any {
-    return item.id; // Use a unique identifier
-  }
-  ListFilter:any[] =[]
-  ChosenItem(item:any,column:any)
-  {
-    const CheckItem = this.dataSource().filteredData.filter((v:any)=>v[column]===item[column]);
-    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
-    console.log(this.ListFilter);
-    console.log(item);
-    console.log(column);
+    if (!this.Listvandon || this.Listvandon.length === 0) return;
     
-    if(CheckItem1.length>0)
-    {
-      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
-    }
-    else{
-      this.ListFilter = [...this.ListFilter,...CheckItem];
-    }    
-  }
-  ChosenAll(list:any)
-  {
-    list.forEach((v:any) => {
-      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
-      if(CheckItem)
-        {
-          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
-        }
-        else{
-          this.ListFilter.push(v);
-        }
+    const query = event.target.value.toLowerCase();
+    if (query.length < 2 && query.length > 0) return; // Chỉ filter khi >= 2 ký tự
+    
+    // Sử dụng requestAnimationFrame để tránh block UI
+    requestAnimationFrame(() => {
+      this.dataSource().filteredData = this.Listvandon.filter((v: any) => 
+        removeVietnameseAccents(v[column] || '').toLowerCase().includes(query) ||
+        (v[column] || '').toString().toLowerCase().includes(query)
+      );
     });
   }
-  ResetFilter()
-  {
-    this.ListFilter = this.Listvandon;
-    this.dataSource().data = this.Listvandon;
-    //this.dataSource().paginator = this.paginator;
+  
+  trackByFn(index: number, item: any): any {
+    return item.id;
+  }
+  
+  ListFilter: any[] = [];
+  
+  ChosenItem(item: any, column: any) {
+    if (!this.dataSource().filteredData) return;
+    
+    const CheckItem = this.dataSource().filteredData.filter((v: any) => v[column] === item[column]);
+    const CheckItem1 = this.ListFilter.filter((v: any) => v[column] === item[column]);
+    
+    if (CheckItem1.length > 0) {
+      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
+    } else {
+      this.ListFilter = [...this.ListFilter, ...CheckItem];
+    }    
+  }
+  
+  ChosenAll(list: any) {
+    if (!list) return;
+    
+    list.forEach((v: any) => {
+      const CheckItem = this.ListFilter.find((v1) => v1.id === v.id) ? true : false;
+      if (CheckItem) {
+        this.ListFilter = this.ListFilter.filter((item) => item.id !== v.id);
+      } else {
+        this.ListFilter.push(v);
+      }
+    });
+  }
+  
+  ResetFilter() {
+    this.ListFilter = this.Listvandon || [];
+    this.dataSource().data = this.Listvandon || [];
     this.dataSource().sort = this.sort;
   }
-  EmptyFiter()
-  {
+  
+  EmptyFiter() {
     this.ListFilter = [];
   }
-  CheckItem(item:any)
-  {
-    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  
+  CheckItem(item: any) {
+    return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
-  ApplyFilterColum(menu:any)
-  {    
-    this.dataSource().data = this.Listvandon.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
-    //this.dataSource().paginator = this.paginator;
+  
+  ApplyFilterColum(menu: any) {    
+    if (this.ListFilter.length === 0) {
+      this.dataSource().data = [];
+    } else {
+      this.dataSource().data = this.Listvandon.filter((v: any) => 
+        this.ListFilter.some((v1) => v1.id === v.id)
+      );
+    }
     this.dataSource().sort = this.sort;
     menu.closeMenu();
   }
