@@ -298,6 +298,9 @@ let DonhangService = class DonhangService {
                     ngaygiaoNormalized: normalizedDate,
                     tenkhachhang: v.khachhang?.name,
                     makhachhang: v.khachhang?.makh,
+                    diachi: v.khachhang?.diachi,
+                    SDT: v.khachhang?.SDT,
+                    email: v.khachhang?.email,
                     madonhang: v.madonhang,
                     tenhang: product?.title || '',
                     mahang: product?.masp || '',
@@ -323,7 +326,10 @@ let DonhangService = class DonhangService {
                     itemCount: 0,
                     customerInfo: {
                         makhachhang: item.makhachhang,
-                        tenkhachhang: item.tenkhachhang
+                        tenkhachhang: item.tenkhachhang,
+                        diachi: item.diachi,
+                        SDT: item.SDT,
+                        email: item.email
                     },
                     dateInfo: {
                         ngaygiao: item.ngaygiao,
@@ -349,12 +355,8 @@ let DonhangService = class DonhangService {
                 }
             };
         });
-        console.log('=== COMBINATION TOTALS DEBUG ===');
         combinationTotals.forEach((value, key) => {
-            console.log(`${key}: ${value.tongtiensauvat} VND (${value.itemCount} items)`);
         });
-        console.log('================================');
-        console.log('result', result);
         return this.createCongnoExcelFile(result || [], params);
     }
     async createCongnoExcelFile(data, params) {
@@ -428,11 +430,13 @@ let DonhangService = class DonhangService {
             worksheet.mergeCells('I1:P1');
             setFallbackLogo();
         }
-        worksheet.getCell('A4').value = 'Tên Khách Hàng :';
-        worksheet.getCell('A5').value = 'Địa chỉ: ';
-        worksheet.getCell('A6').value = 'Điện thoại:';
-        worksheet.getCell('A7').value = 'Người Liên Hệ:';
-        worksheet.getCell('I7').value = 'Email:';
+        const groupedData = this.groupDataByCustomerAndDate(data);
+        const firstCustomer = groupedData[0];
+        worksheet.getCell('A4').value = `Tên Khách Hàng: ${firstCustomer?.tenkhachhang || ''}`;
+        worksheet.getCell('A5').value = `Địa chỉ: ${firstCustomer?.diachi || ''}`;
+        worksheet.getCell('A6').value = `Điện thoại: ${firstCustomer?.SDT || ''}`;
+        worksheet.getCell('A7').value = `Người Liên Hệ: ${firstCustomer?.nguoilienhe || ''}`;
+        worksheet.getCell('I7').value = `Email: ${firstCustomer?.email || ''}`;
         worksheet.mergeCells('A4:P4');
         worksheet.mergeCells('A5:P5');
         worksheet.mergeCells('A6:P6');
@@ -466,7 +470,6 @@ let DonhangService = class DonhangService {
         };
         headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
         headerRow.height = 25;
-        const groupedData = this.groupDataByCustomerAndDate(data);
         let currentRow = 11;
         const mergeRanges = [];
         for (const customerData of groupedData) {
@@ -600,6 +603,9 @@ let DonhangService = class DonhangService {
                 customerMap.set(customerKey, {
                     makhachhang: item.makhachhang,
                     tenkhachhang: item.tenkhachhang,
+                    diachi: item.diachi,
+                    SDT: item.SDT,
+                    email: item.email,
                     tongtiensauvat: 0,
                     items: [],
                     dateGroups: []

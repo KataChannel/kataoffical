@@ -365,6 +365,9 @@ export class DonhangService {
           ngaygiaoNormalized: normalizedDate, // Thêm field để group chính xác
           tenkhachhang: v.khachhang?.name,
           makhachhang: v.khachhang?.makh,
+          diachi: v.khachhang?.diachi,
+          SDT: v.khachhang?.SDT,
+          email: v.khachhang?.email,
           madonhang: v.madonhang,
           tenhang: product?.title || '',
           mahang: product?.masp || '',
@@ -395,7 +398,10 @@ export class DonhangService {
           itemCount: 0,
           customerInfo: {
             makhachhang: item.makhachhang,
-            tenkhachhang: item.tenkhachhang
+            tenkhachhang: item.tenkhachhang,
+            diachi: item.diachi,
+            SDT: item.SDT,
+            email: item.email
           },
           dateInfo: {
             ngaygiao: item.ngaygiao,
@@ -427,12 +433,9 @@ export class DonhangService {
       };
     });
     
-    console.log('=== COMBINATION TOTALS DEBUG ===');
     combinationTotals.forEach((value, key) => {
-      console.log(`${key}: ${value.tongtiensauvat} VND (${value.itemCount} items)`);
+      // console.log(`${key}: ${value.tongtiensauvat} VND (${value.itemCount} items)`);
     });
-    console.log('================================');
-    console.log('result', result);
     
     // Group data by customer and create Excel file
     return this.createCongnoExcelFile(result || [], params);
@@ -529,11 +532,16 @@ export class DonhangService {
     setFallbackLogo();
   }
   
-  worksheet.getCell('A4').value = 'Tên Khách Hàng :';
-  worksheet.getCell('A5').value = 'Địa chỉ: ';
-  worksheet.getCell('A6').value = 'Điện thoại:';
-  worksheet.getCell('A7').value = 'Người Liên Hệ:';
-  worksheet.getCell('I7').value = 'Email:';
+  // Group data by customer and then by date
+  const groupedData = this.groupDataByCustomerAndDate(data);
+  
+  // Get first customer info for display
+  const firstCustomer = groupedData[0];  
+  worksheet.getCell('A4').value = `Tên Khách Hàng: ${firstCustomer?.tenkhachhang || ''}`;
+  worksheet.getCell('A5').value = `Địa chỉ: ${firstCustomer?.diachi || ''}`; 
+  worksheet.getCell('A6').value = `Điện thoại: ${firstCustomer?.SDT || ''}`;
+  worksheet.getCell('A7').value = `Người Liên Hệ: ${firstCustomer?.nguoilienhe || ''}`;
+  worksheet.getCell('I7').value = `Email: ${firstCustomer?.email || ''}`;
 
   // Merge company info across columns
   worksheet.mergeCells('A4:P4');
@@ -581,9 +589,6 @@ export class DonhangService {
     };
     headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
     headerRow.height = 25;
-
-    // Group data by customer and then by date
-    const groupedData = this.groupDataByCustomerAndDate(data);
     
     let currentRow = 11; // Start after header row
     const mergeRanges: any[] = [];
@@ -757,15 +762,17 @@ export class DonhangService {
    * Group data by customer and then by date (updated with normalized date keys)
    */
   private groupDataByCustomerAndDate(data: any[]): any[] {
-    const customerMap = new Map();
-    
+    const customerMap = new Map();    
     data.forEach(item => {
       const customerKey = item.makhachhang || 'unknown-customer';
       
       if (!customerMap.has(customerKey)) {
         customerMap.set(customerKey, {
           makhachhang: item.makhachhang,
-          tenkhachhang: item.tenkhachhang,
+          tenkhachhang: item.tenkhachhang,  
+          diachi: item.diachi,
+          SDT: item.SDT,
+          email : item.email,
           tongtiensauvat: 0, // Sẽ được tính lại dựa trên từng date group
           items: [],
           dateGroups: []
