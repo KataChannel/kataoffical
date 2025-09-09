@@ -19,6 +19,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { DonhangGraphqlService } from '../donhang-graphql.service';
+import { DonhangService } from '../donhang.service';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
@@ -100,6 +101,7 @@ export class VandonComponent {
   
   // GraphQL Service injection
   private _DonhangGraphqlService: DonhangGraphqlService = inject(DonhangGraphqlService);
+  private _DonhangService: DonhangService = inject(DonhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
@@ -184,7 +186,12 @@ export class VandonComponent {
       
       // Dùng setTimeout để tránh blocking UI thread
       setTimeout(async () => {
+        // Load dữ liệu vận đơn với GraphQL
         await this._DonhangGraphqlService.searchDonhang(this.SearchParams);
+        
+        // Load dữ liệu phiếu chuyển để xuất Excel
+        await this._DonhangService.Phieuchuyen(this.SearchParams);
+        
         this.CountItem = this._DonhangGraphqlService.ListDonhang().length;
         
         // Sử dụng requestAnimationFrame để smooth update
@@ -209,6 +216,7 @@ export class VandonComponent {
   
   async refresh() {
     await this._DonhangGraphqlService.searchDonhang(this.SearchParams);
+    await this._DonhangService.Phieuchuyen(this.SearchParams);
   }
   private initializeColumns(): void {
     // Chỉ tạo columns cho các trường được hiển thị để tối ưu performance

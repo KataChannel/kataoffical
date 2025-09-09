@@ -6,6 +6,7 @@ import { GraphqlService } from '../../shared/services/graphql.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { SharedSocketService } from '../../shared/services/sharedsocket.service';
+import { DonhangService } from './donhang.service';
 import moment from 'moment';
 
 @Injectable({
@@ -18,6 +19,7 @@ export class DonhangGraphqlService {
   private _snackBar = inject(MatSnackBar);
   private _ErrorLogService = inject(ErrorLogService);
   private _sharedSocketService = inject(SharedSocketService);
+  private _donhangService = inject(DonhangService);
   
   private socket: any;
 
@@ -427,13 +429,16 @@ export class DonhangGraphqlService {
   }
 
   /**
-   * Xuất Excel danh sách vận đơn
+   * Xuất Excel danh sách vận đơn và phiếu chuyển
    */
   async exportVandonToExcel(data?: any[]) {
     try {
-      const exportData = data || this.ListVandon();
+      const vandonData = data || this.ListVandon();
       
-      if (exportData.length === 0) {
+      // Lấy dữ liệu phiếu chuyển từ DonhangService
+      const phieuchuyenData = this._donhangService.ListDonhang();
+      
+      if (vandonData.length === 0 && phieuchuyenData.length === 0) {
         this._snackBar.open('Không có dữ liệu để xuất', '', {
           duration: 3000,
           horizontalPosition: 'end',
@@ -443,8 +448,8 @@ export class DonhangGraphqlService {
         return;
       }
 
-      // Chuẩn bị dữ liệu xuất Excel - Chỉ các trường cần thiết
-      const excelData = exportData.map((item: any, index: number) => ({
+      // Chuẩn bị dữ liệu xuất Excel cho vận đơn - Chỉ các trường cần thiết
+      const vandonExcelData = vandonData.map((item: any, index: number) => ({
         'STT': index + 1,
         'Mã Đơn Hàng': item.madonhang || '',
         'Khách Hàng': item.khachhang || '',
@@ -457,11 +462,40 @@ export class DonhangGraphqlService {
         'Trạng Thái': this.getStatusLabel(item.status) || ''
       }));
 
+      // Chuẩn bị dữ liệu xuất Excel cho phiếu chuyển
+      const phieuchuyenExcelData = phieuchuyenData.map((item: any, index: number) => ({
+        'STT': index + 1,
+        'Ngày Giao': item.ngaygiao ? new Date(item.ngaygiao).toLocaleString('vi-VN') : '',
+        'Tên Khách Hàng': item.name || '',
+        'Số Lượng TT': item.soluongtt || 0,
+        'Trọng Tải': item.loadpoint || 0,
+        'Chuyến': item.chuyen || '',
+        'Số Điện Thoại': item.sdt || '',
+        'Giờ Nhận Hàng': item.gionhanhang || '',
+        'Tổng Số Món': item.tongsomon || 0,
+        'Địa Chỉ': item.diachi || '',
+        'Shipper': item.shipper || '',
+        'Giờ Đi': item.giodi || '',
+        'Giờ Về': item.giove || '',
+        'Ký Nhận': item.kynhan || '',
+        'Trạng Thái': this.getStatusLabel(item.status) || ''
+      }));
+
       // Import dynamic để tránh bundle size
-      const { writeExcelFile } = await import('../../shared/utils/exceldrive.utils');
-      const fileName = `VanDon_${new Date().toISOString().slice(0, 10)}`;
+      const { writeExcelFileSheets } = await import('../../shared/utils/exceldrive.utils');
+      const fileName = `VanDon_PhieuChuyen_${new Date().toISOString().slice(0, 10)}`;
       
-      writeExcelFile(excelData, fileName);
+      // Tạo Excel với 2 sheets - format đúng theo interface
+      const sheets = {
+        'Vận Đơn': {
+          data: vandonExcelData
+        },
+        'Phiếu Chuyển': {
+          data: phieuchuyenExcelData
+        }
+      };
+      
+      writeExcelFileSheets(sheets, fileName);
       
       this._snackBar.open('Xuất Excel thành công', '', {
         duration: 3000,
