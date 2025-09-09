@@ -563,7 +563,7 @@ doFilterKhachhang(event: Event){
     this.DoImportData(data);
   }  
   async ExportExcel(data: any, title: any) {
-    this.isExporting = true;
+    this.isExporting = true;   
     if( this.editDonhang.length>0) {
       this.SearchParams.ids = this.editDonhang.map((v: any) => v.id);
     }
@@ -582,6 +582,7 @@ doFilterKhachhang(event: Event){
         verticalPosition: 'top',
         panelClass: ['snackbar-success']
       });
+      this.editDonhang = [];
     } catch (error) {
       console.error('Error exporting Excel:', error);
       

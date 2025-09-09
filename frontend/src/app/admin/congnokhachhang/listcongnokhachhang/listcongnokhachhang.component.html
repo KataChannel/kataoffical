@@ -32,7 +32,7 @@
           {{CountItem}} Đơn Hàng
         </span>
 
-       <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(ListExport, 'Congno')" color="primary"
+       <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(editDonhang, 'Congno')" color="primary"
           mat-icon-button class="relative">
           <div *ngIf="isExporting" class="absolute inset-0 flex items-center justify-center">
             <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
