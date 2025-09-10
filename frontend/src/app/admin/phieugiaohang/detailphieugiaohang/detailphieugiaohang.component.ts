@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   computed,
   effect,
@@ -74,6 +75,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   _dialog: MatDialog = inject(MatDialog);
+  _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
     displayedColumns: string[] = [
     'STT',
     'title',
@@ -325,13 +327,13 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   }
 
   private async updatePhieugiaohang() {
-    try {
-      console.log(this.DetailPhieugiaohang());
-      
+    try {      
       this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang().sanpham.map((v:any)=>{
         v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
         return v
       })
+      this.UpdateTongTongTienVat();
+
       await this._PhieugiaohangService.updatePhieugiao(this.DetailPhieugiaohang());
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,
@@ -343,6 +345,24 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
     } catch (error) {
       console.error('Lỗi khi cập nhật phieugiaohang:', error);
     }
+  }
+  UpdateTongTongTienVat(){
+    const tong = this.DetailPhieugiaohang().sanpham?.reduce((sum:any, item:any) => sum + (Number(item.slgiao) * Number(item.giaban)||0), 0) || 0;
+    const tongtien = tong*(1+Number(this.DetailPhieugiaohang().vat));
+    const tongvat = tong*this.DetailPhieugiaohang().vat;
+     this.DetailPhieugiaohang.update((data: any) => ({
+          ...data,
+          tongtien: tongtien,
+          tongvat: tongvat
+     }));
+    
+    // Force change detection để UI cập nhật
+    this._cdr.detectChanges();
+    
+    console.log('tong',tong);
+    console.log('tongtien',tongtien);
+    console.log('tongvat',tongvat);
+    console.log(this.DetailPhieugiaohang());  
   }
 
   async DeleteData() {

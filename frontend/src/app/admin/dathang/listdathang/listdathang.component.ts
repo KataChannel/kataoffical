@@ -673,8 +673,8 @@ export class ListDathangComponent {
               dvt: product.dvt || '',
             },
             sldat: Number(row.sldat) || 0,
-            slgiao: Number(row.slgiao) || 0,
-            slnhan: Number(row.slnhan) || 0,
+            slgiao: Number(row.sldat) || 0,
+            slnhan: Number(row.sldat) || 0,
             ghichu: row.ghichu || '',
             // Preserve original row data for reference
             originalData: row,

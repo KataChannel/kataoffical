@@ -455,9 +455,9 @@ export class DonhangGraphqlService {
         'Khách Hàng': item.khachhang || '',
         'Tên Sản Phẩm': item.title || '',
         'Đơn Vị Tính': item.dvt || '',
-        'SL Đặt': item.sldat || 0,
-        'SL Giao': item.slgiao || 0,
-        'SL Nhận': item.slnhan || 0,
+        'SL Đặt': Number(item.sldat) || 0,
+        'SL Giao': Number(item.slgiao) || 0,
+        'SL Nhận': Number(item.slnhan) || 0,
         'Ngày Giao': item.ngaygiao ? new Date(item.ngaygiao).toLocaleDateString('vi-VN') : '',
         'Trạng Thái': this.getStatusLabel(item.status) || ''
       }));
@@ -467,18 +467,19 @@ export class DonhangGraphqlService {
         'STT': index + 1,
         'Ngày Giao': item.ngaygiao ? new Date(item.ngaygiao).toLocaleString('vi-VN') : '',
         'Tên Khách Hàng': item.name || '',
-        'Số Lượng TT': item.soluongtt || 0,
-        'Trọng Tải': item.loadpoint || 0,
+        'Số Lượng': item.soluongtt || 0,
         'Chuyến': item.chuyen || '',
+        'Địa Chỉ': item.diachi || '',
+        'Liên Hệ': '',
         'Số Điện Thoại': item.sdt || '',
         'Giờ Nhận Hàng': item.gionhanhang || '',
         'Tổng Số Món': item.tongsomon || 0,
-        'Địa Chỉ': item.diachi || '',
+        'Số Lượng TT': item.loadpoint || 0,
         'Shipper': item.shipper || '',
         'Giờ Đi': item.giodi || '',
         'Giờ Về': item.giove || '',
         'Ký Nhận': item.kynhan || '',
-        'Trạng Thái': this.getStatusLabel(item.status) || ''
+        // 'Trạng Thái': this.getStatusLabel(item.status) || ''
       }));
 
       // Import dynamic để tránh bundle size

@@ -678,4 +678,27 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
       
       console.log('=== END MANUAL DEBUG ===');
     }
+    
+    /**
+     * Xóa khách hàng khỏi danh sách nhóm khách hàng
+     */
+    RemoveKhachhang(item: any) {
+      if (!item || !item.id) {
+        console.warn('Invalid item to remove:', item);
+        return;
+      }
+
+      // Tìm và xóa khách hàng khỏi CheckListKhachhang
+      const index = this.CheckListKhachhang.findIndex((v: any) => v.id === item.id);
+      
+      if (index !== -1) {
+        this.CheckListKhachhang.splice(index, 1);
+        console.log(`Đã xóa khách hàng ${item.name} khỏi danh sách`);
+        
+        // Trigger change detection nếu cần thiết (với OnPush strategy)
+        // this.cdr.detectChanges(); // Uncomment nếu cần thiết
+      } else {
+        console.warn(`Không tìm thấy khách hàng ${item.name} trong danh sách để xóa`);
+      }
+    }
 }

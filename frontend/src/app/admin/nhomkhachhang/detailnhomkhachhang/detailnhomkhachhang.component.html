@@ -56,9 +56,9 @@
         </button>
         
         <!-- 🔍 Debug button -->
-        <button mat-stroked-button color="accent" (click)="debugRelationUpdate()" *ngIf="isEdit()">
+        <!-- <button mat-stroked-button color="accent" (click)="debugRelationUpdate()" *ngIf="isEdit()">
           Debug Relations
-        </button>
+        </button> -->
            <mat-menu  #menu="matMenu">
                <div (click)="$event.stopPropagation()"  class="cursor-pointer flex flex-col space-y-4 p-3">                                        
                <div class="relative w-full">
@@ -82,7 +82,10 @@
                </div>
            </mat-menu>
            @for (item of CheckListKhachhang; track $index) {
-               <span class="whitespace-nowrap p-2 rounded-lg bg-slate-200">{{item.name}}</span>
+               <span class="whitespace-nowrap p-2 rounded-lg bg-slate-200">
+                {{item.name}}
+                <span class="material-symbols-outlined text-red-600 cursor-pointer" (click)="RemoveKhachhang(item)">close</span>
+              </span>
            }
         </div>
       </div>

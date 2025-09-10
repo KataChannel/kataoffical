@@ -2085,6 +2085,8 @@ let DonhangService = class DonhangService {
                         ghichu: data.ghichu,
                         printCount: data.printCount,
                         isshowvat: data.isshowvat,
+                        tongtien: parseFloat((data.tongtien ?? 0).toFixed(3)),
+                        tongvat: parseFloat((data.tongvat ?? 0).toFixed(3))
                     },
                     include: {
                         sanpham: true,
