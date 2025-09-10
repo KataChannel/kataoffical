@@ -1,0 +1,333 @@
+/* Styles cho List Công Nợ Nhà Cung Cấp Component */
+
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+.h-screen-12 {
+  height: calc(100vh - 3rem);
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.space-y-2 > * + * {
+  margin-top: 0.5rem;
+}
+
+.space-x-2 > * + * {
+  margin-left: 0.5rem;
+}
+
+.grid {
+  display: grid;
+}
+
+.lg\:grid-cols-2 {
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.p-2 {
+  padding: 0.5rem;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+.bg-opacity-75 {
+  background-color: rgba(255, 255, 255, 0.75);
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.z-50 {
+  z-index: 50;
+}
+
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.h-12 {
+  height: 3rem;
+}
+
+.w-12 {
+  width: 3rem;
+}
+
+.border-b-2 {
+  border-bottom-width: 2px;
+}
+
+.border-blue-600 {
+  border-color: #2563eb;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.text-gray-700 {
+  color: #374151;
+}
+
+.opacity-50 {
+  opacity: 0.5;
+}
+
+.lg\:flex {
+  @media (min-width: 1024px) {
+    display: flex;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.bg-slate-200 {
+  background-color: #e2e8f0;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.h-5 {
+  height: 1.25rem;
+}
+
+.w-5 {
+  width: 1.25rem;
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.w-72 {
+  width: 18rem;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.gap-1 {
+  gap: 0.25rem;
+}
+
+.max-h-40 {
+  max-height: 10rem;
+}
+
+.max-h-96 {
+  max-height: 24rem;
+}
+
+.hover\:bg-gray-50:hover {
+  background-color: #f9fafb;
+}
+
+.text-blue-600 {
+  color: #2563eb;
+}
+
+.hover\:underline:hover {
+  text-decoration: underline;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.text-green-600 {
+  color: #059669;
+}
+
+.py-20 {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
+.text-6xl {
+  font-size: 3.75rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Material Table styles */
+.mat-mdc-table {
+  background: transparent;
+}
+
+.mat-mdc-header-row {
+  background-color: #f8fafc;
+}
+
+.mat-mdc-row:hover {
+  background-color: #f1f5f9;
+}
+
+/* Custom loading states */
+.loading-state {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+  .mat-mdc-table {
+    font-size: 0.75rem;
+  }
+  
+  .mat-mdc-header-cell,
+  .mat-mdc-cell {
+    padding: 0.5rem 0.25rem;
+  }
+}
+
+/* Filter styles */
+.filter-active {
+  background-color: #dbeafe;
+  border-color: #3b82f6;
+}
+
+/* Export button animation */
+.export-animation {
+  transform: scale(0.95);
+  transition: transform 0.2s ease-in-out;
+}
+
+.export-animation:hover {
+  transform: scale(1);
+}
+
+/* Status indicators */
+.status-active {
+  color: #059669;
+  background-color: #d1fae5;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-inactive {
+  color: #dc2626;
+  background-color: #fee2e2;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Drawer styles */
+.mat-drawer-container {
+  background-color: #fafafa;
+}
+
+.mat-drawer {
+  background-color: white;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Paginator styles */
+.mat-mdc-paginator {
+  background-color: white;
+  border-top: 1px solid #e5e7eb;
+}

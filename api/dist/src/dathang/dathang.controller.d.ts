@@ -1,4 +1,5 @@
 import { DathangService } from './dathang.service';
+import { Response } from 'express';
 export declare class DathangController {
     private readonly dathangService;
     constructor(dathangService: DathangService);
@@ -171,6 +172,18 @@ export declare class DathangController {
         pageSize: any;
         totalPages: number;
     }>;
+    congnoncc(params: any): Promise<{
+        id: any;
+        madathang: any;
+        ngaygiao: any;
+        tong: any;
+        soluong: any;
+        tongtien: any;
+        tongvat: any;
+        tennhacungcap: any;
+        manhacungcap: any;
+    }[]>;
+    downloadcongnoncc(params: any, res: Response): Promise<void>;
     findAll(): Promise<{
         sanpham: any[];
         nhacungcap: {

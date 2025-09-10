@@ -554,9 +554,25 @@ export const routes: Routes = [
         canActivate: [PermissionGuard],
         data: { permission: 'congnoncc.view' },
         loadComponent: () =>
-          import('./admin/congnoncc/congnoncc.component').then(
-            (c) => c.CongnonccComponent
-          ),
+          import(
+            './admin/congnoncc/listcongnoncc/listcongnoncc.component'
+          ).then((c) => c.ListcongnonccComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import(
+                './admin/congnoncc/listcongnoncc/listcongnoncc.component'
+              ).then((c) => c.ListcongnonccComponent),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import(
+                './admin/congnoncc/detailcongnoncc/detailcongnoncc.component'
+              ).then((c) => c.DetailCongnonccComponent),
+          },
+        ],
       },
       {
         path: 'user',

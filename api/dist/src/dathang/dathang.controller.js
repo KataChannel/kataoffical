@@ -39,6 +39,20 @@ let DathangController = class DathangController {
     async search(params) {
         return this.dathangService.search(params);
     }
+    async congnoncc(params) {
+        return this.dathangService.congnoncc(params);
+    }
+    async downloadcongnoncc(params, res) {
+        try {
+            const result = await this.dathangService.downloadcongnoncc(params);
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', 'attachment; filename=congnoncc.xlsx');
+            res.send(result);
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
     findAll() {
         return this.dathangService.findAll();
     }
@@ -124,6 +138,21 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], DathangController.prototype, "search", null);
+__decorate([
+    (0, common_1.Post)('congnoncc'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DathangController.prototype, "congnoncc", null);
+__decorate([
+    (0, common_1.Post)('downloadcongnoncc'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], DathangController.prototype, "downloadcongnoncc", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

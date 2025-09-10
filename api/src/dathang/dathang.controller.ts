@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, Res } from '@nestjs/common';
 import { DathangService } from './dathang.service';
 import { AuditAction } from '@prisma/client';
 import { Audit } from 'src/auditlog/audit.decorator';
+import { Response } from 'express';
 
 @Controller('dathang')
 export class DathangController {
@@ -34,6 +35,23 @@ export class DathangController {
   @Post('search')
     async search(@Body() params: any) {
     return this.dathangService.search(params);
+  }
+  
+  @Post('congnoncc')
+  async congnoncc(@Body() params: any) {
+    return this.dathangService.congnoncc(params);
+  }
+  
+  @Post('downloadcongnoncc')
+  async downloadcongnoncc(@Body() params: any, @Res() res: Response) {
+    try {
+      const result = await this.dathangService.downloadcongnoncc(params);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=congnoncc.xlsx');
+      res.send(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
   @Get()
   findAll() {

@@ -1,0 +1,179 @@
+<div class="detail-congnoncc-container p-4">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <div class="flex items-center space-x-4">
+      <button mat-icon-button (click)="cancel()" matTooltip="Quay lại">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h2 class="text-2xl font-bold text-gray-800">
+        {{ DetailDathang()?.madathang || 'Đặt Hàng Mới' }}
+      </h2>
+    </div>
+    
+    <div class="flex space-x-2">
+      <button mat-raised-button color="accent" (click)="toggleEdit()" 
+              *ngIf="!isEdit()">
+        <mat-icon>edit</mat-icon>
+        Chỉnh sửa
+      </button>
+      
+      <button mat-raised-button color="primary" (click)="saveDathang()" 
+              *ngIf="isEdit()">
+        <mat-icon>save</mat-icon>
+        Lưu
+      </button>
+      
+      <button mat-stroked-button (click)="cancel()">
+        <mat-icon>close</mat-icon>
+        Hủy
+      </button>
+    </div>
+  </div>
+
+  <!-- Form thông tin đặt hàng -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <mat-form-field appearance="outline">
+      <mat-label>Mã Đặt Hàng</mat-label>
+      <input matInput [(ngModel)]="DetailDathang().madathang" [readonly]="!isEdit()" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Ngày Giao</mat-label>
+      <input matInput [matDatepicker]="picker" [(ngModel)]="DetailDathang().ngaygiao" [readonly]="!isEdit()" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker" *ngIf="isEdit()"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nhà Cung Cấp</mat-label>
+      <mat-select [(ngModel)]="DetailDathang().nhacungcapId" [disabled]="!isEdit()">
+        <mat-option *ngFor="let ncc of filterNhacungcap" [value]="ncc.id">
+          {{ncc.hovaten}} - {{ncc.sdt}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Ghi Chú</mat-label>
+      <textarea matInput [(ngModel)]="DetailDathang().ghichu" rows="3" [readonly]="!isEdit()"></textarea>
+    </mat-form-field>
+  </div>
+
+  <!-- Bảng sản phẩm -->
+  <div class="bg-white rounded-lg shadow-sm border">
+    <div class="p-4 border-b">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-semibold text-gray-800">
+          Danh sách sản phẩm ({{CountItem()}})
+        </h3>
+        <button mat-raised-button color="primary" (click)="addSanpham()" 
+                *ngIf="isEdit()">
+          <mat-icon>add</mat-icon>
+          Thêm sản phẩm
+        </button>
+      </div>
+    </div>
+
+    <div class="overflow-auto">
+      <table mat-table [dataSource]="dataSource()" class="w-full">
+        
+        <!-- Cột tên sản phẩm -->
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>{{ColumnName['title']}}</th>
+          <td mat-cell *matCellDef="let element">{{element.title}}</td>
+        </ng-container>
+
+        <!-- Cột mã sản phẩm -->
+        <ng-container matColumnDef="masp">
+          <th mat-header-cell *matHeaderCellDef>{{ColumnName['masp']}}</th>
+          <td mat-cell *matCellDef="let element">{{element.masp}}</td>
+        </ng-container>
+
+        <!-- Cột đơn vị tính -->
+        <ng-container matColumnDef="dvt">
+          <th mat-header-cell *matHeaderCellDef>{{ColumnName['dvt']}}</th>
+          <td mat-cell *matCellDef="let element">{{element.dvt}}</td>
+        </ng-container>
+
+        <!-- Cột giá bán -->
+        <ng-container matColumnDef="giaban">
+          <th mat-header-cell *matHeaderCellDef>{{ColumnName['giaban']}}</th>
+          <td mat-cell *matCellDef="let element">
+            <span *ngIf="!isEdit()">
+              {{element.giaban | currency:'VND':'symbol':'1.0-0':'vi-VN'}}
+            </span>
+            <mat-form-field *ngIf="isEdit()" appearance="outline" class="w-full">
+              <input matInput type="number" [(ngModel)]="element.giaban" 
+                     (input)="updateSanphamData()" />
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <!-- Cột số lượng -->
+        <ng-container matColumnDef="soluong">
+          <th mat-header-cell *matHeaderCellDef>{{ColumnName['soluong']}}</th>
+          <td mat-cell *matCellDef="let element">
+            <span *ngIf="!isEdit()">{{element.soluong | number}}</span>
+            <mat-form-field *ngIf="isEdit()" appearance="outline" class="w-full">
+              <input matInput type="number" [(ngModel)]="element.soluong" 
+                     (input)="updateSanphamData()" />
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <!-- Cột tổng tiền -->
+        <ng-container matColumnDef="tongtien">
+          <th mat-header-cell *matHeaderCellDef>{{ColumnName['tongtien']}}</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="font-semibold text-green-600">
+              {{(element.giaban * element.soluong) | currency:'VND':'symbol':'1.0-0':'vi-VN'}}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Cột actions -->
+        <ng-container matColumnDef="actions" *ngIf="isEdit()">
+          <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+          <td mat-cell *matCellDef="let element; let i = index">
+            <button mat-icon-button color="warn" (click)="removeSanpham(i)" 
+                    matTooltip="Xóa sản phẩm">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayColumnsWithActions"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayColumnsWithActions;"></tr>
+      </table>
+
+      <!-- Thông báo khi không có dữ liệu -->
+      <div *ngIf="dataSource().data.length === 0" 
+           class="flex flex-col items-center justify-center py-20 text-gray-500">
+        <mat-icon class="text-6xl mb-4">shopping_cart</mat-icon>
+        <h3 class="text-xl font-medium mb-2">Chưa có sản phẩm</h3>
+        <p>Thêm sản phẩm vào đặt hàng</p>
+      </div>
+    </div>
+
+    <!-- Footer với tổng tiền -->
+    <div class="p-4 border-t bg-gray-50">
+      <div class="flex justify-end">
+        <div class="text-right">
+          <div class="text-lg font-semibold text-gray-800">
+            Tổng tiền: <span class="text-green-600">
+              {{calculateTotal() | currency:'VND':'symbol':'1.0-0':'vi-VN'}}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phân trang -->
+  <mat-paginator 
+    [pageSizeOptions]="[10, 25, 50]" 
+    [pageSize]="10"
+    showFirstLastButtons
+    class="mt-4">
+  </mat-paginator>
+</div>

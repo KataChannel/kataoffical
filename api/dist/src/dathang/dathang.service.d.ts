@@ -633,4 +633,16 @@ export declare class DathangService {
     private updateTonKhoSafely;
     private calculateInitialTonKhoValue;
     getPendingReceiptsForProduct(sanphamId: string): Promise<any[]>;
+    congnoncc(params: any): Promise<{
+        id: any;
+        madathang: any;
+        ngaygiao: any;
+        tong: any;
+        soluong: any;
+        tongtien: any;
+        tongvat: any;
+        tennhacungcap: any;
+        manhacungcap: any;
+    }[]>;
+    downloadcongnoncc(params: any): Promise<any>;
 }

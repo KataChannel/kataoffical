@@ -1759,4 +1759,230 @@ async deletebulk(data: any) {
     }
   }
 
+  async congnoncc(params: any) {
+    const { Batdau, Ketthuc, query } = params;
+
+    // ✅ Sử dụng date range cho đặt hàng
+    const dateRange =  {
+        gte: Batdau ? new Date(Batdau) : undefined,
+        lte: Ketthuc ? new Date(Ketthuc) : undefined,
+      }
+
+    const where: any = {
+      ngaygiao: dateRange,
+      status: Array.isArray(params.Status)
+        ? { in: params.Status }
+        : params.Status,
+    };
+
+    if (query) {
+      where.OR = [
+        { madncc: { contains: query, mode: 'insensitive' } }, // Thay đổi từ madonhang
+        { nhacungcap: { name: { contains: query, mode: 'insensitive' } } }, // Thay đổi từ khachhang
+      ];
+    }
+
+    const dathangs = await this.prisma.dathang.findMany({ // Thay đổi từ donhang
+      where,
+      include: {
+        sanpham: {
+          include: {
+            sanpham: true,
+          },
+        },
+        nhacungcap: true, // Thay đổi từ khachhang
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    
+    const result = dathangs.map((v: any) => {
+      const [tong, soluong] = v.sanpham.reduce(
+        (acc: [number, number], item: any) => {
+          const slnhan = parseFloat((item.slnhan || 0).toString());
+          const giaban = parseFloat((item.sanpham?.giaban || 0).toString());
+          return [
+            acc[0] + (slnhan * giaban),
+            acc[1] + slnhan
+          ];
+        },
+        [0, 0]
+      );      
+      return {
+        id: v.id,
+        madathang: v.madncc, // Thay đổi từ madonhang
+        ngaygiao: v.ngaygiao,
+        tong: tong.toFixed(3),
+        soluong: soluong.toFixed(3),
+        tongtien: v.tongtien,
+        tongvat: v.tongvat,
+        tennhacungcap: v.nhacungcap?.name, // Thay đổi từ name
+        manhacungcap: v.nhacungcap?.mancc, // Thay đổi từ makh
+      }
+    })
+    return result || [];
+  }
+
+  async downloadcongnoncc(params: any) {
+    const { Batdau, Ketthuc, query, ids } = params;
+    
+    // ✅ Sử dụng date range cho đặt hàng  
+    const dateRange =  {
+        gte: Batdau ? new Date(Batdau) : undefined,
+        lte: Ketthuc ? new Date(Ketthuc) : undefined,
+    } 
+    
+    const where: any = {
+      ngaygiao: dateRange,
+      status: Array.isArray(params.Status)
+        ? { in: params.Status }
+        : params.Status,
+    };
+    
+    if(ids?.length > 0){
+      where.id = { in: ids };
+    }
+    
+    if (query) {
+      where.OR = [
+        { madncc: { contains: query, mode: 'insensitive' } }, // Thay đổi từ madonhang
+        { nhacungcap: { name: { contains: query, mode: 'insensitive' } } }, // Thay đổi từ khachhang
+      ];
+    }
+    
+    const dathangs = await this.prisma.dathang.findMany({ // Thay đổi từ donhang
+      where,
+      include: {
+        sanpham: {
+          include: {
+            sanpham: true,
+          },
+        },
+        nhacungcap: true, // Thay đổi từ khachhang
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    
+    const Sanphams = await this.prisma.sanpham.findMany();
+    
+    // Step 1: Flatten all order items với thông tin cơ bản
+    const flatItems = dathangs.flatMap((v: any) => {
+      return v.sanpham.map((item: any) => ({
+        madathang: v.madncc, // Thay đổi từ madonhang
+        ngaygiao: v.ngaygiao,
+        tennhacungcap: v.nhacungcap?.name, // Thay đổi từ tenkhachhang
+        manhacungcap: v.nhacungcap?.mancc, // Thay đổi từ makhachhang
+        sdt: v.nhacungcap?.sdt,
+        diachi: v.nhacungcap?.diachi,
+        sanphamId: item.sanphamId,
+        title: item.sanpham?.title,
+        masp: item.sanpham?.masp,
+        dvt: item.sanpham?.dvt,
+        giaban: parseFloat((item.sanpham?.giaban || 0).toString()),
+        slnhan: parseFloat((item.slnhan || 0).toString()),
+        tongtien: parseFloat((item.slnhan || 0).toString()) * parseFloat((item.sanpham?.giaban || 0).toString()),
+        ghichu: item.ghichu,
+        vat: v.vat || 0,
+        tongvat: v.tongvat || 0,
+        tongtienOrder: v.tongtien || 0,
+      }));
+    });
+
+    // Step 2: Group by customer and calculate totals
+    const customerGroups = flatItems.reduce((groups: any, item: any) => {
+      const key = `${item.manhacungcap}_${item.tennhacungcap}`; // Thay đổi key
+      
+      if (!groups[key]) {
+        groups[key] = {
+          manhacungcap: item.manhacungcap, // Thay đổi từ makhachhang
+          tennhacungcap: item.tennhacungcap, // Thay đổi từ tenkhachhang
+          sdt: item.sdt,
+          diachi: item.diachi,
+          items: [],
+          totalQuantity: 0,
+          totalAmount: 0,
+          vatAmount: 0,
+          finalAmount: 0
+        };
+      }
+      
+      groups[key].items.push(item);
+      groups[key].totalQuantity += item.slnhan;
+      groups[key].totalAmount += item.tongtien;
+      
+      return groups;
+    }, {});
+
+    // Step 3: Create final Excel data
+    const excelData = Object.values(customerGroups).flatMap((group: any) => {
+      // Calculate totals for this customer
+      const subtotal = group.totalAmount;
+      const vatRate = group.items[0]?.vat || 0;
+      const vatAmount = subtotal * vatRate;
+      const finalTotal = subtotal + vatAmount;
+      
+      // Create rows for each item
+      const itemRows = group.items.map((item: any, index: number) => ({
+        'STT': index + 1,
+        'Mã Đặt Hàng': item.madathang, // Thay đổi từ 'Mã Đơn Hàng'
+        'Ngày Giao': item.ngaygiao ? new Date(item.ngaygiao).toLocaleDateString('vi-VN') : '',
+        'Mã NCC': item.manhacungcap, // Thay đổi từ 'Mã KH'
+        'Tên Nhà Cung Cấp': item.tennhacungcap, // Thay đổi từ 'Tên Khách Hàng'
+        'SĐT': item.sdt,
+        'Địa Chỉ': item.diachi,
+        'Mã SP': item.masp,
+        'Tên Sản Phẩm': item.title,
+        'ĐVT': item.dvt,
+        'Giá Bán': item.giaban,
+        'Số Lượng': item.slnhan,
+        'Thành Tiền': item.tongtien,
+        'Ghi Chú': item.ghichu,
+        // Show totals only in first row of each customer
+        'Tổng Số Lượng': index === 0 ? group.totalQuantity : '',
+        'Tổng Tiền': index === 0 ? subtotal : '',
+        'Thuế VAT (%)': index === 0 ? (vatRate * 100) : '',
+        'Tiền Thuế': index === 0 ? vatAmount : '',
+        'Tổng Cộng': index === 0 ? finalTotal : '',
+      }));
+      
+      return itemRows;
+    });
+
+    // Step 4: Create Excel file using XLSX
+    const XLSX = require('xlsx-js-style');
+    const ws = XLSX.utils.json_to_sheet(excelData);
+    
+    // Set column widths
+    const colWidths = [
+      { wch: 5 },  // STT
+      { wch: 15 }, // Mã Đặt Hàng
+      { wch: 12 }, // Ngày Giao
+      { wch: 10 }, // Mã NCC
+      { wch: 25 }, // Tên Nhà Cung Cấp
+      { wch: 12 }, // SĐT
+      { wch: 30 }, // Địa Chỉ
+      { wch: 10 }, // Mã SP
+      { wch: 30 }, // Tên Sản Phẩm
+      { wch: 8 },  // ĐVT
+      { wch: 12 }, // Giá Bán
+      { wch: 10 }, // Số Lượng
+      { wch: 15 }, // Thành Tiền
+      { wch: 20 }, // Ghi Chú
+      { wch: 15 }, // Tổng Số Lượng
+      { wch: 15 }, // Tổng Tiền
+      { wch: 12 }, // Thuế VAT (%)
+      { wch: 15 }, // Tiền Thuế
+      { wch: 15 }, // Tổng Cộng
+    ];
+    ws['!cols'] = colWidths;
+    
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Công Nợ NCC'); // Thay đổi sheet name
+    
+    // Generate filename with timestamp
+    const dateStr = this.formatDateForFilename();
+    const filename = `CongNoNCC_${dateStr}.xlsx`; // Thay đổi filename
+    
+    return XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+  }
+
 }

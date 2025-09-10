@@ -401,4 +401,34 @@ export class DathangService {
       throw error;
     }
   }
+
+  async searchCongno(SearchParams: any) {
+    const payload = {...SearchParams}
+    // ✅ Sử dụng getAPIDateRange để đảm bảo consistent date handling
+    if (payload.Batdau || payload.Ketthuc) {
+      const dateRange = this.timezoneService.getAPIDateRange(payload.Batdau, payload.Ketthuc);
+      payload.Batdau = dateRange.Batdau;
+      payload.Ketthuc = dateRange.Ketthuc;
+    }
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer '+this._StorageService.getItem('token')
+        },
+        body: JSON.stringify(payload),
+      };
+      const response = await fetch(`${environment.APIURL}/dathang/congnoncc`, options); // Thay đổi endpoint
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();                 
+      this.ListDathang.set(data)
+      return data
+    } catch (error) {
+      console.error('Error searching congno:', error);
+      return [];
+    }
+  }
 }
