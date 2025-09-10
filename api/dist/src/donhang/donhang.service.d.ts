@@ -106,6 +106,7 @@ export declare class DonhangService {
         tongvat: import("@prisma/client/runtime/library").Decimal;
     }[]>;
     phieugiao(params: any): Promise<{
+        loadpoint: number;
         sanpham: any[];
         banggia: {
             id: string;

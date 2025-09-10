@@ -920,6 +920,7 @@ let DonhangService = class DonhangService {
         }
         return {
             ...result,
+            loadpoint: parseFloat(result?.sanpham?.reduce((total, item) => total + (Number(item.sanpham?.loadpoint || 0) * Number(item.sldat || 0)), 0).toFixed(3)),
             sanpham: result.sanpham.map((item) => {
                 return {
                     ...item.sanpham,

@@ -79,8 +79,9 @@
             <div class="w-full flex items-start"><strong>Số Điện Thoại : </strong>
               {{DetailPhieugiaohang()?.khachhang?.sdt}}</div>
             <div class="w-full flex items-start">
-              <strong>Tổng khối lượng - Đơn Vị Tính : {{GetDVT(DetailPhieugiaohang())}}
-                ({{TinhTong(DetailPhieugiaohang()?.sanpham,'slgiao')|number:'1.0-2'}})
+              <strong>Tổng khối lượng - Đơn Vị Tính : 
+                {{GetDVT(DetailPhieugiaohang())}}
+                ({{DetailPhieugiaohang().loadpoint|number:'1.0-2' }})
               </strong>
             </div>
           </div>

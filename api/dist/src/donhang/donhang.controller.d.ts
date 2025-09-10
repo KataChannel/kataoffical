@@ -170,6 +170,7 @@ export declare class DonhangController {
         slchogiaott: number;
     }[]>;
     phieugiao(params: any): Promise<{
+        loadpoint: number;
         sanpham: any[];
         banggia: {
             id: string;
