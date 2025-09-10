@@ -532,7 +532,7 @@ async convertDathangImportToTransfer(
               slhuy: sp.slhuy || 0,
               ttdat: sp.ttdat || 0,
               ttgiao: sp.ttgiao || 0,
-              ttnhan: sp.ttnhan || 0,
+              ttnhan: Number(sp.slnhan*sp.gianhap) || 0,
             })),
           },
         },
@@ -708,9 +708,11 @@ async convertDathangImportToTransfer(
                       data: {
                         ghichu: sp.ghichu,
                         sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                        slgiao: 0, // Reset slgiao
-                        slnhan: 0, // Reset slnhan
-                        slhuy: 0, // Reset slhuy
+                        slgiao:  parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                        slnhan:  parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                        slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
+                        gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
+                        ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
                       },
                     })),
                   },
@@ -787,6 +789,8 @@ async convertDathangImportToTransfer(
                         slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                         slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
                         slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
+                        gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
+                        ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
                       },
                     })),
                   },
@@ -854,7 +858,7 @@ async convertDathangImportToTransfer(
                   slnhan: parseFloat((Number(sp.slnhan) ?? 0).toFixed(3)),
                   ttdat: parseFloat((Number(sp.ttdat) ?? 0).toFixed(3)),
                   ttgiao: parseFloat((Number(sp.ttgiao) ?? 0).toFixed(3)),
-                  ttnhan: parseFloat((Number(sp.ttnhan) ?? 0).toFixed(3)),
+                  ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
                   gianhap: parseFloat((Number(sp.gianhap) ?? 0).toFixed(3)),
                 },
               })),
