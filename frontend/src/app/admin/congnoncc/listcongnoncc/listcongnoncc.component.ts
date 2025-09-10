@@ -23,8 +23,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import {
   readExcelFile,
   writeExcelFile,
@@ -41,11 +39,10 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
-import { DathangService } from '../../dathang/dathang.service'; // Thay đổi từ DonhangService
+import { DathangService } from '../../dathang/dathang.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
-
 @Component({
   selector: 'app-listcongnoncc',
   templateUrl: './listcongnoncc.component.html',
@@ -58,18 +55,16 @@ import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from '@angular/mate
     MatPaginatorModule,
     MatMenuModule,
     MatSidenavModule,
+    RouterOutlet,
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
-    MatSlideToggleModule,
-    MatCheckboxModule,
     CommonModule,
     FormsModule,
     MatTooltipModule,
     MatDatepickerModule,
     MatDialogModule,
-    MatAutocompleteModule,
-    RouterOutlet
+    MatAutocompleteModule
   ],
   // providers: [provideNativeDateAdapter()],
 })
@@ -82,9 +77,9 @@ export class ListcongnonccComponent {
   isExporting = false;
   
   displayedColumns: string[] = [
-    'ngaygiao',
-    'madathang', // Thay đổi từ madonhang
-    'mancc',     // Thay đổi từ makh
+    'ngaynhan',
+    'madathang',
+    'makh',
     'name',
     'soluong',
     'tong',
@@ -92,18 +87,19 @@ export class ListcongnonccComponent {
     'tongtien',
   ];
   ColumnName: any = {
-    ngaygiao: 'Ngày Giao',
-    madathang: 'Mã Đặt Hàng', // Thay đổi từ 'Mã Đơn Hàng'
-    mancc: 'Mã Nhà Cung Cấp', // Thay đổi từ 'Mã Khách Hàng'
-    name: 'Tên Nhà Cung Cấp', // Thay đổi từ 'Tên Khách Hàng'
+    ngaynhan: 'Ngày Nhận',
+    madathang: 'Mã Đơn Hàng',
+    makh: 'Mã Nhà Cung Cấp',
+    name: 'Tên Nhà Cung Cấp',
     soluong: 'Số Lượng',
     tong: 'Tổng',
     tongvat: 'Tổng VAT',
     tongtien: 'Tổng Tiền',
   };
 
+
   FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('CongnonccColFilter') || '[]' // Thay đổi key storage
+    localStorage.getItem('CongnonccColFilter') || '[]'
   );
   Columns: any[] = [];
   isFilter: boolean = false;
@@ -112,22 +108,20 @@ export class ListcongnonccComponent {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
-  private _DathangService: DathangService = inject(DathangService); // Thay đổi từ DonhangService
+  private _DathangService: DathangService = inject(DathangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
-  Listdathang: any = this._DathangService.ListDathang; // Thay đổi từ Listdonhang
-  ListNhacungcap:any = []; // Thay đổi từ ListKhachhang
+  Listdathang: any = this._DathangService.ListDathang;
+  ListKhachhang:any =[];
   ListCongno:any = [];
   dataSource = new MatTableDataSource([]);
-  dathangId: any = this._DathangService.dathangId; // Thay đổi từ donhangId
+  dathangId: any = this._DathangService.dathangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   SearchParams: any = {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
-    Type: 'datmua', // Thay đổi từ 'donsi'
-    Status:['danhan','hoanthanh'],
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -137,21 +131,17 @@ export class ListcongnonccComponent {
   ];
   Chonthoigian: any = 'day';
   isSearch: boolean = false;
-  
   constructor() {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
   }
-  
   onSelectionChange(event: MatSelectChange): void {
      this.ngOnInit();
   }
-  
   onDateChange(event: any): void {
     // this.ngOnInit()
   }
-  
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
       const filterObject = JSON.parse(filter);
@@ -168,7 +158,6 @@ export class ListcongnonccComponent {
       return isMatch;
     };
   }
-  
   @Debounce(300)
   async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -185,82 +174,81 @@ export class ListcongnonccComponent {
     this.setupDrawer();
     this.loadData(this.SearchParams);
   }
-  
   async doSearch(){
     this.isSearching = true;
     try {
       await this.loadData(this.SearchParams); 
-      // Create a Map to track unique suppliers (nhà cung cấp)
-      const uniqueSuppliers = new Map();
+      // Create a Map to track unique customers
+      const uniqueCustomers = new Map();
       this.Listdathang().forEach((v: any) => {
-        const mancc = v.manhacungcap; // Thay đổi từ makhachhang
-        const tenncc = v.tennhacungcap; // Thay đổi từ tenkhachhang
-        if (mancc && !uniqueSuppliers.has(mancc)) {
-        uniqueSuppliers.set(mancc, tenncc);
+        const makh = v.makhachhang;
+        const tenkh = v.tenkhachhang;
+        if (makh && !uniqueCustomers.has(makh)) {
+        uniqueCustomers.set(makh, tenkh);
         }
       });
       // Convert Map to array
-      this.ListNhacungcap = this.filterListNhacungcap = Array.from(uniqueSuppliers.values());
-      console.log('ListNhacungcap', this.ListNhacungcap);
+      this.ListKhachhang = this.filterListKhachhang = Array.from(uniqueCustomers.values());
+      console.log('ListKhachhang', this.ListKhachhang);
     } finally {
       this.isSearching = false;
     }
   }
-  
-  ListExport:any = []
-  onNhacungcapChange(event: MatAutocompleteSelectedEvent){ // Thay đổi từ onKhachhangChange
-    const selectedValue = event.option.value;
-    // Update dataSource and ListExport based on selection
-    if (selectedValue && selectedValue !== '') {
-      // Filter by supplier name
-      this.dataSource.data = this.ListExport = this.ListCongno.filter((item: any) =>
-        item.tennhacungcap === selectedValue // Thay đổi từ tenkhachhang
-      );
-    } else {
-      // Reset to show all data
-      this.dataSource.data = this.ListExport = this.ListCongno;
-    }
-    this.dataSource.sort = this.sort;
+ListExport:any =[]
+onKhachhangChange(event: MatAutocompleteSelectedEvent){
+  const selectedValue = event.option.value;
+  // Update dataSource and ListExport based on selection
+  if (selectedValue && selectedValue !== '') {
+    // Filter by customer name
+    this.dataSource.data = this.ListExport = this.ListCongno.filter((item: any) =>
+      item.tenkhachhang === selectedValue
+    );
+  } else {
+    // Reset to show all data
+    this.dataSource.data = this.ListExport = this.ListCongno;
   }
+  // this.dataSource.paginator = this.paginator;
+  this.dataSource.sort = this.sort;
+}
+filterListKhachhang:any = []
+@Debounce(100)
+doFilterKhachhang(event: Event){
+  const query = (event.target as HTMLInputElement).value.toLowerCase();
+  console.log('query', query);
   
-  filterListNhacungcap:any = [] // Thay đổi từ filterListKhachhang
-  @Debounce(100)
-  doFilterNhacungcap(event: Event){ // Thay đổi từ doFilterKhachhang
-    const query = (event.target as HTMLInputElement).value.toLowerCase();
-    console.log('query', query);
-    
-    if(!query) {
-      this.filterListNhacungcap = this.ListNhacungcap;
-      return;
-    }
-   this.filterListNhacungcap = this.ListNhacungcap.filter((item: any) =>
-     item.toLowerCase().includes(query) || removeVietnameseAccents(item).toLowerCase().includes(removeVietnameseAccents(query))
-   );
+  if(!query) {
+    this.filterListKhachhang = this.ListKhachhang;
+    return;
   }
-  
+ this.filterListKhachhang = this.ListKhachhang.filter((item: any) =>
+   item.toLowerCase().includes(query) || removeVietnameseAccents(item).toLowerCase().includes(removeVietnameseAccents(query))
+ );
+}
   async loadData(query:any): Promise<void> {
     this.isLoading = true;
     try {
-      await this._DathangService.searchCongno(query); // Thay đổi method tương ứng
+      await this._DathangService.searchCongno(query);
       console.log(this.Listdathang());
       
       this.CountItem = this.Listdathang().length||0;
-      // Nhóm dữ liệu theo nhà cung cấp để tính tổng tiền sau thuế
-      const supplierTotals = new Map(); // Thay đổi từ customerTotals
-      // Tính tổng tiền sau thuế cho từng nhà cung cấp
+      // Nhóm dữ liệu theo khách hàng để tính tổng tiền sau thuế
+      const customerTotals = new Map();
+      // Tính tổng tiền sau thuế cho từng khách hàng
       this.ListCongno = this.Listdathang()
       this.dataSource = new MatTableDataSource(this.ListCongno);
+      // this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.dataSource.filterPredicate = this.createFilter();
-      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-      this.paginator._intl.previousPageLabel = 'Về Trước';
-      this.paginator._intl.firstPageLabel = 'Trang Đầu';
-      this.paginator._intl.lastPageLabel = 'Trang Cuối';
+      // this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+      // this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+      // this.paginator._intl.previousPageLabel = 'Về Trước';
+      // this.paginator._intl.firstPageLabel = 'Trang Đầu';
+      // this.paginator._intl.lastPageLabel = 'Trang Cuối';
     } finally {
       this.isLoading = false;
     }
   }
+
 
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -272,7 +260,7 @@ export class ListcongnonccComponent {
       this.FilterColumns = this.Columns;
     } else {
       localStorage.setItem(
-        'CongnonccColFilter', // Thay đổi key storage
+        'CongnonccColFilter',
         JSON.stringify(this.FilterColumns)
       );
     }
@@ -307,17 +295,18 @@ export class ListcongnonccComponent {
       return obj;
     }, {} as Record<string, string>);
     localStorage.setItem(
-      'CongnonccColFilter', // Thay đổi key storage
+      'CongnonccColFilter',
       JSON.stringify(this.FilterColumns)
     );
   }
-  
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();
     this.FilterColumns = this.Columns.filter((v) =>
       v.value.toLowerCase().includes(query)
     );
   }
+
+
 
   toggleColumn(item: any): void {
     const column = this.FilterColumns.find((v) => v.key === item.key);
@@ -326,7 +315,6 @@ export class ListcongnonccComponent {
       this.updateDisplayedColumns();
     }
   }
-  
   @memoize()
   FilterHederColumn(list:any,column:any)
   {
@@ -335,14 +323,12 @@ export class ListcongnonccComponent {
     );
     return uniqueList
   }
-  
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
     this.dataSource.filteredData = this.Listdathang().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
-  
-  ListFilter:any[] = []
+  ListFilter:any[] =[]
   ChosenItem(item:any,column:any)
   {
     const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
@@ -355,7 +341,6 @@ export class ListcongnonccComponent {
       this.ListFilter = [...this.ListFilter,...CheckItem];
     }
   }
-  
   ChosenAll(list:any)
   {
     list.forEach((v:any) => {
@@ -369,7 +354,6 @@ export class ListcongnonccComponent {
         }
     });
   }
-  
   ResetFilter()
   {
     this.ListFilter = this.Listdathang();
@@ -377,37 +361,33 @@ export class ListcongnonccComponent {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-  
   EmptyFiter()
   {
     this.ListFilter = [];
   }
-  
   CheckItem(item:any)
   {
     return this.ListFilter.find((v)=>v.id===item.id)?true:false;
   }
-  
   ApplyFilterColum(menu:any)
   {    
+
     this.dataSource.data = this.Listdathang().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     menu.closeMenu();
   }
 
+
   create(): void {
     this.drawer.open();
     this._router.navigate(['admin/congnoncc', 0]);
   }
-  
   goToDetail(item: any): void {
-    this._DathangService.setDathangId(item.id); // Thay đổi từ setDonhangId
+    this._DathangService.setDathangId(item.id);
     this.drawer.open();
     this._router.navigate(['admin/congnoncc', item.id]);
   }
-  
-  editDathang: any[] = []; // Thay đổi từ editDonhang
   ToggleAll(): void {
     if (this.editDathang.length === this.dataSource.filteredData.length) {
       this.editDathang = [];
@@ -416,54 +396,403 @@ export class ListcongnonccComponent {
     }
   }
 
-  async ExportExcel(data: any[], filename: string = 'CongnoNCC'): Promise<void> {
-    this.isExporting = true;
-    try {
-      if (!data || data.length === 0) {
-        this._snackBar.open('Không có dữ liệu để xuất', 'Đóng', {
-          duration: 3000,
-          panelClass: ['snackbar-warning']
-        });
-        return;
+  editDathang: any[] = [];
+  toggleDathang(item: any): void {
+    const index = this.editDathang.findIndex((v) => v.id === item.id);
+    if (index !== -1) {
+      this.editDathang.splice(index, 1);
+    } else {
+      this.editDathang.push(item);
+    }
+  }
+  TinhTong(items: any, fieldTong: any) {
+    return (items?.reduce((sum: any, item: any) => sum + (item[fieldTong] || 0), 0) ||0);
+  }
+  dialog = inject(MatDialog);
+  dialogCreateRef: any;
+  Phieuchia:any[] = [];
+  openCreateDialog(teamplate: TemplateRef<any>) {
+    console.log(this.editDathang);
+    this.Phieuchia = this.editDathang.map((v: any) => ({
+      makh: v.khachhang?.makh,
+      name: v.khachhang?.name,
+      madathang:v.madathang,
+      ngaynhan:v.ngaynhan,
+      sanpham: v.sanpham.map((v1: any) => ({
+        masp:v1.masp,
+        title: v1.title,
+        dvt: v1.dvt,
+        slgiao: v1.slgiao,
+        giaban: v1.giaban,
+        ttgiao: v1.ttgiao,
+      })),
+    }));
+    console.log(this.Phieuchia);
+    this.dialogCreateRef = this.dialog.open(teamplate, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+  }
+
+  BackStatus()
+  {
+    this.editDathang.forEach((v:any) => {
+        v.status = 'dadat';
+        this._DathangService.updateDathang(v);
+    });
+    this.ngOnInit();
+  }
+
+
+  Hoanthanh()
+  {
+    this.editDathang.forEach((v:any) => {
+        v.status = 'hoanthanh';
+        this._DathangService.updateDathang(v);
+    });
+  }
+  getUniqueProducts(): string[] {
+    const products = new Set<string>();
+    this.Phieuchia.forEach(kh => kh.sanpham.forEach((sp:any) => products.add(sp.title)));
+    return Array.from(products);
+  }
+
+  getProductQuantity(product: string, makh: string): number | string {
+    const customer = this.Phieuchia.find(kh => kh.makh === makh);
+    const item = customer?.sanpham.find((sp:any) => sp.title === product);
+    return item ? item.slgiao : '';
+  }
+  getDvtForProduct(product: string) {
+    const uniqueProducts = Array.from(
+      new Map(this.Phieuchia.flatMap(c => c.sanpham.map((sp:any) => ({ ...sp, makh: c.makh, name: c.name })))
+          .map(p => [p.title, p])
+      ).values()
+  );
+    const item = uniqueProducts.find((sp:any) => sp.title === product);
+    return item ? item.dvt : '';
+  }
+  
+  CheckItemInDathang(item: any): boolean {
+    return this.editDathang.findIndex((v) => v.id === item.id) !== -1;
+  }
+  DeleteDathang(): void {}
+  async LoadDrive() {
+    const DriveInfo = {
+      IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
+      SheetName: 'SPImport',
+      ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
+    };
+    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
+    const data = ConvertDriveData(result.values);
+    console.log(data);
+    this.DoImportData(data);
+    // const updatePromises = data.map(async (v: any) => {
+    //   const item = this._KhachhangsService
+    //     .ListKhachhang()
+    //     .find((v1) => v1.MaKH === v.MaKH);
+    //   if (item) {
+    //     const item1 = { ...item, ...v };
+    //     console.log(item1);
+
+    //     await this._KhachhangsService.updateOneKhachhang(item1);
+    //   }
+    // });
+    // Promise.all(updatePromises).then(() => {
+    //   this._snackBar.open('Cập Nhật Thành Công', '', {
+    //     duration: 1000,
+    //     horizontalPosition: 'end',
+    //     verticalPosition: 'top',
+    //     panelClass: ['snackbar-success'],
+    //   });
+    //   //  window.location.reload();
+    // });
+  }
+  DoImportData(data: any) {
+    console.log(data);
+    const transformedData = data.map((v: any) => ({
+      title: v.title?.trim() || '',
+      masp: v.masp?.trim() || '',
+      slug: `${convertToSlug(v?.title?.trim() || '')}_${GenId(5, false)}`,
+      giagoc: Number(v.giagoc) || 0,
+      dvt: v.dvt || '',
+      soluong: Number(v.soluong) || 0,
+      soluongkho: Number(v.soluongkho) || 0,
+      ghichu: v.ghichu || '',
+      order: Number(v.order) || 0,
+    }));
+    // Filter out duplicate masp values
+    const uniqueData = transformedData.filter(
+      (value: any, index: any, self: any) =>
+        index === self.findIndex((t: any) => t.masp === value.masp)
+    );
+    const listId2 = uniqueData.map((v: any) => v.masp);
+    const listId1 = this._DathangService.ListDathang().map((v: any) => v.masp);
+    const listId3 = listId2.filter((item: any) => !listId1.includes(item));
+    const createuppdateitem = uniqueData.map(async (v: any) => {
+      const item = this._DathangService
+        .ListDathang()
+        .find((v1:any) => v1.masp === v.masp);
+      if (item) {
+        const item1 = { ...item, ...v };
+        await this._DathangService.updateDathang(item1);
+      } else {
+        await this._DathangService.CreateDathang(v);
       }
+    });
+    const disableItem = listId3.map(async (v: any) => {
+      const item = this._DathangService
+        .ListDathang()
+        .find((v1:any) => v1.masp === v);
+      item.isActive = false;
+      await this._DathangService.updateDathang(item);
+    });
+    Promise.all([...createuppdateitem, ...disableItem]).then(() => {
+      this._snackBar.open('Cập Nhật Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      // window.location.reload();
+    });
+  }
+  async ImporExcel(event: any) {
+    const data = await readExcelFile(event);
+    this.DoImportData(data);
+  }  
+  async ExportExcel(data: any, title: any) {
+    this.isExporting = true;   
+    if( this.editDathang.length>0) {
+      this.SearchParams.ids = this.editDathang.map((v: any) => v.id);
+    }
+    else {
+      this.SearchParams.ids = data.map((v: any) => v.id);
+    }
 
-      // Chuyển đổi dữ liệu cho Excel
-      const excelData = data.map((item, index) => ({
-        'STT': index + 1,
-        'Ngày Giao': item.ngaygiao ? new Date(item.ngaygiao).toLocaleDateString('vi-VN') : '',
-        'Mã Đặt Hàng': item.madathang || '',
-        'Mã Nhà Cung Cấp': item.manhacungcap || '',
-        'Tên Nhà Cung Cấp': item.tennhacungcap || '',
-        'Số Lượng': item.soluong || 0,
-        'Tổng': item.tong || 0,
-        'Tổng VAT': item.tongvat || 0,
-        'Tổng Tiền': item.tongtien || 0
-      }));
-
-      await writeExcelFile(excelData, `${filename}_${new Date().toISOString().split('T')[0]}`);
+    try {
+      // Sử dụng service để download file Excel từ API
+      // await this._DathangService.downloadCongno(this.SearchParams);
       
-      this._snackBar.open('Xuất Excel thành công', 'Đóng', {
+      // Hiển thị thông báo thành công
+      this._snackBar.open('Tải file Excel thành công!', 'Đóng', {
         duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
         panelClass: ['snackbar-success']
       });
+      this.editDathang = [];
     } catch (error) {
       console.error('Error exporting Excel:', error);
-      this._snackBar.open('Lỗi khi xuất Excel', 'Đóng', {
-        duration: 3000,
+      
+      // Hiển thị thông báo lỗi
+      this._snackBar.open('Lỗi khi tải file Excel!', 'Đóng', {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
         panelClass: ['snackbar-error']
       });
+      
+      // Fallback to old method if API fails
+      await this.ExportExcelFallback(data, title);
     } finally {
       this.isExporting = false;
     }
   }
 
-  // Các method khác giữ nguyên logic nhưng thay đổi naming theo nhà cung cấp/đặt hàng
+  /**
+   * Fallback method for Excel export using client-side generation
+   */
+  private async ExportExcelFallback(data: any, title: any) {
+    try {
+      const columns = [
+        'Ngày',
+        'Mã Nhà Cung Cấp',
+        'Tên Nhà Cung Cấp',
+        'Mã Đơn Hàng',
+        'Mã Hàng',
+        'Tên Hàng',
+        'ĐVT',
+        'Số Lượng', 
+        'Đơn Giá',
+        'Thành Tiền Trước VAT',
+        'VAT',
+        'Đơn Giá VAT',
+        'Thành Tiền Sau VAT',
+        'Ghi Chú',  
+        'Tổng Tiền Sau Thuế',
+      ];
+
+      // Nhóm dữ liệu theo mã khách hàng và tính tổng tiền sau thuế
+      let groupedData: any[] = [];
+      if(data.length>0){
+        groupedData = this.groupDataByCustomer(data);
+      }
+      else {
+        groupedData = this.groupDataByCustomer(this.ListCongno);
+      }
+      this.writeExcelFileWithMergedCells(groupedData, title, columns);
+    } catch (error) {
+      console.error('Error in fallback Excel export:', error);
+    }
+  }
+
+  private groupDataByCustomer(data: any[]): any[] {
+    // Tạo map để nhóm theo mã khách hàng
+    const customerGroups = new Map();
+    
+    data.forEach(item => {
+      const makh = item.makhachhang;
+      if (!customerGroups.has(makh)) {
+        customerGroups.set(makh, []);
+      }
+      customerGroups.get(makh).push(item);
+    });
+
+    // Tính tổng tiền sau thuế cho từng khách hàng và chuẩn bị dữ liệu
+    const result: any[] = [];
+    
+    customerGroups.forEach((items, makh) => {
+      const totalAmount = items.reduce((sum: number, item: any) => 
+        sum + (item.thanhtiensauvat || 0), 0
+      );
+      
+      items.forEach((item: any, index: number) => {
+        result.push({
+          ...item,
+          tongtiensauthue: index === 0 ? totalAmount : null // Chỉ hiển thị tổng ở dòng đầu tiên
+        });
+      });
+    });
+
+    return result;
+  }
+
+  private writeExcelFileWithMergedCells(data: any[], title: string, columns: string[]): void {    
+    // Tạo dữ liệu cho worksheet
+    const worksheetData = data.map(item => ({
+      'Ngày': moment(item.ngaynhan).format('DD/MM/YYYY'),
+      'Mã Nhà Cung Cấp': item.makhachhang,
+      'Tên Nhà Cung Cấp': item.tenkhachhang,
+      'Mã Đơn Hàng': item.madathang,
+      'Mã Hàng': item.mahang,
+      'Tên Hàng': item.tenhang,
+      'ĐVT': item.dvt,
+      'Số Lượng': item.soluong,
+      'Đơn Giá': item.dongia,
+      'Thành Tiền Trước VAT': item.thanhtientruocvat,
+      'VAT': item.vat,
+      'Đơn Giá VAT': item.dongiavathoadon,
+      'Thành Tiền Sau VAT': item.thanhtiensauvat,
+      'Ghi Chú': item.ghichu,
+      'Tổng Tiền Sau Thuế': item.tongtiensauthue
+    }));
+
+    // Tạo worksheet
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    
+    // Tạo merge ranges cho cột "Tổng Tiền Sau Thuế"
+    const mergeRanges = this.createMergeRanges(data);
+    
+    // Áp dụng merge ranges
+    if (mergeRanges.length > 0) {
+      worksheet['!merges'] = mergeRanges;
+    }
+
+    // Tạo workbook và thêm worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'CongNo');
+
+    // Xuất file
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    this.saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
+  }
+
+  private createMergeRanges(data: any[]): any[] {
+    const mergeRanges: any[] = [];
+    const customerGroups = new Map();
+    
+    // Nhóm theo mã khách hàng và lưu vị trí dòng
+    data.forEach((item, index) => {
+      const makh = item.makhachhang;
+      if (!customerGroups.has(makh)) {
+        customerGroups.set(makh, { start: index + 1, count: 0 }); // +1 vì có header
+      }
+      customerGroups.get(makh).count++;
+    });
+
+    // Tạo merge ranges cho cột "Tổng Tiền Sau Thuế" (cột thứ 15, index 14)
+    const totalColumnIndex = 14; // Cột "Tổng Tiền Sau Thuế"
+    
+    customerGroups.forEach((group) => {
+      if (group.count > 1) {
+        mergeRanges.push({
+          s: { r: group.start, c: totalColumnIndex }, // start row, column
+          e: { r: group.start + group.count - 1, c: totalColumnIndex } // end row, column
+        });
+      }
+    });
+
+    return mergeRanges;
+  }
+
+  private saveAsExcelFile(buffer: any, fileName: string): void {
+    const data = new Blob([buffer], { type: 'application/octet-stream' });
+    const url = window.URL.createObjectURL(data);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${fileName}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+  printContent()
+  {
+    const element = document.getElementById('printContent');
+    if (!element) return;
+
+    html2canvas(element, { scale: 2 }).then(canvas => {
+      const imageData = canvas.toDataURL('image/png');
+
+      // Mở cửa sổ mới và in ảnh
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) return;
+
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Phiếu Chia Hàng ${moment().format("DD/MM/YYYY")}</title>
+          </head>
+          <body style="text-align: center;">
+            <img src="${imageData}" style="max-width: 100%;"/>
+            <script>
+              window.onload = function() {
+                window.print();
+                window.onafterprint = function() { window.close(); };
+              };
+            </script>
+          </body>
+        </html>
+      `);
+
+      printWindow.document.close();
+    });
+  }
+  trackByFn(index: number, item: any): any {
+    return item.id; // Use a unique identifier
+  }
 }
 
+
 function memoize() {
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    const cache = new Map();
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
     const originalMethod = descriptor.value;
+    const cache = new Map();
+
     descriptor.value = function (...args: any[]) {
       const key = JSON.stringify(args);
       if (cache.has(key)) {
@@ -473,16 +802,27 @@ function memoize() {
       cache.set(key, result);
       return result;
     };
+
+    return descriptor;
   };
 }
 
 function Debounce(delay: number = 300) {
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    let timeout: any;
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
     const originalMethod = descriptor.value;
+    let timeoutId: any;
+
     descriptor.value = function (...args: any[]) {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => originalMethod.apply(this, args), delay);
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        originalMethod.apply(this, args);
+      }, delay);
     };
+
+    return descriptor;
   };
 }

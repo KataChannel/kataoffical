@@ -1372,7 +1372,7 @@ let DathangService = class DathangService {
             lte: Ketthuc ? new Date(Ketthuc) : undefined,
         };
         const where = {
-            ngaygiao: dateRange,
+            ngaynhan: dateRange,
             status: Array.isArray(params.Status)
                 ? { in: params.Status }
                 : params.Status,
@@ -1407,7 +1407,7 @@ let DathangService = class DathangService {
             return {
                 id: v.id,
                 madathang: v.madncc,
-                ngaygiao: v.ngaygiao,
+                ngaynhan: v.ngaynhan,
                 tong: tong.toFixed(3),
                 soluong: soluong.toFixed(3),
                 tongtien: v.tongtien,
@@ -1425,7 +1425,7 @@ let DathangService = class DathangService {
             lte: Ketthuc ? new Date(Ketthuc) : undefined,
         };
         const where = {
-            ngaygiao: dateRange,
+            ngaynhan: dateRange,
             status: Array.isArray(params.Status)
                 ? { in: params.Status }
                 : params.Status,
@@ -1455,7 +1455,7 @@ let DathangService = class DathangService {
         const flatItems = dathangs.flatMap((v) => {
             return v.sanpham.map((item) => ({
                 madathang: v.madncc,
-                ngaygiao: v.ngaygiao,
+                ngaynhan: v.ngaynhan,
                 tennhacungcap: v.nhacungcap?.name,
                 manhacungcap: v.nhacungcap?.mancc,
                 sdt: v.nhacungcap?.sdt,
@@ -1501,7 +1501,7 @@ let DathangService = class DathangService {
             const itemRows = group.items.map((item, index) => ({
                 'STT': index + 1,
                 'Mã Đặt Hàng': item.madathang,
-                'Ngày Giao': item.ngaygiao ? new Date(item.ngaygiao).toLocaleDateString('vi-VN') : '',
+                'Ngày Giao': item.ngaynhan ? new Date(item.ngaynhan).toLocaleDateString('vi-VN') : '',
                 'Mã NCC': item.manhacungcap,
                 'Tên Nhà Cung Cấp': item.tennhacungcap,
                 'SĐT': item.sdt,

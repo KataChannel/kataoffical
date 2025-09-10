@@ -7,6 +7,54 @@ export class UniversalService { // Fix: Rename to avoid conflict
   constructor(private readonly prisma: PrismaService) {}
 
   /**
+   * ✅ Map lowercase model names to PascalCase Prisma model names
+   */
+  private mapModelName(model: string): string {
+    const modelMap: { [key: string]: string } = {
+      'tonkho': 'TonKho',
+      'sanpham': 'Sanpham',
+      'khachhang': 'Khachhang',
+      'nhomkhachhang': 'Nhomkhachhang',
+      'donhang': 'Donhang',
+      'dathang': 'Dathang',
+      'phieukho': 'Phieukho',
+      'chotkho': 'Chotkho',
+      'menu': 'Menu',
+      'user': 'User',
+      'role': 'Role',
+      'permission': 'Permission',
+      // Add more mappings as needed
+    };
+
+    return modelMap[model.toLowerCase()] || model;
+  }
+
+  /**
+   * ✅ Validate model and get Prisma model instance
+   */
+  private validateAndGetPrismaModel(model: string) {
+    if (!model) {
+      throw new Error('Model name is required');
+    }
+
+    if (!this.prisma) {
+      throw new Error('Prisma service is not initialized');
+    }
+
+    // Map to correct case
+    const mappedModel = this.mapModelName(model);
+    console.log(`🔄 Model mapping: '${model}' -> '${mappedModel}'`);
+
+    // Check if model exists in Prisma
+    const prismaModel = (this.prisma as any)[mappedModel];
+    if (!prismaModel) {
+      throw new Error(`Model '${mappedModel}' does not exist in Prisma schema. Available models: ${Object.keys(this.prisma).filter(key => !key.startsWith('_')).join(', ')}`);
+    }
+
+    return { prismaModel, mappedModel };
+  }
+
+  /**
    * Generic find all with pagination
    */
   async findAll(
@@ -16,6 +64,9 @@ export class UniversalService { // Fix: Rename to avoid conflict
     sort?: SortInput,
     include?: any
   ) {
+    // ✅ Validate and get Prisma model
+    const { prismaModel, mappedModel } = this.validateAndGetPrismaModel(model);
+
     const { page, pageSize } = pagination;
     const skip = (page - 1) * pageSize;
 
@@ -27,14 +78,14 @@ export class UniversalService { // Fix: Rename to avoid conflict
 
     try {
       const [data, total] = await Promise.all([
-        (this.prisma as any)[model].findMany({
+        prismaModel.findMany({
           skip,
           take: pageSize,
           where,
           orderBy,
           include,
         }),
-        (this.prisma as any)[model].count({ where }),
+        prismaModel.count({ where }),
       ]);
 
       const totalPages = Math.ceil(total / pageSize);
@@ -165,11 +216,26 @@ async findMany(modelName: string, options: {
    */
   async create(model: string, data: any, include?: any) {
     try {
-      return await (this.prisma as any)[model].create({
+      // ✅ Validate and get Prisma model
+      const { prismaModel, mappedModel } = this.validateAndGetPrismaModel(model);
+
+      // ✅ Check if create method exists
+      if (typeof prismaModel.create !== 'function') {
+        throw new Error(`Create method does not exist on model '${mappedModel}'`);
+      }
+
+      console.log(`🔍 Creating ${mappedModel} with:`, { data, include });
+
+      const result = await prismaModel.create({
         data,
         include,
       });
+
+      console.log(`✅ Create result for ${mappedModel}:`, result);
+      
+      return result;
     } catch (error) {
+      console.error(`❌ Error creating ${model}:`, error);
       throw new BadRequestException(`Error creating ${model}: ${error.message}`);
     }
   }
@@ -179,6 +245,21 @@ async findMany(modelName: string, options: {
    */
   async update(model: string, where: any, data: any, include?: any, select?: any) {
     try {
+      // ✅ Validate and get Prisma model
+      const { prismaModel, mappedModel } = this.validateAndGetPrismaModel(model);
+
+      // ✅ Check if update method exists
+      if (typeof prismaModel.update !== 'function') {
+        throw new Error(`Update method does not exist on model '${mappedModel}'`);
+      }
+
+      console.log(`🔍 Updating ${mappedModel} with:`, {
+        where,
+        data,
+        include,
+        select
+      });
+
       // Validate data for relations to prevent "Required exactly one parent ID" error
       const cleanData = this.validateAndCleanRelationData(data);
       
@@ -195,8 +276,15 @@ async findMany(modelName: string, options: {
         updateOptions.select = select;
       }
 
-      return await (this.prisma as any)[model].update(updateOptions);
+      console.log(`📤 Final update options for ${mappedModel}:`, updateOptions);
+
+      const result = await prismaModel.update(updateOptions);
+      
+      console.log(`✅ Update result for ${mappedModel}:`, result);
+      
+      return result;
     } catch (error) {
+      console.error(`❌ Error updating ${model}:`, error);
       throw new BadRequestException(`Error updating ${model}: ${error.message}`);
     }
   }

@@ -616,8 +616,8 @@ export class NhucaudathangComponent {
       });
 
       this.TonghopsFinal = this.transformFinalData(transformFinalData, Khos.data);
-      console.log('transformFinalData', transformFinalData);
-      console.log('this.TonghopsFinal', this.TonghopsFinal);
+      //console.log('transformFinalData', transformFinalData);
+      //console.log('this.TonghopsFinal', this.TonghopsFinal);
 
       this.TonghopsFinal.forEach((item) => {
         item.tongkho = parseFloat((
@@ -636,7 +636,7 @@ export class NhucaudathangComponent {
       // Sort by goiy from large to small
       this.TonghopsFinal.sort((a, b) => parseFloat(b.goiy) - parseFloat(a.goiy));
 
-      console.log('this.transformFinalData', transformFinalData);
+      //console.log('this.transformFinalData', transformFinalData);
 
       const tranferTonghop = (await this.convertData(transformFinalData)).flat();
       this.TonghopsExportFinal = this.convertKhoData(tranferTonghop);
@@ -1205,47 +1205,69 @@ export class NhucaudathangComponent {
         const processErrors: string[] = [];
 
         // Process each item từ Excel file
-        for (const item of validData) {
+        // Create a map for quick lookup of validData by masp
+        const validDataMap = new Map(validData.map(item => [item.masp, item.slton]));
+        console.log('tonkhoMap',tonkhoMap);
+        
+        // Loop through all existing TonKho records
+        for (const tonkho of allTonkho) {
           try {
-            // Tìm sản phẩm theo mã sản phẩm
-            const sanpham = sanphamMap.get(item.masp);
+            const masp = tonkho.sanpham?.masp;
+            if (!masp) {
+              continue; // Skip if no masp
+            }
+
+            let newSltontt = 0;
+            
+            // Check if this product exists in validData
+            if (validDataMap.has(masp)) {
+              newSltontt = validDataMap.get(masp) || 0;
+              validDataMap.delete(masp); // Remove from map to track processed items
+              console.log('tonkho', tonkho.id);
+              console.log('newSltontt', newSltontt);
+                         // Update existing TonKho record
+           const result = await this._GraphqlService.updateOne('tonkho',
+            { id: tonkho.id },
+            { sltontt: newSltontt, slton: newSltontt }
+            );
+
+            console.log('Update result:', result);
+
+            updatedCount++;
+            console.log(`Updated TonKho for ${masp}: sltontt = ${newSltontt}`);
+            }
+            
+          } catch (error: any) {
+            processErrors.push(`Lỗi cập nhật ${tonkho.sanpham?.masp || 'unknown'}: ${error.message}`);
+          }
+        }
+
+        // Create new TonKho records for products that exist in validData but not in allTonkho
+        for (const [masp, slton] of validDataMap.entries()) {
+          try {
+            const sanpham = sanphamMap.get(masp);
             if (!sanpham) {
               processErrors.push(
-                `Không tìm thấy sản phẩm với mã: ${item.masp}`
+          `Không tìm thấy sản phẩm với mã: ${masp}`
               );
               continue;
             }
 
-            // Kiểm tra xem TonKho đã tồn tại chưa
-            const existingTonkho = tonkhoMap.get(item.masp);
-
-            if (existingTonkho) {
-              // Cập nhật TonKho đã có - bao gồm cả trường hợp slton = 0
-              await this._GraphqlService.updateOne(
-                'tonkho',
-                { id: (existingTonkho as any).id },
-                { slton: item.slton, sltontt: item.slton }
-              );
-              updatedCount++;
-              console.log(
-                `Updated TonKho for ${item.masp}: slton = ${item.slton}`
-              );
-            } else {
-              // Tạo mới TonKho record - bao gồm cả trường hợp slton = 0
-              await this._GraphqlService.createOne('tonkho', {
-                sanphamId: (sanpham as any).id,
-                slton: item.slton,
-                sltontt: item.slton,
-                slchogiao: 0,
-                slchonhap: 0,
-              });
-              createdCount++;
-              console.log(
-                `Created new TonKho for ${item.masp}: slton = ${item.slton}`
-              );
-            }
+            // Create new TonKho record
+            await this._GraphqlService.createOne('tonkho', {
+              sanphamId: sanpham.id,
+              slton: 0,
+              sltontt: slton,
+              slchogiao: 0,
+              slchonhap: 0,
+            });
+            
+            createdCount++;
+            console.log(
+              `Created new TonKho for ${masp}: sltontt = ${slton}`
+            );
           } catch (error: any) {
-            processErrors.push(`Lỗi xử lý ${item.masp}: ${error.message}`);
+            processErrors.push(`Lỗi tạo mới ${masp}: ${error.message}`);
           }
         }
 
@@ -1448,7 +1470,7 @@ export class NhucaudathangComponent {
         },
         0
       );
-      console.log('Donhangs', Donhangs);
+      // console.log('Donhangs', Donhangs);
       
       const khachgiao = Donhangs.filter(
         (v: any) => v.status !== 'dadat'

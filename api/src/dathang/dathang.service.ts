@@ -1769,7 +1769,7 @@ async deletebulk(data: any) {
       }
 
     const where: any = {
-      ngaygiao: dateRange,
+      ngaynhan: dateRange,
       status: Array.isArray(params.Status)
         ? { in: params.Status }
         : params.Status,
@@ -1810,7 +1810,7 @@ async deletebulk(data: any) {
       return {
         id: v.id,
         madathang: v.madncc, // Thay đổi từ madonhang
-        ngaygiao: v.ngaygiao,
+        ngaynhan: v.ngaynhan,
         tong: tong.toFixed(3),
         soluong: soluong.toFixed(3),
         tongtien: v.tongtien,
@@ -1832,7 +1832,7 @@ async deletebulk(data: any) {
     } 
     
     const where: any = {
-      ngaygiao: dateRange,
+      ngaynhan: dateRange,
       status: Array.isArray(params.Status)
         ? { in: params.Status }
         : params.Status,
@@ -1868,7 +1868,7 @@ async deletebulk(data: any) {
     const flatItems = dathangs.flatMap((v: any) => {
       return v.sanpham.map((item: any) => ({
         madathang: v.madncc, // Thay đổi từ madonhang
-        ngaygiao: v.ngaygiao,
+        ngaynhan: v.ngaynhan,
         tennhacungcap: v.nhacungcap?.name, // Thay đổi từ tenkhachhang
         manhacungcap: v.nhacungcap?.mancc, // Thay đổi từ makhachhang
         sdt: v.nhacungcap?.sdt,
@@ -1924,7 +1924,7 @@ async deletebulk(data: any) {
       const itemRows = group.items.map((item: any, index: number) => ({
         'STT': index + 1,
         'Mã Đặt Hàng': item.madathang, // Thay đổi từ 'Mã Đơn Hàng'
-        'Ngày Giao': item.ngaygiao ? new Date(item.ngaygiao).toLocaleDateString('vi-VN') : '',
+        'Ngày Giao': item.ngaynhan ? new Date(item.ngaynhan).toLocaleDateString('vi-VN') : '',
         'Mã NCC': item.manhacungcap, // Thay đổi từ 'Mã KH'
         'Tên Nhà Cung Cấp': item.tennhacungcap, // Thay đổi từ 'Tên Khách Hàng'
         'SĐT': item.sdt,

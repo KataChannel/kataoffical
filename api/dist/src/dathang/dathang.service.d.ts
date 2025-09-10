@@ -636,7 +636,7 @@ export declare class DathangService {
     congnoncc(params: any): Promise<{
         id: any;
         madathang: any;
-        ngaygiao: any;
+        ngaynhan: any;
         tong: any;
         soluong: any;
         tongtien: any;

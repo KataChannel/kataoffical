@@ -15,6 +15,7 @@ export declare class AuditLogController {
         entityName: string | null;
         entityId: string | null;
         action: import(".prisma/client").$Enums.AuditAction;
+        userId: string | null;
         userEmail: string | null;
         oldValues: import("@prisma/client/runtime/library").JsonValue | null;
         newValues: import("@prisma/client/runtime/library").JsonValue | null;
@@ -24,7 +25,6 @@ export declare class AuditLogController {
         sessionId: string | null;
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
         errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
-        userId: string | null;
     }) | {
         data: ({
             user: {
@@ -39,6 +39,7 @@ export declare class AuditLogController {
             entityName: string | null;
             entityId: string | null;
             action: import(".prisma/client").$Enums.AuditAction;
+            userId: string | null;
             userEmail: string | null;
             oldValues: import("@prisma/client/runtime/library").JsonValue | null;
             newValues: import("@prisma/client/runtime/library").JsonValue | null;
@@ -48,7 +49,6 @@ export declare class AuditLogController {
             sessionId: string | null;
             metadata: import("@prisma/client/runtime/library").JsonValue | null;
             errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
-            userId: string | null;
         })[];
         page: any;
         pageSize: any;

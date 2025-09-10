@@ -16,21 +16,54 @@ let UniversalService = class UniversalService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    mapModelName(model) {
+        const modelMap = {
+            'tonkho': 'TonKho',
+            'sanpham': 'Sanpham',
+            'khachhang': 'Khachhang',
+            'nhomkhachhang': 'Nhomkhachhang',
+            'donhang': 'Donhang',
+            'dathang': 'Dathang',
+            'phieukho': 'Phieukho',
+            'chotkho': 'Chotkho',
+            'menu': 'Menu',
+            'user': 'User',
+            'role': 'Role',
+            'permission': 'Permission',
+        };
+        return modelMap[model.toLowerCase()] || model;
+    }
+    validateAndGetPrismaModel(model) {
+        if (!model) {
+            throw new Error('Model name is required');
+        }
+        if (!this.prisma) {
+            throw new Error('Prisma service is not initialized');
+        }
+        const mappedModel = this.mapModelName(model);
+        console.log(`🔄 Model mapping: '${model}' -> '${mappedModel}'`);
+        const prismaModel = this.prisma[mappedModel];
+        if (!prismaModel) {
+            throw new Error(`Model '${mappedModel}' does not exist in Prisma schema. Available models: ${Object.keys(this.prisma).filter(key => !key.startsWith('_')).join(', ')}`);
+        }
+        return { prismaModel, mappedModel };
+    }
     async findAll(model, pagination = { page: 1, pageSize: 10 }, filter, sort, include) {
+        const { prismaModel, mappedModel } = this.validateAndGetPrismaModel(model);
         const { page, pageSize } = pagination;
         const skip = (page - 1) * pageSize;
         const where = this.buildWhereClause(filter);
         const orderBy = sort ? { [sort.field]: sort.direction } : { createdAt: 'desc' };
         try {
             const [data, total] = await Promise.all([
-                this.prisma[model].findMany({
+                prismaModel.findMany({
                     skip,
                     take: pageSize,
                     where,
                     orderBy,
                     include,
                 }),
-                this.prisma[model].count({ where }),
+                prismaModel.count({ where }),
             ]);
             const totalPages = Math.ceil(total / pageSize);
             return {
@@ -127,17 +160,35 @@ let UniversalService = class UniversalService {
     }
     async create(model, data, include) {
         try {
-            return await this.prisma[model].create({
+            const { prismaModel, mappedModel } = this.validateAndGetPrismaModel(model);
+            if (typeof prismaModel.create !== 'function') {
+                throw new Error(`Create method does not exist on model '${mappedModel}'`);
+            }
+            console.log(`🔍 Creating ${mappedModel} with:`, { data, include });
+            const result = await prismaModel.create({
                 data,
                 include,
             });
+            console.log(`✅ Create result for ${mappedModel}:`, result);
+            return result;
         }
         catch (error) {
+            console.error(`❌ Error creating ${model}:`, error);
             throw new common_1.BadRequestException(`Error creating ${model}: ${error.message}`);
         }
     }
     async update(model, where, data, include, select) {
         try {
+            const { prismaModel, mappedModel } = this.validateAndGetPrismaModel(model);
+            if (typeof prismaModel.update !== 'function') {
+                throw new Error(`Update method does not exist on model '${mappedModel}'`);
+            }
+            console.log(`🔍 Updating ${mappedModel} with:`, {
+                where,
+                data,
+                include,
+                select
+            });
             const cleanData = this.validateAndCleanRelationData(data);
             const updateOptions = {
                 where,
@@ -149,9 +200,13 @@ let UniversalService = class UniversalService {
             if (select) {
                 updateOptions.select = select;
             }
-            return await this.prisma[model].update(updateOptions);
+            console.log(`📤 Final update options for ${mappedModel}:`, updateOptions);
+            const result = await prismaModel.update(updateOptions);
+            console.log(`✅ Update result for ${mappedModel}:`, result);
+            return result;
         }
         catch (error) {
+            console.error(`❌ Error updating ${model}:`, error);
             throw new common_1.BadRequestException(`Error updating ${model}: ${error.message}`);
         }
     }

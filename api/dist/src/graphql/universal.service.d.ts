@@ -3,6 +3,8 @@ import { PaginationInput, FilterInput, SortInput } from './types';
 export declare class UniversalService {
     private readonly prisma;
     constructor(prisma: PrismaService);
+    private mapModelName;
+    private validateAndGetPrismaModel;
     findAll(model: string, pagination?: PaginationInput, filter?: FilterInput, sort?: SortInput, include?: any): Promise<{
         data: any;
         pagination: {
