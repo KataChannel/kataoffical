@@ -1207,8 +1207,6 @@ export class NhucaudathangComponent {
         // Process each item từ Excel file
         // Create a map for quick lookup of validData by masp
         const validDataMap = new Map(validData.map(item => [item.masp, item.slton]));
-        console.log('tonkhoMap',tonkhoMap);
-        
         // Loop through all existing TonKho records
         for (const tonkho of allTonkho) {
           try {
@@ -1223,9 +1221,8 @@ export class NhucaudathangComponent {
             if (validDataMap.has(masp)) {
               newSltontt = validDataMap.get(masp) || 0;
               validDataMap.delete(masp); // Remove from map to track processed items
-              console.log('tonkho', tonkho.id);
-              console.log('newSltontt', newSltontt);
-                         // Update existing TonKho record
+            }
+          // Update existing TonKho record
            const result = await this._GraphqlService.updateOne('tonkho',
             { id: tonkho.id },
             { sltontt: newSltontt, slton: newSltontt }
@@ -1235,8 +1232,6 @@ export class NhucaudathangComponent {
 
             updatedCount++;
             console.log(`Updated TonKho for ${masp}: sltontt = ${newSltontt}`);
-            }
-            
           } catch (error: any) {
             processErrors.push(`Lỗi cập nhật ${tonkho.sanpham?.masp || 'unknown'}: ${error.message}`);
           }
@@ -1732,31 +1727,38 @@ export class NhucaudathangComponent {
     this.currentPage = 1;
     this.updateDisplayData();
   }
-
   applyGlobalFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.globalFilterValue = filterValue;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
 
-    let filteredData =
-      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
-
-    // Apply quick filter first
-    if (this.quickFilter !== 'all') {
-      this.applyQuickFilter(this.quickFilter);
-      return; // applyQuickFilter will handle global filter too
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
-
-    // Apply global filter
-    if (filterValue) {
-      filteredData = this.applyGlobalFilterToData(filteredData, filterValue);
-    }
-
-    this.dataSource.data = filteredData;
-    this.totalItems = filteredData.length;
-    this.calculateTotalPages();
-    this.currentPage = 1;
-    this.updateDisplayData();
   }
+  // applyGlobalFilter(event: Event) {
+  //   const filterValue = (event.target as HTMLInputElement).value;
+  //   this.globalFilterValue = filterValue;
+
+  //   let filteredData =
+  //     this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+
+  //   // Apply quick filter first
+  //   if (this.quickFilter !== 'all') {
+  //     this.applyQuickFilter(this.quickFilter);
+  //     return; // applyQuickFilter will handle global filter too
+  //   }
+
+  //   // Apply global filter
+  //   if (filterValue) {
+  //     filteredData = this.applyGlobalFilterToData(filteredData, filterValue);
+  //   }
+
+  //   this.dataSource.data = filteredData;
+  //   this.totalItems = filteredData.length;
+  //   this.calculateTotalPages();
+  //   this.currentPage = 1;
+  //   this.updateDisplayData();
+  // }
 
   private applyGlobalFilterToData(data: any[], filterValue: string): any[] {
     const searchTerm = filterValue.trim().toLowerCase();
