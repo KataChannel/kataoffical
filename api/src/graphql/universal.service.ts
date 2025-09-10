@@ -175,9 +175,91 @@ async findMany(modelName: string, options: {
   }
 
   /**
-   * Generic update
+   * Generic update with where clause
    */
-  async update(model: string, id: string, data: any, include?: any) {
+  async update(model: string, where: any, data: any, include?: any, select?: any) {
+    try {
+      // Validate data for relations to prevent "Required exactly one parent ID" error
+      const cleanData = this.validateAndCleanRelationData(data);
+      
+      const updateOptions: any = {
+        where,
+        data: cleanData
+      };
+
+      if (include) {
+        updateOptions.include = include;
+      }
+
+      if (select) {
+        updateOptions.select = select;
+      }
+
+      return await (this.prisma as any)[model].update(updateOptions);
+    } catch (error) {
+      throw new BadRequestException(`Error updating ${model}: ${error.message}`);
+    }
+  }
+
+  /**
+   * Validate and clean relation data to prevent Prisma errors
+   */
+  private validateAndCleanRelationData(data: any): any {
+    if (!data || typeof data !== 'object') return data;
+    
+    const cleanData = { ...data };
+    
+    // Recursive validation for relation fields
+    Object.keys(cleanData).forEach(key => {
+      const value = cleanData[key];
+      
+      if (value && typeof value === 'object') {
+        // Handle connect/disconnect operations
+        if (value.connect) {
+          cleanData[key].connect = this.validateConnectArray(value.connect);
+        }
+        if (value.disconnect) {
+          cleanData[key].disconnect = this.validateConnectArray(value.disconnect);
+        }
+        
+        // Clean empty operations
+        if (value.connect && value.connect.length === 0) {
+          delete cleanData[key].connect;
+        }
+        if (value.disconnect && value.disconnect.length === 0) {
+          delete cleanData[key].disconnect;
+        }
+        
+        // Remove empty relation object
+        if (Object.keys(cleanData[key]).length === 0) {
+          delete cleanData[key];
+        }
+      }
+    });
+    
+    return cleanData;
+  }
+
+  /**
+   * Validate connect/disconnect array items
+   */
+  private validateConnectArray(items: any[]): any[] {
+    if (!Array.isArray(items)) return [];
+    
+    return items.filter(item => {
+      // Ensure item has valid id
+      return item && 
+             typeof item === 'object' && 
+             item.id && 
+             typeof item.id === 'string' && 
+             item.id.trim() !== '';
+    }).map(item => ({ id: item.id.trim() }));
+  }
+
+  /**
+   * Generic update by ID (legacy method)
+   */
+  async updateById(model: string, id: string, data: any, include?: any) {
     try {
       // Check if record exists
       await this.findById(model, id);

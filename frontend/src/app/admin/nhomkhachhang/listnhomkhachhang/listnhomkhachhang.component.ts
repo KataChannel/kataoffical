@@ -234,7 +234,7 @@ export class ListNhomkhachhangComponent {
   }
   create(): void {
     this.drawer.open();
-    this._router.navigate(['admin/nhomkhachhang', 0]);
+    this._router.navigate(['admin/nhomkhachhang', 'new']);
   }
   goToDetail(item: any): void {
      this._NhomkhachhangService.setNhomkhachhangId(item.id);

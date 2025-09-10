@@ -1,7 +1,19 @@
 import { PrismaService } from 'prisma/prisma.service';
+import { CreateNhomkhachhangInput } from './dto/create-nhomkhachhang.dto';
+import { UpdateNhomkhachhangInput } from './dto/update-nhomkhachhang.dto';
+import { NhomkhachhangFilterInput, NhomkhachhangPaginationInput, NhomkhachhangSortInput } from './dto/filter-nhomkhachhang.dto';
+import { NhomkhachhangConnection } from './types/nhomkhachhang-response.type';
 export declare class NhomkhachhangService {
     private readonly prisma;
     constructor(prisma: PrismaService);
+    private transformNullToUndefined;
+    createNhomkhachhang(input: CreateNhomkhachhangInput): Promise<any>;
+    findAllNhomkhachhang(filter?: NhomkhachhangFilterInput, pagination?: NhomkhachhangPaginationInput, sort?: NhomkhachhangSortInput): Promise<NhomkhachhangConnection>;
+    findOneNhomkhachhang(id: string): Promise<any>;
+    updateNhomkhachhang(id: string, input: UpdateNhomkhachhangInput): Promise<any>;
+    removeNhomkhachhang(id: string): Promise<boolean>;
+    addKhachhangToNhom(nhomId: string, khachhangIds: string[]): Promise<any>;
+    removeKhachhangFromNhom(nhomId: string, khachhangIds: string[]): Promise<any>;
     create(data: any): Promise<{
         id: string;
         createdAt: Date;

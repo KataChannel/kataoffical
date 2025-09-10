@@ -133,14 +133,14 @@ const CREATE_ONE_MUTATION = gql`
 `;
 
 const UPDATE_ONE_MUTATION = gql`
-  mutation UpdateOne(
+  mutation UpdateRecord(
     $modelName: String!
     $where: JSON!
     $data: JSON!
     $include: JSON
     $select: JSON
   ) {
-    updateOne(
+    updateRecord(
       modelName: $modelName
       where: $where
       data: $data
@@ -559,13 +559,13 @@ export class GraphqlService {
 
     try {
       const result = await firstValueFrom(
-        this.apollo.mutate<{ updateOne: T }>({
+        this.apollo.mutate<{ updateRecord: T }>({
           mutation: UPDATE_ONE_MUTATION,
           variables
         })
       );
 
-      const updatedData = result.data!.updateOne;
+      const updatedData = result.data!.updateRecord;
       // Invalidate related cache entries
       this.invalidateCache(modelName);
       this.trackPerformance('updateOne', startTime, false, 1, modelName);

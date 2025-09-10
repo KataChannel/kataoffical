@@ -136,7 +136,63 @@ let UniversalService = class UniversalService {
             throw new common_1.BadRequestException(`Error creating ${model}: ${error.message}`);
         }
     }
-    async update(model, id, data, include) {
+    async update(model, where, data, include, select) {
+        try {
+            const cleanData = this.validateAndCleanRelationData(data);
+            const updateOptions = {
+                where,
+                data: cleanData
+            };
+            if (include) {
+                updateOptions.include = include;
+            }
+            if (select) {
+                updateOptions.select = select;
+            }
+            return await this.prisma[model].update(updateOptions);
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(`Error updating ${model}: ${error.message}`);
+        }
+    }
+    validateAndCleanRelationData(data) {
+        if (!data || typeof data !== 'object')
+            return data;
+        const cleanData = { ...data };
+        Object.keys(cleanData).forEach(key => {
+            const value = cleanData[key];
+            if (value && typeof value === 'object') {
+                if (value.connect) {
+                    cleanData[key].connect = this.validateConnectArray(value.connect);
+                }
+                if (value.disconnect) {
+                    cleanData[key].disconnect = this.validateConnectArray(value.disconnect);
+                }
+                if (value.connect && value.connect.length === 0) {
+                    delete cleanData[key].connect;
+                }
+                if (value.disconnect && value.disconnect.length === 0) {
+                    delete cleanData[key].disconnect;
+                }
+                if (Object.keys(cleanData[key]).length === 0) {
+                    delete cleanData[key];
+                }
+            }
+        });
+        return cleanData;
+    }
+    validateConnectArray(items) {
+        if (!Array.isArray(items))
+            return [];
+        return items.filter(item => {
+            return item &&
+                typeof item === 'object' &&
+                item.id &&
+                typeof item.id === 'string' &&
+                item.id.trim() !== '';
+        }).map(item => ({ id: item.id.trim() }));
+    }
+    async updateById(model, id, data, include) {
         try {
             await this.findById(model, id);
             return await this.prisma[model].update({

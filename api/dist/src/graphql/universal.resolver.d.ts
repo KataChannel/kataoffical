@@ -28,7 +28,7 @@ export declare class UniversalResolver {
         };
     }>;
     createRecord(modelName: string, data: any): Promise<any>;
-    updateRecord(modelName: string, where: any, data: any): Promise<any>;
+    updateRecord(modelName: string, where: any, data: any, include?: any, select?: any): Promise<any>;
     deleteRecord(modelName: string, where: any): Promise<boolean>;
     getAvailableModels(): string[];
 }

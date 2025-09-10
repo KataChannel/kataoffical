@@ -75,8 +75,8 @@ let UniversalResolver = class UniversalResolver {
     async createRecord(modelName, data) {
         return this.universalService.create(modelName, data);
     }
-    async updateRecord(modelName, where, data) {
-        return this.universalService.update(modelName, where, data);
+    async updateRecord(modelName, where, data, include, select) {
+        return this.universalService.update(modelName, where, data, include, select);
     }
     async deleteRecord(modelName, where) {
         return this.universalService.delete(modelName, where);
@@ -138,8 +138,10 @@ __decorate([
     __param(0, (0, graphql_1.Args)('modelName', { type: () => String })),
     __param(1, (0, graphql_1.Args)('where', { type: () => graphql_type_json_1.GraphQLJSON })),
     __param(2, (0, graphql_1.Args)('data', { type: () => graphql_type_json_1.GraphQLJSON })),
+    __param(3, (0, graphql_1.Args)('include', { type: () => graphql_type_json_1.GraphQLJSON, nullable: true })),
+    __param(4, (0, graphql_1.Args)('select', { type: () => graphql_type_json_1.GraphQLJSON, nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:paramtypes", [String, Object, Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "updateRecord", null);
 __decorate([

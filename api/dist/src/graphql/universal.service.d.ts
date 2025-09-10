@@ -37,7 +37,10 @@ export declare class UniversalService {
     }): Promise<any>;
     findById(model: string, id: string, include?: any): Promise<any>;
     create(model: string, data: any, include?: any): Promise<any>;
-    update(model: string, id: string, data: any, include?: any): Promise<any>;
+    update(model: string, where: any, data: any, include?: any, select?: any): Promise<any>;
+    private validateAndCleanRelationData;
+    private validateConnectArray;
+    updateById(model: string, id: string, data: any, include?: any): Promise<any>;
     delete(model: string, id: string): Promise<boolean>;
     bulkCreate(model: string, data: any[]): Promise<any>;
     bulkUpdate(model: string, updates: {

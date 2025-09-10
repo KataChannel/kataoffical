@@ -4,14 +4,19 @@
   </button>
   <div class="font-bold">{{ DetailNhomkhachhang()?.name || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
-    <mat-slide-toggle [(ngModel)]="DetailNhomkhachhang().isActive" [disabled]="!isEdit()">{{DetailNhomkhachhang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
-    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleNhomkhachhangAction()">
+    <!-- Loading indicator -->
+    <mat-spinner *ngIf="isLoading()" diameter="20"></mat-spinner>
+    
+    <mat-slide-toggle [(ngModel)]="DetailNhomkhachhang().isActive" [disabled]="!isEdit() || isLoading()">
+      {{DetailNhomkhachhang().isActive?'Hiển Thị':'Ẩn'}}
+    </mat-slide-toggle>
+    <button mat-icon-button color="primary" *ngIf="isEdit()" [disabled]="isLoading()" (click)="handleNhomkhachhangAction()">
       <mat-icon>save</mat-icon>
     </button>
-    <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
+    <button mat-icon-button color="primary" *ngIf="!isEdit()" [disabled]="isLoading()" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
-    <button mat-icon-button color="warn" (click)="toggleDelete()">
+    <button mat-icon-button color="warn" [disabled]="isLoading()" (click)="toggleDelete()">
       <mat-icon>delete</mat-icon>
     </button>
   </div>
@@ -35,16 +40,25 @@
       <div class="w-full flex flex-col space-y-2">
         <mat-form-field appearance="outline">
           <mat-label>Nhóm Khách hàng</mat-label>
-          <input matInput [(ngModel)]="DetailNhomkhachhang().name" (input)="FillSlug()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Nhóm Khách hàng"/>
+          <input matInput [(ngModel)]="DetailNhomkhachhang().name"  
+                 [disabled]="!isEdit() || isLoading()" 
+                 placeholder="Vui lòng nhập Nhóm Khách hàng"/>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Mô Tả</mat-label>
-          <input matInput [(ngModel)]="DetailNhomkhachhang().description" (input)="FillSlug()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mô Tả"/>
+          <input matInput [(ngModel)]="DetailNhomkhachhang().description"
+                 [disabled]="!isEdit() || isLoading()" 
+                 placeholder="Vui lòng nhập Mô Tả"/>
         </mat-form-field>
-        <div>
-        <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
+        <div class="flex flex-row flex-wrap gap-2">
+        <button mat-flat-button [disabled]="!isEdit() || isLoading()" color="primary" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
           {{CheckListKhachhang.length}} Khách Hàng
-        </span>
+        </button>
+        
+        <!-- 🔍 Debug button -->
+        <button mat-stroked-button color="accent" (click)="debugRelationUpdate()" *ngIf="isEdit()">
+          Debug Relations
+        </button>
            <mat-menu  #menu="matMenu">
                <div (click)="$event.stopPropagation()"  class="cursor-pointer flex flex-col space-y-4 p-3">                                        
                <div class="relative w-full">
@@ -67,7 +81,10 @@
                </div>
                </div>
            </mat-menu>
-          </div>
+           @for (item of CheckListKhachhang; track $index) {
+               <span class="whitespace-nowrap p-2 rounded-lg bg-slate-200">{{item.name}}</span>
+           }
+        </div>
       </div>
      </ng-container>
 

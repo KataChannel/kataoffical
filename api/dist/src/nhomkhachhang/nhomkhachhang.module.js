@@ -10,6 +10,7 @@ exports.NhomkhachhangModule = void 0;
 const common_1 = require("@nestjs/common");
 const nhomkhachhang_service_1 = require("./nhomkhachhang.service");
 const nhomkhachhang_controller_1 = require("./nhomkhachhang.controller");
+const nhomkhachhang_resolver_1 = require("./nhomkhachhang.resolver");
 const prisma_module_1 = require("../../prisma/prisma.module");
 let NhomkhachhangModule = class NhomkhachhangModule {
 };
@@ -18,7 +19,7 @@ exports.NhomkhachhangModule = NhomkhachhangModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule],
         controllers: [nhomkhachhang_controller_1.NhomkhachhangController],
-        providers: [nhomkhachhang_service_1.NhomkhachhangService],
+        providers: [nhomkhachhang_service_1.NhomkhachhangService, nhomkhachhang_resolver_1.NhomkhachhangResolver],
         exports: [nhomkhachhang_service_1.NhomkhachhangService]
     })
 ], NhomkhachhangModule);

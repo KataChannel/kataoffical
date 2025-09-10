@@ -143,9 +143,11 @@ export class UniversalResolver {
   async updateRecord(
     @Args('modelName', { type: () => String }) modelName: string,
     @Args('where', { type: () => GraphQLJSON }) where: any,
-    @Args('data', { type: () => GraphQLJSON }) data: any
+    @Args('data', { type: () => GraphQLJSON }) data: any,
+    @Args('include', { type: () => GraphQLJSON, nullable: true }) include?: any,
+    @Args('select', { type: () => GraphQLJSON, nullable: true }) select?: any
   ) {
-    return this.universalService.update(modelName, where, data);
+    return this.universalService.update(modelName, where, data, include, select);
   }
 
   @Mutation(() => GraphQLJSON, { name: 'deleteRecord' })

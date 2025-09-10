@@ -7,6 +7,92 @@ type TestItem {
   value: Float!
 }
 
+"""Nhóm khách hàng entity"""
+type Nhomkhachhang {
+  """ID của nhóm khách hàng"""
+  id: ID!
+
+  """Tên nhóm khách hàng"""
+  name: String!
+
+  """Mô tả nhóm khách hàng"""
+  description: String
+
+  """Ngày tạo"""
+  createdAt: DateTime!
+
+  """Ngày cập nhật"""
+  updatedAt: DateTime!
+
+  """Danh sách khách hàng trong nhóm"""
+  khachhang: [KhachhangBasic!]
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""Thông tin cơ bản của khách hàng"""
+type KhachhangBasic {
+  """ID khách hàng"""
+  id: ID!
+
+  """Tên khách hàng"""
+  name: String
+
+  """Tên khách hàng (tenkh)"""
+  tenkh: String
+
+  """Địa chỉ khách hàng"""
+  diachi: String
+
+  """Số điện thoại"""
+  sdt: String
+
+  """Email"""
+  email: String
+
+  """Trạng thái hoạt động"""
+  isActive: Boolean!
+}
+
+"""Kết nối phân trang cho nhóm khách hàng"""
+type NhomkhachhangConnection {
+  """Danh sách nhóm khách hàng"""
+  data: [Nhomkhachhang!]!
+
+  """Tổng số bản ghi"""
+  total: Int!
+
+  """Trang hiện tại"""
+  page: Int!
+
+  """Số lượng mỗi trang"""
+  limit: Int!
+
+  """Tổng số trang"""
+  totalPages: Int!
+
+  """Có trang tiếp theo"""
+  hasNextPage: Boolean!
+
+  """Có trang trước"""
+  hasPreviousPage: Boolean!
+}
+
+"""Response cho các mutation"""
+type NhomkhachhangMutationResponse {
+  """Trạng thái thành công"""
+  success: Boolean!
+
+  """Thông báo"""
+  message: String
+
+  """Dữ liệu nhóm khách hàng"""
+  data: Nhomkhachhang
+}
+
 type AggregateCount {
   _all: Int!
 }
@@ -43,6 +129,15 @@ type TopProductItem {
 
 type Query {
   testQuery: [TestItem!]!
+
+  """Lấy danh sách nhóm khách hàng với phân trang và lọc"""
+  getNhomkhachhang(filter: NhomkhachhangFilterInput, pagination: NhomkhachhangPaginationInput, sort: NhomkhachhangSortInput): NhomkhachhangConnection!
+
+  """Lấy nhóm khách hàng theo ID"""
+  getNhomkhachhangById(id: ID!): Nhomkhachhang!
+
+  """Lấy tất cả nhóm khách hàng đơn giản (cho dropdown)"""
+  getAllNhomkhachhangSimple: [Nhomkhachhang!]!
 
   """
   Enhanced dynamic findMany with intelligent field selection and DataLoader optimization
@@ -116,14 +211,55 @@ type Query {
   topProductsByValue(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
 }
 
+input NhomkhachhangFilterInput {
+  """Tìm kiếm theo tên"""
+  name: String
+
+  """Tìm kiếm theo mô tả"""
+  description: String
+
+  """Tìm kiếm chung"""
+  search: String
+}
+
+input NhomkhachhangPaginationInput {
+  """Trang hiện tại"""
+  page: Float = 1
+
+  """Số lượng mỗi trang"""
+  limit: Float = 10
+}
+
+input NhomkhachhangSortInput {
+  """Trường sắp xếp"""
+  field: String = "createdAt"
+
+  """Hướng sắp xếp: asc hoặc desc"""
+  direction: String = "desc"
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
 scalar JSON
 
 type Mutation {
+  """Tạo nhóm khách hàng mới"""
+  createNhomkhachhang(input: CreateNhomkhachhangInput!): NhomkhachhangMutationResponse!
+
+  """Cập nhật nhóm khách hàng"""
+  updateNhomkhachhang(id: ID!, input: UpdateNhomkhachhangInput!): NhomkhachhangMutationResponse!
+
+  """Xóa nhóm khách hàng"""
+  deleteNhomkhachhang(id: ID!): NhomkhachhangMutationResponse!
+
+  """Thêm khách hàng vào nhóm"""
+  addKhachhangToNhom(input: ManageKhachhangInNhomInput!): NhomkhachhangMutationResponse!
+
+  """Xóa khách hàng khỏi nhóm"""
+  removeKhachhangFromNhom(input: ManageKhachhangInNhomInput!): NhomkhachhangMutationResponse!
   createRecord(modelName: String!, data: JSON!): JSON!
-  updateRecord(modelName: String!, where: JSON!, data: JSON!): JSON!
+  updateRecord(modelName: String!, where: JSON!, data: JSON!, include: JSON, select: JSON): JSON!
   deleteRecord(modelName: String!, where: JSON!): JSON!
 
   """Enhanced dynamic create with optimized response"""
@@ -191,4 +327,28 @@ type Mutation {
     """Specific model to clear cache for (optional)"""
     modelName: String
   ): JSON!
+}
+
+input CreateNhomkhachhangInput {
+  """Tên nhóm khách hàng"""
+  name: String!
+
+  """Mô tả nhóm khách hàng"""
+  description: String
+}
+
+input UpdateNhomkhachhangInput {
+  """Tên nhóm khách hàng"""
+  name: String
+
+  """Mô tả nhóm khách hàng"""
+  description: String
+}
+
+input ManageKhachhangInNhomInput {
+  """ID của nhóm khách hàng"""
+  nhomId: String!
+
+  """Danh sách ID khách hàng"""
+  khachhangIds: [String!]!
 }
