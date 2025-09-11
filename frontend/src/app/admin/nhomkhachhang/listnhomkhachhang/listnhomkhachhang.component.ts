@@ -16,10 +16,11 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NhomkhachhangService } from '../nhomkhachhang.service';
 import { MatMenuModule } from '@angular/material/menu';
-import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
+import { readExcelFile, readExcelFileNoWorkerArray, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 @Component({
   selector: 'app-listnhomkhachhang',
   templateUrl: './listnhomkhachhang.component.html',
@@ -68,6 +69,7 @@ export class ListNhomkhachhangComponent {
   private _NhomkhachhangService: NhomkhachhangService = inject(NhomkhachhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
+  private _GraphqlService: GraphqlService = inject(GraphqlService);
   private _router: Router = inject(Router);
   Listnhomkhachhang:any = this._NhomkhachhangService.ListNhomkhachhang;
   dataSource = new MatTableDataSource([]);
@@ -317,11 +319,95 @@ export class ListNhomkhachhangComponent {
        // window.location.reload();
       });
   }
+
+
+    convertFlatToGroup(data: any) {
+    if (!data || data.length === 0) {
+      return [];
+    }
+    // Extract keys representing price boards (excluding mancc, name)
+    const boardKeys = Object.keys(data[0]).filter(
+      (key) => !['description', 'name'].includes(key)
+    );
+    data.forEach((v: any) => {
+      v.khachhang = [];
+      for (const key of boardKeys) {
+        if (v[key] !== undefined && v[key] !== null && v[key] !== '') {
+          v.khachhang.push(v[key]);
+        }
+        delete v[key];
+      }
+    });
+    return data;
+  }
   async ImporExcel(event: any) {
-  const data = await readExcelFile(event)
-  this.DoImportData(data);
-  }   
-  ExportExcel(data:any,title:any) {
-    writeExcelFile(data,title);
+  const data = await readExcelFileNoWorkerArray(event)
+  console.log(event);
+  
+    console.log(data);
+    
+      const nhomkhachhangs = this.convertFlatToGroup(data);
+      console.log(nhomkhachhangs);
+    const Khachhangs = await this._GraphqlService.findAll('khachhang',{
+        select: {
+          id: true,
+          name: true,
+          makh:true
+        },
+        take: 99999,
+        aggressiveCache: true,
+        enableParallelFetch: true,
+      });
+      const ListNCCSP = nhomkhachhangs
+        .filter((supplier: any) => supplier?.khachhang?.length > 0)
+        .map((supplier: any) => ({
+          ...supplier,
+          khachhang: supplier?.khachhang?.map((makh: any) =>
+            Khachhangs.data.find((kh) => kh?.makh === makh)?.id
+          ),
+        }));
+      console.log('ListNCCSP for import:', ListNCCSP);
+  }  
+
+  async ExportExcel(data:any,title:any) {
+    console.log(data);
+    const Khachhangs = await this._GraphqlService.findAll('khachhang',{
+        select: {
+          id: true,
+          name: true,
+          makh:true
+        },
+        take: 99999,
+        aggressiveCache: true,
+        enableParallelFetch: true,
+      });
+    const dynamicKeys = Khachhangs.data.reduce(
+        (acc: Record<string, string>, v: any) => {
+          if (v && v.makh) {
+            acc[v.makh] = '';
+          }
+          return acc;
+        },
+        {}
+      );
+    const formattedData = data.map((nhom: any) => {
+      const formattedItem: any = {
+        name: nhom.name ||'',
+        description: nhom.description ||''
+      };
+      let i = 1;
+      for (const makh of Object.keys(dynamicKeys)) {
+          const productExists = nhom.khachhang?.some(
+            (v: any) => v.makh === makh
+          );
+          if (productExists) {
+            formattedItem[i] = makh;
+            i++;
+          }
+        }
+
+      return formattedItem;
+    });
+    writeExcelFile(formattedData,title);
   }
 }

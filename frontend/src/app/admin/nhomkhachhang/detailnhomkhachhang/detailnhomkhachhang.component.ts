@@ -227,11 +227,35 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
         }
       } catch (error: any) {
         console.error('Lỗi khi tạo nhomkhachhang:', error);
+        
+        // ✅ Enhanced error handling for specific database constraint errors
+        let errorMessage = 'Có lỗi xảy ra khi tạo nhóm khách hàng';
+        
+        if (error.message) {
+          const errorMsg = error.message.toLowerCase();
+          
+          // Handle unique constraint violation
+          if (errorMsg.includes('unique constraint failed') && errorMsg.includes('name')) {
+            errorMessage = `Tên nhóm khách hàng "${this.DetailNhomkhachhang().name}" đã tồn tại. Vui lòng chọn tên khác.`;
+          }
+          // Handle other specific errors
+          else if (errorMsg.includes('foreign key constraint')) {
+            errorMessage = 'Có lỗi liên kết dữ liệu. Vui lòng kiểm tra lại thông tin khách hàng.';
+          }
+          else if (errorMsg.includes('not null constraint')) {
+            errorMessage = 'Thiếu thông tin bắt buộc. Vui lòng điền đầy đủ các trường.';
+          }
+          else {
+            // Use original error message if not a specific database error
+            errorMessage = error.message;
+          }
+        }
+        
         this._snackBar.open(
-          error.message || 'Có lỗi xảy ra khi tạo nhóm khách hàng', 
+          errorMessage, 
           '', 
           {
-            duration: 3000,
+            duration: 5000, // Increased duration for error messages
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-error'],
@@ -412,11 +436,38 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
 
       } catch (error: any) {
         console.error('Lỗi khi cập nhật nhomkhachhang:', error);
+        
+        // ✅ Enhanced error handling for specific database constraint errors
+        let errorMessage = 'Có lỗi xảy ra khi cập nhật nhóm khách hàng';
+        
+        if (error.message) {
+          const errorMsg = error.message.toLowerCase();
+          
+          // Handle unique constraint violation
+          if (errorMsg.includes('unique constraint failed') && errorMsg.includes('name')) {
+            errorMessage = `Tên nhóm khách hàng "${this.DetailNhomkhachhang().name}" đã tồn tại. Vui lòng chọn tên khác.`;
+          }
+          // Handle other specific errors
+          else if (errorMsg.includes('foreign key constraint')) {
+            errorMessage = 'Có lỗi liên kết dữ liệu. Vui lòng kiểm tra lại thông tin khách hàng.';
+          }
+          else if (errorMsg.includes('not null constraint')) {
+            errorMessage = 'Thiếu thông tin bắt buộc. Vui lòng điền đầy đủ các trường.';
+          }
+          else if (errorMsg.includes('record not found')) {
+            errorMessage = 'Không tìm thấy nhóm khách hàng để cập nhật.';
+          }
+          else {
+            // Use original error message if not a specific database error
+            errorMessage = error.message;
+          }
+        }
+        
         this._snackBar.open(
-          error.message || 'Có lỗi xảy ra khi cập nhật nhóm khách hàng', 
+          errorMessage, 
           '', 
           {
-            duration: 3000,
+            duration: 5000, // Increased duration for error messages
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-error'],
@@ -734,6 +785,51 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
 
       console.log('Built relation update data:', updateData);
       return updateData;
+    }
+
+    /**
+     * ✅ Enhanced error message handler for database constraint errors
+     */
+    private getErrorMessage(error: any, operation: 'create' | 'update' | 'delete' = 'create'): string {
+      if (!error?.message) {
+        return `Có lỗi xảy ra khi ${operation === 'create' ? 'tạo' : operation === 'update' ? 'cập nhật' : 'xóa'} nhóm khách hàng`;
+      }
+
+      const errorMsg = error.message.toLowerCase();
+      const currentName = this.DetailNhomkhachhang()?.name || 'nhóm khách hàng';
+      
+      // Handle unique constraint violation
+      if (errorMsg.includes('unique constraint failed') && errorMsg.includes('name')) {
+        return `Tên nhóm khách hàng "${currentName}" đã tồn tại. Vui lòng chọn tên khác.`;
+      }
+      
+      // Handle foreign key constraint
+      if (errorMsg.includes('foreign key constraint')) {
+        return 'Có lỗi liên kết dữ liệu. Vui lòng kiểm tra lại thông tin khách hàng.';
+      }
+      
+      // Handle not null constraint
+      if (errorMsg.includes('not null constraint')) {
+        return 'Thiếu thông tin bắt buộc. Vui lòng điền đầy đủ các trường.';
+      }
+      
+      // Handle record not found
+      if (errorMsg.includes('record not found')) {
+        return operation === 'update' ? 'Không tìm thấy nhóm khách hàng để cập nhật.' : 'Không tìm thấy dữ liệu.';
+      }
+      
+      // Handle permission errors
+      if (errorMsg.includes('permission') || errorMsg.includes('access')) {
+        return 'Bạn không có quyền thực hiện thao tác này.';
+      }
+      
+      // Handle network/connection errors
+      if (errorMsg.includes('network') || errorMsg.includes('connection') || errorMsg.includes('timeout')) {
+        return 'Lỗi kết nối. Vui lòng kiểm tra internet và thử lại.';
+      }
+      
+      // Return original error message for unknown errors
+      return error.message;
     }
     
     CheckKhachhang(item:any) {
