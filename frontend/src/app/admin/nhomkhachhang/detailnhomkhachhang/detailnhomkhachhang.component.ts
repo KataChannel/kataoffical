@@ -177,10 +177,12 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
       }
     }
     private async createNhomkhachhang() {
+      console.log('Creating new nhomkhachhang...');
+      
       this.isLoading.set(true);
       try {
         // ✅ Validate basic data trước khi tạo
-        const nhomkhachhangData = {
+        const nhomkhachhangData: any = {
           name: this.DetailNhomkhachhang().name?.trim(),
           description: this.DetailNhomkhachhang().description?.trim() || ''
         };
@@ -190,47 +192,24 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
           throw new Error('Tên nhóm khách hàng không được để trống');
         }
 
+        // ✅ Build khachhang connection data for create operation
+        const khachhangConnectionData = this.buildKhachhangConnectionForCreate();
+        if (khachhangConnectionData) {
+          nhomkhachhangData.khachhang = khachhangConnectionData;
+          console.log('Adding khachhang connections to create data:', khachhangConnectionData);
+        }
+
         console.log('Creating nhomkhachhang with data:', nhomkhachhangData);
 
-        // ✅ Tạo nhóm khách hàng trước
+        // ✅ Tạo nhóm khách hàng với relations trong một lần gọi
         const result = await this._GraphqlService.createOne(
           'nhomkhachhang',
           nhomkhachhangData,
           { include: { khachhang: true } }
         );
-        
         console.log('Created nhomkhachhang result:', result);
         
-        if (result && result.id) {
-          // ✅ Sau đó liên kết khách hàng nếu có
-          if (this.CheckListKhachhang.length > 0) {
-            console.log('Connecting khachhang to nhomkhachhang...');
-            
-            // ✅ Validate khách hàng IDs
-            const validKhachhangIds = this.CheckListKhachhang
-              .map((v: any) => v.id)
-              .filter((id: any) => id && typeof id === 'string' && id.trim() !== '');
-
-            if (validKhachhangIds.length > 0) {
-              // ✅ Sử dụng buildRelationUpdateData để đảm bảo consistency
-              const relationUpdateData = {
-                khachhang: {
-                  connect: validKhachhangIds.map((id: string) => ({ id: id.trim() }))
-                }
-              };
-
-              console.log('Relation update data:', relationUpdateData);
-
-              const updateResult = await this._GraphqlService.updateOne(
-                'nhomkhachhang',
-                { id: result.id },
-                relationUpdateData
-              );
-              
-              console.log('Relation update result:', updateResult);
-            }
-          }
-
+        if (result && result?.id) {
           this._snackBar.open('Tạo Mới Thành Công', '', {
             duration: 2000,
             horizontalPosition: 'end',
@@ -263,6 +242,125 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
       }
     }
 
+    /**
+     * ✅ Build khachhang connection data for create operation
+     */
+    private buildKhachhangConnectionForCreate(): any {
+      try {
+        // ✅ Validate và filter IDs từ CheckListKhachhang
+        const khachhangIds = this.CheckListKhachhang
+          .map((v: any) => v.id)
+          .filter((id: any) => id && typeof id === 'string' && id.trim() !== '' && id.length >= 36);
+
+        console.log('Building khachhang connection for create with IDs:', khachhangIds);
+
+        if (khachhangIds.length === 0) {
+          console.log('No valid khachhang IDs found for connection');
+          return null;
+        }
+
+        // ✅ Build connection structure for create operation
+        const connectionData = {
+          connect: khachhangIds.map((id: string) => ({ id: id.trim() }))
+        };
+
+        console.log('Built khachhang connection data:', connectionData);
+        return connectionData;
+
+      } catch (error) {
+        console.error('Lỗi khi build khachhang connection for create:', error);
+        return null;
+      }
+    }
+
+    /**
+     * ✅ Build khachhang relation update data for updateOne operation
+     */
+    private buildKhachhangRelationUpdate(): any {
+      try {
+        // ✅ Validate và filter IDs
+        const currentKhachhangIds = this.DetailNhomkhachhang()?.khachhang
+          ?.map((v: any) => v.id)
+          .filter((id: any) => id && typeof id === 'string') || [];
+          
+        const newKhachhangIds = this.CheckListKhachhang
+          .map((v: any) => v.id)
+          .filter((id: any) => id && typeof id === 'string');
+
+        console.log('=== DEBUGGING KHACHHANG RELATION UPDATE ===');
+        console.log('Current khachhang IDs:', currentKhachhangIds);
+        console.log('New khachhang IDs (from CheckListKhachhang):', newKhachhangIds);
+
+        // ✅ So sánh để xác định có thay đổi không
+        const currentSorted = [...currentKhachhangIds].sort();
+        const newSorted = [...newKhachhangIds].sort();
+        console.log('Current IDs sorted:', currentSorted);
+        console.log('New IDs sorted:', newSorted);
+        console.log('Are arrays equal?', JSON.stringify(currentSorted) === JSON.stringify(newSorted));
+
+        // ✅ Chỉ build relation data nếu có sự thay đổi
+        if (JSON.stringify(currentSorted) === JSON.stringify(newSorted)) {
+          console.log('No relation changes detected for update');
+          return null;
+        }
+
+        const toConnect = newKhachhangIds.filter((id: string) => !currentKhachhangIds.includes(id));
+        const toDisconnect = currentKhachhangIds.filter((id: string) => !newKhachhangIds.includes(id));
+        
+        console.log('To connect:', toConnect);
+        console.log('To disconnect:', toDisconnect);
+        
+        // ✅ Build relation update structure
+        const relationData: any = {};
+
+        if (toDisconnect.length > 0) {
+          // ✅ Validate disconnect IDs
+          const validToDisconnect = toDisconnect.filter((id: any) => 
+            id && 
+            typeof id === 'string' && 
+            id.trim() !== '' && 
+            id.length >= 36
+          );
+          
+          console.log('Valid to disconnect:', validToDisconnect);
+          
+          if (validToDisconnect.length > 0) {
+            relationData.disconnect = validToDisconnect.map((id: string) => ({ 
+              id: id.trim() 
+            }));
+          }
+        }
+
+        if (toConnect.length > 0) {
+          // ✅ Validate connect IDs
+          const validToConnect = toConnect.filter((id: any) => 
+            id && 
+            typeof id === 'string' && 
+            id.trim() !== '' && 
+            id.length >= 36
+          );
+          
+          console.log('Valid to connect:', validToConnect);
+          
+          if (validToConnect.length > 0) {
+            relationData.connect = validToConnect.map((id: string) => ({ 
+              id: id.trim() 
+            }));
+          }
+        }
+
+        console.log('Final relation update data:', relationData);
+        console.log('=== END DEBUGGING ===');
+        
+        // ✅ Return null if no valid operations
+        return Object.keys(relationData).length > 0 ? relationData : null;
+        
+      } catch (error) {
+        console.error('Lỗi khi build khachhang relation update:', error);
+        return null;
+      }
+    }
+
     private async updateNhomkhachhang() {
       this.isLoading.set(true);
       
@@ -278,42 +376,26 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
           throw new Error('Tên nhóm khách hàng không được để trống');
         }
 
-        // ✅ Build nested relation data như trong createNhomkhachhang
-        const initialRelationData = this.buildNestedRelationData();
-        if (initialRelationData) {
-          nhomkhachhangData.khachhang = initialRelationData;
-          console.log('Adding relation updates to data:', initialRelationData);
+        // ✅ Build relation update data for khachhang connections
+        const relationUpdateData = this.buildKhachhangRelationUpdate();
+        if (relationUpdateData) {
+          nhomkhachhangData.khachhang = relationUpdateData;
+          console.log('Adding relation updates to update data:', relationUpdateData);
         } else {
           console.log('No relation changes detected - basic update only');
         }
 
-        // ✅ Alternative approach: Update basic data first, then relationships separately
-        console.log('Updating basic nhomkhachhang data first...');
+        console.log('Updating nhomkhachhang with data:', nhomkhachhangData);
         
-        // ✅ Update basic data first
-        const basicResult = await this._GraphqlService.updateOne(
+        // ✅ Update nhóm khách hàng với relations trong một lần gọi
+        const result = await this._GraphqlService.updateOne(
           'nhomkhachhang', 
           { id: this.nhomkhachhangId() }, 
           nhomkhachhangData, 
           { include: { khachhang: true } }
         );
 
-        console.log('Basic update result:', basicResult);
-
-        // ✅ Then update relationships separately if needed
-        const separateRelationData = this.buildNestedRelationData();
-        if (separateRelationData) {
-          console.log('Updating relationships separately...');
-          
-          const relationResult = await this._GraphqlService.updateOne(
-            'nhomkhachhang', 
-            { id: this.nhomkhachhangId() }, 
-            { khachhang: separateRelationData }, 
-            { include: { khachhang: true } }
-          );
-          
-          console.log('Relation update result:', relationResult);
-        }
+        console.log('Update result:', result);
 
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 2000,
@@ -545,65 +627,65 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
      * Tối ưu hóa việc áp dụng khách hàng với GraphQL
      */
     async ApplyKhachhang(menu:any){
-      this.isLoading.set(true);
-      
-      try {
-        // Validate và filter data
-        const currentKhachhangIds = this.DetailNhomkhachhang()?.khachhang?.map((v:any) => v.id).filter((id: any) => id) || [];
-        const newKhachhangIds = this.CheckListKhachhang.map((v:any) => v.id).filter((id: any) => id);
+      // this.isLoading.set(true);
+      menu.closeMenu();
+      // try {
+      //   // Validate và filter data
+      //   const currentKhachhangIds = this.DetailNhomkhachhang()?.khachhang?.map((v:any) => v.id).filter((id: any) => id) || [];
+      //   const newKhachhangIds = this.CheckListKhachhang.map((v:any) => v.id).filter((id: any) => id);
         
-        // Validate nhomkhachhangId
-        const nhomkhachhangId = this.nhomkhachhangId();
-        if (!nhomkhachhangId) {
-          throw new Error('Không tìm thấy ID nhóm khách hàng');
-        }
-        console.log(this.DetailNhomkhachhang());
-        console.log(currentKhachhangIds);
+      //   // Validate nhomkhachhangId
+      //   const nhomkhachhangId = this.nhomkhachhangId();
+      //   if (!nhomkhachhangId) {
+      //     throw new Error('Không tìm thấy ID nhóm khách hàng');
+      //   }
+      //   console.log(this.DetailNhomkhachhang());
+      //   console.log(currentKhachhangIds);
         
-        // Tối ưu: chỉ thực hiện operations khi có thay đổi
-        if (JSON.stringify(currentKhachhangIds.sort()) === JSON.stringify(newKhachhangIds.sort())) {
-          menu.closeMenu();
-          this.isLoading.set(false);
-          return;
-        }
+      //   // Tối ưu: chỉ thực hiện operations khi có thay đổi
+      //   if (JSON.stringify(currentKhachhangIds.sort()) === JSON.stringify(newKhachhangIds.sort())) {
+      //     menu.closeMenu();
+      //     this.isLoading.set(false);
+      //     return;
+      //   }
 
-        // Tính toán các khách hàng cần thêm và xóa
-        const toConnect = newKhachhangIds.filter((id: string) => !currentKhachhangIds.includes(id));
-        const toDisconnect = currentKhachhangIds.filter((id: string) => !newKhachhangIds.includes(id));
+      //   // Tính toán các khách hàng cần thêm và xóa
+      //   const toConnect = newKhachhangIds.filter((id: string) => !currentKhachhangIds.includes(id));
+      //   const toDisconnect = currentKhachhangIds.filter((id: string) => !newKhachhangIds.includes(id));
         
-        // Cập nhật quan hệ với GraphQL chỉ khi có thay đổi
-        const updateData = this.buildRelationUpdateData(toConnect, toDisconnect);
+      //   // Cập nhật quan hệ với GraphQL chỉ khi có thay đổi
+      //   const updateData = this.buildRelationUpdateData(toConnect, toDisconnect);
         
-        if (updateData) {
-          await this._GraphqlService.updateOne(
-            'nhomkhachhang',
-            { id: nhomkhachhangId },
-            updateData
-          );
-        }
+      //   if (updateData) {
+      //     await this._GraphqlService.updateOne(
+      //       'nhomkhachhang',
+      //       { id: nhomkhachhangId },
+      //       updateData
+      //     );
+      //   }
 
-        this._snackBar.open('Cập nhật khách hàng thành công', '', {
-          duration: 2000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
+      //   this._snackBar.open('Cập nhật khách hàng thành công', '', {
+      //     duration: 2000,
+      //     horizontalPosition: 'end',
+      //     verticalPosition: 'top',
+      //     panelClass: ['snackbar-success'],
+      //   });
         
-        // Refresh data để cập nhật UI
-        await this._NhomkhachhangService.getNhomkhachhangByid(this.nhomkhachhangId());
-        menu.closeMenu();
+      //   // Refresh data để cập nhật UI
+      //   await this._NhomkhachhangService.getNhomkhachhangByid(this.nhomkhachhangId());
+      //   menu.closeMenu();
         
-      } catch (error) {
-        console.error('Lỗi khi cập nhật khách hàng:', error);
-        this._snackBar.open('Có lỗi xảy ra khi cập nhật khách hàng', '', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-error'],
-        });
-      } finally {
-        this.isLoading.set(false);
-      }
+      // } catch (error) {
+      //   console.error('Lỗi khi cập nhật khách hàng:', error);
+      //   this._snackBar.open('Có lỗi xảy ra khi cập nhật khách hàng', '', {
+      //     duration: 3000,
+      //     horizontalPosition: 'end',
+      //     verticalPosition: 'top',
+      //     panelClass: ['snackbar-error'],
+      //   });
+      // } finally {
+      //   this.isLoading.set(false);
+      // }
     }
     
     /**
