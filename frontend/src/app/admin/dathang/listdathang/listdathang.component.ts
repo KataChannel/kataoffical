@@ -342,11 +342,13 @@ export class ListDathangComponent {
   }
   async ExportExcel() {
     // Use existing data if no specific data provided
+    this.searchParam.pageSize = 99999;
+    await this._DathangService.getDathangBy(this.searchParam);
     const exportData = this.Listdathang();
     const exportTitle = `Danh Sách Đặt Hàng ${this._timezoneService.formatForDisplay(new Date(), 'DD-MM-YYYY')}`;
 
     await this._NhacungcapService.getAllNhacungcap();
-    await this._SanphamService.getAllSanpham();
+    await this._SanphamService.getAllSanpham({ pageSize: 99999 });
     await this._BanggiaService.getAllBanggia();
 
     const ListDathang =
@@ -381,6 +383,7 @@ export class ListDathangComponent {
             },
           ];
     console.log(ListDathang);
+    console.log(this.Listdathang());
 
     // const NCC = this._NhacungcapService.ListNhacungcap().map((v: any) => ({
     //   mancc: v.mancc,
