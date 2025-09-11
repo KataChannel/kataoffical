@@ -341,13 +341,13 @@ export class ListNhomkhachhangComponent {
     return data;
   }
   async ImporExcel(event: any) {
-  const data = await readExcelFileNoWorkerArray(event)
-  console.log(event);
-  
+    const data = await readExcelFileNoWorkerArray(event)
+    console.log(event);
+    
     console.log(data);
     
-      const nhomkhachhangs = this.convertFlatToGroup(data);
-      console.log(nhomkhachhangs);
+    const nhomkhachhangs = this.convertFlatToGroup(data);
+    console.log(nhomkhachhangs);
     const Khachhangs = await this._GraphqlService.findAll('khachhang',{
         select: {
           id: true,
@@ -364,9 +364,124 @@ export class ListNhomkhachhangComponent {
           ...supplier,
           khachhang: supplier?.khachhang?.map((makh: any) =>
             Khachhangs.data.find((kh) => kh?.makh === makh)?.id
-          ),
+          ).filter((id: any) => id !== undefined), // Remove undefined IDs
         }));
       console.log('ListNCCSP for import:', ListNCCSP);
+      
+      // Process and import data using GraphQL
+      await this.processImportData(ListNCCSP);
+  }
+
+  /**
+   * Process and import nhomkhachhang data using GraphQL
+   */
+  async processImportData(ListNCCSP: any[]) {
+    try {
+      const importPromises = ListNCCSP.map(async (nhom: any) => {
+        try {
+          // Check if nhomkhachhang already exists by name
+          const existingNhom = this.Listnhomkhachhang().find((existing: any) => 
+            existing.name === nhom.name
+          );
+
+          const nhomData = {
+            name: nhom.name,
+            description: nhom.description || '',
+            khachhang: {
+              connect: nhom.khachhang.map((id: string) => ({ id }))
+            }
+          };
+
+          if (existingNhom) {
+            // Update existing nhomkhachhang
+            console.log(`Updating existing nhomkhachhang: ${nhom.name}`);
+            await this._GraphqlService.updateOne('nhomkhachhang', { id: existingNhom.id }, nhomData);
+          } else {
+            // Create new nhomkhachhang
+            console.log(`Creating new nhomkhachhang: ${nhom.name}`);
+            await this._GraphqlService.createOne('nhomkhachhang', nhomData);
+          }
+        } catch (error: any) {
+          console.error(`Error processing nhomkhachhang "${nhom.name}":`, error);
+          
+          // Handle specific errors
+          if (error.message?.includes('Unique constraint failed') && error.message?.includes('name')) {
+            this._snackBar.open(`Tên nhóm "${nhom.name}" đã tồn tại, bỏ qua.`, '', {
+              duration: 3000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-warning'],
+            });
+          } else {
+            this._snackBar.open(`Lỗi xử lý nhóm "${nhom.name}": ${error.message}`, '', {
+              duration: 5000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-error'],
+            });
+          }
+        }
+      });
+
+      // Wait for all imports to complete
+      await Promise.all(importPromises);
+
+      // Refresh data after import
+      await this.refresh();
+
+      this._snackBar.open(`Import hoàn tất! Đã xử lý ${ListNCCSP.length} nhóm khách hàng.`, '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
+
+    } catch (error: any) {
+      console.error('Import error:', error);
+      this._snackBar.open(`Lỗi import: ${error.message}`, '', {
+        duration: 5000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+  /**
+   * Test method with sample data - for development/testing purposes
+   */
+  async testImportWithSampleData() {
+    const sampleData = [
+      {
+        "name": "Nhóm 2",
+        "description": "Mô tả",
+        "khachhang": [
+          "0032fc11-b99f-4ab6-a10b-9bfdb32f61b5",
+          "003c52fc-4e54-4d58-92e2-a7bf3b847e2c",
+          "008fc6fb-4834-4c72-9f80-7281db4b09db",
+          "011c521e-8b2e-4ba1-a9dc-4a819321444d"
+        ]
+      },
+      {
+        "name": "Nhóm 4",
+        "description": "Mô Tả 2",
+        "khachhang": [
+          "0032fc11-b99f-4ab6-a10b-9bfdb32f61b5",
+          "008fc6fb-4834-4c72-9f80-7281db4b09db",
+          "01cc2b3e-a279-4fb7-8e78-7073cf7d8d8b",
+          "02f57b49-2734-4d92-988a-2fac2a5fbbfa",
+          "036b2dd7-8026-45ae-b388-e643f3546df8",
+          "036ded8c-a9ab-4d0b-b18a-daa0c04aaea8"
+        ]
+      }
+    ];
+
+    console.log('Testing import with sample data:', sampleData);
+    await this.processImportData(sampleData);
   }  
 
   async ExportExcel(data:any,title:any) {
