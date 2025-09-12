@@ -69,34 +69,19 @@
             }
           </div>
         </mat-menu>
-      </div>
 
-      <div class="w-full flex flex-row space-x-2 items-center">
-        <!-- @if(ListKhachhang.length > 0) {
-        <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'" class="w-full">
-          <mat-label>Khách Hàng</mat-label>
-          <input type="text" [matAutocomplete]="auto" (keyup)="doFilterKhachhang($event)" matInput
-            placeholder="Tìm kiếm khách hàng" />
-        </mat-form-field>
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onKhachhangChange($event)" class="max-w-none"
-          panelWidth="auto">
-          @for (option of filterListKhachhang; track option) {
-          <mat-option [value]="option" class="!whitespace-normal !h-auto !py-2">
-            <span class="text-sm">{{ option }}</span>
-          </mat-option>
-          }
-        </mat-autocomplete> -->
-        <!-- Export button với loading -->
-
-        <!-- } -->
-        <!-- Search button với loading -->
+         <button (click)="isShowKH=!isShowKH" matTooltip="Ẩn hiện Tool Khách Hàng" mat-icon-button color="primary">
+          <mat-icon>{{isShowKH ? 'visibility' : 'visibility_off'}}</mat-icon>
+        </button>
       </div>
     </div>
+
+    @if(isShowKH){
     <div class="w-full grid lg:grid-cols-2 gap-2 items-center">
               <!-- Multi-customer group selection with chips autocomplete -->
         <div class="flex flex-col space-y-2 w-full">
+          <div class="font-bold">Nhóm Khách Hàng </div>
           <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-            <mat-label>Nhóm Khách Hàng</mat-label>
             <mat-chip-set aria-label="Chọn nhóm khách hàng">
               @for (nhomKH of SelectedNhomKhachhang; track nhomKH) {
                 <mat-chip (removed)="removeSelectedNhomkhachhang(nhomKH)" [removable]="true">
@@ -131,10 +116,11 @@
             @if (SelectedNhomKhachhang.length > 0) {
             <button matTooltip="Xóa tất cả nhóm khách hàng đã chọn" (click)="clearAllSelectedNhomKhachhang()" 
               color="warn" mat-icon-button matSuffix>
-              <mat-icon>clear_all</mat-icon>
+              <mat-icon>close</mat-icon>
             </button>
             }
-          @if (SelectedNhomKhachhang.length > 0) {
+
+          <!-- @if (SelectedNhomKhachhang.length > 0) {
           <div class="flex flex-wrap gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
             <span class="text-sm font-medium text-blue-800 flex items-center mr-2">
               <mat-icon class="mr-1 text-blue-600" style="font-size: 18px;">people</mat-icon>
@@ -152,14 +138,14 @@
             </mat-chip-set>
             }
           </div>
-          }
+          } -->
           </mat-form-field>
         </div>
 
         <!-- Multi-customer selection with chips autocomplete -->
         <div class="flex flex-col space-y-2 w-full">
+          <div class="font-bold">Khách Hàng </div>
           <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-            <mat-label>Chọn Khách Hàng</mat-label>
             <mat-chip-set aria-label="Chọn khách hàng">
               @for (customer of SelectedKhachhang; track customer) {
                 <mat-chip (removed)="removeSelectedCustomer(customer)" [removable]="true">
@@ -194,12 +180,12 @@
             @if (SelectedKhachhang.length > 0) {
             <button matTooltip="Xóa tất cả khách hàng đã chọn" (click)="clearAllSelectedCustomers()" 
               color="warn" mat-icon-button matSuffix>
-              <mat-icon>clear_all</mat-icon>
+              <mat-icon>close</mat-icon>
             </button>
             }
           </mat-form-field>
                     <!-- Selected customers display with chips -->
-          @if (SelectedKhachhang.length > 0) {
+          <!-- @if (SelectedKhachhang.length > 0) {
           <div class="flex flex-wrap gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
             <span class="text-sm font-medium text-blue-800 flex items-center mr-2">
               <mat-icon class="mr-1 text-blue-600" style="font-size: 18px;">people</mat-icon>
@@ -216,12 +202,16 @@
             </mat-chip-set>
             }
           </div>
-          }
+          } -->
         </div>
 
 
 
     </div>
+    }
+
+
+
     <!-- Table với loading state -->
     <div class="w-full overflow-auto relative">
       <!-- Loading indicator cho table -->

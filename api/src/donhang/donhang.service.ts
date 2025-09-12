@@ -255,11 +255,11 @@ export class DonhangService {
     const where: any = {
       ngaygiao: dateRange,
       // type: Type,
-      status: Array.isArray(params.Status)
-        ? { in: params.Status }
-        : params.Status,
-      };
-
+      status: Array.isArray(params.Status)? { in: params.Status }: params.Status,
+    };
+    if(params.khachhangIds.length>0){
+      where.khachhangId = { in: params.khachhangIds };
+    }
     if (query) {
       where.OR = [
         { madonhang: { contains: query, mode: 'insensitive' } },

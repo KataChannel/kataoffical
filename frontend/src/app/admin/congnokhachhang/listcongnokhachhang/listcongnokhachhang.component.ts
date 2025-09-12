@@ -78,7 +78,7 @@ export class ListcongnokhachhangComponent {
   isLoading = false;
   isSearching = false;
   isExporting = false;
-  
+  isShowKH = true;
   displayedColumns: string[] = [
     'ngaygiao',
     'madonhang',
@@ -201,6 +201,8 @@ export class ListcongnokhachhangComponent {
     this.isSearching = true;
     try {
       await this.loadData(this.SearchParams); 
+      console.log(this.SearchParams);
+      
       // Create a Map to track unique customers
       const uniqueCustomers = new Map();
       this.Listdonhang().forEach((v: any) => {
@@ -250,8 +252,12 @@ onNhomKhachhangSelected(event: MatAutocompleteSelectedEvent): void {
     //   typeof nhomKH === 'string' ? nhomKH : nhomKH.id || nhomKH.name
     // );
     
-    // Refresh the filter list to exclude the newly selected customer group
+    // Add corresponding customers from the selected customer group
+    this.addCustomersFromGroup(fullObject);
+    
+    // Refresh the filter lists to exclude newly selected items
     this.refreshNhomKhachhangFilter();
+    this.refreshCustomerFilter();
   }
   
   // Clear the input after selection
@@ -285,9 +291,9 @@ doFilterKhachhang(event: Event){
     this.filterListKhachhang = availableCustomers;
     return;
   }
-  
   this.filterListKhachhang = availableCustomers.filter((item: any) =>
-    item.toLowerCase().includes(query) || removeVietnameseAccents(item).toLowerCase().includes(removeVietnameseAccents(query))
+    item?.name?.toLowerCase().includes(query) || removeVietnameseAccents(item?.name).toLowerCase().includes(removeVietnameseAccents(query))
+    || item?.makh?.toLowerCase().includes(query) || removeVietnameseAccents(item?.makh).toLowerCase().includes(removeVietnameseAccents(query))
   );
 }
 
@@ -379,14 +385,18 @@ removeSelectedNhomkhachhang(nhomKH: any): void {
     (typeof item === 'string' ? item : item.name) === (typeof nhomKH === 'string' ? nhomKH : nhomKH.name)
   );
   if (index >= 0) {
+    // Remove corresponding customers from the group before removing the group
+    this.removeCustomersFromGroup(nhomKH);
+    
     this.SelectedNhomKhachhang.splice(index, 1);
     // Update SearchParams if you have nhomKhachhangIds
     // this.SearchParams.nhomKhachhangIds = this.SelectedNhomKhachhang.map(nhomKH => 
     //   typeof nhomKH === 'string' ? nhomKH : nhomKH.id || nhomKH.name
     // );
     
-    // Refresh the filter list to include the removed customer group
+    // Refresh the filter lists to include removed items
     this.refreshNhomKhachhangFilter();
+    this.refreshCustomerFilter();
   }
 }
 
@@ -399,11 +409,17 @@ clearAllSelectedCustomers(): void {
   this.refreshCustomerFilter();
 }
 clearAllSelectedNhomKhachhang(): void {
+  // Remove all customers from selected groups before clearing groups
+  this.SelectedNhomKhachhang.forEach(nhomKH => {
+    this.removeCustomersFromGroup(nhomKH);
+  });
+  
   this.SelectedNhomKhachhang = [];
   // this.SearchParams.khachhangIds = [];
   
-  // Refresh the filter list to show all customer groups again
+  // Refresh the filter lists to show all items again
   this.refreshNhomKhachhangFilter();
+  this.refreshCustomerFilter();
 }
 
 // Helper methods to refresh filter lists
@@ -427,6 +443,53 @@ private refreshNhomKhachhangFilter(): void {
     const itemName = typeof item === 'string' ? item : item.name;
     return !selectedNames.includes(itemName);
   });
+}
+
+// Helper method to add customers from a selected customer group
+private addCustomersFromGroup(nhomKhachhang: any): void {
+  if (!nhomKhachhang || typeof nhomKhachhang === 'string') return;
+  
+  // Get customers from the customer group
+  const customersInGroup = nhomKhachhang.khachhang || [];
+  
+  customersInGroup.forEach((customer: any) => {
+    // Check if customer is not already selected
+    const isAlreadySelected = this.SelectedKhachhang.some(selectedCustomer => 
+      (typeof selectedCustomer === 'string' ? selectedCustomer : selectedCustomer.name) === customer.name
+    );
+    
+    if (!isAlreadySelected) {
+      this.SelectedKhachhang.push(customer);
+    }
+  });
+  
+  // Update SearchParams
+  this.SearchParams.khachhangIds = this.SelectedKhachhang.map(customer => 
+    typeof customer === 'string' ? customer : customer.makh || customer.name
+  );
+}
+
+// Helper method to remove customers from a deselected customer group
+private removeCustomersFromGroup(nhomKhachhang: any): void {
+  if (!nhomKhachhang || typeof nhomKhachhang === 'string') return;
+  
+  // Get customers from the customer group
+  const customersInGroup = nhomKhachhang.khachhang || [];
+  
+  customersInGroup.forEach((customer: any) => {
+    const index = this.SelectedKhachhang.findIndex(selectedCustomer => 
+      (typeof selectedCustomer === 'string' ? selectedCustomer : selectedCustomer.name) === customer.name
+    );
+    
+    if (index >= 0) {
+      this.SelectedKhachhang.splice(index, 1);
+    }
+  });
+  
+  // Update SearchParams
+  this.SearchParams.khachhangIds = this.SelectedKhachhang.map(customer => 
+    typeof customer === 'string' ? customer : customer.makh || customer.name
+  );
 }
 
   async loadData(query:any): Promise<void> {
