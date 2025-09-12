@@ -99,11 +99,10 @@ export class ListcongnokhachhangComponent {
     tongvat: 'Tổng VAT',
     tongtien: 'Tổng Tiền',
   };
-
-
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('CongnoColFilter') || '[]'
   );
+  exampleExport:any={}
   Columns: any[] = [];
   isFilter: boolean = false;
   Trangthaidon:any = TrangThaiDon;
@@ -496,7 +495,7 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
     this.isLoading = true;
     try {
       await this._DonhangService.searchCongno(query);
-      console.log(this.Listdonhang());      
+      // console.log(this.Listdonhang());      
       this.CountItem = this.Listdonhang().length||0;
       // Nhóm dữ liệu theo khách hàng để tính tổng tiền sau thuế
       const customerTotals = new Map();
@@ -538,8 +537,8 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
         },
       });
       this.ListNhomKhachhang = this.filterListNhomKhachhang = NhomKhachhangs.data
-      console.log(this.filterListKhachhang);
-      console.log(this.filterListNhomKhachhang);
+      // console.log(this.filterListKhachhang);
+      // console.log(this.filterListNhomKhachhang);
       
 
     } finally {
@@ -710,7 +709,6 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
   dialogCreateRef: any;
   Phieuchia:any[] = [];
   openCreateDialog(teamplate: TemplateRef<any>) {
-    console.log(this.editDonhang);
     this.Phieuchia = this.editDonhang.map((v: any) => ({
       makh: v.khachhang?.makh,
       name: v.khachhang?.name,
@@ -730,6 +728,84 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
       hasBackdrop: true,
       disableClose: true,
     });
+  }
+  async openPreviewExport(teamplate: TemplateRef<any>) {
+    if (this.editDonhang.length > 0) {
+      const ListExport:any = await this.ChuyendoiExport(this.editDonhang);
+      this.exampleExport = this.convertFlatData(ListExport[0]||{});
+      console.log('exampleExport',this.exampleExport);
+      
+      this.dialogCreateRef = this.dialog.open(teamplate, {
+        hasBackdrop: true,
+        disableClose: true,
+      });
+    } else {
+      this._snackBar.open('Vui lòng chọn ít nhất một khách hàng', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning']
+      });
+    }
+  }
+  convertFlatData(data:any) {
+    return data?.sanpham?.map((item:any) => ({
+        "madonhang": data.madonhang,
+        "ngaygiao": data.ngaygiao,
+        "masp": item.sanpham.masp,
+        "tensp": item.sanpham.title,
+        "dvt": item.sanpham.dvt,
+        "slnhan": item.slnhan,
+        "giaban": item.giaban,
+        "ttnhan": item.ttnhan,
+        "makh": data.khachhang.makh,
+        "tenkh": data.khachhang.name,
+        "diachi": data.khachhang.diachi||'',
+        "email": data.khachhang.email||'',
+        "ghichu": item.ghichu||'',
+    }));
+  }
+
+  async ChuyendoiExport(item:any){
+   const Donhangs =  await this._GraphqlService.findAll('donhang',
+    {
+      aggressiveCache: true,
+      enableStreaming: true,
+      where:{
+        id:{in:item.map((v:any)=>v.id)},
+        ngaygiao:{gte:moment(this.SearchParams.Batdau).startOf('day').toDate(),lte:moment(this.SearchParams.Ketthuc).endOf('day').toDate()},
+        status:{in:this.SearchParams.Status},
+        // khachhangId:{in:this.SearchParams.khachhangIds.length>0?this.SearchParams.khachhangIds:undefined}
+      },
+      select: {
+        id: true,
+        madonhang: true,
+        ngaygiao: true,
+        sanpham:{
+          select:{
+            slnhan:true,
+            ttnhan:true,
+            giaban:true,
+            ghichu:true,
+            sanpham:{
+              select:{
+                masp:true,
+                title:true,
+                dvt:true,
+            }
+            }
+        }},
+        khachhang:{
+          select:{
+            makh:true,
+            name:true,
+            diachi:true,
+            email:true,
+          }
+        }
+      }        
+    })
+    return Donhangs.data;
   }
 
   BackStatus()
