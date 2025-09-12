@@ -1212,37 +1212,39 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
       // Prepare header data matching exporttable format
       const customerInfo = exportData[0] || {};
       
-      // Create worksheet data with company header and customer info
+      // Create worksheet data with company header and customer info matching the HTML table structure
       const worksheetData: any[][] = [
-        // Company logo row (merged)
-        ['CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA', '', '', '', '', '', '', '', '', '', ''],
-        ['HTX: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An', '', '', '', '', '', '', '', '', '', ''],
-        ['VP: Tòa nhà An Phú Plaza, 117-119 Lý Chính Thắng, P.7. Q.3, TP.HCM', '', '', '', '', '', '', '', '', '', ''],
-        ['Website: rausachtrangia.com - Hotline: 090.245.8081', '', '', '', '', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', '', '', '', '', ''], // Empty row
+        // Row 1: Logo section (colspan 4) + Company info section (colspan 7)
+        ['[LOGO]', '', '', '', 'CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA', '', '', '', '', '', ''],
+        ['', '', '', '', 'HTX: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An', '', '', '', '', '', ''],
+        ['', '', '', '', 'VP: Tòa nhà An Phú Plaza, 117-119 Lý Chính Thắng, P.7. Q.3,', '', '', '', '', '', ''],
+        ['', '', '', '', 'TP.HCM Kho sơ chế: 30 Kha Vạn Cân, P. Hiệp Bình Chánh,', '', '', '', '', '', ''],
+        ['', '', '', '', 'TP.Thủ Đức, TP.HCM Kho Đà Lạt: 69 Trần Thủ Độ,', '', '', '', '', '', ''],
+        ['', '', '', '', 'TT Liên Nghĩa, Huyện Đức Trọng, Tỉnh Lâm Đồng.', '', '', '', '', '', ''],
+        ['', '', '', '', 'Website: rausachtrangia.com - Hotline: 090.245.8081', '', '', '', '', '', ''],
         
-        // Report title
+        // Report title row
         ['CHI TIẾT ĐỐI CHIẾU CÔNG NỢ', '', '', '', '', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', '', '', '', '', ''], // Empty row
         
-        // Date range
-        [`Từ Ngày ${moment(this.SearchParams.Batdau).format('DD/MM/YYYY')} - Đến Ngày ${moment(this.SearchParams.Ketthuc).format('DD/MM/YYYY')}`, '', '', '', '', '', '', '', '', '', ''],
+        // Date range row
+        [`Từ Ngày ${moment(this.SearchParams.Batdau).format('dd/MM/yyyy')} : - Đến Ngày : ${moment(this.SearchParams.Ketthuc).format('dd/MM/yyyy')}`, '', '', '', '', '', '', '', '', '', ''],
         
-        // Customer info
-        [`Tên Khách Hàng: ${customerInfo.tenkh || ''}`, '', '', '', '', '', '', '', '', '', ''],
-        [`Địa Chỉ: ${customerInfo.diachi || ''}`, '', '', '', '', '', '', '', '', '', ''],
-        [`Người Liên hệ: ${customerInfo.lienhe || ''}`, '', '', 'Email: ' + (customerInfo.email || ''), '', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', '', '', '', '', ''], // Empty row
-        ['', '', '', '', '', '', '', '', '', '', ''], // Empty row
+        // Customer info rows
+        [`Tên Khách Hàng : ${customerInfo.tenkh || ''}`, '', '', '', '', '', '', '', '', '', ''],
+        [`Địa Chỉ : ${customerInfo.diachi || ''}`, '', '', '', '', '', '', '', '', '', ''],
+        [`Người Liên hệ : ${customerInfo.lienhe || ''}`, '', '', '', `Email : ${customerInfo.email || ''}`, '', '', '', '', '', ''],
         
-        // Table headers
+        // Empty row (spacing like in HTML)
+        ['', '', '', '', '', '', '', '', '', '', ''],
+        
+        // Table headers with exact same text as HTML
         ['NGÀY GIAO', 'MÃ KHÁCH HÀNG', 'TÊN KHÁCH HÀNG', 'MÃ ĐƠN HÀNG', 'MÃ HÀNG', 'TÊN HÀNG', 'ĐVT', 'SỐ LƯỢNG', 'ĐƠN GIÁ', 'THÀNH TIỀN', 'GHI CHÚ']
       ];
       
       // Add data rows
       exportData.forEach(item => {
         worksheetData.push([
-          moment(item.ngaygiao).format('DD/MM/YYYY'),
+          moment(item.ngaygiao).format('dd/MM/yyyy'),
           item.makh || '',
           item.tenkh || '',
           item.madonhang || '',
@@ -1275,18 +1277,36 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
       ];
       worksheet['!cols'] = columnWidths;
       
-      // Add merges for header sections
+      // Add merges for header sections matching the HTML table structure
       const merges = [
-        { s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }, // Company name
-        { s: { r: 1, c: 0 }, e: { r: 1, c: 10 } }, // Address 1
-        { s: { r: 2, c: 0 }, e: { r: 2, c: 10 } }, // Address 2
-        { s: { r: 3, c: 0 }, e: { r: 3, c: 10 } }, // Contact info
-        { s: { r: 5, c: 0 }, e: { r: 5, c: 10 } }, // Report title
-        { s: { r: 7, c: 0 }, e: { r: 7, c: 10 } }, // Date range
-        { s: { r: 8, c: 0 }, e: { r: 8, c: 10 } }, // Customer name
-        { s: { r: 9, c: 0 }, e: { r: 9, c: 10 } }, // Customer address
-        { s: { r: 10, c: 0 }, e: { r: 10, c: 2 } }, // Contact person
-        { s: { r: 10, c: 3 }, e: { r: 10, c: 10 } } // Email
+        // Logo section (rows 0-6, cols 0-3)
+        { s: { r: 0, c: 0 }, e: { r: 6, c: 3 } }, // Logo area
+        
+        // Company info section (rows 0-6, cols 4-10)
+        { s: { r: 0, c: 4 }, e: { r: 0, c: 10 } }, // Company name
+        { s: { r: 1, c: 4 }, e: { r: 1, c: 10 } }, // HTX address
+        { s: { r: 2, c: 4 }, e: { r: 2, c: 10 } }, // VP address line 1
+        { s: { r: 3, c: 4 }, e: { r: 3, c: 10 } }, // VP address line 2
+        { s: { r: 4, c: 4 }, e: { r: 4, c: 10 } }, // Kho address line 1
+        { s: { r: 5, c: 4 }, e: { r: 5, c: 10 } }, // Kho address line 2
+        { s: { r: 6, c: 4 }, e: { r: 6, c: 10 } }, // Website and hotline
+        
+        // Report title
+        { s: { r: 7, c: 0 }, e: { r: 7, c: 10 } }, // Report title
+        
+        // Date range
+        { s: { r: 8, c: 0 }, e: { r: 8, c: 10 } }, // Date range
+        
+        // Customer info
+        { s: { r: 9, c: 0 }, e: { r: 9, c: 10 } }, // Customer name
+        { s: { r: 10, c: 0 }, e: { r: 10, c: 10 } }, // Customer address
+        
+        // Contact person and email row (matching HTML: colspan 4 and colspan 7)
+        { s: { r: 11, c: 0 }, e: { r: 11, c: 3 } }, // Contact person (colspan 4)
+        { s: { r: 11, c: 4 }, e: { r: 11, c: 10 } }, // Email (colspan 7)
+        
+        // Empty row
+        { s: { r: 12, c: 0 }, e: { r: 12, c: 10 } } // Empty spacing row
       ];
       worksheet['!merges'] = merges;
       
