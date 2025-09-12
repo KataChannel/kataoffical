@@ -17,6 +17,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { KhachhangService } from '../../khachhang/khachhang.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GraphqlService } from '../../../shared/services/graphql.service';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
   @Component({
     selector: 'app-detailnhomkhachhang',
     imports: [
@@ -158,7 +159,7 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
         aggressiveCache: true,
         enableParallelFetch: true,
       });
-      this.ListKhachhang = Khachhangs.data;
+      this.ListKhachhang = this.FilterKhachhang = Khachhangs.data;
       // console.log(this.ListKhachhang);
     }
     private async handleExistingRecord(id: string): Promise<void> {
@@ -657,11 +658,15 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
      * Tối ưu hóa filter khách hàng với debounce
      */
     doFilterKhachhang(event:any){
-      const value = event.target.value.toLowerCase();
-      if (value.length < 2 && value.length > 0) return; // Chỉ filter khi >= 2 ký tự
-      
-      this.ListKhachhang = this._KhachhangService.ListKhachhang().filter((v) => 
-        v.name.toLowerCase().includes(value)
+      const value = event.target.value;
+      if (value.length < 2) 
+        {
+          this.FilterKhachhang = this.ListKhachhang;
+          return; // Chỉ filter khi >= 2 ký tự
+        }
+      const normalizedFilter = removeVietnameseAccents(value.trim().toLowerCase());
+      this.FilterKhachhang = this.ListKhachhang.filter((v) => 
+        removeVietnameseAccents(v.name.toLowerCase()).includes(normalizedFilter)
       );
     }
 
