@@ -208,19 +208,8 @@ export class ListcongnokhachhangComponent {
   }
 ListExport:any =[]
 onKhachhangChange(event: MatAutocompleteSelectedEvent){
-  const selectedValue = event.option.value;
-  // Update dataSource and ListExport based on selection
-  if (selectedValue && selectedValue !== '') {
-    // Filter by customer name
-    this.dataSource.data = this.ListExport = this.ListCongno.filter((item: any) =>
-      item.tenkhachhang === selectedValue
-    );
-  } else {
-    // Reset to show all data
-    this.dataSource.data = this.ListExport = this.ListCongno;
-  }
-  // this.dataSource.paginator = this.paginator;
-  this.dataSource.sort = this.sort;
+  // Use the chips autocomplete method for consistency
+  this.onCustomerSelected(event);
 }
 onNhomKhachhangChange(event: MatAutocompleteSelectedEvent){
   const selectedValue = event.option.value;
@@ -267,21 +256,42 @@ doFilterNhomKhachhang(event: Event){
  );
 }
 
-// Method to handle customer selection from autocomplete
+// Method to handle customer selection from chips autocomplete
 onCustomerSelected(event: MatAutocompleteSelectedEvent): void {
   const selectedValue = event.option.value;
-  if (!this.SelectedKhachhang.includes(selectedValue)) {
+  // Check if customer is already selected (avoid duplicates)
+  const isAlreadySelected = this.SelectedKhachhang.some(customer => 
+    (typeof customer === 'string' ? customer : customer.name) === (typeof selectedValue === 'string' ? selectedValue : selectedValue.name)
+  );
+  
+  if (!isAlreadySelected) {
     this.SelectedKhachhang.push(selectedValue);
-    this.SearchParams.khachhangIds = this.SelectedKhachhang;
+    this.SearchParams.khachhangIds = this.SelectedKhachhang.map(customer => 
+      typeof customer === 'string' ? customer : customer.makh || customer.name
+    );
   }
+  
+  // Clear the input after selection
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('input[matautocomplete]');
+    inputs.forEach((input: any) => {
+      if (input.placeholder.includes('khách hàng') || input.placeholder.includes('Thêm khách hàng')) {
+        input.value = '';
+      }
+    });
+  }, 100);
 }
 
 // Method to remove selected customer
-removeSelectedCustomer(customer: string): void {
-  const index = this.SelectedKhachhang.indexOf(customer);
+removeSelectedCustomer(customer: any): void {
+  const index = this.SelectedKhachhang.findIndex(item => 
+    (typeof item === 'string' ? item : item.name) === (typeof customer === 'string' ? customer : customer.name)
+  );
   if (index >= 0) {
     this.SelectedKhachhang.splice(index, 1);
-    this.SearchParams.khachhangIds = this.SelectedKhachhang;
+    this.SearchParams.khachhangIds = this.SelectedKhachhang.map(customer => 
+      typeof customer === 'string' ? customer : customer.makh || customer.name
+    );
   }
 }
 removeSelectedNhomkhachhang(customer: string): void {

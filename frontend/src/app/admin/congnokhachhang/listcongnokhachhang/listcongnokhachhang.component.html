@@ -76,51 +76,48 @@
           }
         </div>
 
-        <!-- Multi-customer selection section -->
+        <!-- Multi-customer selection with chips autocomplete -->
         <div class="flex flex-col space-y-2 w-full">
-          <div class="flex flex-row space-x-2 items-center">
-            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Chọn Khách Hàng</mat-label>
-              <input type="text" #customerInput [matAutocomplete]="auto" (keyup)="doFilterKhachhang($event)" matInput
-                placeholder="Tìm và chọn nhiều khách hàng" />
-            </mat-form-field>
-            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onKhachhangChange($event)" class="max-w-none"
+          <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+            <mat-label>Chọn Khách Hàng</mat-label>
+            <mat-chip-set aria-label="Chọn khách hàng">
+              @for (customer of SelectedKhachhang; track customer) {
+                <mat-chip (removed)="removeSelectedCustomer(customer)" [removable]="true">
+                  <span>{{ typeof customer === 'string' ? customer : customer.name }}</span>
+                  <button matChipRemove [attr.aria-label]="'Xóa ' + (typeof customer === 'string' ? customer : customer.name)">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              }
+            </mat-chip-set>
+            <input 
+              #customerInput
+              placeholder="{{SelectedKhachhang.length === 0 ? 'Tìm và chọn nhiều khách hàng' : 'Thêm khách hàng'}}"
+              [matAutocomplete]="auto"
+              (keyup)="doFilterKhachhang($event)"
+              matInput>
+            <mat-autocomplete 
+              #auto="matAutocomplete" 
+              (optionSelected)="onCustomerSelected($event)" 
+              class="max-w-none"
               panelWidth="auto">
-              @for (option of filterListKhachhang; track option.id) {
-              <mat-option [value]="option" class="!whitespace-normal !h-auto !py-2">
-                <span class="text-sm">{{ option.name }}</span>
-                <small class="text-xs text-gray-500 block">{{ option.name }}</small>
-              </mat-option>
+              @for (option of filterListKhachhang; track option) {
+                <mat-option [value]="option" class="!whitespace-normal !h-auto !py-2">
+                  <span class="text-sm">{{ typeof option === 'string' ? option : option.name }}</span>
+                  @if (typeof option !== 'string' && option.makh) {
+                    <small class="text-xs text-gray-500 block">Mã KH: {{ option.makh }}</small>
+                  }
+                </mat-option>
               }
             </mat-autocomplete>
             
             @if (SelectedKhachhang.length > 0) {
             <button matTooltip="Xóa tất cả khách hàng đã chọn" (click)="clearAllSelectedCustomers()" 
-              color="warn" mat-icon-button>
+              color="warn" mat-icon-button matSuffix>
               <mat-icon>clear_all</mat-icon>
             </button>
             }
-          </div>
-          
-          <!-- Selected customers display with chips -->
-          @if (SelectedKhachhang.length > 0) {
-          <div class="flex flex-wrap gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
-            <span class="text-sm font-medium text-blue-800 flex items-center mr-2">
-              <mat-icon class="mr-1 text-blue-600" style="font-size: 18px;">people</mat-icon>
-              Đã chọn {{SelectedKhachhang.length}} khách hàng:
-            </span>
-            @for (customer of SelectedKhachhang; track customer.id) {
-            <mat-chip-set>
-              <mat-chip class="bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
-                <span class="text-xs font-medium">{{ customer.name }}</span>
-                <button matChipRemove (click)="removeSelectedCustomer(customer)" class="ml-1 hover:text-red-600">
-                  <mat-icon class="text-xs">cancel</mat-icon>
-                </button>
-              </mat-chip>
-            </mat-chip-set>
-            }
-          </div>
-          }
+          </mat-form-field>
         </div>
 
         <span (click)="ToggleAll()" class="lg:flex hidden cursor-pointer whitespace-nowrap p-2 rounded-lg bg-slate-200">
