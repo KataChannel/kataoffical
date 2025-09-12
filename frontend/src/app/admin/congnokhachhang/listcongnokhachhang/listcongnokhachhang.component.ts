@@ -936,38 +936,120 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
   }  
   async ExportExcel(data: any, title: any) {
     this.isExporting = true;   
-    if( this.editDonhang.length>0) {
+    
+    // Prepare search parameters for server export
+    if (this.editDonhang.length > 0) {
       this.SearchParams.ids = this.editDonhang.map((v: any) => v.id);
-    }
-    else {
+    } else {
       this.SearchParams.ids = data.map((v: any) => v.id);
     }
 
     try {
-      // Sử dụng service để download file Excel từ API
+      // First try: Server-based export (original functionality)
+      console.log('Attempting server-based Excel export...');
       await this._DonhangService.downloadCongno(this.SearchParams);
       
-      // Hiển thị thông báo thành công
-      this._snackBar.open('Tải file Excel thành công!', 'Đóng', {
+      // If server export succeeds, show success message
+      this._snackBar.open('Xuất file Excel từ server thành công!', 'Đóng', {
         duration: 3000,
         horizontalPosition: 'center',
         verticalPosition: 'top',
         panelClass: ['snackbar-success']
       });
-      this.editDonhang = [];
-    } catch (error) {
-      console.error('Error exporting Excel:', error);
       
-      // Hiển thị thông báo lỗi
-      this._snackBar.open('Lỗi khi tải file Excel!', 'Đóng', {
+      // Clear selected orders
+      this.editDonhang = [];
+      
+    } catch (serverError) {
+      console.warn('Server export failed, falling back to client-side export:', serverError);
+      
+      try {
+        // Fallback: Client-side export with table format
+        console.log('Attempting client-side Excel export with table format...');
+        
+        // Prepare data for client-side export
+        let exportData: any[] = [];
+        
+        if (this.editDonhang.length > 0) {
+          // Use selected orders
+          const selectedOrders = await this.ChuyendoiExport(this.editDonhang);
+          exportData = selectedOrders.flatMap((order: any) => this.convertFlatData(order));
+        } else {
+          // Use all current data
+          const allOrders = await this.ChuyendoiExport(data);
+          exportData = allOrders.flatMap((order: any) => this.convertFlatData(order));
+        }
+
+        // Generate Excel file with exporttable format
+        await this.generateExcelWithTableFormat(exportData, title);
+        
+        // Show success message for client-side export
+        this._snackBar.open('Xuất file Excel (định dạng bảng) thành công!', 'Đóng', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success']
+        });
+        
+        // Clear selected orders
+        this.editDonhang = [];
+        
+      } catch (clientError) {
+        console.error('Client-side export also failed:', clientError);
+        
+        // Final fallback: Use the old ExportExcelFallback method
+        console.log('Attempting final fallback export...');
+        await this.ExportExcelFallback(data, title);
+      }
+    } finally {
+      this.isExporting = false;
+    }
+  }
+
+  // New method for client-side table format export
+  async ExportExcelTableFormat(data: any, title: any) {
+    this.isExporting = true;   
+    
+    try {
+      console.log('Exporting Excel with table format...');
+      
+      // Prepare data for client-side export
+      let exportData: any[] = [];
+      
+      if (this.editDonhang.length > 0) {
+        // Use selected orders
+        const selectedOrders = await this.ChuyendoiExport(this.editDonhang);
+        exportData = selectedOrders.flatMap((order: any) => this.convertFlatData(order));
+      } else {
+        // Use all current data
+        const allOrders = await this.ChuyendoiExport(data);
+        exportData = allOrders.flatMap((order: any) => this.convertFlatData(order));
+      }
+
+      // Generate Excel file with exporttable format
+      await this.generateExcelWithTableFormat(exportData, title);
+      
+      // Clear selected orders
+      this.editDonhang = [];
+      
+      // Show success message
+      this._snackBar.open('Xuất file Excel (định dạng bảng) thành công!', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+      
+    } catch (error) {
+      console.error('Error exporting Excel with table format:', error);
+      
+      // Show error message
+      this._snackBar.open('Lỗi khi xuất file Excel (định dạng bảng)!', 'Đóng', {
         duration: 5000,
         horizontalPosition: 'center',
         verticalPosition: 'top',
         panelClass: ['snackbar-error']
       });
-      
-      // Fallback to old method if API fails
-      await this.ExportExcelFallback(data, title);
     } finally {
       this.isExporting = false;
     }
@@ -1120,6 +1202,107 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   }
+
+  // Generate Excel with the same format as exporttable
+  private async generateExcelWithTableFormat(exportData: any[], title: string): Promise<void> {
+    try {
+      // Create workbook
+      const workbook = XLSX.utils.book_new();
+      
+      // Prepare header data matching exporttable format
+      const customerInfo = exportData[0] || {};
+      
+      // Create worksheet data with company header and customer info
+      const worksheetData: any[][] = [
+        // Company logo row (merged)
+        ['CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA', '', '', '', '', '', '', '', '', '', ''],
+        ['HTX: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An', '', '', '', '', '', '', '', '', '', ''],
+        ['VP: Tòa nhà An Phú Plaza, 117-119 Lý Chính Thắng, P.7. Q.3, TP.HCM', '', '', '', '', '', '', '', '', '', ''],
+        ['Website: rausachtrangia.com - Hotline: 090.245.8081', '', '', '', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', '', '', '', ''], // Empty row
+        
+        // Report title
+        ['CHI TIẾT ĐỐI CHIẾU CÔNG NỢ', '', '', '', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', '', '', '', ''], // Empty row
+        
+        // Date range
+        [`Từ Ngày ${moment(this.SearchParams.Batdau).format('DD/MM/YYYY')} - Đến Ngày ${moment(this.SearchParams.Ketthuc).format('DD/MM/YYYY')}`, '', '', '', '', '', '', '', '', '', ''],
+        
+        // Customer info
+        [`Tên Khách Hàng: ${customerInfo.tenkh || ''}`, '', '', '', '', '', '', '', '', '', ''],
+        [`Địa Chỉ: ${customerInfo.diachi || ''}`, '', '', '', '', '', '', '', '', '', ''],
+        [`Người Liên hệ: ${customerInfo.lienhe || ''}`, '', '', 'Email: ' + (customerInfo.email || ''), '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', '', '', '', ''], // Empty row
+        ['', '', '', '', '', '', '', '', '', '', ''], // Empty row
+        
+        // Table headers
+        ['NGÀY GIAO', 'MÃ KHÁCH HÀNG', 'TÊN KHÁCH HÀNG', 'MÃ ĐƠN HÀNG', 'MÃ HÀNG', 'TÊN HÀNG', 'ĐVT', 'SỐ LƯỢNG', 'ĐƠN GIÁ', 'THÀNH TIỀN', 'GHI CHÚ']
+      ];
+      
+      // Add data rows
+      exportData.forEach(item => {
+        worksheetData.push([
+          moment(item.ngaygiao).format('DD/MM/YYYY'),
+          item.makh || '',
+          item.tenkh || '',
+          item.madonhang || '',
+          item.masp || '',
+          item.tensp || '',
+          item.dvt || '',
+          item.slnhan || 0,
+          item.giaban || 0,
+          item.ttnhan || 0,
+          item.ghichu || ''
+        ]);
+      });
+      
+      // Create worksheet
+      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+      
+      // Set column widths
+      const columnWidths = [
+        { wch: 12 }, // NGÀY GIAO
+        { wch: 15 }, // MÃ KHÁCH HÀNG
+        { wch: 25 }, // TÊN KHÁCH HÀNG
+        { wch: 15 }, // MÃ ĐƠN HÀNG
+        { wch: 12 }, // MÃ HÀNG
+        { wch: 30 }, // TÊN HÀNG
+        { wch: 8 },  // ĐVT
+        { wch: 12 }, // SỐ LƯỢNG
+        { wch: 15 }, // ĐƠN GIÁ
+        { wch: 15 }, // THÀNH TIỀN
+        { wch: 20 }  // GHI CHÚ
+      ];
+      worksheet['!cols'] = columnWidths;
+      
+      // Add merges for header sections
+      const merges = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }, // Company name
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 10 } }, // Address 1
+        { s: { r: 2, c: 0 }, e: { r: 2, c: 10 } }, // Address 2
+        { s: { r: 3, c: 0 }, e: { r: 3, c: 10 } }, // Contact info
+        { s: { r: 5, c: 0 }, e: { r: 5, c: 10 } }, // Report title
+        { s: { r: 7, c: 0 }, e: { r: 7, c: 10 } }, // Date range
+        { s: { r: 8, c: 0 }, e: { r: 8, c: 10 } }, // Customer name
+        { s: { r: 9, c: 0 }, e: { r: 9, c: 10 } }, // Customer address
+        { s: { r: 10, c: 0 }, e: { r: 10, c: 2 } }, // Contact person
+        { s: { r: 10, c: 3 }, e: { r: 10, c: 10 } } // Email
+      ];
+      worksheet['!merges'] = merges;
+      
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'CongNo');
+      
+      // Generate Excel file
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      this.saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
+      
+    } catch (error) {
+      console.error('Error generating Excel with table format:', error);
+      throw error;
+    }
+  }
+
   printContent()
   {
     const element = document.getElementById('printContent');

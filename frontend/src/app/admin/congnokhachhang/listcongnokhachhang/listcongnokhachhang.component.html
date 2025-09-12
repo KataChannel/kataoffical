@@ -37,13 +37,26 @@
       <button (click)="openPreviewExport(dialogPreviewExport)" matTooltip="Xem Mẫu" mat-icon-button color="primary">
           <mat-icon>preview</mat-icon>
         </button>
-       <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(editDonhang, 'Congno')" color="primary"
+        
+        <!-- Export dropdown menu with both options -->
+        <button matTooltip="Xuất file Excel" [matMenuTriggerFor]="exportMenu" color="primary"
           mat-icon-button class="relative">
           <div *ngIf="isExporting" class="absolute inset-0 flex items-center justify-center">
             <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
           </div>
           <mat-icon [class.opacity-0]="isExporting">file_download</mat-icon>
         </button>
+        
+        <mat-menu #exportMenu="matMenu">
+          <button mat-menu-item (click)="ExportExcel(editDonhang, 'Congno')">
+            <mat-icon>cloud_download</mat-icon>
+            <span>Xuất từ Server (Nhanh)</span>
+          </button>
+          <button mat-menu-item (click)="ExportExcelTableFormat(editDonhang, 'Congno')">
+            <mat-icon>table_view</mat-icon>
+            <span>Xuất định dạng bảng (Chi tiết)</span>
+          </button>
+        </mat-menu>
         <button matTooltip="Tìm kiếm" (click)="doSearch()" [disabled]="isSearching" color="primary" mat-icon-button
           class="relative">
           <div *ngIf="isSearching" class="absolute inset-0 flex items-center justify-center">
