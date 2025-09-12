@@ -201,20 +201,20 @@ export class ListcongnokhachhangComponent {
     this.isSearching = true;
     try {
       await this.loadData(this.SearchParams); 
-      console.log(this.SearchParams);
+      // console.log(this.SearchParams);
       
-      // Create a Map to track unique customers
-      const uniqueCustomers = new Map();
-      this.Listdonhang().forEach((v: any) => {
-        const makh = v.makhachhang;
-        const tenkh = v.tenkhachhang;
-        if (makh && !uniqueCustomers.has(makh)) {
-        uniqueCustomers.set(makh, tenkh);
-        }
-      });
-      // Convert Map to array
-      this.ListKhachhang = this.filterListKhachhang = Array.from(uniqueCustomers.values());
-      console.log('ListKhachhang', this.ListKhachhang);
+      // // Create a Map to track unique customers
+      // const uniqueCustomers = new Map();
+      // this.Listdonhang().forEach((v: any) => {
+      //   const makh = v.makhachhang;
+      //   const tenkh = v.tenkhachhang;
+      //   if (makh && !uniqueCustomers.has(makh)) {
+      //   uniqueCustomers.set(makh, tenkh);
+      //   }
+      // });
+      // // Convert Map to array
+      // this.ListKhachhang = this.filterListKhachhang = Array.from(uniqueCustomers.values());
+      // console.log('ListKhachhang', this.ListKhachhang);
     } finally {
       this.isSearching = false;
     }
@@ -347,7 +347,7 @@ onCustomerSelected(event: MatAutocompleteSelectedEvent): void {
   if (!isAlreadySelected) {
     this.SelectedKhachhang.push(objectToAdd);
     this.SearchParams.khachhangIds = this.SelectedKhachhang.map(customer => 
-      typeof customer === 'string' ? customer : customer.makh || customer.name
+      typeof customer === 'string' ? customer : customer.id
     );
     
     // Refresh the filter list to exclude the newly selected customer
@@ -373,7 +373,7 @@ removeSelectedCustomer(customer: any): void {
   if (index >= 0) {
     this.SelectedKhachhang.splice(index, 1);
     this.SearchParams.khachhangIds = this.SelectedKhachhang.map(customer => 
-      typeof customer === 'string' ? customer : customer.makh || customer.name
+      typeof customer === 'string' ? customer : customer.id
     );
     
     // Refresh the filter list to include the removed customer
@@ -465,7 +465,7 @@ private addCustomersFromGroup(nhomKhachhang: any): void {
   
   // Update SearchParams
   this.SearchParams.khachhangIds = this.SelectedKhachhang.map(customer => 
-    typeof customer === 'string' ? customer : customer.makh || customer.name
+    typeof customer === 'string' ? customer : customer.id
   );
 }
 
@@ -488,7 +488,7 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
   
   // Update SearchParams
   this.SearchParams.khachhangIds = this.SelectedKhachhang.map(customer => 
-    typeof customer === 'string' ? customer : customer.makh || customer.name
+    typeof customer === 'string' ? customer : customer.id
   );
 }
 
