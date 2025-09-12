@@ -170,6 +170,15 @@ model Nhomkhachhang {
   khachhang   Khachhang[] @relation("KhachhangNhom")
 }
 
+model NhomNcc {
+  id          String      @id @default(uuid())
+  name        String      @unique    
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  nhacungcap   Nhacungcap[] @relation("NhacungcapNhom")
+}
+
 model Sanpham {
   id              String            @id @default(uuid())
   title           String
@@ -274,6 +283,7 @@ model Nhacungcap {
   tenfile   String?
   dathang   Dathang[]
   Sanpham   Sanpham[] @relation("NhacungcapToSanpham")
+  NhomNcc   NhomNcc[] @relation("NhacungcapNhom")
 }
 
 model Dathang {

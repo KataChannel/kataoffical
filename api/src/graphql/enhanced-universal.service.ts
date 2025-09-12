@@ -385,6 +385,7 @@ export class EnhancedUniversalService {
     'donhang': 'donhang',
     'donhangsanpham': 'donhangsanpham',
     'nhacungcap': 'nhacungcap',
+    'nhomncc': 'nhomNcc',  // ✅ FIX: Add nhomncc mapping to correct Prisma property
     'dathang': 'dathang',
     'dathangsanpham': 'dathangsanpham',
     'congty': 'congty',
@@ -402,7 +403,7 @@ export class EnhancedUniversalService {
     'errorlog': 'errorLog',
     'userguidblock': 'userguidBlock',
     'userguidstep': 'userguidStep',
-    'importhistory': 'importHistory'
+    'importhistory': 'importHistory',
   };
 
   /**

@@ -300,6 +300,13 @@ export const routes: Routes = [
               import('./admin/nhacungcap/nhacungcap.route').then(m => m.NhacungcapRoutingModule),
       },
       {
+            path: 'nhomncc',
+            canActivate: [PermissionGuard],
+            data: { permission: 'nhomncc.view' },
+            loadChildren: () =>
+              import('./admin/nhomncc/nhomncc.route').then(m => m.NhomnccRoutingModule),
+      },
+      {
         path: 'dathang',
         canActivate: [PermissionGuard],
         data: { permission: 'dathang.view' },

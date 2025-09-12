@@ -74,11 +74,11 @@ export class PermissionService {
       const created = await this.prisma.permission.create({
         data: {
           ...data,
-          order: newOrder,
+          // order: newOrder,
           codeId: codeId
         },
       });
-      this._SocketGateway.sendPermissionUpdate();
+      // this._SocketGateway.sendPermissionUpdate();
       return created;
     } catch (error) {
       throw error;

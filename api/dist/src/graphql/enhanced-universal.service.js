@@ -37,6 +37,7 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             'donhang': 'donhang',
             'donhangsanpham': 'donhangsanpham',
             'nhacungcap': 'nhacungcap',
+            'nhomncc': 'nhomNcc',
             'dathang': 'dathang',
             'dathangsanpham': 'dathangsanpham',
             'congty': 'congty',
@@ -54,7 +55,7 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             'errorlog': 'errorLog',
             'userguidblock': 'userguidBlock',
             'userguidstep': 'userguidStep',
-            'importhistory': 'importHistory'
+            'importhistory': 'importHistory',
         };
     }
     synchronizeDateField(fieldName, value) {

@@ -193,7 +193,7 @@ export class ListPermissionComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/permission/add'], { relativeTo: null });
+    this.router.navigate(['/admin/permission/new'], { relativeTo: null });
   }
 
   goToDetail(permission: any): void {

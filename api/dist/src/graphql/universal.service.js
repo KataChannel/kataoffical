@@ -18,18 +18,20 @@ let UniversalService = class UniversalService {
     }
     mapModelName(model) {
         const modelMap = {
-            'tonkho': 'TonKho',
-            'sanpham': 'Sanpham',
-            'khachhang': 'Khachhang',
-            'nhomkhachhang': 'Nhomkhachhang',
-            'donhang': 'Donhang',
-            'dathang': 'Dathang',
-            'phieukho': 'Phieukho',
-            'chotkho': 'Chotkho',
-            'menu': 'Menu',
-            'user': 'User',
-            'role': 'Role',
-            'permission': 'Permission',
+            'tonkho': 'tonKho',
+            'sanpham': 'sanpham',
+            'khachhang': 'khachhang',
+            'nhomkhachhang': 'nhomkhachhang',
+            'nhomncc': 'nhomNcc',
+            'nhacungcap': 'nhacungcap',
+            'donhang': 'donhang',
+            'dathang': 'dathang',
+            'phieukho': 'phieuKho',
+            'chotkho': 'chotkho',
+            'menu': 'menu',
+            'user': 'user',
+            'role': 'role',
+            'permission': 'permission',
         };
         return modelMap[model.toLowerCase()] || model;
     }
@@ -406,6 +408,7 @@ let UniversalService = class UniversalService {
             'banggia',
             'khachhang',
             'nhomkhachhang',
+            'nhomncc',
             'sanpham',
             'donhang',
             'donhangsanpham',

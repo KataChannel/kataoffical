@@ -11,18 +11,20 @@ export class UniversalService { // Fix: Rename to avoid conflict
    */
   private mapModelName(model: string): string {
     const modelMap: { [key: string]: string } = {
-      'tonkho': 'TonKho',
-      'sanpham': 'Sanpham',
-      'khachhang': 'Khachhang',
-      'nhomkhachhang': 'Nhomkhachhang',
-      'donhang': 'Donhang',
-      'dathang': 'Dathang',
-      'phieukho': 'Phieukho',
-      'chotkho': 'Chotkho',
-      'menu': 'Menu',
-      'user': 'User',
-      'role': 'Role',
-      'permission': 'Permission',
+      'tonkho': 'tonKho',           // TonKho -> tonKho in client
+      'sanpham': 'sanpham',         // Sanpham -> sanpham in client 
+      'khachhang': 'khachhang',     // Khachhang -> khachhang in client
+      'nhomkhachhang': 'nhomkhachhang', // Nhomkhachhang -> nhomkhachhang in client
+      'nhomncc': 'nhomNcc',         // ✅ ADD: NhomNcc -> nhomNcc in client
+      'nhacungcap': 'nhacungcap',   // Nhacungcap -> nhacungcap in client
+      'donhang': 'donhang',         // Donhang -> donhang in client
+      'dathang': 'dathang',         // Dathang -> dathang in client
+      'phieukho': 'phieuKho',       // PhieuKho -> phieuKho in client
+      'chotkho': 'chotkho',         // Chotkho -> chotkho in client
+      'menu': 'menu',               // Menu -> menu in client
+      'user': 'user',               // User -> user in client
+      'role': 'role',               // Role -> role in client
+      'permission': 'permission',   // Permission -> permission in client
       // Add more mappings as needed
     };
 
@@ -545,7 +547,8 @@ async findMany(modelName: string, options: {
       'profile',
       'banggia',
       'khachhang',
-      'nhomkhachhang', 
+      'nhomkhachhang',
+      'nhomncc',       // ✅ ADD: nhom nha cung cap
       'sanpham',
       'donhang',
       'donhangsanpham',

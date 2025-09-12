@@ -1266,8 +1266,8 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
       ['CHI TIẾT ĐỐI CHIẾU CÔNG NỢ', '', '', '', '', '', '', '', '', '', ''],
       
       // Date range row
-      [`Từ Ngày ${moment(this.SearchParams.Batdau).format('dd/MM/yyyy')} : - Đến Ngày : ${moment(this.SearchParams.Ketthuc).format('dd/MM/yyyy')}`, '', '', '', '', '', '', '', '', '', ''],
-      
+      [`Từ Ngày ${moment(this.SearchParams.Batdau).format('DD/MM/YYYY')} : - Đến Ngày : ${moment(this.SearchParams.Ketthuc).format('DD/MM/YYYY')}`, '', '', '', '', '', '', '', '', '', ''],
+
       // Customer info rows
       [`Tên Khách Hàng : ${customerInfo.tenkh || customerInfo.tenkhachhang || ''}`, '', '', '', '', '', '', '', '', '', ''],
       [`Địa Chỉ : ${customerInfo.diachi || ''}`, '', '', '', '', '', '', '', '', '', ''],
@@ -1283,23 +1283,23 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
     // Add data rows for this customer
     customerData.forEach(item => {
       worksheetData.push([
-        moment(item.ngaygiao).format('dd/MM/yyyy'),
+        moment(item.ngaygiao).format('DD/MM/YYYY') || '',
         item.makh || '',
         item.tenkh || item.tenkhachhang || '',
         item.madonhang || '',
         item.masp || '',
         item.tensp || '',
         item.dvt || '',
-        item.slnhan || 0,
-        item.giaban || 0,
-        item.ttnhan || 0,
+        Number(item.slnhan) || 0,
+        Number(item.giaban) || 0,
+        Number(item.ttnhan) || 0,
         item.ghichu || ''
       ]);
     });
     
     // Calculate totals for this customer
-    const totalQuantity = customerData.reduce((sum, item) => sum + (item.slnhan || 0), 0);
-    const totalAmount = customerData.reduce((sum, item) => sum + (item.ttnhan || 0), 0);
+    const totalQuantity = customerData.reduce((sum, item) => sum + (Number(item.slnhan) || 0), 0);
+    const totalAmount = customerData.reduce((sum, item) => sum + (Number(item.ttnhan) || 0), 0);
     
     // Add summary row
     worksheetData.push([
@@ -1368,10 +1368,9 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
   // Helper method to sanitize sheet names for Excel compatibility
   private sanitizeSheetName(name: string): string {
     // Excel sheet names cannot contain these characters: / \ ? * [ ]
-    // Also limit to 31 characters
+    // Also limit to 31 characters but preserve Vietnamese characters
     let sanitized = name
       .replace(/[\/\\?*\[\]]/g, '_')
-      .replace(/[^\w\s\-_]/g, '')
       .trim();
     
     // Limit to 31 characters (Excel limit)
