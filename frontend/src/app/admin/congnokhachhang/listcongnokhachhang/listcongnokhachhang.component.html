@@ -11,7 +11,7 @@
     <router-outlet></router-outlet>
   </mat-drawer>
   <div class="flex flex-col space-y-2 h-screen-12 w-full p-2" [class.opacity-50]="isLoading">
-    <div class="w-full grid lg:grid-cols-2 gap-2 items-center">
+    <div class="w-full grid gap-2 items-center">
       <div class="w-full flex flex-row space-x-2 items-center">
         <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
           <mat-label>Bắt Đầu</mat-label>
@@ -31,6 +31,22 @@
         <span (click)="ToggleAll()" class="lg:flex hidden cursor-pointer whitespace-nowrap p-2 rounded-lg bg-slate-200">
           {{CountItem}} Đơn Hàng
         </span>
+
+
+        <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+          <mat-label>Khách Hàng</mat-label>
+          <input type="text" [matAutocomplete]="auto" (keyup)="doFilterKhachhang($event)" matInput
+            placeholder="Tìm kiếm khách hàng" />
+        </mat-form-field>
+
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onKhachhangChange($event)" class="max-w-none"
+          panelWidth="auto">
+          @for (option of filterListKhachhang; track option) {
+          <mat-option [value]="option" class="!whitespace-normal !h-auto !py-2">
+            <span class="text-sm">{{ option }}</span>
+          </mat-option>
+          }
+        </mat-autocomplete>
 
        <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(editDonhang, 'Congno')" color="primary"
           mat-icon-button class="relative">

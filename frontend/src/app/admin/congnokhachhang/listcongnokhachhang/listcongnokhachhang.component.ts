@@ -43,6 +43,7 @@ import { DonhangService } from '../../donhang/donhang.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 @Component({
   selector: 'app-listcongnokhachhang',
   templateUrl: './listcongnokhachhang.component.html',
@@ -111,6 +112,7 @@ export class ListcongnokhachhangComponent {
   private _DonhangService: DonhangService = inject(DonhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
+  private _GraphqlService: GraphqlService = inject(GraphqlService);
   private _router: Router = inject(Router);
   Listdonhang: any = this._DonhangService.ListDonhang;
   ListKhachhang:any =[];
@@ -241,11 +243,24 @@ doFilterKhachhang(event: Event){
       // this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.dataSource.filterPredicate = this.createFilter();
-      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-      this.paginator._intl.previousPageLabel = 'Về Trước';
-      this.paginator._intl.firstPageLabel = 'Trang Đầu';
-      this.paginator._intl.lastPageLabel = 'Trang Cuối';
+      // this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+      // this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+      // this.paginator._intl.previousPageLabel = 'Về Trước';
+      // this.paginator._intl.firstPageLabel = 'Trang Đầu';
+      // this.paginator._intl.lastPageLabel = 'Trang Cuối';
+
+      const Khachhangs = await this._GraphqlService.findAll('khachhang', {
+        aggressiveCache: true,
+        enableStreaming: true,
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+      this.ListKhachhang = this.filterListKhachhang = Khachhangs.data
+      console.log(Khachhangs);
+      
+
     } finally {
       this.isLoading = false;
     }
