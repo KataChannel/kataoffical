@@ -258,7 +258,7 @@ export class DonhangService {
       status: Array.isArray(params.Status)
         ? { in: params.Status }
         : params.Status,
-    };
+      };
 
     if (query) {
       where.OR = [
