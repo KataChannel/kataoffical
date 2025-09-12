@@ -249,6 +249,9 @@ onNhomKhachhangSelected(event: MatAutocompleteSelectedEvent): void {
     // this.SearchParams.nhomKhachhangIds = this.SelectedNhomKhachhang.map(nhomKH => 
     //   typeof nhomKH === 'string' ? nhomKH : nhomKH.id || nhomKH.name
     // );
+    
+    // Refresh the filter list to exclude the newly selected customer group
+    this.refreshNhomKhachhangFilter();
   }
   
   // Clear the input after selection
@@ -267,31 +270,56 @@ doFilterKhachhang(event: Event){
   const query = (event.target as HTMLInputElement).value.toLowerCase();
   console.log('query', query);
   
+  // Get list of already selected customer names
+  const selectedNames = this.SelectedKhachhang.map(customer => 
+    typeof customer === 'string' ? customer : customer.name
+  );
+  
+  // Filter out already selected customers
+  let availableCustomers = this.ListKhachhang.filter((item: any) => {
+    const itemName = typeof item === 'string' ? item : item.name;
+    return !selectedNames.includes(itemName);
+  });
+  
   if(!query) {
-    this.filterListKhachhang = this.ListKhachhang;
+    this.filterListKhachhang = availableCustomers;
     return;
   }
- this.filterListKhachhang = this.ListKhachhang.filter((item: any) =>
-   item.toLowerCase().includes(query) || removeVietnameseAccents(item).toLowerCase().includes(removeVietnameseAccents(query))
- );
+  
+  this.filterListKhachhang = availableCustomers.filter((item: any) =>
+    item.toLowerCase().includes(query) || removeVietnameseAccents(item).toLowerCase().includes(removeVietnameseAccents(query))
+  );
 }
 
 @Debounce(100)
 doFilterNhomKhachhang(event: Event){
   const query = (event.target as HTMLInputElement).value.toLowerCase();
   console.log('query', query);
+  
+  // Get list of already selected customer group names
+  const selectedNames = this.SelectedNhomKhachhang.map(nhomKH => 
+    typeof nhomKH === 'string' ? nhomKH : nhomKH.name
+  );
+  
+  // Filter out already selected customer groups
+  let availableGroups = this.ListNhomKhachhang.filter((item: any) => {
+    const itemName = typeof item === 'string' ? item : item.name;
+    return !selectedNames.includes(itemName);
+  });
+  
   if(!query) {
-    this.filterListNhomKhachhang = this.ListNhomKhachhang;
+    this.filterListNhomKhachhang = availableGroups;
     return;
   }
- this.filterListNhomKhachhang = this.ListNhomKhachhang.filter((item: any) => {
-   const name = typeof item === 'string' ? item : item.name || '';
-   const description = typeof item !== 'string' ? item.description || '' : '';
-   return name.toLowerCase().includes(query) || 
-          removeVietnameseAccents(name).toLowerCase().includes(removeVietnameseAccents(query)) ||
-          description.toLowerCase().includes(query) ||
-          removeVietnameseAccents(description).toLowerCase().includes(removeVietnameseAccents(query));
- });
+  
+  this.filterListNhomKhachhang = availableGroups.filter((item: any) => {
+    const name = typeof item === 'string' ? item : item.name || '';
+    const description = typeof item !== 'string' ? item.description || '' : '';
+    return name.toLowerCase().includes(query) || 
+           removeVietnameseAccents(name).toLowerCase().includes(removeVietnameseAccents(query)) ||
+           description.toLowerCase().includes(query) ||
+           removeVietnameseAccents(description).toLowerCase().includes(removeVietnameseAccents(query));
+  });
 }
 
 // Method to handle customer selection from chips autocomplete
@@ -315,6 +343,9 @@ onCustomerSelected(event: MatAutocompleteSelectedEvent): void {
     this.SearchParams.khachhangIds = this.SelectedKhachhang.map(customer => 
       typeof customer === 'string' ? customer : customer.makh || customer.name
     );
+    
+    // Refresh the filter list to exclude the newly selected customer
+    this.refreshCustomerFilter();
   }
   
   // Clear the input after selection
@@ -338,6 +369,9 @@ removeSelectedCustomer(customer: any): void {
     this.SearchParams.khachhangIds = this.SelectedKhachhang.map(customer => 
       typeof customer === 'string' ? customer : customer.makh || customer.name
     );
+    
+    // Refresh the filter list to include the removed customer
+    this.refreshCustomerFilter();
   }
 }
 removeSelectedNhomkhachhang(nhomKH: any): void {
@@ -350,6 +384,9 @@ removeSelectedNhomkhachhang(nhomKH: any): void {
     // this.SearchParams.nhomKhachhangIds = this.SelectedNhomKhachhang.map(nhomKH => 
     //   typeof nhomKH === 'string' ? nhomKH : nhomKH.id || nhomKH.name
     // );
+    
+    // Refresh the filter list to include the removed customer group
+    this.refreshNhomKhachhangFilter();
   }
 }
 
@@ -357,10 +394,39 @@ removeSelectedNhomkhachhang(nhomKH: any): void {
 clearAllSelectedCustomers(): void {
   this.SelectedKhachhang = [];
   this.SearchParams.khachhangIds = [];
+  
+  // Refresh the filter list to show all customers again
+  this.refreshCustomerFilter();
 }
 clearAllSelectedNhomKhachhang(): void {
   this.SelectedNhomKhachhang = [];
   // this.SearchParams.khachhangIds = [];
+  
+  // Refresh the filter list to show all customer groups again
+  this.refreshNhomKhachhangFilter();
+}
+
+// Helper methods to refresh filter lists
+private refreshCustomerFilter(): void {
+  const selectedNames = this.SelectedKhachhang.map(customer => 
+    typeof customer === 'string' ? customer : customer.name
+  );
+  
+  this.filterListKhachhang = this.ListKhachhang.filter((item: any) => {
+    const itemName = typeof item === 'string' ? item : item.name;
+    return !selectedNames.includes(itemName);
+  });
+}
+
+private refreshNhomKhachhangFilter(): void {
+  const selectedNames = this.SelectedNhomKhachhang.map(nhomKH => 
+    typeof nhomKH === 'string' ? nhomKH : nhomKH.name
+  );
+  
+  this.filterListNhomKhachhang = this.ListNhomKhachhang.filter((item: any) => {
+    const itemName = typeof item === 'string' ? item : item.name;
+    return !selectedNames.includes(itemName);
+  });
 }
 
   async loadData(query:any): Promise<void> {
@@ -400,7 +466,12 @@ clearAllSelectedNhomKhachhang(): void {
         select: {
           id: true,
           name: true,
-          description:true
+          description:true,
+          khachhang:{select:{
+            id:true,
+            name:true,
+            makh:true
+            }}
         },
       });
       this.ListNhomKhachhang = this.filterListNhomKhachhang = NhomKhachhangs.data
