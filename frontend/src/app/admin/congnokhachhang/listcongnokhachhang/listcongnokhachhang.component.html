@@ -13,7 +13,7 @@
   <div class="flex flex-col space-y-2 h-screen-12 w-full p-2" [class.opacity-50]="isLoading">
     <div class="w-full grid gap-2 items-center">
       <div class="w-full flex flex-row space-x-2 items-center">
-        <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+        <mat-form-field class="w-full" [appearance]="'outline'" [subscriptSizing]="'dynamic'">
           <mat-label>Bắt Đầu</mat-label>
           <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau"
             [(ngModel)]="SearchParams.Batdau" [ngModelOptions]="{ standalone: true }" />
@@ -21,32 +21,111 @@
           <mat-datepicker #pickerBatdau></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+        <mat-form-field class="w-full" [appearance]="'outline'" [subscriptSizing]="'dynamic'">
           <mat-label>Kết Thúc</mat-label>
           <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerKetthuc"
             [(ngModel)]="SearchParams.Ketthuc" [ngModelOptions]="{ standalone: true }" />
           <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
           <mat-datepicker #pickerKetthuc></mat-datepicker>
         </mat-form-field>
-        <span (click)="ToggleAll()" class="lg:flex hidden cursor-pointer whitespace-nowrap p-2 rounded-lg bg-slate-200">
-          {{CountItem}} Đơn Hàng
-        </span>
-
-
-        <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-          <mat-label>Khách Hàng</mat-label>
-          <input type="text" [matAutocomplete]="auto" (keyup)="doFilterKhachhang($event)" matInput
-            placeholder="Tìm kiếm khách hàng" />
-        </mat-form-field>
-
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onKhachhangChange($event)" class="max-w-none"
-          panelWidth="auto">
-          @for (option of filterListKhachhang; track option) {
-          <mat-option [value]="option" class="!whitespace-normal !h-auto !py-2">
-            <span class="text-sm">{{ option }}</span>
-          </mat-option>
+        
+        <!-- Multi-customer selection section -->
+        <div class="flex flex-col space-y-2 w-full">
+          <div class="flex flex-row space-x-2 items-center">
+            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+              <mat-label>Nhóm Khách Hàng</mat-label>
+              <input type="text" #customerInput [matAutocomplete]="autoNhom" (keyup)="doFilterNhomKhachhang($event)" matInput
+                placeholder="Tìm và chọn nhiều khách hàng" />
+            </mat-form-field>
+            <mat-autocomplete #autoNhom="matAutocomplete" (optionSelected)="onNhomKhachhangChange($event)" class="max-w-none"
+              panelWidth="auto">
+              @for (option of filterListNhomKhachhang; track option.id) {
+              <mat-option [value]="option.name" class="!whitespace-normal !h-auto !py-2">
+                <span class="text-sm">{{ option.name }}</span>
+                <small class="text-xs text-gray-500 block">{{ option.description }}</small>
+              </mat-option>
+              }
+            </mat-autocomplete>
+            
+            @if (SelectedKhachhang.length > 0) {
+            <button matTooltip="Xóa tất cả khách hàng đã chọn" (click)="clearAllSelectedNhomKhachhang()" 
+              color="warn" mat-icon-button>
+              <mat-icon>clear_all</mat-icon>
+            </button>
+            }
+          </div>
+          
+          <!-- Selected customers display with chips -->
+          @if (SelectedKhachhang.length > 0) {
+          <div class="flex flex-wrap gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <span class="text-sm font-medium text-blue-800 flex items-center mr-2">
+              <mat-icon class="mr-1 text-blue-600" style="font-size: 18px;">people</mat-icon>
+              Đã chọn {{SelectedNhomKhachhang.length}} khách hàng:
+            </span>
+            @for (customer of SelectedKhachhang; track customer.id) {
+            <mat-chip-set>
+              <mat-chip class="bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
+                <span class="text-xs font-medium">{{ customer.name }}</span>
+                <button matChipRemove (click)="removeSelectedNhomkhachhang(customer)" class="ml-1 hover:text-red-600">
+                  <mat-icon class="text-xs">cancel</mat-icon>
+                </button>
+              </mat-chip>
+            </mat-chip-set>
+            }
+          </div>
           }
-        </mat-autocomplete>
+        </div>
+
+        <!-- Multi-customer selection section -->
+        <div class="flex flex-col space-y-2 w-full">
+          <div class="flex flex-row space-x-2 items-center">
+            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+              <mat-label>Chọn Khách Hàng</mat-label>
+              <input type="text" #customerInput [matAutocomplete]="auto" (keyup)="doFilterKhachhang($event)" matInput
+                placeholder="Tìm và chọn nhiều khách hàng" />
+            </mat-form-field>
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onKhachhangChange($event)" class="max-w-none"
+              panelWidth="auto">
+              @for (option of filterListKhachhang; track option.id) {
+              <mat-option [value]="option" class="!whitespace-normal !h-auto !py-2">
+                <span class="text-sm">{{ option.name }}</span>
+                <small class="text-xs text-gray-500 block">{{ option.name }}</small>
+              </mat-option>
+              }
+            </mat-autocomplete>
+            
+            @if (SelectedKhachhang.length > 0) {
+            <button matTooltip="Xóa tất cả khách hàng đã chọn" (click)="clearAllSelectedCustomers()" 
+              color="warn" mat-icon-button>
+              <mat-icon>clear_all</mat-icon>
+            </button>
+            }
+          </div>
+          
+          <!-- Selected customers display with chips -->
+          @if (SelectedKhachhang.length > 0) {
+          <div class="flex flex-wrap gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <span class="text-sm font-medium text-blue-800 flex items-center mr-2">
+              <mat-icon class="mr-1 text-blue-600" style="font-size: 18px;">people</mat-icon>
+              Đã chọn {{SelectedKhachhang.length}} khách hàng:
+            </span>
+            @for (customer of SelectedKhachhang; track customer.id) {
+            <mat-chip-set>
+              <mat-chip class="bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
+                <span class="text-xs font-medium">{{ customer.name }}</span>
+                <button matChipRemove (click)="removeSelectedCustomer(customer)" class="ml-1 hover:text-red-600">
+                  <mat-icon class="text-xs">cancel</mat-icon>
+                </button>
+              </mat-chip>
+            </mat-chip-set>
+            }
+          </div>
+          }
+        </div>
+
+        <span (click)="ToggleAll()" class="lg:flex hidden cursor-pointer whitespace-nowrap p-2 rounded-lg bg-slate-200">
+          {{CountItem}} Bản Ghi
+        </span>
 
        <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(editDonhang, 'Congno')" color="primary"
           mat-icon-button class="relative">

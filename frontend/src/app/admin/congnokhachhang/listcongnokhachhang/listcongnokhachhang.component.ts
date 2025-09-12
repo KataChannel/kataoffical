@@ -43,6 +43,7 @@ import { DonhangService } from '../../donhang/donhang.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import {MatChipsModule} from '@angular/material/chips';
 import { GraphqlService } from '../../../shared/services/graphql.service';
 @Component({
   selector: 'app-listcongnokhachhang',
@@ -65,7 +66,8 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
     MatTooltipModule,
     MatDatepickerModule,
     MatDialogModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatChipsModule
   ],
   // providers: [provideNativeDateAdapter()],
 })
@@ -116,6 +118,11 @@ export class ListcongnokhachhangComponent {
   private _router: Router = inject(Router);
   Listdonhang: any = this._DonhangService.ListDonhang;
   ListKhachhang:any =[];
+  filterListKhachhang:any = [];
+  ListNhomKhachhang:any =[];
+  filterListNhomKhachhang:any = [];
+  SelectedKhachhang: any[] = []; // Array to store selected customers
+  SelectedNhomKhachhang: any[] = []; // Array to store selected customers
   ListCongno:any = [];
   dataSource = new MatTableDataSource([]);
   donhangId: any = this._DonhangService.donhangId;
@@ -126,6 +133,7 @@ export class ListcongnokhachhangComponent {
     Ketthuc: moment().toDate(),
     Type: 'donsi',
     Status:['danhan','hoanthanh'],
+    khachhangIds: [], // Array of selected customer IDs
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -214,7 +222,24 @@ onKhachhangChange(event: MatAutocompleteSelectedEvent){
   // this.dataSource.paginator = this.paginator;
   this.dataSource.sort = this.sort;
 }
-filterListKhachhang:any = []
+onNhomKhachhangChange(event: MatAutocompleteSelectedEvent){
+  const selectedValue = event.option.value;
+  console.log('selectedValue',selectedValue);
+  
+  // Update dataSource and ListExport based on selection
+  // if (selectedValue && selectedValue !== '') {
+  //   // Filter by customer name
+  //   this.dataSource.data = this.ListExport = this.ListCongno.filter((item: any) =>
+  //     item.tenkhachhang === selectedValue
+  //   );
+  // } else {
+  //   // Reset to show all data
+  //   this.dataSource.data = this.ListExport = this.ListCongno;
+  // }
+  // // this.dataSource.paginator = this.paginator;
+  // this.dataSource.sort = this.sort;
+}
+
 @Debounce(100)
 doFilterKhachhang(event: Event){
   const query = (event.target as HTMLInputElement).value.toLowerCase();
@@ -228,12 +253,60 @@ doFilterKhachhang(event: Event){
    item.toLowerCase().includes(query) || removeVietnameseAccents(item).toLowerCase().includes(removeVietnameseAccents(query))
  );
 }
+
+@Debounce(100)
+doFilterNhomKhachhang(event: Event){
+  const query = (event.target as HTMLInputElement).value.toLowerCase();
+  console.log('query', query);
+  if(!query) {
+    this.filterListNhomKhachhang = this.ListNhomKhachhang;
+    return;
+  }
+ this.filterListNhomKhachhang = this.ListNhomKhachhang.filter((item: any) =>
+   item.toLowerCase().includes(query) || removeVietnameseAccents(item).toLowerCase().includes(removeVietnameseAccents(query))
+ );
+}
+
+// Method to handle customer selection from autocomplete
+onCustomerSelected(event: MatAutocompleteSelectedEvent): void {
+  const selectedValue = event.option.value;
+  if (!this.SelectedKhachhang.includes(selectedValue)) {
+    this.SelectedKhachhang.push(selectedValue);
+    this.SearchParams.khachhangIds = this.SelectedKhachhang;
+  }
+}
+
+// Method to remove selected customer
+removeSelectedCustomer(customer: string): void {
+  const index = this.SelectedKhachhang.indexOf(customer);
+  if (index >= 0) {
+    this.SelectedKhachhang.splice(index, 1);
+    this.SearchParams.khachhangIds = this.SelectedKhachhang;
+  }
+}
+removeSelectedNhomkhachhang(customer: string): void {
+  const index = this.SelectedNhomKhachhang.indexOf(customer);
+  if (index >= 0) {
+    this.SelectedNhomKhachhang.splice(index, 1);
+    // this.SearchParams.khachhangIds = this.SelectedNhomKhachhang;
+  }
+}
+
+// Method to clear all selected customers
+clearAllSelectedCustomers(): void {
+  this.SelectedKhachhang = [];
+  this.SearchParams.khachhangIds = [];
+}
+clearAllSelectedNhomKhachhang(): void {
+  this.SelectedNhomKhachhang = [];
+  // this.SearchParams.khachhangIds = [];
+}
+
   async loadData(query:any): Promise<void> {
     this.isLoading = true;
     try {
       await this._DonhangService.searchCongno(query);
-      console.log(this.Listdonhang());
-      
+      console.log(this.Listdonhang());      
       this.CountItem = this.Listdonhang().length||0;
       // Nhóm dữ liệu theo khách hàng để tính tổng tiền sau thuế
       const customerTotals = new Map();
@@ -255,10 +328,23 @@ doFilterKhachhang(event: Event){
         select: {
           id: true,
           name: true,
+          makh:true,
         },
       });
       this.ListKhachhang = this.filterListKhachhang = Khachhangs.data
-      console.log(Khachhangs);
+
+      const NhomKhachhangs = await this._GraphqlService.findAll('nhomkhachhang', {
+        aggressiveCache: true,
+        enableStreaming: true,
+        select: {
+          id: true,
+          name: true,
+          description:true
+        },
+      });
+      this.ListNhomKhachhang = this.filterListNhomKhachhang = NhomKhachhangs.data
+      console.log(this.filterListKhachhang);
+      console.log(this.filterListNhomKhachhang);
       
 
     } finally {
