@@ -1203,118 +1203,41 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
     window.URL.revokeObjectURL(url);
   }
 
-  // Generate Excel with the same format as exporttable
+  // Generate Excel with the same format as exporttable - Multiple sheets by customer
   private async generateExcelWithTableFormat(exportData: any[], title: string): Promise<void> {
     try {
       // Create workbook
       const workbook = XLSX.utils.book_new();
       
-      // Prepare header data matching exporttable format
-      const customerInfo = exportData[0] || {};
+      // Group data by customer (makh and tenkh)
+      const customerGroups = new Map<string, any[]>();
       
-      // Create worksheet data with company header and customer info matching the HTML table structure
-      const worksheetData: any[][] = [
-        // Row 1: Logo section (colspan 4) + Company info section (colspan 7)
-        ['LOGO', '', '', '', 'CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA', '', '', '', '', '', ''],
-        ['', '', '', '', 'HTX: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An', '', '', '', '', '', ''],
-        ['', '', '', '', 'VP: Tòa nhà An Phú Plaza, 117-119 Lý Chính Thắng, P.7. Q.3,', '', '', '', '', '', ''],
-        ['', '', '', '', 'TP.HCM Kho sơ chế: 30 Kha Vạn Cân, P. Hiệp Bình Chánh,', '', '', '', '', '', ''],
-        ['', '', '', '', 'TP.Thủ Đức, TP.HCM Kho Đà Lạt: 69 Trần Thủ Độ,', '', '', '', '', '', ''],
-        ['', '', '', '', 'TT Liên Nghĩa, Huyện Đức Trọng, Tỉnh Lâm Đồng.', '', '', '', '', '', ''],
-        ['', '', '', '', 'Website: rausachtrangia.com - Hotline: 090.245.8081', '', '', '', '', '', ''],
-        
-        // Report title row
-        ['CHI TIẾT ĐỐI CHIẾU CÔNG NỢ', '', '', '', '', '', '', '', '', '', ''],
-        
-        // Date range row
-        [`Từ Ngày ${moment(this.SearchParams.Batdau).format('dd/MM/yyyy')} : - Đến Ngày : ${moment(this.SearchParams.Ketthuc).format('dd/MM/yyyy')}`, '', '', '', '', '', '', '', '', '', ''],
-        
-        // Customer info rows
-        [`Tên Khách Hàng : ${customerInfo.tenkh || ''}`, '', '', '', '', '', '', '', '', '', ''],
-        [`Địa Chỉ : ${customerInfo.diachi || ''}`, '', '', '', '', '', '', '', '', '', ''],
-        [`Người Liên hệ : ${customerInfo.lienhe || ''}`, '', '', '', `Email : ${customerInfo.email || ''}`, '', '', '', '', '', ''],
-        
-        // Empty row (spacing like in HTML)
-        ['', '', '', '', '', '', '', '', '', '', ''],
-        
-        // Table headers with exact same text as HTML
-        ['NGÀY GIAO', 'MÃ KHÁCH HÀNG', 'TÊN KHÁCH HÀNG', 'MÃ ĐƠN HÀNG', 'MÃ HÀNG', 'TÊN HÀNG', 'ĐVT', 'SỐ LƯỢNG', 'ĐƠN GIÁ', 'THÀNH TIỀN', 'GHI CHÚ']
-      ];
-      
-      // Add data rows
       exportData.forEach(item => {
-        worksheetData.push([
-          moment(item.ngaygiao).format('dd/MM/yyyy'),
-          item.makh || '',
-          item.tenkh || '',
-          item.madonhang || '',
-          item.masp || '',
-          item.tensp || '',
-          item.dvt || '',
-          item.slnhan || 0,
-          item.giaban || 0,
-          item.ttnhan || 0,
-          item.ghichu || ''
-        ]);
+        const makh = item.makh || 'Unknown';
+        const tenkh = item.tenkh || item.tenkhachhang || 'Unknown Customer';
+        const key = `${makh}_${tenkh}`;
+        
+        if (!customerGroups.has(key)) {
+          customerGroups.set(key, []);
+        }
+        customerGroups.get(key)!.push(item);
       });
       
-      // Create worksheet
-      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-      
-      // Add company logo image
-      await this.addLogoToWorksheet(worksheet, workbook);
-      
-      // Set column widths
-      const columnWidths = [
-        { wch: 12 }, // NGÀY GIAO
-        { wch: 15 }, // MÃ KHÁCH HÀNG
-        { wch: 25 }, // TÊN KHÁCH HÀNG
-        { wch: 15 }, // MÃ ĐƠN HÀNG
-        { wch: 12 }, // MÃ HÀNG
-        { wch: 30 }, // TÊN HÀNG
-        { wch: 8 },  // ĐVT
-        { wch: 12 }, // SỐ LƯỢNG
-        { wch: 15 }, // ĐƠN GIÁ
-        { wch: 15 }, // THÀNH TIỀN
-        { wch: 20 }  // GHI CHÚ
-      ];
-      worksheet['!cols'] = columnWidths;
-      
-      // Add merges for header sections matching the HTML table structure
-      const merges = [
-        // Logo section (rows 0-6, cols 0-3)
-        { s: { r: 0, c: 0 }, e: { r: 6, c: 3 } }, // Logo area
-        
-        // Company info section (rows 0-6, cols 4-10)
-        { s: { r: 0, c: 4 }, e: { r: 0, c: 10 } }, // Company name
-        { s: { r: 1, c: 4 }, e: { r: 1, c: 10 } }, // HTX address
-        { s: { r: 2, c: 4 }, e: { r: 2, c: 10 } }, // VP address line 1
-        { s: { r: 3, c: 4 }, e: { r: 3, c: 10 } }, // VP address line 2
-        { s: { r: 4, c: 4 }, e: { r: 4, c: 10 } }, // Kho address line 1
-        { s: { r: 5, c: 4 }, e: { r: 5, c: 10 } }, // Kho address line 2
-        { s: { r: 6, c: 4 }, e: { r: 6, c: 10 } }, // Website and hotline
-        
-        // Report title
-        { s: { r: 7, c: 0 }, e: { r: 7, c: 10 } }, // Report title
-        
-        // Date range
-        { s: { r: 8, c: 0 }, e: { r: 8, c: 10 } }, // Date range
-        
-        // Customer info
-        { s: { r: 9, c: 0 }, e: { r: 9, c: 10 } }, // Customer name
-        { s: { r: 10, c: 0 }, e: { r: 10, c: 10 } }, // Customer address
-        
-        // Contact person and email row (matching HTML: colspan 4 and colspan 7)
-        { s: { r: 11, c: 0 }, e: { r: 11, c: 3 } }, // Contact person (colspan 4)
-        { s: { r: 11, c: 4 }, e: { r: 11, c: 10 } }, // Email (colspan 7)
-        
-        // Empty row
-        { s: { r: 12, c: 0 }, e: { r: 12, c: 10 } } // Empty spacing row
-      ];
-      worksheet['!merges'] = merges;
-      
-      // Add worksheet to workbook
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'CongNo');
+      // If no customer groups, create a single sheet with all data
+      if (customerGroups.size === 0) {
+        await this.createCustomerSheet(workbook, exportData, 'All Customers', exportData[0] || {});
+      } else {
+        // Create a sheet for each customer group
+        customerGroups.forEach((customerData, key) => {
+          const customerInfo = customerData[0] || {};
+          const customerName = customerInfo.tenkh || customerInfo.tenkhachhang || 'Unknown Customer';
+          
+          // Clean sheet name (Excel has restrictions on sheet names)
+          const sanitizedSheetName = this.sanitizeSheetName(customerName);
+          
+          this.createCustomerSheet(workbook, customerData, sanitizedSheetName, customerInfo);
+        });
+      }
       
       // Generate Excel file
       const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
@@ -1324,6 +1247,144 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
       console.error('Error generating Excel with table format:', error);
       throw error;
     }
+  }
+
+  // Helper method to create a worksheet for each customer
+  private createCustomerSheet(workbook: any, customerData: any[], sheetName: string, customerInfo: any): void {
+    // Create worksheet data with company header and customer info matching the HTML table structure
+    const worksheetData: any[][] = [
+      // Row 1: Logo section (colspan 4) + Company info section (colspan 7)
+      ['LOGO', '', '', '', 'CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA', '', '', '', '', '', ''],
+      ['', '', '', '', 'HTX: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An', '', '', '', '', '', ''],
+      ['', '', '', '', 'VP: Tòa nhà An Phú Plaza, 117-119 Lý Chính Thắng, P.7. Q.3,', '', '', '', '', '', ''],
+      ['', '', '', '', 'TP.HCM Kho sơ chế: 30 Kha Vạn Cân, P. Hiệp Bình Chánh,', '', '', '', '', '', ''],
+      ['', '', '', '', 'TP.Thủ Đức, TP.HCM Kho Đà Lạt: 69 Trần Thủ Độ,', '', '', '', '', '', ''],
+      ['', '', '', '', 'TT Liên Nghĩa, Huyện Đức Trọng, Tỉnh Lâm Đồng.', '', '', '', '', '', ''],
+      ['', '', '', '', 'Website: rausachtrangia.com - Hotline: 090.245.8081', '', '', '', '', '', ''],
+      
+      // Report title row
+      ['CHI TIẾT ĐỐI CHIẾU CÔNG NỢ', '', '', '', '', '', '', '', '', '', ''],
+      
+      // Date range row
+      [`Từ Ngày ${moment(this.SearchParams.Batdau).format('dd/MM/yyyy')} : - Đến Ngày : ${moment(this.SearchParams.Ketthuc).format('dd/MM/yyyy')}`, '', '', '', '', '', '', '', '', '', ''],
+      
+      // Customer info rows
+      [`Tên Khách Hàng : ${customerInfo.tenkh || customerInfo.tenkhachhang || ''}`, '', '', '', '', '', '', '', '', '', ''],
+      [`Địa Chỉ : ${customerInfo.diachi || ''}`, '', '', '', '', '', '', '', '', '', ''],
+      [`Người Liên hệ : ${customerInfo.lienhe || ''}`, '', '', '', `Email : ${customerInfo.email || ''}`, '', '', '', '', '', ''],
+      
+      // Empty row (spacing like in HTML)
+      ['', '', '', '', '', '', '', '', '', '', ''],
+      
+      // Table headers with exact same text as HTML
+      ['NGÀY GIAO', 'MÃ KHÁCH HÀNG', 'TÊN KHÁCH HÀNG', 'MÃ ĐƠN HÀNG', 'MÃ HÀNG', 'TÊN HÀNG', 'ĐVT', 'SỐ LƯỢNG', 'ĐƠN GIÁ', 'THÀNH TIỀN', 'GHI CHÚ']
+    ];
+    
+    // Add data rows for this customer
+    customerData.forEach(item => {
+      worksheetData.push([
+        moment(item.ngaygiao).format('dd/MM/yyyy'),
+        item.makh || '',
+        item.tenkh || item.tenkhachhang || '',
+        item.madonhang || '',
+        item.masp || '',
+        item.tensp || '',
+        item.dvt || '',
+        item.slnhan || 0,
+        item.giaban || 0,
+        item.ttnhan || 0,
+        item.ghichu || ''
+      ]);
+    });
+    
+    // Calculate totals for this customer
+    const totalQuantity = customerData.reduce((sum, item) => sum + (item.slnhan || 0), 0);
+    const totalAmount = customerData.reduce((sum, item) => sum + (item.ttnhan || 0), 0);
+    
+    // Add summary row
+    worksheetData.push([
+      '', '', '', '', '', 'TỔNG CỘNG:', '', totalQuantity, '', totalAmount, ''
+    ]);
+    
+    // Create worksheet
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    
+    // Add company logo image
+    this.addLogoToWorksheet(worksheet, workbook);
+    
+    // Set column widths
+    const columnWidths = [
+      { wch: 12 }, // NGÀY GIAO
+      { wch: 15 }, // MÃ KHÁCH HÀNG
+      { wch: 25 }, // TÊN KHÁCH HÀNG
+      { wch: 15 }, // MÃ ĐƠN HÀNG
+      { wch: 12 }, // MÃ HÀNG
+      { wch: 30 }, // TÊN HÀNG
+      { wch: 8 },  // ĐVT
+      { wch: 12 }, // SỐ LƯỢNG
+      { wch: 15 }, // ĐƠN GIÁ
+      { wch: 15 }, // THÀNH TIỀN
+      { wch: 20 }  // GHI CHÚ
+    ];
+    worksheet['!cols'] = columnWidths;
+    
+    // Add merges for header sections matching the HTML table structure
+    const merges = [
+      // Logo section (rows 0-6, cols 0-3)
+      { s: { r: 0, c: 0 }, e: { r: 6, c: 3 } }, // Logo area
+      
+      // Company info section (rows 0-6, cols 4-10)
+      { s: { r: 0, c: 4 }, e: { r: 0, c: 10 } }, // Company name
+      { s: { r: 1, c: 4 }, e: { r: 1, c: 10 } }, // HTX address
+      { s: { r: 2, c: 4 }, e: { r: 2, c: 10 } }, // VP address line 1
+      { s: { r: 3, c: 4 }, e: { r: 3, c: 10 } }, // VP address line 2
+      { s: { r: 4, c: 4 }, e: { r: 4, c: 10 } }, // Kho address line 1
+      { s: { r: 5, c: 4 }, e: { r: 5, c: 10 } }, // Kho address line 2
+      { s: { r: 6, c: 4 }, e: { r: 6, c: 10 } }, // Website and hotline
+      
+      // Report title
+      { s: { r: 7, c: 0 }, e: { r: 7, c: 10 } }, // Report title
+      
+      // Date range
+      { s: { r: 8, c: 0 }, e: { r: 8, c: 10 } }, // Date range
+      
+      // Customer info
+      { s: { r: 9, c: 0 }, e: { r: 9, c: 10 } }, // Customer name
+      { s: { r: 10, c: 0 }, e: { r: 10, c: 10 } }, // Customer address
+      
+      // Contact person and email row (matching HTML: colspan 4 and colspan 7)
+      { s: { r: 11, c: 0 }, e: { r: 11, c: 3 } }, // Contact person (colspan 4)
+      { s: { r: 11, c: 4 }, e: { r: 11, c: 10 } }, // Email (colspan 7)
+      
+      // Empty row
+      { s: { r: 12, c: 0 }, e: { r: 12, c: 10 } } // Empty spacing row
+    ];
+    worksheet['!merges'] = merges;
+    
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+  }
+
+  // Helper method to sanitize sheet names for Excel compatibility
+  private sanitizeSheetName(name: string): string {
+    // Excel sheet names cannot contain these characters: / \ ? * [ ]
+    // Also limit to 31 characters
+    let sanitized = name
+      .replace(/[\/\\?*\[\]]/g, '_')
+      .replace(/[^\w\s\-_]/g, '')
+      .trim();
+    
+    // Limit to 31 characters (Excel limit)
+    if (sanitized.length > 31) {
+      sanitized = sanitized.substring(0, 31);
+    }
+    
+    // Ensure it's not empty
+    if (!sanitized || sanitized.length === 0) {
+      sanitized = 'Customer';
+    }
+    
+    return sanitized;
   }
 
   // Method to add company logo to Excel worksheet
