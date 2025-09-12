@@ -92,7 +92,7 @@
         <!-- Search button với loading -->
       </div>
     </div>
-    <div class="w-full grid lg:grid-cols-3 gap-2 items-center">
+    <div class="w-full grid lg:grid-cols-2 gap-2 items-center">
               <!-- Multi-customer group selection with chips autocomplete -->
         <div class="flex flex-col space-y-2 w-full">
           <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
@@ -119,7 +119,7 @@
               class="max-w-none"
               panelWidth="auto">
               @for (option of filterListNhomKhachhang; track option) {
-                <mat-option [value]="option" class="!whitespace-normal !h-auto !py-2">
+                <mat-option [value]="typeof option === 'string' ? option : option.name" class="!whitespace-normal !h-auto !py-2">
                   <span class="text-sm">{{ typeof option === 'string' ? option : option.name }}</span>
                   @if (typeof option !== 'string' && option.description) {
                     <small class="text-xs text-gray-500 block">{{ option.description }}</small>
@@ -163,7 +163,7 @@
               class="max-w-none"
               panelWidth="auto">
               @for (option of filterListKhachhang; track option) {
-                <mat-option [value]="option" class="!whitespace-normal !h-auto !py-2">
+                <mat-option [value]="typeof option === 'string' ? option : option.name" class="!whitespace-normal !h-auto !py-2">
                   <span class="text-sm">{{ typeof option === 'string' ? option : option.name }}</span>
                   @if (typeof option !== 'string' && option.makh) {
                     <small class="text-xs text-gray-500 block">Mã KH: {{ option.makh }}</small>

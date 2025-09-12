@@ -148,6 +148,17 @@ export class ListcongnokhachhangComponent {
       this.filterValues[column] = '';
     });
   }
+
+  // Display function for customer names in chips
+  getCustomerName(customer: any): string {
+    return typeof customer === 'string' ? customer : (customer.name || customer.makh || 'Unknown');
+  }
+
+  // Display function for customer group names in chips
+  getNhomKhachhangName(nhom: any): string {
+    return typeof nhom === 'string' ? nhom : (nhom.name || nhom.manhom || 'Unknown');
+  }
+
   onSelectionChange(event: MatSelectChange): void {
      this.ngOnInit();
   }
@@ -218,14 +229,22 @@ onNhomKhachhangChange(event: MatAutocompleteSelectedEvent){
 
 // Method to handle customer group selection from chips autocomplete
 onNhomKhachhangSelected(event: MatAutocompleteSelectedEvent): void {
-  const selectedValue = event.option.value;
+  const selectedValue = event.option.value; // This is now a string (name)
+  
+  // Find the full object from the list to store it
+  const fullObject = this.ListNhomKhachhang.find((item: any) => 
+    (typeof item === 'string' ? item : item.name) === selectedValue
+  );
+  
+  const objectToAdd = fullObject || selectedValue;
+  
   // Check if customer group is already selected (avoid duplicates)
   const isAlreadySelected = this.SelectedNhomKhachhang.some(nhomKH => 
-    (typeof nhomKH === 'string' ? nhomKH : nhomKH.name) === (typeof selectedValue === 'string' ? selectedValue : selectedValue.name)
+    (typeof nhomKH === 'string' ? nhomKH : nhomKH.name) === selectedValue
   );
   
   if (!isAlreadySelected) {
-    this.SelectedNhomKhachhang.push(selectedValue);
+    this.SelectedNhomKhachhang.push(objectToAdd);
     // You can add nhomKhachhangIds to SearchParams if needed
     // this.SearchParams.nhomKhachhangIds = this.SelectedNhomKhachhang.map(nhomKH => 
     //   typeof nhomKH === 'string' ? nhomKH : nhomKH.id || nhomKH.name
@@ -277,14 +296,22 @@ doFilterNhomKhachhang(event: Event){
 
 // Method to handle customer selection from chips autocomplete
 onCustomerSelected(event: MatAutocompleteSelectedEvent): void {
-  const selectedValue = event.option.value;
+  const selectedValue = event.option.value; // This is now a string (name)
+  
+  // Find the full object from the list to store it
+  const fullObject = this.ListKhachhang.find((item: any) => 
+    (typeof item === 'string' ? item : item.name) === selectedValue
+  );
+  
+  const objectToAdd = fullObject || selectedValue;
+  
   // Check if customer is already selected (avoid duplicates)
   const isAlreadySelected = this.SelectedKhachhang.some(customer => 
-    (typeof customer === 'string' ? customer : customer.name) === (typeof selectedValue === 'string' ? selectedValue : selectedValue.name)
+    (typeof customer === 'string' ? customer : customer.name) === selectedValue
   );
   
   if (!isAlreadySelected) {
-    this.SelectedKhachhang.push(selectedValue);
+    this.SelectedKhachhang.push(objectToAdd);
     this.SearchParams.khachhangIds = this.SelectedKhachhang.map(customer => 
       typeof customer === 'string' ? customer : customer.makh || customer.name
     );
