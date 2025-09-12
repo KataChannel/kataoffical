@@ -212,21 +212,35 @@ onKhachhangChange(event: MatAutocompleteSelectedEvent){
   this.onCustomerSelected(event);
 }
 onNhomKhachhangChange(event: MatAutocompleteSelectedEvent){
+  // Use the chips autocomplete method for consistency
+  this.onNhomKhachhangSelected(event);
+}
+
+// Method to handle customer group selection from chips autocomplete
+onNhomKhachhangSelected(event: MatAutocompleteSelectedEvent): void {
   const selectedValue = event.option.value;
-  console.log('selectedValue',selectedValue);
+  // Check if customer group is already selected (avoid duplicates)
+  const isAlreadySelected = this.SelectedNhomKhachhang.some(nhomKH => 
+    (typeof nhomKH === 'string' ? nhomKH : nhomKH.name) === (typeof selectedValue === 'string' ? selectedValue : selectedValue.name)
+  );
   
-  // Update dataSource and ListExport based on selection
-  // if (selectedValue && selectedValue !== '') {
-  //   // Filter by customer name
-  //   this.dataSource.data = this.ListExport = this.ListCongno.filter((item: any) =>
-  //     item.tenkhachhang === selectedValue
-  //   );
-  // } else {
-  //   // Reset to show all data
-  //   this.dataSource.data = this.ListExport = this.ListCongno;
-  // }
-  // // this.dataSource.paginator = this.paginator;
-  // this.dataSource.sort = this.sort;
+  if (!isAlreadySelected) {
+    this.SelectedNhomKhachhang.push(selectedValue);
+    // You can add nhomKhachhangIds to SearchParams if needed
+    // this.SearchParams.nhomKhachhangIds = this.SelectedNhomKhachhang.map(nhomKH => 
+    //   typeof nhomKH === 'string' ? nhomKH : nhomKH.id || nhomKH.name
+    // );
+  }
+  
+  // Clear the input after selection
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('input[matautocomplete]');
+    inputs.forEach((input: any) => {
+      if (input.placeholder.includes('nhóm khách hàng') || input.placeholder.includes('Thêm nhóm khách hàng')) {
+        input.value = '';
+      }
+    });
+  }, 100);
 }
 
 @Debounce(100)
@@ -251,9 +265,14 @@ doFilterNhomKhachhang(event: Event){
     this.filterListNhomKhachhang = this.ListNhomKhachhang;
     return;
   }
- this.filterListNhomKhachhang = this.ListNhomKhachhang.filter((item: any) =>
-   item.toLowerCase().includes(query) || removeVietnameseAccents(item).toLowerCase().includes(removeVietnameseAccents(query))
- );
+ this.filterListNhomKhachhang = this.ListNhomKhachhang.filter((item: any) => {
+   const name = typeof item === 'string' ? item : item.name || '';
+   const description = typeof item !== 'string' ? item.description || '' : '';
+   return name.toLowerCase().includes(query) || 
+          removeVietnameseAccents(name).toLowerCase().includes(removeVietnameseAccents(query)) ||
+          description.toLowerCase().includes(query) ||
+          removeVietnameseAccents(description).toLowerCase().includes(removeVietnameseAccents(query));
+ });
 }
 
 // Method to handle customer selection from chips autocomplete
@@ -294,11 +313,16 @@ removeSelectedCustomer(customer: any): void {
     );
   }
 }
-removeSelectedNhomkhachhang(customer: string): void {
-  const index = this.SelectedNhomKhachhang.indexOf(customer);
+removeSelectedNhomkhachhang(nhomKH: any): void {
+  const index = this.SelectedNhomKhachhang.findIndex(item => 
+    (typeof item === 'string' ? item : item.name) === (typeof nhomKH === 'string' ? nhomKH : nhomKH.name)
+  );
   if (index >= 0) {
     this.SelectedNhomKhachhang.splice(index, 1);
-    // this.SearchParams.khachhangIds = this.SelectedNhomKhachhang;
+    // Update SearchParams if you have nhomKhachhangIds
+    // this.SearchParams.nhomKhachhangIds = this.SelectedNhomKhachhang.map(nhomKH => 
+    //   typeof nhomKH === 'string' ? nhomKH : nhomKH.id || nhomKH.name
+    // );
   }
 }
 

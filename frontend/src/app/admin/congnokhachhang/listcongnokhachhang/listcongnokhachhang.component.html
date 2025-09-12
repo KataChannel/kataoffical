@@ -93,51 +93,48 @@
       </div>
     </div>
     <div class="w-full grid lg:grid-cols-3 gap-2 items-center">
-              <!-- Multi-customer selection section -->
+              <!-- Multi-customer group selection with chips autocomplete -->
         <div class="flex flex-col space-y-2 w-full">
-          <div class="flex flex-row space-x-2 items-center">
-            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Nhóm Khách Hàng</mat-label>
-              <input type="text" #customerInput [matAutocomplete]="autoNhom" (keyup)="doFilterNhomKhachhang($event)" matInput
-                placeholder="Tìm và chọn nhiều khách hàng" />
-            </mat-form-field>
-            <mat-autocomplete #autoNhom="matAutocomplete" (optionSelected)="onNhomKhachhangChange($event)" class="max-w-none"
+          <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+            <mat-label>Nhóm Khách Hàng</mat-label>
+            <mat-chip-set aria-label="Chọn nhóm khách hàng">
+              @for (nhomKH of SelectedNhomKhachhang; track nhomKH) {
+                <mat-chip (removed)="removeSelectedNhomkhachhang(nhomKH)" [removable]="true">
+                  <span>{{ typeof nhomKH === 'string' ? nhomKH : nhomKH.name }}</span>
+                  <button matChipRemove [attr.aria-label]="'Xóa ' + (typeof nhomKH === 'string' ? nhomKH : nhomKH.name)">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              }
+            </mat-chip-set>
+            <input 
+              #nhomKHInput
+              placeholder="{{SelectedNhomKhachhang.length === 0 ? 'Tìm và chọn nhiều nhóm khách hàng' : 'Thêm nhóm khách hàng'}}"
+              [matAutocomplete]="autoNhom"
+              (keyup)="doFilterNhomKhachhang($event)"
+              matInput>
+            <mat-autocomplete 
+              #autoNhom="matAutocomplete" 
+              (optionSelected)="onNhomKhachhangSelected($event)" 
+              class="max-w-none"
               panelWidth="auto">
-              @for (option of filterListNhomKhachhang; track option.id) {
-              <mat-option [value]="option.name" class="!whitespace-normal !h-auto !py-2">
-                <span class="text-sm">{{ option.name }}</span>
-                <small class="text-xs text-gray-500 block">{{ option.description }}</small>
-              </mat-option>
+              @for (option of filterListNhomKhachhang; track option) {
+                <mat-option [value]="option" class="!whitespace-normal !h-auto !py-2">
+                  <span class="text-sm">{{ typeof option === 'string' ? option : option.name }}</span>
+                  @if (typeof option !== 'string' && option.description) {
+                    <small class="text-xs text-gray-500 block">{{ option.description }}</small>
+                  }
+                </mat-option>
               }
             </mat-autocomplete>
             
-            @if (SelectedKhachhang.length > 0) {
-            <button matTooltip="Xóa tất cả khách hàng đã chọn" (click)="clearAllSelectedNhomKhachhang()" 
-              color="warn" mat-icon-button>
+            @if (SelectedNhomKhachhang.length > 0) {
+            <button matTooltip="Xóa tất cả nhóm khách hàng đã chọn" (click)="clearAllSelectedNhomKhachhang()" 
+              color="warn" mat-icon-button matSuffix>
               <mat-icon>clear_all</mat-icon>
             </button>
             }
-          </div>
-          
-          <!-- Selected customers display with chips -->
-          @if (SelectedNhomKhachhang.length > 0) {
-          <div class="flex flex-wrap gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
-            <span class="text-sm font-medium text-blue-800 flex items-center mr-2">
-              <mat-icon class="mr-1 text-blue-600" style="font-size: 18px;">people</mat-icon>
-              Đã chọn {{SelectedNhomKhachhang.length}} khách hàng:
-            </span>
-            @for (customer of SelectedKhachhang; track customer.id) {
-            <mat-chip-set>
-              <mat-chip class="bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
-                <span class="text-xs font-medium">{{ customer.name }}</span>
-                <button matChipRemove (click)="removeSelectedNhomkhachhang(customer)" class="ml-1 hover:text-red-600">
-                  <mat-icon class="text-xs">cancel</mat-icon>
-                </button>
-              </mat-chip>
-            </mat-chip-set>
-            }
-          </div>
-          }
+          </mat-form-field>
         </div>
 
         <!-- Multi-customer selection with chips autocomplete -->
