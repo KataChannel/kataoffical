@@ -42,11 +42,12 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
          this._MenuService.setMenuId(id);
          await this._MenuService.getAllMenu();
          this.ListMenu = this._MenuService.ListMenu();
+         console.log(this.ListMenu);
+         
       });
   
       effect(async () => {
         const id = this._MenuService.menuId();
-      
         if (!id){
           this._router.navigate(['/admin/menu']);
           this._ListmenuComponent.drawer.close();
@@ -68,7 +69,9 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     isEdit = signal(false);
     isDelete = signal(false);  
     menuId:any = this._MenuService.menuId
-    async ngOnInit() {       
+    async ngOnInit() {   
+        //  await this._MenuService.getAllMenu();
+        //  this.ListMenu = this._MenuService.ListMenu();    
     }
     async handleMenuAction() {
       if (this.menuId() === '0') {

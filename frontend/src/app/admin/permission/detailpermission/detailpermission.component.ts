@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal, Optional } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -30,7 +30,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     styleUrl: './detailpermission.component.scss'
   })
   export class DetailPermissionComponent {
-    _ListPermissionComponent:ListPermissionComponent = inject(ListPermissionComponent)
+    _ListPermissionComponent:ListPermissionComponent | null = inject(ListPermissionComponent, { optional: true })
     _PermissionService:PermissionService = inject(PermissionService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
@@ -41,30 +41,35 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
         this._PermissionService.setPermissionId(id);
       });
   
+  
       effect(async () => {
         const id = this._PermissionService.permissionId();
         if (!id){
           this._router.navigate(['/admin/permission']);
-          this._ListPermissionComponent.drawer.close();
+          this._ListPermissionComponent?.drawer?.close();
         }
         if(id === 'new'){
+          console.log("New Permission");
+          
           this.DetailPermission.set({});
-          this._ListPermissionComponent.drawer.open();
+          this._ListPermissionComponent?.drawer?.open();
           this.isEdit.update(value => !value);
           this._router.navigate(['/admin/permission', "new"]);
         }
         else{
             await this._PermissionService.getPermissionBy({id:id,isOne:true});
-            this._ListPermissionComponent.drawer.open();
+            this._ListPermissionComponent?.drawer?.open();
             this._router.navigate(['/admin/permission', id]);
-        }
+        } 
       });
     }
+    
     DetailPermission: any = this._PermissionService.DetailPermission;
     isEdit = signal(false);
     isDelete = signal(false);  
     permissionId:any = this._PermissionService.permissionId
-    async ngOnInit() {       
+    async ngOnInit() {   
+
     }
     async handlePermissionAction() {
       if (this.permissionId() === 'new') {
@@ -122,7 +127,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     }
     goBack(){
       this._router.navigate(['/admin/permission'])
-      this._ListPermissionComponent.drawer.close();
+      this._ListPermissionComponent?.drawer?.close();
     }
     trackByFn(index: number, item: any): any {
       return item.id;

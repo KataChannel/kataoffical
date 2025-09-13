@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ListNhomnccComponent } from './listnhomncc/listnhomncc';
+import { ListNhomnccComponent } from './listnhomncc/listnhomncc.component';
 const routes: Routes = [
   {
     path: '',
@@ -9,7 +9,7 @@ const routes: Routes = [
       {
         path: ':id',
         loadComponent: () =>
-          import('./detailnhomncc/detailnhomncc').then(
+          import('./detailnhomncc/detailnhomncc.component').then(
             (c) => c.DetailNhomnccComponent
           ),
       },
