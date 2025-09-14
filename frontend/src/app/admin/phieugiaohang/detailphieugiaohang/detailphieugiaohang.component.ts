@@ -39,6 +39,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DonhangService } from '../../donhang/donhang.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { UserService } from '../../user/user.service';
@@ -60,6 +61,7 @@ import { SharedInputService } from '../../../shared/services/shared-input.servic
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
+    MatProgressSpinnerModule,
   ],
   // providers: [provideNativeDateAdapter()],
   templateUrl: './detailphieugiaohang.component.html',
@@ -113,6 +115,11 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   // ListKhachhang: any = this._KhachhangService.ListKhachhang;
   isEdit = signal(true);
   isDelete = signal(false);
+  isLoading = signal<boolean>(false);
+  isSaving = signal<boolean>(false);
+  isUpdating = signal<boolean>(false);
+  isLoadingProducts = signal<boolean>(false);
+  
   filterKhachhang: any = [];
   filterBanggia: any[] = [];
   filterSanpham: any[] = [];
@@ -154,16 +161,26 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   }
 
   private async loadProductsAsync() {
+    this.isLoadingProducts.set(true);
     try {
       // Load products with reasonable pagination instead of all 99,999
       await this._SanphamService.getAllSanpham({pageSize: 1000});
       this.filterSanpham = this._SanphamService.ListSanpham();
     } catch (error) {
       console.error('Error loading products:', error);
+      this._snackBar.open('Lỗi khi tải danh sách sản phẩm', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoadingProducts.set(false);
     }
   }
 
   private async loadPhieugiaohangData(id: string) {
+    this.isLoading.set(true);
     try {
       await this._PhieugiaohangService.Phieugiaohang({id: id});
       const phieuGiaoHang = this.DetailPhieugiaohang();
@@ -202,6 +219,14 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       this._router.navigate(['/admin/phieugiaohang', id]);
     } catch (error) {
       console.error('Error loading phieugiaohang data:', error);
+      this._snackBar.open('Lỗi khi tải dữ liệu phiếu giao hàng', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
@@ -352,6 +377,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   }
 
   private async updatePhieugiaohang() {
+    this.isUpdating.set(true);
     try {      
       this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang().sanpham.map((v:any)=>{
         v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
@@ -361,7 +387,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
 
       await this._PhieugiaohangService.updatePhieugiao(this.DetailPhieugiaohang());
       this._snackBar.open('Cập Nhật Thành Công', '', {
-        duration: 1000,
+        duration: 2000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-success'],
@@ -369,6 +395,14 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       this.isEdit.update((value) => !value);
     } catch (error) {
       console.error('Lỗi khi cập nhật phieugiaohang:', error);
+      this._snackBar.open('Lỗi khi cập nhật phiếu giao hàng', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isUpdating.set(false);
     }
   }
   UpdateTongTongTienVat(){

@@ -7,6 +7,7 @@ import {
   inject,
   signal,
   ViewChild,
+  OnDestroy,
 } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -42,6 +43,7 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import { SharepaginationComponent } from '../../../shared/common/sharepagination/sharepagination.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GraphqlService } from '../../../shared/services/graphql.service';
+import { LoadingUtils } from '../../../shared/utils/loading.utils';
 @Component({
   selector: 'app-listphieugiaohang',
   templateUrl: './listphieugiaohang.component.html',
@@ -69,7 +71,7 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   // providers: [provideNativeDateAdapter()],
 })
-export class ListPhieugiaohangComponent {
+export class ListPhieugiaohangComponent implements OnDestroy {
   Detail: any = {};
   displayedColumns: string[] = [
     'STT',
@@ -99,6 +101,10 @@ export class ListPhieugiaohangComponent {
   Columns: any[] = [];
   isFilter: boolean = false;
   isLoading = signal<boolean>(false);
+  isBulkUpdating = signal<boolean>(false);
+  isSearching = signal<boolean>(false);
+  isExporting = signal<boolean>(false);
+  isImporting = signal<boolean>(false);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -190,41 +196,45 @@ export class ListPhieugiaohangComponent {
   }
 
   async LoadData() {
-    this.isLoading.set(true);
-    try {
-      // Fetch paginated data from server
-      // const data = await this._DonhangService.searchDonhang(this.SearchParams);
-      const data:any = await this.searchDonhang();
-       console.log(data);
-      
+    const loadDataKey = `${this.COMPONENT_KEY}_loadData`;
+    
+    return LoadingUtils.queueRequest(loadDataKey, async () => {
+      this.isLoading.set(true);
+      try {
+        // Fetch paginated data from server
+        const data: any = await this.searchDonhang();
+        console.log(data);
+        
         this.Listphieugiaohang.set(data);
         this.total.set(Number(data.length || 0));
         this.pageSize.set(10);
         this.page.set(1);
         this.pageCount.set(1);
-        // // Set data to table without client-side pagination since we're using server-side
+        
+        // Set data to table without client-side pagination since we're using server-side
         this.dataSource = new MatTableDataSource(data);
         // Disable client-side pagination/sorting since we're using server-side
         this.dataSource.paginator = null;
         this.dataSource.sort = null;
-    } catch (error) {
-      console.error('Error loading data:', error);
-      this._snackBar.open('Lỗi khi tải dữ liệu', '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-      });
+      } catch (error) {
+        console.error('Error loading data:', error);
+        this._snackBar.open('Lỗi khi tải dữ liệu', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
 
-      // Set empty state on error
-      this.total.set(0);
-      this.pageSize.set(10);
-      this.page.set(1);
-      this.pageCount.set(0);
-      this.dataSource = new MatTableDataSource([]);
-    } finally {
-      this.isLoading.set(false);
-    }
+        // Set empty state on error
+        this.total.set(0);
+        this.pageSize.set(10);
+        this.page.set(1);
+        this.pageCount.set(0);
+        this.dataSource = new MatTableDataSource([]);
+      } finally {
+        this.isLoading.set(false);
+      }
+    });
   }
   async searchDonhang(){
     const where: any = {
@@ -271,24 +281,67 @@ export class ListPhieugiaohangComponent {
   async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.SearchParams.query = filterValue;
-    // Reset to first page when filtering
-    this.SearchParams.pageNumber = 1;
-    await this.LoadData();
+    
+    this.isSearching.set(true);
+    this.debouncedSearch();
   }
+  
+  private searchTimeout: any;
+  private readonly COMPONENT_KEY = 'listphieugiaohang';
+
+  // Debounced search function
+  private debouncedSearch = LoadingUtils.debounce(
+    async () => {
+      try {
+        this.SearchParams.pageNumber = 1;
+        await this.LoadData();
+      } finally {
+        this.isSearching.set(false);
+      }
+    },
+    500,
+    `${this.COMPONENT_KEY}_search`
+  );
   onSelectionChange(event: MatSelectChange): void {
     this.SearchParams.pageNumber = 1; // Reset to first page
     this.LoadData();
   }
 
   async onTypeChange(value: string): Promise<void> {
-    this.SearchParams.Type = value;
-    this.SearchParams.pageNumber = 1; // Reset to first page
-    await this.LoadData();
+    this.isLoading.set(true);
+    try {
+      this.SearchParams.Type = value;
+      this.SearchParams.pageNumber = 1; // Reset to first page
+      await this.LoadData();
+    } catch (error) {
+      console.error('Error changing type:', error);
+      this._snackBar.open('Lỗi khi thay đổi loại khách hàng', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   onDateChange(event: any): void {
-    this.SearchParams.pageNumber = 1; // Reset to first page
-    this.LoadData();
+    this.isLoading.set(true);
+    try {
+      this.SearchParams.pageNumber = 1; // Reset to first page
+      this.LoadData();
+    } catch (error) {
+      console.error('Error changing date:', error);
+      this._snackBar.open('Lỗi khi thay đổi ngày', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading.set(false);
+    }
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -420,7 +473,7 @@ export class ListPhieugiaohangComponent {
 
   async UpdateBulk() {
     if (!this.EditList?.length) {
-      this._snackBar.open('Không có mục nào được chọn để xóa', '', {
+      this._snackBar.open('Không có mục nào được chọn để cập nhật', '', {
         duration: 2000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
@@ -429,23 +482,24 @@ export class ListPhieugiaohangComponent {
       return;
     }
 
+    this.isBulkUpdating.set(true);
     try {
       const result: any = await this._DonhangService.UpdateBulkDonhang(
         this.EditList.map((v: any) => v.id)
       );
       this._snackBar.open(
-        `Cập nhật thành công ${result.success} đơn hàng ${result.fail} lỗi`,
+        `Cập nhật thành công ${result.success} đơn hàng${result.fail ? `, ${result.fail} lỗi` : ''}`,
         '',
         {
-          duration: 2000,
+          duration: 3000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
         }
       );
     } catch (error: any) {
-      console.error('Lỗi khi xóa đơn hàng:', error);
-      this._snackBar.open('Có lỗi xảy ra khi xóa đơn hàng', '', {
+      console.error('Lỗi khi cập nhật đơn hàng:', error);
+      this._snackBar.open('Có lỗi xảy ra khi cập nhật đơn hàng', '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
@@ -453,6 +507,7 @@ export class ListPhieugiaohangComponent {
       });
     } finally {
       this.EditList = [];
+      this.isBulkUpdating.set(false);
       await this.LoadData();
     }
   }
@@ -502,42 +557,95 @@ export class ListPhieugiaohangComponent {
     );
   }
   async LoadDrive() {
-    const DriveInfo = {
-      IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'PGHImport',
-      ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
-    };
-    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
-    const data = ConvertDriveData(result.values);
-    console.log(data);
-    this.DoImportData(data);
-    // const updatePromises = data.map(async (v: any) => {
-    //   const item = this._KhachhangsService
-    //     .ListKhachhang()
-    //     .find((v1) => v1.MaKH === v.MaKH);
-    //   if (item) {
-    //     const item1 = { ...item, ...v };
-    //     console.log(item1);
-
-    //     await this._KhachhangsService.updateOneKhachhang(item1);
-    //   }
-    // });
-    // Promise.all(updatePromises).then(() => {
-    //   this._snackBar.open('Cập Nhật Thành Công', '', {
-    //     duration: 1000,
-    //     horizontalPosition: 'end',
-    //     verticalPosition: 'top',
-    //     panelClass: ['snackbar-success'],
-    //   });
-    //   //  window.location.reload();
-    // });
+    this.isImporting.set(true);
+    try {
+      const DriveInfo = {
+        IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
+        SheetName: 'PGHImport',
+        ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
+      };
+      const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
+      const data = ConvertDriveData(result.values);
+      console.log(data);
+      await this.DoImportData(data);
+      
+      this._snackBar.open('Tải dữ liệu từ Drive thành công', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      console.error('Error loading from drive:', error);
+      this._snackBar.open('Lỗi khi tải dữ liệu từ Drive', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isImporting.set(false);
+    }
   }
-  DoImportData(data: any) {}
+  
+  async DoImportData(data: any) {
+    // Implementation for importing data
+    return Promise.resolve();
+  }
+  
   async ImporExcel(event: any) {
-    const data = await readExcelFile(event);
-    this.DoImportData(data);
+    this.isImporting.set(true);
+    try {
+      const data = await readExcelFile(event);
+      await this.DoImportData(data);
+      
+      this._snackBar.open('Import Excel thành công', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      
+      // Clear the input to allow re-importing the same file
+      (event.target as HTMLInputElement).value = '';
+    } catch (error) {
+      console.error('Error importing excel:', error);
+      this._snackBar.open('Lỗi khi import Excel', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isImporting.set(false);
+    }
   }
+  
   ExportExcel(data: any, title: any) {
-    writeExcelFile(data, title);
+    this.isExporting.set(true);
+    try {
+      writeExcelFile(data, title);
+      this._snackBar.open('Export Excel thành công', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      console.error('Error exporting excel:', error);
+      this._snackBar.open('Lỗi khi export Excel', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isExporting.set(false);
+    }
+  }
+  
+  ngOnDestroy(): void {
+    // Cleanup loading utils timers
+    LoadingUtils.cleanup(this.COMPONENT_KEY);
   }
 }

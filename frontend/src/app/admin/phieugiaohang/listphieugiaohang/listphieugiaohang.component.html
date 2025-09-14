@@ -9,9 +9,14 @@
 
                 <div class="relative w-full">
                     <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
-                        class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                        [disabled]="isLoading() || isSearching()"
+                        class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 disabled:bg-gray-100 disabled:cursor-not-allowed">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        @if (isSearching()) {
+                        <mat-spinner diameter="20"></mat-spinner>
+                        } @else {
                         <span class="material-symbols-outlined text-gray-500">search</span>
+                        }
                     </div>
                 </div>
 
@@ -54,9 +59,14 @@
               <span (click)="ToggleAll()" class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{total()}} Phiếu giao hàng
                 </span>
-                  <button (click)="UpdateBulk()" *ngIf="EditList.length > 0" class="flex flex-row items-center" color="primary" mat-flat-button>
-                    <span>Đã Nhận</span>
-                </button>
+                  <button (click)="UpdateBulk()" *ngIf="EditList.length > 0" 
+                    [disabled]="isBulkUpdating() || isLoading()"
+                    class="flex flex-row items-center space-x-2" color="primary" mat-flat-button>
+                    @if (isBulkUpdating()) {
+                    <mat-spinner diameter="20"></mat-spinner>
+                    }
+                    <span>{{isBulkUpdating() ? 'Đang xử lý...' : 'Đã Nhận'}}</span>
+                  </button>
             </div>
         </div>
         <div *ngIf="isSearch" class="py-2 w-full flex flex-row space-x-2 items-center">
@@ -70,14 +80,15 @@
             <mat-button-toggle-group 
                     [(ngModel)]="SearchParams.Type" 
                     [ngModelOptions]="{standalone: true}"
+                    [disabled]="isLoading()"
                     (change)="onTypeChange($event.value)">
-                    <mat-button-toggle value="all">
+                    <mat-button-toggle value="all" [disabled]="isLoading()">
                         All
                     </mat-button-toggle>
-                    <mat-button-toggle value="khachsi">
+                    <mat-button-toggle value="khachsi" [disabled]="isLoading()">
                         Sỉ
                     </mat-button-toggle>
-                    <mat-button-toggle value="khachle">
+                    <mat-button-toggle value="khachle" [disabled]="isLoading()">
                         Lẻ
                     </mat-button-toggle>
             </mat-button-toggle-group>
@@ -85,16 +96,18 @@
             <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
                 <mat-label>Bắt Đầu</mat-label>
                 <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau"
-                    [(ngModel)]="SearchParams.Batdau" [ngModelOptions]="{standalone: true}">
-                <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau"></mat-datepicker-toggle>
+                    [(ngModel)]="SearchParams.Batdau" [ngModelOptions]="{standalone: true}" 
+                    [disabled]="isLoading()">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau" [disabled]="isLoading()"></mat-datepicker-toggle>
                 <mat-datepicker #pickerBatdau></mat-datepicker>
             </mat-form-field>
 
             <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
                 <mat-label>Kết Thúc</mat-label>
                 <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerKetthuc"
-                    [(ngModel)]="SearchParams.Ketthuc" [ngModelOptions]="{standalone: true}">
-                <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
+                    [(ngModel)]="SearchParams.Ketthuc" [ngModelOptions]="{standalone: true}"
+                    [disabled]="isLoading()">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc" [disabled]="isLoading()"></mat-datepicker-toggle>
                 <mat-datepicker #pickerKetthuc></mat-datepicker>
             </mat-form-field>
         </div>        <div class="w-full overflow-auto relative">
