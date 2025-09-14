@@ -11,9 +11,9 @@
     <router-outlet></router-outlet>
   </mat-drawer>
   <div class="flex flex-col space-y-2 h-screen-12 w-full p-2" [class.opacity-50]="isLoading">
-    <div class="w-full grid lg:grid-cols-2 gap-2 items-center">
+    <div class="w-full grid gap-2 items-center">
       <div class="w-full flex flex-row space-x-2 items-center">
-        <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+        <mat-form-field class="w-full" [appearance]="'outline'" [subscriptSizing]="'dynamic'">
           <mat-label>Bắt Đầu</mat-label>
           <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau"
             [(ngModel)]="SearchParams.Batdau" [ngModelOptions]="{ standalone: true }" />
@@ -21,25 +21,43 @@
           <mat-datepicker #pickerBatdau></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+        <mat-form-field class="w-full" [appearance]="'outline'" [subscriptSizing]="'dynamic'">
           <mat-label>Kết Thúc</mat-label>
           <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerKetthuc"
             [(ngModel)]="SearchParams.Ketthuc" [ngModelOptions]="{ standalone: true }" />
           <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
           <mat-datepicker #pickerKetthuc></mat-datepicker>
-        </mat-form-field>
+        </mat-form-field>   
         <span (click)="ToggleAll()" class="lg:flex hidden cursor-pointer whitespace-nowrap p-2 rounded-lg bg-slate-200">
-          {{CountItem}} Đơn Hàng
+          {{CountItem}} Bản Ghi
         </span>
-
-       <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(editDathang, 'Congnoncc')" color="primary"
+        <span class="lg:flex hidden cursor-pointer whitespace-nowrap p-2 rounded-lg bg-slate-200">
+          {{editDathang.length}} Đã Chọn
+        </span>
+      <button (click)="openPreviewExport(dialogPreviewExport)" matTooltip="Xem Mẫu" mat-icon-button color="primary">
+          <mat-icon>preview</mat-icon>
+        </button>
+        
+        <!-- Export dropdown menu with both options -->
+        <button matTooltip="Xuất file Excel" [matMenuTriggerFor]="exportMenu" color="primary"
           mat-icon-button class="relative">
           <div *ngIf="isExporting" class="absolute inset-0 flex items-center justify-center">
             <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
           </div>
           <mat-icon [class.opacity-0]="isExporting">file_download</mat-icon>
         </button>
-          <button matTooltip="Tìm kiếm" (click)="doSearch()" [disabled]="isSearching" color="primary" mat-icon-button
+        
+        <mat-menu #exportMenu="matMenu">
+          <button mat-menu-item (click)="ExportExcel(editDathang, 'Congno')">
+            <mat-icon>cloud_download</mat-icon>
+            <span>Xuất từ Server (Nhanh)</span>
+          </button>
+          <button mat-menu-item (click)="ExportExcelTableFormat(editDathang, 'Congno')">
+            <mat-icon>table_view</mat-icon>
+            <span>Xuất định dạng bảng (Chi tiết)</span>
+          </button>
+        </mat-menu>
+        <button matTooltip="Tìm kiếm" (click)="doSearch()" [disabled]="isSearching" color="primary" mat-icon-button
           class="relative">
           <div *ngIf="isSearching" class="absolute inset-0 flex items-center justify-center">
             <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
@@ -69,29 +87,149 @@
             }
           </div>
         </mat-menu>
-      </div>
 
-      <div class="w-full flex flex-row space-x-2 items-center">
-        <!-- @if(ListKhachhang.length > 0) {
-        <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'" class="w-full">
-          <mat-label>Khách Hàng</mat-label>
-          <input type="text" [matAutocomplete]="auto" (keyup)="doFilterKhachhang($event)" matInput
-            placeholder="Tìm kiếm khách hàng" />
-        </mat-form-field>
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onKhachhangChange($event)" class="max-w-none"
-          panelWidth="auto">
-          @for (option of filterListKhachhang; track option) {
-          <mat-option [value]="option" class="!whitespace-normal !h-auto !py-2">
-            <span class="text-sm">{{ option }}</span>
-          </mat-option>
-          }
-        </mat-autocomplete> -->
-        <!-- Export button với loading -->
-
-        <!-- } -->
-        <!-- Search button với loading -->
+         <button (click)="isShowKH=!isShowKH" matTooltip="Ẩn hiện Tool Nhà Cung Cấp" mat-icon-button color="primary">
+          <mat-icon>{{isShowKH ? 'visibility' : 'visibility_off'}}</mat-icon>
+        </button>
       </div>
     </div>
+
+    @if(isShowKH){
+    <div class="w-full grid lg:grid-cols-2 gap-2 items-center">
+              <!-- Multi-customer group selection with chips autocomplete -->
+        <div class="flex flex-col space-y-2 w-full">
+          <div class="font-bold">Nhóm Nhà Cung Cấp </div>
+          <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+            <mat-chip-set aria-label="Chọn nhóm nhà cung cấp">
+              @for (nhomKH of SelectedNhomCongnoncc; track nhomKH) {
+                <mat-chip (removed)="removeSelectedNhomcongnoncc(nhomKH)" [removable]="true">
+                  <span>{{ typeof nhomKH === 'string' ? nhomKH : nhomKH.name }}</span>
+                  <button matChipRemove [attr.aria-label]="'Xóa ' + (typeof nhomKH === 'string' ? nhomKH : nhomKH.name)">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              }
+            </mat-chip-set>
+            <input 
+              #nhomKHInput
+              placeholder="{{SelectedNhomCongnoncc.length === 0 ? 'Tìm và chọn nhiều nhóm nhà cung cấp' : 'Thêm nhóm nhà cung cấp'}}"
+              [matAutocomplete]="autoNhom"
+              (keyup)="doFilterNhomCongnoncc($event)"
+              matInput>
+            <mat-autocomplete 
+              #autoNhom="matAutocomplete" 
+              (optionSelected)="onNhomCongnonccSelected($event)" 
+              class="max-w-none"
+              panelWidth="auto">
+              @for (option of filterListNhomCongnoncc; track option) {
+                <mat-option [value]="typeof option === 'string' ? option : option.name" class="!whitespace-normal !h-auto !py-2">
+                  <span class="text-sm">{{ typeof option === 'string' ? option : option.name }}</span>
+                  @if (typeof option !== 'string' && option.description) {
+                    <small class="text-xs text-gray-500 block">{{ option.description }}</small>
+                  }
+                </mat-option>
+              }
+            </mat-autocomplete>
+            
+            @if (SelectedNhomCongnoncc.length > 0) {
+            <button matTooltip="Xóa tất cả nhóm nhà cung cấp đã chọn" (click)="clearAllSelectedNhomCongnoncc()" 
+              color="warn" mat-icon-button matSuffix>
+              <mat-icon>close</mat-icon>
+            </button>
+            }
+
+          <!-- @if (SelectedNhomCongnoncc.length > 0) {
+          <div class="flex flex-wrap gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <span class="text-sm font-medium text-blue-800 flex items-center mr-2">
+              <mat-icon class="mr-1 text-blue-600" style="font-size: 18px;">people</mat-icon>
+              Đã chọn {{SelectedNhomCongnoncc.length}} nhà cung cấp:
+            </span>
+
+            @for (customer of SelectedNhomCongnoncc; track customer.id) {
+            <mat-chip-set>
+              <mat-chip class="bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
+                <span class="text-xs font-medium">{{ customer.name }}</span>
+                <button matChipRemove (click)="removeSelectedCustomer(customer)" class="ml-1 hover:text-red-600">
+                  <mat-icon class="text-xs">cancel</mat-icon>
+                </button>
+              </mat-chip>
+            </mat-chip-set>
+            }
+          </div>
+          } -->
+          </mat-form-field>
+        </div>
+
+        <!-- Multi-customer selection with chips autocomplete -->
+        <div class="flex flex-col space-y-2 w-full">
+          <div class="font-bold">Nhà Cung Cấp </div>
+          <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+            <mat-chip-set aria-label="Chọn nhà cung cấp">
+              @for (customer of SelectedCongnoncc; track customer) {
+                <mat-chip (removed)="removeSelectedCustomer(customer)" [removable]="true">
+                  <span>{{ typeof customer === 'string' ? customer : customer.name }}</span>
+                  <button matChipRemove [attr.aria-label]="'Xóa ' + (typeof customer === 'string' ? customer : customer.name)">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              }
+            </mat-chip-set>
+            <input 
+              #customerInput
+              placeholder="{{SelectedCongnoncc.length === 0 ? 'Tìm và chọn nhiều nhà cung cấp' : 'Thêm nhà cung cấp'}}"
+              [matAutocomplete]="auto"
+              (keyup)="doFilterCongnoncc($event)"
+              matInput>
+            <mat-autocomplete 
+              #auto="matAutocomplete" 
+              (optionSelected)="onCustomerSelected($event)" 
+              class="max-w-none"
+              panelWidth="auto">
+              @for (option of filterListCongnoncc; track option) {
+                <mat-option [value]="typeof option === 'string' ? option : option.name" class="!whitespace-normal !h-auto !py-2">
+                  <span class="text-sm">{{ typeof option === 'string' ? option : option.name }}</span>
+                  @if (typeof option !== 'string' && option.makh) {
+                    <small class="text-xs text-gray-500 block">Mã KH: {{ option.makh }}</small>
+                  }
+                </mat-option>
+              }
+            </mat-autocomplete>
+            
+            @if (SelectedCongnoncc.length > 0) {
+            <button matTooltip="Xóa tất cả nhà cung cấp đã chọn" (click)="clearAllSelectedCustomers()" 
+              color="warn" mat-icon-button matSuffix>
+              <mat-icon>close</mat-icon>
+            </button>
+            }
+          </mat-form-field>
+                    <!-- Selected customers display with chips -->
+          <!-- @if (SelectedCongnoncc.length > 0) {
+          <div class="flex flex-wrap gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <span class="text-sm font-medium text-blue-800 flex items-center mr-2">
+              <mat-icon class="mr-1 text-blue-600" style="font-size: 18px;">people</mat-icon>
+              Đã chọn {{SelectedCongnoncc.length}} nhà cung cấp:
+            </span>
+            @for (customer of SelectedCongnoncc; track customer.id) {
+            <mat-chip-set>
+              <mat-chip class="bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
+                <span class="text-xs font-medium">{{ customer.name }}</span>
+                <button matChipRemove (click)="removeSelectedCustomer(customer)" class="ml-1 hover:text-red-600">
+                  <mat-icon class="text-xs">cancel</mat-icon>
+                </button>
+              </mat-chip>
+            </mat-chip-set>
+            }
+          </div>
+          } -->
+        </div>
+
+
+
+    </div>
+    }
+
+
+
     <!-- Table với loading state -->
     <div class="w-full overflow-auto relative">
       <!-- Loading indicator cho table -->
@@ -153,7 +291,7 @@
                     <span>{{ item[column] | date : "dd/MM/yyyy" }}</span>
                     } @case ('updatedAt') {
                     <span>{{ item[column] | date : "dd/MM/yyyy" }}</span>
-                    } @case ('ngaynhan') {
+                    } @case ('ngaygiao') {
                     <span>{{ item[column] | date : "dd/MM/yyyy" }}</span>
                     } @case ('haohut') {
                     <span>{{ item[column] }}%</span>
@@ -179,7 +317,7 @@
               {{ idx + 1 }}
               <span *ngIf="CheckItemInDathang(row)" class="material-symbols-outlined">check_box</span>
             </span>
-            } @case ('madonhang') {
+            } @case ('madathang') {
             <span class="max-w-40 line-clamp-4 font-bold text-blue-700">
               {{ row[column] }}
             </span>
@@ -187,11 +325,11 @@
             <span class="max-w-40 line-clamp-4 text-xs">
               {{ row[column] | date : "HH:mm:ss dd/MM/yyyy" }}
             </span>
-            } @case ('ngaynhan') {
+            } @case ('ngaygiao') {
             <span class="max-w-40 line-clamp-4">
               {{ row[column] | date : "dd/MM/yyyy" }}
             </span>
-            } @case ('khachhang') {
+            } @case ('congnoncc') {
             <span class="max-w-40 line-clamp-4">
               {{ row[column].name }}
             </span>
@@ -288,10 +426,10 @@
                 NGÀY GIAO
               </th>
               <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
-                MÃ KHÁCH HÀNG
+                MÃ NHÀ CUNG CẤP
               </th>
               <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
-                TÊN KHÁCH HÀNG
+                TÊN NHÀ CUNG CẤP
               </th>
               <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
                 MÃ ĐƠN HÀNG
@@ -324,7 +462,7 @@
               <tr *ngFor="let item1 of item.sanpham; let j = index">
                 <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length"
                   class="p-2 border border-gray-300 align-middle text-center">
-                  {{ item.ngaynhan | date : "dd/MM/yyyy" }}
+                  {{ item.ngaygiao | date : "dd/MM/yyyy" }}
                 </td>
                 <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length"
                   class="p-2 border border-gray-300 align-middle text-center">
@@ -336,7 +474,7 @@
                 </td>
                 <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length"
                   class="p-2 border border-gray-300 align-middle text-center">
-                  {{ item.madonhang }}
+                  {{ item.madathang }}
                 </td>
                 <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length"
                   class="p-2 border border-gray-300 align-middle text-center">
@@ -369,3 +507,120 @@
     <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
   </mat-dialog-actions>
 </ng-template>
+
+
+<ng-template #dialogPreviewExport>
+  <h2 mat-dialog-title>Xem Trước Mẫu Excel</h2>
+<mat-dialog-content class="mat-typography">
+    <div class="w-full overflow-x-auto">
+      <table id="exporttable" class="text-xs border-collapse border border-gray-300">
+        <thead>
+        <tr>
+        <th colspan="4" class="text-start p-2 border"><img src="/images/logo-full.png" class="h-20 mx-auto"></th>
+        <th colspan="7" class="text-start p-2  flex flex-col gap-2">
+          <span class="text-md font-bold">CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA</span>
+          <span>HTX: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An</span>
+          <span>VP: Tòa nhà An Phú Plaza, 117-119 Lý Chính Thắng, P.7. Q.3,</span>
+          <span>TP.HCM Kho sơ chế: 30 Kha Vạn Cân, P. Hiệp Bình Chánh,</span>
+          <span>TP.Thủ Đức, TP.HCM Kho Đà Lạt: 69 Trần Thủ Độ,</span>
+          <span>TT Liên Nghĩa, Huyện Đức Trọng, Tỉnh Lâm Đồng.</span>
+          <span>Website: rausachtrangia.com - Hotline: 090.245.8081</span>
+        </th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+        <th colspan="11" class="text-md font-bold text-start p-2 border">CHI TIẾT ĐỐI CHIẾU CÔNG NỢ</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+        <th colspan="11" class="text-start p-2 border">
+          Từ Ngày {{SearchParams.Batdau |date:'dd/MM/yyyy'}} : - Đến Ngày : {{SearchParams.Ketthuc|date:'dd/MM/yyyy'}}
+        </th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+           <th colspan="11" class="text-start p-2 border">Tên Nhà Cung Cấp : {{exampleExport[0]?.tenkh}}</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+        <th colspan="11" class="text-start p-2 border">Địa Chỉ : {{exampleExport[0]?.diachi}}</th>
+          </tr>
+        </thead>
+        <tbody>
+         <tr>
+        <th colspan="4" class="text-start p-2 border ">Người Liên hệ : {{exampleExport[0]?.lienhe}}</th>
+        <th colspan="7" class="text-start p-2 border">Email : {{exampleExport[0]?.email}}</th>
+          </tr>
+        </tbody>
+
+        <thead>
+          <tr class="text-start">
+        <th colspan="11" class="p-8"></th>
+          </tr>
+        </thead>
+        
+        <thead>
+          <tr class="bg-gray-300">
+        <th class="p-2 border border-gray-300 text-center font-bold">NGÀY GIAO</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">MÃ NHÀ CUNG CẤP</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">TÊN NHÀ CUNG CẤP</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">MÃ ĐƠN HÀNG</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">MÃ HÀNG</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">TÊN HÀNG</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">ĐVT</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">SỐ LƯỢNG</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">ĐƠN GIÁ</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">THÀNH TIỀN</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">GHI CHÚ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of exampleExport; let i = index" class="hover:bg-gray-50">
+        <td class="p-2 border border-gray-300 text-center">
+          {{ item.ngaygiao | date : "dd/MM/yyyy" }}
+        </td>
+        <td class="p-2 border border-gray-300 text-center">
+          {{ item.makh }}
+        </td>
+        <td class="p-2 border border-gray-300">
+          {{ item.tenkh }}
+        </td>
+        <td class="p-2 border border-gray-300 text-center">
+          {{ item.madathang }}
+        </td>
+        <td class="p-2 border border-gray-300 text-center">
+          {{ item.masp }}
+        </td>
+        <td class="p-2 border border-gray-300">
+          {{ item.tensp }}
+        </td>
+        <td class="p-2 border border-gray-300 text-center">
+          {{ item.dvt }}
+        </td>
+        <td class="p-2 border border-gray-300 text-right">
+          {{ item.slnhan | number : "1.1-3" }}
+        </td>
+        <td class="p-2 border border-gray-300 text-right">
+          {{ item.giaban | number : "1.0-0" }}
+        </td>
+        <td class="p-2 border border-gray-300 text-right">
+          {{ item.ttnhan | number : "1.0-0" }}
+        </td>
+        <td class="p-2 border border-gray-300 text-right">
+          {{ item.ghichu }}
+        </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Đóng</button>
+</mat-dialog-actions>
+</ng-template>
+
+

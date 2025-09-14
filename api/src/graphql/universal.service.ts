@@ -25,6 +25,7 @@ export class UniversalService { // Fix: Rename to avoid conflict
       'user': 'user',               // User -> user in client
       'role': 'role',               // Role -> role in client
       'permission': 'permission',   // Permission -> permission in client
+      'congnoncc':'congnoncc',   // ✅ ADD: Congnoncc -> congnoncc in client
       // Add more mappings as needed
     };
 
@@ -563,6 +564,7 @@ async findMany(modelName: string, options: {
       'tonKho',
       'chotkho',
       'auditLog',
+      'congnoncc',  // ✅ ADD: congnoncc
     ];
   }
 

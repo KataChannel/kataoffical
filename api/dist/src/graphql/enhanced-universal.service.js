@@ -56,6 +56,7 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             'userguidblock': 'userguidBlock',
             'userguidstep': 'userguidStep',
             'importhistory': 'importHistory',
+            'congnoncc': 'congnoncc',
         };
     }
     synchronizeDateField(fieldName, value) {

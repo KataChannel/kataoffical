@@ -32,6 +32,7 @@ let UniversalService = class UniversalService {
             'user': 'user',
             'role': 'role',
             'permission': 'permission',
+            'congnoncc': 'congnoncc',
         };
         return modelMap[model.toLowerCase()] || model;
     }
@@ -423,6 +424,7 @@ let UniversalService = class UniversalService {
             'tonKho',
             'chotkho',
             'auditLog',
+            'congnoncc',
         ];
     }
     buildWhereClause(filter) {

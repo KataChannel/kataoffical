@@ -41,6 +41,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import { SharepaginationComponent } from '../../../shared/common/sharepagination/sharepagination.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 @Component({
   selector: 'app-listphieugiaohang',
   templateUrl: './listphieugiaohang.component.html',
@@ -106,6 +107,7 @@ export class ListPhieugiaohangComponent {
   private _DonhangService: DonhangService = inject(DonhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
+  private _GraphqlService: GraphqlService = inject(GraphqlService);
   private _router: Router = inject(Router);
   Listphieugiaohang: any = signal<any>({});
   dataSource = new MatTableDataSource([]);
@@ -191,28 +193,20 @@ export class ListPhieugiaohangComponent {
     this.isLoading.set(true);
     try {
       // Fetch paginated data from server
-      const data = await this._DonhangService.searchDonhang(this.SearchParams);
-      this.Listphieugiaohang.set(data);
-
-      if (data && data.data) {
-        this.total.set(Number(data.total || 0));
-        this.pageSize.set(Number(data.pageSize || 10));
-        this.page.set(Number(data.pageNumber || 1));
-        this.pageCount.set(Number(data.totalPages || 1));
-
-        // Set data to table without client-side pagination since we're using server-side
-        this.dataSource = new MatTableDataSource(data.data);
+      // const data = await this._DonhangService.searchDonhang(this.SearchParams);
+      const data:any = await this.searchDonhang();
+       console.log(data);
+      
+        this.Listphieugiaohang.set(data);
+        this.total.set(Number(data.length || 0));
+        this.pageSize.set(10);
+        this.page.set(1);
+        this.pageCount.set(1);
+        // // Set data to table without client-side pagination since we're using server-side
+        this.dataSource = new MatTableDataSource(data);
         // Disable client-side pagination/sorting since we're using server-side
         this.dataSource.paginator = null;
         this.dataSource.sort = null;
-      } else {
-        // Handle empty or invalid response
-        this.total.set(0);
-        this.pageSize.set(10);
-        this.page.set(1);
-        this.pageCount.set(0);
-        this.dataSource = new MatTableDataSource([]);
-      }
     } catch (error) {
       console.error('Error loading data:', error);
       this._snackBar.open('Lỗi khi tải dữ liệu', '', {
@@ -232,7 +226,48 @@ export class ListPhieugiaohangComponent {
       this.isLoading.set(false);
     }
   }
+  async searchDonhang(){
+    const where: any = {
+      ngaygiao: { 
+        gte: moment(this.SearchParams.Batdau).startOf('day').toISOString(),
+        lte: moment(this.SearchParams.Ketthuc).endOf('day').toISOString()
+      },
+      status: { in: this.SearchParams.Status}
+    };
 
+    if (this.SearchParams.Type && this.SearchParams.Type !== 'all') {
+      where.khachhang = { loaikh: this.SearchParams.Type };
+    }
+
+    const Donhangs = await this._GraphqlService.findAll('donhang', {
+      aggressiveCache: true,
+      enableParallelFetch: true,
+      take:999999,
+      where,
+      select:{
+        id:true,
+        madonhang:true,
+        ngaygiao:true,
+        status:true,
+        ghichu:true,
+        createdAt:true,
+        updatedAt:true,
+        khachhang:{
+          select:{
+            id:true,
+            name:true,
+          }
+        },
+        sanpham:{
+          select:{
+            id:true,
+          }
+        }
+      }
+    });
+    console.log(Donhangs);
+    return Donhangs.data;
+  }
   async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.SearchParams.query = filterValue;
