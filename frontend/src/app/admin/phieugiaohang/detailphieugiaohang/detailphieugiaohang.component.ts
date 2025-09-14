@@ -44,6 +44,7 @@ import { DonhangService } from '../../donhang/donhang.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { UserService } from '../../user/user.service';
 import { SharedInputService } from '../../../shared/services/shared-input.service';
+import { LoadingUtils } from '../../../shared/utils/loading.utils';
 @Component({
   selector: 'app-detailphieugiaohang',
   imports: [
@@ -128,6 +129,9 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   
   // Store item to be removed for dialog
   itemToRemove: any = null;
+  
+  // Component key for loading utilities
+  private readonly COMPONENT_KEY = 'detailphieugiaohang';
   Trangthai: any = [
     { value: 'dadat', title: 'Đã Đặt' },
     { value: 'dagiao', title: 'Đã Giao' },
@@ -369,15 +373,19 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   // Thêm method để setup datasource
 
   async handlePhieugiaohangAction() {
-    if (this.phieugiaohangId() === '0') {
-      // await this.createPhieugiaohang();
-    } else {
-      await this.updatePhieugiaohang();
+    this.isSaving.set(true);
+    try {
+      if (this.phieugiaohangId() === '0') {
+        // await this.createPhieugiaohang();
+      } else {
+        await this.updatePhieugiaohang();
+      }
+    } finally {
+      this.isSaving.set(false);
     }
   }
 
   private async updatePhieugiaohang() {
-    this.isUpdating.set(true);
     try {      
       this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang().sanpham.map((v:any)=>{
         v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
@@ -401,8 +409,6 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
       });
-    } finally {
-      this.isUpdating.set(false);
     }
   }
   UpdateTongTongTienVat(){
@@ -661,12 +667,21 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }  EmptyCart()
+    this.debouncedSearch(filterValue);
+  }
+
+  // Debounced search function for better performance
+  private debouncedSearch = LoadingUtils.debounce(
+    (filterValue: string) => {
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+      
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    },
+    300,
+    `${this.COMPONENT_KEY}_search`
+  );  EmptyCart()
   {
     this.DetailPhieugiaohang.update((v:any)=>{
       v.sanpham = []

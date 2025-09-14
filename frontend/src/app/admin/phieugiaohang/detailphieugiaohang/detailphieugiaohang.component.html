@@ -19,18 +19,32 @@
   <div class="flex flex-row space-x-2 items-center">
     <!-- <button *ngIf="DetailPhieugiaohang().status!=='danhan'" mat-flat-button color="primary"
       [disabled]="DetailPhieugiaohang().status=='dagiao'" (click)="GiaoDonhang()"> Đã Giao</button> -->
-    <button mat-flat-button color="primary" [disabled]="DetailPhieugiaohang().status=='danhan'" (click)="Danhanhang()">
-      Đã Nhận
+    <button mat-flat-button color="primary" 
+            [disabled]="DetailPhieugiaohang().status=='danhan' || isUpdating() || isLoading()" 
+            (click)="Danhanhang()">
+      @if (isUpdating()) {
+        <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+      }
+      {{ isUpdating() ? 'Đang xử lý...' : 'Đã Nhận' }}
     </button>
 
     <!-- <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>
     </button> -->
-    <button *ngIf="!isEdit()" mat-icon-button color="primary" (click)="printContent()">
+    <button *ngIf="!isEdit()" mat-icon-button color="primary" 
+            [disabled]="isLoading()" 
+            (click)="printContent()">
       <mat-icon>print</mat-icon>
     </button>
-    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handlePhieugiaohangAction()">
-      <mat-icon>save</mat-icon>
+    <button mat-icon-button color="primary" 
+            *ngIf="isEdit()" 
+            [disabled]="isSaving() || isLoading()" 
+            (click)="handlePhieugiaohangAction()">
+      @if (isSaving()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        <mat-icon>save</mat-icon>
+      }
     </button>
     <!-- @if(this.DetailPhieugiaohang().status !=='danhan' || this.profile().roles.includes('Admin')){ -->
     <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
@@ -41,6 +55,16 @@
 </div>
 
 <div class="relative flex flex-col w-full p-4 overflow-auto">
+  <!-- Loading overlay for the entire detail view -->
+  @if (isLoading()) {
+  <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+    <div class="flex flex-col items-center space-y-4">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span class="text-sm text-gray-600">Đang tải dữ liệu phiếu giao hàng...</span>
+    </div>
+  </div>
+  }
+
   <ng-container *ngIf="isDelete()">
     <div class="flex flex-col space-y-4 items-center justify-center">
       <div class="font-bold text-2xl">Bạn chắc chắn muốn xoá không?</div>
@@ -91,15 +115,24 @@
           <div class="w-full overflow-auto">
             <!-- Filter input -->
             <div class="flex flex-row space-x-2 items-center">
-                <mat-slide-toggle [(ngModel)]="DetailPhieugiaohang().isshowvat" [ngModelOptions]="{standalone: true}" (toggleChange)="onChangeVat()">
+                <mat-slide-toggle [(ngModel)]="DetailPhieugiaohang().isshowvat" 
+                                [ngModelOptions]="{standalone: true}" 
+                                [disabled]="isLoading() || isUpdating()"
+                                (toggleChange)="onChangeVat()">
                 <span class="font-medium">VAT</span>
                 </mat-slide-toggle>
               
               <div class="relative w-full py-2">
-                <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
-                  class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                <input type="text" placeholder="Tìm Kiếm..." 
+                       (keyup)="applyFilter($event)"
+                       [disabled]="isLoading() || isLoadingProducts()"
+                  class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 disabled:bg-gray-100 disabled:cursor-not-allowed">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <span class="material-symbols-outlined text-gray-500">search</span>
+                  @if (isLoadingProducts()) {
+                    <mat-spinner diameter="20"></mat-spinner>
+                  } @else {
+                    <span class="material-symbols-outlined text-gray-500">search</span>
+                  }
                 </div>
               </div>
 
