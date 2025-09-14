@@ -33,7 +33,7 @@ import {
   import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
   import { MatSort, MatSortModule } from '@angular/material/sort';
   import { SanphamService } from '../../sanpham/sanpham.service';
-import { DathangService } from '../../dathang/dathang.service'; // Thay đổi từ DonhangService
+import { DonhangService } from '../../donhang/donhang.service';
 import { ListcongnonccComponent } from '../listcongnoncc/listcongnoncc.component'; // Thay đổi từ ListcongnokhachhangComponent
 
   @Component({
@@ -60,7 +60,7 @@ import { ListcongnonccComponent } from '../listcongnoncc/listcongnoncc.component
   })
   export class DetailCongnonccComponent {
     _ListcongnonccComponent: ListcongnonccComponent = inject(ListcongnonccComponent);
-    _DathangService: DathangService = inject(DathangService); // Thay đổi từ DonhangService
+    _DonhangService: DonhangService = inject(DonhangService);
     _NhacungcapService: NhacungcapService = inject(NhacungcapService); // Thay đổi từ KhachhangService
     _BanggiaService: BanggiaService = inject(BanggiaService);
     _SanphamService: SanphamService = inject(SanphamService);
@@ -71,37 +71,37 @@ import { ListcongnonccComponent } from '../listcongnoncc/listcongnoncc.component
     constructor() {
       this._route.paramMap.subscribe(async (params) => {
         const id = params.get('id');
-        this._DathangService.setDathangId(id); // Thay đổi từ setDonhangId
+        this._DonhangService.setDonhangId(id);
         await this._NhacungcapService.getAllNhacungcap(); // Thay đổi từ getAllKhachhang
         this.filterNhacungcap = this.ListNhacungcap().filter((v:any) => v.isActive);
         await this._BanggiaService.getAllBanggia();
         this.filterBanggia = this._BanggiaService.ListBanggia();
         await this._SanphamService.getAllSanpham();
         this.filterSanpham = this._SanphamService.ListSanpham();
-        this.dataSource().data = this.DetailDathang().sanpham; // Thay đổi từ DetailDonhang
+        this.dataSource().data = this.DetailDonhang().sanpham;
         this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;
       });
   
       effect(async () => {
-        const id = this._DathangService.dathangId(); // Thay đổi từ donhangId
+        const id = this._DonhangService.donhangId();
         if (!id) {
           this._router.navigate(['/admin/congnoncc']);
           this._ListcongnonccComponent.drawer.close();
         }
         if (id === '0') {
-          this.DetailDathang.set({ // Thay đổi từ DetailDonhang
+          this.DetailDonhang.set({
             title: GenId(8, false),
-            madathang: GenId(8, false), // Thay đổi từ madonhang
+            madonhang: GenId(8, false),
             ngaygiao: moment().add(1, 'days').format('YYYY-MM-DD'),
           });
           this._ListcongnonccComponent.drawer.open();
           this.isEdit.update((value) => !value);
           this._router.navigate(['/admin/congnoncc', '0']);
         } else {
-          await this._DathangService.getDathangByid(id); // Thay đổi từ getDonhangByid
-          this.DetailDathang.set(this._DathangService.DetailDathang()); // Thay đổi từ DetailDonhang
-          this.dataSource().data = this.DetailDathang().sanpham;
+          await this._DonhangService.getDonhangByid(id);
+          this.DetailDonhang.set(this._DonhangService.DetailDonhang());
+          this.dataSource().data = this.DetailDonhang().sanpham;
           this.SelectedSanpham = [];
           this.isEdit.set(false);
           this._ListcongnonccComponent.drawer.open();
@@ -110,7 +110,7 @@ import { ListcongnonccComponent } from '../listcongnoncc/listcongnoncc.component
     }
     
     isEdit = signal<boolean>(false);
-    DetailDathang: any = this._DathangService.DetailDathang; // Thay đổi từ DetailDonhang
+    DetailDonhang: any = this._DonhangService.DetailDonhang;
     ListNhacungcap: any = this._NhacungcapService.ListNhacungcap; // Thay đổi từ ListKhachhang
     ListBanggia: any = this._BanggiaService.ListBanggia;
     ListSanpham: any = this._SanphamService.ListSanpham;
@@ -139,19 +139,19 @@ import { ListcongnonccComponent } from '../listcongnoncc/listcongnoncc.component
     dataSource = signal(new MatTableDataSource([]));
     SelectedSanpham: any[] = [];
     
-    CountItem = computed(() => this.DetailDathang().sanpham?.length || 0);
+    CountItem = computed(() => this.DetailDonhang().sanpham?.length || 0);
     
-    async saveDathang() { // Thay đổi từ saveDonhang
+    async saveDonhang() {
       try {
         const data = {
-          ...this.DetailDathang(),
+          ...this.DetailDonhang(),
           sanpham: this.dataSource().data
         };
         
-        if (this._DathangService.dathangId() === '0') {
-          await this._DathangService.CreateDathang(data); // Thay đổi từ CreateDonhang
+        if (this._DonhangService.donhangId() === '0') {
+          await this._DonhangService.CreateDonhang(data);
         } else {
-          await this._DathangService.updateDathang(data); // Sửa tên method
+          await this._DonhangService.updateDonhang(data);
         }
         
         this._snackBar.open('Lưu thành công', 'Đóng', {

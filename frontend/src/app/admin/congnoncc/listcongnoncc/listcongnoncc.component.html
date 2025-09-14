@@ -291,7 +291,7 @@
                     <span>{{ item[column] | date : "dd/MM/yyyy" }}</span>
                     } @case ('updatedAt') {
                     <span>{{ item[column] | date : "dd/MM/yyyy" }}</span>
-                    } @case ('ngaygiao') {
+                    } @case ('ngaynhan') {
                     <span>{{ item[column] | date : "dd/MM/yyyy" }}</span>
                     } @case ('haohut') {
                     <span>{{ item[column] }}%</span>
@@ -317,7 +317,7 @@
               {{ idx + 1 }}
               <span *ngIf="CheckItemInDathang(row)" class="material-symbols-outlined">check_box</span>
             </span>
-            } @case ('madathang') {
+            } @case ('madonhang') {
             <span class="max-w-40 line-clamp-4 font-bold text-blue-700">
               {{ row[column] }}
             </span>
@@ -325,7 +325,7 @@
             <span class="max-w-40 line-clamp-4 text-xs">
               {{ row[column] | date : "HH:mm:ss dd/MM/yyyy" }}
             </span>
-            } @case ('ngaygiao') {
+            } @case ('ngaynhan') {
             <span class="max-w-40 line-clamp-4">
               {{ row[column] | date : "dd/MM/yyyy" }}
             </span>
@@ -423,7 +423,7 @@
           <thead>
             <tr>
               <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
-                NGÀY GIAO
+                NGÀY NHẬN
               </th>
               <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
                 MÃ NHÀ CUNG CẤP
@@ -462,7 +462,7 @@
               <tr *ngFor="let item1 of item.sanpham; let j = index">
                 <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length"
                   class="p-2 border border-gray-300 align-middle text-center">
-                  {{ item.ngaygiao | date : "dd/MM/yyyy" }}
+                  {{ item.ngaynhan | date : "dd/MM/yyyy" }}
                 </td>
                 <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length"
                   class="p-2 border border-gray-300 align-middle text-center">
@@ -474,7 +474,7 @@
                 </td>
                 <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length"
                   class="p-2 border border-gray-300 align-middle text-center">
-                  {{ item.madathang }}
+                  {{ item.madonhang }}
                 </td>
                 <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length"
                   class="p-2 border border-gray-300 align-middle text-center">
@@ -565,7 +565,7 @@
         
         <thead>
           <tr class="bg-gray-300">
-        <th class="p-2 border border-gray-300 text-center font-bold">NGÀY GIAO</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">NGÀY NHẬN</th>
         <th class="p-2 border border-gray-300 text-center font-bold">MÃ NHÀ CUNG CẤP</th>
         <th class="p-2 border border-gray-300 text-center font-bold">TÊN NHÀ CUNG CẤP</th>
         <th class="p-2 border border-gray-300 text-center font-bold">MÃ ĐƠN HÀNG</th>
@@ -581,7 +581,7 @@
         <tbody>
           <tr *ngFor="let item of exampleExport; let i = index" class="hover:bg-gray-50">
         <td class="p-2 border border-gray-300 text-center">
-          {{ item.ngaygiao | date : "dd/MM/yyyy" }}
+          {{ item.ngaynhan | date : "dd/MM/yyyy" }}
         </td>
         <td class="p-2 border border-gray-300 text-center">
           {{ item.makh }}
@@ -590,7 +590,7 @@
           {{ item.tenkh }}
         </td>
         <td class="p-2 border border-gray-300 text-center">
-          {{ item.madathang }}
+          {{ item.madonhang }}
         </td>
         <td class="p-2 border border-gray-300 text-center">
           {{ item.masp }}

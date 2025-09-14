@@ -6,7 +6,7 @@
         <mat-icon>arrow_back</mat-icon>
       </button>
       <h2 class="text-2xl font-bold text-gray-800">
-        {{ DetailDathang()?.madathang || 'Đặt Hàng Mới' }}
+        {{ DetailDonhang()?.madonhang || 'Đơn Hàng Mới' }}
       </h2>
     </div>
     
@@ -17,7 +17,7 @@
         Chỉnh sửa
       </button>
       
-      <button mat-raised-button color="primary" (click)="saveDathang()" 
+      <button mat-raised-button color="primary" (click)="saveDonhang()" 
               *ngIf="isEdit()">
         <mat-icon>save</mat-icon>
         Lưu
@@ -30,23 +30,23 @@
     </div>
   </div>
 
-  <!-- Form thông tin đặt hàng -->
+  <!-- Form thông tin đơn hàng -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
     <mat-form-field appearance="outline">
-      <mat-label>Mã Đặt Hàng</mat-label>
-      <input matInput [(ngModel)]="DetailDathang().madathang" [readonly]="!isEdit()" />
+      <mat-label>Mã Đơn Hàng</mat-label>
+      <input matInput [(ngModel)]="DetailDonhang().madonhang" [readonly]="!isEdit()" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Ngày Giao</mat-label>
-      <input matInput [matDatepicker]="picker" [(ngModel)]="DetailDathang().ngaygiao" [readonly]="!isEdit()" />
+      <input matInput [matDatepicker]="picker" [(ngModel)]="DetailDonhang().ngaygiao" [readonly]="!isEdit()" />
       <mat-datepicker-toggle matIconSuffix [for]="picker" *ngIf="isEdit()"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Nhà Cung Cấp</mat-label>
-      <mat-select [(ngModel)]="DetailDathang().nhacungcapId" [disabled]="!isEdit()">
+      <mat-select [(ngModel)]="DetailDonhang().nhacungcapId" [disabled]="!isEdit()">
         <mat-option *ngFor="let ncc of filterNhacungcap" [value]="ncc.id">
           {{ncc.hovaten}} - {{ncc.sdt}}
         </mat-option>
@@ -55,7 +55,7 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Ghi Chú</mat-label>
-      <textarea matInput [(ngModel)]="DetailDathang().ghichu" rows="3" [readonly]="!isEdit()"></textarea>
+      <textarea matInput [(ngModel)]="DetailDonhang().ghichu" rows="3" [readonly]="!isEdit()"></textarea>
     </mat-form-field>
   </div>
 
