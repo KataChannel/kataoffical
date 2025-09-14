@@ -17,6 +17,8 @@ const common_1 = require("@nestjs/common");
 const menu_service_1 = require("./menu.service");
 const client_1 = require("@prisma/client");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
+const cache_interceptor_1 = require("../common/cache.interceptor");
+const smart_cache_decorator_1 = require("../common/smart-cache.decorator");
 let MenuController = class MenuController {
     constructor(menuService) {
         this.menuService = menuService;
@@ -47,6 +49,11 @@ exports.MenuController = MenuController;
 __decorate([
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Create Menu', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['menu'],
+        get: { ttl: 1800, keyPrefix: 'menu' },
+        updateCache: true
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -54,6 +61,7 @@ __decorate([
 ], MenuController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, cache_interceptor_1.Cache)(1800, 'menu'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
@@ -67,6 +75,7 @@ __decorate([
 ], MenuController.prototype, "getTree", null);
 __decorate([
     (0, common_1.Post)('reorder'),
+    (0, cache_interceptor_1.CacheInvalidate)(['menu']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),
@@ -74,6 +83,7 @@ __decorate([
 ], MenuController.prototype, "reorder", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, cache_interceptor_1.Cache)(1800, 'menu'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -82,6 +92,11 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Update Menu', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['menu'],
+        get: { ttl: 1800, keyPrefix: 'menu' },
+        updateCache: true
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -91,6 +106,7 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Menu', action: client_1.AuditAction.DELETE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['menu']),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

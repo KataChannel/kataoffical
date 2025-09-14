@@ -18,6 +18,8 @@ const nhacungcap_service_1 = require("./nhacungcap.service");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
 const swagger_1 = require("@nestjs/swagger");
+const cache_interceptor_1 = require("../common/cache.interceptor");
+const smart_cache_decorator_1 = require("../common/smart-cache.decorator");
 let NhacungcapController = class NhacungcapController {
     constructor(nhacungcapService) {
         this.nhacungcapService = nhacungcapService;
@@ -139,6 +141,11 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: Object }),
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Nhacungcap', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['nhacungcap'],
+        get: { ttl: 1800, keyPrefix: 'nhacungcap' },
+        updateCache: true
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -194,6 +201,11 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Update Nhacungcap', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['nhacungcap'],
+        get: { ttl: 1800, keyPrefix: 'nhacungcap' },
+        updateCache: true
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -203,6 +215,7 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Nhacungcap', action: client_1.AuditAction.DELETE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['nhacungcap']),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

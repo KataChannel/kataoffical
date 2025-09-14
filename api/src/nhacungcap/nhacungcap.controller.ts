@@ -4,6 +4,8 @@ import { Audit } from 'src/auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Cache, CacheInvalidate } from '../common/cache.interceptor';
+import { SmartCache } from '../common/smart-cache.decorator';
 
 @Controller('nhacungcap')
 export class NhacungcapController {
@@ -14,6 +16,11 @@ export class NhacungcapController {
   @ApiBody({ type: Object }) 
   @Post()
   @Audit({ entity: 'Nhacungcap', action: AuditAction.CREATE, includeResponse: true })
+  @SmartCache({
+    invalidate: ['nhacungcap'],
+    get: { ttl: 1800, keyPrefix: 'nhacungcap' },
+    updateCache: true
+  })
   async create(@Body() data: any) { 
     try {
       return await this.nhacungcapService.create(data);
@@ -102,6 +109,11 @@ export class NhacungcapController {
   }
   @Patch(':id')
   @Audit({entity: 'Update Nhacungcap', action: AuditAction.UPDATE, includeResponse: true})
+  @SmartCache({
+    invalidate: ['nhacungcap'],
+    get: { ttl: 1800, keyPrefix: 'nhacungcap' },
+    updateCache: true
+  })
   async update(@Param('id') id: string, @Body() updateNhacungcapDto: any) {
     try {
       const result = await this.nhacungcapService.update(id, updateNhacungcapDto);
@@ -121,6 +133,7 @@ export class NhacungcapController {
 
   @Delete(':id')
   @Audit({entity: 'Delete Nhacungcap', action: AuditAction.DELETE, includeResponse: true})
+  @CacheInvalidate(['nhacungcap'])
   async remove(@Param('id') id: string) {
     try {
       const result = await this.nhacungcapService.remove(id);

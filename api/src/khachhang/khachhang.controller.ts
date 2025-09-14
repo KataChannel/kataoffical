@@ -3,6 +3,7 @@ import { KhachhangService } from './khachhang.service';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
 import { Cache, CacheInvalidate } from '../common/cache.interceptor';
+import { SmartCache } from '../common/smart-cache.decorator';
 
 @Controller('khachhang')
 export class KhachhangController {
@@ -19,14 +20,18 @@ export class KhachhangController {
 
   @Post()
   @Audit({entity: 'Create Khachhang', action: AuditAction.CREATE, includeResponse: true})
-  @CacheInvalidate(['khachhang:*'])
+  @SmartCache({
+    invalidate: ['khachhang'],
+    get: { ttl: 1800, keyPrefix: 'khachhang' },
+    updateCache: true
+  })
   create(@Body() createKhachhangDto: any) {
     return this.khachhangService.create(createKhachhangDto);
   }
 
   @Post('import')
   @Audit({entity: 'Import Khachhang',action: AuditAction.IMPORT,includeResponse: true})
-  @CacheInvalidate(['khachhang:*'])
+  @CacheInvalidate(['khachhang'])
   import(@Body() data: any) {
     return this.khachhangService.import(data);
   }
@@ -76,14 +81,18 @@ export class KhachhangController {
 
   @Patch(':id')
   @Audit({entity: 'Update Khachhang', action: AuditAction.UPDATE, includeResponse: true})
-  @CacheInvalidate(['khachhang:*'])
+  @SmartCache({
+    invalidate: ['khachhang'],
+    get: { ttl: 1800, keyPrefix: 'khachhang' },
+    updateCache: true
+  })
   update(@Param('id') id: string, @Body() updateKhachhangDto: any) {
     return this.khachhangService.update(id, updateKhachhangDto);
   }
 
   @Delete(':id')
   @Audit({entity: 'Delete Khachhang', action: AuditAction.DELETE, includeResponse: true})
-  @CacheInvalidate(['khachhang:*'])
+  @CacheInvalidate(['khachhang'])
   remove(@Param('id') id: string) {
     return this.khachhangService.remove(id);
   }

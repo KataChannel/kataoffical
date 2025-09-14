@@ -18,6 +18,7 @@ const khachhang_service_1 = require("./khachhang.service");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
 const cache_interceptor_1 = require("../common/cache.interceptor");
+const smart_cache_decorator_1 = require("../common/smart-cache.decorator");
 let KhachhangController = class KhachhangController {
     constructor(khachhangService) {
         this.khachhangService = khachhangService;
@@ -80,7 +81,11 @@ __decorate([
 __decorate([
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Create Khachhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
-    (0, cache_interceptor_1.CacheInvalidate)(['khachhang:*']),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['khachhang'],
+        get: { ttl: 1800, keyPrefix: 'khachhang' },
+        updateCache: true
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -89,7 +94,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('import'),
     (0, audit_decorator_1.Audit)({ entity: 'Import Khachhang', action: client_1.AuditAction.IMPORT, includeResponse: true }),
-    (0, cache_interceptor_1.CacheInvalidate)(['khachhang:*']),
+    (0, cache_interceptor_1.CacheInvalidate)(['khachhang']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -135,7 +140,11 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Update Khachhang', action: client_1.AuditAction.UPDATE, includeResponse: true }),
-    (0, cache_interceptor_1.CacheInvalidate)(['khachhang:*']),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['khachhang'],
+        get: { ttl: 1800, keyPrefix: 'khachhang' },
+        updateCache: true
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -145,7 +154,7 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Khachhang', action: client_1.AuditAction.DELETE, includeResponse: true }),
-    (0, cache_interceptor_1.CacheInvalidate)(['khachhang:*']),
+    (0, cache_interceptor_1.CacheInvalidate)(['khachhang']),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

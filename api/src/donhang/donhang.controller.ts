@@ -5,6 +5,7 @@ import { AuditAction } from '@prisma/client';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { DonhangCronService } from './donhang-cron.service';
 import { Cache, CacheInvalidate } from '../common/cache.interceptor';
+import { SmartCache } from '../common/smart-cache.decorator';
 
 @Controller('donhang')
 export class DonhangController {
@@ -14,7 +15,11 @@ export class DonhangController {
   ) {}
   @Post()
   @Audit({entity: 'Create Donhang', action: AuditAction.CREATE, includeResponse: true})
-  @CacheInvalidate(['donhang:*', 'khachhang:*'])
+  @SmartCache({
+    invalidate: ['donhang', 'khachhang'],
+    get: { ttl: 600, keyPrefix: 'donhang' },
+    updateCache: true
+  })
   create(@Body() createDonhangDto: any) {
     return this.donhangService.create(createDonhangDto);
   }
@@ -109,22 +114,32 @@ export class DonhangController {
   }
   @Patch('bulk')
   @Audit({entity: 'Update bulk Donhang', action: AuditAction.UPDATE, includeResponse: true})
+  @CacheInvalidate(['donhang', 'khachhang'])
   updateBulk(@Body() data: any[]) {
     return this.donhangService.updateBulk(data,'danhan');
   }
+  
   @Patch(':id')
   @Audit({entity: 'Update Donhang', action: AuditAction.UPDATE, includeResponse: true})
+  @SmartCache({
+    invalidate: ['donhang', 'khachhang'],
+    get: { ttl: 600, keyPrefix: 'donhang' },
+    updateCache: true
+  })
   update(@Param('id') id: string, @Body() updateDonhangDto: any) {
     return this.donhangService.update(id, updateDonhangDto);
   }
 
   @Delete('bulk')
   @Audit({entity: 'Delete Donhang', action: AuditAction.DELETE, includeResponse: true})
+  @CacheInvalidate(['donhang', 'khachhang'])
   async removeBulk(@Body() ids: any[]) {
       return await this.donhangService.removeBulk(ids);
   }
+  
   @Delete(':id')
   @Audit({entity: 'Delete Donhang', action: AuditAction.DELETE, includeResponse: true})
+  @CacheInvalidate(['donhang', 'khachhang'])
   remove(@Param('id') id: string) {
     return this.donhangService.remove(id);
   }

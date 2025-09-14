@@ -12,4 +12,5 @@ export declare class CacheInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>>;
     private handleNonGetRequest;
     private generateCacheKey;
+    private cacheNewData;
 }
