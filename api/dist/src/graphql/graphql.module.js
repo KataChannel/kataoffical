@@ -10,6 +10,7 @@ exports.GraphQLUniversalModule = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const auth_module_1 = require("../auth/auth.module");
+const redis_module_1 = require("../redis/redis.module");
 const universal_resolver_1 = require("./universal.resolver");
 const universal_service_1 = require("./universal.service");
 const enhanced_universal_resolver_1 = require("./enhanced-universal.resolver");
@@ -26,6 +27,7 @@ exports.GraphQLUniversalModule = GraphQLUniversalModule = __decorate([
         imports: [
             prisma_module_1.PrismaModule,
             auth_module_1.AuthModule,
+            redis_module_1.RedisModule,
         ],
         providers: [
             universal_resolver_1.UniversalResolver,

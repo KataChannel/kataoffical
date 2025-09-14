@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
+import { RedisModule } from '../redis/redis.module';
 import { UniversalResolver } from './universal.resolver';
 import { UniversalService } from './universal.service';
 import { EnhancedUniversalResolver } from './enhanced-universal.resolver';
@@ -14,6 +15,7 @@ import { DashboardResolver } from '../dashboard/dashboard.resolver';
   imports: [
     PrismaModule,
     AuthModule,
+    RedisModule, // ✅ Add RedisModule for caching
   ],
   providers: [
     // Original universal services (keep for backward compatibility)
