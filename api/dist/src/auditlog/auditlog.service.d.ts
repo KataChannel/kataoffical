@@ -18,8 +18,14 @@ export interface AuditLogData {
 }
 export declare class AuditService {
     private readonly prisma;
+    private auditQueue;
+    private isProcessing;
+    private batchSize;
+    private batchTimeout;
     constructor(prisma: PrismaService);
     logActivity(data: AuditLogData): Promise<void>;
+    private processBatch;
+    private processBatchPeriodically;
     getAuditLogs(param: any): Promise<({
         user: {
             email: string | null;

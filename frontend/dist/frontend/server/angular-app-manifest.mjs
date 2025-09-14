@@ -527,6 +527,38 @@ export default {
       "chunk-ZW44ZSN2.js",
       "chunk-NQPXZ54S.js"
     ],
+    "route": "/admin/nhomncc"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-JNPXNKP2.js",
+      "chunk-J6NDIVXT.js",
+      "chunk-ZPACLRNN.js",
+      "chunk-DHKNCHWG.js",
+      "chunk-EBAUFBFZ.js",
+      "chunk-6FM7CICS.js",
+      "chunk-7LJKCYV5.js",
+      "chunk-4J6ZCWCD.js",
+      "chunk-ZW44ZSN2.js",
+      "chunk-NQPXZ54S.js"
+    ],
+    "route": "/admin/nhomncc/*"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-JNPXNKP2.js",
+      "chunk-J6NDIVXT.js",
+      "chunk-ZPACLRNN.js",
+      "chunk-DHKNCHWG.js",
+      "chunk-EBAUFBFZ.js",
+      "chunk-6FM7CICS.js",
+      "chunk-7LJKCYV5.js",
+      "chunk-4J6ZCWCD.js",
+      "chunk-ZW44ZSN2.js",
+      "chunk-NQPXZ54S.js"
+    ],
     "route": "/admin/dathang"
   },
   {
@@ -1061,10 +1093,10 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-CXKZRS24.js",
+      "chunk-U3WEN6NP.js",
       "chunk-HL53KBER.js",
       "chunk-3Q66WHFX.js",
-      "chunk-GZJGPEQD.js",
+      "chunk-Q2AMH335.js",
       "chunk-VL6RTEXJ.js",
       "chunk-WOKVITID.js",
       "chunk-4RT4GPGM.js",
@@ -1098,8 +1130,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72880, hash: 'e25c8ce95c4a9ca6ac137adf5516645e1412635b490536fcc2126a4dc2570fff', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24171, hash: 'f9cb45464e77cacfb8177ee2e87544a534b099d6681863aeca2fcf3e23c4fd37', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 72880, hash: '6af0c04d7049e2ebf0e0cb6637047835b4f710df9693113be5fafba669dd11c5', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24171, hash: '57d4c793b08c05ed7f981d07d92bca8024abadca60658b407aa49d3e62277909', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-M5MDBUVQ.css': {size: 160342, hash: 'yf0q/hVGEns', text: () => import('./assets-chunks/styles-M5MDBUVQ_css.mjs').then(m => m.default)}
   },
 };

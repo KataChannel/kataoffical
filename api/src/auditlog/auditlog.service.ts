@@ -22,33 +22,77 @@ export interface AuditLogData {
 
 @Injectable()
 export class AuditService {
-  constructor(private readonly prisma: PrismaService) {}
+  private auditQueue: Array<AuditLogData> = [];
+  private isProcessing = false;
+  private batchSize = 10;
+  private batchTimeout = 5000; // 5 seconds
+  
+  constructor(private readonly prisma: PrismaService) {
+    // Start batch processing
+    this.processBatchPeriodically();
+  }
 
   async logActivity(data: AuditLogData): Promise<void> {
     try {
+      // Add to queue for batch processing instead of immediate DB write
       const changedFields = data.changedFields || this.getChangedFields(data.oldValues, data.newValues);
-      await this.prisma.auditLog.create({
-        data: {
-          entityName: data.entityName,
-          entityId: data.entityId,
-          action: data.action,
-          userId: data.userId,
-          userEmail: data.userEmail,
-          oldValues: data.oldValues || null,
-          newValues: data.newValues || null,
-          changedFields: changedFields || [],
-          ipAddress: data.ipAddress || null,
-          userAgent: data.userAgent || null,
-          sessionId: data.sessionId || null,
-          metadata: data.metadata || null,
-          status: data.status || 'SUCCESS',
-          errorDetails: data.errorDetails || null,
-        },
+      this.auditQueue.push({
+        ...data,
+        changedFields: changedFields || [],
+        status: data.status || 'SUCCESS'
       });
+
+      // Trigger immediate processing if queue is full
+      if (this.auditQueue.length >= this.batchSize) {
+        this.processBatch();
+      }
     } catch (error) {
-      console.error('Failed to create audit log:', error);
+      console.error('Failed to queue audit log:', error);
       // Không throw error để không ảnh hưởng business logic
     }
+  }
+
+  private async processBatch(): Promise<void> {
+    if (this.isProcessing || this.auditQueue.length === 0) {
+      return;
+    }
+
+    this.isProcessing = true;
+    const batch = this.auditQueue.splice(0, this.batchSize);
+
+    try {
+      // Use batch insert to reduce connection usage
+      await this.prisma.auditLog.createMany({
+        data: batch.map(item => ({
+          entityName: item.entityName,
+          entityId: item.entityId,
+          action: item.action,
+          userId: item.userId,
+          userEmail: item.userEmail,
+          oldValues: item.oldValues || null,
+          newValues: item.newValues || null,
+          changedFields: item.changedFields || [],
+          ipAddress: item.ipAddress || null,
+          userAgent: item.userAgent || null,
+          sessionId: item.sessionId || null,
+          metadata: item.metadata || null,
+          status: item.status || 'SUCCESS',
+          errorDetails: item.errorDetails || null,
+        })),
+        skipDuplicates: true
+      });
+    } catch (error) {
+      console.error('Failed to create audit log batch:', error);
+      // Re-queue failed items for retry (optional)
+    } finally {
+      this.isProcessing = false;
+    }
+  }
+
+  private processBatchPeriodically(): void {
+    setInterval(() => {
+      this.processBatch();
+    }, this.batchTimeout);
   }
 
   async getAuditLogs(param: any) {

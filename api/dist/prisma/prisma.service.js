@@ -14,13 +14,45 @@ const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
 let PrismaService = class PrismaService extends client_1.PrismaClient {
     constructor() {
-        super();
+        super({
+            log: ['error', 'warn'],
+        });
     }
     async onModuleInit() {
         await this.$connect();
     }
     async onModuleDestroy() {
         await this.$disconnect();
+    }
+    async executeWithRetry(operation, maxRetries = 3, baseDelay = 1000) {
+        let lastError;
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                return await operation(this);
+            }
+            catch (error) {
+                lastError = error;
+                if (error.code === 'P2024' || error.code === 'P2034' || error.message?.includes('timed out')) {
+                    const delay = baseDelay * Math.pow(2, attempt - 1);
+                    console.warn(`Transaction attempt ${attempt} failed, retrying in ${delay}ms...`);
+                    if (attempt < maxRetries) {
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    }
+                }
+                throw error;
+            }
+        }
+        throw lastError;
+    }
+    async safeTransaction(fn, options) {
+        const { timeout = 30000, maxWait = 5000, retries = 2 } = options || {};
+        return this.executeWithRetry(async (prisma) => {
+            return prisma.$transaction(fn, {
+                timeout,
+                maxWait,
+            });
+        }, retries);
     }
 };
 exports.PrismaService = PrismaService;

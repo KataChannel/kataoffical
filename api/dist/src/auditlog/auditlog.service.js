@@ -15,32 +15,66 @@ const prisma_service_1 = require("../../prisma/prisma.service");
 let AuditService = class AuditService {
     constructor(prisma) {
         this.prisma = prisma;
+        this.auditQueue = [];
+        this.isProcessing = false;
+        this.batchSize = 10;
+        this.batchTimeout = 5000;
+        this.processBatchPeriodically();
     }
     async logActivity(data) {
         try {
             const changedFields = data.changedFields || this.getChangedFields(data.oldValues, data.newValues);
-            await this.prisma.auditLog.create({
-                data: {
-                    entityName: data.entityName,
-                    entityId: data.entityId,
-                    action: data.action,
-                    userId: data.userId,
-                    userEmail: data.userEmail,
-                    oldValues: data.oldValues || null,
-                    newValues: data.newValues || null,
-                    changedFields: changedFields || [],
-                    ipAddress: data.ipAddress || null,
-                    userAgent: data.userAgent || null,
-                    sessionId: data.sessionId || null,
-                    metadata: data.metadata || null,
-                    status: data.status || 'SUCCESS',
-                    errorDetails: data.errorDetails || null,
-                },
+            this.auditQueue.push({
+                ...data,
+                changedFields: changedFields || [],
+                status: data.status || 'SUCCESS'
+            });
+            if (this.auditQueue.length >= this.batchSize) {
+                this.processBatch();
+            }
+        }
+        catch (error) {
+            console.error('Failed to queue audit log:', error);
+        }
+    }
+    async processBatch() {
+        if (this.isProcessing || this.auditQueue.length === 0) {
+            return;
+        }
+        this.isProcessing = true;
+        const batch = this.auditQueue.splice(0, this.batchSize);
+        try {
+            await this.prisma.auditLog.createMany({
+                data: batch.map(item => ({
+                    entityName: item.entityName,
+                    entityId: item.entityId,
+                    action: item.action,
+                    userId: item.userId,
+                    userEmail: item.userEmail,
+                    oldValues: item.oldValues || null,
+                    newValues: item.newValues || null,
+                    changedFields: item.changedFields || [],
+                    ipAddress: item.ipAddress || null,
+                    userAgent: item.userAgent || null,
+                    sessionId: item.sessionId || null,
+                    metadata: item.metadata || null,
+                    status: item.status || 'SUCCESS',
+                    errorDetails: item.errorDetails || null,
+                })),
+                skipDuplicates: true
             });
         }
         catch (error) {
-            console.error('Failed to create audit log:', error);
+            console.error('Failed to create audit log batch:', error);
         }
+        finally {
+            this.isProcessing = false;
+        }
+    }
+    processBatchPeriodically() {
+        setInterval(() => {
+            this.processBatch();
+        }, this.batchTimeout);
     }
     async getAuditLogs(param) {
         const { page = 1, pageSize = 50, isOne, ...where } = param;

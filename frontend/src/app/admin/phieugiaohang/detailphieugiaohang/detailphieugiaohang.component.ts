@@ -11,6 +11,7 @@ import {
   ViewChild,
   TemplateRef,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -129,57 +130,81 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   constructor(
     private sharedInputService: SharedInputService
   ) {
-    this._route.paramMap.subscribe(async (params) => {
-      const id = params.get('id');
-      this._PhieugiaohangService.setDonhangId(id);
-      await this._SanphamService.getAllSanpham({pageSize:99999});
-      this.filterSanpham = this._SanphamService.ListSanpham();
-    });
+    this._route.paramMap
+      .pipe(takeUntilDestroyed())
+      .subscribe((params) => {
+        const id = params.get('id');
+        this._PhieugiaohangService.setDonhangId(id);
+        // Load products in smaller batches to prevent memory issues
+        this.loadProductsAsync();
+      });
 
-    effect(async () => {
-      await this._UserService.getProfile();
+    effect(() => {
+      const user = this._UserService.profile();
       const id = this._PhieugiaohangService.donhangId();
-      if (!id || id === '0') {
+      
+      if (user && id && id !== '0') {
+        // Use timeout to prevent blocking
+        setTimeout(() => this.loadPhieugiaohangData(id), 0);
+      } else if (id === '0') {
         this._router.navigate(['/admin/phieugiaohang']);
         this._ListphieugiaohangComponent.drawer.close();
       }
-      else {
-        await this._PhieugiaohangService.Phieugiaohang({id:id});
-        const phieuGiaoHang = this.DetailPhieugiaohang();
-
-        // Update edit mode based on status
-        this.isEdit.set(phieuGiaoHang.status !== 'danhan');
-        
-        // Process sanpham data with proper typing
-        const processedSanpham = phieuGiaoHang?.sanpham?.map((item: any) => ({
-          ...item,
-          ttgiao: (Number(item.slgiao) || 0) * (Number(item.giaban) || 0)
-        })) || [];
-        
-        // Sort by title A-Z
-        processedSanpham.sort((a: any, b: any) => {
-          const titleA = a.sanpham?.title || a.title || '';
-          const titleB = b.sanpham?.title || b.title || '';
-          return titleA.localeCompare(titleB, 'vi', { sensitivity: 'base' });
-        });
-        
-        // Update the signal with processed data
-        this.DetailPhieugiaohang.update((data: any) => ({
-          ...data,
-          sanpham: processedSanpham
-        }));
-          // Initialize datasource with processed data
-        this.dataSource.data = processedSanpham;
-        setTimeout(() => {
-          this.dataSource.sort = this.sort;
-        }, 300);
-        // Set up paginator and sort after view init
-        this.setupDataSource();
-        this._ListphieugiaohangComponent.drawer.open();
-        this._router.navigate(['/admin/phieugiaohang', id]);
-      }
     });
   }
+
+  private async loadProductsAsync() {
+    try {
+      // Load products with reasonable pagination instead of all 99,999
+      await this._SanphamService.getAllSanpham({pageSize: 1000});
+      this.filterSanpham = this._SanphamService.ListSanpham();
+    } catch (error) {
+      console.error('Error loading products:', error);
+    }
+  }
+
+  private async loadPhieugiaohangData(id: string) {
+    try {
+      await this._PhieugiaohangService.Phieugiaohang({id: id});
+      const phieuGiaoHang = this.DetailPhieugiaohang();
+
+      // Update edit mode based on status
+      this.isEdit.set(phieuGiaoHang.status !== 'danhan');
+      
+      // Process sanpham data with proper typing
+      const processedSanpham = phieuGiaoHang?.sanpham?.map((item: any) => ({
+        ...item,
+        ttgiao: (Number(item.slgiao) || 0) * (Number(item.giaban) || 0)
+      })) || [];
+      
+      // Sort by title A-Z
+      processedSanpham.sort((a: any, b: any) => {
+        const titleA = a.sanpham?.title || a.title || '';
+        const titleB = b.sanpham?.title || b.title || '';
+        return titleA.localeCompare(titleB, 'vi', { sensitivity: 'base' });
+      });
+      
+      // Update the signal with processed data
+      this.DetailPhieugiaohang.update((data: any) => ({
+        ...data,
+        sanpham: processedSanpham
+      }));
+      
+      // Initialize datasource with processed data
+      this.dataSource.data = processedSanpham;
+      setTimeout(() => {
+        this.dataSource.sort = this.sort;
+      }, 300);
+      
+      // Set up paginator and sort after view init
+      this.setupDataSource();
+      this._ListphieugiaohangComponent.drawer.open();
+      this._router.navigate(['/admin/phieugiaohang', id]);
+    } catch (error) {
+      console.error('Error loading phieugiaohang data:', error);
+    }
+  }
+
   getTitle(item: any) {
     return this.Trangthai.find((v:any) => v.value === item)?.title;
   } 
