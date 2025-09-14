@@ -4,6 +4,7 @@ import { DonhangService } from './donhang.service';
 import { AuditAction } from '@prisma/client';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { DonhangCronService } from './donhang-cron.service';
+import { Cache, CacheInvalidate } from '../common/cache.interceptor';
 
 @Controller('donhang')
 export class DonhangController {
@@ -13,22 +14,28 @@ export class DonhangController {
   ) {}
   @Post()
   @Audit({entity: 'Create Donhang', action: AuditAction.CREATE, includeResponse: true})
+  @CacheInvalidate(['donhang:*', 'khachhang:*'])
   create(@Body() createDonhangDto: any) {
     return this.donhangService.create(createDonhangDto);
   }
+
   @Post('importold')
   @Audit({entity: 'Import Donhang Cu', action: AuditAction.CREATE, includeResponse: true})
+  @CacheInvalidate(['donhang:*'])
   ImportDonhangOld(@Body() data: any) {
     return this.donhangService.ImportDonhangOld(data);
   }
   
   @Post('importold/confirmed')
   @Audit({entity: 'Import Donhang Cu Confirmed', action: AuditAction.CREATE, includeResponse: true})
+  @CacheInvalidate(['donhang:*'])
   ImportDonhangOldConfirmed(@Body() data: { pendingOrders: any[], userChoice: 'proceed' | 'skip' }) {
     return this.donhangService.ImportDonhangOldConfirmed(data.pendingOrders, data.userChoice);
   }
+
   @Post('import')
   @Audit({entity: 'Import Donhang', action: AuditAction.CREATE, includeResponse: true})
+  @CacheInvalidate(['donhang:*'])
   ImportDonhang(@Body() data: any) {
     return this.donhangService.ImportDonhang(data);
   }

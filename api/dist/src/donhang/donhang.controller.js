@@ -18,6 +18,7 @@ const donhang_service_1 = require("./donhang.service");
 const client_1 = require("@prisma/client");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const donhang_cron_service_1 = require("./donhang-cron.service");
+const cache_interceptor_1 = require("../common/cache.interceptor");
 let DonhangController = class DonhangController {
     constructor(donhangService, donhangCronService) {
         this.donhangService = donhangService;
@@ -161,6 +162,7 @@ exports.DonhangController = DonhangController;
 __decorate([
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Create Donhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['donhang:*', 'khachhang:*']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -169,6 +171,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('importold'),
     (0, audit_decorator_1.Audit)({ entity: 'Import Donhang Cu', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['donhang:*']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -177,6 +180,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('importold/confirmed'),
     (0, audit_decorator_1.Audit)({ entity: 'Import Donhang Cu Confirmed', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['donhang:*']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -185,6 +189,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('import'),
     (0, audit_decorator_1.Audit)({ entity: 'Import Donhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['donhang:*']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

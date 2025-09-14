@@ -2,25 +2,31 @@ import { Controller, Get, Post, Body, Param, Patch, Delete, Query, HttpException
 import { KhachhangService } from './khachhang.service';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
+import { Cache, CacheInvalidate } from '../common/cache.interceptor';
 
 @Controller('khachhang')
 export class KhachhangController {
   constructor(private readonly khachhangService: KhachhangService) {}
-    @Get('lastupdated')
-    async getLastUpdated() {
-      try {
-        return await this.khachhangService.getLastUpdated();
-      } catch (error) {
-        throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-   }
+  @Get('lastupdated')
+  @Cache(300, 'khachhang') // Cache for 5 minutes
+  async getLastUpdated() {
+    try {
+      return await this.khachhangService.getLastUpdated();
+    } catch (error) {
+      throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+ }
+
   @Post()
   @Audit({entity: 'Create Khachhang', action: AuditAction.CREATE, includeResponse: true})
+  @CacheInvalidate(['khachhang:*'])
   create(@Body() createKhachhangDto: any) {
     return this.khachhangService.create(createKhachhangDto);
   }
+
   @Post('import')
   @Audit({entity: 'Import Khachhang',action: AuditAction.IMPORT,includeResponse: true})
+  @CacheInvalidate(['khachhang:*'])
   import(@Body() data: any) {
     return this.khachhangService.import(data);
   }
@@ -38,6 +44,7 @@ export class KhachhangController {
   //   return this.khachhangService.findAll();
   // }
   @Get('forselect')
+  @Cache(1800, 'khachhang') // Cache for 30 minutes
   async findAllForSelect() {
     try {
       return await this.khachhangService.findAllForSelect();
@@ -49,6 +56,7 @@ export class KhachhangController {
     } 
   }
   @Get()
+  @Cache(1800, 'khachhang') // Cache for 30 minutes
   async findAll(@Query() query: any) {
     try {
       return await this.khachhangService.findAll(query);
@@ -59,18 +67,23 @@ export class KhachhangController {
       );
     } 
   }
+
   @Get(':id')
+  @Cache(1800, 'khachhang') // Cache for 30 minutes
   findOne(@Param('id') id: string) {
     return this.khachhangService.findOne(id);
   }
+
   @Patch(':id')
   @Audit({entity: 'Update Khachhang', action: AuditAction.UPDATE, includeResponse: true})
+  @CacheInvalidate(['khachhang:*'])
   update(@Param('id') id: string, @Body() updateKhachhangDto: any) {
     return this.khachhangService.update(id, updateKhachhangDto);
   }
 
   @Delete(':id')
   @Audit({entity: 'Delete Khachhang', action: AuditAction.DELETE, includeResponse: true})
+  @CacheInvalidate(['khachhang:*'])
   remove(@Param('id') id: string) {
     return this.khachhangService.remove(id);
   }

@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const schedule_1 = require("@nestjs/schedule");
 const graphql_1 = require("@nestjs/graphql");
 const apollo_1 = require("@nestjs/apollo");
+const core_1 = require("@nestjs/core");
 const path_1 = require("path");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
@@ -38,12 +39,14 @@ const callback_module_1 = require("./callback/callback.module");
 const dashboard_module_1 = require("./dashboard/dashboard.module");
 const userguide_module_1 = require("./userguide/userguide.module");
 const importdata_module_1 = require("./importdata/importdata.module");
-const core_1 = require("@nestjs/core");
+const core_2 = require("@nestjs/core");
 const audit_interceptor_1 = require("./auditlog/audit.interceptor");
 const auditlog_service_1 = require("./auditlog/auditlog.service");
 const auditlog_module_1 = require("./auditlog/auditlog.module");
 const audit_middleware_1 = require("./auditlog/audit.middleware");
+const cache_interceptor_1 = require("./common/cache.interceptor");
 const graphql_module_1 = require("./graphql/graphql.module");
+const redis_module_1 = require("./redis/redis.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(audit_middleware_1.AuditMiddleware).forRoutes('*');
@@ -96,6 +99,7 @@ exports.AppModule = AppModule = __decorate([
             userguide_module_1.UserguideModule,
             importdata_module_1.ImportdataModule,
             auditlog_module_1.AuditLogModule,
+            redis_module_1.RedisModule,
             graphql_module_1.GraphQLUniversalModule,
         ],
         controllers: [app_controller_1.AppController],
@@ -103,9 +107,14 @@ exports.AppModule = AppModule = __decorate([
             app_service_1.AppService,
             prisma_service_1.PrismaService,
             test_resolver_1.TestResolver,
+            core_1.Reflector,
             {
-                provide: core_1.APP_INTERCEPTOR,
+                provide: core_2.APP_INTERCEPTOR,
                 useClass: audit_interceptor_1.AuditInterceptor,
+            },
+            {
+                provide: core_2.APP_INTERCEPTOR,
+                useClass: cache_interceptor_1.CacheInterceptor,
             },
             auditlog_service_1.AuditService,
         ],

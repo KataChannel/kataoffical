@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { Reflector } from '@nestjs/core';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -34,9 +35,11 @@ import { AuditInterceptor } from './auditlog/audit.interceptor';
 import { AuditService } from './auditlog/auditlog.service';
 import { AuditLogModule } from './auditlog/auditlog.module';
 import { AuditMiddleware } from './auditlog/audit.middleware';
+import { CacheInterceptor } from './common/cache.interceptor';
 // import { UploadModule } from './upload/upload.module';
 // import { MinioModule } from './minio/minio.module';
 import { GraphQLUniversalModule } from './graphql/graphql.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -88,6 +91,7 @@ import { GraphQLUniversalModule } from './graphql/graphql.module';
     UserguideModule,
     ImportdataModule,    
     AuditLogModule,
+    RedisModule,
     // ChotkhoModule,
     // UploadModule,
     // MinioModule,
@@ -98,9 +102,14 @@ import { GraphQLUniversalModule } from './graphql/graphql.module';
     AppService,
     PrismaService,
     TestResolver,
+    Reflector,
     {
       provide: APP_INTERCEPTOR,
       useClass: AuditInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
     },
     AuditService,
   ],

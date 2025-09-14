@@ -14,11 +14,13 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const dataloader_service_1 = require("./dataloader.service");
 const field_selection_service_1 = require("./field-selection.service");
+const redis_service_1 = require("../redis/redis.service");
 let EnhancedUniversalService = class EnhancedUniversalService {
-    constructor(prisma, dataLoader, fieldSelection) {
+    constructor(prisma, dataLoader, fieldSelection, redisService) {
         this.prisma = prisma;
         this.dataLoader = dataLoader;
         this.fieldSelection = fieldSelection;
+        this.redisService = redisService;
         this.modelMapping = {
             'user': 'user',
             'role': 'role',
@@ -85,6 +87,14 @@ let EnhancedUniversalService = class EnhancedUniversalService {
     }
     async findMany(modelName, args, info) {
         try {
+            const cacheKey = this.generateCacheKey('findMany', modelName, args);
+            if (!this.isWriteOperation(args)) {
+                const cachedResult = await this.redisService.read(cacheKey);
+                if (cachedResult) {
+                    console.log(`🔥 Cache hit for ${modelName} findMany`);
+                    return cachedResult;
+                }
+            }
             const model = this.getModel(modelName);
             const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
             const normalizedArgs = { ...args, where: normalizedWhere };
@@ -95,9 +105,16 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             console.log(`✅ ${modelName} findMany completed:`, {
                 resultCount: results.length,
                 queryTime: `${queryTime}ms`,
-                isOptimized: !!queryOptions.select || !!queryOptions.include
+                isOptimized: !!queryOptions.select || !!queryOptions.include,
+                cached: false
             });
-            return await this.postProcessWithDataLoader(results, modelName, queryOptions, info);
+            const processedResults = await this.postProcessWithDataLoader(results, modelName, queryOptions, info);
+            if (!this.isWriteOperation(args) && processedResults) {
+                const ttl = this.getCacheTTL(modelName);
+                await this.redisService.create(cacheKey, processedResults, ttl);
+                console.log(`💾 Cached ${modelName} findMany for ${ttl}s`);
+            }
+            return processedResults;
         }
         catch (error) {
             console.error(`❌ Enhanced findMany error for ${modelName}:`, error);
@@ -111,6 +128,12 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             hasCustomInclude: !!args.include
         });
         try {
+            const cacheKey = this.generateCacheKey('findUnique', modelName, args);
+            const cachedResult = await this.redisService.read(cacheKey);
+            if (cachedResult) {
+                console.log(`🎯 GraphQL cache hit for findUnique ${modelName}`);
+                return cachedResult;
+            }
             const model = this.getModel(modelName);
             const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
             const normalizedArgs = { ...args, where: normalizedWhere };
@@ -118,6 +141,11 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             const startTime = Date.now();
             const result = await model.findUnique(queryOptions);
             const queryTime = Date.now() - startTime;
+            if (result) {
+                const ttl = this.getCacheTTL(modelName);
+                await this.redisService.create(cacheKey, result, ttl);
+                console.log(`💾 GraphQL cached findUnique ${modelName} for ${ttl}s`);
+            }
             return result;
         }
         catch (error) {
@@ -425,12 +453,38 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             throw new Error(`Aggregate operation failed: ${error.message}`);
         }
     }
+    generateCacheKey(operation, modelName, args) {
+        const argsHash = JSON.stringify(args);
+        return this.redisService.generateKey('graphql', operation, modelName, argsHash);
+    }
+    isWriteOperation(args) {
+        return !!(args.where?.id || args.where?.createdAt || args.where?.updatedAt);
+    }
+    getCacheTTL(modelName) {
+        const cacheConfig = {
+            sanpham: 1800,
+            khachhang: 1800,
+            donhang: 600,
+            banggia: 3600,
+            menu: 3600,
+            user: 1200,
+            role: 3600,
+            permission: 3600,
+        };
+        return cacheConfig[modelName.toLowerCase()] || 600;
+    }
+    async invalidateCache(modelName) {
+        const pattern = this.redisService.generateKey('graphql', '*', modelName, '*');
+        await this.redisService.deletePattern(pattern);
+        console.log(`🗑️ Invalidated GraphQL cache for ${modelName}`);
+    }
 };
 exports.EnhancedUniversalService = EnhancedUniversalService;
 exports.EnhancedUniversalService = EnhancedUniversalService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         dataloader_service_1.DataLoaderService,
-        field_selection_service_1.FieldSelectionService])
+        field_selection_service_1.FieldSelectionService,
+        redis_service_1.RedisService])
 ], EnhancedUniversalService);
 //# sourceMappingURL=enhanced-universal.service.js.map

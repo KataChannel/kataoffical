@@ -5,7 +5,7 @@ export declare class EnhancedUniversalResolver {
     private readonly enhancedService;
     private readonly dataLoader;
     constructor(enhancedService: EnhancedUniversalService, dataLoader: DataLoaderService);
-    findMany(modelName: string, info: GraphQLResolveInfo, where?: any, orderBy?: any, skip?: number, take?: number, include?: any, select?: any): Promise<any[]>;
+    findMany(modelName: string, info: GraphQLResolveInfo, where?: any, orderBy?: any, skip?: number, take?: number, include?: any, select?: any): Promise<any>;
     findUnique(modelName: string, where: any, info: GraphQLResolveInfo, include?: any, select?: any): Promise<any>;
     createOne(modelName: string, data: any, info: GraphQLResolveInfo, include?: any, select?: any): Promise<any>;
     updateOne(modelName: string, where: any, data: any, info: GraphQLResolveInfo, include?: any, select?: any): Promise<any>;

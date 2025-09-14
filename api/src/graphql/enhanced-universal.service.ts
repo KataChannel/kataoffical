@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { DataLoaderService } from './dataloader.service';
 import { FieldSelectionService } from './field-selection.service';
+import { RedisService } from '../redis/redis.service';
 import { GraphQLResolveInfo } from 'graphql';
 
 /**
@@ -14,6 +15,7 @@ export class EnhancedUniversalService {
     private readonly prisma: PrismaService,
     private readonly dataLoader: DataLoaderService,
     private readonly fieldSelection: FieldSelectionService,
+    private readonly redisService: RedisService,
   ) {}
 
   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
@@ -48,7 +50,7 @@ export class EnhancedUniversalService {
   }
 
   /**
-   * Dynamic findMany with field selection optimization
+   * Dynamic findMany with Redis caching and field selection optimization
    */
   async findMany(
     modelName: string,
@@ -62,17 +64,19 @@ export class EnhancedUniversalService {
     },
     info?: GraphQLResolveInfo
   ) {
-    // console.log(`🚀 Enhanced findMany for ${modelName}:`, {
-    //   hasWhere: !!args.where,
-    //   hasOrderBy: !!args.orderBy,
-    //   skip: args.skip,
-    //   take: args.take,
-    //   hasCustomSelect: !!args.select,
-    //   hasCustomInclude: !!args.include,
-    //   hasGraphQLInfo: !!info
-    // });
-
     try {
+      // Generate cache key for this query
+      const cacheKey = this.generateCacheKey('findMany', modelName, args);
+      
+      // Try to get from cache first for read operations
+      if (!this.isWriteOperation(args)) {
+        const cachedResult = await this.redisService.read(cacheKey);
+        if (cachedResult) {
+          console.log(`🔥 Cache hit for ${modelName} findMany`);
+          return cachedResult;
+        }
+      }
+
       // Get the model
       const model = this.getModel(modelName);
       
@@ -91,11 +95,21 @@ export class EnhancedUniversalService {
       console.log(`✅ ${modelName} findMany completed:`, {
         resultCount: results.length,
         queryTime: `${queryTime}ms`,
-        isOptimized: !!queryOptions.select || !!queryOptions.include
+        isOptimized: !!queryOptions.select || !!queryOptions.include,
+        cached: false
       });
 
       // Post-process with DataLoader if needed
-      return await this.postProcessWithDataLoader(results, modelName, queryOptions, info);
+      const processedResults = await this.postProcessWithDataLoader(results, modelName, queryOptions, info);
+      
+      // Cache the result for read operations
+      if (!this.isWriteOperation(args) && processedResults) {
+        const ttl = this.getCacheTTL(modelName);
+        await this.redisService.create(cacheKey, processedResults, ttl);
+        console.log(`💾 Cached ${modelName} findMany for ${ttl}s`);
+      }
+      
+      return processedResults;
       
     } catch (error) {
       console.error(`❌ Enhanced findMany error for ${modelName}:`, error);
@@ -122,6 +136,15 @@ export class EnhancedUniversalService {
     });
 
     try {
+      // ⚡ Check Redis cache first
+      const cacheKey = this.generateCacheKey('findUnique', modelName, args);
+      const cachedResult = await this.redisService.read(cacheKey);
+      
+      if (cachedResult) {
+        console.log(`🎯 GraphQL cache hit for findUnique ${modelName}`);
+        return cachedResult;
+      }
+
       const model = this.getModel(modelName);
       
       // Chuẩn hóa date filters trong where
@@ -133,6 +156,13 @@ export class EnhancedUniversalService {
       const startTime = Date.now();
       const result = await model.findUnique(queryOptions);
       const queryTime = Date.now() - startTime;
+
+      // 💾 Cache successful results  
+      if (result) {
+        const ttl = this.getCacheTTL(modelName);
+        await this.redisService.create(cacheKey, result, ttl);
+        console.log(`💾 GraphQL cached findUnique ${modelName} for ${ttl}s`);
+      }
       
       // console.log(`✅ ${modelName} findUnique completed:`, {
       //   found: !!result,
@@ -674,5 +704,38 @@ export class EnhancedUniversalService {
       console.error(`❌ Enhanced aggregate error for ${modelName}:`, error);
       throw new Error(`Aggregate operation failed: ${error.message}`);
     }
+  }
+
+  // ✅ Redis Cache Helper Methods
+  private generateCacheKey(operation: string, modelName: string, args: any): string {
+    const argsHash = JSON.stringify(args);
+    return this.redisService.generateKey('graphql', operation, modelName, argsHash);
+  }
+
+  private isWriteOperation(args: any): boolean {
+    // Skip caching for operations that may change data frequently
+    return !!(args.where?.id || args.where?.createdAt || args.where?.updatedAt);
+  }
+
+  private getCacheTTL(modelName: string): number {
+    // Different cache TTL based on model type
+    const cacheConfig = {
+      sanpham: 1800,      // 30 minutes
+      khachhang: 1800,    // 30 minutes  
+      donhang: 600,       // 10 minutes
+      banggia: 3600,      // 1 hour
+      menu: 3600,         // 1 hour
+      user: 1200,         // 20 minutes
+      role: 3600,         // 1 hour
+      permission: 3600,   // 1 hour
+    };
+    
+    return cacheConfig[modelName.toLowerCase()] || 600; // Default 10 minutes
+  }
+
+  async invalidateCache(modelName: string) {
+    const pattern = this.redisService.generateKey('graphql', '*', modelName, '*');
+    await this.redisService.deletePattern(pattern);
+    console.log(`🗑️ Invalidated GraphQL cache for ${modelName}`);
   }
 }

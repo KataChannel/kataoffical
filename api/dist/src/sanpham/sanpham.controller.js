@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const sanpham_service_1 = require("./sanpham.service");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
+const cache_interceptor_1 = require("../common/cache.interceptor");
 let SanphamController = class SanphamController {
     constructor(sanphamService) {
         this.sanphamService = sanphamService;
@@ -78,6 +79,7 @@ exports.SanphamController = SanphamController;
 __decorate([
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Create Sanpham', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['sanpham:*']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -86,6 +88,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('import'),
     (0, audit_decorator_1.Audit)({ entity: 'Import Sanpham', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['sanpham:*']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -94,6 +97,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('banggiamacdinh'),
     (0, audit_decorator_1.Audit)({ entity: 'Bang Gia Mac Dinh', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['sanpham:*', 'banggia:*']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -108,6 +112,7 @@ __decorate([
 ], SanphamController.prototype, "findby", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, cache_interceptor_1.Cache)(1800, 'sanpham'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -115,24 +120,28 @@ __decorate([
 ], SanphamController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)('forselect'),
+    (0, cache_interceptor_1.Cache)(3600, 'sanpham'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], SanphamController.prototype, "findAllForSelect", null);
 __decorate([
     (0, common_1.Get)('nhucaudathang'),
+    (0, cache_interceptor_1.Cache)(3600, 'sanpham'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], SanphamController.prototype, "nhucaudathang", null);
 __decorate([
     (0, common_1.Get)('lastupdated'),
+    (0, cache_interceptor_1.Cache)(300, 'sanpham'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], SanphamController.prototype, "getLastUpdated", null);
 __decorate([
     (0, common_1.Get)('findid/:id'),
+    (0, cache_interceptor_1.Cache)(1800, 'sanpham'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -141,6 +150,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Update Sanpham', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['sanpham:*']),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -150,6 +160,7 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Sanpham', action: client_1.AuditAction.DELETE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['sanpham:*']),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -157,6 +168,7 @@ __decorate([
 ], SanphamController.prototype, "remove", null);
 __decorate([
     (0, common_1.Post)('reorder'),
+    (0, cache_interceptor_1.CacheInvalidate)(['sanpham:*']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

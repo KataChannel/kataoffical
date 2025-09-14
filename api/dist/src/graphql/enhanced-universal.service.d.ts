@@ -1,12 +1,14 @@
 import { PrismaService } from '../../prisma/prisma.service';
 import { DataLoaderService } from './dataloader.service';
 import { FieldSelectionService } from './field-selection.service';
+import { RedisService } from '../redis/redis.service';
 import { GraphQLResolveInfo } from 'graphql';
 export declare class EnhancedUniversalService {
     private readonly prisma;
     private readonly dataLoader;
     private readonly fieldSelection;
-    constructor(prisma: PrismaService, dataLoader: DataLoaderService, fieldSelection: FieldSelectionService);
+    private readonly redisService;
+    constructor(prisma: PrismaService, dataLoader: DataLoaderService, fieldSelection: FieldSelectionService, redisService: RedisService);
     private synchronizeDateField;
     private toUTC;
     private validateAndConvertToUTC;
@@ -17,7 +19,7 @@ export declare class EnhancedUniversalService {
         take?: number;
         include?: any;
         select?: any;
-    }, info?: GraphQLResolveInfo): Promise<any[]>;
+    }, info?: GraphQLResolveInfo): Promise<any>;
     findUnique(modelName: string, args: {
         where: any;
         include?: any;
@@ -48,4 +50,8 @@ export declare class EnhancedUniversalService {
     private normalizeDateFieldsForModel;
     private normalizeDateFilters;
     aggregate(modelName: string, aggregations: any, where?: any): Promise<any>;
+    private generateCacheKey;
+    private isWriteOperation;
+    private getCacheTTL;
+    invalidateCache(modelName: string): Promise<void>;
 }

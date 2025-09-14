@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const khachhang_service_1 = require("./khachhang.service");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
+const cache_interceptor_1 = require("../common/cache.interceptor");
 let KhachhangController = class KhachhangController {
     constructor(khachhangService) {
         this.khachhangService = khachhangService;
@@ -71,6 +72,7 @@ let KhachhangController = class KhachhangController {
 exports.KhachhangController = KhachhangController;
 __decorate([
     (0, common_1.Get)('lastupdated'),
+    (0, cache_interceptor_1.Cache)(300, 'khachhang'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
@@ -78,6 +80,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Create Khachhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['khachhang:*']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -86,6 +89,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('import'),
     (0, audit_decorator_1.Audit)({ entity: 'Import Khachhang', action: client_1.AuditAction.IMPORT, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['khachhang:*']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -107,12 +111,14 @@ __decorate([
 ], KhachhangController.prototype, "searchfield", null);
 __decorate([
     (0, common_1.Get)('forselect'),
+    (0, cache_interceptor_1.Cache)(1800, 'khachhang'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], KhachhangController.prototype, "findAllForSelect", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, cache_interceptor_1.Cache)(1800, 'khachhang'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -120,6 +126,7 @@ __decorate([
 ], KhachhangController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, cache_interceptor_1.Cache)(1800, 'khachhang'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -128,6 +135,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Update Khachhang', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['khachhang:*']),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -137,6 +145,7 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Khachhang', action: client_1.AuditAction.DELETE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['khachhang:*']),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
