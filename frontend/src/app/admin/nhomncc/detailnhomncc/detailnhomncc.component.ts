@@ -60,6 +60,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
 
     // Cleanup function for effect
     private effectRef?: EffectRef;
+    private isNavigating = false; // ✅ Flag to prevent navigation loops
 
     constructor(){
       // Tối ưu hóa route parameter subscription
@@ -96,14 +97,23 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     private initializeEffect(): void {
       this.effectRef = effect(async () => {
         const id = this._NhomnccService.nhomnccId();
+        
+        // ✅ Prevent navigation loop
+        if (this.isNavigating) {
+          return;
+        }
+        
+        // ✅ Early return để tránh infinite loop
+        if (!id) {
+          this.handleEmptyId();
+          return;
+        }
+
         this.isLoading.set(true);
         
         try {
-          if (!id) {
-            this.handleEmptyId();
-            return;
-          }
-
+          this.isNavigating = true;
+          
           if (id === 'new') {
             this.handleNewRecord();
           } else {
@@ -119,6 +129,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
           });
         } finally {
           this.isLoading.set(false);
+          setTimeout(() => this.isNavigating = false, 100); // ✅ Reset flag after delay
         }
       });
     }
@@ -127,12 +138,17 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
      * Xử lý khi không có ID
      */
     private handleEmptyId(): void {
-      this._router.navigate(['/admin/nhomncc']);
       this._ListnhomnccComponent.drawer.close();
+      
+      // ✅ Chỉ navigate nếu không ở trang chính
+      const currentRoute = this._router.url;
+      if (currentRoute !== '/admin/nhomncc' && !currentRoute.includes('/admin/nhomncc/')) {
+        this._router.navigate(['/admin/nhomncc']);
+      }
     }
 
     /**
-     * Xử lý khi tạo mới (ID = '0')
+     * Xử lý khi tạo mới (ID = 'new')
      */
     private handleNewRecord(): void {
       this.DetailNhomncc.update(() => ({
@@ -142,7 +158,12 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
       }));
       this._ListnhomnccComponent.drawer.open();
       this.isEdit.set(true);
-      this._router.navigate(['/admin/nhomncc', 'new']);
+      
+      // ✅ Chỉ navigate nếu chưa ở route đúng
+      const currentRoute = this._router.url;
+      if (currentRoute !== '/admin/nhomncc/new') {
+        this._router.navigate(['/admin/nhomncc', 'new']);
+      }
     }
 
     /**
@@ -163,11 +184,19 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
       console.log(this.ListNcc);
     }
     private async handleExistingRecord(id: string): Promise<void> {
-      // Sử dụng Promise.all để load parallel
+      // ✅ Avoid navigation loop - chỉ navigate nếu route hiện tại khác
+      const currentRoute = this._router.url;
+      const targetRoute = `/admin/nhomncc/${id}`;
+      
+      // Load data
       await this.getNhomnccByid();
       this.CheckListNcc = this.DetailNhomncc()?.nhacungcap || [];
       this._ListnhomnccComponent.drawer.open();
-      this._router.navigate(['/admin/nhomncc', id]);
+      
+      // ✅ Chỉ navigate nếu cần thiết
+      if (currentRoute !== targetRoute) {
+        this._router.navigate(['/admin/nhomncc', id]);
+      }
     }
     async getNhomnccByid(){
       const Detail = await this._GraphqlService.findUnique('nhomncc', { id: this.nhomnccId() }, {
@@ -231,12 +260,12 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
             panelClass: ['snackbar-success'],
           });
 
-          // ✅ Navigate to the new record và refresh data
-          this._router.navigate(['/admin/nhomncc', result.id]);
+          // ✅ Set service ID first để tránh effect loop
+          this._NhomnccService.setNhomnccId(result.id);
           this.isEdit.set(false);
           
           // ✅ Refresh để load data mới với relations
-          await this._NhomnccService.getNhomnccByid(result.id);
+          await this.getNhomnccByid();
           this.CheckListNcc = this.DetailNhomncc()?.nhacungcap || [];
         }
       } catch (error: any) {
@@ -647,9 +676,17 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
         console.error('Lỗi khi xóa nhomncc:', error);
       }
     }
-    goBack(){
-      this._router.navigate(['/admin/nhomncc'])
+    goBack() {
       this._ListnhomnccComponent.drawer.close();
+      
+      // ✅ Clear ID first để tránh effect trigger không cần thiết
+      this._NhomnccService.setNhomnccId(null);
+      
+      // ✅ Chỉ navigate nếu không ở trang chính
+      const currentRoute = this._router.url;
+      if (currentRoute !== '/admin/nhomncc') {
+        this._router.navigate(['/admin/nhomncc']);
+      }
     }
     trackByFn(index: number, item: any): any {
       return item.id;

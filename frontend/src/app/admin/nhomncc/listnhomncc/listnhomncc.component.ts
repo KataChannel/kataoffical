@@ -52,7 +52,7 @@ export class ListNhomnccComponent {
   ];
 
   ColumnName: any = {
-    name: 'Nhóm Khách hàng',
+    name: 'Nhóm Nhà Cung Cấp',
     description: 'Mô Tả',
     createdAt:'Ngày Tạo',
     updatedAt:'Ngày Cập Nhật'

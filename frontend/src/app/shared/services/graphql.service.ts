@@ -546,7 +546,7 @@ export class GraphqlService {
   ): Promise<T> {
     const startTime = Date.now();
     const loadingKey = `updateOne_${modelName}`;
-    console.log(where, data);
+    // console.log(where, data);
     
     this.setLoading(loadingKey, true);
 
@@ -570,7 +570,7 @@ export class GraphqlService {
       // Invalidate related cache entries
       this.invalidateCache(modelName);
       this.trackPerformance('updateOne', startTime, false, 1, modelName);
-      console.log('updatedData', updatedData);
+      // console.log('updatedData', updatedData);
       
       return updatedData;
     } catch (error) {

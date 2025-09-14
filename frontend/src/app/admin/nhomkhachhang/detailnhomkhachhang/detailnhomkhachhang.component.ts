@@ -165,7 +165,8 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     private async handleExistingRecord(id: string): Promise<void> {
       // Sử dụng Promise.all để load parallel
       await this._NhomkhachhangService.getNhomkhachhangByid(id);
-      this.CheckListKhachhang = this.DetailNhomkhachhang()?.khachhang || [];
+      // ✅ Fix: Tạo deep copy để tránh reference sharing
+      this.CheckListKhachhang = [...(this.DetailNhomkhachhang()?.khachhang || [])];
       this._ListnhomkhachhangComponent.drawer.open();
       this._router.navigate(['/admin/nhomkhachhang', id]);
     }
@@ -224,7 +225,8 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
           
           // ✅ Refresh để load data mới với relations
           await this._NhomkhachhangService.getNhomkhachhangByid(result.id);
-          this.CheckListKhachhang = this.DetailNhomkhachhang()?.khachhang || [];
+          // ✅ Fix: Tạo deep copy để tránh reference sharing
+          this.CheckListKhachhang = [...(this.DetailNhomkhachhang()?.khachhang || [])];
         }
       } catch (error: any) {
         console.error('Lỗi khi tạo nhomkhachhang:', error);
@@ -433,7 +435,8 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
         
         // ✅ Refresh data để đảm bảo UI sync
         await this._NhomkhachhangService.getNhomkhachhangByid(this.nhomkhachhangId());
-        this.CheckListKhachhang = this.DetailNhomkhachhang()?.khachhang || [];
+        // ✅ Fix: Tạo deep copy để tránh reference sharing
+        this.CheckListKhachhang = [...(this.DetailNhomkhachhang()?.khachhang || [])];
 
       } catch (error: any) {
         console.error('Lỗi khi cập nhật nhomkhachhang:', error);
