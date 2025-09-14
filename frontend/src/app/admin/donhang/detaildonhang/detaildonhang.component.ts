@@ -100,7 +100,68 @@ export class DetailDonhangComponent {
       const id = params.get('id');
       this._DonhangService.setDonhangId(id);
     });
-    effect(async () => {});
+
+    effect(async () => {
+      const id = this._DonhangService.donhangId();
+      
+      // Prevent infinite loops during navigation
+      if (this.isNavigating()) {
+        return;
+      }
+      
+      if (!id) {
+        this.isNavigating.set(true);
+        this._router.navigate(['/admin/donhang']);
+        this._ListdonhangComponent.drawer.close();
+        setTimeout(() => this.isNavigating.set(false), 100);
+        return;
+      }
+      
+      if (id === 'new') {
+        this.DetailDonhang.set({
+          title: 'Đơn Hàng' + moment().format('DD_MM_YYYY'),
+          madonhang: GenId(8, false),
+          ngaygiao: moment().add(1, 'days').format('YYYY-MM-DD'),
+          type: 'donsi',
+          status: 'dadat',
+          isshowvat: false,
+          isActive: true,
+          printCount: 0,
+          vat: 0.05,
+          tongvat: 0,
+          tongtien: 0,
+          sanpham: []
+        });
+        this._ListdonhangComponent.drawer.open();
+        this.isEdit.set(true);
+        this.ListFilter = [];
+        
+        if (this._router.url !== '/admin/donhang/new') {
+          this.isNavigating.set(true);
+          this._router.navigate(['/admin/donhang', 'new']);
+          setTimeout(() => this.isNavigating.set(false), 100);
+        }
+      } else {
+        try {
+          await this._DonhangService.getDonhangByid(id);
+          this.DetailDonhang.set(this._DonhangService.DetailDonhang());
+          this.ListFilter = this.DetailDonhang().sanpham || [];
+          this.isEdit.set(false);
+          this._ListdonhangComponent.drawer.open();
+          
+          if (this._router.url !== `/admin/donhang/${id}`) {
+            this.isNavigating.set(true);
+            this._router.navigate(['/admin/donhang', id]);
+            setTimeout(() => this.isNavigating.set(false), 100);
+          }
+        } catch (error) {
+          console.error('Error loading donhang:', error);
+          this.isNavigating.set(true);
+          this._router.navigate(['/admin/donhang']);
+          setTimeout(() => this.isNavigating.set(false), 100);
+        }
+      }
+    });
   }
   DetailDonhang: any = this._DonhangService.DetailDonhang;
   // ListKhachhang: any = this._KhachhangService.ListKhachhang;
@@ -114,6 +175,7 @@ export class DetailDonhangComponent {
   ListSanpham: any[] = [];
   donhangId: any = this._DonhangService.donhangId;
   permissions: any = [];
+  isNavigating = signal<boolean>(false);
 
   // Getter/Setter for khachhangId to avoid read-only property errors
   get selectedKhachhangId(): string | null {
@@ -194,45 +256,6 @@ export class DetailDonhangComponent {
       },
     });
     this.ListKhachhang = this.filterKhachhang = Khachhangs.data;
-    const id = this._DonhangService.donhangId();
-    if (!id) {
-      this._router.navigate(['/admin/donhang']);
-      this._ListdonhangComponent.drawer.close();
-    }
-    if (id === 'new') {
-      this.DetailDonhang.set({
-        title: 'Đơn Hàng' + moment().format('DD_MM_YYYY'),
-        ngaygiao: moment().add(1, 'days').format('YYYY-MM-DD'),
-        type: 'donsi',
-        status: 'dadat',
-        isshowvat: false,
-        isActive: true,
-        printCount: 0,
-        vat: 0.05, // Default 10% VAT rate
-        tongvat: 0,
-        tongtien: 0,
-        sanpham: [],
-      });
-      this._ListdonhangComponent.drawer.open();
-      this.isEdit.set(true);
-      this.ListFilter = [];
-
-      // Initialize available products (all products since no selection yet)
-      this.filterSanpham = [...this.ListSanpham];
-
-      this._router.navigate(['/admin/donhang', 'new']);
-    } else {
-      await this._DonhangService.getDonhangByid(id);
-      this.ListFilter = this.DetailDonhang().sanpham || [];
-      this.dataSource().data = this.DetailDonhang().sanpham || [];
-      this.dataSource().data.sort((a, b) => (a.order || 0) - (b.order || 0));
-
-      // Update available products to exclude already selected ones
-      this.updateAvailableProducts();
-
-      this._ListdonhangComponent.drawer.open();
-      this._router.navigate(['/admin/donhang', id]);
-    }
   }
 
   async handleDonhangAction() {
@@ -1946,5 +1969,13 @@ export class DetailDonhangComponent {
       verticalPosition: 'top',
       panelClass: ['snackbar-success'],
     });
+  }
+
+  cancel() {
+    this.isNavigating.set(true);
+    this._DonhangService.setDonhangId(null);
+    this._router.navigate(['/admin/donhang']);
+    this._ListdonhangComponent.drawer.close();
+    setTimeout(() => this.isNavigating.set(false), 100);
   }
 }
