@@ -278,12 +278,55 @@ export class ListPhieugiaohangComponent implements OnDestroy {
     console.log(Donhangs);
     return Donhangs.data;
   }
+  
   async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.SearchParams.query = filterValue;
-    
+    if (!filterValue.trim()) {
+      // If filter is empty, show all data
+      this.dataSource.filter = '';
+      return;
+    }
+
     this.isSearching.set(true);
-    this.debouncedSearch();
+    
+    // Apply filter to current data source with Vietnamese accent removal and case insensitive search
+    this.dataSource.filterPredicate = (data: any, filter: string) => {
+      const searchText = removeVietnameseAccents(filter.toLowerCase().trim());
+      
+      // Search across all displayed columns with proper handling of nested objects
+      return this.displayedColumns.some(column => {
+        let value;
+        
+        // Handle special cases for nested objects
+        switch (column) {
+          case 'khachhang':
+            value = data.khachhang?.name || '';
+            break;
+          case 'sanpham':
+            value = data.sanpham?.length ? `${data.sanpham.length} sản phẩm` : '';
+            break;
+          case 'ngaygiao':
+          case 'createdAt':
+          case 'updatedAt':
+            value = data[column] ? moment(data[column]).format('DD/MM/YYYY HH:mm') : '';
+            break;
+          case 'status':
+            value = this.Trangthaidon[data[column]] || data[column] || '';
+            break;
+          default:
+            value = data[column] || '';
+        }
+        
+        if (value) {
+          const normalizedValue = removeVietnameseAccents(value.toString().toLowerCase());
+          return normalizedValue.includes(searchText);
+        }
+        return false;
+      });
+    };
+    
+    this.dataSource.filter = filterValue.trim();
+    this.isSearching.set(false);
   }
   
   private searchTimeout: any;
