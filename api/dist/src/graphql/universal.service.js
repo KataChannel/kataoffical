@@ -188,10 +188,20 @@ let UniversalService = class UniversalService {
             }
             console.log(`🔍 Updating ${mappedModel} with:`, {
                 where,
-                data,
+                dataKeys: Object.keys(data),
                 include,
                 select
             });
+            if (mappedModel.toLowerCase() === 'user') {
+                console.log(`👤 User update data preview:`, {
+                    id: data.id,
+                    email: data.email,
+                    hasRoles: !!data.roles,
+                    rolesCount: data.roles ? (Array.isArray(data.roles) ? data.roles.length : 'not array') : 0,
+                    hasPermissions: !!data.permissions,
+                    otherFields: Object.keys(data).filter(k => !['id', 'email', 'roles', 'permissions'].includes(k))
+                });
+            }
             const cleanData = this.validateAndCleanRelationData(data);
             const updateOptions = {
                 where,
@@ -217,9 +227,29 @@ let UniversalService = class UniversalService {
         if (!data || typeof data !== 'object')
             return data;
         const cleanData = { ...data };
+        const excludeFromUpdates = [
+            'roles', 'permissions', 'profile', 'userRoles', 'rolePermissions',
+            'user', 'role', 'permission', 'khachhang', 'nhomkhachhang'
+        ];
+        excludeFromUpdates.forEach(field => {
+            if (cleanData[field]) {
+                if (Array.isArray(cleanData[field])) {
+                    console.log(`🚫 Removing complex relation array field '${field}' from update data`);
+                    delete cleanData[field];
+                }
+                else if (typeof cleanData[field] === 'object' && cleanData[field] !== null) {
+                    const nestedKeys = Object.keys(cleanData[field]);
+                    const hasComplexNesting = nestedKeys.some(key => typeof cleanData[field][key] === 'object' && cleanData[field][key] !== null);
+                    if (hasComplexNesting) {
+                        console.log(`🚫 Removing complex nested relation field '${field}' from update data`);
+                        delete cleanData[field];
+                    }
+                }
+            }
+        });
         Object.keys(cleanData).forEach(key => {
             const value = cleanData[key];
-            if (value && typeof value === 'object') {
+            if (value && typeof value === 'object' && !Array.isArray(value)) {
                 if (value.connect) {
                     cleanData[key].connect = this.validateConnectArray(value.connect);
                 }

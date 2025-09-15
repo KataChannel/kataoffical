@@ -185,7 +185,28 @@ let EnhancedUniversalService = class EnhancedUniversalService {
         });
         try {
             const model = this.getModel(modelName);
-            const normalizedData = this.normalizeDateFieldsForModel(modelName, args.data);
+            let cleanedData = { ...args.data };
+            const excludeFromUpdates = [
+                'roles', 'permissions', 'profile', 'userRoles', 'rolePermissions',
+                'user', 'role', 'permission', 'khachhang', 'nhomkhachhang'
+            ];
+            excludeFromUpdates.forEach(field => {
+                if (cleanedData[field]) {
+                    if (Array.isArray(cleanedData[field])) {
+                        console.log(`🚫 Enhanced service removing complex relation array field '${field}' from update data`);
+                        delete cleanedData[field];
+                    }
+                    else if (typeof cleanedData[field] === 'object' && cleanedData[field] !== null) {
+                        const nestedKeys = Object.keys(cleanedData[field]);
+                        const hasComplexNesting = nestedKeys.some(key => typeof cleanedData[field][key] === 'object' && cleanedData[field][key] !== null);
+                        if (hasComplexNesting) {
+                            console.log(`🚫 Enhanced service removing complex nested relation field '${field}' from update data`);
+                            delete cleanedData[field];
+                        }
+                    }
+                }
+            });
+            const normalizedData = this.normalizeDateFieldsForModel(modelName, cleanedData);
             const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
             const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
             const updateOptions = {
@@ -219,6 +240,13 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             return result;
         }
         catch (error) {
+            if (error.code === 'P2025' || error.message.includes('No record was found for a delete')) {
+                console.log(`✅ Delete operation handled gracefully - Record not found in ${modelName}:`, {
+                    where: args.where,
+                    message: 'Record already deleted or not found, goal achieved'
+                });
+                return { id: args.where.id || null, deleted: true, message: 'Record not found, but deletion goal achieved' };
+            }
             console.error(`❌ Enhanced delete error for ${modelName}:`, error);
             throw new Error(`Failed to delete ${modelName}: ${error.message}`);
         }

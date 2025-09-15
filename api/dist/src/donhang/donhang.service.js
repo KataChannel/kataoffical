@@ -197,57 +197,72 @@ let DonhangService = class DonhangService {
         };
     }
     async congnokhachhang(params) {
-        const { Batdau, Ketthuc, query } = params;
-        const dateRange = {
-            gte: Batdau ? new Date(Batdau) : undefined,
-            lte: Ketthuc ? new Date(Ketthuc) : undefined,
-        };
-        const where = {
-            ngaygiao: dateRange,
-            status: Array.isArray(params.Status) ? { in: params.Status } : params.Status,
-        };
-        if (params.khachhangIds.length > 0) {
-            where.khachhangId = { in: params.khachhangIds };
+        const { Batdau, Ketthuc, Status, khachhangIds, query } = params;
+        console.time('congnokhachhang-query');
+        const whereConditions = {};
+        if (Batdau && Ketthuc) {
+            whereConditions.ngaygiao = {
+                gte: new Date(Batdau),
+                lte: new Date(Ketthuc),
+            };
+        }
+        if (Status && Array.isArray(Status) && Status.length > 0) {
+            whereConditions.status = { in: Status };
+        }
+        if (khachhangIds && Array.isArray(khachhangIds) && khachhangIds.length > 0) {
+            whereConditions.khachhangId = { in: khachhangIds };
         }
         if (query) {
-            where.OR = [
+            whereConditions.OR = [
                 { madonhang: { contains: query, mode: 'insensitive' } },
                 { khachhang: { name: { contains: query, mode: 'insensitive' } } },
             ];
         }
         const donhangs = await this.prisma.donhang.findMany({
-            where,
-            include: {
-                sanpham: {
-                    include: {
-                        sanpham: true,
+            where: whereConditions,
+            select: {
+                id: true,
+                madonhang: true,
+                ngaygiao: true,
+                tongtien: true,
+                tongvat: true,
+                khachhang: {
+                    select: {
+                        name: true,
+                        makh: true,
                     },
                 },
-                khachhang: { include: { banggia: { include: { sanpham: true } } } },
+                sanpham: {
+                    select: {
+                        slnhan: true,
+                        giaban: true,
+                    },
+                },
             },
             orderBy: { createdAt: 'desc' },
         });
-        const result = donhangs.map((v) => {
-            const [tong, soluong] = v.sanpham.reduce((acc, item) => {
-                const slnhan = parseFloat((item.slnhan || 0).toString());
-                const giaban = parseFloat((item.sanpham?.giaban || 0).toString());
-                return [
-                    acc[0] + (slnhan * giaban),
-                    acc[1] + slnhan
-                ];
-            }, [0, 0]);
+        const result = donhangs.map((donhang) => {
+            let tong = 0;
+            let soluong = 0;
+            for (const item of donhang.sanpham) {
+                const slnhan = Number(item.slnhan) || 0;
+                const giaban = Number(item.giaban) || 0;
+                tong += slnhan * giaban;
+                soluong += slnhan;
+            }
             return {
-                id: v.id,
-                madonhang: v.madonhang,
-                ngaygiao: v.ngaygiao,
+                id: donhang.id,
+                madonhang: donhang.madonhang,
+                ngaygiao: donhang.ngaygiao,
                 tong: tong.toFixed(3),
                 soluong: soluong.toFixed(3),
-                tongtien: v.tongtien,
-                tongvat: v.tongvat,
-                name: v.khachhang?.name,
-                makh: v.khachhang?.makh,
+                tongtien: donhang.tongtien,
+                tongvat: donhang.tongvat,
+                name: donhang.khachhang?.name,
+                makh: donhang.khachhang?.makh,
             };
         });
+        console.timeEnd('congnokhachhang-query');
         return result || [];
     }
     async downloadcongnokhachhang(params) {

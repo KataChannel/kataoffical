@@ -250,8 +250,39 @@ export class EnhancedUniversalService {
     try {
       const model = this.getModel(modelName);
       
+      // Clean data to prevent complex relation errors
+      let cleanedData = { ...args.data };
+      
+      // Define fields that should be excluded from updates because they are complex relations
+      const excludeFromUpdates = [
+        'roles', 'permissions', 'profile', 'userRoles', 'rolePermissions',
+        'user', 'role', 'permission', 'khachhang', 'nhomkhachhang'
+      ];
+      
+      // Remove complex relation fields that cause Prisma errors
+      excludeFromUpdates.forEach(field => {
+        if (cleanedData[field]) {
+          // Check if it's an array of objects with nested relations
+          if (Array.isArray(cleanedData[field])) {
+            console.log(`🚫 Enhanced service removing complex relation array field '${field}' from update data`);
+            delete cleanedData[field];
+          }
+          // Check if it's a nested object with complex structure
+          else if (typeof cleanedData[field] === 'object' && cleanedData[field] !== null) {
+            const nestedKeys = Object.keys(cleanedData[field]);
+            const hasComplexNesting = nestedKeys.some(key => 
+              typeof cleanedData[field][key] === 'object' && cleanedData[field][key] !== null
+            );
+            if (hasComplexNesting) {
+              console.log(`🚫 Enhanced service removing complex nested relation field '${field}' from update data`);
+              delete cleanedData[field];
+            }
+          }
+        }
+      });
+      
       // Chuẩn hóa date fields trong data
-      const normalizedData = this.normalizeDateFieldsForModel(modelName, args.data);
+      const normalizedData = this.normalizeDateFieldsForModel(modelName, cleanedData);
       // Chuẩn hóa date filters trong where
       const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
       
@@ -315,6 +346,16 @@ export class EnhancedUniversalService {
       return result;
       
     } catch (error) {
+      // Handle the case where the record doesn't exist
+      if (error.code === 'P2025' || error.message.includes('No record was found for a delete')) {
+        console.log(`✅ Delete operation handled gracefully - Record not found in ${modelName}:`, {
+          where: args.where,
+          message: 'Record already deleted or not found, goal achieved'
+        });
+        // Return a success response since the desired state is achieved (record doesn't exist)
+        return { id: args.where.id || null, deleted: true, message: 'Record not found, but deletion goal achieved' };
+      }
+      
       console.error(`❌ Enhanced delete error for ${modelName}:`, error);
       throw new Error(`Failed to delete ${modelName}: ${error.message}`);
     }

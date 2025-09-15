@@ -45,14 +45,26 @@
         <input matInput type="password" [(ngModel)]="DetailUser().password" [disabled]="!isEdit()" placeholder="Vui lòng nhập Số Điện Thoại" />
       </mat-form-field>
       <div class="w-full flex flex-wrap gap-2 space-x-2 ">
-        <button mat-flat-button [disabled]="!isEdit()" color="primary" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
-          Thêm Nhóm
+        <button mat-flat-button [disabled]="!isEdit() || isAddingRole()" color="primary" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
+          @if (isAddingRole()) {
+            <ng-container>
+              <mat-icon class="animate-spin">refresh</mat-icon>
+              Đang thêm...
+            </ng-container>
+          } @else {
+            Thêm Nhóm
+          }
         </button>
         <div class="flex flex-row space-x-2 items-center">
           @for (item of DetailUser().roles; track $index) {
-            <div class="cursor-pointer flex flex-row space-x-2 items-center p-2 rounded-lg bg-gray-100">
-              <div class="font-bold">{{item?.name}}</div>
-              <mat-icon color="warn" (click)="handleRemoveRole(item)">close</mat-icon>
+            <div class="cursor-pointer flex flex-row space-x-2 items-center p-2 rounded-lg bg-gray-100" 
+                 [class.opacity-50]="isRemovingRole()">
+              <div class="font-bold">{{item?.role?.name || item?.name}}</div>
+              @if (isRemovingRole()) {
+                <mat-icon class="animate-spin text-gray-500">refresh</mat-icon>
+              } @else {
+                <mat-icon color="warn" (click)="handleRemoveRole(item)" [style.cursor]="'pointer'">close</mat-icon>
+              }
             </div>
           }
           </div>

@@ -258,10 +258,22 @@ async findMany(modelName: string, options: {
 
       console.log(`🔍 Updating ${mappedModel} with:`, {
         where,
-        data,
+        dataKeys: Object.keys(data),
         include,
         select
       });
+
+      // Special handling for user updates
+      if (mappedModel.toLowerCase() === 'user') {
+        console.log(`👤 User update data preview:`, {
+          id: data.id,
+          email: data.email,
+          hasRoles: !!data.roles,
+          rolesCount: data.roles ? (Array.isArray(data.roles) ? data.roles.length : 'not array') : 0,
+          hasPermissions: !!data.permissions,
+          otherFields: Object.keys(data).filter(k => !['id', 'email', 'roles', 'permissions'].includes(k))
+        });
+      }
 
       // Validate data for relations to prevent "Required exactly one parent ID" error
       const cleanData = this.validateAndCleanRelationData(data);
@@ -300,11 +312,39 @@ async findMany(modelName: string, options: {
     
     const cleanData = { ...data };
     
+    // Define fields that should be excluded from updates because they are complex relations
+    const excludeFromUpdates = [
+      'roles', 'permissions', 'profile', 'userRoles', 'rolePermissions',
+      'user', 'role', 'permission', 'khachhang', 'nhomkhachhang'
+    ];
+    
+    // Remove complex relation fields that cause Prisma errors
+    excludeFromUpdates.forEach(field => {
+      if (cleanData[field]) {
+        // Check if it's an array of objects with nested relations
+        if (Array.isArray(cleanData[field])) {
+          console.log(`🚫 Removing complex relation array field '${field}' from update data`);
+          delete cleanData[field];
+        }
+        // Check if it's a nested object with complex structure
+        else if (typeof cleanData[field] === 'object' && cleanData[field] !== null) {
+          const nestedKeys = Object.keys(cleanData[field]);
+          const hasComplexNesting = nestedKeys.some(key => 
+            typeof cleanData[field][key] === 'object' && cleanData[field][key] !== null
+          );
+          if (hasComplexNesting) {
+            console.log(`🚫 Removing complex nested relation field '${field}' from update data`);
+            delete cleanData[field];
+          }
+        }
+      }
+    });
+    
     // Recursive validation for relation fields
     Object.keys(cleanData).forEach(key => {
       const value = cleanData[key];
       
-      if (value && typeof value === 'object') {
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
         // Handle connect/disconnect operations
         if (value.connect) {
           cleanData[key].connect = this.validateConnectArray(value.connect);

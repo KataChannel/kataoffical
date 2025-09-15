@@ -47,15 +47,15 @@ export declare class DonhangService {
         totalPages: number;
     }>;
     congnokhachhang(params: any): Promise<{
-        id: any;
-        madonhang: any;
-        ngaygiao: any;
-        tong: any;
-        soluong: any;
-        tongtien: any;
-        tongvat: any;
-        name: any;
-        makh: any;
+        id: string;
+        madonhang: string;
+        ngaygiao: Date | null;
+        tong: string;
+        soluong: string;
+        tongtien: import("@prisma/client/runtime/library").Decimal;
+        tongvat: import("@prisma/client/runtime/library").Decimal;
+        name: string | null | undefined;
+        makh: string | undefined;
     }[]>;
     downloadcongnokhachhang(params: any): Promise<{
         buffer: any;

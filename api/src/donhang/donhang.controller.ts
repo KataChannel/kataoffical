@@ -49,6 +49,7 @@ export class DonhangController {
     return this.donhangService.search(params);
   }
   @Post('congnokhachhang')
+  @Cache(60) // Cache for 60 seconds
   async congnokhachhang(@Body() params: any) {
     return this.donhangService.congnokhachhang(params);
   }

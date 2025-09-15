@@ -244,65 +244,91 @@ export class DonhangService {
   }
 
   async congnokhachhang(params: any) {
-    const { Batdau, Ketthuc, query } = params;
+    const { Batdau, Ketthuc, Status, khachhangIds, query } = params;
 
-    // ✅ Sử dụng TimezoneUtilService cho date range
-    const dateRange =  {
-        gte: Batdau ? new Date(Batdau) : undefined,
-        lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      }
+    console.time('congnokhachhang-query');
 
-    const where: any = {
-      ngaygiao: dateRange,
-      // type: Type,
-      status: Array.isArray(params.Status)? { in: params.Status }: params.Status,
-    };
-    if(params.khachhangIds.length>0){
-      where.khachhangId = { in: params.khachhangIds };
+    // Build WHERE clause efficiently
+    const whereConditions: any = {};
+
+    // Date range filter
+    if (Batdau && Ketthuc) {
+      whereConditions.ngaygiao = {
+        gte: new Date(Batdau),
+        lte: new Date(Ketthuc),
+      };
     }
+
+    // Status filter
+    if (Status && Array.isArray(Status) && Status.length > 0) {
+      whereConditions.status = { in: Status };
+    }
+
+    // Customer filter
+    if (khachhangIds && Array.isArray(khachhangIds) && khachhangIds.length > 0) {
+      whereConditions.khachhangId = { in: khachhangIds };
+    }
+
+    // Search query
     if (query) {
-      where.OR = [
+      whereConditions.OR = [
         { madonhang: { contains: query, mode: 'insensitive' } },
         { khachhang: { name: { contains: query, mode: 'insensitive' } } },
       ];
     }
 
+    // Optimized query with minimal select and efficient joins
     const donhangs = await this.prisma.donhang.findMany({
-      where,
-      include: {
-        sanpham: {
-          include: {
-            sanpham: true,
+      where: whereConditions,
+      select: {
+        id: true,
+        madonhang: true,
+        ngaygiao: true,
+        tongtien: true,
+        tongvat: true,
+        khachhang: {
+          select: {
+            name: true,
+            makh: true,
           },
         },
-        khachhang: { include: { banggia: { include: { sanpham: true } } } },
+        sanpham: {
+          select: {
+            slnhan: true,
+            giaban: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
-    const result = donhangs.map((v: any) => {
-      const [tong, soluong] = v.sanpham.reduce(
-        (acc: [number, number], item: any) => {
-          const slnhan = parseFloat((item.slnhan || 0).toString());
-          const giaban = parseFloat((item.sanpham?.giaban || 0).toString());
-          return [
-            acc[0] + (slnhan * giaban),
-            acc[1] + slnhan
-          ];
-        },
-        [0, 0]
-      );      
-      return {
-        id:v.id,
-        madonhang: v.madonhang,
-        ngaygiao: v.ngaygiao,
-        tong:tong.toFixed(3),
-        soluong:soluong.toFixed(3),
-        tongtien: v.tongtien,
-        tongvat: v.tongvat,
-        name: v.khachhang?.name,
-        makh: v.khachhang?.makh,
+
+    // Process results efficiently
+    const result = donhangs.map((donhang) => {
+      let tong = 0;
+      let soluong = 0;
+
+      // Calculate totals efficiently without parseFloat overhead
+      for (const item of donhang.sanpham) {
+        const slnhan = Number(item.slnhan) || 0;
+        const giaban = Number(item.giaban) || 0;
+        tong += slnhan * giaban;
+        soluong += slnhan;
       }
-    })
+
+      return {
+        id: donhang.id,
+        madonhang: donhang.madonhang,
+        ngaygiao: donhang.ngaygiao,
+        tong: tong.toFixed(3),
+        soluong: soluong.toFixed(3),
+        tongtien: donhang.tongtien,
+        tongvat: donhang.tongvat,
+        name: donhang.khachhang?.name,
+        makh: donhang.khachhang?.makh,
+      };
+    });
+
+    console.timeEnd('congnokhachhang-query');
     return result || [];
   }
 

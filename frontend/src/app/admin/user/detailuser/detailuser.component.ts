@@ -99,7 +99,10 @@ import { DrawerService } from '../shared/drawer.service';
     
     DetailUser = signal<any>({});
     isEdit = signal(false);
-    isDelete = signal(false);  
+    isDelete = signal(false);
+    isLoading = signal(false);
+    isAddingRole = signal(false);
+    isRemovingRole = signal(false);  
     userId = signal<string | null>(null);
     ListRole = signal<Role[]>([]);
     FilterRole = signal<Role[]>([]);
@@ -154,12 +157,24 @@ import { DrawerService } from '../shared/drawer.service';
     }
 
     updateFilterRole() {
-      const allRoles = this.ListRole();
+      const allRoles = this.ListRole() || [];
       const userRoles = this.DetailUser()?.roles || [];
       
-      this.FilterRole.set(allRoles.filter((role: Role) =>
-        !userRoles.some((userRole: any) => userRole.roleId === role.id || userRole.role?.id === role.id)
-      ));
+      if (allRoles.length === 0) {
+        this.FilterRole.set([]);
+        return;
+      }
+      
+      const filteredRoles = allRoles.filter((role: Role) => {
+        if (!role || !role.id) return false;
+        
+        return !userRoles.some((userRole: any) => {
+          if (!userRole) return false;
+          return userRole.roleId === role.id || userRole.role?.id === role.id;
+        });
+      });
+      
+      this.FilterRole.set(filteredRoles);
     }
     async handleUserAction() {
       if (this.userId() === 'new') {
@@ -237,8 +252,11 @@ import { DrawerService } from '../shared/drawer.service';
     }
     FillSlug(){
       this.DetailUser.update((v:any)=>{
-        v.slug = convertToSlug(v.title);
-        return v;
+        // Create a copy of the user object to avoid "object is not extensible" error
+        return {
+          ...v,
+          slug: convertToSlug(v.title)
+        };
       })
     }
     doFilterHederColumn(event:any){
@@ -246,55 +264,132 @@ import { DrawerService } from '../shared/drawer.service';
       this.FilterRole.set(allRoles.filter((v:any)=>v.name.toLowerCase().includes(event.target.value.toLowerCase())));
     }
     
-    async handleAddRole(item:any){
+    async handleAddRole(item: any) {
+      if (!item || !item.id || this.isAddingRole()) {
+        if (!item || !item.id) {
+          this._snackBar.open('Dữ liệu vai trò không hợp lệ', '', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+        }
+        return;
+      }
+
+      this.isAddingRole.set(true);
+      
       try {
+        // Check if role already exists
+        const userRoles = this.DetailUser()?.roles || [];
+        const roleExists = userRoles.some((userRole: any) => 
+          userRole.roleId === item.id || userRole.role?.id === item.id
+        );
+
+        if (roleExists) {
+          this._snackBar.open('Vai trò đã được thêm', '', {
+            duration: 2000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-warning'],
+          });
+          return;
+        }
+
         await this._UserGraphQLService.assignRolesToUser(this.DetailUser().id, [item.id]);
         
-        this.DetailUser.update((v:any)=>{
-          const exits = v.roles.find((r:any)=>r.role?.id === item.id || r.roleId === item.id);
-          if(!exits) {
-            v.roles.push({
-              id: GenId(8, false),
-              userId: this.DetailUser().id,
-              roleId: item.id,
-              role: item
-            });
-          }
-          return v;
+        this.DetailUser.update((v: any) => {
+          // Create a copy of the user object with a new roles array to avoid extensibility issues
+          return {
+            ...v,
+            roles: [
+              ...(v.roles || []),
+              {
+                id: GenId(8, false),
+                userId: this.DetailUser().id,
+                roleId: item.id,
+                role: item
+              }
+            ]
+          };
         });
         
         this.updateFilterRole();
-        this._snackBar.open('Thêm Thành Công', '', {
-          duration: 1000,
+        this._snackBar.open('Thêm vai trò thành công', '', {
+          duration: 2000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
         });
       } catch (error) {
         console.error('Error adding role:', error);
-        this._snackBar.open('Lỗi khi thêm vai trò', 'Đóng', { duration: 3000 });
+        this._snackBar.open('Lỗi khi thêm vai trò', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      } finally {
+        this.isAddingRole.set(false);
       }
     }
     
-    async handleRemoveRole(item:any){
+    async handleRemoveRole(item: any) {
+      if (!item || this.isRemovingRole()) {
+        if (!item) {
+          this._snackBar.open('Dữ liệu vai trò không hợp lệ', '', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+        }
+        return;
+      }
+
+      this.isRemovingRole.set(true);
+
       try {
-        await this._UserGraphQLService.removeRoleFromUser(this.DetailUser().id, item.role?.id || item.roleId);
+        const roleId = item.role?.id || item.roleId;
+        if (!roleId) {
+          this._snackBar.open('Không thể xác định ID vai trò', '', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+          return;
+        }
+
+        await this._UserGraphQLService.removeRoleFromUser(this.DetailUser().id, roleId);
         
-        this.DetailUser.update((v:any)=>{
-          v.roles = v.roles.filter((r:any)=> (r.role?.id || r.roleId) !== (item.role?.id || item.roleId));
-          return v;
+        this.DetailUser.update((v: any) => {
+          // Create a copy of the user object with filtered roles array to avoid extensibility issues
+          return {
+            ...v,
+            roles: (v.roles || []).filter((r: any) => 
+              (r.role?.id || r.roleId) !== roleId
+            )
+          };
         });
         
         this.updateFilterRole();
-        this._snackBar.open('Xóa Thành Công', '', {
-          duration: 1000,
+        this._snackBar.open('Xóa vai trò thành công', '', {
+          duration: 2000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
         });
       } catch (error) {
         console.error('Error removing role:', error);
-        this._snackBar.open('Lỗi khi xóa vai trò', 'Đóng', { duration: 3000 });
+        this._snackBar.open('Lỗi khi xóa vai trò', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      } finally {
+        this.isRemovingRole.set(false);
       }
     }
 

@@ -209,6 +209,7 @@ __decorate([
 ], DonhangController.prototype, "search", null);
 __decorate([
     (0, common_1.Post)('congnokhachhang'),
+    (0, cache_interceptor_1.Cache)(60),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

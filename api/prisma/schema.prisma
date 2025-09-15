@@ -159,6 +159,9 @@ model Khachhang {
   donhang       Donhang[]
   banggia       Banggia?        @relation("Banggiakhachhang", fields: [banggiaId], references: [id])
   nhomkhachhang Nhomkhachhang[] @relation("KhachhangNhom")
+
+  // Index for search performance
+  @@index([name])
 }
 
 model Nhomkhachhang {
@@ -233,6 +236,14 @@ model Donhang {
   khachhang   Khachhang?       @relation(fields: [khachhangId], references: [id])
   sanpham     Donhangsanpham[]
   PhieuKho    PhieuKho[]
+
+  // Performance indexes for congnokhachhang endpoint
+  @@index([ngaygiao])
+  @@index([status])  
+  @@index([khachhangId])
+  @@index([ngaygiao, status])
+  @@index([khachhangId, ngaygiao])
+  @@index([createdAt])
 }
 
 model Donhangsanpham {
@@ -254,6 +265,10 @@ model Donhangsanpham {
   vat       Decimal  @default(0) @postgres.Decimal(20, 3)
   donhang   Donhang  @relation(fields: [donhangId], references: [id], onDelete: Cascade)
   sanpham   Sanpham  @relation(fields: [idSP], references: [id])
+
+  // Index for join performance
+  @@index([donhangId])
+  @@index([idSP])
 }
 
 model Banggiasanpham {
