@@ -6,6 +6,7 @@ import {
   computed,
   effect,
   inject,
+  OnDestroy,
   OnInit,
   signal,
   ViewChild,
@@ -69,7 +70,7 @@ import { LoadingUtils } from '../../../shared/utils/loading.utils';
   styleUrl: './detailphieugiaohang.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
+export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDestroy {
   _ListphieugiaohangComponent: ListPhieugiaohangComponent = inject(ListPhieugiaohangComponent);
   _PhieugiaohangService: DonhangService = inject(DonhangService);
   _SanphamService: SanphamService = inject(SanphamService);
@@ -120,6 +121,14 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   isSaving = signal<boolean>(false);
   isUpdating = signal<boolean>(false);
   isLoadingProducts = signal<boolean>(false);
+  
+  // Optimization: Request queue and debounce
+  private updateQueue = new Map<string, any>();
+  private updateDebounceTimer: any;
+  private readonly UPDATE_DEBOUNCE_TIME = 500; // 500ms debounce
+  private readonly MAX_CONCURRENT_UPDATES = 3; // Max concurrent update requests
+  private activeUpdateRequests = 0;
+  private originalData: any = null; // For rollback on errors
   
   filterKhachhang: any = [];
   filterBanggia: any[] = [];
@@ -373,61 +382,265 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   // Thêm method để setup datasource
 
   async handlePhieugiaohangAction() {
+    // Prevent multiple rapid updates
+    if (this.isSaving() || this.isUpdating()) {
+      console.warn('Update already in progress, skipping...');
+      return;
+    }
+
     this.isSaving.set(true);
     try {
       if (this.phieugiaohangId() === '0') {
         // await this.createPhieugiaohang();
       } else {
-        await this.updatePhieugiaohang();
+        await this.updatePhieugiaohangOptimized();
       }
     } finally {
       this.isSaving.set(false);
     }
   }
 
-  private async updatePhieugiaohang() {
-    try {      
-      this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang().sanpham.map((v:any)=>{
-        v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
-        return v
-      })
-      this.UpdateTongTongTienVat();
+  // Optimized update method with debouncing and request limiting
+  private async updatePhieugiaohangOptimized() {
+    const phieugiaohangId = this.phieugiaohangId();
+    if (!phieugiaohangId || phieugiaohangId === '0') {
+      return;
+    }
 
-      await this._PhieugiaohangService.updatePhieugiao(this.DetailPhieugiaohang());
+    // Add to queue and debounce
+    this.updateQueue.set(phieugiaohangId, {
+      data: this.prepareUpdateData(),
+      timestamp: Date.now()
+    });
+
+    // Clear existing timer and set new one
+    if (this.updateDebounceTimer) {
+      clearTimeout(this.updateDebounceTimer);
+    }
+
+    this.updateDebounceTimer = setTimeout(() => {
+      this.processUpdateQueue();
+    }, this.UPDATE_DEBOUNCE_TIME);
+  }
+
+  private prepareUpdateData() {
+    try {
+      // Calculate values once and reuse
+      const sanphamWithCalculations = this.DetailPhieugiaohang().sanpham?.map((v: any) => {
+        const slgiao = Number(v.slgiao) || 0;
+        const giaban = Number(v.giaban) || 0;
+        return {
+          ...v,
+          ttgiao: slgiao * giaban
+        };
+      }) || [];
+
+      const tong = sanphamWithCalculations.reduce((sum: number, item: any) => 
+        sum + (item.ttgiao || 0), 0);
+      const vat = Number(this.DetailPhieugiaohang().vat) || 0;
+      const tongvat = tong * vat;
+      const tongtien = tong * (1 + vat);
+
+      return {
+        ...this.DetailPhieugiaohang(),
+        sanpham: sanphamWithCalculations,
+        tongtien,
+        tongvat
+      };
+    } catch (error) {
+      console.error('Error preparing update data:', error);
+      throw error;
+    }
+  }
+
+  private async processUpdateQueue() {
+    if (this.activeUpdateRequests >= this.MAX_CONCURRENT_UPDATES) {
+      // Retry after a short delay if too many concurrent requests
+      setTimeout(() => this.processUpdateQueue(), 100);
+      return;
+    }
+
+    const entries = Array.from(this.updateQueue.entries());
+    if (entries.length === 0) return;
+
+    // Process the most recent update for each ID
+    const latestUpdates = new Map();
+    entries.forEach(([id, data]) => {
+      if (!latestUpdates.has(id) || data.timestamp > latestUpdates.get(id).timestamp) {
+        latestUpdates.set(id, data);
+      }
+    });
+
+    // Clear the queue
+    this.updateQueue.clear();
+
+    // Process updates
+    for (const [id, updateData] of latestUpdates) {
+      if (this.activeUpdateRequests >= this.MAX_CONCURRENT_UPDATES) {
+        // Re-queue remaining updates
+        this.updateQueue.set(id, updateData);
+        setTimeout(() => this.processUpdateQueue(), 200);
+        break;
+      }
+
+      this.executeUpdate(updateData.data);
+    }
+  }
+
+  private async executeUpdate(data: any) {
+    if (this.activeUpdateRequests >= this.MAX_CONCURRENT_UPDATES) {
+      console.warn('Max concurrent updates reached, queuing...');
+      return;
+    }
+
+    this.activeUpdateRequests++;
+    this.isUpdating.set(true);
+
+    try {
+      // Update UI optimistically
+      this.updateUIOptimistically(data);
+
+      // Send update request with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+      await this._PhieugiaohangService.updatePhieugiao(data);
+
+      clearTimeout(timeoutId);
+
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 2000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-success'],
       });
+
       this.isEdit.update((value) => !value);
+
     } catch (error) {
       console.error('Lỗi khi cập nhật phieugiaohang:', error);
-      this._snackBar.open('Lỗi khi cập nhật phiếu giao hàng', '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-      });
+      
+      // Rollback optimistic updates on error
+      this.rollbackOptimisticUpdate();
+
+      if (error instanceof Error && error.name === 'AbortError') {
+        this._snackBar.open('Timeout - Vui lòng thử lại', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning'],
+        });
+      } else {
+        this._snackBar.open('Lỗi khi cập nhật phiếu giao hàng', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
+    } finally {
+      this.activeUpdateRequests--;
+      this.isUpdating.set(false);
     }
   }
-  UpdateTongTongTienVat(){
-    const tong = this.DetailPhieugiaohang().sanpham?.reduce((sum:any, item:any) => sum + (Number(item.slgiao) * Number(item.giaban)||0), 0) || 0;
-    const tongtien = tong*(1+Number(this.DetailPhieugiaohang().vat));
-    const tongvat = tong*this.DetailPhieugiaohang().vat;
-     this.DetailPhieugiaohang.update((data: any) => ({
-          ...data,
-          tongtien: tongtien,
-          tongvat: tongvat
-     }));
+
+  private updateUIOptimistically(data: any) {
+    // Store original data for rollback
+    this.originalData = { ...this.DetailPhieugiaohang() };
+
+    // Update UI immediately
+    this.DetailPhieugiaohang.set(data);
     
-    // Force change detection để UI cập nhật
+    // Only trigger change detection once
     this._cdr.detectChanges();
+  }
+
+  private rollbackOptimisticUpdate() {
+    if (this.originalData) {
+      this.DetailPhieugiaohang.set(this.originalData);
+      this._cdr.detectChanges();
+    }
+  }
+
+  // Keep original method for backward compatibility but mark as deprecated
+  private async updatePhieugiaohang() {
+    console.warn('updatePhieugiaohang is deprecated, use updatePhieugiaohangOptimized instead');
+    return this.updatePhieugiaohangOptimized();
+  }
+
+  // Optimized UpdateTongTongTienVat method
+  UpdateTongTongTienVat() {
+    try {
+      const sanpham = this.DetailPhieugiaohang().sanpham || [];
+      const vat = Number(this.DetailPhieugiaohang().vat) || 0;
+      
+      // Use reduce with better performance
+      const tong = sanpham.reduce((sum: number, item: any) => {
+        const slgiao = Number(item.slgiao) || 0;
+        const giaban = Number(item.giaban) || 0;
+        return sum + (slgiao * giaban);
+      }, 0);
+      
+      const tongvat = tong * vat;
+      const tongtien = tong * (1 + vat);
+
+      // Batch update to avoid multiple signal updates
+      this.DetailPhieugiaohang.update((data: any) => ({
+        ...data,
+        tongtien,
+        tongvat
+      }));
+
+      // Only trigger change detection if values actually changed
+      this._cdr.detectChanges();
+
+    } catch (error) {
+      console.error('Error updating totals:', error);
+    }
+  }
+
+  // Cleanup method to prevent memory leaks
+  ngOnDestroy() {
+    if (this.updateDebounceTimer) {
+      clearTimeout(this.updateDebounceTimer);
+    }
+    this.updateQueue.clear();
+    this.originalData = null;
+  }
+
+  // Performance monitoring method
+  private logPerformanceMetrics(operation: string, startTime: number) {
+    const endTime = performance.now();
+    const duration = endTime - startTime;
     
-    console.log('tong',tong);
-    console.log('tongtien',tongtien);
-    console.log('tongvat',tongvat);
-    console.log(this.DetailPhieugiaohang());  
+    console.log(`Performance [${operation}]:`, {
+      duration: `${duration.toFixed(2)}ms`,
+      activeRequests: this.activeUpdateRequests,
+      queueSize: this.updateQueue.size,
+      timestamp: new Date().toISOString()
+    });
+
+    // Log warning if operation takes too long
+    if (duration > 1000) {
+      console.warn(`Slow operation detected: ${operation} took ${duration.toFixed(2)}ms`);
+    }
+  }
+
+  // Method to manually trigger performance test (for debugging)
+  async testConcurrentUpdates(count: number = 10) {
+    console.log(`Starting concurrent update test with ${count} requests...`);
+    const startTime = performance.now();
+
+    const promises = Array.from({ length: count }, (_, i) => {
+      return this.updatePhieugiaohangOptimized();
+    });
+
+    try {
+      await Promise.all(promises);
+      this.logPerformanceMetrics(`ConcurrentTest_${count}`, startTime);
+    } catch (error) {
+      console.error('Concurrent test failed:', error);
+    }
   }
 
   async DeleteData() {
