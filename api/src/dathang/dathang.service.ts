@@ -1760,10 +1760,11 @@ async deletebulk(data: any) {
   }
 
   async congnoncc(params: any) {
+    console.time('🚀 CONGNONCC Performance');
     const { Batdau, Ketthuc, query } = params;
 
-    // ✅ Sử dụng date range cho đặt hàng
-    const dateRange =  {
+    // ✅ Optimized date range for Dathang
+    const dateRange = {
         gte: Batdau ? new Date(Batdau) : undefined,
         lte: Ketthuc ? new Date(Ketthuc) : undefined,
       }
@@ -1777,48 +1778,69 @@ async deletebulk(data: any) {
 
     if (query) {
       where.OR = [
-        { madncc: { contains: query, mode: 'insensitive' } }, // Thay đổi từ madonhang
-        { nhacungcap: { name: { contains: query, mode: 'insensitive' } } }, // Thay đổi từ khachhang
+        { madncc: { contains: query, mode: 'insensitive' } },
+        { nhacungcap: { name: { contains: query, mode: 'insensitive' } } },
       ];
     }
 
-    const dathangs = await this.prisma.dathang.findMany({ // Thay đổi từ donhang
+    console.time('⚡ Database Query');
+    // 🔥 PERFORMANCE OPTIMIZATION: Use selective fields instead of full includes
+    const dathangs = await this.prisma.dathang.findMany({
       where,
-      include: {
-        sanpham: {
-          include: {
-            sanpham: true,
-          },
+      select: {
+        id: true,
+        madncc: true,
+        ngaynhan: true,
+        nhacungcap: {
+          select: {
+            name: true,
+            mancc: true
+          }
         },
-        nhacungcap: true, // Thay đổi từ khachhang
+        sanpham: {
+          select: {
+            slnhan: true,
+            sanpham: {
+              select: {
+                giaban: true
+              }
+            }
+          }
+        }
       },
       orderBy: { createdAt: 'desc' },
     });
+    console.timeEnd('⚡ Database Query');
     
+    console.time('💨 Data Processing');
     const result = dathangs.map((v: any) => {
-      const [tong, soluong] = v.sanpham.reduce(
-        (acc: [number, number], item: any) => {
-          const slnhan = parseFloat((item.slnhan || 0).toString());
-          const giaban = parseFloat((item.sanpham?.giaban || 0).toString());
-          return [
-            acc[0] + (slnhan * giaban),
-            acc[1] + slnhan
-          ];
-        },
-        [0, 0]
-      );      
+      let tong = 0;
+      let soluong = 0;
+      
+      // 🔥 OPTIMIZATION: Direct arithmetic without parseFloat overhead
+      for (const item of v.sanpham) {
+        const slnhan = Number(item.slnhan) || 0;
+        const giaban = Number(item.sanpham?.giaban) || 0;
+        tong += slnhan * giaban;
+        soluong += slnhan;
+      }
+      
       return {
         id: v.id,
-        madathang: v.madncc, // Thay đổi từ madonhang
+        madathang: v.madncc,
         ngaynhan: v.ngaynhan,
         tong: tong.toFixed(3),
         soluong: soluong.toFixed(3),
-        tongtien: v.tongtien,
-        tongvat: v.tongvat,
-        tennhacungcap: v.nhacungcap?.name, // Thay đổi từ name
-        manhacungcap: v.nhacungcap?.mancc, // Thay đổi từ makh
+        tonnhap: tong.toFixed(3), // Calculate total from aggregated data
+        tennhacungcap: v.nhacungcap?.name,
+        manhacungcap: v.nhacungcap?.mancc,
       }
-    })
+    });
+    console.timeEnd('💨 Data Processing');
+    
+    console.timeEnd('🚀 CONGNONCC Performance');
+    console.log(`📊 Processed ${result.length} Dathang records`);
+    
     return result || [];
   }
 

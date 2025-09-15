@@ -1366,6 +1366,7 @@ let DathangService = class DathangService {
         }
     }
     async congnoncc(params) {
+        console.time('🚀 CONGNONCC Performance');
         const { Batdau, Ketthuc, query } = params;
         const dateRange = {
             gte: Batdau ? new Date(Batdau) : undefined,
@@ -1383,39 +1384,57 @@ let DathangService = class DathangService {
                 { nhacungcap: { name: { contains: query, mode: 'insensitive' } } },
             ];
         }
+        console.time('⚡ Database Query');
         const dathangs = await this.prisma.dathang.findMany({
             where,
-            include: {
-                sanpham: {
-                    include: {
-                        sanpham: true,
-                    },
+            select: {
+                id: true,
+                madncc: true,
+                ngaynhan: true,
+                nhacungcap: {
+                    select: {
+                        name: true,
+                        mancc: true
+                    }
                 },
-                nhacungcap: true,
+                sanpham: {
+                    select: {
+                        slnhan: true,
+                        sanpham: {
+                            select: {
+                                giaban: true
+                            }
+                        }
+                    }
+                }
             },
             orderBy: { createdAt: 'desc' },
         });
+        console.timeEnd('⚡ Database Query');
+        console.time('💨 Data Processing');
         const result = dathangs.map((v) => {
-            const [tong, soluong] = v.sanpham.reduce((acc, item) => {
-                const slnhan = parseFloat((item.slnhan || 0).toString());
-                const giaban = parseFloat((item.sanpham?.giaban || 0).toString());
-                return [
-                    acc[0] + (slnhan * giaban),
-                    acc[1] + slnhan
-                ];
-            }, [0, 0]);
+            let tong = 0;
+            let soluong = 0;
+            for (const item of v.sanpham) {
+                const slnhan = Number(item.slnhan) || 0;
+                const giaban = Number(item.sanpham?.giaban) || 0;
+                tong += slnhan * giaban;
+                soluong += slnhan;
+            }
             return {
                 id: v.id,
                 madathang: v.madncc,
                 ngaynhan: v.ngaynhan,
                 tong: tong.toFixed(3),
                 soluong: soluong.toFixed(3),
-                tongtien: v.tongtien,
-                tongvat: v.tongvat,
+                tonnhap: tong.toFixed(3),
                 tennhacungcap: v.nhacungcap?.name,
                 manhacungcap: v.nhacungcap?.mancc,
             };
         });
+        console.timeEnd('💨 Data Processing');
+        console.timeEnd('🚀 CONGNONCC Performance');
+        console.log(`📊 Processed ${result.length} Dathang records`);
         return result || [];
     }
     async downloadcongnoncc(params) {

@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const dathang_service_1 = require("./dathang.service");
 const client_1 = require("@prisma/client");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
+const cache_interceptor_1 = require("../common/cache.interceptor");
 let DathangController = class DathangController {
     constructor(dathangService) {
         this.dathangService = dathangService;
@@ -140,6 +141,7 @@ __decorate([
 ], DathangController.prototype, "search", null);
 __decorate([
     (0, common_1.Post)('congnoncc'),
+    (0, cache_interceptor_1.Cache)(60),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

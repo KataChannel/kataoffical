@@ -3,6 +3,7 @@ import { DathangService } from './dathang.service';
 import { AuditAction } from '@prisma/client';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { Response } from 'express';
+import { Cache } from '../common/cache.interceptor';
 
 @Controller('dathang')
 export class DathangController {
@@ -38,6 +39,7 @@ export class DathangController {
   }
   
   @Post('congnoncc')
+  @Cache(60) // ⚡ Cache for 60 seconds for better performance
   async congnoncc(@Body() params: any) {
     return this.dathangService.congnoncc(params);
   }

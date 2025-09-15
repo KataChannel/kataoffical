@@ -176,10 +176,9 @@ export declare class DathangController {
         id: any;
         madathang: any;
         ngaynhan: any;
-        tong: any;
-        soluong: any;
-        tongtien: any;
-        tongvat: any;
+        tong: string;
+        soluong: string;
+        tonnhap: string;
         tennhacungcap: any;
         manhacungcap: any;
     }[]>;

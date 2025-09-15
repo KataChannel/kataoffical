@@ -321,6 +321,14 @@ model Dathang {
   nhacungcap   Nhacungcap?      @relation(fields: [nhacungcapId], references: [id])
   sanpham      Dathangsanpham[]
   PhieuKho     PhieuKho[]
+
+  // ⚡ PERFORMANCE INDEXES for congnoncc optimization
+  @@index([ngaynhan])
+  @@index([status])  
+  @@index([nhacungcapId])
+  @@index([ngaynhan, status])
+  @@index([nhacungcapId, ngaynhan])
+  @@index([createdAt])
 }
 
 model Dathangsanpham {
@@ -340,6 +348,10 @@ model Dathangsanpham {
   gianhap   Decimal @default(0) @postgres.Decimal(20, 3)
   dathang   Dathang @relation(fields: [dathangId], references: [id], onDelete: Cascade)
   sanpham   Sanpham @relation(fields: [idSP], references: [id])
+
+  // ⚡ PERFORMANCE INDEXES for join optimization
+  @@index([dathangId])
+  @@index([idSP])
 }
 
 model Congty {
