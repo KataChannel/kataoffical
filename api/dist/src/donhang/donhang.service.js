@@ -1350,12 +1350,18 @@ let DonhangService = class DonhangService {
         let maxOrder = maxOrderResult._max.order || 0;
         let madonhang = await this.DonhangnumberToCode(maxOrder + 1);
         let existingDonhang = await this.prisma.donhang.findUnique({ where: { madonhang } });
-        while (existingDonhang) {
+        let attempts = 0;
+        const maxOrderAttempts = 50;
+        while (existingDonhang && attempts < maxOrderAttempts) {
             maxOrder++;
             madonhang = await this.DonhangnumberToCode(maxOrder + 1);
             existingDonhang = await this.prisma.donhang.findUnique({
                 where: { madonhang },
             });
+            attempts++;
+        }
+        if (existingDonhang) {
+            throw new common_1.InternalServerErrorException(`Không thể tạo mã đơn hàng duy nhất sau ${maxOrderAttempts} lần thử`);
         }
         return this.prisma.$transaction(async (prisma) => {
             const khachhang = await prisma.khachhang.findUnique({

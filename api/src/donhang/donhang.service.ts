@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 import { StatusMachineService } from '../common/status-machine.service';
@@ -1700,18 +1700,28 @@ export class DonhangService {
     let maxOrder = maxOrderResult._max.order || 0;
     let madonhang = await this.DonhangnumberToCode(maxOrder + 1);
     
-    // Kiểm tra mã đơn hàng đã tồn tại chưa
+    // Kiểm tra mã đơn hàng đã tồn tại chưa với giới hạn attempts để tránh infinite loop
     let existingDonhang = await this.prisma.donhang.findUnique(
       { where: { madonhang } }
     );
 
     // Nếu mã đã tồn tại, tăng maxOrder cho đến khi tìm được mã chưa tồn tại
-    while (existingDonhang) {
+    let attempts = 0;
+    const maxOrderAttempts = 50;
+    
+    while (existingDonhang && attempts < maxOrderAttempts) {
       maxOrder++;
       madonhang = await this.DonhangnumberToCode(maxOrder + 1);
       existingDonhang = await this.prisma.donhang.findUnique({
-      where: { madonhang },
+        where: { madonhang },
       });
+      attempts++;
+    }
+    
+    if (existingDonhang) {
+      throw new InternalServerErrorException(
+        `Không thể tạo mã đơn hàng duy nhất sau ${maxOrderAttempts} lần thử`
+      );
     }    
 
 
