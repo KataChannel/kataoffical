@@ -93,10 +93,10 @@ export class DonhangController {
   async searchfield(@Body() searchParams: Record<string, any>) {
     return this.donhangService.searchfield(searchParams);
   }
-  @Get()
-  findAll() {
-    return this.donhangService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.donhangService.findAll();
+  // }
   @Get('findbysanpham/:id')
   findByProductId(@Param('id') id: string) {
     console.log(id);

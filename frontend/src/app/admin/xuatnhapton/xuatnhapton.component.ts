@@ -1,36 +1,32 @@
-import { AfterViewInit, Component, computed, effect, inject, TemplateRef, ViewChild } from '@angular/core';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import moment from 'moment';
-import { PhieukhoService } from '../phieukho/phieukho.service';
-import { KhoService } from '../kho/kho.service';
-import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
-import { SanphamService } from '../sanpham/sanpham.service';
-import { readExcelFile, readExcelFileNoWorker, writeExcelFileWithSheets, writeExcelMultiple } from '../../shared/utils/exceldrive.utils';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { memoize, Debounce } from '../../shared/utils/decorators';
-import { DathangService } from '../dathang/dathang.service';
-import { DonhangService } from '../donhang/donhang.service';
-import { TrangThaiDon } from '../../shared/utils/trangthai';
-import { ChotkhoService } from '../chotkho/chotkho.service';
-import { DetaildexuatComponent } from './detaildexuat/detaildexuat';
-import { TimezoneService } from '../../shared/services/timezone.service';
-
+import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
+import { CommonModule } from "@angular/common";
+import { Component, ViewChild, inject, TemplateRef, EventEmitter, Output, OnDestroy } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { MatButtonModule } from "@angular/material/button";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatDialogModule, MatDialog } from "@angular/material/dialog";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatIconModule } from "@angular/material/icon";
+import { MatInputModule } from "@angular/material/input";
+import { MatMenuModule } from "@angular/material/menu";
+import { MatPaginatorModule, MatPaginator } from "@angular/material/paginator";
+import { MatSelectModule } from "@angular/material/select";
+import { MatSidenavModule, MatDrawer } from "@angular/material/sidenav";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatSortModule, MatSort } from "@angular/material/sort";
+import { MatTableModule, MatTableDataSource } from "@angular/material/table";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { RouterOutlet } from "@angular/router";
+import { DateHelpers } from "../../shared/utils/date-helpers";
+import { memoize, Debounce } from "../../shared/utils/decorators";
+import { writeExcelMultiple, readExcelFileNoWorker } from "../../shared/utils/exceldrive.utils";
+import { removeVietnameseAccents } from "../../shared/utils/texttransfer.utils";
+import { TrangThaiDon } from "../../shared/utils/trangthai";
+import { DathangService } from "../dathang/dathang.service";
+import { DonhangService } from "../donhang/donhang.service";
+import { KhoService } from "../kho/kho.service";
+import { PhieukhoService } from "../phieukho/phieukho.service";
+import { SanphamService } from "../sanpham/sanpham.service";
 @Component({
   selector: 'app-xuatnhapton',
   templateUrl: './xuatnhapton.component.html',
@@ -51,29 +47,35 @@ import { TimezoneService } from '../../shared/services/timezone.service';
     FormsModule,
     MatTooltipModule,
     MatDatepickerModule,
-    MatDialogModule,
-    DetaildexuatComponent
+    MatDialogModule
   ],
+  // providers:[provideNativeDateAdapter()]
 })
-export class XuatnhaptonComponent {
-  isDexuat: boolean = true;
+export class XuatnhaptonComponent implements OnDestroy {
+  @Output() DexuatEmit = new EventEmitter<any>();
   Detail: any = {};
   displayedColumns: string[] = [
-    'STT',
     'title',
-    'ngay',
-    'actions'
+    'masp',
+    'dvt',
+    'slton',
+    'sltontt',
+    'slhuy',
+    'chenhlech'
   ];
 
   ColumnName: any = {
-    STT: 'STT',
-    title: 'Tiêu đề chốt kho',
-    ngay: 'Ngày chốt',
-    actions: 'Thao tác'
-  };
+    title: 'Tên sản phẩm',
+    masp: 'Mã sản phẩm',
+    dvt: 'Đơn vị tính',
+    slton: 'SL tồn',
+    sltontt: 'Tồn thực tế Cuối Ngày',
+    slhuy: 'Hủy Cuối Ngày',
+    chenhlech: 'Chênh lệch'
 
+  };
   FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('ChotkhoColFilter') || '[]'
+    localStorage.getItem('TonkhoColFilter') || '[]'
   );
   Columns: any[] = [];
   isFilter: boolean = false;
@@ -81,48 +83,34 @@ export class XuatnhaptonComponent {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
-  
   private _PhieukhoService: PhieukhoService = inject(PhieukhoService);
   private _SanphamService: SanphamService = inject(SanphamService);
   private _DathangService: DathangService = inject(DathangService);
   private _DonhangService: DonhangService = inject(DonhangService);
   private _KhoService: KhoService = inject(KhoService);
-  private _ChotkhoService: ChotkhoService = inject(ChotkhoService);
-  private _timezoneService: TimezoneService = inject(TimezoneService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
-  private _router: Router = inject(Router);
-  
-  // Update to use chot kho data
-  Xuatnhapton: any = this._ChotkhoService.ListChotkho;
-  ListChotkho: any = this._ChotkhoService.ListChotkho;
-  
+  Xuatnhapton:any = this._PhieukhoService.ListPhieukho;
   dataSource = new MatTableDataSource([]);
-  _snackBar: MatSnackBar = inject(MatSnackBar);
-  CountItem: any = 0;
-  
+  _snackBar: MatSnackBar = inject(MatSnackBar);  CountItem: any = 0;
   SearchParams: any = {
-    startDate: moment().subtract(7, 'days').format('YYYY-MM-DD'),
-    endDate: moment().format('YYYY-MM-DD'),
-    page: 1,
-    limit: 20
+    Batdau: DateHelpers.format(DateHelpers.now(), 'YYYY-MM-DD'),
+    Ketthuc: DateHelpers.format(DateHelpers.add(DateHelpers.now(), 1, 'day'), 'YYYY-MM-DD'),
+    Type: 'donsi'
   };
-
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
     { id: 2, Title: '1 Tuần', value: 'week' },
     { id: 3, Title: '1 Tháng', value: 'month' },
     { id: 4, Title: '1 Năm', value: 'year' },
   ];
-  Chonthoigian: any = 'week';
+  Chonthoigian: any = 'day';
   isSearch: boolean = false;
   ListKho: any = [];
-
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
     });
   }
-
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
       const filterObject = JSON.parse(filter);
@@ -136,7 +124,6 @@ export class XuatnhaptonComponent {
       return isMatch;
     };
   }
-
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -145,134 +132,62 @@ export class XuatnhaptonComponent {
     }
   }
 
-  async LoadDondathang() {
-    try {
-      // Load chot kho data with date range
-      const result = await this._ChotkhoService.getChotkhoByDateRange(this.SearchParams);
-      console.log('Chot kho result:', result);
-      
-      if (result && result.data) {
-        this.ListChotkho.set(result.data);
-        this.dataSource.data = result.data;
-        this.CountItem = result.total || result.data.length;
-        
-        // Update paginator if result has pagination info
-        if (this.paginator) {
-          this.paginator.length = result.total || result.data.length;
-          this.paginator.pageIndex = (result.page || 1) - 1;
-          this.paginator.pageSize = result.limit || 20;
-        }
+  async LoadDondathang()
+  {
+    const ListSLChogiao = await this._DonhangService.getSLChogiao(this.SearchParams);
+    const ListSLChonhap = await this._DathangService.getSLChonhap(this.SearchParams);
+    this.dataSource.data.forEach((v: any) => {
+      const SLChogiao = ListSLChogiao.find((v1: any) => v1.idSP === v.sanphamId);
+      if (SLChogiao) {
+        v.slchogiaott = SLChogiao.slchogiaott;
+      } else {
+        v.slchogiaott = 0;
       }
-      
-      this.dataSource.sort = this.sort;
-    } catch (error) {
-      console.error('Error loading chot kho data:', error);
-      this._snackBar.open('Lỗi khi tải dữ liệu chốt kho', '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-      });
-    }
-  }
-
-  async ngOnInit(): Promise<void> {
-    try {
-      // Load initial chot kho data
-      const result = await this._ChotkhoService.getChotkhoByDateRange(this.SearchParams);
-      // console.log('Initial chot kho result:', result);
-      
-      if (result && result.data) {
-        this.ListChotkho.set(result.data);
-        this.dataSource.data = result.data;
-        this.CountItem = result.total || result.data.length;
+      const SLChonhap = ListSLChonhap.find((v1: any) => v1.idSP === v.sanphamId);
+      if (SLChonhap) {
+        v.slchonhaptt = SLChonhap.slchonhaptt;
+      } else {
+        v.slchonhaptt = 0;
       }
-      
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.initializeColumns();
-      this.setupDrawer();
-      
-      // Set up paginator labels
-      if (this.paginator) {
-        this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-        this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-        this.paginator._intl.previousPageLabel = 'Về Trước';
-        this.paginator._intl.firstPageLabel = 'Trang Đầu';
-        this.paginator._intl.lastPageLabel = 'Trang Cuối';
-      }
-    } catch (error) {
-      console.error('Error in ngOnInit:', error);
-      this._snackBar.open('Lỗi khi khởi tạo dữ liệu', '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-      });
-    }
+    });
+    this.dataSource.data = this.dataSource.data.filter((v: any) => v.slchogiaott > 0 || v.slchonhaptt > 0);
+    this.dataSource.sort = this.sort;
   }
+  
 
-  createchotkho() {
-    this.drawer.open();
-    this._router.navigate(['admin/xuatnhapton', 'new']);
+
+  async ngOnInit(): Promise<void> {    
+    await this._SanphamService.getAllSanpham() 
+    this._KhoService.getTonKho('1', '1000').then((res) => {
+    this.Xuatnhapton.set(res.data);
+    this.dataSource.data = this.Xuatnhapton();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.initializeColumns();
+    this.setupDrawer();
+    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+    this.paginator._intl.previousPageLabel = 'Về Trước';
+    this.paginator._intl.firstPageLabel = 'Trang Đầu';
+    this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    });
+    this.CountItem = this.Xuatnhapton().length;
   }
-
-  // Method to view chot kho details
-  viewChotkhoDetail(row: any) {
-    this.drawer.open();
-    window.location.href = `/admin/xuatnhapton/${row.id}`;
-    // this._router.navigate(['admin/xuatnhapton', this._timezoneService.formatForDisplay(row.ngay, 'YYYY-MM-DD')]);
-  }
-
-  // Method to edit chot kho
-  editChotkho(row: any) {
-    this.drawer.open();
-    window.location.href = `/admin/xuatnhapton/${row.id}`;
-    // this._router.navigate(['admin/xuatnhapton', this._timezoneService.formatForDisplay(row.ngay, 'YYYY-MM-DD')]);
-  }
-
-  // Method to delete chot kho
-  async deleteChotkho(row: any) {
-    // if (confirm('Bạn có chắc chắn muốn xóa chốt kho này?')) {
-      try {
-        await this._ChotkhoService.DeleteChotkho(row);
-        this._snackBar.open('Xóa chốt kho thành công', '', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-        // Reload data
-        await this.LoadDondathang();
-      } catch (error) {
-        console.error('Error deleting chot kho:', error);
-        this._snackBar.open('Lỗi khi xóa chốt kho', '', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-error'],
-        });
-      }
-    // }
-  }
-
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
       key,
       value: this.ColumnName[key],
       isShow: true,
     }));
-    
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('ChotkhoColFilter', JSON.stringify(this.FilterColumns));
+      localStorage.setItem('TonkhoColFilter',JSON.stringify(this.FilterColumns)
+      );
     }
-    
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
     );
-    
     this.ColumnName = this.FilterColumns.reduce((obj, item) => {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
@@ -285,15 +200,12 @@ export class XuatnhaptonComponent {
       .subscribe((result) => {
         if (result.matches) {
           this.drawer.mode = 'over';
-          if (this.paginator) {
-            this.paginator.hidePageSize = true;
-          }
+          this.paginator.hidePageSize = true;
         } else {
           this.drawer.mode = 'side';
         }
       });
   }
-
   toggleColumn(item: any): void {
     const column = this.FilterColumns.find((v) => v.key === item.key);
     if (column) {
@@ -301,7 +213,6 @@ export class XuatnhaptonComponent {
       this.updateDisplayedColumns();
     }
   }
-
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -310,82 +221,84 @@ export class XuatnhaptonComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('ChotkhoColFilter', JSON.stringify(this.FilterColumns));
+    localStorage.setItem('TonkhoColFilter',JSON.stringify(this.FilterColumns)
+    );
   }
-
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();
     this.FilterColumns = this.Columns.filter((v) =>
       v.value.toLowerCase().includes(query)
     );
   }
-
   @memoize()
-  FilterHederColumn(list: any, column: any) {
+  FilterHederColumn(list:any,column:any)
+  {
     const uniqueList = list.filter((obj: any, index: number, self: any) => 
       index === self.findIndex((t: any) => t[column] === obj[column])
     );
-    return uniqueList;
+    return uniqueList
   }
-
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    const query = event.target.value.toLowerCase();
+    const query = event.target.value.toLowerCase();  
     console.log(query);
     console.log(column);
 
-    this.dataSource.filteredData = this.ListChotkho().filter((v: any) => 
-      removeVietnameseAccents(v[column]?.toString() || '').includes(query) || 
-      (v[column]?.toString() || '').toLowerCase().includes(query)
-    );
-  }
+    this.dataSource.filteredData = this.Xuatnhapton().filter((v: any) => 
+      
+      removeVietnameseAccents(v[column]).includes(query) || v[column].toLowerCase().includes(query)
+  );
 
+  }
   trackByFn(index: number, item: any): any {
-    return item.id;
+    return item.id; // Use a unique identifier
   }
-
-  ListFilter: any[] = [];
-  
-  ChosenItem(item: any, column: any) {
-    const CheckItem = this.dataSource.filteredData.filter((v: any) => v[column] === item[column]);
-    const CheckItem1 = this.ListFilter.filter((v: any) => v[column] === item[column]);
-    if (CheckItem1.length > 0) {
+  ListFilter:any[] =[]
+  ChosenItem(item:any,column:any)
+  {
+    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
+    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
+    if(CheckItem1.length>0)
+    {
       this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
-    } else {
-      this.ListFilter = [...this.ListFilter, ...CheckItem];
+    }
+    else{
+      this.ListFilter = [...this.ListFilter,...CheckItem];
     }
   }
-
-  ChosenAll(list: any) {
-    list.forEach((v: any) => {
-      const CheckItem = this.ListFilter.find((v1) => v1.id === v.id) ? true : false;
-      if (CheckItem) {
-        this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
-      } else {
-        this.ListFilter.push(v);
-      }
+  ChosenAll(list:any)
+  {
+    list.forEach((v:any) => {
+      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
+      if(CheckItem)
+        {
+          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
+        }
+        else{
+          this.ListFilter.push(v);
+        }
     });
   }
-
-  ResetFilter() {
-    this.ListFilter = this.ListChotkho();
-    this.dataSource.data = this.ListChotkho();
+  ResetFilter()
+  {
+    this.ListFilter = this.Xuatnhapton();
+    this.dataSource.data = this.Xuatnhapton();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-
-  EmptyFiter() {
+  EmptyFiter()
+  {
     this.ListFilter = [];
   }
-
-  CheckItem(item: any) {
-    return this.ListFilter.find((v) => v.id === item.id) ? true : false;
+  CheckItem(item:any)
+  {
+    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
   }
-
-  ApplyFilterColum(menu: any) {
-    this.dataSource.data = this.ListChotkho().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+  ApplyFilterColum(menu:any)
+  {    
+    this.dataSource.data = this.Xuatnhapton().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.dataSource.sort = this.sort;    
     menu.closeMenu();
   }
 
@@ -432,28 +345,26 @@ export class XuatnhaptonComponent {
           });
         }
       }
-    });
-
-    if (phieuNhapDetails.length > 0) {
+    });    if (phieuNhapDetails.length > 0) {
       // Tạo phiếu nhập một lần với danh sách chi tiết
       this._PhieukhoService.CreatePhieukho(
         {
-        title:`Điều Chỉnh Kho Ngày ${this._timezoneService.nowLocal('DD/MM/YYYY ')}`, 
+        title:`Điều Chỉnh Kho Ngày ${DateHelpers.format(DateHelpers.now(), 'DD/MM/YYYY ')}`, 
         type:'nhap',
         sanpham: phieuNhapDetails, 
-        ghichu: `Cập nhật tồn kho lúc ${this._timezoneService.nowLocal('HH:mm:ss DD/MM/YYYY ')}`,
-        ngay: new Date()
+        ghichu: `Cập nhật tồn kho lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
+        ngay: DateHelpers.now()
       });
     }
     if (phieuXuatDetails.length > 0) {
       // Tạo phiếu xuất một lần với danh sách chi tiết
       this._PhieukhoService.CreatePhieukho(
         {
-        title:`Điều Chỉnh Kho Ngày ${this._timezoneService.nowLocal('DD/MM/YYYY ')}`, 
+        title:`Điều Chỉnh Kho Ngày ${DateHelpers.format(DateHelpers.now(), 'DD/MM/YYYY ')}`, 
         type:'xuat',
         sanpham: phieuXuatDetails, 
-        ghichu: `Cập nhật tồn kho lúc ${this._timezoneService.nowLocal('HH:mm:ss DD/MM/YYYY ')}`,
-        ngay: new Date()
+        ghichu: `Cập nhật tồn kho lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
+        ngay: DateHelpers.now()
       });
     }
     if (phieuNhapDetails.length > 0) {
@@ -483,28 +394,46 @@ export class XuatnhaptonComponent {
   }
 
   private _dialog: MatDialog = inject(MatDialog);
-  Trangthaidon: any = TrangThaiDon;
-  ListDathang: any[] = [];
-  ListDonhang: any[] = [];
+  Trangthaidon:any = TrangThaiDon
+  ListDathang:any[] = [];
+  ListDonhang:any[] = [];
+  
+  // Enhanced filtering and sorting properties
   FilteredDathang: any[] = [];
   FilteredDonhang: any[] = [];
-  selectedDathangStatus: string = '';
-  selectedDonhangStatus: string = '';
-  Object = Object;
   
-  // Sorting properties for Dathang
-  dathangSortColumn: string = '';
+  // Sort properties for Dathang
+  dathangSortField: string = '';
   dathangSortDirection: 'asc' | 'desc' = 'asc';
+  selectedDathangStatus: string = '';
   
-  // Sorting properties for Donhang
-  donhangSortColumn: string = '';
+  // Sort properties for Donhang
+  donhangSortField: string = '';
   donhangSortDirection: 'asc' | 'desc' = 'asc';
-
+  selectedDonhangStatus: string = '';
+  
+  // Date filtering properties
+  dathangStartDate: string = '';
+  dathangEndDate: string = '';
+  donhangStartDate: string = '';
+  donhangEndDate: string = '';
+  
+  // Debounce timers for optimized search
+  private dathangSearchTimeout: any;
+  private donhangSearchTimeout: any;
+  
+  Object = Object; // For template access
   async XemDathang(row: any, template: TemplateRef<any>) {
-    this.ListDathang = await this._DathangService.findbysanpham(row.sanphamId);
-    this.FilteredDathang = [...this.ListDathang];
-    this.selectedDathangStatus = '';
-    console.log(this.ListDathang);
+   this.ListDathang =  await this._DathangService.findbysanpham(row.sanphamId);
+   console.log(this.ListDathang);
+   
+   // Initialize filtered array and reset filters
+   this.FilteredDathang = [...this.ListDathang];
+   this.selectedDathangStatus = '';
+   this.dathangSortField = '';
+   this.dathangSortDirection = 'asc';
+   this.dathangStartDate = '';
+   this.dathangEndDate = '';
 
     const dialogDeleteRef = this._dialog.open(template, {
       hasBackdrop: true,
@@ -512,301 +441,429 @@ export class XuatnhaptonComponent {
     });
     dialogDeleteRef.afterClosed().subscribe((result) => {
       if (result === "true") {
-        // Handle result
+      
       }
     });
   }
 
   async XemDonhang(row: any, template: TemplateRef<any>) {
-    this.ListDonhang = await this._DonhangService.findbysanpham(row.sanphamId);
+    this.ListDonhang =  await this._DonhangService.findbysanpham(row.sanphamId);
+    console.log(this.ListDonhang);
+    
+    // Initialize filtered array and reset filters
     this.FilteredDonhang = [...this.ListDonhang];
     this.selectedDonhangStatus = '';
-    console.log(this.ListDonhang);
+    this.donhangSortField = '';
+    this.donhangSortDirection = 'asc';
+    this.donhangStartDate = '';
+    this.donhangEndDate = '';
     const dialogDeleteRef = this._dialog.open(template, {
       hasBackdrop: true,
       disableClose: true,
     });
     dialogDeleteRef.afterClosed().subscribe((result) => {
       if (result === "true") {
-        // Handle result
+      
       }
     });
   }
+  TinhTong(items: any, fieldTong: any) {
+    return (
+      items?.reduce((sum: any, item: any) => sum + (Number(item?.sanpham[fieldTong]) || 0), 0) || 0
+    );
+  }
+  gotoDexuat(){
+    this.DexuatEmit.emit(false);
+  }
 
-  // Filter methods for Dathang
-  filterDathangList(event: any): void {
-    const query = removeVietnameseAccents(event.target.value?.toLowerCase() || '');
-    if (!query.trim()) {
-      this.FilteredDathang = [...this.ListDathang];
-      return;
+  ngOnDestroy() {
+    // Clean up debounce timers
+    if (this.dathangSearchTimeout) {
+      clearTimeout(this.dathangSearchTimeout);
+    }
+    if (this.donhangSearchTimeout) {
+      clearTimeout(this.donhangSearchTimeout);
+    }
+  }
+
+  // ================== DATHANG FILTERING AND SORTING METHODS ==================
+  
+  filterDathangList(event: any) {
+    // Clear previous timeout
+    if (this.dathangSearchTimeout) {
+      clearTimeout(this.dathangSearchTimeout);
     }
     
-    this.FilteredDathang = this.ListDathang.filter((item: any) => {
-      const title = removeVietnameseAccents(item.title?.toString() || '').toLowerCase();
-      const madncc = removeVietnameseAccents(item.madncc?.toString() || '').toLowerCase();
-      const nhacungcap = removeVietnameseAccents(item.nhacungcap?.name?.toString() || '').toLowerCase();
-      const sanpham = removeVietnameseAccents(item.sanpham?.sanpham?.title?.toString() || '').toLowerCase();
-      
-      return title.includes(query) || 
-             madncc.includes(query) || 
-             nhacungcap.includes(query) || 
-             sanpham.includes(query);
+    // Debounce search for better performance
+    this.dathangSearchTimeout = setTimeout(() => {
+      const searchTerm = event.target.value?.toLowerCase() || '';
+      this.applyDathangFilters(searchTerm);
+    }, 300);
+  }
+
+  filterDathangByStatus(status: string) {
+    this.selectedDathangStatus = status;
+    const searchInput = document.querySelector('#dathangSearch') as HTMLInputElement;
+    const searchTerm = searchInput?.value?.toLowerCase() || '';
+    this.applyDathangFilters(searchTerm);
+  }
+
+  clearDathangFilter() {
+    this.selectedDathangStatus = '';
+    this.dathangStartDate = '';
+    this.dathangEndDate = '';
+    this.dathangSortField = '';
+    this.dathangSortDirection = 'asc';
+    this.applyDathangFilters('');
+  }
+
+  private applyDathangFilters(searchTerm: string) {
+    let filtered = [...this.ListDathang];
+
+    // Apply status filter
+    if (this.selectedDathangStatus) {
+      filtered = filtered.filter(item => item.status === this.selectedDathangStatus);
+    }
+
+    // Apply date range filter - Optimized
+    if (this.dathangStartDate || this.dathangEndDate) {
+      filtered = this.applyDateRangeFilter(filtered, this.dathangStartDate, this.dathangEndDate);
+    }
+
+    // Apply search filter - Optimized
+    if (searchTerm) {
+      filtered = this.applySearchFilter(filtered, searchTerm, 'dathang');
+    }
+
+    this.FilteredDathang = filtered;
+    this.applydathangCurrentSort();
+  }
+
+  // Optimized date range filter method
+  private applyDateRangeFilter(items: any[], startDate: string, endDate: string): any[] {
+    if (!startDate && !endDate) return items;
+    
+    const start = startDate ? new Date(startDate + 'T00:00:00') : null;
+    const end = endDate ? new Date(endDate + 'T23:59:59') : null;
+    
+    return items.filter(item => {
+      const itemDate = new Date(item.createdAt);
+      if (start && itemDate < start) return false;
+      if (end && itemDate > end) return false;
+      return true;
     });
   }
 
-  filterDathangByStatus(status: string): void {
-    this.selectedDathangStatus = status;
-    if (status === '') {
-      this.FilteredDathang = [...this.ListDathang];
-    } else {
-      this.FilteredDathang = this.ListDathang.filter((item: any) => item.status === status);
-    }
+  // Optimized search filter method
+  private applySearchFilter(items: any[], searchTerm: string, type: 'dathang' | 'donhang'): any[] {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    
+    return items.filter(item => {
+      const searchableFields = type === 'dathang' 
+        ? [
+            item.title,
+            item.madathang || item.madncc,
+            item.khachhang?.name || item.nhacungcap?.name,
+            item.sanpham?.sanpham?.title,
+            this.Trangthaidon[item.status]
+          ]
+        : [
+            item.title,
+            item.madonhang,
+            item.khachhang?.name,
+            item.sanpham?.sanpham?.title,
+            this.Trangthaidon[item.status]
+          ];
+      
+      return searchableFields.some(field => 
+        field?.toString().toLowerCase().includes(lowerSearchTerm)
+      );
+    });
   }
 
-  clearDathangFilter(): void {
-    this.FilteredDathang = [...this.ListDathang];
-    this.selectedDathangStatus = '';
-    this.dathangSortColumn = '';
-    this.dathangSortDirection = 'asc';
-  }
-
-  // Sort methods for Dathang
-  sortDathangData(column: string): void {
-    if (this.dathangSortColumn === column) {
+  sortDathangData(field: string) {
+    if (this.dathangSortField === field) {
       this.dathangSortDirection = this.dathangSortDirection === 'asc' ? 'desc' : 'asc';
     } else {
-      this.dathangSortColumn = column;
+      this.dathangSortField = field;
       this.dathangSortDirection = 'asc';
     }
+    this.applydathangCurrentSort();
+  }
 
-    this.FilteredDathang.sort((a: any, b: any) => {
-      let valueA = this.getNestedProperty(a, column);
-      let valueB = this.getNestedProperty(b, column);
+  private applydathangCurrentSort() {
+    if (!this.dathangSortField) return;
 
-      // Handle null/undefined values
-      if (valueA == null && valueB == null) return 0;
-      if (valueA == null) return 1;
-      if (valueB == null) return -1;
+    this.FilteredDathang.sort((a, b) => {
+      let aValue: any;
+      let bValue: any;
 
-      // Convert to string for comparison if needed
-      if (typeof valueA === 'string') valueA = valueA.toLowerCase();
-      if (typeof valueB === 'string') valueB = valueB.toLowerCase();
-
-      // Handle dates
-      if (column === 'createdAt' || column === 'updatedAt') {
-        valueA = new Date(valueA).getTime();
-        valueB = new Date(valueB).getTime();
+      // Handle nested properties
+      if (this.dathangSortField.includes('.')) {
+        const keys = this.dathangSortField.split('.');
+        aValue = keys.reduce((obj, key) => obj && obj[key], a);
+        bValue = keys.reduce((obj, key) => obj && obj[key], b);
+      } else {
+        aValue = a[this.dathangSortField];
+        bValue = b[this.dathangSortField];
       }
 
-      let result = 0;
-      if (valueA < valueB) result = -1;
-      else if (valueA > valueB) result = 1;
+      // Handle null/undefined values
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
 
-      return this.dathangSortDirection === 'asc' ? result : -result;
+      // Convert to string for comparison
+      aValue = String(aValue).toLowerCase();
+      bValue = String(bValue).toLowerCase();
+
+      const comparison = aValue.localeCompare(bValue, 'vi', { numeric: true });
+      return this.dathangSortDirection === 'asc' ? comparison : -comparison;
     });
   }
 
-  getDathangSortIcon(column: string): string {
-    if (this.dathangSortColumn !== column) return 'unfold_more';
+  getDathangSortIcon(field: string): string {
+    if (this.dathangSortField !== field) {
+      return 'unfold_more';
+    }
     return this.dathangSortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
   }
 
-  // Filter methods for Donhang
-  filterDonhangList(event: any): void {
-    const query = removeVietnameseAccents(event.target.value?.toLowerCase() || '');
-    if (!query.trim()) {
-      this.FilteredDonhang = [...this.ListDonhang];
+  exportDathangData() {
+    if (this.FilteredDathang.length === 0) {
+      alert('Không có dữ liệu để xuất');
       return;
     }
-    
-    this.FilteredDonhang = this.ListDonhang.filter((item: any) => {
-      const title = removeVietnameseAccents(item.title?.toString() || '').toLowerCase();
-      const madonhang = removeVietnameseAccents(item.madonhang?.toString() || '').toLowerCase();
-      const khachhang = removeVietnameseAccents(item.khachhang?.name?.toString() || '').toLowerCase();
-      const sanpham = removeVietnameseAccents(item.sanpham?.sanpham?.title?.toString() || '').toLowerCase();
-      
-      return title.includes(query) || 
-             madonhang.includes(query) || 
-             khachhang.includes(query) || 
-             sanpham.includes(query);
-    });
+
+    const dataToExport = this.FilteredDathang.map(item => ({
+      'Tiêu đề': item.title || '',
+      'Mã Đặt Hàng': item.madathang || '',
+      'Trạng thái': this.Trangthaidon[item.status] || '',
+      'Khách Hàng': item.khachhang?.name || '',
+      'Tên Sản Phẩm': item.sanpham?.sanpham?.title || '',
+      'Số Lượng Đặt': item.sanpham?.sldat || 0,
+      'Số Lượng Nhận': item.sanpham?.slnhan || 0,
+      'Ngày': this.formatDate(item.createdAt)
+    }));
+
+    this.exportToExcel(dataToExport, 'dathang-data');
   }
 
-  filterDonhangByStatus(status: string): void {
-    this.selectedDonhangStatus = status;
-    if (status === '') {
-      this.FilteredDonhang = [...this.ListDonhang];
-    } else {
-      this.FilteredDonhang = this.ListDonhang.filter((item: any) => item.status === status);
+  // ================== DONHANG FILTERING AND SORTING METHODS ==================
+
+  filterDonhangList(event: any) {
+    // Clear previous timeout
+    if (this.donhangSearchTimeout) {
+      clearTimeout(this.donhangSearchTimeout);
     }
+    
+    // Debounce search for better performance
+    this.donhangSearchTimeout = setTimeout(() => {
+      const searchTerm = event.target.value?.toLowerCase() || '';
+      this.applyDonhangFilters(searchTerm);
+    }, 300);
   }
 
-  clearDonhangFilter(): void {
-    this.FilteredDonhang = [...this.ListDonhang];
+  filterDonhangByStatus(status: string) {
+    this.selectedDonhangStatus = status;
+    const searchInput = document.querySelector('#donhangSearch') as HTMLInputElement;
+    const searchTerm = searchInput?.value?.toLowerCase() || '';
+    this.applyDonhangFilters(searchTerm);
+  }
+
+  clearDonhangFilter() {
     this.selectedDonhangStatus = '';
-    this.donhangSortColumn = '';
+    this.donhangStartDate = '';
+    this.donhangEndDate = '';
+    this.donhangSortField = '';
     this.donhangSortDirection = 'asc';
+    this.applyDonhangFilters('');
   }
 
-  // Sort methods for Donhang
-  sortDonhangData(column: string): void {
-    if (this.donhangSortColumn === column) {
+  private applyDonhangFilters(searchTerm: string) {
+    let filtered = [...this.ListDonhang];
+
+    // Apply status filter
+    if (this.selectedDonhangStatus) {
+      filtered = filtered.filter(item => item.status === this.selectedDonhangStatus);
+    }
+
+    // Apply date range filter - Optimized
+    if (this.donhangStartDate || this.donhangEndDate) {
+      filtered = this.applyDateRangeFilter(filtered, this.donhangStartDate, this.donhangEndDate);
+    }
+
+    // Apply search filter - Optimized
+    if (searchTerm) {
+      filtered = this.applySearchFilter(filtered, searchTerm, 'donhang');
+    }
+
+    this.FilteredDonhang = filtered;
+    this.applyDonhangCurrentSort();
+  }
+
+  sortDonhangData(field: string) {
+    if (this.donhangSortField === field) {
       this.donhangSortDirection = this.donhangSortDirection === 'asc' ? 'desc' : 'asc';
     } else {
-      this.donhangSortColumn = column;
+      this.donhangSortField = field;
       this.donhangSortDirection = 'asc';
     }
+    this.applyDonhangCurrentSort();
+  }
 
-    this.FilteredDonhang.sort((a: any, b: any) => {
-      let valueA = this.getNestedProperty(a, column);
-      let valueB = this.getNestedProperty(b, column);
+  private applyDonhangCurrentSort() {
+    if (!this.donhangSortField) return;
 
-      // Handle null/undefined values
-      if (valueA == null && valueB == null) return 0;
-      if (valueA == null) return 1;
-      if (valueB == null) return -1;
+    this.FilteredDonhang.sort((a, b) => {
+      let aValue: any;
+      let bValue: any;
 
-      // Convert to string for comparison if needed
-      if (typeof valueA === 'string') valueA = valueA.toLowerCase();
-      if (typeof valueB === 'string') valueB = valueB.toLowerCase();
-
-      // Handle dates
-      if (column === 'createdAt' || column === 'updatedAt') {
-        valueA = new Date(valueA).getTime();
-        valueB = new Date(valueB).getTime();
+      // Handle nested properties
+      if (this.donhangSortField.includes('.')) {
+        const keys = this.donhangSortField.split('.');
+        aValue = keys.reduce((obj, key) => obj && obj[key], a);
+        bValue = keys.reduce((obj, key) => obj && obj[key], b);
+      } else {
+        aValue = a[this.donhangSortField];
+        bValue = b[this.donhangSortField];
       }
 
-      let result = 0;
-      if (valueA < valueB) result = -1;
-      else if (valueA > valueB) result = 1;
+      // Handle null/undefined values
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
 
-      return this.donhangSortDirection === 'asc' ? result : -result;
+      // Convert to string for comparison
+      aValue = String(aValue).toLowerCase();
+      bValue = String(bValue).toLowerCase();
+
+      const comparison = aValue.localeCompare(bValue, 'vi', { numeric: true });
+      return this.donhangSortDirection === 'asc' ? comparison : -comparison;
     });
   }
 
-  getDonhangSortIcon(column: string): string {
-    if (this.donhangSortColumn !== column) return 'unfold_more';
+  getDonhangSortIcon(field: string): string {
+    if (this.donhangSortField !== field) {
+      return 'unfold_more';
+    }
     return this.donhangSortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
   }
 
-  // Helper method to get nested properties
-  private getNestedProperty(obj: any, path: string): any {
-    if (!obj || !path) return null;
-    return path.split('.').reduce((current, prop) => {
-      return current && current[prop] !== undefined ? current[prop] : null;
-    }, obj);
-  }
-
-  // Export methods
-  exportDathangData(): void {
-    try {
-      if (!this.FilteredDathang || this.FilteredDathang.length === 0) {
-        this._snackBar.open('Không có dữ liệu để xuất', '', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-warning'],
-        });
-        return;
-      }
-
-      const exportData = this.FilteredDathang.map((item: any) => ({
-        'Tiêu đề': item.title || '',
-        'Mã đặt': item.madncc || '',
-        'Trạng thái': this.Trangthaidon[item.status] || item.status || '',
-        'Nhà cung cấp': item.nhacungcap?.name || 'N/A',
-        'Tên sản phẩm': item.sanpham?.sanpham?.title || 'N/A',
-        'Số lượng đặt': item.sanpham?.sldat || 0,
-        'Số lượng nhận': item.sanpham?.slnhan || 0,
-        'Ngày': this.formatDate(item.createdAt)
-      }));
-      
-      const dataToExport = { 'Đặt hàng': exportData };
-      writeExcelFileWithSheets(dataToExport, `Dathang_${this._timezoneService.nowLocal('YYYY-MM-DD')}`);
-      
-      this._snackBar.open('Xuất Excel thành công', '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
-    } catch (error) {
-      console.error('Error exporting Dathang data:', error);
-      this._snackBar.open('Lỗi khi xuất Excel', '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-      });
+  exportDonhangData() {
+    if (this.FilteredDonhang.length === 0) {
+      alert('Không có dữ liệu để xuất');
+      return;
     }
+
+    const dataToExport = this.FilteredDonhang.map(item => ({
+      'Tiêu đề': item.title || '',
+      'Mã Đơn Hàng': item.madonhang || '',
+      'Trạng thái': this.Trangthaidon[item.status] || '',
+      'Khách Hàng': item.khachhang?.name || '',
+      'Tên Sản Phẩm': item.sanpham?.sanpham?.title || '',
+      'Số Lượng Đặt': item.sanpham?.sldat || 0,
+      'Số Lượng Nhận': item.sanpham?.slnhan || 0,
+      'Ngày': this.formatDate(item.createdAt)
+    }));
+
+    this.exportToExcel(dataToExport, 'donhang-data');
   }
 
-  exportDonhangData(): void {
-    try {
-      if (!this.FilteredDonhang || this.FilteredDonhang.length === 0) {
-        this._snackBar.open('Không có dữ liệu để xuất', '', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-warning'],
-        });
-        return;
-      }
+  // ================== DATE FILTERING METHODS ==================
 
-      const exportData = this.FilteredDonhang.map((item: any) => ({
-        'Tiêu đề': item.title || '',
-        'Mã đơn': item.madonhang || '',
-        'Trạng thái': this.Trangthaidon[item.status] || item.status || '',
-        'Khách hàng': item.khachhang?.name || 'N/A',
-        'Tên sản phẩm': item.sanpham?.sanpham?.title || 'N/A',
-        'Số lượng đặt': item.sanpham?.sldat || 0,
-        'Số lượng nhận': item.sanpham?.slnhan || 0,
-        'Ngày': this.formatDate(item.createdAt)
-      }));
-      
-      const dataToExport = { 'Đơn hàng': exportData };
-      writeExcelFileWithSheets(dataToExport, `Donhang_${this._timezoneService.nowLocal('YYYY-MM-DD')}`);
-      
-      this._snackBar.open('Xuất Excel thành công', '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
-    } catch (error) {
-      console.error('Error exporting Donhang data:', error);
-      this._snackBar.open('Lỗi khi xuất Excel', '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-      });
-    }
+  filterDathangByDateRange() {
+    const searchInput = document.querySelector('#dathangSearch') as HTMLInputElement;
+    const searchTerm = searchInput?.value?.toLowerCase() || '';
+    this.applyDathangFilters(searchTerm);
   }
 
-  TinhTong(items: any[], fieldTong: string) {
-    if (!items || !Array.isArray(items) || items.length === 0) return 0;
+  filterDonhangByDateRange() {
+    const searchInput = document.querySelector('#donhangSearch') as HTMLInputElement;
+    const searchTerm = searchInput?.value?.toLowerCase() || '';
+    this.applyDonhangFilters(searchTerm);
+  }
+
+  clearDathangDateFilter() {
+    this.dathangStartDate = '';
+    this.dathangEndDate = '';
+    this.filterDathangByDateRange();
+  }
+
+  clearDonhangDateFilter() {
+    this.donhangStartDate = '';
+    this.donhangEndDate = '';
+    this.filterDonhangByDateRange();
+  }
+
+  // Quick date filters for Dathang - Optimized
+  setDathangDateFilter(days: number) {
+    const today = DateHelpers.format(DateHelpers.now(), 'YYYY-MM-DD');
+    const startDate = DateHelpers.format(
+      DateHelpers.subtract(DateHelpers.now(), days, 'day'), 
+      'YYYY-MM-DD'
+    );
     
-    return items.reduce((sum: number, item: any) => {
-      const value = item?.sanpham?.[fieldTong];
-      const numberValue = Number(value);
-      return sum + (isNaN(numberValue) ? 0 : numberValue);
-    }, 0);
+    this.dathangStartDate = startDate;
+    this.dathangEndDate = today;
+    this.filterDathangByDateRange();
   }
 
-  // Date formatting helper methods for templates
-  formatDate(date: any, format: string = 'DD/MM/YYYY'): string {
-    if (!date) return '';
-    return this._timezoneService.formatForDisplay(date, format);
+  // Quick date filters for Donhang - Optimized
+  setDonhangDateFilter(days: number) {
+    const today = DateHelpers.format(DateHelpers.now(), 'YYYY-MM-DD');
+    const startDate = DateHelpers.format(
+      DateHelpers.subtract(DateHelpers.now(), days, 'day'), 
+      'YYYY-MM-DD'
+    );
+    
+    this.donhangStartDate = startDate;
+    this.donhangEndDate = today;
+    this.filterDonhangByDateRange();
   }
 
-  formatDateTime(date: any): string {
+  // ================== UTILITY METHODS ==================
+
+  formatDate(date: any): string {
     if (!date) return '';
-    return this._timezoneService.formatForDisplay(date, 'DD/MM/YYYY HH:mm');
+    try {
+      return DateHelpers.format(date, 'DD/MM/YYYY HH:mm');
+    } catch (error) {
+      return '';
+    }
   }
 
-  formatDateTimeSeconds(date: any): string {
-    if (!date) return '';
-    return this._timezoneService.formatForDisplay(date, 'HH:mm:ss DD/MM/YYYY');
+  private exportToExcel(data: any[], filename: string) {
+    // Simple CSV export implementation
+    const csvContent = this.convertToCSV(data);
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${filename}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
+
+  private convertToCSV(data: any[]): string {
+    if (data.length === 0) return '';
+
+    const headers = Object.keys(data[0]);
+    const csvHeaders = headers.join(',');
+    
+    const csvRows = data.map(row => 
+      headers.map(header => {
+        const value = row[header];
+        // Escape commas and quotes in CSV
+        return typeof value === 'string' && (value.includes(',') || value.includes('"')) 
+          ? `"${value.replace(/"/g, '""')}"` 
+          : value;
+      }).join(',')
+    );
+
+    return [csvHeaders, ...csvRows].join('\n');
+  }
+
 }

@@ -76,9 +76,6 @@ let DonhangController = class DonhangController {
     async searchfield(searchParams) {
         return this.donhangService.searchfield(searchParams);
     }
-    findAll() {
-        return this.donhangService.findAll();
-    }
     findByProductId(id) {
         console.log(id);
         return this.donhangService.findByProductId(id);
@@ -258,12 +255,6 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], DonhangController.prototype, "searchfield", null);
-__decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], DonhangController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)('findbysanpham/:id'),
     __param(0, (0, common_1.Param)('id')),
