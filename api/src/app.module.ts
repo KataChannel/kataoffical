@@ -41,8 +41,6 @@ import { PerformanceInterceptor } from './shared/interceptors/performance.interc
 // import { MinioModule } from './minio/minio.module';
 import { GraphQLUniversalModule } from './graphql/graphql.module';
 import { RedisModule } from './redis/redis.module';
-import { TestPerformanceController } from './test/test-performance.controller';
-
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -99,7 +97,7 @@ import { TestPerformanceController } from './test/test-performance.controller';
     // MinioModule,
     GraphQLUniversalModule,
   ],
-  controllers: [AppController, TestPerformanceController],
+  controllers: [AppController],
   providers: [
     AppService,
     PrismaService,

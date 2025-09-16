@@ -48,7 +48,6 @@ const cache_interceptor_1 = require("./common/cache.interceptor");
 const performance_interceptor_1 = require("./shared/interceptors/performance.interceptor");
 const graphql_module_1 = require("./graphql/graphql.module");
 const redis_module_1 = require("./redis/redis.module");
-const test_performance_controller_1 = require("./test/test-performance.controller");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(audit_middleware_1.AuditMiddleware).forRoutes('*');
@@ -104,7 +103,7 @@ exports.AppModule = AppModule = __decorate([
             redis_module_1.RedisModule,
             graphql_module_1.GraphQLUniversalModule,
         ],
-        controllers: [app_controller_1.AppController, test_performance_controller_1.TestPerformanceController],
+        controllers: [app_controller_1.AppController],
         providers: [
             app_service_1.AppService,
             prisma_service_1.PrismaService,
