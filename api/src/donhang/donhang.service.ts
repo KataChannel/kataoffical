@@ -3,6 +3,7 @@ import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 import { StatusMachineService } from '../common/status-machine.service';
 import { TonkhoManagerService } from '../common/tonkho-manager.service';
+import { PerformanceLogger } from '../shared/performance-logger';
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 const DEFAUL_BANGGIA_ID = '84a62698-5784-4ac3-b506-5e662d1511cb';
 @Injectable()
@@ -155,14 +156,15 @@ export class DonhangService {
   }
 
   async search(params: any) {
-    const {
-      Batdau,
-      Ketthuc,
-      Type,
-      pageSize = 10,
-      pageNumber = 1,
-      query,
-    } = params;
+    return await PerformanceLogger.logAsync('DonhangService.search', async () => {
+      const {
+        Batdau,
+        Ketthuc,
+        Type,
+        pageSize = 10,
+        pageNumber = 1,
+        query,
+      } = params;
 
     const ngaygiao =
       Batdau || Ketthuc
@@ -241,10 +243,12 @@ export class DonhangService {
       pageSize,
       totalPages: Math.ceil(total / pageSize),
     };
+    }, params);
   }
 
   async congnokhachhang(params: any) {
-    const { Batdau, Ketthuc, Status, khachhangIds, query } = params;
+    return await PerformanceLogger.logAsync('DonhangService.congnokhachhang', async () => {
+      const { Batdau, Ketthuc, Status, khachhangIds, query } = params;
 
     console.time('congnokhachhang-query');
 
@@ -330,6 +334,7 @@ export class DonhangService {
 
     console.timeEnd('congnokhachhang-query');
     return result || [];
+    }, params);
   }
 
 
@@ -1228,7 +1233,8 @@ export class DonhangService {
   }
 
   async findAll() {
-    const donhangs = await this.prisma.donhang.findMany({
+    return await PerformanceLogger.logAsync('DonhangService.findAll', async () => {
+      const donhangs = await this.prisma.donhang.findMany({
       include: {
         sanpham: {
           include: {
@@ -1265,6 +1271,7 @@ export class DonhangService {
       name: donhang.khachhang?.name,
     }));
     return result;
+    });
   }
 
   async searchfield(searchParams: Record<string, any>) {

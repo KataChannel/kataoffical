@@ -36,10 +36,12 @@ import { AuditService } from './auditlog/auditlog.service';
 import { AuditLogModule } from './auditlog/auditlog.module';
 import { AuditMiddleware } from './auditlog/audit.middleware';
 import { CacheInterceptor } from './common/cache.interceptor';
+import { PerformanceInterceptor } from './shared/interceptors/performance.interceptor';
 // import { UploadModule } from './upload/upload.module';
 // import { MinioModule } from './minio/minio.module';
 import { GraphQLUniversalModule } from './graphql/graphql.module';
 import { RedisModule } from './redis/redis.module';
+import { TestPerformanceController } from './test/test-performance.controller';
 
 @Module({
   imports: [
@@ -97,7 +99,7 @@ import { RedisModule } from './redis/redis.module';
     // MinioModule,
     GraphQLUniversalModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, TestPerformanceController],
   providers: [
     AppService,
     PrismaService,
@@ -110,6 +112,10 @@ import { RedisModule } from './redis/redis.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: PerformanceInterceptor,
     },
     AuditService,
   ],

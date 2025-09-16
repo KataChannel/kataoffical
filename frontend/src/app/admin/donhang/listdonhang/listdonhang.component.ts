@@ -153,6 +153,7 @@ export class ListDonhangComponent {
     }
   }
   ListKhachhang:any[] =[]
+
   async LoadListKhachhang(){
       const result = await this._GraphqlService.findAll('khachhang', {
         enableParallelFetch: true,
@@ -207,8 +208,8 @@ export class ListDonhangComponent {
       this.ListKhachhang = result.data;
   }
   async LoadData() {
-    await this._KhachhangService.getAllKhachhang();
-    this.LoadListKhachhang();
+    // await this._KhachhangService.getAllKhachhang();
+    this.LoadListKhachhang();    
     this.isLoading.set(true);
     try {
        this._GraphqlService.clearCache('donhang');
@@ -302,6 +303,15 @@ export class ListDonhangComponent {
       this.isLoading.set(false);
     }
   }  
+  async getAllKhachhang(){
+    const result = await this._GraphqlService.findAll('khachhang', {
+      enableParallelFetch: true,
+      take: 999999,
+      enableStreaming: true,
+      aggressiveCache: true,
+      })
+      console.log(result);
+  }
   async onSelectionChange(event: MatSelectChange): Promise<void> {
     this.isLoading.set(true);
     try {

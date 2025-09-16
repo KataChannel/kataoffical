@@ -15,6 +15,7 @@ const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const status_machine_service_1 = require("../common/status-machine.service");
 const tonkho_manager_service_1 = require("../common/tonkho-manager.service");
+const performance_logger_1 = require("../shared/performance-logger");
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 const DEFAUL_BANGGIA_ID = '84a62698-5784-4ac3-b506-5e662d1511cb';
 let DonhangService = class DonhangService {
@@ -128,142 +129,146 @@ let DonhangService = class DonhangService {
         }
     }
     async search(params) {
-        const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, query, } = params;
-        const ngaygiao = Batdau || Ketthuc
-            ? {
-                ...(Batdau && { gte: new Date(Batdau) }),
-                ...(Ketthuc && { lte: new Date(Ketthuc) }),
+        return await performance_logger_1.PerformanceLogger.logAsync('DonhangService.search', async () => {
+            const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, query, } = params;
+            const ngaygiao = Batdau || Ketthuc
+                ? {
+                    ...(Batdau && { gte: new Date(Batdau) }),
+                    ...(Ketthuc && { lte: new Date(Ketthuc) }),
+                }
+                : undefined;
+            const where = {
+                ...(ngaygiao && { ngaygiao }),
+                status: Array.isArray(params.Status)
+                    ? { in: params.Status }
+                    : params.Status,
+            };
+            if (Type && Type !== 'all') {
+                where.khachhang = { loaikh: Type };
             }
-            : undefined;
-        const where = {
-            ...(ngaygiao && { ngaygiao }),
-            status: Array.isArray(params.Status)
-                ? { in: params.Status }
-                : params.Status,
-        };
-        if (Type && Type !== 'all') {
-            where.khachhang = { loaikh: Type };
-        }
-        if (query) {
-            where.OR = [
-                { madonhang: { contains: query, mode: 'insensitive' } },
-                { khachhang: { name: { contains: query, mode: 'insensitive' } } },
-            ];
-        }
-        const [total, donhangs] = await Promise.all([
-            this.prisma.donhang.count({ where }),
-            this.prisma.donhang.findMany({
-                where,
-                include: {
-                    sanpham: {
-                        include: {
-                            sanpham: true,
+            if (query) {
+                where.OR = [
+                    { madonhang: { contains: query, mode: 'insensitive' } },
+                    { khachhang: { name: { contains: query, mode: 'insensitive' } } },
+                ];
+            }
+            const [total, donhangs] = await Promise.all([
+                this.prisma.donhang.count({ where }),
+                this.prisma.donhang.findMany({
+                    where,
+                    include: {
+                        sanpham: {
+                            include: {
+                                sanpham: true,
+                            },
                         },
+                        khachhang: { include: { banggia: { include: { sanpham: true } } } },
                     },
-                    khachhang: { include: { banggia: { include: { sanpham: true } } } },
-                },
-                orderBy: { createdAt: 'desc' },
-                skip: (Number(pageNumber) - 1) * Number(pageSize),
-                take: Number(pageSize),
-            }),
-        ]);
-        const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
-            ...donhang,
-            sanpham: sanpham.map((item) => {
-                return {
-                    ...item.sanpham,
-                    idSP: item.idSP,
-                    giaban: item.giaban,
-                    sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
-                    slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
-                    slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
-                    ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
-                    ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
-                    ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
-                    ghichu: item.ghichu,
-                };
-            }),
-            khachhang: khachhang
-                ? (({ banggia, ...rest }) => rest)(khachhang)
-                : null,
-            name: khachhang?.name,
-        }));
-        return {
-            data: result,
-            total,
-            pageNumber,
-            pageSize,
-            totalPages: Math.ceil(total / pageSize),
-        };
+                    orderBy: { createdAt: 'desc' },
+                    skip: (Number(pageNumber) - 1) * Number(pageSize),
+                    take: Number(pageSize),
+                }),
+            ]);
+            const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
+                ...donhang,
+                sanpham: sanpham.map((item) => {
+                    return {
+                        ...item.sanpham,
+                        idSP: item.idSP,
+                        giaban: item.giaban,
+                        sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+                        slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+                        slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+                        ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+                        ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+                        ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
+                        ghichu: item.ghichu,
+                    };
+                }),
+                khachhang: khachhang
+                    ? (({ banggia, ...rest }) => rest)(khachhang)
+                    : null,
+                name: khachhang?.name,
+            }));
+            return {
+                data: result,
+                total,
+                pageNumber,
+                pageSize,
+                totalPages: Math.ceil(total / pageSize),
+            };
+        }, params);
     }
     async congnokhachhang(params) {
-        const { Batdau, Ketthuc, Status, khachhangIds, query } = params;
-        console.time('congnokhachhang-query');
-        const whereConditions = {};
-        if (Batdau && Ketthuc) {
-            whereConditions.ngaygiao = {
-                gte: new Date(Batdau),
-                lte: new Date(Ketthuc),
-            };
-        }
-        if (Status && Array.isArray(Status) && Status.length > 0) {
-            whereConditions.status = { in: Status };
-        }
-        if (khachhangIds && Array.isArray(khachhangIds) && khachhangIds.length > 0) {
-            whereConditions.khachhangId = { in: khachhangIds };
-        }
-        if (query) {
-            whereConditions.OR = [
-                { madonhang: { contains: query, mode: 'insensitive' } },
-                { khachhang: { name: { contains: query, mode: 'insensitive' } } },
-            ];
-        }
-        const donhangs = await this.prisma.donhang.findMany({
-            where: whereConditions,
-            select: {
-                id: true,
-                madonhang: true,
-                ngaygiao: true,
-                tongtien: true,
-                tongvat: true,
-                khachhang: {
-                    select: {
-                        name: true,
-                        makh: true,
-                    },
-                },
-                sanpham: {
-                    select: {
-                        slnhan: true,
-                        giaban: true,
-                    },
-                },
-            },
-            orderBy: { createdAt: 'desc' },
-        });
-        const result = donhangs.map((donhang) => {
-            let tong = 0;
-            let soluong = 0;
-            for (const item of donhang.sanpham) {
-                const slnhan = Number(item.slnhan) || 0;
-                const giaban = Number(item.giaban) || 0;
-                tong += slnhan * giaban;
-                soluong += slnhan;
+        return await performance_logger_1.PerformanceLogger.logAsync('DonhangService.congnokhachhang', async () => {
+            const { Batdau, Ketthuc, Status, khachhangIds, query } = params;
+            console.time('congnokhachhang-query');
+            const whereConditions = {};
+            if (Batdau && Ketthuc) {
+                whereConditions.ngaygiao = {
+                    gte: new Date(Batdau),
+                    lte: new Date(Ketthuc),
+                };
             }
-            return {
-                id: donhang.id,
-                madonhang: donhang.madonhang,
-                ngaygiao: donhang.ngaygiao,
-                tong: tong.toFixed(3),
-                soluong: soluong.toFixed(3),
-                tongtien: donhang.tongtien,
-                tongvat: donhang.tongvat,
-                name: donhang.khachhang?.name,
-                makh: donhang.khachhang?.makh,
-            };
-        });
-        console.timeEnd('congnokhachhang-query');
-        return result || [];
+            if (Status && Array.isArray(Status) && Status.length > 0) {
+                whereConditions.status = { in: Status };
+            }
+            if (khachhangIds && Array.isArray(khachhangIds) && khachhangIds.length > 0) {
+                whereConditions.khachhangId = { in: khachhangIds };
+            }
+            if (query) {
+                whereConditions.OR = [
+                    { madonhang: { contains: query, mode: 'insensitive' } },
+                    { khachhang: { name: { contains: query, mode: 'insensitive' } } },
+                ];
+            }
+            const donhangs = await this.prisma.donhang.findMany({
+                where: whereConditions,
+                select: {
+                    id: true,
+                    madonhang: true,
+                    ngaygiao: true,
+                    tongtien: true,
+                    tongvat: true,
+                    khachhang: {
+                        select: {
+                            name: true,
+                            makh: true,
+                        },
+                    },
+                    sanpham: {
+                        select: {
+                            slnhan: true,
+                            giaban: true,
+                        },
+                    },
+                },
+                orderBy: { createdAt: 'desc' },
+            });
+            const result = donhangs.map((donhang) => {
+                let tong = 0;
+                let soluong = 0;
+                for (const item of donhang.sanpham) {
+                    const slnhan = Number(item.slnhan) || 0;
+                    const giaban = Number(item.giaban) || 0;
+                    tong += slnhan * giaban;
+                    soluong += slnhan;
+                }
+                return {
+                    id: donhang.id,
+                    madonhang: donhang.madonhang,
+                    ngaygiao: donhang.ngaygiao,
+                    tong: tong.toFixed(3),
+                    soluong: soluong.toFixed(3),
+                    tongtien: donhang.tongtien,
+                    tongvat: donhang.tongvat,
+                    name: donhang.khachhang?.name,
+                    makh: donhang.khachhang?.makh,
+                };
+            });
+            console.timeEnd('congnokhachhang-query');
+            return result || [];
+        }, params);
     }
     async downloadcongnokhachhang(params) {
         const { Batdau, Ketthuc, query, ids } = params;
@@ -956,36 +961,38 @@ let DonhangService = class DonhangService {
         };
     }
     async findAll() {
-        const donhangs = await this.prisma.donhang.findMany({
-            include: {
-                sanpham: {
-                    include: {
-                        sanpham: true,
+        return await performance_logger_1.PerformanceLogger.logAsync('DonhangService.findAll', async () => {
+            const donhangs = await this.prisma.donhang.findMany({
+                include: {
+                    sanpham: {
+                        include: {
+                            sanpham: true,
+                        },
                     },
+                    khachhang: { include: { banggia: { include: { sanpham: true } } } },
                 },
-                khachhang: { include: { banggia: { include: { sanpham: true } } } },
-            },
-            orderBy: { createdAt: 'desc' },
+                orderBy: { createdAt: 'desc' },
+            });
+            const result = donhangs.map((donhang) => ({
+                ...donhang,
+                sanpham: donhang.sanpham.map((item) => {
+                    return {
+                        ...item.sanpham,
+                        idSP: item.idSP,
+                        giaban: item.giaban,
+                        sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+                        slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+                        slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+                        ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+                        ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+                        ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
+                        ghichu: item.ghichu,
+                    };
+                }),
+                name: donhang.khachhang?.name,
+            }));
+            return result;
         });
-        const result = donhangs.map((donhang) => ({
-            ...donhang,
-            sanpham: donhang.sanpham.map((item) => {
-                return {
-                    ...item.sanpham,
-                    idSP: item.idSP,
-                    giaban: item.giaban,
-                    sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
-                    slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
-                    slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
-                    ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
-                    ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
-                    ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
-                    ghichu: item.ghichu,
-                };
-            }),
-            name: donhang.khachhang?.name,
-        }));
-        return result;
     }
     async searchfield(searchParams) {
         const where = {};

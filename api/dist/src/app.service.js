@@ -15,6 +15,7 @@ const prisma_service_1 = require("../prisma/prisma.service");
 const crypto_1 = require("crypto");
 const callback_data_output_dto_1 = require("./callback/dto/callback-data-output.dto");
 const callback_data_type_enum_1 = require("./callback/enums/callback-data-type.enum");
+const performance_logger_1 = require("./shared/performance-logger");
 let AppService = class AppService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -25,27 +26,29 @@ let AppService = class AppService {
         return 'Hello World!';
     }
     async search(searchDto) {
-        const { model, filters = {}, relations = {}, orderBy, skip = 0, take } = searchDto;
-        if (!this.allowedModels.includes(model)) {
-            throw new common_1.BadRequestException(`Model "${model}" không tồn tại`);
-        }
-        const where = this.buildWhereClause(filters);
-        console.log(JSON.stringify(where));
-        const prismaQuery = { where, skip: Number(skip) };
-        if (take !== undefined && take !== -1) {
-            prismaQuery.take = Number(take);
-        }
-        const include = this.buildIncludeClause(relations);
-        if (include)
-            prismaQuery.include = include;
-        if (orderBy?.field && orderBy?.direction) {
-            prismaQuery.orderBy = {
-                [orderBy.field]: orderBy.direction.toLowerCase() === 'desc' ? 'desc' : 'asc',
-            };
-        }
-        const result = await this.prisma[model].findMany(prismaQuery);
-        console.log(result);
-        return result;
+        return await performance_logger_1.PerformanceLogger.logAsync('AppService.search', async () => {
+            const { model, filters = {}, relations = {}, orderBy, skip = 0, take } = searchDto;
+            if (!this.allowedModels.includes(model)) {
+                throw new common_1.BadRequestException(`Model "${model}" không tồn tại`);
+            }
+            const where = this.buildWhereClause(filters);
+            console.log(JSON.stringify(where));
+            const prismaQuery = { where, skip: Number(skip) };
+            if (take !== undefined && take !== -1) {
+                prismaQuery.take = Number(take);
+            }
+            const include = this.buildIncludeClause(relations);
+            if (include)
+                prismaQuery.include = include;
+            if (orderBy?.field && orderBy?.direction) {
+                prismaQuery.orderBy = {
+                    [orderBy.field]: orderBy.direction.toLowerCase() === 'desc' ? 'desc' : 'asc',
+                };
+            }
+            const result = await this.prisma[model].findMany(prismaQuery);
+            console.log(result);
+            return result;
+        }, { model: searchDto.model, filters: searchDto.filters, skip: searchDto.skip, take: searchDto.take });
     }
     buildWhereClause(filters) {
         const where = {};

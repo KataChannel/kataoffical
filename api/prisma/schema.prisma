@@ -579,6 +579,28 @@ model ImportHistory {
   type       String?
 }
 
+model PerformanceLog {
+  id          String   @id @default(cuid())
+  name        String   // Operation name
+  duration    Float    // Duration in milliseconds
+  timestamp   DateTime @default(now())
+  context     Json?    // Context data
+  success     Boolean  @default(true)
+  error       String?  // Error message if failed
+  method      String?  // HTTP method
+  url         String?  // Request URL
+  statusCode  Int?     // HTTP status code
+  memoryUsage Float?   // Memory usage in MB
+  
+  // Indexes for better query performance
+  @@index([timestamp])
+  @@index([name])
+  @@index([success])
+  @@index([duration])
+  
+  @@map("performance_logs")
+}
+
 enum AuditAction {
   CREATE
   UPDATE

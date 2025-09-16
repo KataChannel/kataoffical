@@ -3,6 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
 import { StatusMachineService } from 'src/common/status-machine.service';
 import { TonkhoManagerService } from 'src/common/tonkho-manager.service';
+import { PerformanceLogger } from '../shared/performance-logger';
 
 @Injectable()
 export class DathangService {
@@ -41,17 +42,19 @@ export class DathangService {
   }
 
   async generateNextOrderCode(): Promise<string> {
-    // Lấy mã đơn hàng gần nhất
-    const lastOrder = await this.prisma.dathang.findFirst({
-      orderBy: { createdAt: 'desc' },
+    return await PerformanceLogger.logAsync('DathangService.generateNextOrderCode', async () => {
+      // Lấy mã đơn hàng gần nhất
+      const lastOrder = await this.prisma.dathang.findFirst({
+        orderBy: { createdAt: 'desc' },
+      });
+
+      let nextCode = 'TGNCC-AA00001'; // Mã đầu tiên
+
+      if (lastOrder && lastOrder.madncc) {
+        nextCode = this.incrementOrderCode(lastOrder.madncc);
+      }
+      return nextCode;
     });
-
-    let nextCode = 'TGNCC-AA00001'; // Mã đầu tiên
-
-    if (lastOrder && lastOrder.madncc) {
-      nextCode = this.incrementOrderCode(lastOrder.madncc);
-    }
-    return nextCode;
   }
 
   private incrementOrderCode(orderCode: string): string {
@@ -97,32 +100,34 @@ export class DathangService {
   }
 
   async findAll() {
-    const dathangs = await this.prisma.dathang.findMany({
-      include: {
-        sanpham: {
-          include: {
-            sanpham: true,
+    return await PerformanceLogger.logAsync('DathangService.findAll', async () => {
+      const dathangs = await this.prisma.dathang.findMany({
+        include: {
+          sanpham: {
+            include: {
+              sanpham: true,
+            },
           },
+          nhacungcap: true,
+          kho: true, // Include kho information
         },
-        nhacungcap: true,
-        kho: true, // Include kho information
-      },
-      orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'desc' },
+      });
+      return dathangs.map((dathang) => ({
+        ...dathang,
+        sanpham: dathang.sanpham.map((item: any) => ({
+          ...item.sanpham,
+          idSP: item.idSP,
+          sldat: item.sldat || 0,
+          slgiao: item.slgiao || 0,
+          slnhan: item.slnhan || 0,
+          ttdat: item.ttdat || 0,
+          ttgiao: item.ttgiao || 0,
+          ttnhan: item.ttnhan || 0,
+          ghichu: item.ghichu,
+        })),
+      }));
     });
-    return dathangs.map((dathang) => ({
-      ...dathang,
-      sanpham: dathang.sanpham.map((item: any) => ({
-        ...item.sanpham,
-        idSP: item.idSP,
-        sldat: item.sldat || 0,
-        slgiao: item.slgiao || 0,
-        slnhan: item.slnhan || 0,
-        ttdat: item.ttdat || 0,
-        ttgiao: item.ttgiao || 0,
-        ttnhan: item.ttnhan || 0,
-        ghichu: item.ghichu,
-      })),
-    }));
   }
 
   async findOne(id: string) {

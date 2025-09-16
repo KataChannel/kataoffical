@@ -13,6 +13,7 @@ exports.KhachhangService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
+const performance_logger_1 = require("../shared/performance-logger");
 let KhachhangService = class KhachhangService {
     constructor(prisma, _ImportdataService) {
         this.prisma = prisma;
@@ -29,18 +30,15 @@ let KhachhangService = class KhachhangService {
         return `${year}${month}${day}_${hours}${minutes}${seconds}`;
     }
     async getLastUpdated() {
-        try {
+        return performance_logger_1.PerformanceLogger.logAsync('KH_getLastUpdated', async () => {
             const lastUpdated = await this.prisma.khachhang.aggregate({
                 _max: { updatedAt: true },
             });
             return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
-        }
-        catch (error) {
-            throw error;
-        }
+        });
     }
     async generateMakh(loaikh) {
-        try {
+        return performance_logger_1.PerformanceLogger.logAsync('KH_generateMakh', async () => {
             const prefix = loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
             const latest = await this.prisma.khachhang.findFirst({
                 where: { makh: { startsWith: prefix } },
@@ -53,10 +51,7 @@ let KhachhangService = class KhachhangService {
                 nextNumber = lastNumber + 1;
             }
             return `${prefix}${nextNumber.toString().padStart(5, '0')}`;
-        }
-        catch (error) {
-            throw new common_1.InternalServerErrorException('Lỗi khi tạo mã khách hàng');
-        }
+        }, { loaikh });
     }
     async create(data) {
         if (!data.makh) {

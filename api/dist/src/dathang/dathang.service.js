@@ -15,6 +15,7 @@ const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
 const status_machine_service_1 = require("../common/status-machine.service");
 const tonkho_manager_service_1 = require("../common/tonkho-manager.service");
+const performance_logger_1 = require("../shared/performance-logger");
 let DathangService = class DathangService {
     constructor(prisma, _ImportdataService, statusMachine, tonkhoManager) {
         this.prisma = prisma;
@@ -43,14 +44,16 @@ let DathangService = class DathangService {
         return result;
     }
     async generateNextOrderCode() {
-        const lastOrder = await this.prisma.dathang.findFirst({
-            orderBy: { createdAt: 'desc' },
+        return await performance_logger_1.PerformanceLogger.logAsync('DathangService.generateNextOrderCode', async () => {
+            const lastOrder = await this.prisma.dathang.findFirst({
+                orderBy: { createdAt: 'desc' },
+            });
+            let nextCode = 'TGNCC-AA00001';
+            if (lastOrder && lastOrder.madncc) {
+                nextCode = this.incrementOrderCode(lastOrder.madncc);
+            }
+            return nextCode;
         });
-        let nextCode = 'TGNCC-AA00001';
-        if (lastOrder && lastOrder.madncc) {
-            nextCode = this.incrementOrderCode(lastOrder.madncc);
-        }
-        return nextCode;
     }
     incrementOrderCode(orderCode) {
         const prefix = 'TGNCC-';
@@ -87,32 +90,34 @@ let DathangService = class DathangService {
         }
     }
     async findAll() {
-        const dathangs = await this.prisma.dathang.findMany({
-            include: {
-                sanpham: {
-                    include: {
-                        sanpham: true,
+        return await performance_logger_1.PerformanceLogger.logAsync('DathangService.findAll', async () => {
+            const dathangs = await this.prisma.dathang.findMany({
+                include: {
+                    sanpham: {
+                        include: {
+                            sanpham: true,
+                        },
                     },
+                    nhacungcap: true,
+                    kho: true,
                 },
-                nhacungcap: true,
-                kho: true,
-            },
-            orderBy: { createdAt: 'desc' },
+                orderBy: { createdAt: 'desc' },
+            });
+            return dathangs.map((dathang) => ({
+                ...dathang,
+                sanpham: dathang.sanpham.map((item) => ({
+                    ...item.sanpham,
+                    idSP: item.idSP,
+                    sldat: item.sldat || 0,
+                    slgiao: item.slgiao || 0,
+                    slnhan: item.slnhan || 0,
+                    ttdat: item.ttdat || 0,
+                    ttgiao: item.ttgiao || 0,
+                    ttnhan: item.ttnhan || 0,
+                    ghichu: item.ghichu,
+                })),
+            }));
         });
-        return dathangs.map((dathang) => ({
-            ...dathang,
-            sanpham: dathang.sanpham.map((item) => ({
-                ...item.sanpham,
-                idSP: item.idSP,
-                sldat: item.sldat || 0,
-                slgiao: item.slgiao || 0,
-                slnhan: item.slnhan || 0,
-                ttdat: item.ttdat || 0,
-                ttgiao: item.ttgiao || 0,
-                ttnhan: item.ttnhan || 0,
-                ghichu: item.ghichu,
-            })),
-        }));
     }
     async findOne(id) {
         const dathang = await this.prisma.dathang.findUnique({

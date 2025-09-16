@@ -6,6 +6,7 @@ import { CallbackDataDetail } from './callback/dto/callback-data-detail.dto';
 import { CallbackDataInput } from './callback/dto/callback-data-input.dto';
 import { CallbackDataOutput } from './callback/dto/callback-data-output.dto';
 import { CallBackDataType } from './callback/enums/callback-data-type.enum';
+import { PerformanceLogger } from './shared/performance-logger';
 @Injectable()
 export class AppService {
 
@@ -17,37 +18,39 @@ export class AppService {
   private allowedModels = ['sanpham','banggia','khachhang','donhang','nhacungcap','dathang','kho','phieukho','role','permission','nhomkhachhang'];
 
   async search(searchDto: SearchDto) {
-    const { model, filters = {}, relations = {}, orderBy, skip = 0, take } = searchDto;
-  
-    if (!this.allowedModels.includes(model)) {
-      throw new BadRequestException(`Model "${model}" không tồn tại`);
-    }
-  
-    // Xây dựng WHERE
-    const where = this.buildWhereClause(filters);
-    console.log(JSON.stringify(where));
+    return await PerformanceLogger.logAsync('AppService.search', async () => {
+      const { model, filters = {}, relations = {}, orderBy, skip = 0, take } = searchDto;
     
-    // Xây dựng Prisma Query
-    const prismaQuery: any = { where, skip: Number(skip) };
-  
-    // Nếu take không được truyền vào hoặc bằng -1, không giới hạn số lượng
-    if (take !== undefined && take !== -1) {
-      prismaQuery.take = Number(take);
-    }
-  
-    // Xử lý quan hệ (include)
-    const include = this.buildIncludeClause(relations);
-    if (include) prismaQuery.include = include;
-  
-    // Xử lý orderBy
-    if (orderBy?.field && orderBy?.direction) {
-      prismaQuery.orderBy = {
-        [orderBy.field]: orderBy.direction.toLowerCase() === 'desc' ? 'desc' : 'asc',
-      };
-    }
-    const result = await this.prisma[model].findMany(prismaQuery);
-    console.log(result);
-    return result
+      if (!this.allowedModels.includes(model)) {
+        throw new BadRequestException(`Model "${model}" không tồn tại`);
+      }
+    
+      // Xây dựng WHERE
+      const where = this.buildWhereClause(filters);
+      console.log(JSON.stringify(where));
+      
+      // Xây dựng Prisma Query
+      const prismaQuery: any = { where, skip: Number(skip) };
+    
+      // Nếu take không được truyền vào hoặc bằng -1, không giới hạn số lượng
+      if (take !== undefined && take !== -1) {
+        prismaQuery.take = Number(take);
+      }
+    
+      // Xử lý quan hệ (include)
+      const include = this.buildIncludeClause(relations);
+      if (include) prismaQuery.include = include;
+    
+      // Xử lý orderBy
+      if (orderBy?.field && orderBy?.direction) {
+        prismaQuery.orderBy = {
+          [orderBy.field]: orderBy.direction.toLowerCase() === 'desc' ? 'desc' : 'asc',
+        };
+      }
+      const result = await this.prisma[model].findMany(prismaQuery);
+      console.log(result);
+      return result;
+    }, { model: searchDto.model, filters: searchDto.filters, skip: searchDto.skip, take: searchDto.take });
   }
   
 

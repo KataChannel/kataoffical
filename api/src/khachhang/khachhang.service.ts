@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
+import { PerformanceLogger } from '../shared/performance-logger';
 
 @Injectable()
 export class KhachhangService {
@@ -25,19 +26,17 @@ export class KhachhangService {
     return `${year}${month}${day}_${hours}${minutes}${seconds}`;
   }
 
-    async getLastUpdated(): Promise<{ updatedAt: number }> {
-    try {
+  async getLastUpdated(): Promise<{ updatedAt: number }> {
+    return PerformanceLogger.logAsync('KH_getLastUpdated', async () => {
       const lastUpdated = await this.prisma.khachhang.aggregate({
         _max: { updatedAt: true },
       });
       return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
-    } catch (error) {
-      throw error;
-    }
+    });
   }
 
   async generateMakh(loaikh: string): Promise<string> {
-    try {
+    return PerformanceLogger.logAsync('KH_generateMakh', async () => {
       const prefix = loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
       const latest = await this.prisma.khachhang.findFirst({
         where: { makh: { startsWith: prefix } },
@@ -50,9 +49,7 @@ export class KhachhangService {
         nextNumber = lastNumber + 1;
       }
       return `${prefix}${nextNumber.toString().padStart(5, '0')}`;
-    } catch (error) {
-      throw new InternalServerErrorException('Lỗi khi tạo mã khách hàng');
-    }
+    }, { loaikh });
   }
 
   async create(data: any) {
