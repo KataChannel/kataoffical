@@ -199,36 +199,24 @@ export class ListPhieukhoComponent {
     this.drawer.open();
     this._router.navigate(['admin/phieukho', item.id]);
   }
-  async LoadDrive() {
-    const DriveInfo = {
-      IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'SPImport',
-      ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
-    };
-   const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
-   const data = ConvertDriveData(result.values);
-   console.log(data);
-   this.DoImportData(data);
-    // const updatePromises = data.map(async (v: any) => {
-    //   const item = this._KhachhangsService
-    //     .ListKhachhang()
-    //     .find((v1) => v1.MaKH === v.MaKH);
-    //   if (item) {
-    //     const item1 = { ...item, ...v };
-    //     console.log(item1);
-
-    //     await this._KhachhangsService.updateOneKhachhang(item1);
-    //   }
-    // });
-    // Promise.all(updatePromises).then(() => {
-    //   this._snackBar.open('Cập Nhật Thành Công', '', {
-    //     duration: 1000,
-    //     horizontalPosition: 'end',
-    //     verticalPosition: 'top',
-    //     panelClass: ['snackbar-success'],
-    //   });
-    //   //  window.location.reload();
-    // });
+  async LoadData(){
+    try {
+      await this.refresh();
+      this.CountItem = this.Listphieukho().length;
+      // Show success message
+      this._snackBar.open('Đã tải dữ liệu thành công!', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+      });
+    } catch (error) {
+      console.error('Error loading data:', error);
+      this._snackBar.open('Có lỗi khi tải dữ liệu!', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+      });
+    }
   }
   DoImportData(data:any)
   {
