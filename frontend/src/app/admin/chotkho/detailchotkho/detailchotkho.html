@@ -4,7 +4,7 @@
   </button>
   <div class="font-bold">{{ DetailChotkho()?.codeId || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
-    <mat-slide-toggle [(ngModel)]="DetailChotkho().isActive" [disabled]="!isEdit()">{{DetailChotkho().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+    <!-- <mat-slide-toggle [(ngModel)]="DetailChotkho().isActive" [disabled]="!isEdit()">{{DetailChotkho().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle> -->
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleChotkhoAction()">
       <mat-icon>save</mat-icon>
     </button>
@@ -26,15 +26,121 @@
   </ng-container>
 
   <ng-container *ngIf="!isDelete()">
-    <div class="grid grid-cols-1 gap-4">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Tiêu Đề</mat-label>
-        <input matInput [(ngModel)]="DetailChotkho().title" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
-      </mat-form-field>
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Mô Tả</mat-label>
-        <textarea matInput [(ngModel)]="DetailChotkho().description" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mô Tả"></textarea>
-      </mat-form-field>
+    <!-- Master Information -->
+    <div class="p-4 rounded-lg mb-4" *ngIf="DetailChotkho()">
+      <h3 class="text-lg font-semibold mb-4">Thông tin chốt kho</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Tiêu Đề</mat-label>
+          <input matInput [(ngModel)]="DetailChotkho().title" [disabled]="!isEdit()" placeholder="Vui lòng nhập tiêu đề"/>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Ngày Chốt</mat-label>
+          <input matInput [matDatepicker]="picker" [(ngModel)]="DetailChotkho().ngaychot" [disabled]="!isEdit()" placeholder="Chọn ngày chốt">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="md:col-span-2">
+          <mat-label>Ghi Chú</mat-label>
+          <textarea matInput [(ngModel)]="DetailChotkho().ghichu" [disabled]="!isEdit()" 
+                    placeholder="Vui lòng nhập ghi chú" rows="2"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Detail Items -->
+    <div class="bg-white p-4 rounded-lg border" *ngIf="DetailChotkho()">
+      <div class="flex items-center mb-4">
+        <!-- Product Selection using SearchFilter -->
+        <div class="flex flex-row space-x-2 items-center">
+          <app-searchfilter
+            [isEdit]="isEdit"
+            [title]="'Sản Phẩm'"
+            [ListFilter]="this.DetailChotkho()?.details || []"
+            [filterItem]="filterSanpham"
+            [CountItems]="this.DetailChotkho()?.details?.length || 0"
+            [fieldsearch]="'tensanpham'"
+            [ListItem]="ListSanpham"
+            (OutFilter)="DoOutFilter($event)"
+          ></app-searchfilter>
+          
+          <button [disabled]="!isEdit()" mat-icon-button color="warn" (click)="EmptyCart()">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Details Table -->
+      <div class="w-full overflow-auto">
+        <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource()" matSort>
+          @for (column of displayedColumns; track column) {
+            <ng-container [matColumnDef]="column">
+              <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
+                <span class="line-clamp-4 me-4">
+                  {{ ColumnName[column] }}
+                </span>
+              </th>
+              <td mat-cell *matCellDef="let row; let idx = index">
+                @switch (column) {
+                  @case ('STT') {
+                    <span class="max-w-20 line-clamp-4 flex flex-row items-center">
+                      <span>{{ idx + 1 }} </span>
+                      <button [disabled]="!isEdit()" mat-icon-button color="warn" (click)="RemoveSanpham(row)">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </span>
+                  }
+                  @case ('sltonthucte') {
+                    <div *ngIf="isEdit()"
+                         [contentEditable]="true"
+                         (keydown.enter)="updateValue($event, idx, row, 'sltonthucte', 'number')"
+                         class="sltonthucte-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
+                      {{ row[column] || 0 | number:'1.0-3' }}
+                    </div>
+                    <span *ngIf="!isEdit()" class="max-w-20 line-clamp-4">
+                      {{ row[column] | number:'1.0-3' }}
+                    </span>
+                  }
+                  @case ('slhuy') {
+                    <div *ngIf="isEdit()"
+                         [contentEditable]="true"
+                         (keydown.enter)="updateValue($event, idx, row, 'slhuy', 'number')"
+                         class="slhuy-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
+                      {{ row[column] || 0 | number:'1.0-3' }}
+                    </div>
+                    <span *ngIf="!isEdit()" class="max-w-20 line-clamp-4">
+                      {{ row[column] | number:'1.0-3' }}
+                    </span>
+                  }
+                  @case ('chenhlech') {
+                    <span class="max-w-20 line-clamp-4" 
+                          [class]="row[column] > 0 ? 'text-green-600' : (row[column] < 0 ? 'text-red-600' : 'text-yellow-600')">
+                      {{ row[column] | number:'1.0-3' }}
+                    </span>
+                  }
+                  @case ('sltonhethong') {
+                    <span class="max-w-20 line-clamp-4">
+                      {{ row[column] | number:'1.0-3' }}
+                    </span>
+                  }
+                  @default {
+                    <span class="max-w-40 line-clamp-4">
+                      {{ row[column] }}
+                    </span>
+                  }
+                }
+              </td>
+            </ng-container>
+          }
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell p-4" colspan="8">Không tìm thấy dữ liệu</td>
+          </tr>
+        </table>
+      </div>
     </div>
   </ng-container>
 </div>

@@ -1,6 +1,6 @@
 <!-- Enhanced Chotkho List Template with Advanced Features -->
 <mat-drawer-container class="w-full h-full" autosize>
-  <mat-drawer #drawer class="flex flex-col lg:!w-2/3 !w-full h-full" [position]="'end'" mode="over">
+  <mat-drawer #drawer class="flex flex-col !w-full h-full" [position]="'end'" mode="over">
     <router-outlet></router-outlet>
   </mat-drawer>
   
@@ -62,59 +62,6 @@
             <mat-icon>refresh</mat-icon>
             <span class="whitespace-nowrap">Refresh</span>
           </button>
-        </div>
-
-        <!-- Advanced Actions Menu -->
-        <div class="flex flex-row space-x-2 items-center">
-          <button mat-flat-button color="primary" [matMenuTriggerFor]="advancedMenu">
-            <mat-icon>more_vert</mat-icon>
-            <span>Advanced</span>
-          </button>
-          
-          <mat-menu #advancedMenu="matMenu">
-            <!-- Import/Export Section -->
-            <div class="p-2 border-b">
-              <div class="text-sm font-semibold text-gray-600 mb-2">Import/Export</div>
-              <button mat-menu-item (click)="importFromExcel()">
-                <mat-icon>file_upload</mat-icon>
-                <span>Import Excel</span>
-              </button>
-              <button mat-menu-item (click)="exportToExcel()">
-                <mat-icon>file_download</mat-icon>
-                <span>Export Excel</span>
-              </button>
-            </div>
-            
-            <!-- Backup/Restore Section -->
-            <div class="p-2 border-b">
-              <div class="text-sm font-semibold text-gray-600 mb-2">Backup/Restore</div>
-              <button mat-menu-item (click)="createBackup()">
-                <mat-icon>backup</mat-icon>
-                <span>Create Backup</span>
-              </button>
-              <button mat-menu-item (click)="restoreFromBackup()">
-                <mat-icon>restore</mat-icon>
-                <span>Restore Data</span>
-              </button>
-            </div>
-            
-            <!-- System Tools Section -->
-            <div class="p-2">
-              <div class="text-sm font-semibold text-gray-600 mb-2">System Tools</div>
-              <button mat-menu-item (click)="optimizeSystem()">
-                <mat-icon>tune</mat-icon>
-                <span>Optimize System</span>
-              </button>
-              <button mat-menu-item (click)="checkSystemHealth()">
-                <mat-icon>health_and_safety</mat-icon>
-                <span>Health Check</span>
-              </button>
-              <button mat-menu-item (click)="clearAllCache()">
-                <mat-icon>clear_all</mat-icon>
-                <span>Clear Cache</span>
-              </button>
-            </div>
-          </mat-menu>
         </div>
       </div>
 
@@ -224,6 +171,23 @@
             @case ('createdAt') {
             <span class="max-w-40 line-clamp-4">
               {{ row[column]|date:'dd/MM/yyyy'}}
+            </span>
+            }
+            @case ('ngaychot') {
+            <span class="max-w-40 line-clamp-4">
+              {{ row[column]|date:'dd/MM/yyyy'}}
+            </span>
+            }
+            @case ('khoId') {
+            <span class="max-w-40 line-clamp-4">
+              {{ row.kho?.name || row.kho?.makho || 'Chưa chọn kho' }}
+            </span>
+            }
+            @case ('details') {
+            <span class="max-w-40 line-clamp-4 text-center">
+              <mat-chip class="bg-blue-100 text-blue-800">
+                {{ row.details?.length || 0 }} SP
+              </mat-chip>
             </span>
             }
             @case ('isActive') {

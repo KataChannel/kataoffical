@@ -47,21 +47,42 @@ export class ChotkhoResolver {
     return await this.chotkhoService.getAllProductsByKho(khoId);
   }
 
+  @Query(() => GraphQLJSON, { 
+    name: 'chotkhoGetAllProducts',
+    description: '🎯 NEW: Get all products with inventory information (no warehouse filter)'
+  })
+  async getAllProducts() {
+    return await this.chotkhoService.getAllProducts();
+  }
+
+  @Query(() => GraphQLJSON, { 
+    name: 'chotkhoGetAllWarehouses',
+    description: '🎯 NEW: Get all active warehouses for selection'
+  })
+  async getAllWarehouses() {
+    return await this.chotkhoService.getAllKho();
+  }
+
   @UseGuards(JwtAuthGuard)
   @Mutation(() => GraphQLJSON, { 
     name: 'chotkhoCreate',
-    description: '🎯 NEW: Create inventory check with new business logic - Process all products in warehouse'
+    description: '🎯 Create inventory check with master-detail structure'
   })
   @Audit({ entity: 'Chotkho', action: AuditAction.CREATE, includeResponse: true })
   async create(
     @Args('data', { 
       type: () => GraphQLJSON,
-      description: 'Inventory check data with khoId and products array'
+      description: 'Inventory check data with master info and details array'
     }) 
     data: {
+      ngaychot?: Date;
+      title?: string;
+      ghichu?: string;
       khoId: string;
-      products: Array<{
+      userId?: string;
+      details: Array<{
         sanphamId: string;
+        sltonhethong: number;
         sltonthucte: number;
         slhuy: number;
         ghichu?: string;

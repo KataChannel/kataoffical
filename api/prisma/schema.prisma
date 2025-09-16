@@ -45,10 +45,11 @@ model User {
   isActive   Boolean    @default(false)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
-  AuditLog   AuditLog[]
-  Chotkho    Chotkho[]
-  profile    Profile?
-  roles      UserRole[]
+  AuditLog       AuditLog[]
+  Chotkho        Chotkho[]
+  Chotkhodetail  Chotkhodetail[] @relation("ChotkhodetailUser")
+  profile        Profile?
+  roles          UserRole[]
 }
 
 model Role {
@@ -204,7 +205,7 @@ model Sanpham {
   giaban          Decimal           @default(0) @postgres.Decimal(20, 3)
   vat             Decimal?          @default(0) @postgres.Decimal(20, 3)
   banggia         Banggiasanpham[]
-  chotkho         Chotkho[]         @relation("ChotkhoSanpham")
+  chotkhodetail   Chotkhodetail[]   @relation("ChotkhodetailSanpham")
   Dathangsanpham  Dathangsanpham[]
   Donhangsanpham  Donhangsanpham[]
   PhieuKhoSanpham PhieuKhoSanpham[]
@@ -443,13 +444,7 @@ model TonKho {
 
 model Chotkho {
   id            String   @id @default(uuid())
-  khoId         String?
-  sanphamId     String?
   ngaychot      DateTime @default(now())
-  sltonhethong  Decimal  @default(0) @postgres.Decimal(20, 3)
-  sltonthucte   Decimal  @default(0) @postgres.Decimal(20, 3)
-  slhuy         Decimal  @default(0) @postgres.Decimal(20, 3)
-  chenhlech     Decimal  @default(0) @postgres.Decimal(20, 3)
   title         String?
   ghichu        String?
   isActive      Boolean  @default(true)
@@ -457,12 +452,34 @@ model Chotkho {
   updatedAt     DateTime @updatedAt
   codeId        String?  @unique
   order         Int?     @default(1)
-  userId        String?
+  khoId         String?
   kho           Kho?     @relation(fields: [khoId], references: [id])
-  sanpham       Sanpham? @relation("ChotkhoSanpham", fields: [sanphamId], references: [id])
+  userId        String?
   user          User?    @relation(fields: [userId], references: [id])
-
+  details       Chotkhodetail[] @relation("ChotkhoDetails")
+  @@index([codeId])
+  @@index([ngaychot])
   @@index([khoId])
+}
+
+model Chotkhodetail {
+  id            String   @id @default(uuid())
+  title         String?
+  ngaychot      DateTime @default(now())
+  sltonhethong  Decimal  @default(0) @postgres.Decimal(20, 3)
+  sltonthucte   Decimal  @default(0) @postgres.Decimal(20, 3)
+  slhuy         Decimal  @default(0) @postgres.Decimal(20, 3)
+  chenhlech     Decimal  @default(0) @postgres.Decimal(20, 3)
+  ghichu        String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  order         Int?     @default(1)
+  sanphamId     String?
+  sanpham       Sanpham? @relation("ChotkhodetailSanpham", fields: [sanphamId], references: [id])
+  chotkhoId     String?
+  chotkho       Chotkho? @relation("ChotkhoDetails", fields: [chotkhoId], references: [id])
+  userId        String?
+  user          User?    @relation("ChotkhodetailUser", fields: [userId], references: [id])
   @@index([sanphamId])
   @@index([ngaychot])
 }

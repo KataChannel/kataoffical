@@ -17,6 +17,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChotkhoService } from '../chotkho.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatChipsModule } from '@angular/material/chips';
 import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
 import { memoize, Debounce } from '../../../shared/utils/decorators';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -40,6 +41,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     FormsModule,
     MatTooltipModule,
     MatDialogModule,
+    MatChipsModule,
     SearchfilterComponent,
     MatProgressSpinnerModule,
     MatProgressBarModule
@@ -52,12 +54,15 @@ export class ListChotkhoComponent implements OnInit {
   displayedColumns: string[] = [];
   ColumnName: any = {
     stt: '#',
-    codeId: 'Code',
-    title: 'Tiêu Đề',
-    description: 'Mô Tả',
-    status: 'Trạng Thái',
-    order: 'Thứ Tự',
-    createdAt: 'Ngày Tạo',
+    codeId: 'Mã chốt kho',
+    title: 'Tiêu đề',
+    khoId: 'Kho',
+    ngaychot: 'Ngày chốt',
+    ghichu: 'Ghi chú',
+    isActive: 'Trạng thái',
+    createdAt: 'Ngày tạo',
+    order: 'Thứ tự',
+    details: 'Số SP'
   };
   FilterColumns: any[] = JSON.parse(localStorage.getItem('ChotkhoColFilter') || '[]');
   Columns: any[] = [];

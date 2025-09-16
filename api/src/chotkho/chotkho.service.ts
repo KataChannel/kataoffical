@@ -9,16 +9,19 @@ export class ChotkhoService {
   ) {}
 
   /**
-   * 🎯 NEW CREATE METHOD: Chốt kho với logic mới
-   * Logic: 1 lần chốt kho sẽ lấy tất cả sản phẩm đang có
-   * sltonhethong = slton tương ứng từ Tonkho
-   * sau đó bổ sung sltonthucte, slhuy từ user input
-   * chenhlech = sltonhethong - sltonthucte - slhuy
+   * 🎯 CREATE METHOD: Tạo chốt kho với master-detail structure
+   * Master: Chotkho (ngaychot, title, ghichu, khoId, userId)
+   * Details: Chotkhodetail (sanphamId, sltonhethong, sltonthucte, slhuy, chenhlech)
    */
   async create(inventoryData: {
+    ngaychot?: Date;
+    title?: string;
+    ghichu?: string;
     khoId: string;
-    products: Array<{
+    userId?: string;
+    details: Array<{
       sanphamId: string;
+      sltonhethong: number;
       sltonthucte: number;
       slhuy: number;
       ghichu?: string;
@@ -26,86 +29,93 @@ export class ChotkhoService {
   }) {
     try {
       return await this.prisma.$transaction(async (prisma) => {
-        const { khoId, products } = inventoryData;
-        const ngaychot = new Date();
+        const { ngaychot, title, ghichu, khoId, userId, details } = inventoryData;
         
-        // Lấy tất cả sản phẩm có tồn kho > 0 theo kho
-        const tonkhoRecords = await prisma.tonKho.findMany({
-          where: {
-            slton: { gt: 0 },
-            sanpham: {
-              SanphamKho: {
-                some: { khoId }
-              }
+        // Validate khoId exists
+        const kho = await prisma.kho.findUnique({
+          where: { id: khoId }
+        });
+        
+        if (!kho) {
+          throw new Error(`Kho với ID ${khoId} không tồn tại trong hệ thống`);
+        }
+
+        // Validate all sanphamId exist
+        for (const detail of details) {
+          const sanpham = await prisma.sanpham.findUnique({
+            where: { id: detail.sanphamId }
+          });
+          
+          if (!sanpham) {
+            throw new Error(`Sản phẩm với ID ${detail.sanphamId} không tồn tại trong hệ thống`);
+          }
+        }
+        
+        // Tạo master record - Chotkho
+        const chotkhoMaster = await prisma.chotkho.create({
+          data: {
+            ngaychot: ngaychot || new Date(),
+            title: title || `Chốt kho ${new Date().toLocaleDateString('vi-VN')}`,
+            ghichu: ghichu || '',
+            khoId,
+            userId,
+            codeId: `CHOTKHO_${Date.now()}`,
+            isActive: true
+          }
+        });
+
+        console.log(`📦 Created master chotkho record: ${chotkhoMaster.id}`);
+
+        // Tạo detail records - Chotkhodetail
+        let detailCount = 0;
+        for (const detail of details) {
+          const chenhlech = Number(detail.sltonhethong) - Number(detail.sltonthucte) - Number(detail.slhuy);
+          
+          await prisma.chotkhodetail.create({
+            data: {
+              chotkhoId: chotkhoMaster.id,
+              sanphamId: detail.sanphamId,
+              sltonhethong: new Decimal(detail.sltonhethong),
+              sltonthucte: new Decimal(detail.sltonthucte),
+              slhuy: new Decimal(detail.slhuy),
+              chenhlech: new Decimal(chenhlech),
+              ghichu: detail.ghichu || '',
+              userId,
+              ngaychot: chotkhoMaster.ngaychot
             }
-          },
+          });
+          
+          detailCount++;
+        }
+
+        // Lấy full data với relations
+        const result = await prisma.chotkho.findUnique({
+          where: { id: chotkhoMaster.id },
           include: {
-            sanpham: {
-              select: {
-                id: true,
-                title: true,
-                masp: true
+            kho: {
+              select: { id: true, name: true, makho: true }
+            },
+            user: {
+              select: { 
+                id: true, 
+                email: true,
+                profile: { select: { name: true } }
+              }
+            },
+            details: {
+              include: {
+                sanpham: {
+                  select: { id: true, title: true, masp: true }
+                }
               }
             }
           }
         });
 
-        console.log(`📦 Found ${tonkhoRecords.length} products with inventory > 0`);
-
-        if (tonkhoRecords.length === 0) {
-          return {
-            success: false,
-            message: 'Không có sản phẩm nào có tồn kho > 0 trong kho này'
-          };
-        }
-
-        const createdRecords: any[] = [];
-        let totalDifference = 0;
-
-        // Tạo record chốt kho cho từng sản phẩm
-        for (const tonkho of tonkhoRecords) {
-          // Tìm data user input cho sản phẩm này
-          const userInput = products.find(p => p.sanphamId === tonkho.sanphamId);
-          
-          const sltonhethong = Number(tonkho.slton);
-          const sltonthucte = userInput?.sltonthucte || 0;
-          const slhuy = userInput?.slhuy || 0;
-          const chenhlech = sltonhethong - sltonthucte - slhuy;
-          
-          // Tạo record chotkho
-          const chotkhoRecord = await prisma.chotkho.create({
-            data: {
-              khoId,
-              sanphamId: tonkho.sanphamId,
-              ngaychot,
-              sltonhethong: new Decimal(sltonhethong),
-              sltonthucte: new Decimal(sltonthucte),
-              slhuy: new Decimal(slhuy),
-              chenhlech: new Decimal(chenhlech),
-              ghichu: userInput?.ghichu || ''
-            },
-            include: {
-              sanpham: {
-                select: {
-                  title: true,
-                  masp: true
-                }
-              }
-            }
-          });
-
-          createdRecords.push(chotkhoRecord);
-          totalDifference += chenhlech;
-        }
-
         return {
           success: true,
-          message: `Chốt kho thành công cho ${createdRecords.length} sản phẩm`,
-          data: {
-            totalProducts: createdRecords.length,
-            totalDifference,
-            records: createdRecords
-          }
+          message: `Tạo chốt kho thành công với ${detailCount} sản phẩm`,
+          data: result
         };
       });
     } catch (error) {
@@ -115,18 +125,14 @@ export class ChotkhoService {
   }
 
   /**
-   * Lấy tất cả sản phẩm có tồn kho theo kho
+   * Lấy tất cả sản phẩm có tồn kho theo kho để chuẩn bị cho việc chốt kho
    */
   async getAllProductsByKho(khoId: string): Promise<any[]> {
     try {
-      const tonkhoRecords = await this.prisma.tonKho.findMany({
+      const sanphamKhoRecords = await this.prisma.sanphamKho.findMany({
         where: {
-          slton: { gt: 0 },
-          sanpham: {
-            SanphamKho: {
-              some: { khoId }
-            }
-          }
+          khoId,
+          soluong: { gt: 0 }
         },
         include: {
           sanpham: {
@@ -144,16 +150,91 @@ export class ChotkhoService {
         }
       });
 
-      return tonkhoRecords.map(tonkho => ({
-        sanphamId: tonkho.sanphamId,
-        sanpham: tonkho.sanpham,
-        sltonhethong: Number(tonkho.slton),
+      return sanphamKhoRecords.map(item => ({
+        sanphamId: item.sanphamId,
+        sanpham: item.sanpham,
+        sltonhethong: Number(item.soluong),
         sltonthucte: 0,
         slhuy: 0,
-        chenhlech: Number(tonkho.slton)
+        chenhlech: Number(item.soluong)
       }));
     } catch (error) {
       console.error('Error getting products by kho:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Lấy danh sách tất cả kho
+   */
+  async getAllKho(): Promise<any[]> {
+    try {
+      return await this.prisma.kho.findMany({
+        where: {
+          isActive: true
+        },
+        select: {
+          id: true,
+          name: true,
+          makho: true,
+          diachi: true
+        },
+        orderBy: {
+          name: 'asc'
+        }
+      });
+    } catch (error) {
+      console.error('Error getting all kho:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Lấy tất cả sản phẩm có thông tin tồn kho (không phân theo kho)
+   */
+  async getAllProducts(): Promise<any[]> {
+    try {
+      const products = await this.prisma.sanpham.findMany({
+        where: {
+          isActive: true
+        },
+        include: {
+          TonKho: {
+            select: {
+              slton: true,
+              sltontt: true,
+              slchogiao: true,
+              slchonhap: true
+            }
+          }
+        },
+        orderBy: {
+          title: 'asc'
+        }
+      });
+
+      return products.map(product => ({
+        id: product.id,
+        masanpham: product.masp,
+        tensanpham: product.title,
+        donvitinh: product.dvt,
+        dongia: Number(product.giaban) || 0,
+        status: product.isActive,
+        ghichu: product.ghichu,
+        tonkho: product.TonKho ? {
+          slton: Number(product.TonKho.slton) || 0,
+          slhuy: 0, // TonKho không có field slhuy
+          sltinhthucte: Number(product.TonKho.sltontt) || 0,
+          ngaycapnhat: new Date()
+        } : {
+          slton: 0,
+          slhuy: 0,
+          sltinhthucte: 0,
+          ngaycapnhat: null
+        }
+      }));
+    } catch (error) {
+      console.error('Error getting all products:', error);
       throw error;
     }
   }
@@ -166,17 +247,31 @@ export class ChotkhoService {
         skip,
         take: limit,
         include: {
-          sanpham: {
-            select: {
-              id: true,
-              title: true,
-              masp: true
-            }
-          },
           kho: {
             select: {
               id: true,
-              name: true
+              name: true,
+              makho: true
+            }
+          },
+          user: {
+            select: {
+              id: true,
+              email: true,
+              profile: {
+                select: { name: true }
+              }
+            }
+          },
+          details: {
+            include: {
+              sanpham: {
+                select: {
+                  id: true,
+                  title: true,
+                  masp: true
+                }
+              }
             }
           }
         },
@@ -202,17 +297,31 @@ export class ChotkhoService {
     return this.prisma.chotkho.findUnique({
       where: { id },
       include: {
-        sanpham: {
-          select: {
-            id: true,
-            title: true,
-            masp: true
-          }
-        },
         kho: {
           select: {
             id: true,
-            name: true
+            name: true,
+            makho: true
+          }
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            profile: {
+              select: { name: true }
+            }
+          }
+        },
+        details: {
+          include: {
+            sanpham: {
+              select: {
+                id: true,
+                title: true,
+                masp: true
+              }
+            }
           }
         }
       }
@@ -239,11 +348,17 @@ export class ChotkhoService {
     const where: any = {};
     
     if (khoId) where.khoId = khoId;
-    if (sanphamId) where.sanphamId = sanphamId;
     if (fromDate || toDate) {
       where.ngaychot = {};
       if (fromDate) where.ngaychot.gte = new Date(fromDate);
       if (toDate) where.ngaychot.lte = new Date(toDate);
+    }
+
+    // Filter by sanphamId through details relation
+    if (sanphamId) {
+      where.details = {
+        some: { sanphamId }
+      };
     }
 
     const [items, total] = await Promise.all([
@@ -252,17 +367,31 @@ export class ChotkhoService {
         skip,
         take: limit,
         include: {
-          sanpham: {
-            select: {
-              id: true,
-              title: true,
-              masp: true
-            }
-          },
           kho: {
             select: {
               id: true,
-              name: true
+              name: true,
+              makho: true
+            }
+          },
+          user: {
+            select: {
+              id: true,
+              email: true,
+              profile: {
+                select: { name: true }
+              }
+            }
+          },
+          details: {
+            include: {
+              sanpham: {
+                select: {
+                  id: true,
+                  title: true,
+                  masp: true
+                }
+              }
             }
           }
         },

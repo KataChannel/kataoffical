@@ -33,6 +33,12 @@ let ChotkhoResolver = class ChotkhoResolver {
     async getProductsByWarehouse(khoId) {
         return await this.chotkhoService.getAllProductsByKho(khoId);
     }
+    async getAllProducts() {
+        return await this.chotkhoService.getAllProducts();
+    }
+    async getAllWarehouses() {
+        return await this.chotkhoService.getAllKho();
+    }
     async create(data) {
         return await this.chotkhoService.create(data);
     }
@@ -79,15 +85,33 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChotkhoResolver.prototype, "getProductsByWarehouse", null);
 __decorate([
+    (0, graphql_1.Query)(() => graphql_type_json_1.GraphQLJSON, {
+        name: 'chotkhoGetAllProducts',
+        description: '🎯 NEW: Get all products with inventory information (no warehouse filter)'
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ChotkhoResolver.prototype, "getAllProducts", null);
+__decorate([
+    (0, graphql_1.Query)(() => graphql_type_json_1.GraphQLJSON, {
+        name: 'chotkhoGetAllWarehouses',
+        description: '🎯 NEW: Get all active warehouses for selection'
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ChotkhoResolver.prototype, "getAllWarehouses", null);
+__decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
         name: 'chotkhoCreate',
-        description: '🎯 NEW: Create inventory check with new business logic - Process all products in warehouse'
+        description: '🎯 Create inventory check with master-detail structure'
     }),
     (0, audit_decorator_1.Audit)({ entity: 'Chotkho', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, graphql_1.Args)('data', {
         type: () => graphql_type_json_1.GraphQLJSON,
-        description: 'Inventory check data with khoId and products array'
+        description: 'Inventory check data with master info and details array'
     })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

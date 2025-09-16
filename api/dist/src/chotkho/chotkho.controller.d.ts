@@ -5,56 +5,41 @@ export declare class ChotkhoController {
     create(data: any): Promise<{
         success: boolean;
         message: string;
-        data?: undefined;
-    } | {
-        success: boolean;
-        message: string;
-        data: {
-            totalProducts: number;
-            totalDifference: number;
-            records: any[];
-        };
-    }>;
-    getAllProductsByKho(khoId: string): Promise<any[]>;
-    findOne(id: string): Promise<({
-        sanpham: {
-            id: string;
-            title: string;
-            masp: string;
-        } | null;
-        kho: {
-            id: string;
-            name: string;
-        } | null;
-    } & {
-        id: string;
-        title: string | null;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        codeId: string | null;
-        khoId: string | null;
-        sanphamId: string | null;
-        userId: string | null;
-        slhuy: import("@prisma/client/runtime/library").Decimal;
-        ngaychot: Date;
-        sltonhethong: import("@prisma/client/runtime/library").Decimal;
-        sltonthucte: import("@prisma/client/runtime/library").Decimal;
-        chenhlech: import("@prisma/client/runtime/library").Decimal;
-    }) | null>;
-    findAll(page?: string, limit?: string): Promise<{
         data: ({
-            sanpham: {
+            user: {
                 id: string;
-                title: string;
-                masp: string;
+                profile: {
+                    name: string;
+                } | null;
+                email: string | null;
             } | null;
             kho: {
                 id: string;
                 name: string;
+                makho: string | null;
             } | null;
+            details: ({
+                sanpham: {
+                    id: string;
+                    title: string;
+                    masp: string;
+                } | null;
+            } & {
+                id: string;
+                title: string | null;
+                ghichu: string | null;
+                order: number | null;
+                createdAt: Date;
+                updatedAt: Date;
+                sanphamId: string | null;
+                userId: string | null;
+                slhuy: import("@prisma/client/runtime/library").Decimal;
+                ngaychot: Date;
+                sltonhethong: import("@prisma/client/runtime/library").Decimal;
+                sltonthucte: import("@prisma/client/runtime/library").Decimal;
+                chenhlech: import("@prisma/client/runtime/library").Decimal;
+                chotkhoId: string | null;
+            })[];
         } & {
             id: string;
             title: string | null;
@@ -65,6 +50,37 @@ export declare class ChotkhoController {
             updatedAt: Date;
             codeId: string | null;
             khoId: string | null;
+            userId: string | null;
+            ngaychot: Date;
+        }) | null;
+    }>;
+    getAllProductsByKho(khoId: string): Promise<any[]>;
+    findOne(id: string): Promise<({
+        user: {
+            id: string;
+            profile: {
+                name: string;
+            } | null;
+            email: string | null;
+        } | null;
+        kho: {
+            id: string;
+            name: string;
+            makho: string | null;
+        } | null;
+        details: ({
+            sanpham: {
+                id: string;
+                title: string;
+                masp: string;
+            } | null;
+        } & {
+            id: string;
+            title: string | null;
+            ghichu: string | null;
+            order: number | null;
+            createdAt: Date;
+            updatedAt: Date;
             sanphamId: string | null;
             userId: string | null;
             slhuy: import("@prisma/client/runtime/library").Decimal;
@@ -72,6 +88,69 @@ export declare class ChotkhoController {
             sltonhethong: import("@prisma/client/runtime/library").Decimal;
             sltonthucte: import("@prisma/client/runtime/library").Decimal;
             chenhlech: import("@prisma/client/runtime/library").Decimal;
+            chotkhoId: string | null;
+        })[];
+    } & {
+        id: string;
+        title: string | null;
+        ghichu: string | null;
+        order: number | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        codeId: string | null;
+        khoId: string | null;
+        userId: string | null;
+        ngaychot: Date;
+    }) | null>;
+    findAll(page?: string, limit?: string): Promise<{
+        data: ({
+            user: {
+                id: string;
+                profile: {
+                    name: string;
+                } | null;
+                email: string | null;
+            } | null;
+            kho: {
+                id: string;
+                name: string;
+                makho: string | null;
+            } | null;
+            details: ({
+                sanpham: {
+                    id: string;
+                    title: string;
+                    masp: string;
+                } | null;
+            } & {
+                id: string;
+                title: string | null;
+                ghichu: string | null;
+                order: number | null;
+                createdAt: Date;
+                updatedAt: Date;
+                sanphamId: string | null;
+                userId: string | null;
+                slhuy: import("@prisma/client/runtime/library").Decimal;
+                ngaychot: Date;
+                sltonhethong: import("@prisma/client/runtime/library").Decimal;
+                sltonthucte: import("@prisma/client/runtime/library").Decimal;
+                chenhlech: import("@prisma/client/runtime/library").Decimal;
+                chotkhoId: string | null;
+            })[];
+        } & {
+            id: string;
+            title: string | null;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            codeId: string | null;
+            khoId: string | null;
+            userId: string | null;
+            ngaychot: Date;
         })[];
         pagination: {
             current: number;
@@ -90,13 +169,8 @@ export declare class ChotkhoController {
         updatedAt: Date;
         codeId: string | null;
         khoId: string | null;
-        sanphamId: string | null;
         userId: string | null;
-        slhuy: import("@prisma/client/runtime/library").Decimal;
         ngaychot: Date;
-        sltonhethong: import("@prisma/client/runtime/library").Decimal;
-        sltonthucte: import("@prisma/client/runtime/library").Decimal;
-        chenhlech: import("@prisma/client/runtime/library").Decimal;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -108,12 +182,7 @@ export declare class ChotkhoController {
         updatedAt: Date;
         codeId: string | null;
         khoId: string | null;
-        sanphamId: string | null;
         userId: string | null;
-        slhuy: import("@prisma/client/runtime/library").Decimal;
         ngaychot: Date;
-        sltonhethong: import("@prisma/client/runtime/library").Decimal;
-        sltonthucte: import("@prisma/client/runtime/library").Decimal;
-        chenhlech: import("@prisma/client/runtime/library").Decimal;
     }>;
 }

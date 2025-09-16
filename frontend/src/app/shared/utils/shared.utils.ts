@@ -47,6 +47,15 @@ export function genMaDonhang(startNumber:any) {
   startNumber++;
   return code;
 }
+export function genMaChotkho(startNumber:any) {
+  let code = startNumber.toString();
+  while (code.length < 3) {
+    code = "0" + code;
+  }
+  code = "CHOTKHO-AA" + code;
+  startNumber++;
+  return code;
+}
 
 export interface SearchParams {
   idChinhanh?: string;

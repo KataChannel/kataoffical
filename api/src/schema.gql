@@ -156,6 +156,14 @@ type Query {
     khoId: String!
   ): JSON!
 
+  """
+  🎯 NEW: Get all products with inventory information (no warehouse filter)
+  """
+  chotkhoGetAllProducts: JSON!
+
+  """🎯 NEW: Get all active warehouses for selection"""
+  chotkhoGetAllWarehouses: JSON!
+
   """Search chotkho records with filters"""
   chotkhoSearch(
     """Search filters: khoId, sanphamId, fromDate, toDate, page, limit"""
@@ -282,11 +290,9 @@ type Mutation {
   """Xóa khách hàng khỏi nhóm"""
   removeKhachhangFromNhom(input: ManageKhachhangInNhomInput!): NhomkhachhangMutationResponse!
 
-  """
-  🎯 NEW: Create inventory check with new business logic - Process all products in warehouse
-  """
+  """🎯 Create inventory check with master-detail structure"""
   chotkhoCreate(
-    """Inventory check data with khoId and products array"""
+    """Inventory check data with master info and details array"""
     data: JSON!
   ): JSON!
 
