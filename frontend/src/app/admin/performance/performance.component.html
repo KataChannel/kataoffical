@@ -199,17 +199,40 @@
               </mat-card-title>
             </mat-card-header>
             <mat-card-content class="p-4">
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                
+                <!-- Request Type Filter -->
                 <mat-form-field appearance="outline">
-                  <mat-label>Operation Filter</mat-label>
-                  <input matInput [(ngModel)]="selectedOperation" (input)="onFilterChange()" 
-                         placeholder="e.g., DonhangService">
+                  <mat-label>Request Type</mat-label>
+                  <mat-select [(ngModel)]="selectedRequestType" (selectionChange)="onFilterChange()">
+                    <mat-option value="all">All Types</mat-option>
+                    <mat-option value="graphql">GraphQL Only</mat-option>
+                    <mat-option value="http">HTTP Only</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                
+                <!-- GraphQL Operation Type Filter -->
+                <mat-form-field appearance="outline" *ngIf="selectedRequestType === 'all' || selectedRequestType === 'graphql'">
+                  <mat-label>GraphQL Operation</mat-label>
+                  <mat-select [(ngModel)]="selectedOperationType" (selectionChange)="onFilterChange()">
+                    <mat-option value="all">All Operations</mat-option>
+                    <mat-option value="query">Query</mat-option>
+                    <mat-option value="mutation">Mutation</mat-option>
+                    <mat-option value="subscription">Subscription</mat-option>
+                  </mat-select>
                 </mat-form-field>
                 
                 <mat-form-field appearance="outline">
-                  <mat-label>Success</mat-label>
+                  <mat-label>Operation/Field Filter</mat-label>
+                  <input matInput [(ngModel)]="selectedOperation" (input)="onFilterChange()" 
+                         placeholder="e.g., findMany, DonhangService">
+                  <mat-hint>Search by operation name or service</mat-hint>
+                </mat-form-field>
+                
+                <mat-form-field appearance="outline">
+                  <mat-label>Success Status</mat-label>
                   <mat-select [(ngModel)]="selectedSuccess" (selectionChange)="onFilterChange()">
-                    <mat-option value="all">All</mat-option>
+                    <mat-option value="all">All Status</mat-option>
                     <mat-option value="true">Success Only</mat-option>
                     <mat-option value="false">Errors Only</mat-option>
                   </mat-select>
@@ -219,27 +242,54 @@
                   <mat-label>Min Duration (ms)</mat-label>
                   <input matInput type="number" [(ngModel)]="minDuration" 
                          (input)="onFilterChange()" placeholder="1000">
+                  <mat-hint>Filter slow operations</mat-hint>
                 </mat-form-field>
                 
                 <mat-form-field appearance="outline">
-                  <mat-label>Limit</mat-label>
+                  <mat-label>Results Limit</mat-label>
                   <mat-select [(ngModel)]="logLimit" (selectionChange)="onFilterChange()">
+                    <mat-option value="25">25</mat-option>
                     <mat-option value="50">50</mat-option>
                     <mat-option value="100">100</mat-option>
                     <mat-option value="200">200</mat-option>
                     <mat-option value="500">500</mat-option>
                   </mat-select>
                 </mat-form-field>
-                
-                <div class="flex gap-2">
-                  <button mat-raised-button color="primary" (click)="loadLogs()">
-                    <mat-icon>search</mat-icon>
-                    Search
-                  </button>
-                  <button mat-raised-button color="accent" (click)="loadAllData()">
-                    <mat-icon>refresh</mat-icon>
-                    Refresh
-                  </button>
+              </div>
+              
+              <!-- Action Buttons -->
+              <div class="flex flex-wrap gap-3 mt-4">
+                <button mat-raised-button color="primary" (click)="loadLogs()" class="flex items-center gap-2">
+                  <mat-icon>search</mat-icon>
+                  Search Logs
+                </button>
+                <button mat-raised-button color="accent" (click)="loadAllData()" class="flex items-center gap-2">
+                  <mat-icon>refresh</mat-icon>
+                  Refresh All
+                </button>
+                <button mat-stroked-button (click)="resetFilters()" class="flex items-center gap-2">
+                  <mat-icon>clear</mat-icon>
+                  Clear Filters
+                </button>
+              </div>
+              
+              <!-- Quick Stats -->
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 pt-4 border-t">
+                <div class="text-center">
+                  <div class="text-lg font-bold text-blue-600">{{ logs.length }}</div>
+                  <div class="text-sm text-gray-600">Total Logs</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-lg font-bold text-purple-600">{{ getGraphQLLogsCount() }}</div>
+                  <div class="text-sm text-gray-600">GraphQL</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-lg font-bold text-green-600">{{ getSuccessfulLogsCount() }}</div>
+                  <div class="text-sm text-gray-600">Successful</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-lg font-bold text-orange-600">{{ getAverageDuration() }}ms</div>
+                  <div class="text-sm text-gray-600">Avg Duration</div>
                 </div>
               </div>
             </mat-card-content>
@@ -255,24 +305,39 @@
             </mat-card-header>
             <mat-card-content class="p-0">
               <div class="overflow-x-auto">
-                <table mat-table [dataSource]="logs" class="w-full">
+                <table mat-table [dataSource]="dataSource" matSort class="w-full">
                   
                   <ng-container matColumnDef="timestamp">
-                    <th mat-header-cell *matHeaderCellDef class="font-semibold">Timestamp</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="font-semibold">Timestamp</th>
                     <td mat-cell *matCellDef="let log" class="text-sm">
                       {{ formatTimestamp(log.timestamp) }}
                     </td>
                   </ng-container>
 
                   <ng-container matColumnDef="operation">
-                    <th mat-header-cell *matHeaderCellDef class="font-semibold">Operation</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="operation" class="font-semibold">Operation</th>
                     <td mat-cell *matCellDef="let log" class="font-medium">
-                      {{ log.name }}
+                      <div class="flex items-center gap-2">
+                        <!-- GraphQL or HTTP Icon -->
+                        <mat-icon *ngIf="isGraphQLLog(log)" class="text-purple-600 text-sm">
+                          graphql
+                        </mat-icon>
+                        <mat-icon *ngIf="!isGraphQLLog(log)" class="text-blue-600 text-sm">
+                          http
+                        </mat-icon>
+                        
+                        <div>
+                          <div class="font-medium">{{ getOperationName(log) }}</div>
+                          <div *ngIf="getOperationType(log)" class="text-xs text-gray-500">
+                            {{ getOperationType(log) }} {{ getFieldName(log) }}
+                          </div>
+                        </div>
+                      </div>
                     </td>
                   </ng-container>
 
                   <ng-container matColumnDef="duration">
-                    <th mat-header-cell *matHeaderCellDef class="font-semibold">Duration</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="font-semibold">Duration</th>
                     <td mat-cell *matCellDef="let log">
                       <mat-chip [ngClass]="getDurationColor(log.duration + 'ms')">
                         {{ log.duration.toFixed(2) }}ms
@@ -281,52 +346,80 @@
                   </ng-container>
 
                   <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef class="font-semibold">Status</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="status" class="font-semibold">Status</th>
                     <td mat-cell *matCellDef="let log">
-                      <mat-chip [color]="log.success ? 'primary' : 'warn'">
-                        {{ log.success ? 'Success' : 'Error' }}
-                      </mat-chip>
-                      <div *ngIf="!log.success && log.error" class="text-red-600 text-xs mt-1">
+                      <div class="flex items-center gap-2">
+                        <mat-chip [color]="log.success ? 'primary' : 'warn'" class="text-xs">
+                          {{ log.statusCode || (log.success ? '200' : 'ERROR') }}
+                        </mat-chip>
+                        <mat-icon *ngIf="log.success" class="text-green-600 text-sm">check_circle</mat-icon>
+                        <mat-icon *ngIf="!log.success" class="text-red-600 text-sm">error</mat-icon>
+                      </div>
+                      <div *ngIf="!log.success && log.error" class="text-red-600 text-xs mt-1 truncate max-w-xs">
                         {{ log.error }}
                       </div>
                     </td>
                   </ng-container>
 
                   <ng-container matColumnDef="method">
-                    <th mat-header-cell *matHeaderCellDef class="font-semibold">Method</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="font-semibold">Type</th>
                     <td mat-cell *matCellDef="let log">
-                      <mat-chip *ngIf="log.method" color="accent">{{ log.method }}</mat-chip>
+                      <mat-chip *ngIf="isGraphQLLog(log)" class="bg-purple-100 text-purple-800">
+                        {{ getOperationType(log) || 'GraphQL' }}
+                      </mat-chip>
+                      <mat-chip *ngIf="!isGraphQLLog(log)" color="accent">
+                        {{ log.method || 'HTTP' }}
+                      </mat-chip>
                     </td>
                   </ng-container>
 
                   <ng-container matColumnDef="url">
-                    <th mat-header-cell *matHeaderCellDef class="font-semibold">URL</th>
-                    <td mat-cell *matCellDef="let log" class="text-sm max-w-xs truncate">
-                      {{ log.url || '-' }}
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="font-semibold">Endpoint</th>
+                    <td mat-cell *matCellDef="let log" class="text-sm">
+                      <div class="max-w-xs truncate" [title]="getEndpointPath(log)">
+                        {{ getEndpointPath(log) }}
+                      </div>
                     </td>
                   </ng-container>
 
                   <ng-container matColumnDef="memory">
-                    <th mat-header-cell *matHeaderCellDef class="font-semibold">Memory</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="memory" class="font-semibold">Memory</th>
                     <td mat-cell *matCellDef="let log" class="text-sm">
-                      <span *ngIf="log.memoryUsage">{{ log.memoryUsage.toFixed(1) }}MB</span>
-                      <span *ngIf="!log.memoryUsage">-</span>
+                      <span *ngIf="log.memoryUsage" class="px-2 py-1 bg-gray-100 rounded text-xs">
+                        {{ log.memoryUsage.toFixed(1) }}MB
+                      </span>
+                      <span *ngIf="!log.memoryUsage" class="text-gray-400">-</span>
                     </td>
                   </ng-container>
 
                   <ng-container matColumnDef="context">
-                    <th mat-header-cell *matHeaderCellDef class="font-semibold">Context</th>
+                    <th mat-header-cell *matHeaderCellDef class="font-semibold">Details</th>
                     <td mat-cell *matCellDef="let log">
-                      <button *ngIf="log.context" mat-stroked-button color="primary" class="text-xs">
-                        View
-                      </button>
+                      <div class="flex items-center gap-2">
+                        <button mat-icon-button color="primary" 
+                                (click)="showLogDetails(log)" 
+                                matTooltip="View detailed information">
+                          <mat-icon class="text-sm">visibility</mat-icon>
+                        </button>
+                        <span *ngIf="hasGraphQLArgs(log)" class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          Args
+                        </span>
+                      </div>
                     </td>
                   </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                   <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
-                      class="hover:bg-gray-50 transition-colors"></tr>
+                      class="hover:bg-gray-50 transition-colors cursor-pointer"
+                      (click)="showLogDetails(row)"></tr>
                 </table>
+                
+                <!-- No data message -->
+                <div *ngIf="dataSource.data.length === 0" class="text-center py-12 text-gray-500">
+                  <mat-icon class="text-6xl mb-4 text-gray-300">list_alt</mat-icon>
+                  <p class="text-lg">No performance logs found</p>
+                  <p class="text-sm">Try adjusting your filters or time range</p>
+                </div>
               </div>
             </mat-card-content>
           </mat-card>
@@ -534,3 +627,181 @@
     </mat-card-content>
   </mat-card>
 </div>
+
+<!-- Detailed Log View Modal -->
+<ng-template #logDetailsModal>
+  <div class="max-w-4xl w-full">
+    <mat-dialog-content *ngIf="selectedLog" class="p-0">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <mat-icon class="text-2xl">
+              {{ isGraphQLLog(selectedLog) ? 'graphql' : 'http' }}
+            </mat-icon>
+            <div>
+              <h2 class="text-xl font-bold">{{ getOperationName(selectedLog) }}</h2>
+              <p class="text-blue-100">{{ formatTimestamp(selectedLog.timestamp) }}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-bold">{{ selectedLog.duration.toFixed(2) }}ms</div>
+            <mat-chip [color]="selectedLog.success ? 'primary' : 'warn'" class="mt-2">
+              {{ selectedLog.success ? 'SUCCESS' : 'ERROR' }}
+            </mat-chip>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Tabs -->
+      <mat-tab-group class="min-h-96">
+        
+        <!-- Overview Tab -->
+        <mat-tab label="Overview">
+          <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              <!-- Basic Info -->
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>Request Information</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="space-y-3">
+                    <div class="flex justify-between">
+                      <span class="font-medium">Request ID:</span>
+                      <code class="text-sm bg-gray-100 px-2 py-1 rounded">{{ selectedLog.id || 'N/A' }}</code>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="font-medium">Type:</span>
+                      <span>{{ isGraphQLLog(selectedLog) ? 'GraphQL' : 'HTTP' }}</span>
+                    </div>
+                    <div *ngIf="!isGraphQLLog(selectedLog)" class="flex justify-between">
+                      <span class="font-medium">Method:</span>
+                      <mat-chip color="accent">{{ selectedLog.method || 'Unknown' }}</mat-chip>
+                    </div>
+                    <div *ngIf="isGraphQLLog(selectedLog)" class="flex justify-between">
+                      <span class="font-medium">Operation:</span>
+                      <mat-chip class="bg-purple-100 text-purple-800">{{ getOperationType(selectedLog) }}</mat-chip>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="font-medium">Status Code:</span>
+                      <span>{{ selectedLog.statusCode || 'N/A' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="font-medium">Endpoint:</span>
+                      <code class="text-sm break-all">{{ getEndpointPath(selectedLog) }}</code>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+
+              <!-- Performance Metrics -->
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>Performance Metrics</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                      <span class="font-medium">Duration:</span>
+                      <mat-chip [ngClass]="getDurationColor(selectedLog.duration + 'ms')">
+                        {{ selectedLog.duration.toFixed(2) }}ms
+                      </mat-chip>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="font-medium">Memory Usage:</span>
+                      <span>{{ selectedLog.memoryUsage ? selectedLog.memoryUsage.toFixed(1) + 'MB' : 'N/A' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="font-medium">Success:</span>
+                      <mat-icon [class]="selectedLog.success ? 'text-green-600' : 'text-red-600'">
+                        {{ selectedLog.success ? 'check_circle' : 'error' }}
+                      </mat-icon>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+              
+            </div>
+
+            <!-- Error Details -->
+            <mat-card *ngIf="!selectedLog.success && selectedLog.error" class="mt-6 border-l-4 border-red-500">
+              <mat-card-header>
+                <mat-card-title class="text-red-700">Error Details</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <pre class="bg-red-50 p-4 rounded overflow-auto text-sm text-red-800">{{ selectedLog.error }}</pre>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-tab>
+
+        <!-- GraphQL Details Tab -->
+        <mat-tab *ngIf="isGraphQLLog(selectedLog)" label="GraphQL Details">
+          <div class="p-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              
+              <!-- GraphQL Operation Info -->
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>Operation Details</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="space-y-3">
+                    <div class="flex justify-between">
+                      <span class="font-medium">Operation Type:</span>
+                      <mat-chip class="bg-purple-100 text-purple-800">{{ getOperationType(selectedLog) }}</mat-chip>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="font-medium">Field Name:</span>
+                      <code class="text-sm bg-gray-100 px-2 py-1 rounded">{{ getFieldName(selectedLog) }}</code>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="font-medium">Parent Type:</span>
+                      <span>{{ getParentType(selectedLog) }}</span>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+
+              <!-- Arguments -->
+              <mat-card *ngIf="hasGraphQLArgs(selectedLog)">
+                <mat-card-header>
+                  <mat-card-title>Arguments</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <pre class="bg-gray-50 p-4 rounded overflow-auto text-sm max-h-64">{{ getGraphQLArgs(selectedLog) | json }}</pre>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Context Tab -->
+        <mat-tab *ngIf="selectedLog.context" label="Full Context">
+          <div class="p-6">
+            <mat-card>
+              <mat-card-header>
+                <mat-card-title>Request Context</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <pre class="bg-gray-50 p-4 rounded overflow-auto text-sm max-h-96">{{ selectedLog.context | json }}</pre>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-tab>
+        
+      </mat-tab-group>
+    </mat-dialog-content>
+
+    <!-- Actions -->
+    <mat-dialog-actions align="end" class="p-4 bg-gray-50">
+      <button mat-button (click)="closeLogDetails()">Close</button>
+      <button mat-raised-button color="primary" (click)="copyLogDetails()">
+        <mat-icon>content_copy</mat-icon>
+        Copy Details
+      </button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>

@@ -1281,6 +1281,7 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
     ];
     
     // Add data rows for this customer
+    customerData.sort((a, b) => (a.tensp || '').localeCompare(b.tensp || ''));
     customerData.forEach(item => {
       worksheetData.push([
         moment(item.ngaygiao).format('DD/MM/YYYY') || '',

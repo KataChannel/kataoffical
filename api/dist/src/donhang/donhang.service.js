@@ -337,6 +337,9 @@ let DonhangService = class DonhangService {
             });
         });
         const combinationTotals = new Map();
+        flatItems.sort((a, b) => {
+            return (a.tenhang || '').localeCompare(b.tenhang || '');
+        });
         flatItems.forEach(item => {
             const customerKey = item.makhachhang || 'unknown-customer';
             const dateKey = item.ngaygiaoNormalized;

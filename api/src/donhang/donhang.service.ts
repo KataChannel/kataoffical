@@ -416,7 +416,11 @@ export class DonhangService {
 
     // Step 2: Tính tongtiensauvat cho mỗi combination duy nhất (ngaygiao + khachhang)
     const combinationTotals = new Map();
-    
+    flatItems.sort((a, b) => {
+      // Sort by tenhang (product name) only
+      return (a.tenhang || '').localeCompare(b.tenhang || '');
+    });
+
     flatItems.forEach(item => {
       // Tạo key duy nhất cho combination (customer + date)
       const customerKey = item.makhachhang || 'unknown-customer';
@@ -793,7 +797,7 @@ export class DonhangService {
    * Group data by customer and then by date (updated with normalized date keys)
    */
   private groupDataByCustomerAndDate(data: any[]): any[] {
-    const customerMap = new Map();    
+    const customerMap = new Map();   
     data.forEach(item => {
       const customerKey = item.makhachhang || 'unknown-customer';
       

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { interval, Subscription } from 'rxjs';
@@ -14,11 +14,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-performance',
@@ -36,25 +38,31 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatSlideToggleModule,
     MatChipsModule,
     MatTableModule,
+    MatSortModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatDialogModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatTooltipModule
   ],
   templateUrl: './performance.component.html',
   styleUrls: []
 })
-export class PerformanceComponent implements OnInit, OnDestroy {
+export class PerformanceComponent implements OnInit, OnDestroy, AfterViewInit {
   // Data properties
   summary: any = null;
   dbStats: PerformanceStats | null = null;
   logs: PerformanceMetric[] = [];
+  dataSource = new MatTableDataSource<PerformanceMetric>([]);
   trends: PerformanceTrend[] = [];
+  selectedLog: PerformanceMetric | null = null;
 
   // Filter properties
   selectedHours: number = 24;
   selectedOperation: string = '';
   selectedSuccess: string = 'all';
+  selectedOperationType: string = 'all';
+  selectedRequestType: string = 'all'; // 'all', 'graphql', 'http'
   minDuration: number | null = null;
   logLimit: number = 50;
 
@@ -67,6 +75,12 @@ export class PerformanceComponent implements OnInit, OnDestroy {
 
   // Test results
   testResults: any[] = [];
+  
+  // Modal template reference
+  @ViewChild('logDetailsModal', { static: false }) logDetailsModalTemplate!: TemplateRef<any>;
+  
+  // Sort reference
+  @ViewChild(MatSort) sort!: MatSort;
 
   // Table columns
   displayedColumns: string[] = ['timestamp', 'operation', 'duration', 'status', 'method', 'url', 'memory', 'context'];
@@ -80,6 +94,36 @@ export class PerformanceComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadAllData();
+  }
+
+  ngAfterViewInit(): void {
+    // Configure custom sorting for complex data
+    this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+      switch (property) {
+        case 'operation':
+          return this.getOperationName(item);
+        case 'status':
+          return item.success;
+        case 'memory':
+          return item.memoryUsage || 0;
+        case 'duration':
+          return item.duration;
+        case 'timestamp':
+          return new Date(item.timestamp).getTime();
+        case 'method':
+          return this.isGraphQLLog(item) ? this.getOperationType(item) : item.method;
+        case 'url':
+          return this.getEndpointPath(item);
+        default:
+          return item[property];
+      }
+    };
+    
+    this.dataSource.sort = this.sort;
+    // If we already have data, refresh the sort
+    if (this.dataSource.data.length > 0) {
+      this.dataSource._updateChangeSubscription();
+    }
   }
 
   ngOnDestroy(): void {
@@ -136,15 +180,38 @@ export class PerformanceComponent implements OnInit, OnDestroy {
       limit: this.logLimit,
       operation: this.selectedOperation || undefined,
       success: this.selectedSuccess === 'all' ? undefined : this.selectedSuccess === 'true',
-      minDuration: this.minDuration || undefined
+      minDuration: this.minDuration || undefined,
+      requestType: this.selectedRequestType === 'all' ? undefined : this.selectedRequestType,
+      operationType: this.selectedOperationType === 'all' ? undefined : this.selectedOperationType
     };
 
     this.performanceService.getLogs(filter).subscribe({
       next: (data) => {
-        this.logs = data;
+        // Client-side filtering for GraphQL-specific filters since backend may not support them yet
+        let filteredData = data;
+        
+        if (this.selectedRequestType === 'graphql') {
+          filteredData = filteredData.filter(log => this.isGraphQLLog(log));
+        } else if (this.selectedRequestType === 'http') {
+          filteredData = filteredData.filter(log => !this.isGraphQLLog(log));
+        }
+        
+        if (this.selectedOperationType !== 'all') {
+          filteredData = filteredData.filter(log => 
+            this.isGraphQLLog(log) && this.getOperationType(log).toLowerCase() === this.selectedOperationType
+          );
+        }
+        
+        this.logs = filteredData;
+        this.dataSource.data = filteredData;
+        // Ensure sort is applied after data update
+        if (this.sort) {
+          this.dataSource.sort = this.sort;
+        }
       },
       error: (error) => {
         console.error('Error loading logs:', error);
+        this.showSnackBar('Error loading performance logs', 'error');
       }
     });
   }
@@ -262,5 +329,111 @@ export class PerformanceComponent implements OnInit, OnDestroy {
         this.showSnackBar('Error clearing metrics: ' + error.message, 'error');
       }
     });
+  }
+
+  // GraphQL helper methods
+  isGraphQLLog(log: PerformanceMetric): boolean {
+    return log.context && (
+      log.context.method === 'GRAPHQL' ||
+      log.context.operation ||
+      log.context.fieldName ||
+      log.url?.includes('/graphql')
+    );
+  }
+
+  getOperationName(log: PerformanceMetric): string {
+    if (this.isGraphQLLog(log)) {
+      return log.context?.fieldName || log.name || 'GraphQL Operation';
+    }
+    return log.name || log.url || 'HTTP Request';
+  }
+
+  getOperationType(log: PerformanceMetric): string {
+    return log.context?.operation || 'query';
+  }
+
+  getFieldName(log: PerformanceMetric): string {
+    return log.context?.fieldName || 'unknown';
+  }
+
+  getParentType(log: PerformanceMetric): string {
+    return log.context?.parentType || 'Query';
+  }
+
+  getEndpointPath(log: PerformanceMetric): string {
+    if (this.isGraphQLLog(log)) {
+      const fieldName = this.getFieldName(log);
+      const operation = this.getOperationType(log);
+      return `/graphql/${fieldName} (${operation})`;
+    }
+    return log.url || log.context?.url || '-';
+  }
+
+  hasGraphQLArgs(log: PerformanceMetric): boolean {
+    return log.context && log.context.args && Object.keys(log.context.args).length > 0;
+  }
+
+  getGraphQLArgs(log: PerformanceMetric): any {
+    return log.context?.args || {};
+  }
+
+  // Modal dialog methods
+  showLogDetails(log: PerformanceMetric): void {
+    this.selectedLog = log;
+    const dialogRef = this.dialog.open(this.logDetailsModalTemplate, {
+      width: '90vw',
+      maxWidth: '1200px',
+      maxHeight: '90vh'
+    });
+  }
+
+  closeLogDetails(): void {
+    this.selectedLog = null;
+    this.dialog.closeAll();
+  }
+
+  copyLogDetails(): void {
+    if (this.selectedLog) {
+      const details = {
+        id: this.selectedLog.id,
+        name: this.selectedLog.name,
+        duration: this.selectedLog.duration,
+        timestamp: this.selectedLog.timestamp,
+        success: this.selectedLog.success,
+        error: this.selectedLog.error,
+        context: this.selectedLog.context
+      };
+      
+      navigator.clipboard.writeText(JSON.stringify(details, null, 2)).then(() => {
+        this.showSnackBar('Log details copied to clipboard', 'success');
+      }).catch(() => {
+        this.showSnackBar('Failed to copy to clipboard', 'error');
+      });
+    }
+  }
+
+  // Filter and stats methods
+  resetFilters(): void {
+    this.selectedOperation = '';
+    this.selectedSuccess = 'all';
+    this.selectedOperationType = 'all';
+    this.selectedRequestType = 'all';
+    this.minDuration = null;
+    this.logLimit = 50;
+    this.onFilterChange();
+  }
+
+  getGraphQLLogsCount(): number {
+    return this.logs.filter(log => this.isGraphQLLog(log)).length;
+  }
+
+  getSuccessfulLogsCount(): number {
+    return this.logs.filter(log => log.success).length;
+  }
+
+  getAverageDuration(): string {
+    if (this.logs.length === 0) return '0';
+    const avg = this.logs.reduce((sum, log) => sum + log.duration, 0) / this.logs.length;
+    return avg.toFixed(1);
   }
 }
