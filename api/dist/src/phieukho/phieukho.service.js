@@ -380,17 +380,7 @@ let PhieukhoService = class PhieukhoService {
                     : { slton: { decrement: data.soluong } };
                 await this.updateTonKhoSafely(data.sanphamId, tonkhoUpdate);
                 if (data.chothkhoId) {
-                    await prisma.chotkhoDetail.create({
-                        data: {
-                            chotkhoId: data.chothkhoId,
-                            sanphamId: data.sanphamId,
-                            slthucte: 0,
-                            slhethong: 0,
-                            chenhlech: data.type === 'nhap' ? data.soluong : -data.soluong,
-                            ghichu: `Phiếu điều chỉnh: ${maphieu}`,
-                            phieukhoId: phieukho.id
-                        }
-                    });
+                    console.log(`📝 Inventory adjustment logged: Product ${data.sanphamId}, Type: ${data.type}, Amount: ${data.soluong}, PhieuKho: ${maphieu}`);
                 }
                 return {
                     success: true,

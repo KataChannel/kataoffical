@@ -11,8 +11,6 @@ async function main() {
     console.log('✅ Đã xóa tất cả dathangsanpham');
     await prisma.dathang.deleteMany({});
     console.log('✅ Đã xóa tất cả dathang');
-    await prisma.chotkhoDetail.deleteMany({});
-    console.log('✅ Đã xóa tất cả ChotkhoDetail');
     await prisma.phieuKhoSanpham.deleteMany({});
     console.log('✅ Đã xóa tất cả phieukhosanpham');
     await prisma.phieuKho.deleteMany({});

@@ -16,8 +16,7 @@ async function main() {
   await prisma.dathang.deleteMany({});
   console.log('✅ Đã xóa tất cả dathang');
 
-  await prisma.chotkhoDetail.deleteMany({});
-  console.log('✅ Đã xóa tất cả ChotkhoDetail');
+  // Note: ChotkhoDetail table has been removed in schema restructuring
 
   await prisma.phieuKhoSanpham.deleteMany({});
   console.log('✅ Đã xóa tất cả phieukhosanpham');

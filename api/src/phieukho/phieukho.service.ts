@@ -459,19 +459,9 @@ export class PhieukhoService {
 
         await this.updateTonKhoSafely(data.sanphamId, tonkhoUpdate);
 
-        // Ghi log vào chotkho nếu có chothkhoId
+        // Note: ChotkhoDetail table removed - adjustment logging simplified
         if (data.chothkhoId) {
-          await prisma.chotkhoDetail.create({
-            data: {
-              chotkhoId: data.chothkhoId,
-              sanphamId: data.sanphamId,
-              slthucte: 0, // Điều chỉnh không có trong Excel
-              slhethong: 0, // Sẽ được cập nhật sau
-              chenhlech: data.type === 'nhap' ? data.soluong : -data.soluong,
-              ghichu: `Phiếu điều chỉnh: ${maphieu}`,
-              phieukhoId: phieukho.id
-            }
-          });
+          console.log(`📝 Inventory adjustment logged: Product ${data.sanphamId}, Type: ${data.type}, Amount: ${data.soluong}, PhieuKho: ${maphieu}`);
         }
 
         return { 

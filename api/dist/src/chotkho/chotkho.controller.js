@@ -19,6 +19,8 @@ const swagger_1 = require("@nestjs/swagger");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
+const cache_interceptor_1 = require("../common/cache.interceptor");
+const smart_cache_decorator_1 = require("../common/smart-cache.decorator");
 let ChotkhoController = class ChotkhoController {
     constructor(chotkhoService) {
         this.chotkhoService = chotkhoService;
@@ -28,7 +30,15 @@ let ChotkhoController = class ChotkhoController {
             return await this.chotkhoService.create(data);
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Create failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException(error.message || 'Create inventory check failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async getAllProductsByKho(khoId) {
+        try {
+            return await this.chotkhoService.getAllProductsByKho(khoId);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Get products failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async findOne(id) {
@@ -39,82 +49,85 @@ let ChotkhoController = class ChotkhoController {
             throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async findAll(query) {
+    async findAll(page = '1', limit = '10') {
         try {
-            return await this.chotkhoService.findAll(query);
+            const pageNum = parseInt(page, 10) || 1;
+            const limitNum = parseInt(limit, 10) || 10;
+            return await this.chotkhoService.findAll(pageNum, limitNum);
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException(error.message || 'Find all failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async getTonkhoWithPendingQuantities(khoId) {
+    async update(id, data) {
         try {
-            return await this.chotkhoService.getTonkhoWithPendingQuantities(khoId);
+            return await this.chotkhoService.update(id, data);
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Get tonkho failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException(error.message || 'Update failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async createChotkhoDetails(chotkhoId, data) {
+    async remove(id) {
         try {
-            return await this.chotkhoService.createChotkhoDetails(chotkhoId, data.excelData);
+            return await this.chotkhoService.remove(id);
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Create details failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    async updateTonkhoAfterClose(chotkhoId) {
-        try {
-            return await this.chotkhoService.updateTonkhoAfterClose(chotkhoId);
-        }
-        catch (error) {
-            throw new common_1.HttpException(error.message || 'Close inventory failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    async completeChotkhoWorkflow(chotkhoId) {
-        try {
-            const result = await this.chotkhoService.updateTonkhoAfterClose(chotkhoId);
-            if (result.success) {
-                return {
-                    success: true,
-                    message: 'Chốt kho hoàn tất với phiếu kho điều chỉnh',
-                    data: result
-                };
-            }
-            else {
-                throw new common_1.HttpException(result.message || 'Chốt kho thất bại', common_1.HttpStatus.BAD_REQUEST);
-            }
-        }
-        catch (error) {
-            throw new common_1.HttpException(error.message || 'Complete chotkho failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    async getLastUpdatedChotkho() {
-        try {
-            return await this.chotkhoService.getLastUpdatedChotkho();
-        }
-        catch (error) {
-            throw new common_1.HttpException(error.message || 'Get last updated failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException(error.message || 'Delete failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 };
 exports.ChotkhoController = ChotkhoController;
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new chotkho' }),
-    (0, swagger_1.ApiBody)({ type: Object }),
+    (0, swagger_1.ApiOperation)({ summary: 'Create new inventory check - New Logic: Process all products in warehouse' }),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                khoId: { type: 'string', description: 'Warehouse ID' },
+                products: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            sanphamId: { type: 'string' },
+                            sltonthucte: { type: 'number' },
+                            slhuy: { type: 'number' },
+                            ghichu: { type: 'string' }
+                        }
+                    }
+                }
+            }
+        }
+    }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Post)('create'),
+    (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Chotkho', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['chotkho'],
+        get: { ttl: 600, keyPrefix: 'chotkho' },
+        updateCache: true
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ChotkhoController.prototype, "create", null);
 __decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Get all products with inventory by warehouse' }),
+    (0, swagger_1.ApiParam)({ name: 'khoId', type: String, description: 'Warehouse ID' }),
+    (0, common_1.Get)('products/by-warehouse/:khoId'),
+    (0, cache_interceptor_1.Cache)(300, 'chotkho:products'),
+    __param(0, (0, common_1.Param)('khoId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "getAllProductsByKho", null);
+__decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Find chotkho by ID' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: String }),
     (0, common_1.Get)(':id'),
+    (0, cache_interceptor_1.Cache)(600, 'chotkho'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -124,55 +137,46 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get all chotkho records' }),
     (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number }),
     (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number }),
-    (0, swagger_1.ApiQuery)({ name: 'khoId', required: false, type: String }),
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)()),
+    (0, cache_interceptor_1.Cache)(300, 'chotkho'),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], ChotkhoController.prototype, "findAll", null);
 __decorate([
-    (0, swagger_1.ApiOperation)({ summary: 'Get TonKho with pending order information' }),
-    (0, swagger_1.ApiQuery)({ name: 'khoId', required: false, type: String }),
-    (0, common_1.Get)('tonkho-pending'),
-    __param(0, (0, common_1.Query)('khoId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], ChotkhoController.prototype, "getTonkhoWithPendingQuantities", null);
-__decorate([
-    (0, swagger_1.ApiOperation)({ summary: 'Create chotkho details from Excel data' }),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Update chotkho by ID' }),
+    (0, swagger_1.ApiParam)({ name: 'id', type: String }),
     (0, swagger_1.ApiBody)({ type: Object }),
-    (0, common_1.Post)(':id/details'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Chotkho', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['chotkho'],
+        get: { ttl: 600, keyPrefix: 'chotkho' },
+        updateCache: true
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
-], ChotkhoController.prototype, "createChotkhoDetails", null);
+], ChotkhoController.prototype, "update", null);
 __decorate([
-    (0, swagger_1.ApiOperation)({ summary: 'Update TonKho after closing inventory' }),
-    (0, common_1.Patch)(':id/close'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Delete chotkho by ID' }),
+    (0, swagger_1.ApiParam)({ name: 'id', type: String }),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Delete)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Chotkho', action: client_1.AuditAction.DELETE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['chotkho']),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], ChotkhoController.prototype, "updateTonkhoAfterClose", null);
-__decorate([
-    (0, swagger_1.ApiOperation)({ summary: 'Complete chotkho workflow - close with phieukho creation' }),
-    (0, common_1.Post)(':id/complete'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], ChotkhoController.prototype, "completeChotkhoWorkflow", null);
-__decorate([
-    (0, swagger_1.ApiOperation)({ summary: 'Get last updated chotkho timestamp' }),
-    (0, common_1.Get)('last-updated'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ChotkhoController.prototype, "getLastUpdatedChotkho", null);
+], ChotkhoController.prototype, "remove", null);
 exports.ChotkhoController = ChotkhoController = __decorate([
     (0, swagger_1.ApiTags)('chotkho'),
     (0, common_1.Controller)('chotkho'),

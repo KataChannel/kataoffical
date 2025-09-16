@@ -6,23 +6,27 @@ import { GraphqlService } from '../../shared/services/graphql.service';
 import { environment } from '../../../environments/environment.development';
 
 /**
- * ChotkhoService - Updated to align with new Prisma schema (Chotkho + ChotkhoDetail)
+ * ChotkhoService - Updated for simplified Chotkho structure (removed ChotkhoDetail)
  * 
  * Key Schema Updates:
- * - Chotkho: Header record with kho, user, date, title, ghichu
- * - ChotkhoDetail: Line items with sanpham, quantities (slthucte, slhethong, chenhlech)
- * - Proper relations: Chotkho -> ChotkhoDetail (one-to-many)
- * - ChotkhoDetail relations to sanpham, tonkho, phieukho
- * - Type-safe interfaces and validation methods
+ * - Chotkho: Single record with ngaychot, sltonhethong, sltonthucte, slhuy, chenhlech
+ * - No more ChotkhoDetail table - everything in main Chotkho record
+ * - Relations: Chotkho -> Kho, Chotkho -> Sanpham
+ * - Simplified workflow for inventory checking
  * 
- * Based on new Prisma schema structure
+ * Based on updated Prisma schema structure
  */
 
-// Type interfaces based on new schema
+// Type interfaces based on new simplified schema
 export interface ChotkhoData {
   id?: string;
   khoId?: string;
-  ngay?: Date;
+  sanphamId?: string;
+  ngaychot?: Date;
+  sltonhethong?: number;  // System quantity
+  sltonthucte?: number;   // Actual quantity
+  slhuy?: number;         // Discarded quantity
+  chenhlech?: number;     // Difference (auto-calculated)
   title?: string;
   ghichu?: string;
   isActive?: boolean;
@@ -33,29 +37,8 @@ export interface ChotkhoData {
   userId?: string;
   // Relations
   kho?: any;
-  user?: any;
-  details?: ChotkhoDetailData[];
-}
-
-export interface ChotkhoDetailData {
-  id?: string;
-  chotkhoId?: string;
-  sanphamId?: string;
-  tonkhoId?: string;
-  phieukhoId?: string;
-  slthucte: number;    // Actual quantity
-  slhethong: number;   // System quantity  
-  chenhlech?: number;  // Difference
-  ghichu?: string;
-  isActive?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-  order?: number;
-  // Relations
-  chotkho?: any;
   sanpham?: any;
-  tonkho?: any;
-  phieukho?: any;
+  user?: any;
 }
 
 export interface ChotkhoSearchParams {
@@ -65,27 +48,25 @@ export interface ChotkhoSearchParams {
   sanphamId?: string;
   userId?: string;
   searchText?: string;
-  ngay?: Date;
+  keyword?: string;
+  fromDate?: string;
+  toDate?: string;
+  minChenhlech?: number;
+  maxChenhlech?: number;
+  page?: number;
+  limit?: number;
 }
 
 export interface ChotkhoCreateData {
   khoId?: string;
-  ngay?: Date;
+  sanphamId?: string;
+  ngaychot?: Date;
+  sltonhethong?: number;
+  sltonthucte?: number;
+  slhuy?: number;
   title?: string;
   ghichu?: string;
   userId?: string;
-  details: ChotkhoDetailCreateData[];
-}
-
-export interface ChotkhoDetailCreateData {
-  sanphamId?: string;
-  tonkhoId?: string;
-  phieukhoId?: string;
-  slthucte: number;
-  slhethong: number;
-  chenhlech?: number;
-  ghichu?: string;
-  order?: number;
 }
 
 @Injectable({

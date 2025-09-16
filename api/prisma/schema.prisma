@@ -204,7 +204,7 @@ model Sanpham {
   giaban          Decimal           @default(0) @postgres.Decimal(20, 3)
   vat             Decimal?          @default(0) @postgres.Decimal(20, 3)
   banggia         Banggiasanpham[]
-  ChotkhoDetail   ChotkhoDetail[] @relation("ChotkhoDetailSanpham")
+  chotkho         Chotkho[]         @relation("ChotkhoSanpham")
   Dathangsanpham  Dathangsanpham[]
   Donhangsanpham  Donhangsanpham[]
   PhieuKhoSanpham PhieuKhoSanpham[]
@@ -411,7 +411,6 @@ model PhieuKho {
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
   isChotkho Boolean           @default(false)
-  ChotkhoDetail ChotkhoDetail[] @relation("ChotkhoDetailPhieuKho")
   kho       Kho?              @relation(fields: [khoId], references: [id])
   dathang   Dathang?          @relation(fields: [madncc], references: [madncc])
   donhang   Donhang?          @relation(fields: [madonhang], references: [madonhang])
@@ -439,48 +438,33 @@ model TonKho {
   sltontt     Decimal   @default(0) @postgres.Decimal(20, 3)
   slchogiao Decimal   @default(0) @postgres.Decimal(20, 3)
   slchonhap Decimal   @default(0) @postgres.Decimal(20, 3)
-  ChotkhoDetail ChotkhoDetail[] @relation("ChotkhoDetailTonKho")
   sanpham   Sanpham   @relation(fields: [sanphamId], references: [id])
 }
 
 model Chotkho {
-  id         String          @id @default(uuid())
-  khoId      String?
-  ngay       DateTime        @default(now())
-  title      String?
-  ghichu     String?
-  isActive   Boolean         @default(true)
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
-  codeId     String?         @unique
-  order      Int?            @default(1)
-  userId     String?
-  kho        Kho?            @relation(fields: [khoId], references: [id])
-  user       User?           @relation(fields: [userId], references: [id])
-  details    ChotkhoDetail[]
-}
+  id            String   @id @default(uuid())
+  khoId         String?
+  sanphamId     String?
+  ngaychot      DateTime @default(now())
+  sltonhethong  Decimal  @default(0) @postgres.Decimal(20, 3)
+  sltonthucte   Decimal  @default(0) @postgres.Decimal(20, 3)
+  slhuy         Decimal  @default(0) @postgres.Decimal(20, 3)
+  chenhlech     Decimal  @default(0) @postgres.Decimal(20, 3)
+  title         String?
+  ghichu        String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  codeId        String?  @unique
+  order         Int?     @default(1)
+  userId        String?
+  kho           Kho?     @relation(fields: [khoId], references: [id])
+  sanpham       Sanpham? @relation("ChotkhoSanpham", fields: [sanphamId], references: [id])
+  user          User?    @relation(fields: [userId], references: [id])
 
-model ChotkhoDetail {
-  id         String    @id @default(uuid())
-  chotkhoId  String
-  sanphamId  String?
-  tonkhoId   String?
-  phieukhoId String?
-  slthucte   Decimal   @postgres.Decimal(20, 3)
-  slhethong  Decimal   @postgres.Decimal(20, 3)
-  chenhlech  Decimal?  @postgres.Decimal(20, 3)
-  ghichu     String?
-  isActive   Boolean   @default(true)
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  order      Int?      @default(1)
-  chotkho    Chotkho   @relation(fields: [chotkhoId], references: [id], onDelete: Cascade)
-  phieukho   PhieuKho? @relation("ChotkhoDetailPhieuKho", fields: [phieukhoId], references: [id])
-  sanpham    Sanpham?  @relation("ChotkhoDetailSanpham", fields: [sanphamId], references: [id])
-  tonkho     TonKho?   @relation("ChotkhoDetailTonKho", fields: [tonkhoId], references: [id])
-
-  @@index([chotkhoId])
+  @@index([khoId])
   @@index([sanphamId])
+  @@index([ngaychot])
 }
 
 model FileManager {
