@@ -5,6 +5,7 @@ import {
   computed,
   effect,
   inject,
+  OnDestroy,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -65,7 +66,7 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
   templateUrl: './detailbanggia.component.html',
   styleUrl: './detailbanggia.component.scss',
 })
-export class DetailBanggiaComponent implements AfterViewInit {
+export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   _ListbanggiaComponent: ListBanggiaComponent = inject(ListBanggiaComponent);
   _BanggiaService: BanggiaService = inject(BanggiaService);
   _SanphamService: SanphamService = inject(SanphamService);
@@ -87,6 +88,17 @@ export class DetailBanggiaComponent implements AfterViewInit {
   };
   dataSource = signal(new MatTableDataSource<any>([]));
   CountItem = computed(() => this.dataSource().data.length);
+  
+  // Performance optimization properties
+  private pendingChanges = new Map<number, any>(); // Cache changes
+  private debounceTimer: any = null;
+  private batchUpdateTimer: any = null;
+  private readonly DEBOUNCE_TIME = 300; // ms
+  private readonly BATCH_UPDATE_TIME = 1000; // ms
+  
+  // UI state indicators
+  public hasUnsavedChanges = signal(false);
+  
   filterSanpham: any[] = [];
   ListSanpham: any[] = [];
   ListKhachhang: any[] = [];
@@ -190,8 +202,47 @@ export class DetailBanggiaComponent implements AfterViewInit {
         //this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;
       }
-    }, 300);
+    }, 0);
   }
+
+  ngOnDestroy() {
+    // Cleanup timers to prevent memory leaks
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+    if (this.batchUpdateTimer) {
+      clearTimeout(this.batchUpdateTimer);
+    }
+    
+    // Process any remaining pending changes before destroying (local only, no save)
+    if (this.pendingChanges.size > 0) {
+      this.flushPendingChanges();
+    }
+  }
+
+  // Force apply all pending changes immediately (useful before save)
+  public flushPendingChanges() {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+    if (this.batchUpdateTimer) {
+      clearTimeout(this.batchUpdateTimer);
+    }
+    
+    if (this.pendingChanges.size > 0) {
+      // Just apply changes locally without saving
+      this.DetailBanggia.update((banggia: any) => {
+        this.pendingChanges.forEach((changes, index) => {
+          Object.assign(banggia.sanpham[index], changes);
+        });
+        return banggia;
+      });
+      
+      this.pendingChanges.clear();
+      this.dataSource().data = [...this.DetailBanggia().sanpham];
+    }
+  }
+
   async handleBanggiaAction() {
     // this.DetailBanggia.update((v: any) => {
     //   v.sanpham?.forEach((item: any) => {
@@ -223,7 +274,10 @@ export class DetailBanggiaComponent implements AfterViewInit {
   }
 
   private async updateBanggia() {
-     console.log(this.DetailBanggia());
+    // Flush any pending changes before saving
+    this.flushPendingChanges();
+    
+    console.log(this.DetailBanggia());
     try {
       await this._BanggiaService.updateBanggia(this.DetailBanggia());
       this._snackBar.open('Cập Nhật Thành Công', '', {
@@ -233,10 +287,74 @@ export class DetailBanggiaComponent implements AfterViewInit {
         panelClass: ['snackbar-success'],
       });
       this.isEdit.update((value) => !value);
+      this.hasUnsavedChanges.set(false);
     } catch (error) {
       console.error('Lỗi khi cập nhật banggia:', error);
+      this._snackBar.open('Lỗi khi cập nhật!', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
     }
   }
+
+  // Performance optimization methods
+  private debounceUpdate(callback: () => void, delay: number = this.DEBOUNCE_TIME) {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+    this.debounceTimer = setTimeout(callback, delay);
+  }
+
+  private scheduleBatchUpdate() {
+    if (this.batchUpdateTimer) {
+      clearTimeout(this.batchUpdateTimer);
+    }
+    
+    this.batchUpdateTimer = setTimeout(() => {
+      this.processBatchUpdate();
+    }, this.BATCH_UPDATE_TIME);
+  }
+
+  private processBatchUpdate() {
+    if (this.pendingChanges.size === 0) return;
+    
+    const changeCount = this.pendingChanges.size;
+    
+    // Apply all pending changes at once
+    this.DetailBanggia.update((banggia: any) => {
+      this.pendingChanges.forEach((changes, index) => {
+        Object.assign(banggia.sanpham[index], changes);
+      });
+      return banggia;
+    });
+    
+    // Clear pending changes but keep unsaved flag
+    this.pendingChanges.clear();
+    this.hasUnsavedChanges.set(true); // Mark as having unsaved changes
+    
+    // Update data source
+    this.dataSource().data = [...this.DetailBanggia().sanpham];
+    
+    console.log(`Batch update completed for ${changeCount} items - Manual save required`);
+  }
+
+  private addPendingChange(index: number, field: string, value: any) {
+    if (!this.pendingChanges.has(index)) {
+      this.pendingChanges.set(index, {});
+    }
+    
+    const existingChanges = this.pendingChanges.get(index);
+    existingChanges[field] = value;
+    
+    // Update UI state indicator - will be set to true after batch update
+    // this.hasUnsavedChanges.set(true);
+    
+    // Schedule batch update
+    this.scheduleBatchUpdate();
+  }
+
   async DeleteData() {
     try {
       await this._BanggiaService.DeleteBanggia(this.DetailBanggia());
@@ -289,10 +407,12 @@ export class DetailBanggiaComponent implements AfterViewInit {
               .replace(/[^0-9]/g, '')
           ) || 0
         : (event.target as HTMLElement).innerText.trim();
+    
     const keyboardEvent = event as KeyboardEvent;
     if (keyboardEvent.key === 'Enter' && !keyboardEvent.shiftKey) {
       event.preventDefault();
     }
+    
     if (type === 'number') {
       const allowedKeys = [
         'Backspace',
@@ -310,41 +430,51 @@ export class DetailBanggiaComponent implements AfterViewInit {
         event.preventDefault();
       }
     }
-    this.DetailBanggia.update((v: any) => {
-      if (index !== null) {
-        if (field === 'giaban') {
-          v.sanpham[index][field] = newValue;
-          const inputs = document.querySelectorAll(
-            '.giaban-input'
-          ) as NodeListOf<HTMLInputElement>;
-          if (index < this.dataSource().filteredData.length - 1) {
-            const nextInput = inputs[index + 1] as HTMLInputElement;
-            if (nextInput) {
-              if (nextInput instanceof HTMLInputElement) {
-                nextInput.focus();
-                nextInput.select();
-              }
-              // Then select text using a different method that works on more element types
-              setTimeout(() => {
-                if (document.createRange && window.getSelection) {
-                  const range = document.createRange();
-                  range.selectNodeContents(nextInput);
-                  const selection = window.getSelection();
-                  selection?.removeAllRanges();
-                  selection?.addRange(range);
-                }
-              }, 10);
-            }
-          }
-        }
-      } else {
-        v[field] = newValue;
-      }
-      return v;
-    });
 
-    console.log(element, field, newValue);
-    console.log('Dữ liệu đã cập nhật:', this.DetailBanggia());
+    // Optimized update logic
+    if (index !== null && field === 'giaban') {
+      // Use debounced update for better performance
+      this.debounceUpdate(() => {
+        // Add to pending changes instead of immediate update
+        this.addPendingChange(index, field, newValue);
+        
+        // Handle keyboard navigation without heavy DOM manipulation
+        if (keyboardEvent.key === 'Enter') {
+          this.moveToNextInput(index);
+        }
+      });
+    } else {
+      // For non-giaban fields, update immediately
+      this.DetailBanggia.update((v: any) => {
+        if (index !== null) {
+          v.sanpham[index][field] = newValue;
+        } else {
+          v[field] = newValue;
+        }
+        return v;
+      });
+    }
+
+    // Reduced logging for better performance
+    if (console && console.log) {
+      console.log(`Updated ${String(field)}:`, newValue);
+    }
+  }
+
+  private moveToNextInput(currentIndex: number) {
+    const inputs = document.querySelectorAll('.giaban-input') as NodeListOf<HTMLElement>;
+    if (currentIndex < inputs.length - 1) {
+      const nextInput = inputs[currentIndex + 1];
+      if (nextInput) {
+        // Simplified focus logic
+        requestAnimationFrame(() => {
+          nextInput.focus();
+          if (nextInput instanceof HTMLInputElement) {
+            nextInput.select();
+          }
+        });
+      }
+    }
   }
 
   async LoadDrive() {

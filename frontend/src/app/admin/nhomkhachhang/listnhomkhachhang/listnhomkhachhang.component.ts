@@ -329,6 +329,8 @@ export class ListNhomkhachhangComponent {
     const boardKeys = Object.keys(data[0]).filter(
       (key) => !['description', 'name'].includes(key)
     );
+    console.log(boardKeys);
+    
     data.forEach((v: any) => {
       v.khachhang = [];
       for (const key of boardKeys) {
@@ -516,13 +518,14 @@ export class ListNhomkhachhangComponent {
             (v: any) => v.makh === makh
           );
           if (productExists) {
-            formattedItem[i] = makh;
+            formattedItem['z' + i] = makh;
             i++;
           }
         }
 
       return formattedItem;
     });
+    console.log(formattedData);
     writeExcelFile(formattedData,title);
   }
 }
