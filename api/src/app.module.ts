@@ -19,6 +19,7 @@ import { KhachhangModule } from './khachhang/khachhang.module';
 import { NhacungcapModule } from './nhacungcap/nhacungcap.module';
 import { DathangModule } from './dathang/dathang.module';
 import { khoModule } from './kho/kho.module';
+import { ChotkhoModule } from './chotkho/chotkho.module';
 import { PhieukhoModule } from './phieukho/phieukho.module';
 import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
@@ -92,7 +93,7 @@ import { RedisModule } from './redis/redis.module';
     ImportdataModule,    
     AuditLogModule,
     RedisModule,
-    // ChotkhoModule,
+    ChotkhoModule,
     // UploadModule,
     // MinioModule,
     GraphQLUniversalModule,

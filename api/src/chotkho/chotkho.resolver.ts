@@ -1,0 +1,124 @@
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Injectable, UseGuards } from '@nestjs/common';
+import { GraphQLJSON } from 'graphql-type-json';
+import { ChotkhoService } from './chotkho.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AuditAction } from '@prisma/client';
+import { Audit } from '../auditlog/audit.decorator';
+
+@Injectable()
+@Resolver('Chotkho')
+export class ChotkhoResolver {
+  constructor(private readonly chotkhoService: ChotkhoService) {}
+
+  @Query(() => GraphQLJSON, { 
+    name: 'chotkhoFindMany',
+    description: 'Find many chotkho records with pagination'
+  })
+  async findMany(
+    @Args('page', { type: () => Number, nullable: true, defaultValue: 1 }) 
+    page?: number,
+    
+    @Args('limit', { type: () => Number, nullable: true, defaultValue: 10 }) 
+    limit?: number
+  ) {
+    return await this.chotkhoService.findAll(page, limit);
+  }
+
+  @Query(() => GraphQLJSON, { 
+    name: 'chotkhoFindOne',
+    description: 'Find one chotkho record by ID'
+  })
+  async findOne(
+    @Args('id', { type: () => String, description: 'Chotkho ID' }) 
+    id: string
+  ) {
+    return await this.chotkhoService.findOne(id);
+  }
+
+  @Query(() => GraphQLJSON, { 
+    name: 'chotkhoGetProductsByWarehouse',
+    description: '🎯 NEW: Get all products with inventory by warehouse for inventory check'
+  })
+  async getProductsByWarehouse(
+    @Args('khoId', { type: () => String, description: 'Warehouse ID' }) 
+    khoId: string
+  ) {
+    return await this.chotkhoService.getAllProductsByKho(khoId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Mutation(() => GraphQLJSON, { 
+    name: 'chotkhoCreate',
+    description: '🎯 NEW: Create inventory check with new business logic - Process all products in warehouse'
+  })
+  @Audit({ entity: 'Chotkho', action: AuditAction.CREATE, includeResponse: true })
+  async create(
+    @Args('data', { 
+      type: () => GraphQLJSON,
+      description: 'Inventory check data with khoId and products array'
+    }) 
+    data: {
+      khoId: string;
+      products: Array<{
+        sanphamId: string;
+        sltonthucte: number;
+        slhuy: number;
+        ghichu?: string;
+      }>;
+    }
+  ) {
+    return await this.chotkhoService.create(data);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Mutation(() => GraphQLJSON, { 
+    name: 'chotkhoUpdate',
+    description: 'Update chotkho record by ID'
+  })
+  @Audit({ entity: 'Chotkho', action: AuditAction.UPDATE, includeResponse: true })
+  async update(
+    @Args('id', { type: () => String, description: 'Chotkho ID' }) 
+    id: string,
+    
+    @Args('data', { type: () => GraphQLJSON }) 
+    data: any
+  ) {
+    return await this.chotkhoService.update(id, data);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Mutation(() => GraphQLJSON, { 
+    name: 'chotkhoDelete',
+    description: 'Delete chotkho record by ID'
+  })
+  @Audit({ entity: 'Chotkho', action: AuditAction.DELETE, includeResponse: true })
+  async remove(
+    @Args('id', { type: () => String, description: 'Chotkho ID' }) 
+    id: string
+  ) {
+    return await this.chotkhoService.remove(id);
+  }
+
+  @Query(() => GraphQLJSON, { 
+    name: 'chotkhoSearch',
+    description: 'Search chotkho records with filters'
+  })
+  async search(
+    @Args('filters', { 
+      type: () => GraphQLJSON,
+      nullable: true,
+      description: 'Search filters: khoId, sanphamId, fromDate, toDate, page, limit'
+    }) 
+    filters?: {
+      khoId?: string;
+      sanphamId?: string;
+      fromDate?: string;
+      toDate?: string;
+      page?: number;
+      limit?: number;
+    }
+  ) {
+    return await this.chotkhoService.search(filters || {});
+  }
+}

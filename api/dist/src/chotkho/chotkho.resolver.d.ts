@@ -1,31 +1,8 @@
-import { PrismaService } from '../../prisma/prisma.service';
-import { Decimal } from '@prisma/client/runtime/library';
-export declare class ChotkhoService {
-    private prisma;
-    constructor(prisma: PrismaService);
-    create(inventoryData: {
-        khoId: string;
-        products: Array<{
-            sanphamId: string;
-            sltonthucte: number;
-            slhuy: number;
-            ghichu?: string;
-        }>;
-    }): Promise<{
-        success: boolean;
-        message: string;
-        data?: undefined;
-    } | {
-        success: boolean;
-        message: string;
-        data: {
-            totalProducts: number;
-            totalDifference: number;
-            records: any[];
-        };
-    }>;
-    getAllProductsByKho(khoId: string): Promise<any[]>;
-    findAll(page?: number, limit?: number): Promise<{
+import { ChotkhoService } from './chotkho.service';
+export declare class ChotkhoResolver {
+    private readonly chotkhoService;
+    constructor(chotkhoService: ChotkhoService);
+    findMany(page?: number, limit?: number): Promise<{
         data: ({
             sanpham: {
                 id: string;
@@ -48,11 +25,11 @@ export declare class ChotkhoService {
             khoId: string | null;
             sanphamId: string | null;
             userId: string | null;
-            slhuy: Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
             ngaychot: Date;
-            sltonhethong: Decimal;
-            sltonthucte: Decimal;
-            chenhlech: Decimal;
+            sltonhethong: import("@prisma/client/runtime/library").Decimal;
+            sltonthucte: import("@prisma/client/runtime/library").Decimal;
+            chenhlech: import("@prisma/client/runtime/library").Decimal;
         })[];
         pagination: {
             current: number;
@@ -83,13 +60,35 @@ export declare class ChotkhoService {
         khoId: string | null;
         sanphamId: string | null;
         userId: string | null;
-        slhuy: Decimal;
+        slhuy: import("@prisma/client/runtime/library").Decimal;
         ngaychot: Date;
-        sltonhethong: Decimal;
-        sltonthucte: Decimal;
-        chenhlech: Decimal;
+        sltonhethong: import("@prisma/client/runtime/library").Decimal;
+        sltonthucte: import("@prisma/client/runtime/library").Decimal;
+        chenhlech: import("@prisma/client/runtime/library").Decimal;
     }) | null>;
-    update(id: string, updateData: any): Promise<{
+    getProductsByWarehouse(khoId: string): Promise<any[]>;
+    create(data: {
+        khoId: string;
+        products: Array<{
+            sanphamId: string;
+            sltonthucte: number;
+            slhuy: number;
+            ghichu?: string;
+        }>;
+    }): Promise<{
+        success: boolean;
+        message: string;
+        data?: undefined;
+    } | {
+        success: boolean;
+        message: string;
+        data: {
+            totalProducts: number;
+            totalDifference: number;
+            records: any[];
+        };
+    }>;
+    update(id: string, data: any): Promise<{
         id: string;
         title: string | null;
         ghichu: string | null;
@@ -101,11 +100,11 @@ export declare class ChotkhoService {
         khoId: string | null;
         sanphamId: string | null;
         userId: string | null;
-        slhuy: Decimal;
+        slhuy: import("@prisma/client/runtime/library").Decimal;
         ngaychot: Date;
-        sltonhethong: Decimal;
-        sltonthucte: Decimal;
-        chenhlech: Decimal;
+        sltonhethong: import("@prisma/client/runtime/library").Decimal;
+        sltonthucte: import("@prisma/client/runtime/library").Decimal;
+        chenhlech: import("@prisma/client/runtime/library").Decimal;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -119,13 +118,20 @@ export declare class ChotkhoService {
         khoId: string | null;
         sanphamId: string | null;
         userId: string | null;
-        slhuy: Decimal;
+        slhuy: import("@prisma/client/runtime/library").Decimal;
         ngaychot: Date;
-        sltonhethong: Decimal;
-        sltonthucte: Decimal;
-        chenhlech: Decimal;
+        sltonhethong: import("@prisma/client/runtime/library").Decimal;
+        sltonthucte: import("@prisma/client/runtime/library").Decimal;
+        chenhlech: import("@prisma/client/runtime/library").Decimal;
     }>;
-    search(searchParams: any): Promise<{
+    search(filters?: {
+        khoId?: string;
+        sanphamId?: string;
+        fromDate?: string;
+        toDate?: string;
+        page?: number;
+        limit?: number;
+    }): Promise<{
         data: ({
             sanpham: {
                 id: string;
@@ -148,11 +154,11 @@ export declare class ChotkhoService {
             khoId: string | null;
             sanphamId: string | null;
             userId: string | null;
-            slhuy: Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
             ngaychot: Date;
-            sltonhethong: Decimal;
-            sltonthucte: Decimal;
-            chenhlech: Decimal;
+            sltonhethong: import("@prisma/client/runtime/library").Decimal;
+            sltonthucte: import("@prisma/client/runtime/library").Decimal;
+            chenhlech: import("@prisma/client/runtime/library").Decimal;
         })[];
         pagination: {
             current: any;

@@ -231,4 +231,56 @@ export class ChotkhoService {
       where: { id }
     });
   }
+
+  async search(searchParams: any) {
+    const { khoId, sanphamId, fromDate, toDate, page = 1, limit = 10 } = searchParams;
+    const skip = (page - 1) * limit;
+    
+    const where: any = {};
+    
+    if (khoId) where.khoId = khoId;
+    if (sanphamId) where.sanphamId = sanphamId;
+    if (fromDate || toDate) {
+      where.ngaychot = {};
+      if (fromDate) where.ngaychot.gte = new Date(fromDate);
+      if (toDate) where.ngaychot.lte = new Date(toDate);
+    }
+
+    const [items, total] = await Promise.all([
+      this.prisma.chotkho.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          sanpham: {
+            select: {
+              id: true,
+              title: true,
+              masp: true
+            }
+          },
+          kho: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        },
+        orderBy: {
+          ngaychot: 'desc'
+        }
+      }),
+      this.prisma.chotkho.count({ where })
+    ]);
+
+    return {
+      data: items,
+      pagination: {
+        current: page,
+        pageSize: limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  }
 }

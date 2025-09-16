@@ -139,6 +139,29 @@ type Query {
   """Lấy tất cả nhóm khách hàng đơn giản (cho dropdown)"""
   getAllNhomkhachhangSimple: [Nhomkhachhang!]!
 
+  """Find many chotkho records with pagination"""
+  chotkhoFindMany(page: Float = 1, limit: Float = 10): JSON!
+
+  """Find one chotkho record by ID"""
+  chotkhoFindOne(
+    """Chotkho ID"""
+    id: String!
+  ): JSON!
+
+  """
+  🎯 NEW: Get all products with inventory by warehouse for inventory check
+  """
+  chotkhoGetProductsByWarehouse(
+    """Warehouse ID"""
+    khoId: String!
+  ): JSON!
+
+  """Search chotkho records with filters"""
+  chotkhoSearch(
+    """Search filters: khoId, sanphamId, fromDate, toDate, page, limit"""
+    filters: JSON
+  ): JSON!
+
   """
   Enhanced dynamic findMany with intelligent field selection and DataLoader optimization
   """
@@ -258,6 +281,27 @@ type Mutation {
 
   """Xóa khách hàng khỏi nhóm"""
   removeKhachhangFromNhom(input: ManageKhachhangInNhomInput!): NhomkhachhangMutationResponse!
+
+  """
+  🎯 NEW: Create inventory check with new business logic - Process all products in warehouse
+  """
+  chotkhoCreate(
+    """Inventory check data with khoId and products array"""
+    data: JSON!
+  ): JSON!
+
+  """Update chotkho record by ID"""
+  chotkhoUpdate(
+    """Chotkho ID"""
+    id: String!
+    data: JSON!
+  ): JSON!
+
+  """Delete chotkho record by ID"""
+  chotkhoDelete(
+    """Chotkho ID"""
+    id: String!
+  ): JSON!
   createRecord(modelName: String!, data: JSON!): JSON!
   updateRecord(modelName: String!, where: JSON!, data: JSON!, include: JSON, select: JSON): JSON!
   deleteRecord(modelName: String!, where: JSON!): JSON!

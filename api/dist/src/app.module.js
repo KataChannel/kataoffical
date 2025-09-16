@@ -28,6 +28,7 @@ const khachhang_module_1 = require("./khachhang/khachhang.module");
 const nhacungcap_module_1 = require("./nhacungcap/nhacungcap.module");
 const dathang_module_1 = require("./dathang/dathang.module");
 const kho_module_1 = require("./kho/kho.module");
+const chotkho_module_1 = require("./chotkho/chotkho.module");
 const phieukho_module_1 = require("./phieukho/phieukho.module");
 const role_module_1 = require("./role/role.module");
 const permission_module_1 = require("./permission/permission.module");
@@ -101,6 +102,7 @@ exports.AppModule = AppModule = __decorate([
             importdata_module_1.ImportdataModule,
             auditlog_module_1.AuditLogModule,
             redis_module_1.RedisModule,
+            chotkho_module_1.ChotkhoModule,
             graphql_module_1.GraphQLUniversalModule,
         ],
         controllers: [app_controller_1.AppController],
