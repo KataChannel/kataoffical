@@ -28,6 +28,13 @@ export const routes: Routes = [
             import('./admin/auditlog/auditlog.route').then(m => m.AuditlogRoutingModule),
       },
       {
+        path: 'performance',
+        loadComponent: () =>
+          import('./admin/performance/performance.component').then(
+            (c) => c.PerformanceComponent
+          ),
+      },
+      {
         path: 'dashboard',
         loadComponent: () =>
           import('./admin/dashboard/dashboard.component').then(
@@ -39,6 +46,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./admin/dashboard/baocaodoanhthu.component').then(
             (c) => c.BaocaodoanhtuComponent
+          ),
+      },
+      {
+        path: 'performance',
+        canActivate: [PermissionGuard],
+        data: { permission: 'admin.view' },
+        loadComponent: () =>
+          import('./admin/performance/performance.component').then(
+            (c) => c.PerformanceComponent
           ),
       },
       {
