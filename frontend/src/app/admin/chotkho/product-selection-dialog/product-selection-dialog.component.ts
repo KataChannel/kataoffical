@@ -103,21 +103,21 @@ export interface ProductSelectionResult {
             </ng-container>
 
             <!-- Product Code Column -->
-            <ng-container matColumnDef="masanpham">
+            <ng-container matColumnDef="masp">
               <th mat-header-cell *matHeaderCellDef>Mã SP</th>
-              <td mat-cell *matCellDef="let product">{{ product.masanpham }}</td>
+              <td mat-cell *matCellDef="let product">{{ product.masp }}</td>
             </ng-container>
 
             <!-- Product Name Column -->
-            <ng-container matColumnDef="tensanpham">
+            <ng-container matColumnDef="title">
               <th mat-header-cell *matHeaderCellDef>Tên Sản Phẩm</th>
-              <td mat-cell *matCellDef="let product">{{ product.tensanpham }}</td>
+              <td mat-cell *matCellDef="let product">{{ product.title }}</td>
             </ng-container>
 
             <!-- Unit Column -->
-            <ng-container matColumnDef="donvitinh">
+            <ng-container matColumnDef="dvt">
               <th mat-header-cell *matHeaderCellDef>Đơn Vị</th>
-              <td mat-cell *matCellDef="let product">{{ product.donvitinh || '-' }}</td>
+              <td mat-cell *matCellDef="let product">{{ product.dvt || '-' }}</td>
             </ng-container>
 
             <!-- Stock Quantity Column -->
@@ -188,7 +188,7 @@ export class ProductSelectionDialogComponent implements OnInit {
   searchTerm: string = '';
   selection = new SelectionModel<SanphamInterface>(true, []);
   
-  displayedColumns: string[] = ['select', 'masanpham', 'tensanpham', 'donvitinh', 'tonkho', 'dongia'];
+  displayedColumns: string[] = ['select', 'masp', 'title', 'dvt', 'tonkho', 'dongia'];
 
   constructor(
     private chotkhoService: ChotkhoService,
@@ -255,8 +255,8 @@ export class ProductSelectionDialogComponent implements OnInit {
     }
 
     const filtered = this.products().filter(product =>
-      product.masanpham.toLowerCase().includes(term) ||
-      product.tensanpham.toLowerCase().includes(term)
+      product.masp.toLowerCase().includes(term) ||
+      product.title.toLowerCase().includes(term)
     );
     this.filteredProducts.set(filtered);
   }

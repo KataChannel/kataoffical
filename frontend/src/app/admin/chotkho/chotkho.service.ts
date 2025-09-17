@@ -37,9 +37,9 @@ export interface KhoInterface {
 
 export interface SanphamInterface {
   id: string;
-  masanpham: string;
-  tensanpham: string;
-  donvitinh?: string;
+  masp: string;
+  title: string;
+  dvt?: string;
   dongia?: number;
   status?: boolean;
   ghichu?: string;
@@ -336,9 +336,9 @@ export class ChotkhoService {
           details: result.details?.map((detail: any) => ({
             ...detail,
             // Flatten sanpham fields to detail level for table display
-            tensanpham: detail.sanpham?.tensanpham,
-            masanpham: detail.sanpham?.masanpham,
-            donvitinh: detail.sanpham?.donvitinh,
+            title: detail.sanpham?.title,
+            masp: detail.sanpham?.masp,
+            dvt: detail.sanpham?.dvt,
             // Keep original sanpham object for reference
             sanpham: detail.sanpham
           })) || []

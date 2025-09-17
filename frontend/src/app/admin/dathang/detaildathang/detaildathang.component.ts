@@ -77,7 +77,7 @@ export class DetailDathangComponent {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
       this._DathangService.setDathangId(id);
-      await this._NhacungcapService.getAllNhacungcap();
+      await this._NhacungcapService.getAllNhacungcap({pageSize:99999});
       this.filterNhacungcap = this.ListNhacungcap().filter(
         (v: any) => v.isActive
       );
@@ -85,7 +85,7 @@ export class DetailDathangComponent {
       this.filterKho = this.ListKho()
       await this._BanggiaService.getAllBanggia();
       this.filterBanggia = this._BanggiaService.ListBanggia();
-      await this._SanphamService.getAllSanpham();
+      await this._SanphamService.getAllSanpham({pageSize:99999});
       this.filterSanpham = this._SanphamService.ListSanpham();
       this.dataSource.data = this.DetailDathang().sanpham;
       // this.dataSource.paginator = this.paginator;

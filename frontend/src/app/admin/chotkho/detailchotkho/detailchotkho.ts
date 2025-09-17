@@ -35,6 +35,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       MatSortModule,
       CommonModule,
       MatSlideToggleModule,
+      SearchfilterComponent
     ],
     templateUrl: './detailchotkho.html',
     styleUrl: './detailchotkho.scss'
@@ -51,12 +52,12 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     
     // Table configuration
     dataSource = signal(new MatTableDataSource<any>([]));
-    displayedColumns: string[] = ['STT', 'tensanpham', 'masanpham', 'donvitinh', 'sltonhethong', 'sltonthucte', 'slhuy', 'chenhlech'];
+    displayedColumns: string[] = ['STT', 'title', 'masp', 'dvt', 'sltonhethong', 'sltonthucte', 'slhuy', 'chenhlech'];
     ColumnName: any = {
       STT: 'STT',
-      tensanpham: 'Tên Sản Phẩm',
-      masanpham: 'Mã SP',
-      donvitinh: 'Đơn Vị',
+      title: 'Tên Sản Phẩm',
+      masp: 'Mã SP',
+      dvt: 'Đơn Vị',
       sltonhethong: 'SL Hệ Thống',
       sltonthucte: 'SL Thực Tế',
       slhuy: 'SL Hủy',
@@ -283,9 +284,9 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
             sanphamId: product.id,
             sanpham: {
               id: product.id,
-              masanpham: product.masanpham,
-              tensanpham: product.tensanpham,
-              donvitinh: product.donvitinh,
+              masp: product.masp,
+              title: product.title,
+              dvt: product.dvt,
               dongia: product.dongia
             },
             sltonhethong: product.tonkho?.slton || 0,
@@ -373,12 +374,12 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       try {
         // Load all products with tonkho information (no warehouse filter needed)
         const products = await this._ChotkhoService.getAllProducts();
-        this.ListSanpham = products.map(product => ({
+        this.ListSanpham = products.map((product:any) => ({
           id: product.id,
           sanphamId: product.id,
-          tensanpham: product.tensanpham,
-          masanpham: product.masanpham,
-          donvitinh: product.donvitinh,
+          title: product.title,
+          masp: product.masp,
+          dvt: product.dvt,
           sltonhethong: product.tonkho?.slton || 0,
           sltonthucte: product.tonkho?.sltinhthucte || 0,
           slhuy: product.tonkho?.slhuy || 0,
@@ -398,7 +399,6 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 
     async DoOutFilter(event: any) {
       console.log('Cập nhật sản phẩm cho chốt kho:', event);
-
       try {
         this.DetailChotkho.update((v: any) => {
           return {
@@ -407,9 +407,9 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
               sanphamId: sp.sanphamId || sp.id,
               sanpham: {
                 id: sp.sanphamId || sp.id,
-                masanpham: sp.masanpham,
-                tensanpham: sp.tensanpham,
-                donvitinh: sp.donvitinh,
+                masp: sp.masp,
+                title: sp.title,
+                dvt: sp.dvt,
                 dongia: sp.dongia
               },
               sltonhethong: Number(sp.sltonhethong) || 0,
@@ -419,9 +419,9 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
               ghichu: sp.ghichu || '',
               isActive: true,
               // Fields for table display
-              tensanpham: sp.tensanpham,
-              masanpham: sp.masanpham,
-              donvitinh: sp.donvitinh
+              title: sp.title,
+              masp: sp.masp,
+              dvt: sp.dvt
             }))
           };
         }); 
