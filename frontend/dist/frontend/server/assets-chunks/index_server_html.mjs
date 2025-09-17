@@ -19,6 +19,6 @@ export default `<!doctype html>
 </script>
   <app-root></app-root>
   <noscript>Please enable JavaScript to continue using this application.</noscript>
-<link rel="modulepreload" href="chunk-YWXC6CCQ.js"><link rel="modulepreload" href="chunk-FSCSPFQQ.js"><link rel="modulepreload" href="chunk-XRRQRA6S.js"><link rel="modulepreload" href="chunk-4ZVJO4SQ.js"><link rel="modulepreload" href="chunk-XHVJ7NZ3.js"><link rel="modulepreload" href="chunk-IE4L6KDU.js"><link rel="modulepreload" href="chunk-H7UDLENL.js"><link rel="modulepreload" href="chunk-Q3KOS33T.js"><link rel="modulepreload" href="chunk-DP4FJZ2N.js"><link rel="modulepreload" href="chunk-OJMQSPC3.js"><script src="polyfills-FFHMD2TL.js" type="module"></script><script src="main-TSZJKUFH.js" type="module"></script></body>
+<link rel="modulepreload" href="chunk-YWXC6CCQ.js"><link rel="modulepreload" href="chunk-FSCSPFQQ.js"><link rel="modulepreload" href="chunk-XRRQRA6S.js"><link rel="modulepreload" href="chunk-4ZVJO4SQ.js"><link rel="modulepreload" href="chunk-XHVJ7NZ3.js"><link rel="modulepreload" href="chunk-IE4L6KDU.js"><link rel="modulepreload" href="chunk-H7UDLENL.js"><link rel="modulepreload" href="chunk-Q3KOS33T.js"><link rel="modulepreload" href="chunk-DP4FJZ2N.js"><link rel="modulepreload" href="chunk-OJMQSPC3.js"><script src="polyfills-FFHMD2TL.js" type="module"></script><script src="main-RJNS4EAO.js" type="module"></script></body>
 </html>
 `;
