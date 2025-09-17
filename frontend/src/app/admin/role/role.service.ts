@@ -86,15 +86,19 @@ export class RoleService {
       
       if (result) {
         this.showSuccessMessage('Tạo role thành công');
-        await this.getAllRole();
+        
+        // Update local cache instead of fetching from server
+        const currentRoles = this.ListRole();
+        this.ListRole.set([result, ...currentRoles]);
         this.roleId.set(result.id);
+        
         return true;
       }
 
       return false;
     } catch (error) {
       console.error('Error creating role:', error);
-      this.showErrorMessage('Lỗi khi tạo role');
+      this.handleCreateUpdateError(error, 'tạo');
       return false;
     } finally {
       this.isLoading.set(false);
@@ -204,15 +208,27 @@ export class RoleService {
 
       if (result) {
         this.showSuccessMessage('Cập nhật role thành công');
-        await this.getAllRole();
-        await this.getRoleByid(dulieu.id);
+        
+        // Update local cache instead of fetching from server
+        const currentRoles = this.ListRole();
+        const updatedRoles = currentRoles.map(role => 
+          role.id === result.id ? { ...role, ...result } : role
+        );
+        this.ListRole.set(updatedRoles);
+        
+        // Update detail if it's the current role
+        const currentDetail = this.DetailRole();
+        if (currentDetail?.id === result.id) {
+          this.DetailRole.set({ ...currentDetail, ...result });
+        }
+        
         return true;
       }
 
       return false;
     } catch (error) {
       console.error('Error updating role:', error);
-      this.showErrorMessage('Lỗi khi cập nhật role');
+      this.handleCreateUpdateError(error, 'cập nhật');
       return false;
     } finally {
       this.isLoading.set(false);
@@ -232,15 +248,22 @@ export class RoleService {
 
       if (result) {
         this.showSuccessMessage('Gán quyền thành công');
-        await this.getAllRole();
-        await this.getRoleByid(data.roleId);
+        
+        // Update local cache instead of fetching from server
+        // Only refresh if user is viewing the role list or specific role details
+        const currentDetail = this.DetailRole();
+        if (currentDetail?.id === data.roleId) {
+          // Refresh only the current role detail to get updated permissions
+          await this.getRoleByid(data.roleId);
+        }
+        
         return true;
       }
 
       return false;
     } catch (error) {
       console.error('Error assigning permission:', error);
-      this.showErrorMessage('Lỗi khi gán quyền');
+      this.handlePermissionError(error, 'gán');
       return false;
     }
   }
@@ -258,15 +281,22 @@ export class RoleService {
 
       if (result) {
         this.showSuccessMessage('Xóa quyền thành công');
-        await this.getAllRole();
-        await this.getRoleByid(data.roleId);
+        
+        // Update local cache instead of fetching from server
+        // Only refresh if user is viewing the role list or specific role details
+        const currentDetail = this.DetailRole();
+        if (currentDetail?.id === data.roleId) {
+          // Refresh only the current role detail to get updated permissions
+          await this.getRoleByid(data.roleId);
+        }
+        
         return true;
       }
 
       return false;
     } catch (error) {
       console.error('Error removing permission:', error);
-      this.showErrorMessage('Lỗi khi xóa quyền');
+      this.handlePermissionError(error, 'xóa');
       return false;
     }
   }
@@ -315,6 +345,176 @@ export class RoleService {
       verticalPosition: 'top',
       panelClass: ['snackbar-error']
     });
+  }
+
+  /**
+   * Handle specific errors for Create and Update operations
+   */
+  private handleCreateUpdateError(error: any, operation: string): void {
+    console.error(`Error ${operation} role:`, error);
+    
+    // Extract error message from different possible error structures
+    let errorMessage = '';
+    
+    if (error?.message) {
+      errorMessage = error.message;
+    } else if (error?.error?.message) {
+      errorMessage = error.error.message;
+    } else if (error?.graphQLErrors?.[0]?.message) {
+      errorMessage = error.graphQLErrors[0].message;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    }
+
+    console.log('Processed error message:', errorMessage);
+     this.showErrorMessage(`Tên role này đã tồn tại. Vui lòng chọn tên khác.`);
+    // Check for unique constraint violation on name field
+    if (this.isUniqueConstraintError(errorMessage, 'name')) {
+      this.showErrorMessage(`Tên role này đã tồn tại. Vui lòng chọn tên khác.`);
+      return;
+    }
+
+    // Check for other unique constraint errors
+    if (this.isUniqueConstraintError(errorMessage)) {
+      this.showErrorMessage(`Thông tin này đã tồn tại trong hệ thống. Vui lòng kiểm tra lại.`);
+      return;
+    }
+
+    // Check for validation errors
+    if (this.isValidationError(errorMessage)) {
+      this.showErrorMessage(`Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin.`);
+      return;
+    }
+
+    // Default error message
+    this.showErrorMessage(`Lỗi khi ${operation} role. Vui lòng thử lại.`);
+  }
+
+  /**
+   * Check if error is unique constraint violation
+   */
+  private isUniqueConstraintError(errorMessage: string, field?: string): boolean {
+    const uniqueKeywords = [
+      'Unique constraint failed',
+      'unique constraint', 
+      'UNIQUE constraint',
+      'duplicate key',
+      'already exists'
+    ];
+
+    const hasUniqueError = uniqueKeywords.some(keyword => 
+      errorMessage.toLowerCase().includes(keyword.toLowerCase())
+    );
+
+    if (!hasUniqueError) return false;
+
+    // If specific field is provided, check if error mentions that field
+    if (field) {
+      const fieldPattern = new RegExp(`\\(\`${field}\`\\)|${field}`, 'i');
+      return fieldPattern.test(errorMessage);
+    }
+
+    return true;
+  }
+
+  /**
+   * Check if error is validation error  
+   */
+  private isValidationError(errorMessage: string): boolean {
+    const validationKeywords = [
+      'validation failed',
+      'invalid input',
+      'required field',
+      'field is required',
+      'invalid value'
+    ];
+
+    return validationKeywords.some(keyword =>
+      errorMessage.toLowerCase().includes(keyword.toLowerCase())
+    );
+  }
+
+  /**
+   * Handle specific errors for Permission operations
+   */
+  private handlePermissionError(error: any, operation: string): void {
+    console.error(`Error ${operation} permission:`, error);
+    
+    // Extract error message
+    let errorMessage = '';
+    
+    if (error?.message) {
+      errorMessage = error.message;
+    } else if (error?.error?.message) {
+      errorMessage = error.error.message;
+    } else if (error?.graphQLErrors?.[0]?.message) {
+      errorMessage = error.graphQLErrors[0].message;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    }
+
+    console.log('Permission error message:', errorMessage);
+
+    // Check for unique constraint violation (permission already assigned)
+    if (this.isUniqueConstraintError(errorMessage)) {
+      if (operation === 'gán') {
+        this.showErrorMessage('Quyền này đã được gán cho role. Không thể gán lại.');
+      } else {
+        this.showErrorMessage('Lỗi trùng lặp khi thao tác với quyền.');
+      }
+      return;
+    }
+
+    // Check for foreign key constraint (role or permission not found)
+    if (this.isForeignKeyError(errorMessage)) {
+      this.showErrorMessage('Role hoặc Permission không tồn tại. Vui lòng kiểm tra lại.');
+      return;
+    }
+
+    // Check for not found errors
+    if (this.isNotFoundError(errorMessage)) {
+      if (operation === 'xóa') {
+        this.showErrorMessage('Quyền này chưa được gán cho role.');
+      } else {
+        this.showErrorMessage('Không tìm thấy thông tin cần thiết.');
+      }
+      return;
+    }
+
+    // Default error message
+    this.showErrorMessage(`Lỗi khi ${operation} quyền. Vui lòng thử lại.`);
+  }
+
+  /**
+   * Check if error is foreign key constraint violation
+   */
+  private isForeignKeyError(errorMessage: string): boolean {
+    const foreignKeyKeywords = [
+      'foreign key constraint',
+      'foreign key',
+      'reference constraint',
+      'violates foreign key'
+    ];
+
+    return foreignKeyKeywords.some(keyword =>
+      errorMessage.toLowerCase().includes(keyword.toLowerCase())
+    );
+  }
+
+  /**
+   * Check if error is not found error
+   */
+  private isNotFoundError(errorMessage: string): boolean {
+    const notFoundKeywords = [
+      'not found',
+      'does not exist',
+      'record not found',
+      'no record found'
+    ];
+
+    return notFoundKeywords.some(keyword =>
+      errorMessage.toLowerCase().includes(keyword.toLowerCase())
+    );
   }
 
   private handleError(error: any): void {
