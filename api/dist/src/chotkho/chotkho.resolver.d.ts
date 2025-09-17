@@ -5,10 +5,10 @@ export declare class ChotkhoResolver {
     findMany(page?: number, limit?: number): Promise<{
         data: ({
             user: {
+                id: string;
                 profile: {
                     name: string;
                 } | null;
-                id: string;
                 email: string | null;
             } | null;
             kho: {
@@ -24,32 +24,32 @@ export declare class ChotkhoResolver {
                 } | null;
             } & {
                 id: string;
-                ngaychot: Date;
                 title: string | null;
                 ghichu: string | null;
+                order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                order: number | null;
+                sanphamId: string | null;
                 userId: string | null;
+                slhuy: import("@prisma/client/runtime/library").Decimal;
+                ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
-                slhuy: import("@prisma/client/runtime/library").Decimal;
                 chenhlech: import("@prisma/client/runtime/library").Decimal;
-                sanphamId: string | null;
                 chotkhoId: string | null;
             })[];
         } & {
             id: string;
-            ngaychot: Date;
             title: string | null;
             ghichu: string | null;
+            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             codeId: string | null;
-            order: number | null;
             khoId: string | null;
             userId: string | null;
+            ngaychot: Date;
         })[];
         pagination: {
             current: number;
@@ -60,10 +60,10 @@ export declare class ChotkhoResolver {
     }>;
     findOne(id: string): Promise<({
         user: {
+            id: string;
             profile: {
                 name: string;
             } | null;
-            id: string;
             email: string | null;
         } | null;
         kho: {
@@ -79,32 +79,32 @@ export declare class ChotkhoResolver {
             } | null;
         } & {
             id: string;
-            ngaychot: Date;
             title: string | null;
             ghichu: string | null;
+            order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            order: number | null;
+            sanphamId: string | null;
             userId: string | null;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
+            ngaychot: Date;
             sltonhethong: import("@prisma/client/runtime/library").Decimal;
             sltonthucte: import("@prisma/client/runtime/library").Decimal;
-            slhuy: import("@prisma/client/runtime/library").Decimal;
             chenhlech: import("@prisma/client/runtime/library").Decimal;
-            sanphamId: string | null;
             chotkhoId: string | null;
         })[];
     } & {
         id: string;
-        ngaychot: Date;
         title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
-        order: number | null;
         khoId: string | null;
         userId: string | null;
+        ngaychot: Date;
     }) | null>;
     getProductsByWarehouse(khoId: string): Promise<any[]>;
     getAllProducts(): Promise<any[]>;
@@ -127,10 +127,10 @@ export declare class ChotkhoResolver {
         message: string;
         data: ({
             user: {
+                id: string;
                 profile: {
                     name: string;
                 } | null;
-                id: string;
                 email: string | null;
             } | null;
             kho: {
@@ -146,59 +146,59 @@ export declare class ChotkhoResolver {
                 } | null;
             } & {
                 id: string;
-                ngaychot: Date;
                 title: string | null;
                 ghichu: string | null;
+                order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                order: number | null;
+                sanphamId: string | null;
                 userId: string | null;
+                slhuy: import("@prisma/client/runtime/library").Decimal;
+                ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
-                slhuy: import("@prisma/client/runtime/library").Decimal;
                 chenhlech: import("@prisma/client/runtime/library").Decimal;
-                sanphamId: string | null;
                 chotkhoId: string | null;
             })[];
         } & {
             id: string;
-            ngaychot: Date;
             title: string | null;
             ghichu: string | null;
+            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             codeId: string | null;
-            order: number | null;
             khoId: string | null;
             userId: string | null;
+            ngaychot: Date;
         }) | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
-        ngaychot: Date;
         title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
-        order: number | null;
         khoId: string | null;
         userId: string | null;
+        ngaychot: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
-        ngaychot: Date;
         title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
-        order: number | null;
         khoId: string | null;
         userId: string | null;
+        ngaychot: Date;
     }>;
     search(filters?: {
         khoId?: string;
@@ -210,10 +210,10 @@ export declare class ChotkhoResolver {
     }): Promise<{
         data: ({
             user: {
+                id: string;
                 profile: {
                     name: string;
                 } | null;
-                id: string;
                 email: string | null;
             } | null;
             kho: {
@@ -229,32 +229,32 @@ export declare class ChotkhoResolver {
                 } | null;
             } & {
                 id: string;
-                ngaychot: Date;
                 title: string | null;
                 ghichu: string | null;
+                order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                order: number | null;
+                sanphamId: string | null;
                 userId: string | null;
+                slhuy: import("@prisma/client/runtime/library").Decimal;
+                ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
-                slhuy: import("@prisma/client/runtime/library").Decimal;
                 chenhlech: import("@prisma/client/runtime/library").Decimal;
-                sanphamId: string | null;
                 chotkhoId: string | null;
             })[];
         } & {
             id: string;
-            ngaychot: Date;
             title: string | null;
             ghichu: string | null;
+            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             codeId: string | null;
-            order: number | null;
             khoId: string | null;
             userId: string | null;
+            ngaychot: Date;
         })[];
         pagination: {
             current: any;

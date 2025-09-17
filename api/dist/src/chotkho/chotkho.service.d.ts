@@ -21,10 +21,10 @@ export declare class ChotkhoService {
         message: string;
         data: ({
             user: {
+                id: string;
                 profile: {
                     name: string;
                 } | null;
-                id: string;
                 email: string | null;
             } | null;
             kho: {
@@ -40,32 +40,32 @@ export declare class ChotkhoService {
                 } | null;
             } & {
                 id: string;
-                ngaychot: Date;
                 title: string | null;
                 ghichu: string | null;
+                order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                order: number | null;
+                sanphamId: string | null;
                 userId: string | null;
+                slhuy: Decimal;
+                ngaychot: Date;
                 sltonhethong: Decimal;
                 sltonthucte: Decimal;
-                slhuy: Decimal;
                 chenhlech: Decimal;
-                sanphamId: string | null;
                 chotkhoId: string | null;
             })[];
         } & {
             id: string;
-            ngaychot: Date;
             title: string | null;
             ghichu: string | null;
+            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             codeId: string | null;
-            order: number | null;
             khoId: string | null;
             userId: string | null;
+            ngaychot: Date;
         }) | null;
     }>;
     getAllProductsByKho(khoId: string): Promise<any[]>;
@@ -74,10 +74,10 @@ export declare class ChotkhoService {
     findAll(page?: number, limit?: number): Promise<{
         data: ({
             user: {
+                id: string;
                 profile: {
                     name: string;
                 } | null;
-                id: string;
                 email: string | null;
             } | null;
             kho: {
@@ -93,32 +93,32 @@ export declare class ChotkhoService {
                 } | null;
             } & {
                 id: string;
-                ngaychot: Date;
                 title: string | null;
                 ghichu: string | null;
+                order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                order: number | null;
+                sanphamId: string | null;
                 userId: string | null;
+                slhuy: Decimal;
+                ngaychot: Date;
                 sltonhethong: Decimal;
                 sltonthucte: Decimal;
-                slhuy: Decimal;
                 chenhlech: Decimal;
-                sanphamId: string | null;
                 chotkhoId: string | null;
             })[];
         } & {
             id: string;
-            ngaychot: Date;
             title: string | null;
             ghichu: string | null;
+            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             codeId: string | null;
-            order: number | null;
             khoId: string | null;
             userId: string | null;
+            ngaychot: Date;
         })[];
         pagination: {
             current: number;
@@ -129,10 +129,10 @@ export declare class ChotkhoService {
     }>;
     findOne(id: string): Promise<({
         user: {
+            id: string;
             profile: {
                 name: string;
             } | null;
-            id: string;
             email: string | null;
         } | null;
         kho: {
@@ -148,66 +148,66 @@ export declare class ChotkhoService {
             } | null;
         } & {
             id: string;
-            ngaychot: Date;
             title: string | null;
             ghichu: string | null;
+            order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            order: number | null;
+            sanphamId: string | null;
             userId: string | null;
+            slhuy: Decimal;
+            ngaychot: Date;
             sltonhethong: Decimal;
             sltonthucte: Decimal;
-            slhuy: Decimal;
             chenhlech: Decimal;
-            sanphamId: string | null;
             chotkhoId: string | null;
         })[];
     } & {
         id: string;
-        ngaychot: Date;
         title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
-        order: number | null;
         khoId: string | null;
         userId: string | null;
+        ngaychot: Date;
     }) | null>;
     update(id: string, updateData: any): Promise<{
         id: string;
-        ngaychot: Date;
         title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
-        order: number | null;
         khoId: string | null;
         userId: string | null;
+        ngaychot: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
-        ngaychot: Date;
         title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
-        order: number | null;
         khoId: string | null;
         userId: string | null;
+        ngaychot: Date;
     }>;
     search(searchParams: any): Promise<{
         data: ({
             user: {
+                id: string;
                 profile: {
                     name: string;
                 } | null;
-                id: string;
                 email: string | null;
             } | null;
             kho: {
@@ -223,32 +223,32 @@ export declare class ChotkhoService {
                 } | null;
             } & {
                 id: string;
-                ngaychot: Date;
                 title: string | null;
                 ghichu: string | null;
+                order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                order: number | null;
+                sanphamId: string | null;
                 userId: string | null;
+                slhuy: Decimal;
+                ngaychot: Date;
                 sltonhethong: Decimal;
                 sltonthucte: Decimal;
-                slhuy: Decimal;
                 chenhlech: Decimal;
-                sanphamId: string | null;
                 chotkhoId: string | null;
             })[];
         } & {
             id: string;
-            ngaychot: Date;
             title: string | null;
             ghichu: string | null;
+            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             codeId: string | null;
-            order: number | null;
             khoId: string | null;
             userId: string | null;
+            ngaychot: Date;
         })[];
         pagination: {
             current: any;
@@ -271,10 +271,10 @@ export declare class ChotkhoService {
         }>;
     }): Promise<({
         user: {
+            id: string;
             profile: {
                 name: string;
             } | null;
-            id: string;
             email: string | null;
         } | null;
         details: ({
@@ -285,31 +285,31 @@ export declare class ChotkhoService {
             } | null;
         } & {
             id: string;
-            ngaychot: Date;
             title: string | null;
             ghichu: string | null;
+            order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            order: number | null;
+            sanphamId: string | null;
             userId: string | null;
+            slhuy: Decimal;
+            ngaychot: Date;
             sltonhethong: Decimal;
             sltonthucte: Decimal;
-            slhuy: Decimal;
             chenhlech: Decimal;
-            sanphamId: string | null;
             chotkhoId: string | null;
         })[];
     } & {
         id: string;
-        ngaychot: Date;
         title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
-        order: number | null;
         khoId: string | null;
         userId: string | null;
+        ngaychot: Date;
     }) | null>;
 }
