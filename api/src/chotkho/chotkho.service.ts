@@ -195,9 +195,6 @@ export class ChotkhoService {
   async getAllProducts(): Promise<any[]> {
     try {
       const products = await this.prisma.sanpham.findMany({
-        where: {
-          isActive: true
-        },
         include: {
           TonKho: {
             select: {

@@ -160,9 +160,6 @@ let ChotkhoService = class ChotkhoService {
     async getAllProducts() {
         try {
             const products = await this.prisma.sanpham.findMany({
-                where: {
-                    isActive: true
-                },
                 include: {
                     TonKho: {
                         select: {
