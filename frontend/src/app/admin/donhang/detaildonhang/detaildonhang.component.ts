@@ -163,6 +163,9 @@ export class DetailDonhangComponent {
         this.isEdit.set(true);
         this.ListFilter = [];
         
+        // Reset dataSource for new donhang
+        this.dataSource().data = [];
+        
         if (this._router.url !== '/admin/donhang/new') {
           this.isNavigating.set(true);
           this._router.navigate(['/admin/donhang', 'new']);
@@ -173,6 +176,11 @@ export class DetailDonhangComponent {
           await this._DonhangService.getDonhangByid(id);
           this.DetailDonhang.set(this._DonhangService.DetailDonhang());
           this.ListFilter = this.DetailDonhang().sanpham || [];
+          
+          // Update dataSource to display products in table
+          this.dataSource().data = [...this.ListFilter];
+          this.dataSource().data.sort((a, b) => (a.order || 0) - (b.order || 0));
+          
           // Update available products after setting ListFilter
           this.updateAvailableProducts();
           this.isEdit.set(false);
@@ -1711,13 +1719,18 @@ export class DetailDonhangComponent {
   }
 
   ChosenItem(item: any) {
-    let CheckItem = this.filterSanpham.find((v: any) => v.id === item.id);
+    let CheckItem = this.ListSanpham.find((v: any) => v.id === item.id);
     let CheckItem1 = this.ListFilter.find((v: any) => v.id === item.id);
 
     if (CheckItem1) {
       // Product is already selected, remove it from ListFilter
       this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
       console.log(`Removed product: ${item.title}`);
+      
+      // Update dataSource immediately
+      this.dataSource().data = [...this.ListFilter];
+      this.dataSource().data.sort((a, b) => (a.order || 0) - (b.order || 0));
+      
     } else {
       // Product is not selected yet, add it to ListFilter
       if (CheckItem) {
@@ -1746,6 +1759,10 @@ export class DetailDonhangComponent {
           if (existingIndex === -1) {
             this.ListFilter.push(itemCopy);
             console.log(`Added product: ${item.title} with price: ${correctPrice}`);
+            
+            // Update dataSource immediately
+            this.dataSource().data = [...this.ListFilter];
+            this.dataSource().data.sort((a, b) => (a.order || 0) - (b.order || 0));
           }
         });
       }
@@ -1806,6 +1823,10 @@ export class DetailDonhangComponent {
 
     // Add new products to existing ListFilter
     this.ListFilter = [...this.ListFilter, ...newProducts];
+
+    // Update dataSource immediately
+    this.dataSource().data = [...this.ListFilter];
+    this.dataSource().data.sort((a, b) => (a.order || 0) - (b.order || 0));
 
     // Mark that sanpham data has changed
     this.sanphamDataChanged = true;
