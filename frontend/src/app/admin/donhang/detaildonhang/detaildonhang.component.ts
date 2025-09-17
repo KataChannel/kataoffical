@@ -95,6 +95,33 @@ export class DetailDonhangComponent {
   @ViewChild('BgHethanDialog') BgHethanDialog!: TemplateRef<any>;
   @ViewChild('confirmRemoveDialog') confirmRemoveDialog!: TemplateRef<any>;
   ListFilter: any[] = [];
+  filterSanpham: any[] = [];
+  private searchTerm: string = '';
+
+  // Get filtered products for display in dropdown
+  getFilteredSanpham(): any[] {
+    if (!this.searchTerm || this.searchTerm.length < 2) {
+      return this.ListSanpham;
+    }
+
+    const normalizedValue = removeVietnameseAccents(this.searchTerm.toLowerCase());
+
+    return this.ListSanpham.filter((product: any) => {
+      const normalizedTitle = removeVietnameseAccents(
+        product.title?.toLowerCase() || ''
+      );
+      const normalizedMasp = removeVietnameseAccents(
+        product.masp?.toLowerCase() || ''
+      );
+
+      return (
+        normalizedTitle.includes(normalizedValue) ||
+        normalizedMasp.includes(normalizedValue) ||
+        product.title?.toLowerCase().includes(this.searchTerm) ||
+        product.masp?.toLowerCase().includes(this.searchTerm)
+      );
+    });
+  }
   constructor() {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
@@ -173,7 +200,6 @@ export class DetailDonhangComponent {
   isDelete = signal(false);
   filterKhachhang: any = [];
   filterBanggia: any[] = [];
-  filterSanpham: any[] = [];
   ListSanpham: any[] = [];
   donhangId: any = this._DonhangService.donhangId;
   permissions: any = [];
@@ -1643,63 +1669,19 @@ export class DetailDonhangComponent {
 
   async doFilterSanpham(event: any): Promise<void> {
     const value = event.target.value.trim().toLowerCase();
-
-    if (value.length < 2) {
-      // Show only available products (not already selected)
-      this.filterSanpham = this.ListSanpham.filter(
-        (item: any) =>
-          !this.ListFilter.find((selected: any) => selected.id === item.id)
-      );
-      return;
-    }
-
-    const normalizedValue = removeVietnameseAccents(value);
-
-    // Filter and exclude already selected products
-    this.filterSanpham = this.ListSanpham.filter((product: any) => {
-      // First check if product is not already selected
-      const isAlreadySelected = this.ListFilter.find(
-        (selected: any) => selected.id === product.id
-      );
-      if (isAlreadySelected) {
-        return false; // Don't show already selected products
-      }
-
-      const normalizedTitle = removeVietnameseAccents(
-        product.title?.toLowerCase() || ''
-      );
-      const normalizedMasp = removeVietnameseAccents(
-        product.masp?.toLowerCase() || ''
-      );
-
-      return (
-        normalizedTitle.includes(normalizedValue) ||
-        normalizedMasp.includes(normalizedValue) ||
-        product.title?.toLowerCase().includes(value) ||
-        product.masp?.toLowerCase().includes(value)
-      );
-    }).sort((a: any, b: any) => {
-      // Prioritize exact matches
-      const aExactMatch =
-        a.masp?.toLowerCase() === value || a.title?.toLowerCase() === value;
-      const bExactMatch =
-        b.masp?.toLowerCase() === value || b.title?.toLowerCase() === value;
-
-      if (aExactMatch && !bExactMatch) return -1;
-      if (!aExactMatch && bExactMatch) return 1;
-
-      // Then sort alphabetically by title
-      const titleA = removeVietnameseAccents(a.title || '').toLowerCase();
-      const titleB = removeVietnameseAccents(b.title || '').toLowerCase();
-      return titleA.localeCompare(titleB);
-    });
+    this.searchTerm = value;
 
     if (event.key === 'Enter') {
-      if (this.filterSanpham.length > 0) {
-        this.ChosenItem(this.filterSanpham[0]);
-        // Reset search after adding product
-        event.target.value = '';
-        this.updateAvailableProducts();
+      const filteredProducts = this.getFilteredSanpham();
+      if (filteredProducts.length > 0) {
+        // Find first unselected product
+        const firstAvailable = filteredProducts.find(product => !this.CheckItem(product));
+        if (firstAvailable) {
+          this.ChosenItem(firstAvailable);
+          // Reset search after adding product
+          event.target.value = '';
+          this.searchTerm = '';
+        }
       }
     }
   }
@@ -1846,13 +1828,10 @@ export class DetailDonhangComponent {
     console.log('Cleared all selected products');
   }
 
-  // New method to update available products (excluding already selected ones)
+  // New method to update available products (excluding already selected ones) - kept for compatibility
   updateAvailableProducts() {
-    this.filterSanpham = this.ListSanpham.filter(
-      (item: any) =>
-        !this.ListFilter.find((selected: any) => selected.id === item.id)
-    );
-    console.log('Updated available products:', this.filterSanpham.length, 'out of', this.ListSanpham.length);
+    // No longer needed since we show all products with checkboxes
+    console.log('All products are now visible with checkbox states');
   }
   CheckItem(item: any) {
     return this.ListFilter.find((v) => v.id === item.id) ? true : false;
