@@ -52,24 +52,74 @@
 
     <!-- Detail Items -->
     <div class="bg-white p-4 rounded-lg border" *ngIf="DetailChotkho()">
-      <div class="flex items-center mb-4">
-        <!-- Product Selection using SearchFilter -->
-        <div class="flex flex-row space-x-2 items-center">
-          <app-searchfilter
-            [isEdit]="isEdit"
-            [title]="'Sản Phẩm'"
-            [ListFilter]="this.DetailChotkho()?.details || []"
-            [filterItem]="filterSanpham"
-            [CountItems]="this.DetailChotkho()?.details?.length || 0"
-            [fieldsearch]="'title'"
-            [ListItem]="ListSanpham"
-            (OutFilter)="DoOutFilter($event)"
-          ></app-searchfilter>
-                    
-          <button [disabled]="!isEdit()" mat-icon-button color="warn" (click)="EmptyCart()">
-            <mat-icon>delete</mat-icon>
-          </button>
+      <div *ngIf="isEdit()" class="w-full flex flex-col overflow-y-auto mb-4">
+        @defer () {
+        <div
+          class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
+          <div class="w-full flex flex-row space-x-2 items-center">
+            <button mat-flat-button color="primary" [disabled]="!isEdit()" [matMenuTriggerFor]="menu"
+              #menuTrigger="matMenuTrigger">
+              <mat-icon>inventory</mat-icon>
+              {{ListFilter.length}} Sản Phẩm Đã Chọn
+            </button>
+            <mat-menu #menu="matMenu">
+              <div (click)="$event.stopPropagation()" class="cursor-pointer flex flex-col space-y-4 p-3">
+                <div class="bg-blue-50 p-2 rounded-lg">
+                  <div class="text-sm font-medium text-blue-800">Tình trạng sản phẩm:</div>
+                  <div class="text-xs text-blue-600">
+                    • {{ListFilter.length}} sản phẩm đã chọn
+                    • {{filterSanpham.length}} sản phẩm khả dụng
+                    • {{ListSanpham.length}} tổng sản phẩm
+                  </div>
+                </div>
+                <div class="relative w-full">
+                  <input type="text" placeholder="Tìm Kiếm..." (keyup)="doFilterSanpham($event)" #searchInput
+                    class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                  <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <span class="material-symbols-outlined text-gray-500">search</span>
+                  </div>
+                </div>
+                <div class="flex flex-row space-x-2 items-center justify-between">
+                  <div class="flex flex-row space-x-2 items-center">
+                    <span class="text-xs text-blue-600 underline" (click)="ChosenAll(filterSanpham)">Chọn Tất Cả
+                      ({{filterSanpham.length}} sản phẩm khả dụng)</span>
+                    <span class="text-xs text-red-600 underline" (click)="EmptyFiter()">Xoá Tất Cả</span>
+                  </div>
+
+                  <span class="text-xs text-green-600 underline" (click)="ResetFilter()">Làm Mới</span>
+                </div>
+                <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
+                  <div *ngFor="let item of filterSanpham; trackBy:trackByFn" (click)="ChosenItem(item)"
+                    class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100 cursor-pointer">
+                    <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-green-600">check_box</span>
+                    <span *ngIf="!CheckItem(item)" class="material-symbols-outlined text-gray-400">check_box_outline_blank</span>
+                    <div class="flex flex-col flex-1">
+                      <span class="font-medium">{{item.title || 'Chưa Có Tên'}}</span>
+                      <span class="text-xs text-gray-500">Mã: {{item.masp}} - ĐVT: {{item.dvt}}</span>
+                    </div>
+                  </div>
+                  <div *ngIf="filterSanpham.length === 0" class="text-center text-gray-500 p-4">
+                    Không có sản phẩm khả dụng
+                  </div>
+                </div>
+                <div class="flex flex-row space-x-2 items-end justify-end">
+                  <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
+                  <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)">Áp Dụng</button>
+                </div>
+              </div>
+            </mat-menu>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Tìm Kiếm</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="Tìm Kiếm" />
+            </mat-form-field>
+            <button [disabled]="!isEdit()" matTooltip="Làm Trống Giỏ Hàng" (click)="EmptyCart()" color="warn"
+              mat-icon-button>
+              <mat-icon>delete</mat-icon>
+            </button>
+
+          </div>
         </div>
+        }
       </div>
       
       <!-- Details Table -->

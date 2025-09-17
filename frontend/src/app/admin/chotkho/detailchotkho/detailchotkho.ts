@@ -12,6 +12,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
 import { ListChotkhoComponent } from '../listchotkho/listchotkho';
 import { ChotkhoService } from '../chotkho.service';
@@ -19,6 +20,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ProductSelectionDialogComponent, ProductSelectionResult } from '../product-selection-dialog/product-selection-dialog.component';
 import { SearchfilterComponent } from '../../../shared/common/searchfilter123/searchfilter.component';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { SanphamService } from '../../sanpham/sanpham.service';
   @Component({
     selector: 'app-detailchotkho',
     imports: [
@@ -33,9 +36,9 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       MatNativeDateModule,
       MatTableModule,
       MatSortModule,
+      MatMenuModule,
       CommonModule,
-      MatSlideToggleModule,
-      SearchfilterComponent
+      MatSlideToggleModule
     ],
     templateUrl: './detailchotkho.html',
     styleUrl: './detailchotkho.scss'
@@ -43,6 +46,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   export class DetailChotkhoComponent {
     _ListChotkhoComponent:ListChotkhoComponent = inject(ListChotkhoComponent)
     _ChotkhoService:ChotkhoService = inject(ChotkhoService)
+    _SanphamService: SanphamService = inject(SanphamService);
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
@@ -94,8 +98,9 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
             return ds;
           });
           
-          // Update filterSanpham for SearchFilter
-          this.filterSanpham = serviceDetail.details || [];
+          // Update ListFilter and filterSanpham for product selection
+          this.ListFilter = serviceDetail.details || [];
+          this.updateAvailableProducts();
           
           console.log('DetailChotkho updated from service:', serviceDetail);
         }
@@ -108,6 +113,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     // SearchFilter properties for product selection
     ListSanpham: any[] = [];
     filterSanpham: any[] = [];
+    ListFilter: any[] = [];
     
     async ngOnInit() {    
         const id = this._ChotkhoService.chotkhoId();
@@ -149,7 +155,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
             this._router.navigate(['/admin/chotkho', id]);
         }   
         
-        // Load sanpham list for SearchFilter
+        // Load sanpham list for product selection
         await this.loadSanphamList();
     }
 
@@ -356,7 +362,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       this._ListChotkhoComponent.drawer.close();
     }
     trackByFn(index: number, item: any): any {
-      return item.id;
+      return item.id || index;
     }
     toggleEdit() {
       this.isEdit.update(value => !value);
@@ -390,21 +396,15 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           dongia: product.dongia
         }));
         
-        // Filter out products that are already selected in details
-        const selectedIds = (this.DetailChotkho()?.details || []).map((detail: any) => 
-          detail.sanphamId || detail.id
-        );
+        // Set ListSanpham to all products
+        this.ListSanpham = allProducts;
         
-        this.ListSanpham = allProducts.filter(product => 
-          !selectedIds.includes(product.id || product.sanphamId)
-        );
+        // Update available products (excluding already selected ones)
+        this.updateAvailableProducts();
 
-        this.filterSanpham = [...this.ListSanpham];
-
-        console.log('Loaded products', products);
-        console.log('Selected IDs to exclude:', selectedIds);
-        console.log('Loaded sanpham list for SearchFilter:', this.ListSanpham);
-        console.log('Loaded sanpham list for filterSanpham:', this.filterSanpham);
+        console.log('Loaded products:', products);
+        console.log('Loaded ListSanpham:', this.ListSanpham);
+        console.log('Available products (filterSanpham):', this.filterSanpham);
 
       } catch (error) {
         console.error('Error loading sanpham list:', error);
@@ -665,4 +665,179 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     //     });
     //   }
     // }
+  
+    // Product selection methods similar to detaildonhang
+    async doFilterSanpham(event: any): Promise<void> {
+      const value = event.target.value.trim().toLowerCase();
+
+      if (value.length < 2) {
+        // Show only available products (not already selected)
+        this.filterSanpham = this.ListSanpham.filter(
+          (item: any) =>
+            !this.ListFilter.find((selected: any) => selected.id === item.id)
+        );
+        return;
+      }
+
+      const normalizedValue = removeVietnameseAccents(value);
+
+      // Filter and exclude already selected products
+      this.filterSanpham = this.ListSanpham.filter((product: any) => {
+        // First check if product is not already selected
+        const isAlreadySelected = this.ListFilter.find(
+          (selected: any) => selected.id === product.id
+        );
+        if (isAlreadySelected) {
+          return false; // Don't show already selected products
+        }
+
+        const normalizedTitle = removeVietnameseAccents(
+          product.title?.toLowerCase() || ''
+        );
+        const normalizedMasp = removeVietnameseAccents(
+          product.masp?.toLowerCase() || ''
+        );
+
+        return (
+          normalizedTitle.includes(normalizedValue) ||
+          normalizedMasp.includes(normalizedValue) ||
+          product.title?.toLowerCase().includes(value) ||
+          product.masp?.toLowerCase().includes(value)
+        );
+      }).sort((a: any, b: any) => {
+        // Prioritize exact matches
+        const aExactMatch =
+          a.masp?.toLowerCase() === value || a.title?.toLowerCase() === value;
+        const bExactMatch =
+          b.masp?.toLowerCase() === value || b.title?.toLowerCase() === value;
+
+        if (aExactMatch && !bExactMatch) return -1;
+        if (!aExactMatch && bExactMatch) return 1;
+
+        // Then sort alphabetically by title
+        const titleA = removeVietnameseAccents(a.title || '').toLowerCase();
+        const titleB = removeVietnameseAccents(b.title || '').toLowerCase();
+        return titleA.localeCompare(titleB);
+      });
+
+      if (event.key === 'Enter') {
+        if (this.filterSanpham.length > 0) {
+          this.ChosenItem(this.filterSanpham[0]);
+          // Reset search after adding product
+          event.target.value = '';
+          this.updateAvailableProducts();
+        }
+      }
+    }
+
+    ChosenItem(item: any) {
+      let CheckItem = this.filterSanpham.find((v: any) => v.id === item.id);
+      let CheckItem1 = this.ListFilter.find((v: any) => v.id === item.id);
+
+      if (CheckItem1) {
+        // Product is already selected, remove it from ListFilter
+        this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
+        console.log(`Removed product: ${item.title}`);
+      } else {
+        // Product is not selected yet, add it to ListFilter
+        if (CheckItem) {
+          // Create a copy of the object to avoid read-only property error
+          const itemCopy = { 
+            ...CheckItem,
+            sanphamId: CheckItem.id,
+            sltonhethong: 0,
+            sltonthucte: 0, 
+            slhuy: 0,
+            chenhlech: 0,
+            order: this.ListFilter.length + 1
+          };
+          
+          const existingIndex = this.ListFilter.findIndex(existing => existing.id === item.id);
+          if (existingIndex === -1) {
+            this.ListFilter.push(itemCopy);
+            console.log(`Added product: ${item.title}`);
+          }
+        }
+      }
+    }
+
+    async ChosenAll(list: any) {
+      // Prevent duplicates by only adding products that are not already in ListFilter
+      const uniqueProducts = list.filter(
+        (item: any) =>
+          !this.ListFilter.find((existing: any) => existing.id === item.id)
+      );
+
+      // Add all unique products with default quantities
+      const newProducts = uniqueProducts.map((item: any, index: number) => {
+        const itemCopy = { 
+          ...item,
+          sanphamId: item.id,
+          sltonhethong: 0,
+          sltonthucte: 0, 
+          slhuy: 0,
+          chenhlech: 0,
+          order: this.ListFilter.length + index + 1
+        };
+        return itemCopy;
+      });
+
+      // Add new products to existing ListFilter
+      this.ListFilter = [...this.ListFilter, ...newProducts];
+
+      console.log(
+        `Added ${newProducts.length} unique products. Total: ${this.ListFilter.length} products`
+      );
+    }
+
+    ResetFilter() {
+      // Reset to only show available products (not already selected)
+      this.filterSanpham = this.ListSanpham.filter(
+        (item: any) =>
+          !this.ListFilter.find((selected: any) => selected.id === item.id)
+      );
+      console.log(
+        `Reset filter. Showing ${this.filterSanpham.length} available products`
+      );
+    }
+
+    EmptyFiter() {
+      this.ListFilter = [];
+      this.updateAvailableProducts();
+      console.log('Cleared all selected products');
+    }
+
+    // New method to update available products (excluding already selected ones)
+    updateAvailableProducts() {
+      this.filterSanpham = this.ListSanpham.filter(
+        (item: any) =>
+          !this.ListFilter.find((selected: any) => selected.id === item.id)
+      );
+    }
+
+    CheckItem(item: any) {
+      return this.ListFilter.find((v) => v.id === item.id) ? true : false;
+    }
+
+    ApplyFilterColum(menu: any) {
+      // Update DetailChotkho with selected products
+      this.DetailChotkho.update((v: any) => {
+        v.details = [...this.ListFilter]; // Create a copy to avoid reference issues
+        return v;
+      });
+
+      // Update dataSource for display
+      this.dataSource.update(ds => {
+        ds.data = [...this.ListFilter];
+        return ds;
+      });
+
+      menu.closeMenu();
+      console.log('Applied filter. Selected products:', this.ListFilter.length);
+    }
+
+    applyFilter(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value;
+      this.dataSource().filter = filterValue.trim().toLowerCase();
+    }
   }
