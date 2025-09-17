@@ -133,16 +133,16 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           this._router.navigate(['/admin/chotkho', "new"]);
         }
         else if(id){
-            console.log('Loading chotkho by id:', id);
+            // console.log('Loading chotkho by id:', id);
             await this._ChotkhoService.getChotkhoById(id);
             // The effect will handle updating this.DetailChotkho when service data changes
             
             // Debug: Check if service data is loaded correctly
             setTimeout(() => {
               const serviceData = this._ChotkhoService.DetailChotkho();
-              console.log('Service data after load:', serviceData);
-              console.log('Component data after load:', this.DetailChotkho());
-              console.log('DataSource data after load:', this.dataSource().data);
+              // console.log('Service data after load:', serviceData);
+              // console.log('Component data after load:', this.DetailChotkho());
+              // console.log('DataSource data after load:', this.dataSource().data);
             }, 1000);
             
             this._ListChotkhoComponent.drawer.open();
@@ -198,6 +198,9 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
             panelClass: ['snackbar-success'],
           });
           this.isEdit.update(value => false);
+          setTimeout(() => {
+            window.location.reload();
+          }, 100);
         }
       } catch (error) {
         console.error('Lỗi khi cập nhật chốt kho:', error);
@@ -387,7 +390,15 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           dongia: product.dongia
         }));
         
+
         this.filterSanpham = [...this.ListSanpham];
+
+        console.log('Loaded products', products);
+        console.log('Loaded sanpham list for SearchFilter:', this.ListSanpham);
+        console.log('Loaded sanpham list for filterSanpham:', this.filterSanpham);
+
+        
+
       } catch (error) {
         console.error('Error loading sanpham list:', error);
         this._snackBar.open('Lỗi khi tải danh sách sản phẩm', 'Đóng', { 
@@ -561,28 +572,28 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     }
 
     // Method to save changes to server
-    async saveChangesToServer() {
-      try {
-        const chotkhoData = this.DetailChotkho();
-        if (chotkhoData?.id && chotkhoData.id !== 'new') {
-          // Use updateChotkhoWithDetails to save both master and details
-          await this._ChotkhoService.updateChotkhoWithDetails(chotkhoData.id, chotkhoData);
+    // async saveChangesToServer() {
+    //   try {
+    //     const chotkhoData = this.DetailChotkho();
+    //     if (chotkhoData?.id && chotkhoData.id !== 'new') {
+    //       // Use updateChotkhoWithDetails to save both master and details
+    //       await this._ChotkhoService.updateChotkhoWithDetails(chotkhoData.id, chotkhoData);
           
-          this._snackBar.open('Đã lưu thay đổi lên server', '', {
-            duration: 2000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['snackbar-success'],
-          });
-        }
-      } catch (error) {
-        console.error('Error saving to server:', error);
-        this._snackBar.open('Lỗi khi lưu lên server', '', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-error'],
-        });
-      }
-    }
+    //       this._snackBar.open('Đã lưu thay đổi lên server', '', {
+    //         duration: 2000,
+    //         horizontalPosition: 'end',
+    //         verticalPosition: 'top',
+    //         panelClass: ['snackbar-success'],
+    //       });
+    //     }
+    //   } catch (error) {
+    //     console.error('Error saving to server:', error);
+    //     this._snackBar.open('Lỗi khi lưu lên server', '', {
+    //       duration: 3000,
+    //       horizontalPosition: 'end',
+    //       verticalPosition: 'top',
+    //       panelClass: ['snackbar-error'],
+    //     });
+    //   }
+    // }
   }

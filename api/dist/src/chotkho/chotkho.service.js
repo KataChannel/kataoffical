@@ -179,9 +179,9 @@ let ChotkhoService = class ChotkhoService {
             });
             return products.map(product => ({
                 id: product.id,
-                masanpham: product.masp,
-                tensanpham: product.title,
-                donvitinh: product.dvt,
+                masp: product.masp,
+                title: product.title,
+                dvt: product.dvt,
                 dongia: Number(product.giaban) || 0,
                 status: product.isActive,
                 ghichu: product.ghichu,
@@ -189,12 +189,10 @@ let ChotkhoService = class ChotkhoService {
                     slton: Number(product.TonKho.slton) || 0,
                     slhuy: 0,
                     sltinhthucte: Number(product.TonKho.sltontt) || 0,
-                    ngaycapnhat: new Date()
                 } : {
                     slton: 0,
                     slhuy: 0,
                     sltinhthucte: 0,
-                    ngaycapnhat: null
                 }
             }));
         }

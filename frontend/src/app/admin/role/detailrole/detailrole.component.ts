@@ -61,7 +61,7 @@ export class DetailRoleComponent {
     //   }
     // });
   }
-  DetailRole:any={};
+  DetailRole: any = {};
   isEdit = signal(false);
   isDelete = signal(false);
   async ngOnInit() {
@@ -70,30 +70,30 @@ export class DetailRoleComponent {
     if (!this.idRole) {
       this._router.navigate(['/admin/nhomuser']);
       this._ListroleComponent.drawer.close();
-    } else if (this.idRole === '0') {
+    } else if (this.idRole === 'new') {
       this._ListroleComponent.drawer.open();
       this.isEdit.update((value) => !value);
-      this._router.navigate(['/admin/nhomuser', '0']);
+      this._router.navigate(['/admin/nhomuser', 'new']);
     } else {
       await this._RoleService.getRoleByid(this.idRole).then(() => {
         this.DetailRole = this._RoleService.DetailRole();
         this.filterPermission = this.ListPermission.map((v: any) => {
           if (this.DetailRole?.permissions?.length > 0) {
-            v.hasPermission = this.DetailRole?.permissions.find(
-              (p: any) => p.permissionId === v.id
-            )
-              ? true
-              : false;
+            v.hasPermission = this.DetailRole?.permissions.find((p: any) => p.permissionId === v.id)? true : false;
           }
           return v;
         });
-        })
+      });
       this._ListroleComponent.drawer.open();
       this._router.navigate(['/admin/nhomuser', this.idRole]);
-    };
+    }
+    setTimeout(() => {
+      console.log(this.filterPermission);
+      
+    }, 200);
   }
   async handleRoleAction() {
-    if (this.idRole === '0') {
+    if (this.idRole === 'new') {
       await this.createRole();
     } else {
       await this.updateRole();
@@ -101,7 +101,6 @@ export class DetailRoleComponent {
   }
   private async createRole() {
     console.log(this.DetailRole);
-    
     try {
       await this._RoleService.CreateRole(this.DetailRole);
       this._snackBar.open('Tạo Mới Thành Công', '', {

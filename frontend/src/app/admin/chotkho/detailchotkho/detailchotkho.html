@@ -65,13 +65,7 @@
             [ListItem]="ListSanpham"
             (OutFilter)="DoOutFilter($event)"
           ></app-searchfilter>
-          
-          <button [disabled]="!isEdit()" mat-icon-button color="primary" 
-                  (click)="saveChangesToServer()" 
-                  title="Lưu thay đổi lên server">
-            <mat-icon>cloud_upload</mat-icon>
-          </button>
-          
+                    
           <button [disabled]="!isEdit()" mat-icon-button color="warn" (click)="EmptyCart()">
             <mat-icon>delete</mat-icon>
           </button>

@@ -189,7 +189,7 @@ export class ListRoleComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/nhomuser/add'], { relativeTo: null });
+    this.router.navigate(['/admin/nhomuser/new'], { relativeTo: null });
   }
 
   goToDetail(role: any): void {
