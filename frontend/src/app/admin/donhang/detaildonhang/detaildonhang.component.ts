@@ -146,6 +146,8 @@ export class DetailDonhangComponent {
           await this._DonhangService.getDonhangByid(id);
           this.DetailDonhang.set(this._DonhangService.DetailDonhang());
           this.ListFilter = this.DetailDonhang().sanpham || [];
+          // Update available products after setting ListFilter
+          this.updateAvailableProducts();
           this.isEdit.set(false);
           this._ListdonhangComponent.drawer.open();
           
@@ -1370,7 +1372,7 @@ export class DetailDonhangComponent {
     this.updateTotals();
 
     // Update available products to show all products again
-    this.filterSanpham = [...this.ListSanpham];
+    this.updateAvailableProducts();
 
     // Mark that sanpham data has changed
     this.sanphamDataChanged = true;
@@ -1832,10 +1834,7 @@ export class DetailDonhangComponent {
   }
   ResetFilter() {
     // Reset to only show available products (not already selected)
-    this.filterSanpham = this.ListSanpham.filter(
-      (item: any) =>
-        !this.ListFilter.find((selected: any) => selected.id === item.id)
-    );
+    this.updateAvailableProducts();
     console.log(
       `Reset filter. Showing ${this.filterSanpham.length} available products`
     );
@@ -1853,6 +1852,7 @@ export class DetailDonhangComponent {
       (item: any) =>
         !this.ListFilter.find((selected: any) => selected.id === item.id)
     );
+    console.log('Updated available products:', this.filterSanpham.length, 'out of', this.ListSanpham.length);
   }
   CheckItem(item: any) {
     return this.ListFilter.find((v) => v.id === item.id) ? true : false;

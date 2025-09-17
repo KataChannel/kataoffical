@@ -98,9 +98,13 @@ import { SanphamService } from '../../sanpham/sanpham.service';
             return ds;
           });
           
-          // Update ListFilter and filterSanpham for product selection
+          // Update ListFilter for product selection
           this.ListFilter = serviceDetail.details || [];
-          this.updateAvailableProducts();
+          
+          // Only update available products if ListSanpham is loaded
+          if (this.ListSanpham.length > 0) {
+            this.updateAvailableProducts();
+          }
           
           console.log('DetailChotkho updated from service:', serviceDetail);
         }
@@ -403,8 +407,9 @@ import { SanphamService } from '../../sanpham/sanpham.service';
         this.updateAvailableProducts();
 
         console.log('Loaded products:', products);
-        console.log('Loaded ListSanpham:', this.ListSanpham);
-        console.log('Available products (filterSanpham):', this.filterSanpham);
+        console.log('Loaded ListSanpham:', this.ListSanpham.length);
+        console.log('Current ListFilter:', this.ListFilter.length);
+        console.log('Available products (filterSanpham):', this.filterSanpham.length);
 
       } catch (error) {
         console.error('Error loading sanpham list:', error);
@@ -674,7 +679,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
         // Show only available products (not already selected)
         this.filterSanpham = this.ListSanpham.filter(
           (item: any) =>
-            !this.ListFilter.find((selected: any) => selected.id === item.id)
+            !this.ListFilter.find((selected: any) => selected.id === item.id || selected.sanphamId === item.id)
         );
         return;
       }
@@ -685,7 +690,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
       this.filterSanpham = this.ListSanpham.filter((product: any) => {
         // First check if product is not already selected
         const isAlreadySelected = this.ListFilter.find(
-          (selected: any) => selected.id === product.id
+          (selected: any) => selected.id === product.id || selected.sanphamId === product.id
         );
         if (isAlreadySelected) {
           return false; // Don't show already selected products
@@ -732,11 +737,11 @@ import { SanphamService } from '../../sanpham/sanpham.service';
 
     ChosenItem(item: any) {
       let CheckItem = this.filterSanpham.find((v: any) => v.id === item.id);
-      let CheckItem1 = this.ListFilter.find((v: any) => v.id === item.id);
+      let CheckItem1 = this.ListFilter.find((v: any) => v.id === item.id || v.sanphamId === item.id);
 
       if (CheckItem1) {
         // Product is already selected, remove it from ListFilter
-        this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
+        this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id && v.sanphamId !== item.id);
         console.log(`Removed product: ${item.title}`);
       } else {
         // Product is not selected yet, add it to ListFilter
@@ -745,14 +750,14 @@ import { SanphamService } from '../../sanpham/sanpham.service';
           const itemCopy = { 
             ...CheckItem,
             sanphamId: CheckItem.id,
-            sltonhethong: 0,
-            sltonthucte: 0, 
-            slhuy: 0,
-            chenhlech: 0,
+            sltonhethong: CheckItem.sltonhethong || 0,
+            sltonthucte: CheckItem.sltonthucte || 0, 
+            slhuy: CheckItem.slhuy || 0,
+            chenhlech: CheckItem.chenhlech || 0,
             order: this.ListFilter.length + 1
           };
           
-          const existingIndex = this.ListFilter.findIndex(existing => existing.id === item.id);
+          const existingIndex = this.ListFilter.findIndex(existing => existing.id === item.id || existing.sanphamId === item.id);
           if (existingIndex === -1) {
             this.ListFilter.push(itemCopy);
             console.log(`Added product: ${item.title}`);
@@ -765,7 +770,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
       // Prevent duplicates by only adding products that are not already in ListFilter
       const uniqueProducts = list.filter(
         (item: any) =>
-          !this.ListFilter.find((existing: any) => existing.id === item.id)
+          !this.ListFilter.find((existing: any) => existing.id === item.id || existing.sanphamId === item.id)
       );
 
       // Add all unique products with default quantities
@@ -773,10 +778,10 @@ import { SanphamService } from '../../sanpham/sanpham.service';
         const itemCopy = { 
           ...item,
           sanphamId: item.id,
-          sltonhethong: 0,
-          sltonthucte: 0, 
-          slhuy: 0,
-          chenhlech: 0,
+          sltonhethong: item.sltonhethong || 0,
+          sltonthucte: item.sltonthucte || 0, 
+          slhuy: item.slhuy || 0,
+          chenhlech: item.chenhlech || 0,
           order: this.ListFilter.length + index + 1
         };
         return itemCopy;
@@ -811,12 +816,15 @@ import { SanphamService } from '../../sanpham/sanpham.service';
     updateAvailableProducts() {
       this.filterSanpham = this.ListSanpham.filter(
         (item: any) =>
-          !this.ListFilter.find((selected: any) => selected.id === item.id)
+          !this.ListFilter.find((selected: any) => 
+            selected.id === item.id || selected.sanphamId === item.id
+          )
       );
+      console.log('Updated available products:', this.filterSanpham.length, 'out of', this.ListSanpham.length);
     }
 
     CheckItem(item: any) {
-      return this.ListFilter.find((v) => v.id === item.id) ? true : false;
+      return this.ListFilter.find((v) => v.id === item.id || v.sanphamId === item.id) ? true : false;
     }
 
     ApplyFilterColum(menu: any) {
