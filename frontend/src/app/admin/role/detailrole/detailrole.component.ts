@@ -73,6 +73,7 @@ export class DetailRoleComponent {
     } else if (this.idRole === 'new') {
       this._ListroleComponent.drawer.open();
       this.isEdit.update((value) => !value);
+      this.filterPermission = this.ListPermission
       this._router.navigate(['/admin/nhomuser', 'new']);
     } else {
       await this._RoleService.getRoleByid(this.idRole).then(() => {

@@ -377,7 +377,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       try {
         // Load all products with tonkho information (no warehouse filter needed)
         const products = await this._ChotkhoService.getAllProducts();
-        this.ListSanpham = products.map((product:any) => ({
+        const allProducts = products.map((product:any) => ({
           id: product.id,
           sanphamId: product.id,
           title: product.title,
@@ -390,14 +390,21 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           dongia: product.dongia
         }));
         
+        // Filter out products that are already selected in details
+        const selectedIds = (this.DetailChotkho()?.details || []).map((detail: any) => 
+          detail.sanphamId || detail.id
+        );
+        
+        this.ListSanpham = allProducts.filter(product => 
+          !selectedIds.includes(product.id || product.sanphamId)
+        );
 
         this.filterSanpham = [...this.ListSanpham];
 
         console.log('Loaded products', products);
+        console.log('Selected IDs to exclude:', selectedIds);
         console.log('Loaded sanpham list for SearchFilter:', this.ListSanpham);
         console.log('Loaded sanpham list for filterSanpham:', this.filterSanpham);
-
-        
 
       } catch (error) {
         console.error('Error loading sanpham list:', error);
@@ -446,7 +453,14 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           return ds;
         });
         
+        // Remove selected products from ListSanpham to avoid duplicates
+        const selectedIds = event.map((sp: any) => sp.sanphamId || sp.id);
+        this.ListSanpham = this.ListSanpham.filter(product => 
+          !selectedIds.includes(product.id || product.sanphamId)
+        );
+        
         console.log('Updated DetailChotkho:', this.DetailChotkho());
+        console.log('Updated ListSanpham (removed selected):', this.ListSanpham);
 
         this._snackBar.open('Cập nhật sản phẩm thành công', '', {
           duration: 2000,
@@ -466,6 +480,9 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     }
 
     EmptyCart() {
+      // Store current details to add back to ListSanpham
+      const currentDetails = this.DetailChotkho().details || [];
+      
       this.DetailChotkho.update((v: any) => {
         return {
           ...v,
@@ -478,6 +495,33 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
         ds.data = [];
         return ds;
       });
+      
+      // Add all removed products back to ListSanpham
+      currentDetails.forEach((detail: any) => {
+        const productToAdd = {
+          id: detail.sanphamId || detail.id,
+          sanphamId: detail.sanphamId || detail.id,
+          title: detail.title || detail.sanpham?.title,
+          masp: detail.masp || detail.sanpham?.masp,
+          dvt: detail.dvt || detail.sanpham?.dvt,
+          sltonhethong: detail.sltonhethong || 0,
+          sltonthucte: detail.sltonthucte || 0,
+          slhuy: detail.slhuy || 0,
+          chenhlech: detail.chenhlech || 0,
+          dongia: detail.dongia || detail.sanpham?.dongia || 0
+        };
+        
+        // Check if product is not already in ListSanpham before adding
+        const existsInList = this.ListSanpham.some(p => 
+          (p.id === productToAdd.id) || (p.sanphamId === productToAdd.id)
+        );
+        
+        if (!existsInList) {
+          this.ListSanpham.push(productToAdd);
+        }
+      });
+      
+      console.log('Restored products to ListSanpham:', this.ListSanpham);
       
       this._snackBar.open('Đã xóa tất cả sản phẩm', '', {
         duration: 2000,
@@ -504,6 +548,31 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
         ds.data = [...updatedDetails];
         return ds;
       });
+      
+      // Add the removed product back to ListSanpham
+      const removedProductId = row.sanphamId || row.id;
+      const productToAdd = {
+        id: removedProductId,
+        sanphamId: removedProductId,
+        title: row.title || row.sanpham?.title,
+        masp: row.masp || row.sanpham?.masp,
+        dvt: row.dvt || row.sanpham?.dvt,
+        sltonhethong: row.sltonhethong || 0,
+        sltonthucte: row.sltonthucte || 0,
+        slhuy: row.slhuy || 0,
+        chenhlech: row.chenhlech || 0,
+        dongia: row.dongia || row.sanpham?.dongia || 0
+      };
+      
+      // Check if product is not already in ListSanpham before adding
+      const existsInList = this.ListSanpham.some(p => 
+        (p.id === removedProductId) || (p.sanphamId === removedProductId)
+      );
+      
+      if (!existsInList) {
+        this.ListSanpham.push(productToAdd);
+        console.log('Added product back to ListSanpham:', productToAdd);
+      }
       
       this._snackBar.open('Đã xóa sản phẩm', '', {
         duration: 2000,
