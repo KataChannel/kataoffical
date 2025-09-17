@@ -159,6 +159,49 @@ export declare class ChotkhoController {
             totalPages: number;
         };
     }>;
+    updateWithDetails(id: string, data: any): Promise<({
+        user: {
+            id: string;
+            profile: {
+                name: string;
+            } | null;
+            email: string | null;
+        } | null;
+        details: ({
+            sanpham: {
+                id: string;
+                title: string;
+                masp: string;
+            } | null;
+        } & {
+            id: string;
+            title: string | null;
+            ghichu: string | null;
+            order: number | null;
+            createdAt: Date;
+            updatedAt: Date;
+            sanphamId: string | null;
+            userId: string | null;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
+            ngaychot: Date;
+            sltonhethong: import("@prisma/client/runtime/library").Decimal;
+            sltonthucte: import("@prisma/client/runtime/library").Decimal;
+            chenhlech: import("@prisma/client/runtime/library").Decimal;
+            chotkhoId: string | null;
+        })[];
+    } & {
+        id: string;
+        title: string | null;
+        ghichu: string | null;
+        order: number | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        codeId: string | null;
+        khoId: string | null;
+        userId: string | null;
+        ngaychot: Date;
+    }) | null>;
     update(id: string, data: any): Promise<{
         id: string;
         title: string | null;

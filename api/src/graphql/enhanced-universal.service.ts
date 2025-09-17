@@ -466,6 +466,7 @@ export class EnhancedUniversalService {
     'phieukhosanpham': 'phieuKhoSanpham',
     'tonkho': 'tonKho', // ✅ FIX: tonKho -> tonKho (correct Prisma client property)
     'chotkho': 'chotkho',
+    'chotkhodetail': 'chotkhodetail', // ✅ FIX: Add chotkhodetail mapping
     'auditlog': 'auditLog',
     'filemanager': 'fileManager',
     'chataimessage': 'chatAIMessage',

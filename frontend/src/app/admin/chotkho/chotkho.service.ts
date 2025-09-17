@@ -60,6 +60,7 @@ export interface ChotkhodetailData {
   sanphamId?: string;
   chotkhoId?: string;
   sanpham?: any;
+  ghichu?: string;
   isActive?: boolean;
 }
 
@@ -160,14 +161,19 @@ export class ChotkhoService {
       if (data.details && data.details.length > 0) {
         for (const detail of data.details) {
           const detailData = {
-            ...detail,
             chotkhoId: masterResult.id,
+            sanphamId: detail.sanphamId,
             userId: data.userId || await this.getCurrentUserId(),
+            sltonhethong: detail.sltonhethong || 0,
+            sltonthucte: detail.sltonthucte || 0,
+            slhuy: detail.slhuy || 0,
             chenhlech: this.calculateChenhLech(
               detail.sltonhethong || 0,
               detail.sltonthucte || 0,
               detail.slhuy || 0
-            )
+            ),
+            ghichu: detail.ghichu || '',
+            isActive: true
           };
 
           await this.graphqlService.createOne(
@@ -259,7 +265,12 @@ export class ChotkhoService {
             details: {
               include: {
                 sanpham: {
-                  select: { id: true, title: true }
+                  select: { 
+                    id: true, 
+                    title: true,
+                    masp: true,
+                    dvt: true
+                  }
                 }
               }
             }
@@ -304,17 +315,39 @@ export class ChotkhoService {
             details: {
               include: {
                 sanpham: {
-                  select: { id: true, title: true}
+                  select: { 
+                    id: true, 
+                    title: true,
+                    masp: true,
+                    dvt: true
+                  }
                 }
               }
             }
           }
         }
       );      
+      console.log('getChotkhoById result:', result);
+      
       if (result) {
-        this.selectedChotkho.set(result);
-        this.DetailChotkho.set(result);
-        return result;
+        // Flatten sanpham data into detail items for easier template access
+        const processedResult = {
+          ...result,
+          details: result.details?.map((detail: any) => ({
+            ...detail,
+            // Flatten sanpham fields to detail level for table display
+            tensanpham: detail.sanpham?.tensanpham,
+            masanpham: detail.sanpham?.masanpham,
+            donvitinh: detail.sanpham?.donvitinh,
+            // Keep original sanpham object for reference
+            sanpham: detail.sanpham
+          })) || []
+        };
+        
+        console.log('Processed chotkho data:', processedResult);
+        this.selectedChotkho.set(processedResult);
+        this.DetailChotkho.set(processedResult);
+        return processedResult;
       }
 
       return null;
@@ -336,7 +369,6 @@ export class ChotkhoService {
         ngaychot: data.ngaychot,
         title: data.title,
         ghichu: data.ghichu,
-        khoId: data.khoId,
         isActive: data.isActive
       };
 
@@ -365,6 +397,50 @@ export class ChotkhoService {
 
     } catch (error) {
       console.error('Error updating chotkho:', error);
+      this.showErrorMessage('Lỗi khi cập nhật chốt kho');
+      return false;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async updateChotkhoWithDetails(id: string, data: Partial<ChotkhoData>): Promise<boolean> {
+    try {
+      this.isLoading.set(true);
+
+      // Use direct HTTP call to chotkho REST endpoint
+      const updateData = {
+        ngaychot: data.ngaychot,
+        title: data.title,
+        ghichu: data.ghichu,
+        isActive: data.isActive,
+        details: data.details?.map(detail => ({
+          sanphamId: detail.sanphamId,
+          sltonhethong: detail.sltonhethong || 0,
+          sltonthucte: detail.sltonthucte || 0,
+          slhuy: detail.slhuy || 0,
+          ghichu: detail.ghichu || ''
+        }))
+      };
+
+      const response = await firstValueFrom(
+        this.http.patch(`${environment.APIURL}/chotkho/${id}/with-details`, updateData, {
+          headers: {
+            'Authorization': `Bearer ${this.storageService.getItem('token')}`
+          }
+        })
+      );
+
+      if (response) {
+        this.showSuccessMessage('Cập nhật chốt kho và chi tiết thành công');
+        await this.getAllChotkho();
+        await this.getChotkhoById(id); // Refresh the current detail view
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error updating chotkho with details:', error);
       this.showErrorMessage('Lỗi khi cập nhật chốt kho');
       return false;
     } finally {

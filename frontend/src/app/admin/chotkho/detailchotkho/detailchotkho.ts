@@ -35,7 +35,6 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       MatSortModule,
       CommonModule,
       MatSlideToggleModule,
-      SearchfilterComponent
     ],
     templateUrl: './detailchotkho.html',
     styleUrl: './detailchotkho.scss'
@@ -87,6 +86,17 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
         const serviceDetail = this._ChotkhoService.DetailChotkho();
         if (serviceDetail) {
           this.DetailChotkho.set(serviceDetail);
+          
+          // Update dataSource when DetailChotkho changes
+          this.dataSource.update(ds => {
+            ds.data = serviceDetail.details || [];
+            return ds;
+          });
+          
+          // Update filterSanpham for SearchFilter
+          this.filterSanpham = serviceDetail.details || [];
+          
+          console.log('DetailChotkho updated from service:', serviceDetail);
         }
       });
     }
@@ -122,8 +132,18 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           this._router.navigate(['/admin/chotkho', "new"]);
         }
         else if(id){
+            console.log('Loading chotkho by id:', id);
             await this._ChotkhoService.getChotkhoById(id);
             // The effect will handle updating this.DetailChotkho when service data changes
+            
+            // Debug: Check if service data is loaded correctly
+            setTimeout(() => {
+              const serviceData = this._ChotkhoService.DetailChotkho();
+              console.log('Service data after load:', serviceData);
+              console.log('Component data after load:', this.DetailChotkho());
+              console.log('DataSource data after load:', this.dataSource().data);
+            }, 1000);
+            
             this._ListChotkhoComponent.drawer.open();
             this._router.navigate(['/admin/chotkho', id]);
         }   
@@ -167,7 +187,8 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       try {
         const chotkhoData = this.DetailChotkho();
         if (chotkhoData?.id) {
-          await this._ChotkhoService.updateChotkho(chotkhoData.id, chotkhoData);
+          // Use updateChotkhoWithDetails to save both master and details
+          await this._ChotkhoService.updateChotkhoWithDetails(chotkhoData.id, chotkhoData);
           
           this._snackBar.open('Cập nhật thành công', '', {
             duration: 1000,
@@ -407,9 +428,12 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
         
         this.filterSanpham = this.DetailChotkho().details;
         
-        // Update dataSource for table display
-        this.dataSource().data = this.DetailChotkho().details;
-        this.dataSource().sort = this.sort;
+        // Update dataSource for table display using signal update
+        this.dataSource.update(ds => {
+          ds.data = [...this.DetailChotkho().details];
+          ds.sort = this.sort;
+          return ds;
+        });
         
         console.log('Updated DetailChotkho:', this.DetailChotkho());
 
@@ -432,12 +456,17 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 
     EmptyCart() {
       this.DetailChotkho.update((v: any) => {
-        v.details = [];
-        return v;
+        return {
+          ...v,
+          details: []
+        };
       });
       
       // Update dataSource
-      this.dataSource().data = [];
+      this.dataSource.update(ds => {
+        ds.data = [];
+        return ds;
+      });
       
       this._snackBar.open('Đã xóa tất cả sản phẩm', '', {
         duration: 2000,
@@ -453,12 +482,17 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       const updatedDetails = currentDetails.filter((detail: any) => detail.id !== row.id && detail.sanphamId !== row.sanphamId);
       
       this.DetailChotkho.update((v: any) => {
-        v.details = updatedDetails;
-        return v;
+        return {
+          ...v,
+          details: updatedDetails
+        };
       });
       
       // Update dataSource
-      this.dataSource().data = updatedDetails;
+      this.dataSource.update(ds => {
+        ds.data = [...updatedDetails];
+        return ds;
+      });
       
       this._snackBar.open('Đã xóa sản phẩm', '', {
         duration: 2000,
@@ -470,38 +504,85 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 
     updateValue(event: any, index: number, row: any, field: string, type: string) {
       event.preventDefault();
+      event.stopPropagation();
+      
       let value = event.target.innerText.trim();
       
       if (type === 'number') {
-        value = Number(value.replace(/,/g, '')) || 0;
+        // Remove commas and convert to number
+        const numericValue = value.replace(/,/g, '').replace(/[^0-9.-]/g, '');
+        value = Number(numericValue) || 0;
       }
       
-      // Update the row
-      row[field] = value;
+      console.log(`Updating ${field} with value:`, value);
       
-      // Recalculate chenhlech
-      if (field === 'sltonthucte' || field === 'slhuy') {
-        const sltonhethong = Number(row.sltonhethong) || 0;
-        const sltonthucte = Number(row.sltonthucte) || 0;
-        const slhuy = Number(row.slhuy) || 0;
-        row.chenhlech = sltonhethong - sltonthucte - slhuy;
-      }
+      // Update DetailChotkho using immutable pattern
+      this.DetailChotkho.update((currentChotkho: any) => {
+        const updatedDetails = (currentChotkho.details || []).map((detail: any, idx: number) => {
+          if (idx === index || detail.sanphamId === row.sanphamId) {
+            const updatedDetail = { ...detail };
+            updatedDetail[field] = value;
+            
+            // Recalculate chenhlech when sltonthucte or slhuy changes
+            if (field === 'sltonthucte' || field === 'slhuy') {
+              const sltonhethong = Number(updatedDetail.sltonhethong) || 0;
+              const sltonthucte = Number(updatedDetail.sltonthucte) || 0;
+              const slhuy = Number(updatedDetail.slhuy) || 0;
+              updatedDetail.chenhlech = sltonhethong - sltonthucte - slhuy;
+            }
+            
+            return updatedDetail;
+          }
+          return detail;
+        });
+        
+        return {
+          ...currentChotkho,
+          details: updatedDetails
+        };
+      });
       
-      // Update DetailChotkho
+      // Update dataSource for table display
       const currentDetails = this.DetailChotkho().details || [];
-      const updatedDetails = currentDetails.map((detail: any) => {
-        if (detail.id === row.id || detail.sanphamId === row.sanphamId) {
-          return { ...detail, ...row };
+      this.dataSource.update(ds => {
+        ds.data = [...currentDetails];
+        return ds;
+      });
+      
+      console.log('Updated DetailChotkho:', this.DetailChotkho());
+      
+      // Show success message
+      // this._snackBar.open(`Cập nhật ${field} thành công`, '', {
+      //   duration: 1500,
+      //   horizontalPosition: 'end',
+      //   verticalPosition: 'top',
+      //   panelClass: ['snackbar-success'],
+      // });
+    }
+
+    // Method to save changes to server
+    async saveChangesToServer() {
+      try {
+        const chotkhoData = this.DetailChotkho();
+        if (chotkhoData?.id && chotkhoData.id !== 'new') {
+          // Use updateChotkhoWithDetails to save both master and details
+          await this._ChotkhoService.updateChotkhoWithDetails(chotkhoData.id, chotkhoData);
+          
+          this._snackBar.open('Đã lưu thay đổi lên server', '', {
+            duration: 2000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-success'],
+          });
         }
-        return detail;
-      });
-      
-      this.DetailChotkho.update((v: any) => {
-        v.details = updatedDetails;
-        return v;
-      });
-      
-      // Update dataSource to trigger change detection
-      this.dataSource().data = [...updatedDetails];
+      } catch (error) {
+        console.error('Error saving to server:', error);
+        this._snackBar.open('Lỗi khi lưu lên server', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
     }
   }

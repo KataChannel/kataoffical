@@ -49,6 +49,7 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             'phieukhosanpham': 'phieuKhoSanpham',
             'tonkho': 'tonKho',
             'chotkho': 'chotkho',
+            'chotkhodetail': 'chotkhodetail',
             'auditlog': 'auditLog',
             'filemanager': 'fileManager',
             'chataimessage': 'chatAIMessage',

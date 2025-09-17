@@ -59,6 +59,14 @@ let ChotkhoController = class ChotkhoController {
             throw new common_1.HttpException(error.message || 'Find all failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async updateWithDetails(id, data) {
+        try {
+            return await this.chotkhoService.updateChotkhoWithDetails(id, data);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Update with details failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async update(id, data) {
         try {
             return await this.chotkhoService.update(id, data);
@@ -145,6 +153,24 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], ChotkhoController.prototype, "findAll", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Update chotkho with details' }),
+    (0, swagger_1.ApiParam)({ name: 'id', type: String }),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)(':id/with-details'),
+    (0, audit_decorator_1.Audit)({ entity: 'Chotkho', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['chotkho'],
+        get: { ttl: 600, keyPrefix: 'chotkho' },
+        updateCache: true
+    }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "updateWithDetails", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Update chotkho by ID' }),

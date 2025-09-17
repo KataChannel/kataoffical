@@ -412,4 +412,84 @@ export class ChotkhoService {
       }
     };
   }
+
+  /**
+   * Update chotkho with details
+   */
+  async updateChotkhoWithDetails(
+    id: string,
+    data: {
+      ngaychot?: Date;
+      title?: string;
+      ghichu?: string;
+      isActive?: boolean;
+      details?: Array<{
+        sanphamId: string;
+        sltonhethong: number;
+        sltonthucte: number;
+        slhuy: number;
+        ghichu?: string;
+      }>;
+    }
+  ) {
+    return this.prisma.$transaction(async (prisma) => {
+      // Update master record
+      const updatedMaster = await prisma.chotkho.update({
+        where: { id },
+        data: {
+          ngaychot: data.ngaychot,
+          title: data.title,
+          ghichu: data.ghichu,
+          isActive: data.isActive
+        }
+      });
+
+      // Handle details if provided
+      if (data.details && data.details.length > 0) {
+        // Delete existing details
+        await prisma.chotkhodetail.deleteMany({
+          where: { chotkhoId: id }
+        });
+
+        // Create new details
+        for (const detail of data.details) {
+          const chenhlech = Number(detail.sltonhethong) - Number(detail.sltonthucte) - Number(detail.slhuy);
+          
+          await prisma.chotkhodetail.create({
+            data: {
+              chotkhoId: id,
+              sanphamId: detail.sanphamId,
+              sltonhethong: detail.sltonhethong,
+              sltonthucte: detail.sltonthucte,
+              slhuy: detail.slhuy,
+              chenhlech,
+              ghichu: detail.ghichu || '',
+              ngaychot: updatedMaster.ngaychot
+            }
+          });
+        }
+      }
+
+      // Return full data with relations
+      return await prisma.chotkho.findUnique({
+        where: { id },
+        include: {
+          user: {
+            select: { 
+              id: true, 
+              email: true,
+              profile: { select: { name: true } }
+            }
+          },
+          details: {
+            include: {
+              sanpham: {
+                select: { id: true, title: true, masp: true }
+              }
+            }
+          }
+        }
+      });
+    });
+  }
 }

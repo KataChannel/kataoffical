@@ -257,4 +257,59 @@ export declare class ChotkhoService {
             totalPages: number;
         };
     }>;
+    updateChotkhoWithDetails(id: string, data: {
+        ngaychot?: Date;
+        title?: string;
+        ghichu?: string;
+        isActive?: boolean;
+        details?: Array<{
+            sanphamId: string;
+            sltonhethong: number;
+            sltonthucte: number;
+            slhuy: number;
+            ghichu?: string;
+        }>;
+    }): Promise<({
+        user: {
+            id: string;
+            profile: {
+                name: string;
+            } | null;
+            email: string | null;
+        } | null;
+        details: ({
+            sanpham: {
+                id: string;
+                title: string;
+                masp: string;
+            } | null;
+        } & {
+            id: string;
+            title: string | null;
+            ghichu: string | null;
+            order: number | null;
+            createdAt: Date;
+            updatedAt: Date;
+            sanphamId: string | null;
+            userId: string | null;
+            slhuy: Decimal;
+            ngaychot: Date;
+            sltonhethong: Decimal;
+            sltonthucte: Decimal;
+            chenhlech: Decimal;
+            chotkhoId: string | null;
+        })[];
+    } & {
+        id: string;
+        title: string | null;
+        ghichu: string | null;
+        order: number | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        codeId: string | null;
+        khoId: string | null;
+        userId: string | null;
+        ngaychot: Date;
+    }) | null>;
 }

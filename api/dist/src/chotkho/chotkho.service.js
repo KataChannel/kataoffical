@@ -367,6 +367,58 @@ let ChotkhoService = class ChotkhoService {
             }
         };
     }
+    async updateChotkhoWithDetails(id, data) {
+        return this.prisma.$transaction(async (prisma) => {
+            const updatedMaster = await prisma.chotkho.update({
+                where: { id },
+                data: {
+                    ngaychot: data.ngaychot,
+                    title: data.title,
+                    ghichu: data.ghichu,
+                    isActive: data.isActive
+                }
+            });
+            if (data.details && data.details.length > 0) {
+                await prisma.chotkhodetail.deleteMany({
+                    where: { chotkhoId: id }
+                });
+                for (const detail of data.details) {
+                    const chenhlech = Number(detail.sltonhethong) - Number(detail.sltonthucte) - Number(detail.slhuy);
+                    await prisma.chotkhodetail.create({
+                        data: {
+                            chotkhoId: id,
+                            sanphamId: detail.sanphamId,
+                            sltonhethong: detail.sltonhethong,
+                            sltonthucte: detail.sltonthucte,
+                            slhuy: detail.slhuy,
+                            chenhlech,
+                            ghichu: detail.ghichu || '',
+                            ngaychot: updatedMaster.ngaychot
+                        }
+                    });
+                }
+            }
+            return await prisma.chotkho.findUnique({
+                where: { id },
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            email: true,
+                            profile: { select: { name: true } }
+                        }
+                    },
+                    details: {
+                        include: {
+                            sanpham: {
+                                select: { id: true, title: true, masp: true }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    }
 };
 exports.ChotkhoService = ChotkhoService;
 exports.ChotkhoService = ChotkhoService = __decorate([

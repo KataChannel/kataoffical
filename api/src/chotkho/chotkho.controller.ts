@@ -93,6 +93,25 @@ export class ChotkhoController {
   }
 
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update chotkho with details' })
+  @ApiParam({ name: 'id', type: String })
+  @UseGuards(JwtAuthGuard) 
+  @Patch(':id/with-details')
+  @Audit({ entity: 'Chotkho', action: AuditAction.UPDATE, includeResponse: true })
+  @SmartCache({
+    invalidate: ['chotkho'],
+    get: { ttl: 600, keyPrefix: 'chotkho' },
+    updateCache: true
+  })
+  async updateWithDetails(@Param('id') id: string, @Body() data: any) {
+    try {
+      return await this.chotkhoService.updateChotkhoWithDetails(id, data);
+    } catch (error) {
+      throw new HttpException(error.message || 'Update with details failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update chotkho by ID' })
   @ApiParam({ name: 'id', type: String })
   @ApiBody({ type: Object })

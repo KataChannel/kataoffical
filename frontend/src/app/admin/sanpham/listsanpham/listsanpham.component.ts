@@ -111,7 +111,7 @@ export class ListSanphamComponent implements OnInit {
     this.ColumnName = this.FilterColumns.reduce((acc, { key, value, isShow }) => 
       isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
   }
-  @Debounce(500)
+  @Debounce(100)
     applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     if (!filterValue) {
