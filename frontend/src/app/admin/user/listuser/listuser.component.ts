@@ -301,15 +301,18 @@ export class ListUserComponent implements OnInit, AfterViewInit {
      console.log(ListUser);
      const exportListUser = ListUser.data.map((user:any)=>{
       return {
-        id:user.id,
         email:user.email,
         SDT:user.SDT,
         roles:user.roles.map((roleUser:any)=>roleUser.role.name).join(', '),
-        permissions: user.roles.map((roleUser:any)=>
-          roleUser.role.permissions.map((permisionRole:any)=>permisionRole.permission.name).join(', ')
+        permissions: user.roles.flatMap((roleUser:any)=>
+          roleUser.role.permissions.map((permissionRole:any)=>permissionRole.permission.name)
         ).join(', ')
       }
      })
-    console.log(exportListUser);
+    const XLSX = await import('xlsx');
+    const ws = XLSX.utils.json_to_sheet(exportListUser);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Users');
+    XLSX.writeFile(wb, 'users-export.xlsx');
   }
 }
