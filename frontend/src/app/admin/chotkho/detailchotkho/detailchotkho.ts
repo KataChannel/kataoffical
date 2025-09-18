@@ -22,6 +22,7 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter123/se
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { SanphamService } from '../../sanpham/sanpham.service';
+import * as XLSX from 'xlsx';
   @Component({
     selector: 'app-detailchotkho',
     imports: [
@@ -797,6 +798,295 @@ import { SanphamService } from '../../sanpham/sanpham.service';
       this.dataSource().filter = filterValue.trim().toLowerCase();
     }
     async ImportExcel(event: any) {
+      try {
+        const file = event.target.files[0];
+        if (!file) {
+          this._snackBar.open('Vui lòng chọn file Excel', 'Đóng', {
+            duration: 3000,
+            panelClass: ['snackbar-error']
+          });
+          return;
+        }
 
+        // Validate file type
+        const validTypes = [
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'application/vnd.ms-excel',
+          'application/octet-stream'
+        ];
+        
+        if (!validTypes.includes(file.type) && !file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+          this._snackBar.open('Vui lòng chọn file Excel (.xlsx hoặc .xls)', 'Đóng', {
+            duration: 3000,
+            panelClass: ['snackbar-error']
+          });
+          return;
+        }
+
+        this._snackBar.open('Đang xử lý file Excel...', '', {
+          duration: 2000,
+          panelClass: ['snackbar-info']
+        });
+
+        // Read Excel file
+        const data = await this.readExcelFile(file);
+        
+        if (!data || data.length === 0) {
+          this._snackBar.open('File Excel không có dữ liệu hoặc không hợp lệ', 'Đóng', {
+            duration: 3000,
+            panelClass: ['snackbar-error']
+          });
+          return;
+        }
+
+        // Load all products from server if not already loaded
+        if (this.ListSanpham.length === 0) {
+          await this.loadNewSanphamList();
+        }
+
+        // Process and validate Excel data
+        const processedData = await this.processExcelData(data);
+        
+        if (processedData.length === 0) {
+          this._snackBar.open('Không tìm thấy sản phẩm nào khớp với mã sản phẩm trong file Excel', 'Đóng', {
+            duration: 4000,
+            panelClass: ['snackbar-warning']
+          });
+          return;
+        }
+
+        // Update DetailChotkho with processed data
+        this.DetailChotkho.update((v: any) => {
+          // Combine existing details with imported data, avoiding duplicates
+          const existingDetails = v.details || [];
+          const combinedDetails = [...existingDetails];
+          
+          processedData.forEach((importedItem: any) => {
+            const existingIndex = combinedDetails.findIndex(
+              (existing: any) => existing.sanphamId === importedItem.sanphamId
+            );
+            
+            if (existingIndex >= 0) {
+              // Update existing item
+              combinedDetails[existingIndex] = {
+                ...combinedDetails[existingIndex],
+                ...importedItem,
+                // Recalculate chenhlech
+                chenhlech: this.calculateChenhLech(
+                  importedItem.sltonhethong || combinedDetails[existingIndex].sltonhethong || 0,
+                  importedItem.sltonthucte || 0,
+                  importedItem.slhuy || 0
+                )
+              };
+            } else {
+              // Add new item
+              combinedDetails.push(importedItem);
+            }
+          });
+          
+          return {
+            ...v,
+            details: combinedDetails
+          };
+        });
+
+        // Update dataSource for table display
+        this.dataSource.update(ds => {
+          ds.data = [...this.DetailChotkho().details];
+          ds.sort = this.sort;
+          return ds;
+        });
+
+        // Update ListFilter for consistency
+        this.ListFilter = this.DetailChotkho().details || [];
+
+        // Reset file input
+        event.target.value = '';
+
+        this._snackBar.open(
+          `Import thành công ${processedData.length} sản phẩm từ Excel`,
+          'Đóng',
+          {
+            duration: 4000,
+            panelClass: ['snackbar-success']
+          }
+        );
+
+        console.log('Excel import completed:', {
+          importedItems: processedData.length,
+          totalDetails: this.DetailChotkho().details?.length || 0
+        });
+
+      } catch (error) {
+        console.error('Error importing Excel:', error);
+        this._snackBar.open(
+          `Lỗi khi import Excel: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          'Đóng',
+          {
+            duration: 5000,
+            panelClass: ['snackbar-error']
+          }
+        );
+      }
+    }
+
+    private async readExcelFile(file: File): Promise<any[]> {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        
+        reader.onload = (e: any) => {
+          try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            
+            // Get first sheet
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            
+            // Convert to JSON
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+              header: 1,
+              defval: '',
+              raw: false
+            });
+            
+            resolve(jsonData);
+          } catch (error) {
+            reject(new Error('Không thể đọc file Excel. Vui lòng kiểm tra định dạng file.'));
+          }
+        };
+        
+        reader.onerror = () => {
+          reject(new Error('Lỗi khi đọc file'));
+        };
+        
+        reader.readAsArrayBuffer(file);
+      });
+    }
+
+    private async processExcelData(rawData: any[]): Promise<any[]> {
+      try {
+        if (!rawData || rawData.length < 2) {
+          throw new Error('File Excel phải có ít nhất 2 dòng (header + data)');
+        }
+
+        // Get header row and find column indices
+        const headers = rawData[0].map((h: any) => 
+          removeVietnameseAccents(String(h).toLowerCase().trim())
+        );
+        
+        const columnIndices = {
+          masp: this.findColumnIndex(headers, ['masp', 'ma sp', 'ma san pham', 'product code']),
+          sltonthucte: this.findColumnIndex(headers, ['sltonthucte', 'sl ton thuc te', 'so luong ton thuc te', 'actual stock']),
+          slhuy: this.findColumnIndex(headers, ['slhuy', 'sl huy', 'so luong huy', 'damaged quantity'])
+        };
+
+        // Validate required columns
+        if (columnIndices.masp === -1) {
+          throw new Error('Không tìm thấy cột "masp" trong file Excel');
+        }
+
+        const processedData: any[] = [];
+        const notFoundProducts: string[] = [];
+
+        // Process data rows (skip header)
+        for (let i = 1; i < rawData.length; i++) {
+          const row = rawData[i];
+          if (!row || row.length === 0) continue;
+
+          const masp = String(row[columnIndices.masp] || '').trim();
+          if (!masp) continue;
+
+          // Find product in server data by masp
+          const serverProduct = this.ListSanpham.find((p: any) => 
+            p.masp?.toLowerCase().trim() === masp.toLowerCase().trim()
+          );
+
+          if (!serverProduct) {
+            notFoundProducts.push(masp);
+            continue;
+          }
+
+          // Extract quantities from Excel
+          const sltonthucte = this.parseNumber(row[columnIndices.sltonthucte]);
+          const slhuy = this.parseNumber(row[columnIndices.slhuy]);
+          
+          // Use server data for sltonhethong (system stock)
+          const sltonhethong = serverProduct.sltonhethong || 0;
+
+          // Calculate chenhlech
+          const chenhlech = this.calculateChenhLech(sltonhethong, sltonthucte, slhuy);
+
+          // Create detail item combining Excel data with server data
+          const detailItem = {
+            id: undefined, // New item
+            sanphamId: serverProduct.id,
+            sanpham: {
+              id: serverProduct.id,
+              masp: serverProduct.masp,
+              title: serverProduct.title,
+              dvt: serverProduct.dvt,
+              dongia: serverProduct.dongia
+            },
+            sltonhethong: sltonhethong,
+            sltonthucte: sltonthucte,
+            slhuy: slhuy,
+            chenhlech: chenhlech,
+            ghichu: `Import từ Excel - ${new Date().toLocaleString()}`,
+            isActive: true,
+            // Fields for table display
+            title: serverProduct.title,
+            masp: serverProduct.masp,
+            dvt: serverProduct.dvt
+          };
+
+          processedData.push(detailItem);
+        }
+
+        // Show warning for products not found
+        if (notFoundProducts.length > 0) {
+          console.warn('Products not found in system:', notFoundProducts);
+          this._snackBar.open(
+            `Cảnh báo: ${notFoundProducts.length} sản phẩm không tìm thấy trong hệ thống`,
+            'Xem chi tiết',
+            {
+              duration: 5000,
+              panelClass: ['snackbar-warning']
+            }
+          ).onAction().subscribe(() => {
+            console.log('Not found products:', notFoundProducts.join(', '));
+          });
+        }
+
+        return processedData;
+
+      } catch (error) {
+        console.error('Error processing Excel data:', error);
+        throw error;
+      }
+    }
+
+    private findColumnIndex(headers: string[], possibleNames: string[]): number {
+      for (const name of possibleNames) {
+        const normalizedName = removeVietnameseAccents(name.toLowerCase().trim());
+        const index = headers.findIndex(header => header.includes(normalizedName));
+        if (index !== -1) return index;
+      }
+      return -1;
+    }
+
+    private parseNumber(value: any): number {
+      if (value === undefined || value === null || value === '') return 0;
+      
+      // Convert to string and remove commas, spaces
+      const stringValue = String(value).replace(/,/g, '').replace(/\s/g, '');
+      
+      // Parse as float and return integer
+      const parsed = parseFloat(stringValue);
+      return isNaN(parsed) ? 0 : Math.floor(parsed);
+    }
+
+    private calculateChenhLech(sltonhethong: number, sltonthucte: number, slhuy: number): number {
+      return (sltonhethong || 0) - (sltonthucte || 0) - (slhuy || 0);
     }
   }
