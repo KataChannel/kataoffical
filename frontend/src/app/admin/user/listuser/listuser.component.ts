@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal, TemplateRef, ViewChild, effect, AfterViewInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, TemplateRef, ViewChild, effect, AfterViewInit, inject } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -18,6 +18,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
 import { UserGraphQLService, User } from '../user-graphql.service';
 import { DrawerService } from '../shared/drawer.service';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 
 @Component({
   selector: 'app-listuser',
@@ -82,7 +83,7 @@ export class ListUserComponent implements OnInit, AfterViewInit {
     //   }
     // });
   }
-
+  private _GraphqlService: GraphqlService = inject(GraphqlService);
   // State - initialized after constructor
   Listuser!: () => User[];
   isLoading!: () => boolean;
@@ -265,5 +266,50 @@ export class ListUserComponent implements OnInit, AfterViewInit {
     } catch (error: any) {
       this.snackBar.open('Lỗi khi xóa user: ' + error.message, 'Đóng', { duration: 3000 });
     }
+  }
+  async ExportUser() {
+     const ListUser =  await this._GraphqlService.findAll('User',
+      {
+        aggressiveCache: true,
+        take: 10000,
+        enableParallelFetch:true,
+        select:{
+          id:true,
+          email:true,
+          SDT:true,
+          roles:{
+            select:{
+              role:{select:
+                { 
+                  name:true,
+                  permissions:{
+                    select:{
+                      permission:{
+                        select:{name:true}
+                      }
+                    }
+                  }
+
+                }
+            },
+            }
+          }
+            
+        }
+      }
+     );
+     console.log(ListUser);
+     const exportListUser = ListUser.data.map((user:any)=>{
+      return {
+        id:user.id,
+        email:user.email,
+        SDT:user.SDT,
+        roles:user.roles.map((roleUser:any)=>roleUser.role.name).join(', '),
+        permissions: user.roles.map((roleUser:any)=>
+          roleUser.role.permissions.map((permisionRole:any)=>permisionRole.permission.name).join(', ')
+        ).join(', ')
+      }
+     })
+    console.log(exportListUser);
   }
 }

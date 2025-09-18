@@ -1227,15 +1227,32 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
       if (customerGroups.size === 0) {
         await this.createCustomerSheet(workbook, exportData, 'All Customers', exportData[0] || {});
       } else {
+        // Track used sheet names to prevent duplicates
+        const usedSheetNames = new Set<string>();
+        
         // Create a sheet for each customer group
         customerGroups.forEach((customerData, key) => {
           const customerInfo = customerData[0] || {};
           const customerName = customerInfo.tenkh || customerInfo.tenkhachhang || 'Unknown Customer';
           
           // Clean sheet name (Excel has restrictions on sheet names)
-          const sanitizedSheetName = this.sanitizeSheetName(customerName);
+          let sanitizedSheetName = this.sanitizeSheetName(customerName);
           
-          this.createCustomerSheet(workbook, customerData, sanitizedSheetName, customerInfo);
+          // Ensure unique sheet name
+          let uniqueSheetName = sanitizedSheetName;
+          let counter = 1;
+          while (usedSheetNames.has(uniqueSheetName)) {
+            // If name would exceed 31 chars with suffix, truncate first
+            const suffix = `_${counter}`;
+            const maxBaseLength = 31 - suffix.length;
+            const baseName = sanitizedSheetName.substring(0, maxBaseLength);
+            uniqueSheetName = `${baseName}${suffix}`;
+            counter++;
+          }
+          
+          usedSheetNames.add(uniqueSheetName);
+          
+          this.createCustomerSheet(workbook, customerData, uniqueSheetName, customerInfo);
         });
       }
       

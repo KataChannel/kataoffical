@@ -18,6 +18,9 @@
             <mat-icon>add_circle</mat-icon>
             <span class="whitespace-nowrap">Tạo Mới</span>
           </button>
+          <button (click)="ExportUser()" matTooltip="Tải xuống file excel" color="primary" mat-icon-button>
+             <mat-icon>file_download</mat-icon>
+          </button>
           <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
             class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button>
             <mat-icon>delete</mat-icon>
