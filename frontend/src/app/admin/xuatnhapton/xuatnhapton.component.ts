@@ -27,6 +27,7 @@ import { DonhangService } from "../donhang/donhang.service";
 import { KhoService } from "../kho/kho.service";
 import { PhieukhoService } from "../phieukho/phieukho.service";
 import { SanphamService } from "../sanpham/sanpham.service";
+import { GraphqlService } from "../../shared/services/graphql.service";
 @Component({
   selector: 'app-xuatnhapton',
   templateUrl: './xuatnhapton.component.html',
@@ -60,8 +61,6 @@ export class XuatnhaptonComponent implements OnDestroy {
     'dvt',
     'slton',
     'sltontt',
-    'slhuy',
-    'chenhlech'
   ];
 
   ColumnName: any = {
@@ -70,9 +69,6 @@ export class XuatnhaptonComponent implements OnDestroy {
     dvt: 'Đơn vị tính',
     slton: 'SL tồn',
     sltontt: 'Tồn thực tế Cuối Ngày',
-    slhuy: 'Hủy Cuối Ngày',
-    chenhlech: 'Chênh lệch'
-
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('TonkhoColFilter') || '[]'
@@ -87,6 +83,7 @@ export class XuatnhaptonComponent implements OnDestroy {
   private _SanphamService: SanphamService = inject(SanphamService);
   private _DathangService: DathangService = inject(DathangService);
   private _DonhangService: DonhangService = inject(DonhangService);
+  private _GraphqlService: GraphqlService = inject(GraphqlService);
   private _KhoService: KhoService = inject(KhoService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   Xuatnhapton:any = this._PhieukhoService.ListPhieukho;
@@ -157,7 +154,8 @@ export class XuatnhaptonComponent implements OnDestroy {
 
 
   async ngOnInit(): Promise<void> {    
-    await this._SanphamService.getAllSanpham() 
+    // await this._SanphamService.getAllSanpham() 
+    this.LoadXuatnhapton();
     this._KhoService.getTonKho('1', '1000').then((res) => {
     this.Xuatnhapton.set(res.data);
     this.dataSource.data = this.Xuatnhapton();
@@ -171,8 +169,21 @@ export class XuatnhaptonComponent implements OnDestroy {
     this.paginator._intl.firstPageLabel = 'Trang Đầu';
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
     });
+    this._GraphqlService
     this.CountItem = this.Xuatnhapton().length;
   }
+
+  async LoadXuatnhapton(){
+    const ListXuatnhapton = await this._GraphqlService.findAll('tonkho',{
+      aggressiveCache:true,
+      enableParallelFetch:true,
+      take:99999
+    })
+    console.log(ListXuatnhapton);
+    this.Xuatnhapton.set(ListXuatnhapton.data);
+  }
+
+
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
       key,

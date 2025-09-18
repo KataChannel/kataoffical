@@ -22,6 +22,7 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter/searc
 import { memoize, Debounce } from '../../../shared/utils/decorators';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 @Component({
   selector: 'app-listchotkho',
   standalone: true,
@@ -44,7 +45,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatChipsModule,
     SearchfilterComponent,
     MatProgressSpinnerModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatCheckboxModule
   ],
   templateUrl: './listchotkho.html',
   styleUrl: './listchotkho.scss',
@@ -235,17 +237,58 @@ export class ListChotkhoComponent implements OnInit {
     });
   }
 
-  DeleteListItem(): void {
-    this.EditList.forEach((item: any) => {
-      this._ChotkhoService.DeleteChotkho(item);
-    });
-    this.EditList = [];
-    this._snackBar.open('Xóa Thành Công', '', {
-      duration: 1000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-success'],
-    });
+  async DeleteListItem(): Promise<void> {
+    if (!this.EditList?.length) {
+      this._snackBar.open('Không có mục nào được chọn để xóa', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    this.isLoading.set(true);
+    try {
+      let successCount = 0;
+      let errorCount = 0;
+      
+      for (const item of this.EditList) {
+        try {
+          await this._ChotkhoService.deleteChotkho(item.id);
+          successCount++;
+        } catch (error) {
+          console.error('Error deleting item:', error);
+          errorCount++;
+        }
+      }
+      
+      this._snackBar.open(
+        `Xóa thành công ${successCount} chỗ kho${errorCount > 0 ? `, ${errorCount} lỗi` : ''}`,
+        '',
+        {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        }
+      );
+      this.EditList = [];
+      
+      // Reload data after deletion
+      await this._ChotkhoService.getAllChotkho(this.searchParam);
+      
+    } catch (error: any) {
+      console.error('Error during bulk delete:', error);
+      this._snackBar.open(`Lỗi khi xóa: ${error.message}`, '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   AddToEdit(item: any): void {
@@ -917,5 +960,16 @@ export class ListChotkhoComponent implements OnInit {
 
   clearAllCache() {
     this.clearAllCacheMethod();
+  }
+
+  /**
+   * Toggle all items selection
+   */
+  ToggleAll(): void {
+    if (this.EditList.length === this.dataSource.filteredData.length) {
+      this.EditList = [];
+    } else {
+      this.EditList = [...this.dataSource.filteredData];
+    }
   }
 }

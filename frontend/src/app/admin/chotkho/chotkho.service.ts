@@ -148,7 +148,8 @@ export class ChotkhoService {
             title: true,
             ghichu: true,
             userId: true,
-            codeId: true
+            codeId: true,
+            details: true
           }
         }
       );
@@ -180,7 +181,7 @@ export class ChotkhoService {
             isActive: true
           };
 
-          await this.graphqlService.createOne(
+         const Detail =  await this.graphqlService.createOne(
             this.detailModelName,
             detailData,
             {
@@ -192,13 +193,13 @@ export class ChotkhoService {
                 slhuy: true,
                 chenhlech: true,
                 ghichu: true,
-                chotkhoId: true
               }
             }
           );
+          console.log('Created detail record:', Detail);
         }
       }
-
+     
       this.showSuccessMessage('Tạo chốt kho thành công');
       await this.getAllChotkho();
       return true;
@@ -301,7 +302,6 @@ export class ChotkhoService {
   async getChotkhoById(id: string): Promise<ChotkhoData | null> {
     try {
       this.isLoading.set(true);
-
       const result = await this.graphqlService.findUnique(
         this.modelName,
         { id },

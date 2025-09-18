@@ -104,8 +104,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
           // Only update available products if ListSanpham is loaded
           if (this.ListSanpham.length > 0) {
             this.updateAvailableProducts();
-          }
-          
+          }          
           // console.log('DetailChotkho updated from service:', serviceDetail);
         }
       });
@@ -175,15 +174,13 @@ import { SanphamService } from '../../sanpham/sanpham.service';
             // Debug: Check if service data is loaded correctly
             setTimeout(() => {
               const serviceData = this._ChotkhoService.DetailChotkho();
-              // console.log('Service data after load:', serviceData);
-              // console.log('Component data after load:', this.DetailChotkho());
-              // console.log('DataSource data after load:', this.dataSource().data);
-            }, 1000);
-            
+             console.log('Service data after load:', serviceData);
+             console.log('Component data after load:', this.DetailChotkho());
+             console.log('DataSource data after load:', this.dataSource().data);
+            }, 1000);         
             this._ListChotkhoComponent.drawer.open();
             this._router.navigate(['/admin/chotkho', id]);
         }   
-        
         // Load sanpham list for product selection
         await this.loadSanphamList();
     }
@@ -199,8 +196,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
     private async createChotkho() {
       try {
         const chotkhoData = this.DetailChotkho();
-        await this._ChotkhoService.createChotkhoWithDetails(chotkhoData);
-        
+        await this._ChotkhoService.createChotkhoWithDetails(chotkhoData);        
         this._snackBar.open('Tạo chốt kho thành công', '', {
           duration: 1000,
           horizontalPosition: 'end',
@@ -233,9 +229,9 @@ import { SanphamService } from '../../sanpham/sanpham.service';
             panelClass: ['snackbar-success'],
           });
           this.isEdit.update(value => false);
-          setTimeout(() => {
-            window.location.reload();
-          }, 100);
+          // setTimeout(() => {
+          //   window.location.reload();
+          // }, 100);
         }
       } catch (error) {
         console.error('Lỗi khi cập nhật chốt kho:', error);
@@ -292,81 +288,6 @@ import { SanphamService } from '../../sanpham/sanpham.service';
 
     // Properties for detail table display
     detailDisplayedColumns: string[] = ['sanpham', 'sltonhethong', 'sltonthucte', 'slhuy', 'chenhlech', 'actions'];
-
-    // Methods for detail management
-    // Legacy addDetail method - replaced by SearchFilter
-    /*
-    async addDetail() {
-      try {
-        // Get current warehouse ID from the detail record
-        const currentChotkho = this.DetailChotkho();
-        const selectedWarehouseId = currentChotkho?.khoId;
-
-        // Open product selection dialog
-        const dialogRef = this._dialog.open(ProductSelectionDialogComponent, {
-          width: '900px',
-          maxWidth: '95vw',
-          data: {
-            selectedWarehouseId: selectedWarehouseId
-          },
-          disableClose: false
-        });
-
-        // Handle dialog result
-        const result: ProductSelectionResult = await dialogRef.afterClosed().toPromise();
-        
-        if (result && result.selectedProducts.length > 0) {
-          // Convert selected products to chotkho details
-          const newDetails = result.selectedProducts.map(product => ({
-            id: GenId(10, false),
-            sanphamId: product.id,
-            sanpham: {
-              id: product.id,
-              masp: product.masp,
-              title: product.title,
-              dvt: product.dvt,
-              dongia: product.dongia
-            },
-            sltonhethong: product.tonkho?.slton || 0,
-            sltonthucte: product.tonkho?.sltinhthucte || 0,
-            slhuy: product.tonkho?.slhuy || 0,
-            chenhlech: (product.tonkho?.sltinhthucte || 0) - (product.tonkho?.slton || 0),
-            ghichu: '',
-            isActive: true
-          }));
-
-          // Add new details to current details
-          const currentDetails = this.DetailChotkho().details || [];
-          const updatedDetails = [...currentDetails, ...newDetails];
-
-          // Update the DetailChotkho signal
-          this.DetailChotkho.set({
-            ...this.DetailChotkho(),
-            details: updatedDetails,
-            khoId: selectedWarehouseId // Ensure warehouse is set
-          });
-
-          // Show success message
-          this._snackBar.open(
-            `Đã thêm ${result.selectedProducts.length} sản phẩm vào danh sách kiểm kho`, 
-            'Đóng', 
-            {
-              duration: 3000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['snackbar-success'],
-            }
-          );
-        }
-      } catch (error) {
-        console.error('Error adding products:', error);
-        this._snackBar.open('Có lỗi xảy ra khi thêm sản phẩm', 'Đóng', { 
-          duration: 3000,
-          panelClass: ['snackbar-error']
-        });
-      }
-    }
-    */
 
     removeDetail(detail: any) {
       const currentDetails = this.DetailChotkho().details || [];
@@ -427,7 +348,9 @@ import { SanphamService } from '../../sanpham/sanpham.service';
         
         // Set ListSanpham to all products
         this.ListSanpham = allProducts;
-        
+        this.filterSanpham = this.ListSanpham.filter((item: any) =>
+          !this.ListFilter.find((selected: any) => selected.id === item.id)
+        );
         // Update available products (excluding already selected ones)
         this.updateAvailableProducts();
 
@@ -669,32 +592,6 @@ import { SanphamService } from '../../sanpham/sanpham.service';
       //   panelClass: ['snackbar-success'],
       // });
     }
-
-    // Method to save changes to server
-    // async saveChangesToServer() {
-    //   try {
-    //     const chotkhoData = this.DetailChotkho();
-    //     if (chotkhoData?.id && chotkhoData.id !== 'new') {
-    //       // Use updateChotkhoWithDetails to save both master and details
-    //       await this._ChotkhoService.updateChotkhoWithDetails(chotkhoData.id, chotkhoData);
-          
-    //       this._snackBar.open('Đã lưu thay đổi lên server', '', {
-    //         duration: 2000,
-    //         horizontalPosition: 'end',
-    //         verticalPosition: 'top',
-    //         panelClass: ['snackbar-success'],
-    //       });
-    //     }
-    //   } catch (error) {
-    //     console.error('Error saving to server:', error);
-    //     this._snackBar.open('Lỗi khi lưu lên server', '', {
-    //       duration: 3000,
-    //       horizontalPosition: 'end',
-    //       verticalPosition: 'top',
-    //       panelClass: ['snackbar-error'],
-    //     });
-    //   }
-    // }
   
     // Product selection methods similar to detaildonhang
     async doFilterSanpham(event: any): Promise<void> {
@@ -719,7 +616,10 @@ import { SanphamService } from '../../sanpham/sanpham.service';
     ChosenItem(item: any) {
       let CheckItem = this.filterSanpham.find((v: any) => v.id === item.id);
       let CheckItem1 = this.ListFilter.find((v: any) => v.id === item.id || v.sanphamId === item.id);
-
+      // console.log('ChosenItem:', item, 'CheckItem:', CheckItem, 'CheckItem1:', CheckItem1);
+      // console.log(this.filterSanpham);
+      // console.log(this.ListFilter);
+      
       if (CheckItem1) {
         // Product is already selected, remove it from ListFilter
         this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id && v.sanphamId !== item.id);
@@ -741,7 +641,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
           const existingIndex = this.ListFilter.findIndex(existing => existing.id === item.id || existing.sanphamId === item.id);
           if (existingIndex === -1) {
             this.ListFilter.push(itemCopy);
-            console.log(`Added product: ${item.title}`);
+            // console.log(`Added product: ${item.title}`);
           }
         }
       }
@@ -778,8 +678,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
 
     ResetFilter() {
       // Reset to only show available products (not already selected)
-      this.filterSanpham = this.ListSanpham.filter(
-        (item: any) =>
+      this.filterSanpham = this.ListSanpham.filter((item: any) =>
           !this.ListFilter.find((selected: any) => selected.id === item.id)
       );
       console.log(
@@ -796,7 +695,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
     // New method to update available products (excluding already selected ones) - kept for compatibility
     updateAvailableProducts() {
       // No longer needed since we show all products with checkboxes
-      console.log('All products are now visible with checkbox states');
+      // console.log('All products are now visible with checkbox states');
     }
 
     CheckItem(item: any) {
