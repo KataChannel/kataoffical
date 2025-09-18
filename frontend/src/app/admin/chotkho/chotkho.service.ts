@@ -8,7 +8,10 @@ import { GraphqlService } from '../../shared/services/graphql.service';
 import { UserService } from '../user/user.service';
 import { environment } from '../../../environments/environment.development';
 import { genMaDonhang } from '../../shared/utils/shared.utils';
-import { DonhangnumberToCode, DynamicnumberToCode } from '../../shared/utils/madonhang.utils';
+import {
+  DonhangnumberToCode,
+  DynamicnumberToCode,
+} from '../../shared/utils/madonhang.utils';
 
 // Type interfaces for master-detail structure
 export interface ChotkhoData {
@@ -99,7 +102,7 @@ export interface ChotkhodetailCreateData {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChotkhoService {
   private graphqlService = inject(GraphqlService);
@@ -116,7 +119,7 @@ export class ChotkhoService {
   chotkhos: WritableSignal<ChotkhoData[]> = signal([]);
   isLoading: WritableSignal<boolean> = signal(false);
   selectedChotkho: WritableSignal<ChotkhoData | null> = signal(null);
-  
+
   ListChotkho: WritableSignal<ChotkhoData[]> = signal([]);
   DetailChotkho: WritableSignal<ChotkhoData | null> = signal(null);
   page: WritableSignal<number> = signal(1);
@@ -127,8 +130,7 @@ export class ChotkhoService {
   isRefreshing: WritableSignal<boolean> = signal(false);
   lastUpdated: WritableSignal<Date | null> = signal(null);
 
-
-  async ChotkhoCodeId(){
+  async ChotkhoCodeId() {
     try {
       const maxOrderResult = await this.graphqlService.aggregate('chotkho', {
         _max: { order: true },
@@ -140,23 +142,23 @@ export class ChotkhoService {
 
       let existingCodeId = await this.graphqlService.findFirst('chotkho', {
         where: { codeId },
-        select: { codeId: true }
+        select: { codeId: true },
       });
-    // If codeId already exists, increment order until we find an unused one
+      // If codeId already exists, increment order until we find an unused one
       while (existingCodeId && existingCodeId.codeId) {
         newOrder++;
         codeId = DynamicnumberToCode('Chotkho', newOrder, false);
         existingCodeId = await this.graphqlService.findFirst('chotkho', {
           where: { codeId },
-          select: { codeId: true }
+          select: { codeId: true },
         });
       }
-      
+
       return { codeId, newOrder };
     } catch (error) {
       console.error('Error generating chotkho code ID:', error);
       this.showErrorMessage('Lỗi khi tạo mã chốt kho');
-      
+
       // Fallback: generate a simple code with timestamp
       const timestamp = Date.now().toString().slice(-6);
       const maxOrderResult = await this.graphqlService.aggregate('chotkho', {
@@ -164,28 +166,25 @@ export class ChotkhoService {
       });
       let maxOrder = maxOrderResult._max?.order || 0;
       let newOrder = maxOrder + 1;
-      
+
       return { codeId: `CK-${timestamp}`, newOrder };
     }
   }
 
-
-  async createChotkhoWithDetails(data: ChotkhoCreateData){
+  async createChotkhoWithDetails(data: ChotkhoCreateData) {
     try {
       this.isLoading.set(true);
-      console.log('Generated CodeId 123:');
-     const newChotkho:any =  await this.ChotkhoCodeId();
-     console.log('Generated CodeId:', newChotkho);
-     
+      const newChotkho: any = await this.ChotkhoCodeId();
+      
       const masterData = {
         ngaychot: data.ngaychot,
         title: data.title,
         ghichu: data.ghichu,
-        userId: data.userId || await this.getCurrentUserId(),
+        userId: data.userId || (await this.getCurrentUserId()),
         codeId: newChotkho.codeId,
         order: newChotkho.newOrder,
       };
-      
+
       const masterResult = await this.graphqlService.createOne(
         this.modelName,
         masterData,
@@ -197,8 +196,8 @@ export class ChotkhoService {
             ghichu: true,
             userId: true,
             codeId: true,
-            details: true
-          }
+            details: true,
+          },
         }
       );
       if (!masterResult || !masterResult.id) {
@@ -208,11 +207,10 @@ export class ChotkhoService {
 
       if (data.details && data.details.length > 0) {
         for (const detail of data.details) {
-          
           const detailData = {
             chotkhoId: masterResult.id,
             sanphamId: detail.sanphamId,
-            userId: data.userId || await this.getCurrentUserId(),
+            userId: data.userId || (await this.getCurrentUserId()),
             sltonhethong: detail.sltonhethong || 0,
             sltonthucte: detail.sltonthucte || 0,
             slhuy: detail.slhuy || 0,
@@ -221,10 +219,9 @@ export class ChotkhoService {
               detail.sltonthucte || 0,
               detail.slhuy || 0
             ),
-            ghichu: detail.ghichu || ''
+            ghichu: detail.ghichu || '',
           };
-
-         const Detail =  await this.graphqlService.createOne(
+          await this.graphqlService.createOne(
             this.detailModelName,
             detailData,
             {
@@ -236,15 +233,16 @@ export class ChotkhoService {
                 slhuy: true,
                 chenhlech: true,
                 ghichu: true,
-              }
+              },
             }
           );
         }
-      }     
+      }
+
+
       this.showSuccessMessage('Tạo chốt kho thành công');
       await this.getAllChotkho();
       return masterResult;
-      
     } catch (error) {
       console.error('Error creating chotkho with details:', error);
       this.showErrorMessage('Lỗi khi tạo chốt kho');
@@ -257,24 +255,26 @@ export class ChotkhoService {
   async getAllChotkho(searchParam?: ChotkhoSearchParams): Promise<void> {
     try {
       this.isLoading.set(true);
-      
+
       let whereClause = 'isActive: true';
-      
+
       if (searchParam) {
         const conditions = [];
-        
+
         if (searchParam.khoId) {
           conditions.push(`khoId: "${searchParam.khoId}"`);
         }
-        
+
         if (searchParam.userId) {
           conditions.push(`userId: "${searchParam.userId}"`);
         }
-        
+
         if (searchParam.startDate && searchParam.endDate) {
-          conditions.push(`ngaychot: { gte: "${searchParam.startDate}", lte: "${searchParam.endDate}" }`);
+          conditions.push(
+            `ngaychot: { gte: "${searchParam.startDate}", lte: "${searchParam.endDate}" }`
+          );
         }
-        
+
         if (searchParam.searchText) {
           conditions.push(`OR: [
             { title: { contains: "${searchParam.searchText}" } },
@@ -282,56 +282,56 @@ export class ChotkhoService {
             { codeId: { contains: "${searchParam.searchText}" } }
           ]`);
         }
-        
+
         if (conditions.length > 0) {
-          whereClause = `AND: [{ isActive: true }, { ${conditions.join(', ')} }]`;
+          whereClause = `AND: [{ isActive: true }, { ${conditions.join(
+            ', '
+          )} }]`;
         }
       }
 
-      const result = await this.graphqlService.findMany(
-        this.modelName,
-        {
-          where: whereClause,
-          orderBy: { ngaychot: 'desc' },
-          skip: ((searchParam?.page || 1) - 1) * (searchParam?.limit || 50),
-          take: searchParam?.limit || 50,
-          include: {
-            kho: {
-              select: { id: true, name: true }
+      const result = await this.graphqlService.findMany(this.modelName, {
+        where: whereClause,
+        orderBy: { ngaychot: 'desc' },
+        skip: ((searchParam?.page || 1) - 1) * (searchParam?.limit || 50),
+        take: searchParam?.limit || 50,
+        include: {
+          kho: {
+            select: { id: true, name: true },
+          },
+          user: {
+            select: {
+              id: true,
+              email: true,
+              profile: {
+                select: { name: true },
+              },
             },
-            user: {
-              select: { 
-                id: true, 
-                email: true,
-                profile: {
-                  select: { name: true }
-                }
-              }
-            },
-            // details: {
-            //   include: {
-            //     sanpham: {
-            //       select: { 
-            //         id: true, 
-            //         title: true,
-            //         masp: true,
-            //         dvt: true
-            //       }
-            //     }
-            //   }
-            // }
-          }
-        }
-      );
+          },
+          // details: {
+          //   include: {
+          //     sanpham: {
+          //       select: {
+          //         id: true,
+          //         title: true,
+          //         masp: true,
+          //         dvt: true
+          //       }
+          //     }
+          //   }
+          // }
+        },
+      });
 
       if (result) {
         this.ListChotkho.set(result || []);
         this.chotkhos.set(result || []);
         this.total.set(result.length || 0);
-        this.totalPages.set(Math.ceil((result.length || 0) / (searchParam?.limit || 50)));
+        this.totalPages.set(
+          Math.ceil((result.length || 0) / (searchParam?.limit || 50))
+        );
         this.page.set(searchParam?.page || 1);
       }
-
     } catch (error) {
       console.error('Error getting chotkho data:', error);
       this.showErrorMessage('Lỗi khi tải dữ liệu chốt kho');
@@ -349,44 +349,45 @@ export class ChotkhoService {
         {
           include: {
             user: {
-              select: { 
-                id: true, 
+              select: {
+                id: true,
                 email: true,
                 profile: {
-                  select: { name: true }
-                }
-              }
+                  select: { name: true },
+                },
+              },
             },
             details: {
               include: {
                 sanpham: {
-                  select: { 
-                    id: true, 
+                  select: {
+                    id: true,
                     title: true,
                     masp: true,
-                    dvt: true
-                  }
-                }
-              }
-            }
-          }
+                    dvt: true,
+                  },
+                },
+              },
+            },
+          },
         }
-      );            
+      );
       if (result) {
         // Flatten sanpham data into detail items for easier template access
         const processedResult = {
           ...result,
-          details: result.details?.map((detail: any) => ({
-            ...detail,
-            // Flatten sanpham fields to detail level for table display
-            title: detail.sanpham?.title,
-            masp: detail.sanpham?.masp,
-            dvt: detail.sanpham?.dvt,
-            // Keep original sanpham object for reference
-            sanpham: detail.sanpham
-          })) || []
+          details:
+            result.details?.map((detail: any) => ({
+              ...detail,
+              // Flatten sanpham fields to detail level for table display
+              title: detail.sanpham?.title,
+              masp: detail.sanpham?.masp,
+              dvt: detail.sanpham?.dvt,
+              // Keep original sanpham object for reference
+              sanpham: detail.sanpham,
+            })) || [],
         };
-        
+
         console.log('Processed chotkho data:', processedResult);
         this.selectedChotkho.set(processedResult);
         this.DetailChotkho.set(processedResult);
@@ -394,7 +395,6 @@ export class ChotkhoService {
       }
 
       return null;
-
     } catch (error) {
       console.error('Error getting chotkho by id:', error);
       this.showErrorMessage('Lỗi khi lấy thông tin chốt kho');
@@ -404,7 +404,10 @@ export class ChotkhoService {
     }
   }
 
-  async updateChotkho(id: string, data: Partial<ChotkhoData>): Promise<boolean> {
+  async updateChotkho(
+    id: string,
+    data: Partial<ChotkhoData>
+  ): Promise<boolean> {
     try {
       this.isLoading.set(true);
 
@@ -412,7 +415,7 @@ export class ChotkhoService {
         ngaychot: data.ngaychot,
         title: data.title,
         ghichu: data.ghichu,
-        isActive: data.isActive
+        isActive: data.isActive,
       };
 
       const result = await this.graphqlService.updateOne(
@@ -425,8 +428,8 @@ export class ChotkhoService {
             ngaychot: true,
             title: true,
             ghichu: true,
-            khoId: true
-          }
+            khoId: true,
+          },
         }
       );
 
@@ -437,7 +440,6 @@ export class ChotkhoService {
       }
 
       return false;
-
     } catch (error) {
       console.error('Error updating chotkho:', error);
       this.showErrorMessage('Lỗi khi cập nhật chốt kho');
@@ -447,7 +449,10 @@ export class ChotkhoService {
     }
   }
 
-  async updateChotkhoWithDetails(id: string, data: Partial<ChotkhoData>): Promise<boolean> {
+  async updateChotkhoWithDetails(
+    id: string,
+    data: Partial<ChotkhoData>
+  ): Promise<boolean> {
     try {
       this.isLoading.set(true);
 
@@ -457,21 +462,25 @@ export class ChotkhoService {
         title: data.title,
         ghichu: data.ghichu,
         isActive: data.isActive,
-        details: data.details?.map(detail => ({
+        details: data.details?.map((detail) => ({
           sanphamId: detail.sanphamId,
           sltonhethong: detail.sltonhethong || 0,
           sltonthucte: detail.sltonthucte || 0,
           slhuy: detail.slhuy || 0,
-          ghichu: detail.ghichu || ''
-        }))
+          ghichu: detail.ghichu || '',
+        })),
       };
 
       const response = await firstValueFrom(
-        this.http.patch(`${environment.APIURL}/chotkho/${id}/with-details`, updateData, {
-          headers: {
-            'Authorization': `Bearer ${this.storageService.getItem('token')}`
+        this.http.patch(
+          `${environment.APIURL}/chotkho/${id}/with-details`,
+          updateData,
+          {
+            headers: {
+              Authorization: `Bearer ${this.storageService.getItem('token')}`,
+            },
           }
-        })
+        )
       );
 
       if (response) {
@@ -495,29 +504,109 @@ export class ChotkhoService {
     try {
       this.isLoading.set(true);
 
-      const result = await this.graphqlService.deleteOne(
+      // Lấy thông tin chốt kho và details để xác nhận
+      const chotkhoData = await this.graphqlService.findUnique(
         this.modelName,
         { id },
+        {
+          include: {
+            details: {
+              include: {
+                sanpham: {
+                  select: {
+                    title: true,
+                    masp: true,
+                  },
+                },
+              },
+            },
+          },
+        }
       );
 
+      if (!chotkhoData) {
+        this.showErrorMessage('Không tìm thấy chốt kho cần xóa');
+        return false;
+      }
+
+      const detailCount = chotkhoData.details?.length || 0;
+
+      // Xác nhận xóa với thông tin chi tiết
+      const confirmMessage = `
+        Bạn có chắc muốn xóa chốt kho này không?
+        
+        📋 Mã chốt kho: ${chotkhoData.codeId || 'N/A'}
+        📝 Tiêu đề: ${chotkhoData.title || 'N/A'}
+        📦 Số lượng sản phẩm: ${detailCount}
+        
+        ⚠️ Thao tác này sẽ xóa vĩnh viễn:
+        • Chốt kho chính
+        • Tất cả ${detailCount} chi tiết sản phẩm
+        
+        Không thể khôi phục sau khi xóa!
+      `.trim();
+
+      const confirmed = window.confirm(confirmMessage);
+
+      if (!confirmed) {
+        console.log('User cancelled deletion');
+        return false;
+      }
+
+      // Xóa tất cả details trước
+      if (chotkhoData.details && chotkhoData.details.length > 0) {
+        console.log(
+          `🗑️ Đang xóa ${chotkhoData.details.length} chi tiết chốt kho...`
+        );
+
+        for (const detail of chotkhoData.details) {
+          try {
+            await this.graphqlService.deleteOne(this.detailModelName, {
+              id: detail.id,
+            });
+            console.log(`✅ Đã xóa detail ID: ${detail.id}`);
+          } catch (detailError) {
+            console.error(`❌ Lỗi xóa detail ${detail.id}:`, detailError);
+            // Tiếp tục xóa các details khác
+          }
+        }
+      }
+
+      // Xóa master record
+      console.log(`🗑️ Đang xóa chốt kho chính ID: ${id}...`);
+      const result = await this.graphqlService.deleteOne(this.modelName, {
+        id,
+      });
+
       if (result) {
-        this.showSuccessMessage('Xóa chốt kho thành công');
+        this.showSuccessMessage(
+          `Xóa chốt kho và ${detailCount} chi tiết thành công`
+        );
         await this.getAllChotkho();
+
+        // Reset selected chotkho nếu đang xem detail của record vừa xóa
+        if (this.selectedChotkho()?.id === id) {
+          this.selectedChotkho.set(null);
+          this.DetailChotkho.set(null);
+        }
+
         return true;
       }
 
       return false;
-
     } catch (error) {
-      console.error('Error deleting chotkho:', error);
-      this.showErrorMessage('Lỗi khi xóa chốt kho');
+      console.error('Error deleting chotkho with details:', error);
+      this.showErrorMessage('Lỗi khi xóa chốt kho và chi tiết');
       return false;
     } finally {
       this.isLoading.set(false);
     }
   }
 
-  async addChotkhoDetail(chotkhoId: string, detailData: ChotkhodetailCreateData): Promise<boolean> {
+  async addChotkhoDetail(
+    chotkhoId: string,
+    detailData: ChotkhodetailCreateData
+  ): Promise<boolean> {
     try {
       const data = {
         ...detailData,
@@ -527,7 +616,7 @@ export class ChotkhoService {
           detailData.sltonhethong || 0,
           detailData.sltonthucte || 0,
           detailData.slhuy || 0
-        )
+        ),
       };
 
       const result = await this.graphqlService.createOne(
@@ -542,8 +631,8 @@ export class ChotkhoService {
             slhuy: true,
             chenhlech: true,
             ghichu: true,
-            chotkhoId: true
-          }
+            chotkhoId: true,
+          },
         }
       );
 
@@ -554,7 +643,6 @@ export class ChotkhoService {
       }
 
       return false;
-
     } catch (error) {
       console.error('Error adding chotkho detail:', error);
       this.showErrorMessage('Lỗi khi thêm chi tiết chốt kho');
@@ -562,17 +650,87 @@ export class ChotkhoService {
     }
   }
 
-  calculateChenhLech(sltonhethong: number, sltonthucte: number, slhuy: number): number {
+  async deleteChotkhoDetail(
+    detailId: string,
+    chotkhoId: string
+  ): Promise<boolean> {
+    try {
+      // Lấy thông tin detail trước khi xóa để hiển thị trong confirm
+      const detailData = await this.graphqlService.findUnique(
+        this.detailModelName,
+        { id: detailId },
+        {
+          include: {
+            sanpham: {
+              select: {
+                title: true,
+                masp: true,
+              },
+            },
+          },
+        }
+      );
+
+      if (!detailData) {
+        this.showErrorMessage('Không tìm thấy chi tiết cần xóa');
+        return false;
+      }
+
+      // Xác nhận xóa detail
+      const confirmMessage = `
+        Bạn có chắc muốn xóa chi tiết này không?
+        
+        📦 Sản phẩm: ${detailData.sanpham?.title || 'N/A'}
+        🔢 Mã SP: ${detailData.sanpham?.masp || 'N/A'}
+        📊 SL tồn hệ thống: ${detailData.sltonhethong || 0}
+        📊 SL tồn thực tế: ${detailData.sltonthucte || 0}
+        📊 SL hủy: ${detailData.slhuy || 0}
+        
+        ⚠️ Không thể khôi phục sau khi xóa!
+      `.trim();
+
+      const confirmed = window.confirm(confirmMessage);
+
+      if (!confirmed) {
+        return false;
+      }
+
+      const result = await this.graphqlService.deleteOne(this.detailModelName, {
+        id: detailId,
+      });
+
+      if (result) {
+        this.showSuccessMessage('Xóa chi tiết thành công');
+        // Refresh the chotkho details
+        await this.getChotkhoById(chotkhoId);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error deleting chotkho detail:', error);
+      this.showErrorMessage('Lỗi khi xóa chi tiết chốt kho');
+      return false;
+    }
+  }
+
+  calculateChenhLech(
+    sltonhethong: number,
+    sltonthucte: number,
+    slhuy: number
+  ): number {
     return sltonhethong - sltonthucte - slhuy;
   }
 
   generateChotkhoCode(): string {
     const now = new Date();
-    const dateStr = now.getFullYear().toString().substr(-2) + 
-                   (now.getMonth() + 1).toString().padStart(2, '0') + 
-                   now.getDate().toString().padStart(2, '0');
-    const timeStr = now.getHours().toString().padStart(2, '0') + 
-                   now.getMinutes().toString().padStart(2, '0');
+    const dateStr =
+      now.getFullYear().toString().substr(-2) +
+      (now.getMonth() + 1).toString().padStart(2, '0') +
+      now.getDate().toString().padStart(2, '0');
+    const timeStr =
+      now.getHours().toString().padStart(2, '0') +
+      now.getMinutes().toString().padStart(2, '0');
     return `CK${dateStr}${timeStr}`;
   }
 
@@ -595,7 +753,7 @@ export class ChotkhoService {
       duration: 3000,
       horizontalPosition: 'center',
       verticalPosition: 'top',
-      panelClass: ['snackbar-success']
+      panelClass: ['snackbar-success'],
     });
   }
 
@@ -604,12 +762,12 @@ export class ChotkhoService {
       duration: 5000,
       horizontalPosition: 'center',
       verticalPosition: 'top',
-      panelClass: ['snackbar-error']
+      panelClass: ['snackbar-error'],
     });
   }
 
   // Additional methods used by listchotkho component (placeholder implementations)
-  
+
   async getUpdatedCodeIds(): Promise<void> {
     // Placeholder - implement code ID updates if needed
     console.log('getUpdatedCodeIds - implement if needed');
@@ -626,7 +784,7 @@ export class ChotkhoService {
     // Placeholder - implement statistics if needed
     return {
       total: this.ListChotkho().length,
-      active: this.ListChotkho().filter(item => item.isActive).length
+      active: this.ListChotkho().filter((item) => item.isActive).length,
     };
   }
 
@@ -699,10 +857,12 @@ export class ChotkhoService {
     `;
 
     try {
-      const response = await firstValueFrom(this.apollo.query<{ chotkhoGetAllWarehouses: any }>({
-        query,
-        fetchPolicy: 'cache-first'
-      }));
+      const response = await firstValueFrom(
+        this.apollo.query<{ chotkhoGetAllWarehouses: any }>({
+          query,
+          fetchPolicy: 'cache-first',
+        })
+      );
       return response.data.chotkhoGetAllWarehouses || [];
     } catch (error) {
       console.error('Error getting warehouses:', error);
@@ -719,11 +879,13 @@ export class ChotkhoService {
     `;
 
     try {
-      const response = await firstValueFrom(this.apollo.query<{ chotkhoGetProductsByWarehouse: any }>({
-        query,
-        variables: { khoId },
-        fetchPolicy: 'cache-first'
-      }));
+      const response = await firstValueFrom(
+        this.apollo.query<{ chotkhoGetProductsByWarehouse: any }>({
+          query,
+          variables: { khoId },
+          fetchPolicy: 'cache-first',
+        })
+      );
       return response.data.chotkhoGetProductsByWarehouse || [];
     } catch (error) {
       console.error('Error getting products by warehouse:', error);
@@ -740,10 +902,12 @@ export class ChotkhoService {
     `;
 
     try {
-      const response = await firstValueFrom(this.apollo.query<{ chotkhoGetAllProducts: any }>({
-        query,
-        fetchPolicy: 'cache-first'
-      }));
+      const response = await firstValueFrom(
+        this.apollo.query<{ chotkhoGetAllProducts: any }>({
+          query,
+          fetchPolicy: 'cache-first',
+        })
+      );
       return response.data.chotkhoGetAllProducts || [];
     } catch (error) {
       console.error('Error getting all products:', error);

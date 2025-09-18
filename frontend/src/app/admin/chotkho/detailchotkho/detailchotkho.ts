@@ -151,6 +151,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
           this._ListChotkhoComponent.drawer.close();
         }
         if(id === 'new'){
+          this.loadNewSanphamList(); // Load products for new chotkho
           const newChotkhoData = { 
             title: 'Chốt Kho Ngày ' + new Date().toLocaleDateString(),
             ngaychot: new Date(),
@@ -170,10 +171,10 @@ import { SanphamService } from '../../sanpham/sanpham.service';
             // console.log('Loading chotkho by id:', id);
             await this._ChotkhoService.getChotkhoById(id);
             // The effect will handle updating this.DetailChotkho when service data changes
-            
+            await this.loadSanphamList();
             // Debug: Check if service data is loaded correctly
             setTimeout(() => {
-              const serviceData = this._ChotkhoService.DetailChotkho();
+             const serviceData = this._ChotkhoService.DetailChotkho();
              console.log('Service data after load:', serviceData);
              console.log('Component data after load:', this.DetailChotkho());
              console.log('DataSource data after load:', this.dataSource().data);
@@ -182,7 +183,6 @@ import { SanphamService } from '../../sanpham/sanpham.service';
             this._router.navigate(['/admin/chotkho', id]);
         }   
         // Load sanpham list for product selection
-        await this.loadSanphamList();
     }
 
     async handleChotkhoAction() {
@@ -292,6 +292,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
     detailDisplayedColumns: string[] = ['sanpham', 'sltonhethong', 'sltonthucte', 'slhuy', 'chenhlech', 'actions'];
 
     removeDetail(detail: any) {
+      // Chỉ remove khỏi local array (cho unsaved details)
       const currentDetails = this.DetailChotkho().details || [];
       const updatedDetails = currentDetails.filter((d: any) => d !== detail);
       
@@ -299,6 +300,39 @@ import { SanphamService } from '../../sanpham/sanpham.service';
         ...v,
         details: updatedDetails
       }));
+    }
+
+    async deleteDetailFromDatabase(detail: any) {
+      // Xóa detail đã lưu từ database
+      try {
+        if (detail.id && this.DetailChotkho().id) {
+          const success = await this._ChotkhoService.deleteChotkhoDetail(
+            detail.id, 
+            this.DetailChotkho().id
+          );
+          
+          if (success) {
+            // Service đã refresh data, không cần update local state
+            this._snackBar.open('Xóa chi tiết thành công', '', {
+              duration: 1000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-success'],
+            });
+          }
+        } else {
+          // Nếu không có ID, chỉ remove khỏi local array
+          this.removeDetail(detail);
+        }
+      } catch (error) {
+        console.error('Lỗi khi xóa chi tiết:', error);
+        this._snackBar.open('Lỗi khi xóa chi tiết', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
     }
 
     updateChenhLech(detail: any) {
@@ -331,6 +365,46 @@ import { SanphamService } from '../../sanpham/sanpham.service';
     }
 
     // SearchFilter methods (similar to banggia pattern)
+    async loadNewSanphamList() {
+      try {
+        // Load all products with tonkho information (no warehouse filter needed)
+        const products = await this._ChotkhoService.getAllProducts();
+        console.log('Loaded products for new chotkho:', products);
+        
+        const allProducts = products.map((product:any) => ({
+          id: product.id,
+          sanphamId: product.id,
+          title: product.title,
+          masp: product.masp,
+          dvt: product.dvt,
+          sltonhethong: product.tonkho?.slton || 0,
+          sltonthucte: product.tonkho?.sltinhthucte || 0,
+          slhuy: product.tonkho?.slhuy || 0,
+          chenhlech: (product.tonkho?.slton || 0) - (product.tonkho?.sltinhthucte || 0) - (product.slhuy || 0),
+          dongia: product.dongia
+        }));
+        
+        // Set ListSanpham to all products
+        this.ListSanpham = allProducts;
+        this.filterSanpham = this.ListSanpham.filter((item: any) =>
+          !this.ListFilter.find((selected: any) => selected.id === item.id)
+        );
+        // Update available products (excluding already selected ones)
+        this.updateAvailableProducts();
+
+        // console.log('Loaded products:', products);
+        // console.log('Loaded ListSanpham:', this.ListSanpham.length);
+        // console.log('Current ListFilter:', this.ListFilter.length);
+        // console.log('Available products (filterSanpham):', this.filterSanpham.length);
+
+      } catch (error) {
+        console.error('Error loading sanpham list:', error);
+        this._snackBar.open('Lỗi khi tải danh sách sản phẩm', 'Đóng', { 
+          duration: 3000,
+          panelClass: ['snackbar-error']
+        });
+      }
+    }
     async loadSanphamList() {
       try {
         // Load all products with tonkho information (no warehouse filter needed)
@@ -341,10 +415,10 @@ import { SanphamService } from '../../sanpham/sanpham.service';
           title: product.title,
           masp: product.masp,
           dvt: product.dvt,
-          sltonhethong: product.tonkho?.slton || 0,
-          sltonthucte: product.tonkho?.sltinhthucte || 0,
-          slhuy: product.tonkho?.slhuy || 0,
-          chenhlech: (product.tonkho?.slton || 0) - (product.tonkho?.sltinhthucte || 0) - (product.tonkho?.slhuy || 0),
+          sltonhethong: product.sltonhethong || 0,
+          sltonthucte: product.sltonthucte || 0,
+          slhuy: product.slhuy || 0,
+          chenhlech: (product.sltonhethong || 0) - (product.sltonthucte || 0) - (product.slhuy || 0),
           dongia: product.dongia
         }));
         
