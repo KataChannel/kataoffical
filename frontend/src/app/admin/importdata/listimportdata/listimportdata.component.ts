@@ -573,6 +573,7 @@ export class ListImportdataComponent implements OnInit {
                 sldat: Number(sp.sldat) || 0,
                 slgiao: Number(sp.slgiao) || 0,
                 slnhan: Number(sp.slnhan) || 0,
+                gianhap: Number(sp.gianhap) || 0,
                 ghichu: sp.ghichu,
                 makho: record?.kho?.makho || '',
               }));
@@ -588,6 +589,7 @@ export class ListImportdataComponent implements OnInit {
                 sldat: 0,
                 slgiao: 0,
                 slnhan: 0,
+                gianhap:0,
                 ghichu: '',
                 makho: '',
               },
@@ -1685,6 +1687,7 @@ export class ListImportdataComponent implements OnInit {
           sldat: Number(v.sldat),
           slgiao: Number(v.sldat),
           slnhan: Number(v.sldat),
+          gianhap: Number(v.gianhap),
           ghichu: v.ghichu,
         }));
 

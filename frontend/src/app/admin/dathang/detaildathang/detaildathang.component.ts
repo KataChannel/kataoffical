@@ -330,14 +330,16 @@ export class DetailDathangComponent {
 
   @Debounce(100)
   async DoFindNhacungcap(event: any) {
-    const value = event.target.value.trim().toLowerCase();
+    const value = event.target.value.trim();
     if( !value) {
-      await this._NhacungcapService.getNhacungcapBy({})
+      // await this._NhacungcapService.getNhacungcapBy({})
       this.filterNhacungcap = this.ListNhacungcap()
       return;
     }
-    await this._NhacungcapService.getNhacungcapBy({name:value})
-    this.filterNhacungcap = this.ListNhacungcap()
+    
+    this.filterNhacungcap = this.ListNhacungcap().filter((v:any)=>{
+        return removeVietnameseAccents(v.name).includes(removeVietnameseAccents(value))
+    })
   }
   DoFindBanggia(event: any) {
     const query = event.target.value.toLowerCase();

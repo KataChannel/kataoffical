@@ -1311,7 +1311,7 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
     const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
     
     // Add company logo image
-    this.addLogoToWorksheet(worksheet, workbook);
+    // this.addLogoToWorksheet(worksheet, workbook);
     
     // Set column widths
     const columnWidths = [
