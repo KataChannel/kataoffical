@@ -106,7 +106,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
             this.updateAvailableProducts();
           }
           
-          console.log('DetailChotkho updated from service:', serviceDetail);
+          // console.log('DetailChotkho updated from service:', serviceDetail);
         }
       });
     }
@@ -153,8 +153,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
         }
         if(id === 'new'){
           const newChotkhoData = { 
-            id: undefined,
-            title: '',
+            title: 'Chốt Kho Ngày ' + new Date().toLocaleDateString(),
             ngaychot: new Date(),
             ghichu: '',
             khoId: '',
@@ -432,10 +431,10 @@ import { SanphamService } from '../../sanpham/sanpham.service';
         // Update available products (excluding already selected ones)
         this.updateAvailableProducts();
 
-        console.log('Loaded products:', products);
-        console.log('Loaded ListSanpham:', this.ListSanpham.length);
-        console.log('Current ListFilter:', this.ListFilter.length);
-        console.log('Available products (filterSanpham):', this.filterSanpham.length);
+        // console.log('Loaded products:', products);
+        // console.log('Loaded ListSanpham:', this.ListSanpham.length);
+        // console.log('Current ListFilter:', this.ListFilter.length);
+        // console.log('Available products (filterSanpham):', this.filterSanpham.length);
 
       } catch (error) {
         console.error('Error loading sanpham list:', error);

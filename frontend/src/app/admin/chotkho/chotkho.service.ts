@@ -152,6 +152,8 @@ export class ChotkhoService {
           }
         }
       );
+      console.log('Created chotkho master record:', masterResult);
+      
 
       if (!masterResult || !masterResult.id) {
         this.showErrorMessage('Lỗi khi tạo chốt kho');
@@ -160,6 +162,8 @@ export class ChotkhoService {
 
       if (data.details && data.details.length > 0) {
         for (const detail of data.details) {
+          console.log('Creating detail record:', detail);
+          
           const detailData = {
             chotkhoId: masterResult.id,
             sanphamId: detail.sanphamId,
