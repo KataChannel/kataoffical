@@ -57,6 +57,26 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
             throw error;
         }
     }
+    async findFirst(modelName, info, where, orderBy, include, select) {
+        const sanitizedArgs = {
+            where,
+            orderBy,
+            include,
+            select,
+        };
+        console.log(`🥇 Enhanced findFirst query:`, {
+            model: modelName,
+            hasWhere: !!where,
+            hasOrderBy: !!orderBy,
+        });
+        try {
+            return await this.enhancedService.findFirst(modelName, sanitizedArgs, info);
+        }
+        catch (error) {
+            console.error(`❌ Enhanced findFirst error:`, error);
+            throw error;
+        }
+    }
     async createOne(modelName, data, info, include, select) {
         const sanitizedArgs = {
             data: data || {},
@@ -296,6 +316,41 @@ __decorate([
     __metadata("design:paramtypes", [String, Object, Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], EnhancedUniversalResolver.prototype, "findUnique", null);
+__decorate([
+    (0, graphql_1.Query)(() => graphql_type_json_1.GraphQLJSON, {
+        name: 'findFirst',
+        nullable: true,
+        description: 'Enhanced dynamic findFirst with field selection and ordering',
+    }),
+    __param(0, (0, graphql_1.Args)('modelName', {
+        type: () => String,
+        description: 'Model name (case-insensitive)',
+    })),
+    __param(1, (0, graphql_1.Info)()),
+    __param(2, (0, graphql_1.Args)('where', {
+        type: () => graphql_type_json_1.GraphQLJSON,
+        nullable: true,
+        description: 'Filter conditions',
+    })),
+    __param(3, (0, graphql_1.Args)('orderBy', {
+        type: () => graphql_type_json_1.GraphQLJSON,
+        nullable: true,
+        description: 'Sort conditions',
+    })),
+    __param(4, (0, graphql_1.Args)('include', {
+        type: () => graphql_type_json_1.GraphQLJSON,
+        nullable: true,
+        description: 'Relations to include',
+    })),
+    __param(5, (0, graphql_1.Args)('select', {
+        type: () => graphql_type_json_1.GraphQLJSON,
+        nullable: true,
+        description: 'Specific fields to select',
+    })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object, Object, Object, Object]),
+    __metadata("design:returntype", Promise)
+], EnhancedUniversalResolver.prototype, "findFirst", null);
 __decorate([
     (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
         name: 'createOne',

@@ -17,6 +17,8 @@ const common_1 = require("@nestjs/common");
 const phieukho_service_1 = require("./phieukho.service");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
+const cache_interceptor_1 = require("../common/cache.interceptor");
+const smart_cache_decorator_1 = require("../common/smart-cache.decorator");
 let PhieukhoController = class PhieukhoController {
     constructor(phieukhoService) {
         this.phieukhoService = phieukhoService;
@@ -47,6 +49,11 @@ exports.PhieukhoController = PhieukhoController;
 __decorate([
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Create Phieukho', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['phieukho', 'kho'],
+        get: { ttl: 600, keyPrefix: 'phieukho' },
+        updateCache: true
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -54,6 +61,7 @@ __decorate([
 ], PhieukhoController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, cache_interceptor_1.Cache)(600, 'phieukho'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
@@ -61,6 +69,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('xuatnhapton'),
     (0, audit_decorator_1.Audit)({ entity: 'Xuat Nhap Ton', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['phieukho', 'kho', 'sanpham']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -69,6 +78,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('adjustment'),
     (0, audit_decorator_1.Audit)({ entity: 'Create Adjustment Phieukho', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['phieukho', 'kho', 'sanpham']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -76,6 +86,7 @@ __decorate([
 ], PhieukhoController.prototype, "createAdjustment", null);
 __decorate([
     (0, common_1.Get)('findid/:id'),
+    (0, cache_interceptor_1.Cache)(600, 'phieukho'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -84,6 +95,11 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Update Phieukho', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['phieukho', 'kho'],
+        get: { ttl: 600, keyPrefix: 'phieukho' },
+        updateCache: true
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -93,6 +109,7 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Remove Phieukho', action: client_1.AuditAction.DELETE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['phieukho', 'kho']),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

@@ -116,6 +116,24 @@ const FIND_UNIQUE_QUERY = gql`
   }
 `;
 
+const FIND_FIRST_QUERY = gql`
+  query FindFirst(
+    $modelName: String!
+    $where: JSON
+    $orderBy: JSON
+    $include: JSON
+    $select: JSON
+  ) {
+    findFirst(
+      modelName: $modelName
+      where: $where
+      orderBy: $orderBy
+      include: $include
+      select: $select
+    )
+  }
+`;
+
 const CREATE_ONE_MUTATION = gql`
   mutation CreateOne(
     $modelName: String!
@@ -492,6 +510,57 @@ export class GraphqlService {
       return data;
     } catch (error) {
       this.trackError(error, 'findUnique');
+      throw error;
+    } finally {
+      this.setLoading(loadingKey, false);
+    }
+  }
+
+  async findFirst<T = any>(
+    modelName: string,
+    options: { 
+      where?: any; 
+      orderBy?: any;
+      include?: any; 
+      select?: any;
+    } = {}
+  ): Promise<T | null> {
+    const startTime = Date.now();
+    const cacheKey = this.generateCacheKey('findFirst', { modelName, ...options });
+    const loadingKey = `findFirst_${modelName}`;
+
+    // Check cache first
+    const cachedData = this.getFromCache<T>(cacheKey);
+    if (cachedData) {
+      this.trackPerformance('findFirst', startTime, true, 1, modelName);
+      return cachedData;
+    }
+
+    this.setLoading(loadingKey, true);
+
+    const variables = {
+      modelName,
+      where: options.where,
+      orderBy: options.orderBy,
+      include: options.include,
+      select: options.select
+    };
+
+    try {
+      const result = await firstValueFrom(
+        this.apollo.query<{ findFirst: T }>({
+          query: FIND_FIRST_QUERY,
+          variables,
+          fetchPolicy: 'cache-first'
+        })
+      );
+
+      const data = result.data.findFirst;
+      this.setCache(cacheKey, data);
+      this.trackPerformance('findFirst', startTime, false, data ? 1 : 0, modelName);
+      return data;
+    } catch (error) {
+      this.trackError(error, 'findFirst');
       throw error;
     } finally {
       this.setLoading(loadingKey, false);
@@ -1421,6 +1490,13 @@ export class GraphqlService {
     return await this.findUnique('sanpham', { id });
   }
 
+  async getFirstSanpham(options: { where?: any; orderBy?: any; include?: any; select?: any } = {}): Promise<any> {
+    return await this.findFirst('sanpham', {
+      orderBy: { createdAt: 'desc' },
+      ...options
+    });
+  }
+
   // Khachhang methods
   async getKhachhangList(options: OptimizedFindManyOptions = {}): Promise<any[]> {
     return await this.findMany('khachhang', {
@@ -1433,32 +1509,48 @@ export class GraphqlService {
     return await this.findUnique('khachhang', { id });
   }
 
+  async getFirstKhachhang(options: { where?: any; orderBy?: any; include?: any; select?: any } = {}): Promise<any> {
+    return await this.findFirst('khachhang', {
+      orderBy: { createdAt: 'desc' },
+      ...options
+    });
+  }
+
   // Donhang methods
   async getDonhangList(options: OptimizedFindManyOptions = {}): Promise<any[]> {
     return await this.findMany('donhang', {
       orderBy: { createdAt: 'desc' },
-      include: {
-        khachhang: true,
-        donhangsanpham: {
-          include: {
-            sanpham: true
-          }
-        }
-      },
       ...options
     });
   }
 
   async getDonhangById(id: string | number): Promise<any> {
-    return await this.findUnique('donhang', { id }, {
-      include: {
-        khachhang: true,
-        donhangsanpham: {
-          include: {
-            sanpham: true
-          }
-        }
-      }
+    return await this.findUnique('donhang', { id });
+  }
+
+  async getFirstDonhang(options: { where?: any; orderBy?: any; include?: any; select?: any } = {}): Promise<any> {
+    return await this.findFirst('donhang', {
+      orderBy: { createdAt: 'desc' },
+      ...options
+    });
+  }
+
+  // Nhomkhachhang methods
+  async getNhomkhachhangList(options: OptimizedFindManyOptions = {}): Promise<any[]> {
+    return await this.findMany('nhomkhachhang', {
+      orderBy: { ten: 'asc' },
+      ...options
+    });
+  }
+
+  async getNhomkhachhangById(id: string | number): Promise<any> {
+    return await this.findUnique('nhomkhachhang', { id });
+  }
+
+  async getFirstNhomkhachhang(options: { where?: any; orderBy?: any; include?: any; select?: any } = {}): Promise<any> {
+    return await this.findFirst('nhomkhachhang', {
+      orderBy: { createdAt: 'desc' },
+      ...options
     });
   }
 

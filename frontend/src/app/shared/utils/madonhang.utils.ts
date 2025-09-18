@@ -40,3 +40,34 @@ export function DonhangnumberToCode(number:any) {
   // Tạo mã
   return `TG-${firstLetter}${secondLetter}${numStr}`;
 }
+export function DynamicnumberToCode(prefix: any, number: any, hasString: boolean) {
+  // Kiểm tra số thứ tự hợp lệ
+  if (number < 1 || number > 676 * 99999) {
+    throw new Error("Số thứ tự không hợp lệ");
+  }
+
+  // Trừ 1 vì số thứ tự bắt đầu từ 1
+  number -= 1;
+
+  if (hasString) {
+    // Trường hợp có chuỗi ký tự (như TG-XXYYYYY)
+    const letterValue = Math.floor(number / 99999);
+    const numValue = (number % 99999) + 1;
+
+    // Chuyển phần chữ cái thành hai chữ cái
+    const firstLetter = String.fromCharCode(65 + Math.floor(letterValue / 26));
+    const secondLetter = String.fromCharCode(65 + (letterValue % 26));
+
+    // Định dạng phần số với 5 chữ số
+    const numStr = numValue.toString().padStart(5, '0');
+
+    // Tạo mã với prefix-XXYYYYY
+    return `${prefix}-${firstLetter}${secondLetter}${numStr}`;
+  } else {
+    // Trường hợp chỉ có số (như TG-YYYYY)
+    const numStr = (number + 1).toString().padStart(5, '0');
+    
+    // Tạo mã với prefix-YYYYY
+    return `${prefix}-${numStr}`;
+  }
+}

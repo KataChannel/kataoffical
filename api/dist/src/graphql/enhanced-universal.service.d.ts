@@ -25,6 +25,12 @@ export declare class EnhancedUniversalService {
         include?: any;
         select?: any;
     }, info?: GraphQLResolveInfo): Promise<any>;
+    findFirst(modelName: string, args: {
+        where?: any;
+        orderBy?: any;
+        include?: any;
+        select?: any;
+    }, info?: GraphQLResolveInfo): Promise<any>;
     create(modelName: string, args: {
         data: any;
         include?: any;

@@ -178,6 +178,70 @@ export class EnhancedUniversalService {
   }
 
   /**
+   * Dynamic findFirst with field selection optimization and ordering
+   */
+  async findFirst(
+    modelName: string,
+    args: {
+      where?: any;
+      orderBy?: any;
+      include?: any;
+      select?: any;
+    },
+    info?: GraphQLResolveInfo
+  ) {
+    console.log(`🥇 Enhanced findFirst for ${modelName}:`, {
+      hasWhere: !!args.where,
+      hasOrderBy: !!args.orderBy,
+      whereFields: args.where ? Object.keys(args.where) : [],
+      hasCustomSelect: !!args.select,
+      hasCustomInclude: !!args.include
+    });
+
+    try {
+      // ⚡ Check Redis cache first
+      const cacheKey = this.generateCacheKey('findFirst', modelName, args);
+      const cachedResult = await this.redisService.read(cacheKey);
+      
+      if (cachedResult) {
+        console.log(`🥇 GraphQL cache hit for findFirst ${modelName}`);
+        return cachedResult;
+      }
+
+      const model = this.getModel(modelName);
+      
+      // Chuẩn hóa date filters trong where
+      const normalizedWhere = args.where ? this.normalizeDateFilters(modelName, args.where) : undefined;
+      const normalizedArgs = { ...args, where: normalizedWhere };
+      
+      const queryOptions = await this.buildOptimizedQuery(modelName, normalizedArgs, info);
+      
+      const startTime = Date.now();
+      const result = await model.findFirst(queryOptions);
+      const queryTime = Date.now() - startTime;
+
+      // 💾 Cache successful results  
+      if (result) {
+        const ttl = this.getCacheTTL(modelName);
+        await this.redisService.create(cacheKey, result, ttl);
+        console.log(`💾 GraphQL cached findFirst ${modelName} for ${ttl}s`);
+      }
+      
+      console.log(`✅ ${modelName} findFirst completed:`, {
+        found: !!result,
+        queryTime: `${queryTime}ms`,
+        hasOrderBy: !!args.orderBy
+      });
+
+      return result;
+      
+    } catch (error) {
+      console.error(`❌ Enhanced findFirst error for ${modelName}:`, error);
+      throw new Error(`Failed to find first ${modelName}: ${error.message}`);
+    }
+  }
+
+  /**
    * Dynamic create with optimized response
    */
   async create(
@@ -216,8 +280,9 @@ export class EnhancedUniversalService {
       const result = await model.create(createOptions);
       const queryTime = Date.now() - startTime;
       
-      // Clear related caches
+      // Clear related caches - both DataLoader and Redis cache
       this.dataLoader.clearLoaderCache(modelName);
+      await this.invalidateCache(modelName);
       
       // console.log(`✅ ${modelName} create completed:`, {
       //   id: result.id,
@@ -300,8 +365,9 @@ export class EnhancedUniversalService {
       const result = await model.update(updateOptions);
       const queryTime = Date.now() - startTime;
       
-      // Clear related caches
+      // Clear related caches - both DataLoader and Redis cache
       this.dataLoader.clearLoaderCache(modelName);
+      await this.invalidateCache(modelName);
       
       // console.log(`✅ ${modelName} update completed:`, {
       //   id: result.id,
@@ -338,8 +404,9 @@ export class EnhancedUniversalService {
       });
       const queryTime = Date.now() - startTime;
       
-      // Clear related caches
+      // Clear related caches - both DataLoader and Redis cache
       this.dataLoader.clearLoaderCache(modelName);
+      await this.invalidateCache(modelName);
       
       // console.log(`✅ ${modelName} delete completed:`, {
       //   id: result.id,
@@ -351,6 +418,10 @@ export class EnhancedUniversalService {
     } catch (error) {
       // Handle the case where the record doesn't exist
       if (error.code === 'P2025' || error.message.includes('No record was found for a delete')) {
+        // Clear related caches even for delete not found cases
+        this.dataLoader.clearLoaderCache(modelName);
+        await this.invalidateCache(modelName);
+        
         console.log(`✅ Delete operation handled gracefully - Record not found in ${modelName}:`, {
           where: args.where,
           message: 'Record already deleted or not found, goal achieved'

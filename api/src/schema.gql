@@ -215,6 +215,24 @@ type Query {
   testSelectQuery(modelName: String! = "dathang"): JSON!
   getAvailableModels: [String!]!
 
+  """Enhanced dynamic findFirst with field selection and ordering"""
+  findFirst(
+    """Model name (case-insensitive)"""
+    modelName: String!
+
+    """Filter conditions"""
+    where: JSON
+
+    """Sort conditions"""
+    orderBy: JSON
+
+    """Relations to include"""
+    include: JSON
+
+    """Specific fields to select"""
+    select: JSON
+  ): JSON
+
   """Get metadata about a model for optimization"""
   modelMetadata(
     """Model name to get metadata for"""

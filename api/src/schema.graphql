@@ -20,6 +20,14 @@ type Query {
     select: JSON
   ): JSON
 
+  findFirst(
+    modelName: String!
+    where: JSON
+    orderBy: JSON
+    include: JSON
+    select: JSON
+  ): JSON
+
   # Performance monitoring
   modelMetadata(modelName: String!): JSON
   

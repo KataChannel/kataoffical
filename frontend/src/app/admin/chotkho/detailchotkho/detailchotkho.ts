@@ -195,8 +195,10 @@ import { SanphamService } from '../../sanpham/sanpham.service';
     }
     private async createChotkho() {
       try {
-        const chotkhoData = this.DetailChotkho();
-        await this._ChotkhoService.createChotkhoWithDetails(chotkhoData);        
+        const chotkhoData = this.DetailChotkho();   
+        const result = await this._ChotkhoService.createChotkhoWithDetails(chotkhoData); 
+        console.log(result);
+        if(result && result.id){this._router.navigate(['/admin/chotkho', result.id])}
         this._snackBar.open('Tạo chốt kho thành công', '', {
           duration: 1000,
           horizontalPosition: 'end',
@@ -249,7 +251,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
         const chotkhoData = this.DetailChotkho();
         if (chotkhoData?.id) {
           await this._ChotkhoService.deleteChotkho(chotkhoData.id);
-          
+
           this._snackBar.open('Xóa thành công', '', {
             duration: 1000,
             horizontalPosition: 'end',

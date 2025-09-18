@@ -164,6 +164,74 @@ export class EnhancedUniversalResolver {
     }
   }
 
+  @Query(() => GraphQLJSON, {
+    name: 'findFirst',
+    nullable: true,
+    description:
+      'Enhanced dynamic findFirst with field selection and ordering',
+  })
+  async findFirst(
+    @Args('modelName', {
+      type: () => String,
+      description: 'Model name (case-insensitive)',
+    })
+    modelName: string,
+
+    @Info() info: GraphQLResolveInfo,
+
+    @Args('where', {
+      type: () => GraphQLJSON,
+      nullable: true,
+      description: 'Filter conditions',
+    })
+    where?: any,
+
+    @Args('orderBy', {
+      type: () => GraphQLJSON,
+      nullable: true,
+      description: 'Sort conditions',
+    })
+    orderBy?: any,
+
+    @Args('include', {
+      type: () => GraphQLJSON,
+      nullable: true,
+      description: 'Relations to include',
+    })
+    include?: any,
+
+    @Args('select', {
+      type: () => GraphQLJSON,
+      nullable: true,
+      description: 'Specific fields to select',
+    })
+    select?: any,
+  ) {
+    const sanitizedArgs = {
+      where,
+      orderBy,
+      include,
+      select,
+    };
+
+    console.log(`🥇 Enhanced findFirst query:`, {
+      model: modelName,
+      hasWhere: !!where,
+      hasOrderBy: !!orderBy,
+    });
+
+    try {
+      return await this.enhancedService.findFirst(
+        modelName,
+        sanitizedArgs,
+        info,
+      );
+    } catch (error) {
+      console.error(`❌ Enhanced findFirst error:`, error);
+      throw error;
+    }
+  }
+
   @Mutation(() => GraphQLJSON, {
     name: 'createOne',
     description: 'Enhanced dynamic create with optimized response',

@@ -4,6 +4,8 @@ import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiR
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; // Giả sử đường dẫn này là cố định
 import { AuditAction } from '@prisma/client';
 import { Audit } from 'src/auditlog/audit.decorator';
+import { Cache, CacheInvalidate } from '../common/cache.interceptor';
+import { SmartCache } from '../common/smart-cache.decorator';
 
 @ApiTags('permission')
 @Controller('permission')
@@ -18,6 +20,11 @@ export class PermissionController {
     entity: 'Permission',
     action: AuditAction.CREATE,
     includeResponse: true,
+  })
+  @SmartCache({
+    invalidate: ['permission'],
+    get: { ttl: 3600, keyPrefix: 'permission' },
+    updateCache: true
   })
   async create(@Body() data: any) {
     try {
@@ -44,6 +51,7 @@ export class PermissionController {
   @ApiResponse({ status: 200, description: 'List of permissions with pagination info' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get()
+  @Cache(3600, 'permission')
   async findAll(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
@@ -71,6 +79,7 @@ export class PermissionController {
 
   @ApiOperation({ summary: 'Get last updated permission' })
   @Get('lastupdated')
+  @Cache(300, 'permission')
   async getLastUpdatedPermission() {
     try {
       return await this.permissionService.getLastUpdatedPermission();
@@ -82,6 +91,7 @@ export class PermissionController {
   @ApiOperation({ summary: 'Find permission by ID' })
   @ApiParam({ name: 'id', type: String })
   @Get('findid/:id')
+  @Cache(3600, 'permission')
   async findOne(@Param('id') id: string) {
     try {
       return await this.permissionService.findOne(id);
@@ -101,6 +111,11 @@ export class PermissionController {
     action: AuditAction.UPDATE,
     includeResponse: true,
   })
+  @SmartCache({
+    invalidate: ['permission'],
+    get: { ttl: 3600, keyPrefix: 'permission' },
+    updateCache: true
+  })
   async update(@Param('id') id: string, @Body() data: any) {
     try {
       return await this.permissionService.update(id, data);
@@ -119,6 +134,7 @@ export class PermissionController {
     action: AuditAction.DELETE,
     includeResponse: true,
   })
+  @CacheInvalidate(['permission'])
   async remove(@Param('id') id: string) {
     try {
       return await this.permissionService.remove(id);
@@ -136,6 +152,7 @@ export class PermissionController {
     },
   })
   @Post('reorder')
+  @CacheInvalidate(['permission'])
   async reorder(@Body() body: { permissionIds: string[] }) {
     try {
       return await this.permissionService.reorderPermissions(body.permissionIds);

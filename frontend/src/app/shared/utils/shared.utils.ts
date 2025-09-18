@@ -47,12 +47,14 @@ export function genMaDonhang(startNumber:any) {
   startNumber++;
   return code;
 }
-export function genMaChotkho(startNumber:any) {
+
+
+export function genDynamicCodeId(startNumber:any,prefix:any) {
   let code = startNumber.toString();
   while (code.length < 3) {
     code = "0" + code;
   }
-  code = "CHOTKHO-AA" + code;
+  code = prefix + code;
   startNumber++;
   return code;
 }

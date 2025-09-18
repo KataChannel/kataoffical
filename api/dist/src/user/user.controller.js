@@ -19,6 +19,8 @@ const auth_service_1 = require("../auth/auth.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
+const cache_interceptor_1 = require("../common/cache.interceptor");
+const smart_cache_decorator_1 = require("../common/smart-cache.decorator");
 let UserController = class UserController {
     constructor(userService, authService) {
         this.userService = userService;
@@ -53,6 +55,11 @@ exports.UserController = UserController;
 __decorate([
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Create User', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['users'],
+        get: { ttl: 1200, keyPrefix: 'users' },
+        updateCache: true
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -60,6 +67,7 @@ __decorate([
 ], UserController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, cache_interceptor_1.Cache)(1200, 'users'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
@@ -75,6 +83,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('assign'),
     (0, audit_decorator_1.Audit)({ entity: 'Assign Role to User', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['users', 'roles']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -83,6 +92,7 @@ __decorate([
 __decorate([
     (0, common_1.Delete)('remove'),
     (0, audit_decorator_1.Audit)({ entity: 'Remove Role from User', action: client_1.AuditAction.DELETE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['users', 'roles']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -90,6 +100,7 @@ __decorate([
 ], UserController.prototype, "removeRoleFromUser", null);
 __decorate([
     (0, common_1.Get)('findid/:id'),
+    (0, cache_interceptor_1.Cache)(1200, 'users'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -98,6 +109,11 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Update User', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['users'],
+        get: { ttl: 1200, keyPrefix: 'users' },
+        updateCache: true
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -107,6 +123,7 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Delete User', action: client_1.AuditAction.DELETE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['users']),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
