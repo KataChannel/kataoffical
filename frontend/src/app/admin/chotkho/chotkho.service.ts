@@ -175,19 +175,39 @@ export class ChotkhoService {
     try {
       this.isLoading.set(true);
       const newChotkho: any = await this.ChotkhoCodeId();
+      const currentUserId = data.userId || (await this.getCurrentUserId());
       
-      const masterData = {
+      // Prepare nested create data with master and details in one operation
+      const nestedCreateData = {
         ngaychot: data.ngaychot,
         title: data.title,
         ghichu: data.ghichu,
-        userId: data.userId || (await this.getCurrentUserId()),
+        userId: currentUserId,
         codeId: newChotkho.codeId,
         order: newChotkho.newOrder,
+        details: {
+          create: data.details && data.details.length > 0 
+            ? data.details.map((detail) => ({
+                sanphamId: detail.sanphamId,
+                userId: currentUserId,
+                sltonhethong: detail.sltonhethong || 0,
+                sltonthucte: detail.sltonthucte || 0,
+                slhuy: detail.slhuy || 0,
+                chenhlech: this.calculateChenhLech(
+                  detail.sltonhethong || 0,
+                  detail.sltonthucte || 0,
+                  detail.slhuy || 0
+                ),
+                ghichu: detail.ghichu || '',
+              }))
+            : []
+        }
       };
 
+      // Create master record with nested details in single transaction
       const masterResult = await this.graphqlService.createOne(
         this.modelName,
-        masterData,
+        nestedCreateData,
         {
           select: {
             id: true,
@@ -196,35 +216,8 @@ export class ChotkhoService {
             ghichu: true,
             userId: true,
             codeId: true,
-            details: true,
-          },
-        }
-      );
-      if (!masterResult || !masterResult.id) {
-        this.showErrorMessage('Lỗi khi tạo chốt kho');
-        return false;
-      }
-
-      if (data.details && data.details.length > 0) {
-        for (const detail of data.details) {
-          const detailData = {
-            chotkhoId: masterResult.id,
-            sanphamId: detail.sanphamId,
-            userId: data.userId || (await this.getCurrentUserId()),
-            sltonhethong: detail.sltonhethong || 0,
-            sltonthucte: detail.sltonthucte || 0,
-            slhuy: detail.slhuy || 0,
-            chenhlech: this.calculateChenhLech(
-              detail.sltonhethong || 0,
-              detail.sltonthucte || 0,
-              detail.slhuy || 0
-            ),
-            ghichu: detail.ghichu || '',
-          };
-          await this.graphqlService.createOne(
-            this.detailModelName,
-            detailData,
-            {
+            order: true,
+            details: {
               select: {
                 id: true,
                 sanphamId: true,
@@ -233,14 +226,26 @@ export class ChotkhoService {
                 slhuy: true,
                 chenhlech: true,
                 ghichu: true,
-              },
+              }
             }
-          );
+          },
         }
+      );
+
+      if (!masterResult || !masterResult.id) {
+        this.showErrorMessage('Lỗi khi tạo chốt kho');
+        return false;
       }
-
-
-      this.showSuccessMessage('Tạo chốt kho thành công');
+      masterResult.details.map(async (v:any)=>{
+        // Perform any necessary operations on each detail
+      await this.graphqlService.updateOne('tonkho',{sanphamId:v.sanphamId},{
+            slton: v.sltonthucte || 0 ,
+            sltontt: v.sltonthucte || 0 ,
+        })
+      });
+      console.log('Chốt kho đã được tạo thành công:', masterResult);
+      
+      this.showSuccessMessage(`Tạo chốt kho thành công với ${masterResult.details?.length || 0} chi tiết`);
       await this.getAllChotkho();
       return masterResult;
     } catch (error) {
@@ -250,8 +255,8 @@ export class ChotkhoService {
     } finally {
       this.isLoading.set(false);
     }
-  }
-
+  } 
+  
   async getAllChotkho(searchParam?: ChotkhoSearchParams): Promise<void> {
     try {
       this.isLoading.set(true);
@@ -307,19 +312,7 @@ export class ChotkhoService {
                 select: { name: true },
               },
             },
-          },
-          // details: {
-          //   include: {
-          //     sanpham: {
-          //       select: {
-          //         id: true,
-          //         title: true,
-          //         masp: true,
-          //         dvt: true
-          //       }
-          //     }
-          //   }
-          // }
+          }
         },
       });
 
@@ -387,8 +380,6 @@ export class ChotkhoService {
               sanpham: detail.sanpham,
             })) || [],
         };
-
-        console.log('Processed chotkho data:', processedResult);
         this.selectedChotkho.set(processedResult);
         this.DetailChotkho.set(processedResult);
         return processedResult;

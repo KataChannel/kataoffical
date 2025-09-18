@@ -175,9 +175,9 @@ import { SanphamService } from '../../sanpham/sanpham.service';
             // Debug: Check if service data is loaded correctly
             setTimeout(() => {
              const serviceData = this._ChotkhoService.DetailChotkho();
-             console.log('Service data after load:', serviceData);
-             console.log('Component data after load:', this.DetailChotkho());
-             console.log('DataSource data after load:', this.dataSource().data);
+            //  console.log('Service data after load:', serviceData);
+            //  console.log('Component data after load:', this.DetailChotkho());
+            //  console.log('DataSource data after load:', this.dataSource().data);
             }, 1000);         
             this._ListChotkhoComponent.drawer.open();
             this._router.navigate(['/admin/chotkho', id]);
@@ -197,7 +197,6 @@ import { SanphamService } from '../../sanpham/sanpham.service';
       try {
         const chotkhoData = this.DetailChotkho();   
         const result = await this._ChotkhoService.createChotkhoWithDetails(chotkhoData); 
-        console.log(result);
         if(result && result.id){this._router.navigate(['/admin/chotkho', result.id])}
         this._snackBar.open('Tạo chốt kho thành công', '', {
           duration: 1000,
@@ -368,9 +367,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
     async loadNewSanphamList() {
       try {
         // Load all products with tonkho information (no warehouse filter needed)
-        const products = await this._ChotkhoService.getAllProducts();
-        console.log('Loaded products for new chotkho:', products);
-        
+        const products = await this._ChotkhoService.getAllProducts();       
         const allProducts = products.map((product:any) => ({
           id: product.id,
           sanphamId: product.id,
@@ -488,8 +485,8 @@ import { SanphamService } from '../../sanpham/sanpham.service';
           !selectedIds.includes(product.id || product.sanphamId)
         );
         
-        console.log('Updated DetailChotkho:', this.DetailChotkho());
-        console.log('Updated ListSanpham (removed selected):', this.ListSanpham);
+        // console.log('Updated DetailChotkho:', this.DetailChotkho());
+        // console.log('Updated ListSanpham (removed selected):', this.ListSanpham);
 
         this._snackBar.open('Cập nhật sản phẩm thành công', '', {
           duration: 2000,
@@ -623,7 +620,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
         value = Number(numericValue) || 0;
       }
       
-      console.log(`Updating ${field} with value:`, value);
+      // console.log(`Updating ${field} with value:`, value);
       
       // Update DetailChotkho using immutable pattern
       this.DetailChotkho.update((currentChotkho: any) => {
@@ -658,7 +655,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
         return ds;
       });
       
-      console.log('Updated DetailChotkho:', this.DetailChotkho());
+      // console.log('Updated DetailChotkho:', this.DetailChotkho());
       
       // Show success message
       // this._snackBar.open(`Cập nhật ${field} thành công`, '', {
@@ -798,5 +795,8 @@ import { SanphamService } from '../../sanpham/sanpham.service';
     applyFilter(event: Event) {
       const filterValue = (event.target as HTMLInputElement).value;
       this.dataSource().filter = filterValue.trim().toLowerCase();
+    }
+    async ImportExcel(event: any) {
+
     }
   }

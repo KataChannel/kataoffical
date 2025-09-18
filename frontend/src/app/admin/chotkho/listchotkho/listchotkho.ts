@@ -58,13 +58,13 @@ export class ListChotkhoComponent implements OnInit {
     stt: '#',
     codeId: 'Mã chốt kho',
     title: 'Tiêu đề',
-    khoId: 'Kho',
+    // khoId: 'Kho',
     ngaychot: 'Ngày chốt',
     ghichu: 'Ghi chú',
-    isActive: 'Trạng thái',
+    // isActive: 'Trạng thái',
     createdAt: 'Ngày tạo',
-    order: 'Thứ tự',
-    details: 'Số SP'
+    // order: 'Thứ tự',
+    // details: 'Số SP'
   };
   FilterColumns: any[] = JSON.parse(localStorage.getItem('ChotkhoColFilter') || '[]');
   Columns: any[] = [];
