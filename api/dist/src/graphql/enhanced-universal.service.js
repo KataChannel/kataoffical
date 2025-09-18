@@ -162,9 +162,10 @@ let EnhancedUniversalService = class EnhancedUniversalService {
         try {
             const model = this.getModel(modelName);
             const normalizedData = this.normalizeDateFieldsForModel(modelName, args.data);
+            const finalData = this.normalizeRelationFieldsForModel(modelName, normalizedData);
             const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
             const createOptions = {
-                data: normalizedData,
+                data: finalData,
                 ...queryOptions
             };
             const startTime = Date.now();
@@ -506,6 +507,36 @@ let EnhancedUniversalService = class EnhancedUniversalService {
         const pattern = this.redisService.generateKey('graphql', '*', modelName, '*');
         await this.redisService.deletePattern(pattern);
         console.log(`🗑️ Invalidated GraphQL cache for ${modelName}`);
+    }
+    normalizeRelationFieldsForModel(modelName, data) {
+        if (!data || typeof data !== 'object')
+            return data;
+        const normalizedData = { ...data };
+        switch (modelName.toLowerCase()) {
+            case 'chotkhodetail':
+                if (normalizedData.chotkhoId && !normalizedData.chotkho) {
+                    normalizedData.chotkho = {
+                        connect: { id: normalizedData.chotkhoId }
+                    };
+                    delete normalizedData.chotkhoId;
+                }
+                if (normalizedData.sanphamId && !normalizedData.sanpham) {
+                    normalizedData.sanpham = {
+                        connect: { id: normalizedData.sanphamId }
+                    };
+                    delete normalizedData.sanphamId;
+                }
+                if (normalizedData.userId && !normalizedData.user) {
+                    normalizedData.user = {
+                        connect: { id: normalizedData.userId }
+                    };
+                    delete normalizedData.userId;
+                }
+                break;
+            default:
+                break;
+        }
+        return normalizedData;
     }
 };
 exports.EnhancedUniversalService = EnhancedUniversalService;

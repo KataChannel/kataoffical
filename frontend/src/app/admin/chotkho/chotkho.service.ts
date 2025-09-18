@@ -177,8 +177,7 @@ export class ChotkhoService {
               detail.sltonthucte || 0,
               detail.slhuy || 0
             ),
-            ghichu: detail.ghichu || '',
-            isActive: true
+            ghichu: detail.ghichu || ''
           };
 
          const Detail =  await this.graphqlService.createOne(

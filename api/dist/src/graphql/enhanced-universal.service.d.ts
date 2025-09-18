@@ -54,4 +54,5 @@ export declare class EnhancedUniversalService {
     private isWriteOperation;
     private getCacheTTL;
     invalidateCache(modelName: string): Promise<void>;
+    private normalizeRelationFieldsForModel;
 }

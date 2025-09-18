@@ -200,10 +200,13 @@ export class EnhancedUniversalService {
       // Chuẩn hóa date fields trong data
       const normalizedData = this.normalizeDateFieldsForModel(modelName, args.data);
       
+      // Handle model-specific relation fields
+      const finalData = this.normalizeRelationFieldsForModel(modelName, normalizedData);
+      
       // Build query options for response
       const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
       const createOptions = {
-        data: normalizedData,
+        data: finalData,
         ...queryOptions
       };
       
@@ -779,5 +782,46 @@ export class EnhancedUniversalService {
     const pattern = this.redisService.generateKey('graphql', '*', modelName, '*');
     await this.redisService.deletePattern(pattern);
     console.log(`🗑️ Invalidated GraphQL cache for ${modelName}`);
+  }
+
+  /**
+   * Handle model-specific relation fields normalization
+   */
+  private normalizeRelationFieldsForModel(modelName: string, data: any): any {
+    if (!data || typeof data !== 'object') return data;
+
+    const normalizedData = { ...data };
+
+    // Handle specific model relation fields
+    switch (modelName.toLowerCase()) {
+      case 'chotkhodetail':
+        // Convert direct IDs to nested relations if needed
+        if (normalizedData.chotkhoId && !normalizedData.chotkho) {
+          normalizedData.chotkho = {
+            connect: { id: normalizedData.chotkhoId }
+          };
+          delete normalizedData.chotkhoId;
+        }
+        if (normalizedData.sanphamId && !normalizedData.sanpham) {
+          normalizedData.sanpham = {
+            connect: { id: normalizedData.sanphamId }
+          };
+          delete normalizedData.sanphamId;
+        }
+        if (normalizedData.userId && !normalizedData.user) {
+          normalizedData.user = {
+            connect: { id: normalizedData.userId }
+          };
+          delete normalizedData.userId;
+        }
+        break;
+      
+      // Add more cases for other models as needed
+      default:
+        // No special handling needed
+        break;
+    }
+
+    return normalizedData;
   }
 }
