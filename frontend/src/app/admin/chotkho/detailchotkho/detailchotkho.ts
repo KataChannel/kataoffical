@@ -23,6 +23,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import * as XLSX from 'xlsx';
+import * as XLSXStyle from 'xlsx-js-style';
   @Component({
     selector: 'app-detailchotkho',
     imports: [
@@ -1088,5 +1089,222 @@ import * as XLSX from 'xlsx';
 
     private calculateChenhLech(sltonhethong: number, sltonthucte: number, slhuy: number): number {
       return (sltonhethong || 0) - (sltonthucte || 0) - (slhuy || 0);
+    }
+
+    async ExportExample() {
+      try {
+        // Load sample products if not already loaded
+        if (this.ListSanpham.length === 0) {
+          await this.loadNewSanphamList();
+        }
+
+        // Create example data structure
+        const exampleData = this.createExampleData();
+        
+        // Create workbook and worksheet
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.aoa_to_sheet(exampleData);
+
+        // Set column widths for better display
+        const columnWidths = [
+          { wch: 15 }, // masp
+          { wch: 35 }, // title (for reference)
+          { wch: 10 }, // dvt (for reference)
+          { wch: 20 }, // sltonhethong (for reference)
+          { wch: 15 }, // sltonthucte
+          { wch: 15 }, // slhuy
+          { wch: 50 }  // notes
+        ];
+        worksheet['!cols'] = columnWidths;
+
+        // Style header row (row 1)
+        const headerCells = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1'];
+        headerCells.forEach(cell => {
+          if (worksheet[cell]) {
+            worksheet[cell].s = {
+              font: { bold: true, color: { rgb: "FFFFFF" }, sz: 12 },
+              fill: { fgColor: { rgb: "4472C4" } },
+              alignment: { horizontal: "center", vertical: "center" },
+              border: {
+                top: { style: 'thin' },
+                bottom: { style: 'thin' },
+                left: { style: 'thin' },
+                right: { style: 'thin' }
+              }
+            };
+          }
+        });
+
+        // Style instruction section (rows 2-14)
+        for (let row = 2; row <= 14; row++) {
+          const cellA = `A${row}`;
+          if (worksheet[cellA]) {
+            worksheet[cellA].s = {
+              font: { color: { rgb: "0066CC" }, sz: 10, bold: row === 2 || row === 13 },
+              fill: { fgColor: { rgb: "F0F8FF" } },
+              alignment: { horizontal: "left", vertical: "center" }
+            };
+          }
+        }
+
+        // Style data rows (starting from row 15)
+        const dataStartRow = 15;
+        const sampleDataRows = Math.min(10, this.ListSanpham.length || 10);
+        
+        for (let row = dataStartRow; row < dataStartRow + sampleDataRows; row++) {
+          // Style required columns (A: masp, E: sltonthucte, F: slhuy)
+          ['A', 'E', 'F'].forEach(col => {
+            const cell = `${col}${row}`;
+            if (worksheet[cell]) {
+              worksheet[cell].s = {
+                fill: { fgColor: { rgb: "FFFFCC" } }, // Light yellow for editable fields
+                border: {
+                  top: { style: 'thin' },
+                  bottom: { style: 'thin' },
+                  left: { style: 'thin' },
+                  right: { style: 'thin' }
+                },
+                alignment: { horizontal: "center", vertical: "center" }
+              };
+            }
+          });
+          
+          // Style reference columns (B, C, D, G)
+          ['B', 'C', 'D', 'G'].forEach(col => {
+            const cell = `${col}${row}`;
+            if (worksheet[cell]) {
+              worksheet[cell].s = {
+                fill: { fgColor: { rgb: "F5F5F5" } }, // Light gray for reference only
+                font: { color: { rgb: "666666" } },
+                border: {
+                  top: { style: 'thin' },
+                  bottom: { style: 'thin' },
+                  left: { style: 'thin' },
+                  right: { style: 'thin' }
+                },
+                alignment: { horizontal: "left", vertical: "center" }
+              };
+            }
+          });
+        }
+
+        // Add the worksheet to workbook
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Mẫu Import Chốt Kho');
+
+        // Generate filename with current date
+        const now = new Date();
+        const dateStr = now.getFullYear() + 
+          String(now.getMonth() + 1).padStart(2, '0') + 
+          String(now.getDate()).padStart(2, '0');
+        const timeStr = String(now.getHours()).padStart(2, '0') + 
+          String(now.getMinutes()).padStart(2, '0');
+        const filename = `Mau_Import_ChotkKho_${dateStr}_${timeStr}.xlsx`;
+
+        // Write and download the file using XLSXStyle for better formatting
+        try {
+          XLSXStyle.writeFile(workbook, filename);
+        } catch (styleError) {
+          // Fallback to regular XLSX if styling fails
+          console.warn('Styled export failed, using regular export:', styleError);
+          XLSX.writeFile(workbook, filename);
+        }
+
+        this._snackBar.open(
+          `Đã tải xuống file mẫu: ${filename}`,
+          'Đóng',
+          {
+            duration: 4000,
+            panelClass: ['snackbar-success']
+          }
+        );
+
+        console.log('Excel template exported successfully:', filename);
+
+      } catch (error) {
+        console.error('Error exporting Excel template:', error);
+        this._snackBar.open(
+          `Lỗi khi tạo file mẫu: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          'Đóng',
+          {
+            duration: 5000,
+            panelClass: ['snackbar-error']
+          }
+        );
+      }
+    }
+
+    private createExampleData(): any[][] {
+      const headers = [
+        'masp',
+        'title (Tham khảo - không import)',
+        'dvt (Tham khảo - không import)',
+        'sltonhethong (Tham khảo - từ hệ thống)',
+        'sltonthucte',
+        'slhuy',
+        'Ghi chú hướng dẫn'
+      ];
+
+      // Create example rows with real product data if available
+      const exampleRows: any[][] = [];
+      
+      if (this.ListSanpham.length > 0) {
+        // Use first 10 products as examples
+        const sampleProducts = this.ListSanpham.slice(0, Math.min(10, this.ListSanpham.length));
+        
+        sampleProducts.forEach((product, index) => {
+          const sltonhethong = product.sltonhethong || Math.floor(Math.random() * 100) + 1;
+          const sltonthucte = Math.floor(sltonhethong * (0.8 + Math.random() * 0.4)); // 80-120% of system stock
+          const slhuy = Math.floor(Math.random() * 5); // Random damaged quantity 0-5
+          
+          exampleRows.push([
+            product.masp || `SP${String(index + 1).padStart(3, '0')}`,
+            product.title || `Sản phẩm mẫu ${index + 1}`,
+            product.dvt || 'Cái',
+            sltonhethong,
+            sltonthucte,
+            slhuy,
+            index === 0 ? 'Cột này chỉ để hướng dẫn, không được import' : ''
+          ]);
+        });
+      } else {
+        // Create sample data if no products loaded
+        for (let i = 1; i <= 10; i++) {
+          const sltonhethong = Math.floor(Math.random() * 100) + 1;
+          const sltonthucte = Math.floor(sltonhethong * (0.8 + Math.random() * 0.4));
+          const slhuy = Math.floor(Math.random() * 5);
+          
+          exampleRows.push([
+            `SP${String(i).padStart(3, '0')}`,
+            `Sản phẩm mẫu ${i}`,
+            'Cái',
+            sltonhethong,
+            sltonthucte,
+            slhuy,
+            i === 1 ? 'Cột này chỉ để hướng dẫn, không được import' : ''
+          ]);
+        }
+      }
+
+      // Add instruction rows
+      const instructionRows = [
+        [],
+        ['HƯỚNG DẪN SỬ DỤNG:'],
+        ['1. Chỉ cần điền dữ liệu vào các cột: masp, sltonthucte, slhuy'],
+        ['2. Cột "masp" là BẮT BUỘC - phải khớp với mã sản phẩm trong hệ thống'],
+        ['3. Cột "sltonthucte" là số lượng tồn thực tế (mặc định 0 nếu để trống)'],
+        ['4. Cột "slhuy" là số lượng hủy (mặc định 0 nếu để trống)'],
+        ['5. Cột "sltonhethong" sẽ được lấy từ hệ thống tự động'],
+        ['6. Chênh lệch = sltonhethong - sltonthucte - slhuy (tự động tính)'],
+        ['7. Các cột khác chỉ để tham khảo, không được import'],
+        ['8. Xóa các dòng hướng dẫn này trước khi import'],
+        [],
+        ['DỮ LIỆU MẪU (Bắt đầu từ dòng tiếp theo):']
+      ];
+
+      return [
+        headers,
+        ...instructionRows,
+        ...exampleRows
+      ];
     }
   }

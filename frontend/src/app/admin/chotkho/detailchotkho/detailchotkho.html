@@ -117,9 +117,12 @@
 
              <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
                     <mat-icon>file_upload</mat-icon>
-                </button>
+              </button>
               <input multiple class="hidden" (change)="ImportExcel($event)" type="file" #uploadfile>
 
+             <button matTooltip="Tải xuống file mẫu Excel" (click)="ExportExample()" color="primary" mat-icon-button>
+                    <mat-icon>file_download</mat-icon>
+              </button>
 
             <button [disabled]="!isEdit()" matTooltip="Làm Trống Giỏ Hàng" (click)="EmptyCart()" color="warn"
               mat-icon-button>
