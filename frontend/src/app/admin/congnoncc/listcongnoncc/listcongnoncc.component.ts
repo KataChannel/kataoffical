@@ -38,7 +38,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import moment from 'moment';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
-import { DonhangService } from '../../donhang/donhang.service';
+import { DathangService } from '../../dathang/dathang.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import {
@@ -87,8 +87,6 @@ export class ListcongnonccComponent {
     'mancc',
     'name',
     'soluong',
-    'tong',
-    'tongvat',
     'tongtien',
   ];
   ColumnName: any = {
@@ -97,9 +95,7 @@ export class ListcongnonccComponent {
     mancc: 'Mã Nhà Cung Cấp',
     name: 'Tên Nhà Cung Cấp',
     soluong: 'Số Lượng',
-    tong: 'Tổng',
-    tongvat: 'Tổng VAT',
-    tongtien: 'Tổng Tiền',
+    tongtien: 'Tổng',
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('CongnonccColFilter') || '[]'
@@ -112,12 +108,12 @@ export class ListcongnonccComponent {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
-  private _DonhangService: DonhangService = inject(DonhangService);
+  private _DathangService: DathangService = inject(DathangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _GraphqlService: GraphqlService = inject(GraphqlService);
   private _router: Router = inject(Router);
-  Listdonhang: any = this._DonhangService.ListDonhang;
+  Listdathang: any = this._DathangService.ListDathang;
   ListCongnoncc: any = [];
   filterListCongnoncc: any = [];
   ListNhomCongnoncc: any = [];
@@ -126,7 +122,7 @@ export class ListcongnonccComponent {
   SelectedNhomCongnoncc: any[] = []; // Array to store selected customers
   ListCongno: any = [];
   dataSource = new MatTableDataSource([]);
-  donhangId: any = this._DonhangService.donhangId;
+  dathangId: any = this._DathangService.dathangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   SearchParams: any = {
@@ -539,12 +535,12 @@ export class ListcongnonccComponent {
       // await this._DathangService.searchCongno(query);
       this.SearchCongno();
       // console.log(this.Listdathang());
-      this.CountItem = this.Listdonhang().length || 0;
+      this.CountItem = this.Listdathang().length || 0;
       // Nhóm dữ liệu theo nhà cung cấp để tính tổng tiền sau thuế
       const supplierTotals = new Map();
       // Tính tổng tiền sau thuế cho từng nhà cung cấp
-      this.ListCongno = this.Listdonhang();
-      console.log(this.ListCongno);
+      this.ListCongno = this.Listdathang();
+      // console.log(this.ListCongno);
 
       this.dataSource = new MatTableDataSource(this.ListCongno);
       // this.dataSource.paginator = this.paginator;
@@ -614,22 +610,44 @@ export class ListcongnonccComponent {
             mancc: true,
           },
         },
-        sanpham:{
-          select:{
-            sldat:true,
-            slgiao:true,
-            slnhan:true
-          }
-        }
+        sanpham: {
+          select: {
+            sanpham: {
+              select: {
+                id: true,
+                title: true,
+                masp: true,
+                dvt: true,
+              },
+            },
+            sldat: true,
+            slgiao: true,
+            slnhan: true,
+            gianhap: true,
+          },
+        },
       },
     });
-    console.log(Dathangs);
-    // const ListDathang = Dathangs.data.map((v: any) => ({
-    this._DonhangService.ListDonhang.update(() => Dathangs.data.map((v: any) => ({
-      ...v,
-      name: v.nhacungcap?.name || '',
-      mancc: v.nhacungcap?.mancc || '',
-    })));
+    this._DathangService.ListDathang.update(() =>
+      Dathangs.data.map((v: any) => ({
+        ...v,
+        name: v.nhacungcap?.name || '',
+        mancc: v.nhacungcap?.mancc || '',
+        soluong: Number(
+          v.sanpham.reduce(
+            (total: any, item: any) => total + (Number(item.slnhan) || 0),
+            0
+          )
+        ),
+        tongtien: Number(
+          v.sanpham.reduce(
+            (total: any, item: any) =>
+              total + (Number(item.slnhan) * Number(item.gianhap) || 0),
+            0
+          )
+        ),
+      }))
+    );
   }
 
   private initializeColumns(): void {
@@ -676,7 +694,10 @@ export class ListcongnonccComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('CongnonccColFilter', JSON.stringify(this.FilterColumns));
+    localStorage.setItem(
+      'CongnonccColFilter',
+      JSON.stringify(this.FilterColumns)
+    );
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();
@@ -702,7 +723,7 @@ export class ListcongnonccComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listdonhang().filter(
+    this.dataSource.filteredData = this.Listdathang().filter(
       (v: any) =>
         removeVietnameseAccents(v[column]).includes(
           event.target.value.toLowerCase()
@@ -739,8 +760,8 @@ export class ListcongnonccComponent {
     });
   }
   ResetFilter() {
-    this.ListFilter = this.Listdonhang();
-    this.dataSource.data = this.Listdonhang();
+    this.ListFilter = this.Listdathang();
+    this.dataSource.data = this.Listdathang();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -751,7 +772,7 @@ export class ListcongnonccComponent {
     return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
   ApplyFilterColum(menu: any) {
-    this.dataSource.data = this.Listdonhang().filter((v: any) =>
+    this.dataSource.data = this.Listdathang().filter((v: any) =>
       this.ListFilter.some((v1) => v1.id === v.id)
     );
     this.dataSource.paginator = this.paginator;
@@ -764,7 +785,7 @@ export class ListcongnonccComponent {
     this._router.navigate(['admin/congnocongnoncc', 0]);
   }
   goToDetail(item: any): void {
-    this._DonhangService.setDonhangId(item.id);
+    this._DathangService.setDathangId(item.id);
     this.drawer.open();
     this._router.navigate(['admin/congnocongnoncc', item.id]);
   }
@@ -817,8 +838,10 @@ export class ListcongnonccComponent {
   }
   async openPreviewExport(teamplate: TemplateRef<any>) {
     if (this.editDathang.length > 0) {
-      const ListExport: any = await this.ChuyendoiExport(this.editDathang);
-      this.exampleExport = this.convertFlatData(ListExport[0] || {});
+      // const ListExport: any = await this.ChuyendoiExport(this.editDathang);
+      this.exampleExport = this.convertFlatData(this.editDathang[0] || {});
+      console.log(this.editDathang);
+
       console.log('exampleExport', this.exampleExport);
 
       this.dialogCreateRef = this.dialog.open(teamplate, {
@@ -835,20 +858,20 @@ export class ListcongnonccComponent {
     }
   }
   convertFlatData(data: any) {
+    console.log(data);
     return data?.sanpham?.map((item: any) => ({
-      madathang: data.madathang,
+      madncc: data.madncc,
       ngaynhan: data.ngaynhan,
-      masp: item.sanpham.masp,
-      tensp: item.sanpham.title,
-      dvt: item.sanpham.dvt,
-      slnhan: item.slnhan,
-      giaban: item.giaban,
-      ttnhan: item.ttnhan,
-      mancc: data.congnoncc.mancc,
-      tenkh: data.congnoncc.name,
-      diachi: data.congnoncc.diachi || '',
-      email: data.congnoncc.email || '',
-      ghichu: item.ghichu || '',
+      masp: item.sanpham?.masp || '  ',
+      tensp: item.sanpham?.title,
+      dvt: item.sanpham?.dvt,
+      sldat: Number(item.sldat),
+      slnhan: Number(item.slnhan),
+      slconlai: Number(item.sldat) - Number(item.slnhan),
+      gianhap: Number(item.gianhap),
+      thanhtien: Number(item.slnhan) * Number(item.gianhap),
+      mancc: data.nhacungcap.mancc,
+      name: data.nhacungcap.name,
     }));
   }
 
@@ -867,7 +890,7 @@ export class ListcongnonccComponent {
       },
       select: {
         id: true,
-        madathang: true,
+        madncc: true,
         ngaynhan: true,
         sanpham: {
           select: {
@@ -894,13 +917,15 @@ export class ListcongnonccComponent {
         },
       },
     });
+    console.log(Dathangs);
+
     return Dathangs.data;
   }
 
   BackStatus() {
     this.editDathang.forEach((v: any) => {
       v.status = 'dadat';
-      this._DonhangService.updateDonhang(v);
+      this._DathangService.updateDathang(v);
     });
     this.ngOnInit();
   }
@@ -908,7 +933,7 @@ export class ListcongnonccComponent {
   Hoanthanh() {
     this.editDathang.forEach((v: any) => {
       v.status = 'hoanthanh';
-      this._DonhangService.updateDonhang(v);
+      this._DathangService.updateDathang(v);
     });
   }
   getUniqueProducts(): string[] {
@@ -959,25 +984,25 @@ export class ListcongnonccComponent {
         index === self.findIndex((t: any) => t.masp === value.masp)
     );
     const listId2 = uniqueData.map((v: any) => v.masp);
-    const listId1 = this._DonhangService.ListDonhang().map((v: any) => v.masp);
+    const listId1 = this._DathangService.ListDathang().map((v: any) => v.masp);
     const listId3 = listId2.filter((item: any) => !listId1.includes(item));
     const createuppdateitem = uniqueData.map(async (v: any) => {
-      const item = this._DonhangService
-        .ListDonhang()
+      const item = this._DathangService
+        .ListDathang()
         .find((v1: any) => v1.masp === v.masp);
       if (item) {
         const item1 = { ...item, ...v };
-        await this._DonhangService.updateDonhang(item1);
+        await this._DathangService.updateDathang(item1);
       } else {
-        await this._DonhangService.CreateDonhang(v);
+        await this._DathangService.CreateDathang(v);
       }
     });
     const disableItem = listId3.map(async (v: any) => {
-      const item = this._DonhangService
-        .ListDonhang()
+      const item = this._DathangService
+        .ListDathang()
         .find((v1: any) => v1.masp === v);
       item.isActive = false;
-      await this._DonhangService.updateDonhang(item);
+      await this._DathangService.updateDathang(item);
     });
     Promise.all([...createuppdateitem, ...disableItem]).then(() => {
       this._snackBar.open('Cập Nhật Thành Công', '', {
@@ -1034,15 +1059,18 @@ export class ListcongnonccComponent {
         if (this.editDathang.length > 0) {
           // Use selected orders
           const selectedOrders = await this.ChuyendoiExport(this.editDathang);
-          exportData = selectedOrders.flatMap((order: any) =>
-            this.convertFlatData(order)
-          );
+          exportData = selectedOrders.flatMap((order: any) => {
+            console.log(order);
+
+            return this.convertFlatData(order);
+          });
         } else {
           // Use all current data
           const allOrders = await this.ChuyendoiExport(data);
-          exportData = allOrders.flatMap((order: any) =>
-            this.convertFlatData(order)
-          );
+          exportData = allOrders.flatMap((order: any) => {
+            console.log(order);
+            return this.convertFlatData(order);
+          });
         }
 
         // Generate Excel file with exporttable format
@@ -1085,17 +1113,17 @@ export class ListcongnonccComponent {
       let exportData: any[] = [];
 
       if (this.editDathang.length > 0) {
-        // Use selected orders
-        const selectedOrders = await this.ChuyendoiExport(this.editDathang);
-        exportData = selectedOrders.flatMap((order: any) =>
-          this.convertFlatData(order)
-        );
+        exportData = this.editDathang.flatMap((order: any) => {   
+          const result = this.convertFlatData(order);
+          return result
+        });
+        console.log(exportData);    
       } else {
         // Use all current data
-        const allOrders = await this.ChuyendoiExport(data);
-        exportData = allOrders.flatMap((order: any) =>
-          this.convertFlatData(order)
-        );
+        exportData = data.flatMap((order: any) => {
+          console.log(order);
+          return this.convertFlatData(order);
+        });
       }
 
       // Generate Excel file with exporttable format
