@@ -1,0 +1,55 @@
+// Admin Main Component Styles
+
+// Search dialog container
+::ng-deep .advanced-search-dialog-container {
+  .mat-mdc-dialog-container {
+    padding: 0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .mat-mdc-dialog-content {
+    padding: 0;
+    margin: 0;
+    max-height: none;
+  }
+}
+
+// Main layout improvements
+.primary {
+  background-color: #f5f5f5;
+}
+
+// Header styling - using attribute selector for Tailwind classes
+[class*="bg-[#57A345]"] {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+// Drawer content
+mat-drawer {
+  .mat-drawer-inner-container {
+    overflow-x: hidden;
+  }
+}
+
+// Search input styling in header
+.search-input-container {
+  position: relative;
+  
+  input {
+    transition: all 0.3s ease;
+    
+    &:focus {
+      transform: scale(1.02);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+  }
+  
+  &:hover {
+    cursor: pointer;
+    
+    input {
+      background-color: #f9f9f9;
+    }
+  }
+}

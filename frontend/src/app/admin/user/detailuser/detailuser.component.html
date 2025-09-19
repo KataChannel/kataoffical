@@ -37,6 +37,10 @@
         <input matInput [(ngModel)]="DetailUser().email" [disabled]="!isEdit()" placeholder="Vui lòng nhập Email" />
       </mat-form-field>
       <mat-form-field appearance="outline">
+        <mat-label>Họ Và Tên</mat-label>
+        <input matInput [(ngModel)]="DetailUser().name" [disabled]="!isEdit()" placeholder="Vui lòng nhập Họ Và Tên" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
         <mat-label>Số Điện Thoại</mat-label>
         <input matInput [(ngModel)]="DetailUser().SDT" [disabled]="!isEdit()" placeholder="Vui lòng nhập Số Điện Thoại" />
       </mat-form-field>

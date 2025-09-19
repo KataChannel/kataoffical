@@ -7,9 +7,9 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeModule, MatTreeFlattener, MatTreeFlatDataSource } from '@angular/material/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatDividerModule} from '@angular/material/divider';
-import {MatListModule} from '@angular/material/list';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
 import { CommonModule } from '@angular/common';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MenuService } from '../menu/menu/menu.service';
@@ -20,10 +20,12 @@ import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { StorageService } from '../../shared/utils/storage.service';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import {MatStepperModule} from '@angular/material/stepper';
+import { MatStepperModule } from '@angular/material/stepper';
 import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
 import { CommonuserguideComponent } from '../userguide/commonuserguide/commonuserguide.component';
 import { UserguideService } from '../userguide/userguide.service';
+import { MatDialog } from '@angular/material/dialog';
+// import { AdvancedSearchDialogComponent } from './advanced-search-dialog/advanced-search-dialog.component';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -89,6 +91,7 @@ export class AdminmainComponent {
   _snackBar:MatSnackBar = inject(MatSnackBar)
   _StorageService:StorageService = inject(StorageService)
   _UserguideService:UserguideService = inject(UserguideService)
+  private dialog = inject(MatDialog)
   ListMenu:any[] = []
   FilterListMenu:any[] = []
   DetailUserguide:any = signal<any>({});
@@ -124,6 +127,8 @@ export class AdminmainComponent {
     });
   }
   searchFunction(event: any) {
+    console.log(event.target.value,"ạhdkjsahdjkash");
+    
     this.FilterListMenu = this.ListMenu.filter((item: any) => {
       return removeVietnameseAccents(item.title).toLowerCase().includes(event.target.value.toLowerCase()) 
       || item.title.toLowerCase().includes(event.target.value.toLowerCase())
@@ -151,6 +156,25 @@ export class AdminmainComponent {
       verticalPosition: 'top',
       panelClass: ['snackbar-success'],
     });
+  }
+
+  openSearchDialog(): void {
+    // const dialogRef = this.dialog.open(AdvancedSearchDialogComponent, {
+    //   width: '90vw',
+    //   maxWidth: '900px',
+    //   height: '80vh',
+    //   maxHeight: '700px',
+    //   panelClass: 'advanced-search-dialog-container',
+    //   data: {
+    //     initialKeyword: '' // Có thể truyền keyword từ input nếu có
+    //   }
+    // });
+
+    // dialogRef.afterClosed().subscribe(result => {
+    //   if (result) {
+    //     console.log('Search dialog closed with result:', result);
+    //   }
+    // });
   }
   events = [
     { date: '2025-01-01', title: 'Project Start', description: 'Initiated the project with team.', icon: 'fa-circle' },

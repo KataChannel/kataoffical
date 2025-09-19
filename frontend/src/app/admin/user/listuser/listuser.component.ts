@@ -46,12 +46,12 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
 })
 export class ListUserComponent implements OnInit, AfterViewInit {
   
-  displayedColumns: string[] = ['stt', 'email', 'profile.name', 'SDT', 'isActive', 'roles', 'createdAt'];
-  readonly AllColumn: string[] = ['stt', 'email', 'profile.name', 'SDT', 'isActive', 'roles', 'createdAt'];
+  displayedColumns: string[] = ['stt', 'email', 'name', 'SDT', 'isActive', 'roles', 'createdAt'];
+  readonly AllColumn: string[] = ['stt', 'email', 'name', 'SDT', 'isActive', 'roles', 'createdAt'];
   readonly ColumnName: Record<string, string> = {
     stt: '#',
     email: 'Email',
-    'profile.name': 'Họ và tên',
+    name: 'Họ và tên',
     SDT: 'Số điện thoại',
     isActive: 'Trạng thái',
     roles: 'Vai trò',
@@ -277,6 +277,7 @@ export class ListUserComponent implements OnInit, AfterViewInit {
           id:true,
           email:true,
           SDT:true,
+          name:true,
           roles:{
             select:{
               role:{select:

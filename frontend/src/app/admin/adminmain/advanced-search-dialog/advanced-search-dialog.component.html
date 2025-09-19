@@ -1,0 +1,188 @@
+<div class="advanced-search-dialog">
+  <!-- Dialog Header -->
+  <div class="dialog-header flex items-center justify-between p-4 border-b">
+    <div class="flex items-center space-x-2">
+      <mat-icon class="text-2xl">search</mat-icon>
+      <h2 class="text-xl font-semibold">Tìm Kiếm Nâng Cao</h2>
+    </div>
+    <button mat-icon-button (click)="closeDialog()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Dialog Content -->
+  <div class="dialog-content p-4 max-h-[70vh] overflow-y-auto">
+    <mat-tab-group>
+      <!-- Quick Search Tab -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="mr-2">flash_on</mat-icon>
+          Tìm Nhanh
+        </ng-template>
+        
+        <div class="py-4">
+          <!-- Main Search Input -->
+          <div class="mb-4">
+            <mat-form-field class="w-full" appearance="outline">
+              <mat-label>Từ khóa tìm kiếm</mat-label>
+              <input matInput 
+                     [(ngModel)]="searchCriteria.keyword" 
+                     placeholder="Nhập từ khóa..."
+                     (keydown.enter)="performSearch()"
+                     #searchInput>
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <!-- Quick Suggestions -->
+          <div class="mb-4" *ngIf="quickSearchSuggestions().length > 0">
+            <h4 class="text-sm font-medium text-gray-600 mb-2">Gợi ý tìm kiếm:</h4>
+            <div class="flex flex-wrap gap-2">
+              <mat-chip 
+                *ngFor="let suggestion of quickSearchSuggestions()"
+                (click)="useQuickSearch(suggestion)"
+                class="cursor-pointer hover:bg-blue-100">
+                {{suggestion}}
+              </mat-chip>
+            </div>
+          </div>
+
+          <!-- Search History -->
+          <div class="mb-4" *ngIf="searchHistory().length > 0">
+            <h4 class="text-sm font-medium text-gray-600 mb-2">Lịch sử tìm kiếm:</h4>
+            <div class="flex flex-wrap gap-2">
+              <mat-chip 
+                *ngFor="let history of searchHistory()"
+                (click)="useHistorySearch(history)"
+                class="cursor-pointer hover:bg-gray-100">
+                <mat-icon matChipTrailingIcon>history</mat-icon>
+                {{history}}
+              </mat-chip>
+            </div>
+          </div>
+
+          <!-- Model Selection -->
+          <div class="mb-4">
+            <h4 class="text-sm font-medium text-gray-600 mb-2">Tìm trong:</h4>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+              <mat-checkbox 
+                *ngFor="let model of availableModels"
+                [checked]="selectedModels().includes(model.value)"
+                (change)="onModelSelectionChange(model.value, $event.checked)"
+                class="flex items-center">
+                <div class="flex items-center space-x-2">
+                  <mat-icon class="text-sm">{{model.icon}}</mat-icon>
+                  <span class="text-sm">{{model.label}}</span>
+                </div>
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Advanced Search Tab -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="mr-2">tune</mat-icon>
+          Nâng Cao
+        </ng-template>
+        
+        <div class="py-4">
+          <!-- Date Range -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Từ ngày</mat-label>
+              <input matInput 
+                     [matDatepicker]="fromPicker"
+                     [(ngModel)]="searchCriteria.dateRange.from">
+              <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+              <mat-datepicker #fromPicker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Đến ngày</mat-label>
+              <input matInput 
+                     [matDatepicker]="toPicker"
+                     [(ngModel)]="searchCriteria.dateRange.to">
+              <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+              <mat-datepicker #toPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <!-- Result Limit -->
+          <div class="mb-4">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Giới hạn kết quả</mat-label>
+              <mat-select [(ngModel)]="searchCriteria.limit">
+                <mat-option [value]="10">10 kết quả</mat-option>
+                <mat-option [value]="20">20 kết quả</mat-option>
+                <mat-option [value]="50">50 kết quả</mat-option>
+                <mat-option [value]="100">100 kết quả</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <!-- Search Results -->
+  <div class="search-results p-4 border-t bg-gray-50" *ngIf="searchResults().length > 0">
+    <h3 class="text-lg font-medium mb-4">Kết quả tìm kiếm ({{searchResults().reduce((sum, r) => sum + r.total, 0)}})</h3>
+    
+    <div *ngFor="let result of searchResults()" class="mb-6">
+      <div class="flex items-center mb-3">
+        <mat-icon class="mr-2">{{getModelConfig(result.model)?.icon}}</mat-icon>
+        <h4 class="font-medium">{{getModelConfig(result.model)?.label}} ({{result.total}})</h4>
+        <span class="ml-auto text-sm text-gray-500">{{result.searchTime}}ms</span>
+      </div>
+
+      <div class="grid gap-2 max-h-60 overflow-y-auto">
+        <div *ngFor="let item of result.data"
+             (click)="navigateToResult(result.model, item)"
+             class="p-3 bg-white rounded border hover:bg-blue-50 cursor-pointer transition-colors">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <div class="font-medium text-sm">{{getDisplayValue(item, result.model)}}</div>
+              <div class="text-xs text-gray-500 mt-1" *ngIf="item.createdAt">
+                Tạo: {{item.createdAt | date:'dd/MM/yyyy HH:mm'}}
+              </div>
+            </div>
+            <mat-icon class="text-gray-400">chevron_right</mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="text-center py-8 text-gray-500" *ngIf="!isSearching() && searchResults().length === 0 && searchCriteria.keyword">
+    <mat-icon class="text-4xl mb-2">search_off</mat-icon>
+    <p>Không tìm thấy kết quả nào</p>
+  </div>
+
+  <!-- Loading State -->
+  <div class="text-center py-8" *ngIf="isSearching()">
+    <mat-icon class="animate-spin text-4xl mb-2">refresh</mat-icon>
+    <p>Đang tìm kiếm...</p>
+  </div>
+
+  <!-- Dialog Actions -->
+  <div class="dialog-actions flex justify-between items-center p-4 border-t bg-white">
+    <button mat-button (click)="clearSearch()" [disabled]="isSearching()">
+      <mat-icon>clear</mat-icon>
+      Xóa
+    </button>
+    
+    <div class="space-x-2">
+      <button mat-button (click)="closeDialog()">Hủy</button>
+      <button mat-raised-button 
+              color="primary" 
+              (click)="performSearch()" 
+              [disabled]="!searchCriteria.keyword?.trim() || isSearching()">
+        <mat-icon>search</mat-icon>
+        Tìm Kiếm
+      </button>
+    </div>
+  </div>
+</div>
