@@ -838,7 +838,7 @@ export class ListcongnonccComponent {
   }
   async openPreviewExport(teamplate: TemplateRef<any>) {
     if (this.editDathang.length > 0) {
-      // const ListExport: any = await this.ChuyendoiExport(this.editDathang);
+
       this.exampleExport = this.convertFlatData(this.editDathang[0] || {});
       console.log(this.editDathang);
 
@@ -858,69 +858,22 @@ export class ListcongnonccComponent {
     }
   }
   convertFlatData(data: any) {
-    console.log(data);
     return data?.sanpham?.map((item: any) => ({
-      madncc: data.madncc,
-      ngaynhan: data.ngaynhan,
-      masp: item.sanpham?.masp || '  ',
-      tensp: item.sanpham?.title,
-      dvt: item.sanpham?.dvt,
-      sldat: Number(item.sldat),
-      slnhan: Number(item.slnhan),
-      slconlai: Number(item.sldat) - Number(item.slnhan),
-      gianhap: Number(item.gianhap),
-      thanhtien: Number(item.slnhan) * Number(item.gianhap),
-      mancc: data.nhacungcap.mancc,
-      name: data.nhacungcap.name,
+      madncc: data.madncc || '',
+      ngaynhan: data.ngaynhan || '',
+      masp: item.sanpham?.masp || '',
+      tensp: item.sanpham?.title || '',
+      dvt: item.sanpham?.dvt || '',
+      sldat: Number(item.sldat) || 0,
+      slnhan: Number(item.slnhan) || 0,
+      slconlai: (Number(item.sldat) || 0) - (Number(item.slnhan) || 0),
+      gianhap: Number(item.gianhap) || 0,
+      thanhtien: (Number(item.slnhan) || 0) * (Number(item.gianhap) || 0),
+      mancc: data.nhacungcap?.mancc || data.congnoncc?.mancc || '',
+      name: data.nhacungcap?.name || data.congnoncc?.name || '',
     }));
   }
 
-  async ChuyendoiExport(item: any) {
-    const Dathangs = await this._GraphqlService.findAll('dathang', {
-      aggressiveCache: true,
-      enableStreaming: true,
-      where: {
-        id: { in: item.map((v: any) => v.id) },
-        ngaynhan: {
-          gte: moment(this.SearchParams.Batdau).startOf('day').toDate(),
-          lte: moment(this.SearchParams.Ketthuc).endOf('day').toDate(),
-        },
-        status: { in: this.SearchParams.Status },
-        // congnonccId:{in:this.SearchParams.congnonccIds.length>0?this.SearchParams.congnonccIds:undefined}
-      },
-      select: {
-        id: true,
-        madncc: true,
-        ngaynhan: true,
-        sanpham: {
-          select: {
-            slnhan: true,
-            ttnhan: true,
-            giaban: true,
-            ghichu: true,
-            sanpham: {
-              select: {
-                masp: true,
-                title: true,
-                dvt: true,
-              },
-            },
-          },
-        },
-        congnoncc: {
-          select: {
-            mancc: true,
-            name: true,
-            diachi: true,
-            email: true,
-          },
-        },
-      },
-    });
-    console.log(Dathangs);
-
-    return Dathangs.data;
-  }
 
   BackStatus() {
     this.editDathang.forEach((v: any) => {
@@ -966,7 +919,6 @@ export class ListcongnonccComponent {
   }
   DeleteDathang(): void {}
   DoImportData(data: any) {
-    console.log(data);
     const transformedData = data.map((v: any) => ({
       title: v.title?.trim() || '',
       masp: v.masp?.trim() || '',
@@ -1058,16 +1010,13 @@ export class ListcongnonccComponent {
 
         if (this.editDathang.length > 0) {
           // Use selected orders
-          const selectedOrders = await this.ChuyendoiExport(this.editDathang);
-          exportData = selectedOrders.flatMap((order: any) => {
+          exportData = this.editDathang.flatMap((order: any) => {
             console.log(order);
-
             return this.convertFlatData(order);
           });
         } else {
           // Use all current data
-          const allOrders = await this.ChuyendoiExport(data);
-          exportData = allOrders.flatMap((order: any) => {
+          exportData = data.flatMap((order: any) => {
             console.log(order);
             return this.convertFlatData(order);
           });
@@ -1188,7 +1137,7 @@ export class ListcongnonccComponent {
       } else {
         groupedData = this.groupDataByCustomer(this.ListCongno);
       }
-      this.writeExcelFileWithMergedCells(groupedData, title, columns);
+      await this.generateExcelWithSingleSheet(this.ListCongno, title);
     } catch (error) {
       console.error('Error in fallback Excel export:', error);
     }
@@ -1226,55 +1175,6 @@ export class ListcongnonccComponent {
     return result;
   }
 
-  private writeExcelFileWithMergedCells(
-    data: any[],
-    title: string,
-    columns: string[]
-  ): void {
-    // Tạo dữ liệu cho worksheet
-    const worksheetData = data.map((item) => ({
-      Ngày: moment(item.ngaynhan).format('DD/MM/YYYY'),
-      'Mã Nhà Cung Cấp': item.macongnoncc,
-      'Tên Nhà Cung Cấp': item.tencongnoncc,
-      'Mã Đơn Hàng': item.madathang,
-      'Mã Hàng': item.mahang,
-      'Tên Hàng': item.tenhang,
-      ĐVT: item.dvt,
-      'Số Lượng': item.soluong,
-      'Đơn Giá': item.dongia,
-      'Thành Tiền Trước VAT': item.thanhtientruocvat,
-      VAT: item.vat,
-      'Đơn Giá VAT': item.dongiavathoadon,
-      'Thành Tiền Sau VAT': item.thanhtiensauvat,
-      'Ghi Chú': item.ghichu,
-      'Tổng Tiền Sau Thuế': item.tongtiensauthue,
-    }));
-
-    // Tạo worksheet
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-
-    // Tạo merge ranges cho cột "Tổng Tiền Sau Thuế"
-    const mergeRanges = this.createMergeRanges(data);
-
-    // Áp dụng merge ranges
-    if (mergeRanges.length > 0) {
-      worksheet['!merges'] = mergeRanges;
-    }
-
-    // Tạo workbook và thêm worksheet
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'CongNo');
-
-    // Xuất file
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-    this.saveAsExcelFile(
-      excelBuffer,
-      `${title}_${moment().format('DD_MM_YYYY')}`
-    );
-  }
 
   private createMergeRanges(data: any[]): any[] {
     const mergeRanges: any[] = [];
@@ -1316,457 +1216,134 @@ export class ListcongnonccComponent {
     window.URL.revokeObjectURL(url);
   }
 
-  // Generate Excel with the same format as exporttable - Multiple sheets by customer
-  private async generateExcelWithTableFormat(
-    exportData: any[],
-    title: string
-  ): Promise<void> {
+  // Generate Excel with single sheet format
+  private async generateExcelWithTableFormat(exportData: any[], title: string): Promise<void> {
     try {
       // Create workbook
       const workbook = XLSX.utils.book_new();
 
-      // Group data by customer (mancc and tenkh)
-      const customerGroups = new Map<string, any[]>();
-
+      // Tính tổng tiền theo mã đơn hàng
+      const orderTotals = new Map();
       exportData.forEach((item) => {
-        const mancc = item.mancc || 'Unknown';
-        const tenkh = item.tenkh || item.tencongnoncc || 'Unknown Customer';
-        const key = `${mancc}_${tenkh}`;
-
-        if (!customerGroups.has(key)) {
-          customerGroups.set(key, []);
+        const madncc = item.madncc || '';
+        if (!orderTotals.has(madncc)) {
+          orderTotals.set(madncc, 0);
         }
-        customerGroups.get(key)!.push(item);
+        orderTotals.set(madncc, orderTotals.get(madncc) + (Number(item.thanhtien) || 0));
       });
 
-      // If no customer groups, create a single sheet with all data
-      if (customerGroups.size === 0) {
-        await this.createCustomerSheet(
-          workbook,
-          exportData,
-          'All Customers',
-          exportData[0] || {}
-        );
-      } else {
-        // Create a sheet for each customer group
-        customerGroups.forEach((customerData, key) => {
-          const customerInfo = customerData[0] || {};
-          const customerName =
-            customerInfo.tenkh ||
-            customerInfo.tencongnoncc ||
-            'Unknown Customer';
+      // Create single worksheet data with company header
+      const worksheetData: any[][] = [
+        // Table headers
+        [
+          'NGÀY NHẬN',
+          'MÃ ĐƠN HÀNG',
+          'MÃ NCC',
+          'TÊN NCC',
+          'MÃ HÀNG',
+          'TÊN HÀNG',
+          'ĐVT',
+          'SỐ LƯỢNG ĐẶT',
+          'SỐ LƯỢNG NHẬN',
+          'SỐ LƯỢNG CÒN LẠI',
+          'GIÁ NHẬP',
+          'THÀNH TIỀN',
+          'TỔNG TIỀN ĐƠN HÀNG'
+        ],
+      ];
 
-          // Clean sheet name (Excel has restrictions on sheet names)
-          const sanitizedSheetName = this.sanitizeSheetName(customerName);
+      // Nhóm dữ liệu theo mã đơn hàng để hiển thị tổng tiền chỉ ở dòng đầu tiên
+      const groupedData = new Map();
+      exportData.forEach((item) => {
+        const madncc = item.madncc || '';
+        if (!groupedData.has(madncc)) {
+          groupedData.set(madncc, []);
+        }
+        groupedData.get(madncc).push(item);
+      });
 
-          this.createCustomerSheet(
-            workbook,
-            customerData,
-            sanitizedSheetName,
-            customerInfo
-          );
+      // Add all data rows với tổng tiền chỉ hiển thị ở dòng đầu tiên của mỗi đơn hàng
+      groupedData.forEach((items, madncc) => {
+        const orderTotal = orderTotals.get(madncc);
+        items.forEach((item: any, index: number) => {
+          worksheetData.push([
+            moment(item.ngaynhan).format('DD/MM/YYYY') || '',
+            item.madncc || '',
+            item.mancc || '',
+            item.name || '',
+            item.masp || '',
+            item.tensp || '',
+            item.dvt || '',
+            Number(item.sldat) || 0,
+            Number(item.slnhan) || 0,
+            Number(item.slconlai) || 0,
+            Number(item.gianhap) || 0,
+            Number(item.thanhtien) || 0,
+            index === 0 ? orderTotal : '', // Chỉ hiển thị tổng ở dòng đầu tiên
+          ]);
         });
-      }
+      });
+
+      // Add summary row
+      const totalSldat = exportData.reduce((sum, item) => sum + (Number(item.sldat) || 0), 0);
+      const totalSlnhan = exportData.reduce((sum, item) => sum + (Number(item.slnhan) || 0), 0);
+      const totalSlconlai = exportData.reduce((sum, item) => sum + (Number(item.slconlai) || 0), 0);
+      const totalThanhtien = exportData.reduce((sum, item) => sum + (Number(item.thanhtien) || 0), 0);
+      const grandTotal = Array.from(orderTotals.values()).reduce((sum, total) => sum + total, 0);
+
+      // worksheetData.push([
+      //   '',
+      //   '',
+      //   '',
+      //   '',
+      //   'TỔNG CỘNG:',
+      //   '',
+      //   '',
+      //   totalSldat,
+      //   totalSlnhan,
+      //   totalSlconlai,
+      //   '',
+      //   totalThanhtien,
+      //   grandTotal,
+      // ]);
+
+      // Create worksheet
+      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+      // Set column widths
+      const columnWidths = [
+        { wch: 12 }, // NGÀY NHẬN
+        { wch: 15 }, // MÃ ĐƠN HÀNG
+        { wch: 12 }, // MÃ NCC
+        { wch: 25 }, // TÊN NCC
+        { wch: 12 }, // MÃ HÀNG
+        { wch: 30 }, // TÊN HÀNG
+        { wch: 8 },  // ĐVT
+        { wch: 12 }, // SỐ LƯỢNG ĐẶT
+        { wch: 12 }, // SỐ LƯỢNG NHẬN
+        { wch: 12 }, // SỐ LƯỢNG CÒN LẠI
+        { wch: 12 }, // GIÁ NHẬP
+        { wch: 15 }, // THÀNH TIỀN
+        { wch: 18 }, // TỔNG TIỀN ĐƠN HÀNG
+      ];
+      worksheet['!cols'] = columnWidths;
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Công Nợ NCC');
 
       // Generate Excel file
-      const excelBuffer = XLSX.write(workbook, {
-        bookType: 'xlsx',
-        type: 'array',
-      });
-      this.saveAsExcelFile(
-        excelBuffer,
-        `${title}_${moment().format('DD_MM_YYYY')}`
-      );
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      this.saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
+      
     } catch (error) {
-      console.error('Error generating Excel with table format:', error);
+      console.error('Error generating Excel with single sheet format:', error);
       throw error;
     }
   }
 
+
   // Helper method to create a worksheet for each customer
-  private createCustomerSheet(
-    workbook: any,
-    customerData: any[],
-    sheetName: string,
-    customerInfo: any
-  ): void {
-    // Create worksheet data with company header and customer info matching the HTML table structure
-    const worksheetData: any[][] = [
-      // Row 1: Logo section (colspan 4) + Company info section (colspan 7)
-      [
-        'LOGO',
-        '',
-        '',
-        '',
-        'CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-      ],
-      [
-        '',
-        '',
-        '',
-        '',
-        'HTX: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-      ],
-      [
-        '',
-        '',
-        '',
-        '',
-        'VP: Tòa nhà An Phú Plaza, 117-119 Lý Chính Thắng, P.7. Q.3,',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-      ],
-      [
-        '',
-        '',
-        '',
-        '',
-        'TP.HCM Kho sơ chế: 30 Kha Vạn Cân, P. Hiệp Bình Chánh,',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-      ],
-      [
-        '',
-        '',
-        '',
-        '',
-        'TP.Thủ Đức, TP.HCM Kho Đà Lạt: 69 Trần Thủ Độ,',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-      ],
-      [
-        '',
-        '',
-        '',
-        '',
-        'TT Liên Nghĩa, Huyện Đức Trọng, Tỉnh Lâm Đồng.',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-      ],
-      [
-        '',
-        '',
-        '',
-        '',
-        'Website: rausachtrangia.com - Hotline: 090.245.8081',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-      ],
 
-      // Report title row
-      ['CHI TIẾT ĐỐI CHIẾU CÔNG NỢ', '', '', '', '', '', '', '', '', '', ''],
-
-      // Date range row
-      [
-        `Từ Ngày ${moment(this.SearchParams.Batdau).format(
-          'DD/MM/YYYY'
-        )} : - Đến Ngày : ${moment(this.SearchParams.Ketthuc).format(
-          'DD/MM/YYYY'
-        )}`,
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-      ],
-
-      // Customer info rows
-      [
-        `Tên Nhà Cung Cấp : ${
-          customerInfo.tenkh || customerInfo.tencongnoncc || ''
-        }`,
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-      ],
-      [
-        `Địa Chỉ : ${customerInfo.diachi || ''}`,
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-      ],
-      [
-        `Người Liên hệ : ${customerInfo.lienhe || ''}`,
-        '',
-        '',
-        '',
-        `Email : ${customerInfo.email || ''}`,
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-      ],
-
-      // Empty row (spacing like in HTML)
-      ['', '', '', '', '', '', '', '', '', '', ''],
-
-      // Table headers with exact same text as HTML
-      [
-        'NGÀY NHẬN',
-        'MÃ NHÀ CUNG CẤP',
-        'TÊN NHÀ CUNG CẤP',
-        'MÃ ĐƠN HÀNG',
-        'MÃ HÀNG',
-        'TÊN HÀNG',
-        'ĐVT',
-        'SỐ LƯỢNG',
-        'ĐƠN GIÁ',
-        'THÀNH TIỀN',
-        'GHI CHÚ',
-      ],
-    ];
-
-    // Add data rows for this customer
-    customerData.forEach((item) => {
-      worksheetData.push([
-        moment(item.ngaynhan).format('DD/MM/YYYY') || '',
-        item.mancc || '',
-        item.tenkh || item.tencongnoncc || '',
-        item.madathang || '',
-        item.masp || '',
-        item.tensp || '',
-        item.dvt || '',
-        Number(item.slnhan) || 0,
-        Number(item.giaban) || 0,
-        Number(item.ttnhan) || 0,
-        item.ghichu || '',
-      ]);
-    });
-
-    // Calculate totals for this customer
-    const totalQuantity = customerData.reduce(
-      (sum, item) => sum + (Number(item.slnhan) || 0),
-      0
-    );
-    const totalAmount = customerData.reduce(
-      (sum, item) => sum + (Number(item.ttnhan) || 0),
-      0
-    );
-
-    // Add summary row
-    worksheetData.push([
-      '',
-      '',
-      '',
-      '',
-      '',
-      'TỔNG CỘNG:',
-      '',
-      totalQuantity,
-      '',
-      totalAmount,
-      '',
-    ]);
-
-    // Create worksheet
-    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-
-    // Add company logo image
-    this.addLogoToWorksheet(worksheet, workbook);
-
-    // Set column widths
-    const columnWidths = [
-      { wch: 12 }, // NGÀY NHẬN
-      { wch: 15 }, // MÃ NHÀ CUNG CẤP
-      { wch: 25 }, // TÊN NHÀ CUNG CẤP
-      { wch: 15 }, // MÃ ĐƠN HÀNG
-      { wch: 12 }, // MÃ HÀNG
-      { wch: 30 }, // TÊN HÀNG
-      { wch: 8 }, // ĐVT
-      { wch: 12 }, // SỐ LƯỢNG
-      { wch: 15 }, // ĐƠN GIÁ
-      { wch: 15 }, // THÀNH TIỀN
-      { wch: 20 }, // GHI CHÚ
-    ];
-    worksheet['!cols'] = columnWidths;
-
-    // Add merges for header sections matching the HTML table structure
-    const merges = [
-      // Logo section (rows 0-6, cols 0-3)
-      { s: { r: 0, c: 0 }, e: { r: 6, c: 3 } }, // Logo area
-
-      // Company info section (rows 0-6, cols 4-10)
-      { s: { r: 0, c: 4 }, e: { r: 0, c: 10 } }, // Company name
-      { s: { r: 1, c: 4 }, e: { r: 1, c: 10 } }, // HTX address
-      { s: { r: 2, c: 4 }, e: { r: 2, c: 10 } }, // VP address line 1
-      { s: { r: 3, c: 4 }, e: { r: 3, c: 10 } }, // VP address line 2
-      { s: { r: 4, c: 4 }, e: { r: 4, c: 10 } }, // Kho address line 1
-      { s: { r: 5, c: 4 }, e: { r: 5, c: 10 } }, // Kho address line 2
-      { s: { r: 6, c: 4 }, e: { r: 6, c: 10 } }, // Website and hotline
-
-      // Report title
-      { s: { r: 7, c: 0 }, e: { r: 7, c: 10 } }, // Report title
-
-      // Date range
-      { s: { r: 8, c: 0 }, e: { r: 8, c: 10 } }, // Date range
-
-      // Customer info
-      { s: { r: 9, c: 0 }, e: { r: 9, c: 10 } }, // Customer name
-      { s: { r: 10, c: 0 }, e: { r: 10, c: 10 } }, // Customer address
-
-      // Contact person and email row (matching HTML: colspan 4 and colspan 7)
-      { s: { r: 11, c: 0 }, e: { r: 11, c: 3 } }, // Contact person (colspan 4)
-      { s: { r: 11, c: 4 }, e: { r: 11, c: 10 } }, // Email (colspan 7)
-
-      // Empty row
-      { s: { r: 12, c: 0 }, e: { r: 12, c: 10 } }, // Empty spacing row
-    ];
-    worksheet['!merges'] = merges;
-
-    // Add worksheet to workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-  }
-
-  // Helper method to sanitize sheet names for Excel compatibility
-  private sanitizeSheetName(name: string): string {
-    // Excel sheet names cannot contain these characters: / \ ? * [ ]
-    // Also limit to 31 characters but preserve Vietnamese characters
-    let sanitized = name.replace(/[\/\\?*\[\]]/g, '_').trim();
-
-    // Limit to 31 characters (Excel limit)
-    if (sanitized.length > 31) {
-      sanitized = sanitized.substring(0, 31);
-    }
-
-    // Ensure it's not empty
-    if (!sanitized || sanitized.length === 0) {
-      sanitized = 'Customer';
-    }
-
-    return sanitized;
-  }
-
-  // Method to add company logo to Excel worksheet
-  private async addLogoToWorksheet(
-    worksheet: any,
-    workbook: any
-  ): Promise<void> {
-    try {
-      // Try to load the actual company logo
-      const logoUrl = '/images/logo-full.png';
-      const logoBase64 = await this.loadImageAsBase64(logoUrl);
-
-      if (logoBase64) {
-        // For now, we'll style the logo cell since xlsx-js-style has limited image support
-        // In a full implementation, you might want to use a server-side solution for images
-        console.log('Logo loaded successfully for Excel');
-      }
-
-      // Style the logo cell to make it look professional
-      const logoCell = worksheet['A1'];
-      if (logoCell) {
-        logoCell.s = {
-          font: {
-            bold: true,
-            size: 12,
-            color: { rgb: '2E5A87' },
-            name: 'Arial',
-          },
-          alignment: {
-            horizontal: 'center',
-            vertical: 'center',
-          },
-          fill: {
-            fgColor: { rgb: 'F8F9FA' },
-          },
-          border: {
-            top: { style: 'thin', color: { rgb: 'D1D5DB' } },
-            bottom: { style: 'thin', color: { rgb: 'D1D5DB' } },
-            left: { style: 'thin', color: { rgb: 'D1D5DB' } },
-            right: { style: 'thin', color: { rgb: 'D1D5DB' } },
-          },
-        };
-
-        // Change the logo cell content to company name styled nicely
-        logoCell.v = 'CÔNG TY TRẦN GIA';
-        logoCell.t = 's';
-      }
-    } catch (error) {
-      console.warn('Could not load/add logo to Excel file:', error);
-      // Gracefully continue with styled text instead of logo
-      const logoCell = worksheet['A1'];
-      if (logoCell) {
-        logoCell.v = 'LOGO';
-        logoCell.s = {
-          font: { bold: true, size: 10 },
-          alignment: { horizontal: 'center', vertical: 'center' },
-          fill: { fgColor: { rgb: 'E5E7EB' } },
-        };
-      }
-    }
-  }
-
-  // Method to load image as base64
-  private async loadImageAsBase64(imageUrl: string): Promise<string | null> {
-    try {
-      const response = await fetch(imageUrl);
-      if (!response.ok) throw new Error('Failed to load image');
-
-      const blob = await response.blob();
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-    } catch (error) {
-      console.warn('Failed to load image:', error);
-      return null;
-    }
-  }
 
   printContent() {
     const element = document.getElementById('printContent');
@@ -1799,6 +1376,99 @@ export class ListcongnonccComponent {
       printWindow.document.close();
     });
   }
+
+  private async generateExcelWithSingleSheet(data: any[], title: string): Promise<void> {
+    try {
+      const workbook = XLSX.utils.book_new();
+      
+      // Convert data trước khi export
+      const exportData = this.convertFlatData(data);
+      
+      // Tạo worksheet data
+      const wsData = [];
+      
+      // Header công ty (3 hàng đầu)
+      wsData.push(['CÔNG TY TNHH RAU SẠCH TRĂNG GIÁ']);
+      wsData.push(['ĐC: Tiểu Khu 7, TT. Nga Sơn, H. Nga Sơn, T. Thanh Hóa']);
+      wsData.push([`${title} - ${moment().format('DD/MM/YYYY HH:mm:ss')}`]);
+      wsData.push([]); // Hàng trống
+      
+      // Header của bảng dữ liệu
+      const headers = [
+        'Mã ĐNCC',
+        'Ngày nhận', 
+        'Mã SP',
+        'Tên SP',
+        'ĐVT',
+        'SL đặt',
+        'SL nhận',
+        'SL còn lại',
+        'Giá nhập',
+        'Thành tiền',
+        'Mã NCC',
+        'Tên NCC'
+      ];
+      wsData.push(headers);
+      
+      // Dữ liệu
+      exportData.forEach((item: any) => {
+        wsData.push([
+          item.madncc || '',
+          item.ngaynhan || '',
+          item.masp || '',
+          item.tensp || '',
+          item.dvt || '',
+          item.sldat || 0,
+          item.slnhan || 0,
+          item.slconlai || 0,
+          item.gianhap || 0,
+          item.thanhtien || 0,
+          item.mancc || '',
+          item.name || ''
+        ]);
+      });
+      
+      // Tạo worksheet
+      const worksheet = XLSX.utils.aoa_to_sheet(wsData);
+      
+      // Styling cho worksheet
+      const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
+      
+      // Merge cells cho header công ty
+      worksheet['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } }, // Tên công ty
+        { s: { r: 1, c: 0 }, e: { r: 1, c: headers.length - 1 } }, // Địa chỉ
+        { s: { r: 2, c: 0 }, e: { r: 2, c: headers.length - 1 } }  // Tiêu đề + ngày
+      ];
+      
+      // Auto width cho các cột
+      const colWidths = [];
+      for (let c = 0; c <= range.e.c; c++) {
+        let maxWidth = 10;
+        for (let r = 0; r <= range.e.r; r++) {
+          const cellAddress = XLSX.utils.encode_cell({ r, c });
+          const cell = worksheet[cellAddress];
+          if (cell && cell.v) {
+            const cellLength = cell.v.toString().length;
+            maxWidth = Math.max(maxWidth, cellLength + 2);
+          }
+        }
+        colWidths.push({ wch: Math.min(maxWidth, 30) });
+      }
+      worksheet['!cols'] = colWidths;
+      
+      // Thêm worksheet vào workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Công nợ NCC');
+      
+      // Export file
+      const fileName = `${title}_${moment().format('YYYYMMDD_HHmmss')}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
+      
+    } catch (error) {
+      console.error('Error generating single sheet Excel:', error);
+    }
+  }
+
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }

@@ -45,7 +45,6 @@ import { AdvancedSearchDialogComponent } from '../../components/advanced-search-
     MatInputModule,
     MatFormFieldModule,
     MatStepperModule,
-    CommonuserguideComponent,
   ],
   templateUrl: './adminmain.component.html',
   styleUrls: ['./adminmain.component.scss']
