@@ -11,6 +11,7 @@ export declare class UserService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
+        name: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
@@ -38,6 +39,7 @@ export declare class UserService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
+        name: string | null;
         provider: string | null;
         providerId: string | null;
     }[]>;
@@ -64,6 +66,7 @@ export declare class UserService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
+        name: string | null;
         provider: string | null;
         providerId: string | null;
     }[]>;
@@ -85,6 +88,7 @@ export declare class UserService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
+        name: string | null;
         provider: string | null;
         providerId: string | null;
     }>;
@@ -95,6 +99,7 @@ export declare class UserService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
+        name: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
@@ -106,6 +111,7 @@ export declare class UserService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
+        name: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;

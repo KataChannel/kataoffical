@@ -102,7 +102,7 @@ export class ListcongnonccComponent {
     tongtien: 'Tổng Tiền',
   };
   FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('CongnoColFilter') || '[]'
+    localStorage.getItem('CongnonccColFilter') || '[]'
   );
   exampleExport: any = {};
   Columns: any[] = [];
@@ -613,10 +613,18 @@ export class ListcongnonccComponent {
             name: true,
             mancc: true,
           },
+        },
+        sanpham:{
+          select:{
+            sldat:true,
+            slgiao:true,
+            slnhan:true
+          }
         }
       },
     });
     console.log(Dathangs);
+    // const ListDathang = Dathangs.data.map((v: any) => ({
     this._DonhangService.ListDonhang.update(() => Dathangs.data.map((v: any) => ({
       ...v,
       name: v.nhacungcap?.name || '',
@@ -634,7 +642,7 @@ export class ListcongnonccComponent {
       this.FilterColumns = this.Columns;
     } else {
       localStorage.setItem(
-        'CongnoColFilter',
+        'CongnonccColFilter',
         JSON.stringify(this.FilterColumns)
       );
     }
@@ -668,7 +676,7 @@ export class ListcongnonccComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('CongnoColFilter', JSON.stringify(this.FilterColumns));
+    localStorage.setItem('CongnonccColFilter', JSON.stringify(this.FilterColumns));
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();
@@ -932,37 +940,6 @@ export class ListcongnonccComponent {
     return this.editDathang.findIndex((v) => v.id === item.id) !== -1;
   }
   DeleteDathang(): void {}
-  async LoadDrive() {
-    const DriveInfo = {
-      IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'SPImport',
-      ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
-    };
-    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
-    const data = ConvertDriveData(result.values);
-    console.log(data);
-    this.DoImportData(data);
-    // const updatePromises = data.map(async (v: any) => {
-    //   const item = this._CongnonccsService
-    //     .ListCongnoncc()
-    //     .find((v1) => v1.Mancc === v.Mancc);
-    //   if (item) {
-    //     const item1 = { ...item, ...v };
-    //     console.log(item1);
-
-    //     await this._CongnonccsService.updateOneCongnoncc(item1);
-    //   }
-    // });
-    // Promise.all(updatePromises).then(() => {
-    //   this._snackBar.open('Cập Nhật Thành Công', '', {
-    //     duration: 1000,
-    //     horizontalPosition: 'end',
-    //     verticalPosition: 'top',
-    //     panelClass: ['snackbar-success'],
-    //   });
-    //   //  window.location.reload();
-    // });
-  }
   DoImportData(data: any) {
     console.log(data);
     const transformedData = data.map((v: any) => ({

@@ -28,10 +28,12 @@
           <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
           <mat-datepicker #pickerKetthuc></mat-datepicker>
         </mat-form-field>   
-        <span (click)="ToggleAll()" class="lg:flex hidden cursor-pointer whitespace-nowrap p-2 rounded-lg bg-slate-200">
+        
+        <span (click)="ToggleAll()" class="lg:flex cursor-pointer whitespace-nowrap p-2 rounded-lg bg-slate-200">
           {{CountItem}} Bản Ghi
         </span>
-        <span class="lg:flex hidden cursor-pointer whitespace-nowrap p-2 rounded-lg bg-slate-200">
+
+        <span class="lg:flex cursor-pointer whitespace-nowrap p-2 rounded-lg bg-slate-200">
           {{editDathang.length}} Đã Chọn
         </span>
       <button (click)="openPreviewExport(dialogPreviewExport)" matTooltip="Xem Mẫu" mat-icon-button color="primary">
@@ -48,11 +50,11 @@
         </button>
         
         <mat-menu #exportMenu="matMenu">
-          <button mat-menu-item (click)="ExportExcel(editDathang, 'Congno')">
+          <!-- <button mat-menu-item (click)="ExportExcel(editDathang, 'Congno')">
             <mat-icon>cloud_download</mat-icon>
             <span>Xuất từ Server (Nhanh)</span>
-          </button>
-          <button mat-menu-item (click)="ExportExcelTableFormat(editDathang, 'Congno')">
+          </button> -->
+          <button mat-menu-item (click)="ExportExcelTableFormat(editDathang, 'Congnoncc')">
             <mat-icon>table_view</mat-icon>
             <span>Xuất định dạng bảng (Chi tiết)</span>
           </button>
@@ -514,7 +516,7 @@
 <mat-dialog-content class="mat-typography">
     <div class="w-full overflow-x-auto">
       <table id="exporttable" class="text-xs border-collapse border border-gray-300">
-        <thead>
+        <!-- <thead>
         <tr>
         <th colspan="4" class="text-start p-2 border"><img src="/images/logo-full.png" class="h-20 mx-auto"></th>
         <th colspan="7" class="text-start p-2  flex flex-col gap-2">
@@ -561,7 +563,7 @@
           <tr class="text-start">
         <th colspan="11" class="p-8"></th>
           </tr>
-        </thead>
+        </thead> -->
         
         <thead>
           <tr class="bg-gray-300">

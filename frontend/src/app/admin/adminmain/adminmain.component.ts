@@ -25,7 +25,7 @@ import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
 import { CommonuserguideComponent } from '../userguide/commonuserguide/commonuserguide.component';
 import { UserguideService } from '../userguide/userguide.service';
 import { MatDialog } from '@angular/material/dialog';
-// import { AdvancedSearchDialogComponent } from './advanced-search-dialog/advanced-search-dialog.component';
+import { AdvancedSearchDialogComponent } from '../../components/advanced-search-dialog/advanced-search-dialog.component';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -159,22 +159,22 @@ export class AdminmainComponent {
   }
 
   openSearchDialog(): void {
-    // const dialogRef = this.dialog.open(AdvancedSearchDialogComponent, {
-    //   width: '90vw',
-    //   maxWidth: '900px',
-    //   height: '80vh',
-    //   maxHeight: '700px',
-    //   panelClass: 'advanced-search-dialog-container',
-    //   data: {
-    //     initialKeyword: '' // Có thể truyền keyword từ input nếu có
-    //   }
-    // });
+    const dialogRef = this.dialog.open(AdvancedSearchDialogComponent, {
+      width: '90vw',
+      maxWidth: '90vw',
+      height: '90vh',
+      maxHeight: '90vh',
+      panelClass: 'advanced-search-dialog-container',
+      data: {
+        initialKeyword: '' // Có thể truyền keyword từ input nếu có
+      }
+    });
 
-    // dialogRef.afterClosed().subscribe(result => {
-    //   if (result) {
-    //     console.log('Search dialog closed with result:', result);
-    //   }
-    // });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Search dialog closed with result:', result);
+      }
+    });
   }
   events = [
     { date: '2025-01-01', title: 'Project Start', description: 'Initiated the project with team.', icon: 'fa-circle' },
