@@ -156,7 +156,7 @@ export class XuatnhaptonComponent implements OnDestroy {
   async ngOnInit(): Promise<void> {    
     // await this._SanphamService.getAllSanpham() 
     this.LoadXuatnhapton();
-    this._KhoService.getTonKho('1', '1000').then((res) => {
+    this._KhoService.getTonKho('1', '99999').then((res) => {
     this.Xuatnhapton.set(res.data);
     this.dataSource.data = this.Xuatnhapton();
     this.dataSource.paginator = this.paginator;
