@@ -1263,8 +1263,13 @@ export class ListcongnonccComponent {
       });
 
       // Add all data rows với tổng tiền chỉ hiển thị ở dòng đầu tiên của mỗi đơn hàng
+      let currentRow = 1; // Start after header row
+      const mergeRanges: any[] = [];
+      
       groupedData.forEach((items, madncc) => {
         const orderTotal = orderTotals.get(madncc);
+        const startRow = currentRow;
+        
         items.forEach((item: any, index: number) => {
           worksheetData.push([
             moment(item.ngaynhan).format('DD/MM/YYYY') || '',
@@ -1281,7 +1286,16 @@ export class ListcongnonccComponent {
             Number(item.thanhtien) || 0,
             index === 0 ? orderTotal : '', // Chỉ hiển thị tổng ở dòng đầu tiên
           ]);
+          currentRow++;
         });
+        
+        // Tạo merge range cho cột TỔNG TIỀN ĐƠN HÀNG (cột index 12) nếu có nhiều hơn 1 dòng
+        if (items.length > 1) {
+          mergeRanges.push({
+            s: { r: startRow, c: 12 }, // start row, column 12 (TỔNG TIỀN ĐƠN HÀNG)
+            e: { r: currentRow - 1, c: 12 }, // end row, column 12
+          });
+        }
       });
 
       // Add summary row
@@ -1309,6 +1323,11 @@ export class ListcongnonccComponent {
 
       // Create worksheet
       const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+      // Áp dụng merge cells cho cột TỔNG TIỀN ĐƠN HÀNG
+      if (mergeRanges.length > 0) {
+        worksheet['!merges'] = mergeRanges;
+      }
 
       // Set column widths
       const columnWidths = [
