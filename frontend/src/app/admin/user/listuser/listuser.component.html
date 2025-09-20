@@ -104,9 +104,9 @@
             <span class="max-w-40 line-clamp-4 me-4">
               {{ ColumnName[column] }}
             </span>
-            <app-searchfilter [icon]="'filter_alt'" [ListItem]="this.Listuser()" [fieldsearch]="column"
-              [ListFilter]="ListFilter" [filterItem]="FilterHederColumn(this.Listuser(),column)"
-              (OutFilter)="onOutFilter($event)"></app-searchfilter>
+            <app-searchfilter [icon]="'filter_alt'" [ListItem]="Listuser()" [fieldsearch]="column"
+              [ListFilter]="ListFilter" [filterItem]="FilterHederColumn(dataSource.filteredData,column)"
+              (OutFilter)="onOutFilter($event)"></app-searchfilter>             
           </th>
           }
           <td class="border" mat-cell *matCellDef="let row; let idx = index">

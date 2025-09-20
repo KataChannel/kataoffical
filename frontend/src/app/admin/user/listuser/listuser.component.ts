@@ -19,6 +19,7 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter/searc
 import { UserGraphQLService, User } from '../user-graphql.service';
 import { DrawerService } from '../shared/drawer.service';
 import { GraphqlService } from '../../../shared/services/graphql.service';
+import { memoize } from '../../../shared/utils/decorators';
 
 @Component({
   selector: 'app-listuser',
@@ -85,7 +86,8 @@ export class ListUserComponent implements OnInit, AfterViewInit {
   }
   private _GraphqlService: GraphqlService = inject(GraphqlService);
   // State - initialized after constructor
-  Listuser!: () => User[];
+
+  Listuser = signal<any[]>([]);
   isLoading!: () => boolean;
   ListFilter: any[] = [];
   EditList: User[] = [];
@@ -96,13 +98,11 @@ export class ListUserComponent implements OnInit, AfterViewInit {
   total = signal(0);
   totalPages = signal(1);
 
-  ngOnInit(): void {
-    // Initialize signals after service is available
-    this.Listuser = this.userGraphQLService.allUsers;
+  async ngOnInit(): Promise<void> {
     this.isLoading = this.userGraphQLService.isLoading;
-    
     this.initializeColumns();
-    this.loadUsers();
+    await this.loadUsers();
+    // console.log('Listuser', this.Listuser());
   }
 
   ngAfterViewInit(): void {
@@ -130,8 +130,9 @@ export class ListUserComponent implements OnInit, AfterViewInit {
     try {
       const users = await this.userGraphQLService.loadAllUsers();
       this.dataSource.data = users;
+      this.Listuser.set(users);
       this.total.set(users.length);
-      this.updatePagination();
+      this.updatePagination(); 
     } catch (error: any) {
       this.snackBar.open('Lỗi khi tải dữ liệu: ' + error.message, 'Đóng', { duration: 3000 });
     }
@@ -192,14 +193,18 @@ export class ListUserComponent implements OnInit, AfterViewInit {
       .map(column => column.key);
   }
 
-  FilterHederColumn(data: User[], field: string): any[] {
-    const uniqueValues = [...new Set(data.map(item => (item as any)[field]))];
-    return uniqueValues.filter(value => value !== null && value !== undefined);
+  @memoize()
+  FilterHederColumn(list: any, column: any) {
+    const uniqueList = list.filter((obj: any, index: number, self: any) => 
+      index === self.findIndex((t: any) => t[column] === obj[column])
+    );
+    return uniqueList;
   }
 
-  onOutFilter(filterData: any): void {
-    this.ListFilter = filterData;
-    this.applyFilters();
+  onOutFilter(event: any) {
+    this.dataSource.data = event;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   applyFilters(): void {

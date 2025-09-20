@@ -866,6 +866,45 @@ export class EnhancedUniversalService {
 
     // Handle specific model relation fields
     switch (modelName.toLowerCase()) {
+      case 'userpermission':
+        // UserPermission should use direct foreign keys, not nested relations
+        // Keep userId and permissionId as they are for direct foreign key reference
+        if (normalizedData.user && !normalizedData.userId) {
+          // If user relation is provided but no userId, extract the ID
+          normalizedData.userId = normalizedData.user.connect?.id || normalizedData.user.id;
+          delete normalizedData.user;
+        }
+        if (normalizedData.permission && !normalizedData.permissionId) {
+          // If permission relation is provided but no permissionId, extract the ID
+          normalizedData.permissionId = normalizedData.permission.connect?.id || normalizedData.permission.id;
+          delete normalizedData.permission;
+        }
+        break;
+
+      case 'userrole':
+        // UserRole should use direct foreign keys
+        if (normalizedData.user && !normalizedData.userId) {
+          normalizedData.userId = normalizedData.user.connect?.id || normalizedData.user.id;
+          delete normalizedData.user;
+        }
+        if (normalizedData.role && !normalizedData.roleId) {
+          normalizedData.roleId = normalizedData.role.connect?.id || normalizedData.role.id;
+          delete normalizedData.role;
+        }
+        break;
+
+      case 'rolepermission':
+        // RolePermission should use direct foreign keys
+        if (normalizedData.role && !normalizedData.roleId) {
+          normalizedData.roleId = normalizedData.role.connect?.id || normalizedData.role.id;
+          delete normalizedData.role;
+        }
+        if (normalizedData.permission && !normalizedData.permissionId) {
+          normalizedData.permissionId = normalizedData.permission.connect?.id || normalizedData.permission.id;
+          delete normalizedData.permission;
+        }
+        break;
+
       case 'chotkhodetail':
         // Convert direct IDs to nested relations if needed
         if (normalizedData.chotkhoId && !normalizedData.chotkho) {

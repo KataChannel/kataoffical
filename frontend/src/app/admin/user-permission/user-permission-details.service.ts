@@ -109,9 +109,9 @@ export class UserPermissionDetailsService {
     const rolePermissions = this.extractRolePermissions(userDetails.roles);
     const userGranted = userDetails.userPermissions.filter(up => up.isGranted);
     const userDenied = userDetails.userPermissions.filter(up => !up.isGranted);
-    console.log('rolePermissions', rolePermissions);
-    console.log('userGranted', userGranted);
-    console.log('userDenied', userDenied);
+    // console.log('rolePermissions', rolePermissions);
+    // console.log('userGranted', userGranted);
+    // console.log('userDenied', userDenied);
     
     // Calculate effective permissions - convert to Permission format
     const effectivePermissions = this.calculateEffectivePermissions(
@@ -180,7 +180,7 @@ export class UserPermissionDetailsService {
         isActive: user.isActive,
         profile: user.profile,
         roles: user.roles || [],
-        userPermissions: userPermissions.map(up => ({
+        userPermissions: userPermissions.map((up:any) => ({
           id: up.id,
           isGranted: up.isGranted,
           permission: up.permission ? {
@@ -200,8 +200,8 @@ export class UserPermissionDetailsService {
             createdAt: new Date(),
             updatedAt: new Date()
           },
-          createdAt: up.createdAt?.toISOString(),
-          updatedAt: up.updatedAt?.toISOString()
+          createdAt: up.createdAt,
+          updatedAt: up.updatedAt
         }))
       };
 
@@ -217,7 +217,7 @@ export class UserPermissionDetailsService {
     
     roles.forEach(userRole => {
       const role = userRole.role;
-      console.log('role.permissions',role.permissions);
+      // console.log('role.permissions',role.permissions);
       
       if (role && role.permissions) {
         role.permissions.forEach((permission: any) => {

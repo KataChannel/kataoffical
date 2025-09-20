@@ -558,6 +558,36 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             return data;
         const normalizedData = { ...data };
         switch (modelName.toLowerCase()) {
+            case 'userpermission':
+                if (normalizedData.user && !normalizedData.userId) {
+                    normalizedData.userId = normalizedData.user.connect?.id || normalizedData.user.id;
+                    delete normalizedData.user;
+                }
+                if (normalizedData.permission && !normalizedData.permissionId) {
+                    normalizedData.permissionId = normalizedData.permission.connect?.id || normalizedData.permission.id;
+                    delete normalizedData.permission;
+                }
+                break;
+            case 'userrole':
+                if (normalizedData.user && !normalizedData.userId) {
+                    normalizedData.userId = normalizedData.user.connect?.id || normalizedData.user.id;
+                    delete normalizedData.user;
+                }
+                if (normalizedData.role && !normalizedData.roleId) {
+                    normalizedData.roleId = normalizedData.role.connect?.id || normalizedData.role.id;
+                    delete normalizedData.role;
+                }
+                break;
+            case 'rolepermission':
+                if (normalizedData.role && !normalizedData.roleId) {
+                    normalizedData.roleId = normalizedData.role.connect?.id || normalizedData.role.id;
+                    delete normalizedData.role;
+                }
+                if (normalizedData.permission && !normalizedData.permissionId) {
+                    normalizedData.permissionId = normalizedData.permission.connect?.id || normalizedData.permission.id;
+                    delete normalizedData.permission;
+                }
+                break;
             case 'chotkhodetail':
                 if (normalizedData.chotkhoId && !normalizedData.chotkho) {
                     normalizedData.chotkho = {

@@ -372,7 +372,7 @@ export class UserPermissionOverviewComponent {
       
       if (userDetails) {
         const summaryData = this.userPermissionService.getPermissionSummary(userDetails);
-        console.log('summaryData', summaryData);
+        // console.log('summaryData', summaryData);
         
         this.summary.set(summaryData);
         this.error.set(null);

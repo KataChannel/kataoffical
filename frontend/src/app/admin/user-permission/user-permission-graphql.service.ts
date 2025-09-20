@@ -261,19 +261,18 @@ export class UserPermissionGraphQLService {
 
   async assignPermissionToUser(data: UserPermissionCreateData): Promise<UserPermission> {
     this._isLoading.set(true);
-    
+    console.log('Assigning permission to user with data:', data);
     try {
       const newUserPermission = await this.graphqlService.createOne<UserPermission>(
-        'userPermission',
-        {
-          data: {
+        'userPermission',{
             userId: data.userId,
             permissionId: data.permissionId,
             isGranted: data.isGranted,
             grantedBy: data.grantedBy,
             reason: data.reason,
             expiresAt: data.expiresAt,
-          },
+        },
+        {
           include: {
             user: {
               select: {

@@ -1,0 +1,56 @@
+// Test UserPermission creation with the fixed enhanced-universal service
+const testUserPermissionCreation = `
+  mutation CreateUserPermission {
+    createOne(
+      modelName: "userpermission"
+      data: {
+        userId: "04032421-1ce2-42fe-9b42-6048fb235532"
+        permissionId: "6c7d1c9e-0cc0-4c13-ac91-8e71ef68591c"
+        isGranted: true
+        grantedBy: "admin"
+      }
+      include: {
+        user: {
+          select: {
+            id: true
+            name: true
+            email: true
+          }
+        }
+        permission: {
+          select: {
+            id: true
+            name: true
+            codeId: true
+            description: true
+            group: true
+          }
+        }
+      }
+    ) {
+      id
+      userId
+      permissionId
+      isGranted
+      grantedBy
+      grantedAt
+      user {
+        id
+        name
+        email
+      }
+      permission {
+        id
+        name
+        codeId
+        description
+        group
+      }
+    }
+  }
+`;
+
+// This mutation should now work without the "Argument user is missing" error
+// because we've fixed the normalizeRelationFieldsForModel method to properly
+// handle userpermission models by keeping userId and permissionId as direct
+// foreign key references instead of trying to convert them to nested relations.

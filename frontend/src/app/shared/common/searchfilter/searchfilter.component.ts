@@ -51,12 +51,17 @@ export class SearchfilterComponent {
   searchText: string = '';
   initFilter: any[] = [];
   ngOnInit(): void {
-      this.initFilter = this.filterItem;
+    this.initFilter = this.filterItem;
     // console.log('ListItem', this.ListItem);   
     // console.log('filterItem', this.filterItem);   
     // console.log('ListFilter', this.ListFilter);   
-    // console.log('fieldsearch', this.fieldsearch);   
-    
+    // console.log('fieldsearch', this.fieldsearch);     
+  }
+  ngOnChanges(): void {
+    // console.log('ListItem', this.ListItem);   
+    // console.log('filterItem', this.filterItem);   
+    // console.log('ListFilter', this.ListFilter);   
+    // console.log('fieldsearch', this.fieldsearch);
   }
   trackByFn(index: number, item: any): any {
     return item.id;

@@ -144,15 +144,15 @@ export class UserRolesInfoComponent {
   constructor() {
     // Debug effect to check user data
     effect(() => {
-      console.log('🔍 UserRolesInfoComponent - user data:', this.user());
-      console.log('🔍 UserRolesInfoComponent - user roles:', this.user()?.roles);
+      // console.log('🔍 UserRolesInfoComponent - user data:', this.user());
+      // console.log('🔍 UserRolesInfoComponent - user roles:', this.user()?.roles);
     });
   }
   
   getRolePermissions(userRole: any): any[] {
     // console.log('Extracting permissions for role:', userRole);
      const result = userRole.role?.permissions ||  userRole.permissions || userRole.role?.rolePermissions?.map((rp: any) => rp.permission) ||[];
-     console.log('Extracting permissions for role result:', result);
+    //  console.log('Extracting permissions for role result:', result);
      return result
 }
   
