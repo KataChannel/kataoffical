@@ -517,6 +517,7 @@ export class EnhancedUniversalService {
     'role': 'role',
     'userrole': 'userRole',
     'permission': 'permission',
+    'userpermission': 'userPermission',
     'rolepermission': 'rolePermission',
     'menu': 'menu',
     'profile': 'profile',

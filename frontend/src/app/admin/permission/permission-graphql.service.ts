@@ -1,5 +1,9 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
-import { GraphqlService, OptimizedFindManyOptions, PaginationResult } from '../../shared/services/graphql.service';
+import { Injectable, signal, computed, inject, effect } from '@angular/core';
+import {
+  GraphqlService,
+  OptimizedFindManyOptions,
+  PaginationResult,
+} from '../../shared/services/graphql.service';
 import { StorageService } from '../../shared/utils/storage.service';
 
 export interface Permission {
@@ -22,7 +26,7 @@ export interface Role {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PermissionGraphQLService {
   // Signals for state management
@@ -46,7 +50,7 @@ export class PermissionGraphQLService {
   // Computed pagination
   totalItems = computed(() => this._filteredPermissions().length);
   totalPages = computed(() => Math.ceil(this.totalItems() / this._pageSize()));
-  
+
   // Client-side pagination
   paginatedPermissions = computed(() => {
     const start = (this._currentPage() - 1) * this._pageSize();
@@ -58,24 +62,24 @@ export class PermissionGraphQLService {
   searchResults = computed(() => {
     const term = this._searchTerm().toLowerCase();
     if (!term) {
-      this._filteredPermissions.set(this._allPermissions());
       return this._allPermissions();
     }
 
-    const filtered = this._allPermissions().filter(permission =>
-      permission.name.toLowerCase().includes(term) ||
-      permission.code.toLowerCase().includes(term) ||
-      permission.description?.toLowerCase().includes(term)
+    const filtered = this._allPermissions().filter(
+      (permission) =>
+        permission.name.toLowerCase().includes(term) ||
+        permission.code.toLowerCase().includes(term) ||
+        permission.description?.toLowerCase().includes(term)
     );
-    this._filteredPermissions.set(filtered);
     return filtered;
   });
 
-  constructor(
-    private storageService: StorageService
-  ) {
-    // Auto-update filtered data when search term changes
-    this.searchResults(); // Initialize computed
+  constructor(private storageService: StorageService) {
+    // Effect to update _filteredPermissions when searchResults changes
+    effect(() => {
+      const results = this.searchResults();
+      this._filteredPermissions.set(results);
+    });
   }
 
   private graphqlService = inject(GraphqlService);
@@ -88,27 +92,35 @@ export class PermissionGraphQLService {
     }
 
     this._isLoading.set(true);
-    
+
     try {
       const options: OptimizedFindManyOptions = {
         orderBy: { createdAt: 'desc' },
         include: {
           roles: {
             select: {
-              id: true,
-              name: true
-            }
-          }
-        }
+              role: {
+                select: {
+                  id: true,
+                  name: true,
+                  createdAt: true,
+                  updatedAt: true,
+                },
+              },
+            },
+          },
+        },
       };
 
-      const permissions = await this.graphqlService.findMany<Permission>('permission', options) as Permission[];
+      const permissions = (await this.graphqlService.findMany<Permission>(
+        'permission',
+        options
+      )) as Permission[];
       this._allPermissions.set(permissions);
-      this._filteredPermissions.set(permissions);
-      
+
       // Reset to first page
       this._currentPage.set(1);
-      
+
       return permissions;
     } catch (error) {
       console.error('Error loading permissions:', error);
@@ -120,29 +132,38 @@ export class PermissionGraphQLService {
 
   async createPermission(data: Partial<Permission>): Promise<Permission> {
     this._isLoading.set(true);
-    
+
     try {
-      const newPermission = await this.graphqlService.createOne<Permission>('permission', {
-        data: {
-          name: data.name,
-          code: data.code,
-          description: data.description,
-          isActive: data.isActive ?? true
-        },
-        include: {
-          roles: {
-            select: {
-              id: true,
-              name: true
-            }
-          }
+      const newPermission = (await this.graphqlService.createOne<Permission>(
+        'permission',
+        {
+          data: {
+            name: data.name,
+            code: data.code,
+            description: data.description,
+            isActive: data.isActive ?? true,
+          },
+          include: {
+            roles: {
+              select: {
+                role: {
+                  select: {
+                    id: true,
+                    name: true,
+                    createdAt: true,
+                    updatedAt: true,
+                  },
+                },
+              },
+            },
+          },
         }
-      }) as Permission;
+      )) as Permission;
 
       // Update local state
       const currentPermissions = this._allPermissions();
       this._allPermissions.set([newPermission, ...currentPermissions]);
-      
+
       return newPermission;
     } catch (error) {
       console.error('Error creating permission:', error);
@@ -152,30 +173,41 @@ export class PermissionGraphQLService {
     }
   }
 
-  async updatePermission(id: string, data: Partial<Permission>): Promise<Permission> {
+  async updatePermission(
+    id: string,
+    data: Partial<Permission>
+  ): Promise<Permission> {
     this._isLoading.set(true);
-    
+
     try {
-      const updatedPermission = await this.graphqlService.updateOne<Permission>('permission', { id }, data, {
-        include: {
-          roles: {
-            select: {
-              id: true,
-              name: true
-            }
+      const updatedPermission =
+        (await this.graphqlService.updateOne<Permission>(
+          'permission',
+          { id },
+          data,
+          {
+            include: {
+              role: {
+                select: {
+                  id: true,
+                  name: true,
+                  createdAt: true,
+                  updatedAt: true,
+                },
+              },
+            },
           }
-        }
-      }) as Permission;
+        )) as Permission;
 
       // Update local state
       const currentPermissions = this._allPermissions();
-      const index = currentPermissions.findIndex(p => p.id === id);
+      const index = currentPermissions.findIndex((p) => p.id === id);
       if (index !== -1) {
         const updated = [...currentPermissions];
         updated[index] = updatedPermission;
         this._allPermissions.set(updated);
       }
-      
+
       return updatedPermission;
     } catch (error) {
       console.error('Error updating permission:', error);
@@ -187,20 +219,19 @@ export class PermissionGraphQLService {
 
   async deletePermission(id: string): Promise<void> {
     this._isLoading.set(true);
-    
+
     try {
-      await this.graphqlService.deleteOne('permission', { id }) as any;
+      (await this.graphqlService.deleteOne('permission', { id })) as any;
 
       // Update local state
       const currentPermissions = this._allPermissions();
-      const filtered = currentPermissions.filter(p => p.id !== id);
+      const filtered = currentPermissions.filter((p) => p.id !== id);
       this._allPermissions.set(filtered);
-      
+
       // Remove from selected if exists
       const selected = new Set(this._selectedPermissions());
       selected.delete(id);
       this._selectedPermissions.set(selected);
-      
     } catch (error) {
       console.error('Error deleting permission:', error);
       throw error;
@@ -211,18 +242,17 @@ export class PermissionGraphQLService {
 
   async batchDeletePermissions(ids: string[]): Promise<void> {
     this._isLoading.set(true);
-    
+
     try {
-      await this.graphqlService.batchDelete('permission', ids) as any;
+      (await this.graphqlService.batchDelete('permission', ids)) as any;
 
       // Update local state
       const currentPermissions = this._allPermissions();
-      const filtered = currentPermissions.filter(p => !ids.includes(p.id));
+      const filtered = currentPermissions.filter((p) => !ids.includes(p.id));
       this._allPermissions.set(filtered);
-      
+
       // Clear selected
       this._selectedPermissions.set(new Set());
-      
     } catch (error) {
       console.error('Error batch deleting permissions:', error);
       throw error;
@@ -275,7 +305,7 @@ export class PermissionGraphQLService {
 
   selectAllCurrentPage(): void {
     const selected = new Set(this._selectedPermissions());
-    this.paginatedPermissions().forEach(permission => {
+    this.paginatedPermissions().forEach((permission) => {
       selected.add(permission.id);
     });
     this._selectedPermissions.set(selected);
@@ -283,7 +313,7 @@ export class PermissionGraphQLService {
 
   deselectAllCurrentPage(): void {
     const selected = new Set(this._selectedPermissions());
-    this.paginatedPermissions().forEach(permission => {
+    this.paginatedPermissions().forEach((permission) => {
       selected.delete(permission.id);
     });
     this._selectedPermissions.set(selected);
@@ -308,22 +338,21 @@ export class PermissionGraphQLService {
   // ========================= Utility Methods =========================
 
   findPermissionById(id: string): Permission | undefined {
-    return this._allPermissions().find(p => p.id === id);
+    return this._allPermissions().find((p) => p.id === id);
   }
 
   getPermissionsByCode(codes: string[]): Permission[] {
-    return this._allPermissions().filter(p => codes.includes(p.code));
+    return this._allPermissions().filter((p) => codes.includes(p.code));
   }
 
   getActivePermissions(): Permission[] {
-    return this._allPermissions().filter(p => p.isActive);
+    return this._allPermissions().filter((p) => p.isActive);
   }
 
   // ========================= Cache Management =========================
 
   clearCache(): void {
     this._allPermissions.set([]);
-    this._filteredPermissions.set([]);
     this._searchTerm.set('');
     this._currentPage.set(1);
     this.clearSelection();

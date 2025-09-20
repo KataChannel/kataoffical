@@ -392,7 +392,7 @@ export class UserPermissionManagementComponent {
     const start = this.currentPage() * this.pageSize();
     const end = start + this.pageSize();
     
-    this.totalCount.set(filtered.length);
+    this.totalCount?.set(filtered.length);
     return filtered.slice(start, end);
   });
 

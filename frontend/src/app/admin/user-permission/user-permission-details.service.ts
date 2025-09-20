@@ -1,179 +1,125 @@
 import { Injectable, inject } from '@angular/core';
-import { Apollo } from 'apollo-angular';
-import { gql } from 'apollo-angular';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-
-const GET_USER_PERMISSION_DETAILS = gql`
-  query GetUserPermissionDetails($userId: String!) {
-    user: getUserById(id: $userId) {
-      id
-      username
-      email
-      roles {
-        id
-        name
-        description
-        permissions {
-          id
-          name
-          description
-          resource
-          action
-        }
-      }
-      userPermissions {
-        id
-        type
-        permission {
-          id
-          name
-          description
-          resource
-          action
-        }
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
-
-const GET_ALL_PERMISSIONS = gql`
-  query GetAllPermissions {
-    permissions: getAllPermissions {
-      id
-      name
-      description
-      resource
-      action
-    }
-  }
-`;
+import { Observable, of, BehaviorSubject } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { UserPermissionGraphQLService, UserPermission } from './user-permission-graphql.service';
+import { PermissionGraphQLService, Permission as BasePermission } from '../permission/permission-graphql.service';
+import { UserGraphQLService, User, UserRole } from '../user/user-graphql.service';
 
 export interface Permission {
   id: string;
   name: string;
+  code: string;
   description?: string;
-  resource?: string;
-  action?: string;
-}
-
-export interface UserPermission {
-  id: string;
-  type: 'GRANTED' | 'DENIED';
-  permission: Permission;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Role {
-  id: string;
-  name: string;
-  description?: string;
-  permissions: Permission[];
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface UserPermissionDetails {
   id: string;
-  username: string;
-  email: string;
-  roles: Role[];
-  userPermissions: UserPermission[];
+  email?: string;
+  SDT?: string;
+  isActive: boolean;
+  profile?: {
+    name: string;
+    avatar?: string;
+    bio?: string;
+  };
+  roles: UserRole[];
+  userPermissions: {
+    id: string;
+    isGranted: boolean;
+    permission: Permission;
+    createdAt?: string;
+    updatedAt?: string;
+  }[];
+}
+
+export interface PermissionSummary {
+  totalRolePermissions: number;
+  grantedPermissions: number;
+  deniedPermissions: number;
+  effectivePermissions: Permission[];
+  rolePermissions: Permission[];
+  userGranted: any[];
+  userDenied: any[];
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserPermissionDetailsService {
-  private apollo = inject(Apollo);
+  private userPermissionService = inject(UserPermissionGraphQLService);
+  private permissionService = inject(PermissionGraphQLService);
+  private userService = inject(UserGraphQLService);
 
+  private cachedUsers = new Map<string, UserPermissionDetails>();
+  private cachedPermissions: Permission[] = [];
+
+  /**
+   * Get user permission details by userId
+   */
   getUserPermissionDetails(userId: string): Observable<UserPermissionDetails | null> {
-    return this.apollo.query<{ user: UserPermissionDetails }>({
-      query: GET_USER_PERMISSION_DETAILS,
-      variables: { userId },
-      errorPolicy: 'all'
-    }).pipe(
-      map(result => result.data?.user || null)
-    );
-  }
-
-  getAllPermissions(): Observable<Permission[]> {
-    return this.apollo.query<{ permissions: Permission[] }>({
-      query: GET_ALL_PERMISSIONS,
-      errorPolicy: 'all'
-    }).pipe(
-      map(result => result.data?.permissions || [])
-    );
-  }
-
-  calculateEffectivePermissions(user: UserPermissionDetails): Permission[] {
-    if (!user) return [];
-
-    // Get all permissions from roles
-    const rolePermissions = new Map<string, Permission>();
-    user.roles?.forEach(role => {
-      role.permissions?.forEach(permission => {
-        rolePermissions.set(permission.name, permission);
-      });
-    });
-
-    // Apply user-specific permissions
-    const deniedPermissions = new Set<string>();
-    const grantedPermissions = new Map<string, Permission>();
-
-    user.userPermissions?.forEach(userPerm => {
-      if (userPerm.type === 'DENIED') {
-        deniedPermissions.add(userPerm.permission.name);
-        // Remove from granted if it was there
-        grantedPermissions.delete(userPerm.permission.name);
-      } else if (userPerm.type === 'GRANTED') {
-        // Only grant if not denied
-        if (!deniedPermissions.has(userPerm.permission.name)) {
-          grantedPermissions.set(userPerm.permission.name, userPerm.permission);
-        }
-      }
-    });
-
-    // Final effective permissions = role permissions + granted - denied
-    const effective = new Map<string, Permission>();
-
-    // Add role permissions (except denied ones)
-    rolePermissions.forEach((permission, name) => {
-      if (!deniedPermissions.has(name)) {
-        effective.set(name, permission);
-      }
-    });
-
-    // Add granted permissions
-    grantedPermissions.forEach((permission, name) => {
-      effective.set(name, permission);
-    });
-
-    return Array.from(effective.values());
-  }
-
-  getPermissionSummary(user: UserPermissionDetails) {
-    if (!user) {
-      return {
-        totalRolePermissions: 0,
-        grantedPermissions: 0,
-        deniedPermissions: 0,
-        effectivePermissions: [],
-        rolePermissions: [],
-        userGranted: [],
-        userDenied: []
-      };
+    if (!userId || userId === 'new') {
+      return of(null);
     }
 
-    const rolePermissions = user.roles?.flatMap(role => 
-      role.permissions || []
-    ) || [];
+    // Check cache first
+    if (this.cachedUsers.has(userId)) {
+      return of(this.cachedUsers.get(userId)!);
+    }
 
-    const userGranted = user.userPermissions?.filter(up => up.type === 'GRANTED') || [];
-    const userDenied = user.userPermissions?.filter(up => up.type === 'DENIED') || [];
+    // Load user data with roles and user permissions
+    return this.loadUserWithPermissions(userId).pipe(
+      map(userDetails => {
+        if (userDetails) {
+          // Cache the result
+          this.cachedUsers.set(userId, userDetails);
+        }
+        return userDetails;
+      }),
+      catchError(error => {
+        console.error('Error loading user permission details:', error);
+        return of(null);
+      })
+    );
+  }
 
-    const effectivePermissions = this.calculateEffectivePermissions(user);
+  /**
+   * Get all available permissions
+   */
+  getAllPermissions(): Observable<Permission[]> {
+    if (this.cachedPermissions.length > 0) {
+      return of(this.cachedPermissions);
+    }
+
+    return new Observable(observer => {
+      this.permissionService.loadAllPermissions().then(() => {
+        this.cachedPermissions = this.permissionService.allPermissions();
+        observer.next(this.cachedPermissions);
+        observer.complete();
+      }).catch(error => {
+        console.error('Error loading permissions:', error);
+        observer.next([]);
+        observer.complete();
+      });
+    });
+  }
+
+  /**
+   * Generate permission summary for a user
+   */
+  getPermissionSummary(userDetails: UserPermissionDetails): PermissionSummary {
+    const rolePermissions = this.extractRolePermissions(userDetails.roles);
+    const userGranted = userDetails.userPermissions.filter(up => up.isGranted);
+    const userDenied = userDetails.userPermissions.filter(up => !up.isGranted);
+    
+    // Calculate effective permissions - convert to Permission format
+    const effectivePermissions = this.calculateEffectivePermissions(
+      rolePermissions,
+      userGranted.map(up => up.permission),
+      userDenied.map(up => up.permission)
+    );
 
     return {
       totalRolePermissions: rolePermissions.length,
@@ -184,5 +130,151 @@ export class UserPermissionDetailsService {
       userGranted,
       userDenied
     };
+  }
+
+  /**
+   * Clear cached data
+   */
+  clearCache() {
+    this.cachedUsers.clear();
+    this.cachedPermissions = [];
+  }
+
+  /**
+   * Clear specific user cache
+   */
+  clearUserCache(userId: string) {
+    this.cachedUsers.delete(userId);
+  }
+
+  // Private methods
+
+  private loadUserWithPermissions(userId: string): Observable<UserPermissionDetails | null> {
+    return new Observable(observer => {
+      this.loadUserWithPermissionsAsync(userId).then(result => {
+        observer.next(result);
+        observer.complete();
+      }).catch(error => {
+        console.error('Error in loadUserWithPermissions:', error);
+        observer.next(null);
+        observer.complete();
+      });
+    });
+  }
+
+  private async loadUserWithPermissionsAsync(userId: string): Promise<UserPermissionDetails | null> {
+    try {
+      // Load user basic info
+      const user = await this.userService.getUserById(userId);
+      if (!user) {
+        return null;
+      }
+
+      // Load user permissions
+      const userPermissions = await this.userPermissionService.getUserPermissions(userId);
+
+      // Transform to expected format
+      const userDetails: UserPermissionDetails = {
+        id: user.id,
+        email: user.email,
+        SDT: user.SDT,
+        isActive: user.isActive,
+        profile: user.profile,
+        roles: user.roles || [],
+        userPermissions: userPermissions.map(up => ({
+          id: up.id,
+          isGranted: up.isGranted,
+          permission: up.permission ? {
+            id: up.permission.id,
+            name: up.permission.name,
+            code: up.permission.codeId || '',
+            description: up.permission.description,
+            isActive: true,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          } : {
+            id: '',
+            name: 'Unknown Permission',
+            code: '',
+            description: '',
+            isActive: false,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          },
+          createdAt: up.createdAt?.toISOString(),
+          updatedAt: up.updatedAt?.toISOString()
+        }))
+      };
+
+      return userDetails;
+    } catch (error) {
+      console.error('Error in loadUserWithPermissionsAsync:', error);
+      return null;
+    }
+  }
+
+  private extractRolePermissions(roles: UserRole[]): Permission[] {
+    const permissionMap = new Map<string, Permission>();
+    
+    roles.forEach(userRole => {
+      const role = userRole.role;
+      if (role && role.permissions) {
+        role.permissions.forEach((permission: any) => {
+          if (permission && permission.id) {
+            // Convert to proper Permission format
+            const fullPermission: Permission = {
+              id: permission.id,
+              name: permission.name,
+              code: permission.codeId || permission.code || '',
+              description: permission.description,
+              isActive: true,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            };
+            permissionMap.set(permission.id, fullPermission);
+          }
+        });
+      }
+    });
+
+    return Array.from(permissionMap.values());
+  }
+
+  private calculateEffectivePermissions(
+    rolePermissions: Permission[],
+    userGranted: any[],
+    userDenied: any[]
+  ): Permission[] {
+    const effectiveMap = new Map<string, Permission>();
+    
+    // Start with role permissions
+    rolePermissions.forEach(permission => {
+      effectiveMap.set(permission.id, permission);
+    });
+
+    // Add user granted permissions (convert to Permission format)
+    userGranted.forEach(permission => {
+      if (permission && permission.id) {
+        const fullPermission: Permission = {
+          id: permission.id,
+          name: permission.name,
+          code: permission.codeId || permission.code || '',
+          description: permission.description,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        effectiveMap.set(permission.id, fullPermission);
+      }
+    });
+
+    // Remove user denied permissions
+    userDenied.forEach(permission => {
+      if (permission && permission.id) {
+        effectiveMap.delete(permission.id);
+      }
+    });
+
+    return Array.from(effectiveMap.values());
   }
 }

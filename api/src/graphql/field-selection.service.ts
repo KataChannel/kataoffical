@@ -137,11 +137,52 @@ export class FieldSelectionService {
     // Always exclude sensitive fields unless explicitly selected
     if (selection.select) {
       const { password, refreshToken, ...safeSelect } = selection.select;
+      
+      // Fix roles relationship - User.roles points to UserRole[], not Role[]
+      if (safeSelect.roles) {
+        // If roles is requested, we need to include the proper nested structure
+        safeSelect.roles = {
+          include: {
+            role: {
+              select: {
+                id: true,
+                name: true,
+                createdAt: true,
+                updatedAt: true
+              }
+            }
+          }
+        };
+      }
+      
       return {
         ...selection,
         select: safeSelect
       };
     }
+    
+    // If using include, also fix the roles relationship
+    if (selection.include && selection.include.roles) {
+      return {
+        ...selection,
+        include: {
+          ...selection.include,
+          roles: {
+            include: {
+              role: {
+                select: {
+                  id: true,
+                  name: true,
+                  createdAt: true,
+                  updatedAt: true
+                }
+              }
+            }
+          }
+        }
+      };
+    }
+    
     return selection;
   }
 

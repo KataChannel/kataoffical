@@ -105,9 +105,43 @@ let FieldSelectionService = class FieldSelectionService {
     optimizeUserSelection(selection) {
         if (selection.select) {
             const { password, refreshToken, ...safeSelect } = selection.select;
+            if (safeSelect.roles) {
+                safeSelect.roles = {
+                    include: {
+                        role: {
+                            select: {
+                                id: true,
+                                name: true,
+                                createdAt: true,
+                                updatedAt: true
+                            }
+                        }
+                    }
+                };
+            }
             return {
                 ...selection,
                 select: safeSelect
+            };
+        }
+        if (selection.include && selection.include.roles) {
+            return {
+                ...selection,
+                include: {
+                    ...selection.include,
+                    roles: {
+                        include: {
+                            role: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    createdAt: true,
+                                    updatedAt: true
+                                }
+                            }
+                        }
+                    }
+                }
             };
         }
         return selection;

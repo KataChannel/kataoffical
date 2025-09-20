@@ -39,8 +39,8 @@ import { UserRolesInfoComponent } from './user-roles-info.component';
       MatDividerModule,
       MatChipsModule,
       UserPermissionManagementComponent,
-    UserPermissionSummaryComponent,
-    UserRolesInfoComponent
+      UserPermissionSummaryComponent,
+      UserRolesInfoComponent
     ],
     templateUrl: './detailuser.component.html',
   styles: [`
@@ -122,7 +122,7 @@ import { UserRolesInfoComponent } from './user-roles-info.component';
       // });
     }
     
-    DetailUser = signal<any>({});
+    DetailUser = signal<any>(null);
     isEdit = signal(false);
     isDelete = signal(false);
     isLoading = signal(false);
@@ -147,43 +147,57 @@ import { UserRolesInfoComponent } from './user-roles-info.component';
       }
     }
     async ngOnInit() {    
-     const id = this.userId();
-        if (!id){
-          this._router.navigate(['/admin/user']);
-          this._ListuserComponent.drawer.close();
-          return;        
-        }
-        if(id === 'new'){
-          this.DetailUser.set({ 
-            email: '', 
-            password: '',
-            SDT: '',
-            isActive: true,
-            roles: [],
-            profile: {
-              name: '',
-              avatar: '',
-              bio: ''
-            }
-          });
+      const id = this.userId();
+      if (!id){
+        this._router.navigate(['/admin/user']);
+        this._ListuserComponent.drawer.close();
+        return;        
+      }
+      
+      if(id === 'new'){
+        this.DetailUser.set({ 
+          id: 'new',
+          email: '', 
+          password: '',
+          SDT: '',
+          name: '',
+          isActive: true,
+          roles: [],
+          profile: {
+            name: '',
+            avatar: '',
+            bio: ''
+          }
+        });
+        this._ListuserComponent?.drawer?.open();
+        this.isEdit.set(true);
+      }
+      else if(id){
+        try {
+          await this.getUserById(id);
           this._ListuserComponent?.drawer?.open();
-          this.isEdit.update(value => !value);
-          // this._router.navigate(['/admin/user', 'new']);
+          this._router.navigate(['/admin/user', id]);
+        } catch (error) {
+          console.error('Error loading user:', error);
+          this._snackBar.open('Lỗi khi tải thông tin người dùng', 'Đóng', { duration: 3000 });
+          this._router.navigate(['/admin/user']);
+          return;
         }
-        else if(id){
-            await this.getUserById(id);
-            this._ListuserComponent?.drawer?.open();
-            this._router.navigate(['/admin/user', id]);
-        }
+      }
 
-      await this._RoleGraphQLService.loadAllRoles();
-      this.ListRole.set(this._RoleGraphQLService.allRoles());
-      this.updateFilterRole();
+      try {
+        await this._RoleGraphQLService.loadAllRoles();
+        this.ListRole.set(this._RoleGraphQLService.allRoles());
+        this.updateFilterRole();
+      } catch (error) {
+        console.error('Error loading roles:', error);
+      }
     }
 
     updateFilterRole() {
       const allRoles = this.ListRole() || [];
-      const userRoles = this.DetailUser()?.roles || [];
+      const currentUser = this.DetailUser();
+      const userRoles = currentUser?.roles || [];
       
       if (allRoles.length === 0) {
         this.FilterRole.set([]);
