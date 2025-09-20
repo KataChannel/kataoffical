@@ -53,18 +53,9 @@
         <input matInput type="password" [(ngModel)]="DetailUser().password" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mật khẩu" />
       </mat-form-field>
       <div class="w-full flex flex-wrap gap-2 space-x-2 ">
-        <button mat-flat-button [disabled]="!isEdit() || isAddingRole()" color="primary" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
-          @if (isAddingRole()) {
-            <ng-container>
-              <mat-icon class="animate-spin">refresh</mat-icon>
-              Đang thêm...
-            </ng-container>
-          } @else {
-            <ng-container>
+        <button class="mt-2 flex items-center" mat-flat-button [disabled]="!isEdit() || isAddingRole()" color="primary" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
               <mat-icon>add</mat-icon>
               Thêm Nhóm
-            </ng-container>
-          }
         </button>
       </div>
 
@@ -106,11 +97,9 @@
                 <mat-icon class="text-gray-400">group_off</mat-icon>
                 <p class="text-sm mt-1">Chưa có nhóm quyền nào</p>
                 @if (isEdit()) {
-                  <button mat-stroked-button color="primary" [matMenuTriggerFor]="menu" class="mt-2">
-                    <ng-container>
+                  <button mat-stroked-button color="primary" [matMenuTriggerFor]="menu" class="mt-2 flex items-center">
                       <mat-icon>add</mat-icon>
                       Thêm nhóm đầu tiên
-                    </ng-container>
                   </button>
                 }
               </div>

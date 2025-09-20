@@ -8,10 +8,18 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormsModule } from '@angular/forms';
 import { UserPermissionDetailsService } from './user-permission-details.service';
 import { Permission } from '../permission/permission-graphql.service'; // Use base Permission
 import { UserPermissionGraphQLService } from './user-permission-graphql.service';
 import { UserRolesInfoComponent } from '../user/detailuser/user-roles-info.component';
+import { PermissionSelectorDialogComponent, PermissionSelectorResult } from './permission-selector-dialog.component';
 
 interface PermissionSummary {
   totalRolePermissions: number;
@@ -36,6 +44,7 @@ interface PermissionSummary {
     MatDividerModule,
     MatExpansionModule,
     MatTabsModule,
+    MatDialogModule,
     UserRolesInfoComponent
   ],
   template: `
@@ -309,6 +318,8 @@ interface PermissionSummary {
 export class UserPermissionOverviewComponent {
   private userPermissionService = inject(UserPermissionDetailsService);
   private userPermissionGraphQLService = inject(UserPermissionGraphQLService);
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
   
   userId = input.required<string>();
   user = input<any>();
@@ -317,6 +328,7 @@ export class UserPermissionOverviewComponent {
   isUpdatingPermission = signal(false);
   summary = signal<PermissionSummary | null>(null);
   error = signal<string | null>(null);
+  availablePermissions = signal<Permission[]>([]);
   
   // Computed signal để dễ access trong template
   currentSummary = computed(() => this.summary());
@@ -330,6 +342,7 @@ export class UserPermissionOverviewComponent {
         this.summary.set(null);
         setTimeout(() => {
           this.loadPermissionData();
+          this.loadAvailablePermissions();
         }, 0);
       } else {
         this.summary.set(null);
@@ -373,6 +386,21 @@ export class UserPermissionOverviewComponent {
       this.error.set('Lỗi khi tải thông tin quyền. Vui lòng thử lại.');
     } finally {
       this.isLoading.set(false);
+    }
+  }
+  
+  async loadAvailablePermissions() {
+    try {
+      const permissions = await new Promise<Permission[]>((resolve, reject) => {
+        this.userPermissionService.getAllPermissions().subscribe({
+          next: (data) => resolve(data),
+          error: (error) => reject(error)
+        });
+      });
+      
+      this.availablePermissions.set(permissions);
+    } catch (error) {
+      console.error('Error loading available permissions:', error);
     }
   }
   
@@ -429,7 +457,87 @@ export class UserPermissionOverviewComponent {
   }
   
   openPermissionSelector() {
-    // TODO: Implement permission selector dialog
-    console.log('Open permission selector dialog');
+    const currentSummary = this.summary();
+    if (!currentSummary || this.isUpdatingPermission()) return;
+    
+    const dialogRef = this.dialog.open(PermissionSelectorDialogComponent, {
+      width: '700px',
+      maxHeight: '80vh',
+      data: {
+        availablePermissions: this.availablePermissions(),
+        currentUserPermissions: currentSummary.userGranted.concat(currentSummary.userDenied),
+        currentRolePermissions: currentSummary.rolePermissions
+      }
+    });
+    
+    dialogRef.afterClosed().subscribe(async (result: PermissionSelectorResult) => {
+      if (result && result.selectedPermissions.length > 0) {
+        await this.processPermissionChanges(result);
+      }
+    });
+  }
+  
+  private async processPermissionChanges(result: PermissionSelectorResult) {
+    if (this.isUpdatingPermission()) return;
+    
+    this.isUpdatingPermission.set(true);
+    const userId = this.userId();
+    let successCount = 0;
+    let errorCount = 0;
+    
+    try {
+      for (const permission of result.selectedPermissions) {
+        try {
+          // Check if user already has this permission
+          const existingUserPerm = this.summary()?.userGranted
+            .concat(this.summary()?.userDenied || [])
+            .find(up => up.permission.id === permission.id);
+          
+          if (existingUserPerm) {
+            // Update existing permission
+            await this.userPermissionGraphQLService.updateUserPermission(
+              existingUserPerm.id,
+              {
+                isGranted: result.grantType === 'grant',
+                grantedBy: 'admin',
+                reason: result.reason
+              }
+            );
+          } else {
+            // Create new user permission
+            await this.userPermissionGraphQLService.assignPermissionToUser({
+              userId: userId,
+              permissionId: permission.id,
+              isGranted: result.grantType === 'grant',
+              grantedBy: 'admin',
+              reason: result.reason
+            });
+          }
+          
+          successCount++;
+        } catch (error) {
+          console.error(`Error processing permission ${permission.name}:`, error);
+          errorCount++;
+        }
+      }
+      
+      // Show result message
+      const action = result.grantType === 'grant' ? 'cấp' : 'từ chối';
+      if (successCount > 0) {
+        this.snackBar.open(
+          `Đã ${action} ${successCount} quyền thành công${errorCount > 0 ? `, ${errorCount} lỗi` : ''}`, 
+          'Đóng',
+          { duration: 5000 }
+        );
+      } else if (errorCount > 0) {
+        this.snackBar.open(`Lỗi khi ${action} quyền`, 'Đóng', { duration: 5000 });
+      }
+      
+      // Reload data
+      await this.loadPermissionData();
+      
+    } finally {
+      this.isUpdatingPermission.set(false);
+    }
   }
 }
