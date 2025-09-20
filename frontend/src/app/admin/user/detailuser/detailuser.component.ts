@@ -9,6 +9,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatChipsModule } from '@angular/material/chips';
 import { ListUserComponent } from '../listuser/listuser.component';
 import { UserGraphQLService, User } from '../user-graphql.service';
 import { RoleGraphQLService, Role } from '../../role/role-graphql.service';
@@ -17,6 +20,8 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { MatMenuModule } from '@angular/material/menu';
 import { DrawerService } from '../shared/drawer.service';
 import { UserPermissionManagementComponent } from '../../user-permission/user-permission-management.component';
+import { UserPermissionSummaryComponent } from '../../user-permission/user-permission-summary.component';
+import { UserRolesInfoComponent } from './user-roles-info.component';
   @Component({
     selector: 'app-detailuser',
     imports: [
@@ -30,9 +35,27 @@ import { UserPermissionManagementComponent } from '../../user-permission/user-pe
       CommonModule,
       MatSlideToggleModule,
       MatMenuModule,
-      UserPermissionManagementComponent
+      MatCardModule,
+      MatDividerModule,
+      MatChipsModule,
+      UserPermissionManagementComponent,
+    UserPermissionSummaryComponent,
+    UserRolesInfoComponent
     ],
     templateUrl: './detailuser.component.html',
+  styles: [`
+    .permission-management {
+      border-left: 4px solid #4caf50;
+    }
+    
+    .permission-management mat-card-header {
+      padding-bottom: 8px;
+    }
+    
+    .permission-management mat-card-content {
+      font-size: 12px;
+    }
+  `],
     styleUrl: './detailuser.component.scss'
   })
   export class DetailUserComponent {

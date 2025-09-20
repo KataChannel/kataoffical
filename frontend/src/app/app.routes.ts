@@ -155,6 +155,22 @@ export const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'user-permission',
+        // canActivate: [PermissionGuard],
+        // data: { permission: 'user-permission.view' },
+        loadComponent: () =>
+          import('./admin/user-permission/user-permission-management.component').then(
+            (c) => c.UserPermissionManagementComponent
+          ),
+      },
+      // {
+      //   path: 'user-permission-demo',
+      //   loadComponent: () =>
+      //     import('./admin/user-permission-demo/user-permission-demo.component').then(
+      //       (c) => c.UserPermissionDemoComponent
+      //     ),
+      // },
     {
             path: 'importdata',
             canActivate: [PermissionGuard],
