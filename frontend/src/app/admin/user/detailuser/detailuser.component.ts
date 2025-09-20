@@ -19,9 +19,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { MatMenuModule } from '@angular/material/menu';
 import { DrawerService } from '../shared/drawer.service';
-import { UserPermissionManagementComponent } from '../../user-permission/user-permission-management.component';
-import { UserPermissionSummaryComponent } from '../../user-permission/user-permission-summary.component';
-import { UserRolesInfoComponent } from './user-roles-info.component';
+import { UserPermissionOverviewComponent } from '../../user-permission/user-permission-overview.component';
   @Component({
     selector: 'app-detailuser',
     imports: [
@@ -38,9 +36,7 @@ import { UserRolesInfoComponent } from './user-roles-info.component';
       MatCardModule,
       MatDividerModule,
       MatChipsModule,
-      UserPermissionManagementComponent,
-      UserPermissionSummaryComponent,
-      UserRolesInfoComponent
+      UserPermissionOverviewComponent
     ],
     templateUrl: './detailuser.component.html',
   styles: [`
@@ -215,6 +211,19 @@ import { UserRolesInfoComponent } from './user-roles-info.component';
       
       this.FilterRole.set(filteredRoles);
     }
+
+    updateUserName(event: any) {
+      const value = event.target.value;
+      const currentUser = this.DetailUser();
+      if (currentUser) {
+        if (!currentUser.profile) {
+          currentUser.profile = { name: '', avatar: '', bio: '' };
+        }
+        currentUser.profile.name = value;
+        this.DetailUser.set({ ...currentUser });
+      }
+    }
+
     async handleUserAction() {
       if (this.userId() === 'new') {
         await this.createUser();

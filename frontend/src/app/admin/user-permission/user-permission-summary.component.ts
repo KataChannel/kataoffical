@@ -4,7 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { UserPermissionDetailsService, UserPermissionDetails, Permission } from './user-permission-details.service';
+import { Permission, UserPermissionDetailsService } from './user-permission-details.service';
 
 interface PermissionSummary {
   totalRolePermissions: number;
@@ -46,6 +46,16 @@ interface PermissionSummary {
           <div class="text-center py-4">
             <mat-spinner diameter="32"></mat-spinner>
             <p class="mt-2 text-sm text-gray-600">Đang tải quyền...</p>
+          </div>
+        } @else if (error()) {
+          <div class="text-center py-4 text-red-500">
+            <mat-icon class="text-red-400">error</mat-icon>
+            <p class="mt-1 text-sm">{{ error() }}</p>
+            <button 
+              class="mt-2 px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
+              (click)="loadPermissionSummary()">
+              Thử lại
+            </button>
           </div>
         } @else if (currentSummary()) {
           <!-- Statistics -->
@@ -184,6 +194,7 @@ export class UserPermissionSummaryComponent {
   
   isLoading = signal(false);
   summary = signal<PermissionSummary | null>(null);
+  error = signal<string | null>(null);
   showAllRolePerms = signal(false);
   showAllEffective = signal(false);
   
@@ -191,43 +202,56 @@ export class UserPermissionSummaryComponent {
   currentSummary = computed(() => this.summary());
   
   constructor() {
-    // Load permissions when userId changes
-    effect(async () => {
+    // Load permissions when userId changes - using proper effect syntax
+    effect(() => {
       const id = this.userId();
       if (id && id !== 'new') {
-        await this.loadPermissionSummary();
+        // Clear previous state
+        this.error.set(null);
+        this.summary.set(null);
+        // Use setTimeout to avoid synchronous effect execution
+        setTimeout(() => {
+          this.loadPermissionSummary();
+        }, 0);
       } else {
         this.summary.set(null);
+        this.error.set(null);
       }
     });
   }
   
   async loadPermissionSummary() {
-    if (!this.userId()) return;
+    const userId = this.userId();
+    if (!userId || userId === 'new') {
+      this.summary.set(null);
+      this.error.set(null);
+      return;
+    }
     
     this.isLoading.set(true);
+    this.error.set(null);
     
     try {
-      this.userPermissionService.getUserPermissionDetails(this.userId()).subscribe({
-        next: (userDetails) => {
-          if (userDetails) {
-            const summaryData = this.userPermissionService.getPermissionSummary(userDetails);
-            this.summary.set(summaryData);
-          } else {
-            this.summary.set(null);
-          }
-        },
-        error: (error) => {
-          console.error('Error loading permission details:', error);
-          this.summary.set(null);
-        },
-        complete: () => {
-          this.isLoading.set(false);
-        }
+      const userDetails = await new Promise<any>((resolve, reject) => {
+        this.userPermissionService.getUserPermissionDetails(userId).subscribe({
+          next: (data) => resolve(data),
+          error: (error) => reject(error)
+        });
       });
+      
+      if (userDetails) {
+        const summaryData = this.userPermissionService.getPermissionSummary(userDetails);
+        this.summary.set(summaryData);
+        this.error.set(null);
+      } else {
+        this.summary.set(null);
+        this.error.set('Không tìm thấy dữ liệu người dùng');
+      }
     } catch (error) {
       console.error('Error loading permission summary:', error);
       this.summary.set(null);
+      this.error.set('Lỗi khi tải thông tin quyền. Vui lòng thử lại.');
+    } finally {
       this.isLoading.set(false);
     }
   }
