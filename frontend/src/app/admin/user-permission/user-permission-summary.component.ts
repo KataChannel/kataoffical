@@ -4,7 +4,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Permission, UserPermissionDetailsService } from './user-permission-details.service';
+import { Permission } from '../permission/permission-graphql.service';
+import { UserPermissionDetailsService } from './user-permission-details.service';
+
 
 interface PermissionSummary {
   totalRolePermissions: number;

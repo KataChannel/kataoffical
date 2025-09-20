@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +16,11 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule
   ],
   template: `
+    <!-- Simple fallback to ensure component renders -->
+    <div class="mb-2 p-2 bg-blue-50 border border-blue-200 rounded" *ngIf="user()">
+      <small class="text-blue-700">✅ UserRolesInfoComponent loaded - User: {{ user()?.email || user()?.name || user()?.id }}</small>
+    </div>
+    
     <mat-card class="roles-info">
       <mat-card-header>
         <mat-card-title class="text-sm font-medium flex items-center">
@@ -35,7 +40,7 @@ import { MatButtonModule } from '@angular/material/button';
                 <!-- Role Header -->
                 <div class="flex items-center justify-between mb-2">
                   <div class="flex items-center">
-                    <mat-icon class="mr-2 text-blue-600" [class]="getRoleIcon(userRole.role?.name || userRole.name)">
+                    <mat-icon class="mr-2 text-blue-600">
                       {{ getRoleIcon(userRole.role?.name || userRole.name) }}
                     </mat-icon>
                     <div>
@@ -66,7 +71,7 @@ import { MatButtonModule } from '@angular/material/button';
                         <span 
                           class="px-2 py-1 text-xs bg-white border border-blue-200 text-blue-700 rounded"
                           [title]="permission.description || permission.name">
-                          {{ permission.name }}
+                          {{ permission.permission.name }}
                         </span>
                       }
                       @if (getRolePermissions(userRole).length > 4) {
@@ -136,13 +141,20 @@ export class UserRolesInfoComponent {
   
   showAllPermissions: { [key: string]: boolean } = {};
   
-  getRolePermissions(userRole: any): any[] {
-    // Try different possible structures
-    return userRole.role?.permissions || 
-           userRole.permissions || 
-           userRole.role?.rolePermissions?.map((rp: any) => rp.permission) ||
-           [];
+  constructor() {
+    // Debug effect to check user data
+    effect(() => {
+      console.log('🔍 UserRolesInfoComponent - user data:', this.user());
+      console.log('🔍 UserRolesInfoComponent - user roles:', this.user()?.roles);
+    });
   }
+  
+  getRolePermissions(userRole: any): any[] {
+    // console.log('Extracting permissions for role:', userRole);
+     const result = userRole.role?.permissions ||  userRole.permissions || userRole.role?.rolePermissions?.map((rp: any) => rp.permission) ||[];
+     console.log('Extracting permissions for role result:', result);
+     return result
+}
   
   getRoleIcon(roleName: string): string {
     if (!roleName) return 'person';
