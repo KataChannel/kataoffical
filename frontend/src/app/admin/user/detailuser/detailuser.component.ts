@@ -216,10 +216,7 @@ import { UserPermissionOverviewComponent } from '../../user-permission/user-perm
       const value = event.target.value;
       const currentUser = this.DetailUser();
       if (currentUser) {
-        if (!currentUser.profile) {
-          currentUser.profile = { name: '', avatar: '', bio: '' };
-        }
-        currentUser.profile.name = value;
+        currentUser.name = value;
         this.DetailUser.set({ ...currentUser });
       }
     }

@@ -39,7 +39,7 @@
       <mat-form-field appearance="outline">
         <mat-label>Họ Và Tên</mat-label>
         <input matInput 
-               [value]="DetailUser()?.profile?.name || ''" 
+               [value]="DetailUser()?.name || ''" 
                (input)="updateUserName($event)" 
                [disabled]="!isEdit()" 
                placeholder="Vui lòng nhập Họ Và Tên" />
