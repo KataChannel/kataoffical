@@ -17,22 +17,8 @@ export declare class UserService {
         providerId: string | null;
     }>;
     getUsers(): Promise<{
-        roles: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-        }[];
-        permissions: {
-            id: string;
-            order: number | null;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            codeId: string | null;
-            group: string | null;
-            description: string | null;
-        }[];
+        roles: string[];
+        permissions: any[];
         id: string;
         isActive: boolean;
         createdAt: Date;
@@ -44,22 +30,8 @@ export declare class UserService {
         providerId: string | null;
     }[]>;
     findAll(): Promise<{
-        roles: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-        }[];
-        permissions: {
-            id: string;
-            order: number | null;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            codeId: string | null;
-            group: string | null;
-            description: string | null;
-        }[];
+        roles: string[];
+        permissions: any[];
         id: string;
         isActive: boolean;
         createdAt: Date;

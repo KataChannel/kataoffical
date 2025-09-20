@@ -18,21 +18,67 @@ export class AuthService {
     const user:any = await this.prisma.user.findFirst({ 
       where: { OR: [{ email }, { SDT }] },
       include: {
-      roles: { include: { role: { include: { permissions: {include:{permission:true}} } } } },
+        roles: { include: { role: { include: { permissions: {include:{permission:true}} } } } },
+        userPermissions: {
+          include: {
+            permission: true
+          },
+          where: {
+            OR: [
+              { expiresAt: null }, // Never expires
+              { expiresAt: { gt: new Date() } }, // Not expired yet
+            ],
+          }
+        }
       },
      });    
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    // Get role-based permissions
+    const rolePermissions: any[] = Array.from(new Set(user.roles.flatMap((role: any) => role.role.permissions.map((p: any) => p.permission))));
+    
+    // Get user-specific granted permissions
+    const validUserPermissions = user.userPermissions
+      .filter((up: any) => up.isGranted)
+      .map((up: any) => up.permission);
+    
+    // Get user-specific denied permissions
+    const deniedUserPermissions = user.userPermissions
+      .filter((up: any) => !up.isGranted)
+      .map((up: any) => up.permission.id);
+    
+    // Merge permissions: role permissions + user granted - user denied
+    const allPermissions = [
+      ...rolePermissions.filter((p: any) => !deniedUserPermissions.includes(p.id)),
+      ...validUserPermissions
+    ];
+    
+    // Remove duplicates based on permission id
+    const uniquePermissions = Array.from(
+      new Map(allPermissions.map(p => [p.id, p])).values()
+    );
+
     const resultUser = {
       ...user,
       roles: user.roles.map((role) => {
         const { permissions, ...rest } = role.role;
-        return rest;
+        return rest.name; // Return just role name for consistency
       }),
-      permissions: Array.from(new Set(user.roles.flatMap((role) => role.role.permissions.map((p) => p.permission)))),
+      permissions: uniquePermissions,
     };
-    const payload = { id: user.id, role: user.role, permissions: user.permissions };
+    
+    // Remove sensitive data
+    delete resultUser.password;
+    delete resultUser.userPermissions;
+
+    const payload = { 
+      id: user.id, 
+      email: user.email,
+      roles: resultUser.roles,
+      permissions: uniquePermissions.map(p => p.name) // Include permission names in JWT
+    };
     const result = {
       access_token: this.jwtService.sign(payload),
       user: resultUser,

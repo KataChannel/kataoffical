@@ -19,35 +19,34 @@ let JwtAuthGuard = class JwtAuthGuard {
     }
     canActivate(context) {
         let request;
-        if (context.getType() === 'graphql') {
-            const gqlContext = graphql_1.GqlExecutionContext.create(context);
-            request = gqlContext.getContext().req;
-        }
-        else {
-            request = context.switchToHttp().getRequest();
-        }
-        if (!request) {
-            console.warn('Request is undefined in JwtAuthGuard');
-            return false;
-        }
-        const authHeader = request.headers?.authorization;
-        if (!authHeader) {
-            console.warn('No authorization header found');
-            return false;
-        }
-        const token = authHeader.split(' ')[1];
-        if (!token) {
-            console.warn('No token found in authorization header');
-            return false;
-        }
         try {
+            if (context.getType() === 'graphql') {
+                const gqlContext = graphql_1.GqlExecutionContext.create(context);
+                request = gqlContext.getContext().req;
+            }
+            else {
+                request = context.switchToHttp().getRequest();
+            }
+            if (!request) {
+                throw new common_1.UnauthorizedException('Request context not available');
+            }
+            const authHeader = request.headers?.authorization;
+            if (!authHeader) {
+                throw new common_1.UnauthorizedException('No authorization header found');
+            }
+            const token = authHeader.split(' ')[1];
+            if (!token) {
+                throw new common_1.UnauthorizedException('No token found in authorization header');
+            }
             const user = this.jwtService.verify(token);
             request.user = user;
             return true;
         }
         catch (error) {
-            console.warn('JWT verification failed:', error.message);
-            return false;
+            if (error instanceof common_1.UnauthorizedException) {
+                throw error;
+            }
+            throw new common_1.UnauthorizedException('Invalid or expired token');
         }
     }
 };

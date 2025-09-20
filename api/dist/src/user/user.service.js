@@ -40,16 +40,38 @@ let UserService = class UserService {
                         },
                     },
                 },
+                userPermissions: {
+                    include: {
+                        permission: true
+                    },
+                    where: {
+                        OR: [
+                            { expiresAt: null },
+                            { expiresAt: { gt: new Date() } },
+                        ],
+                    }
+                }
             },
         });
-        return users.map(({ password, roles, ...userWithoutPassword }) => ({
-            ...userWithoutPassword,
-            roles: roles.map(({ role }) => {
-                const { permissions, ...roleWithoutPermissions } = role;
-                return roleWithoutPermissions;
-            }),
-            permissions: Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission)))),
-        }));
+        return users.map(({ password, roles, userPermissions, ...userWithoutPassword }) => {
+            const rolePermissions = Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission))));
+            const validUserPermissions = userPermissions
+                .filter((up) => up.isGranted)
+                .map((up) => up.permission);
+            const deniedUserPermissions = userPermissions
+                .filter((up) => !up.isGranted)
+                .map((up) => up.permission.id);
+            const allPermissions = [
+                ...rolePermissions.filter((p) => !deniedUserPermissions.includes(p.id)),
+                ...validUserPermissions
+            ];
+            const uniquePermissions = Array.from(new Map(allPermissions.map((p) => [p.id, p])).values());
+            return {
+                ...userWithoutPassword,
+                roles: roles.map(({ role }) => role.name),
+                permissions: uniquePermissions,
+            };
+        });
     }
     async findAll() {
         const users = await this.prisma.user.findMany({
@@ -63,16 +85,38 @@ let UserService = class UserService {
                         },
                     },
                 },
+                userPermissions: {
+                    include: {
+                        permission: true
+                    },
+                    where: {
+                        OR: [
+                            { expiresAt: null },
+                            { expiresAt: { gt: new Date() } },
+                        ],
+                    }
+                }
             },
         });
-        return users.map(({ password, roles, ...userWithoutPassword }) => ({
-            ...userWithoutPassword,
-            roles: roles.map(({ role }) => {
-                const { permissions, ...roleWithoutPermissions } = role;
-                return roleWithoutPermissions;
-            }),
-            permissions: Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission)))),
-        }));
+        return users.map(({ password, roles, userPermissions, ...userWithoutPassword }) => {
+            const rolePermissions = Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission))));
+            const validUserPermissions = userPermissions
+                .filter((up) => up.isGranted)
+                .map((up) => up.permission);
+            const deniedUserPermissions = userPermissions
+                .filter((up) => !up.isGranted)
+                .map((up) => up.permission.id);
+            const allPermissions = [
+                ...rolePermissions.filter((p) => !deniedUserPermissions.includes(p.id)),
+                ...validUserPermissions
+            ];
+            const uniquePermissions = Array.from(new Map(allPermissions.map((p) => [p.id, p])).values());
+            return {
+                ...userWithoutPassword,
+                roles: roles.map(({ role }) => role.name),
+                permissions: uniquePermissions,
+            };
+        });
     }
     async findOne(id) {
         const user = await this.prisma.user.findUnique({
@@ -87,20 +131,37 @@ let UserService = class UserService {
                         },
                     },
                 },
+                userPermissions: {
+                    include: {
+                        permission: true
+                    }
+                }
             },
         });
         if (!user)
             throw new common_1.NotFoundException('User not found');
-        const { password, roles, ...userWithoutPassword } = user;
+        const { password, roles, userPermissions, ...userWithoutPassword } = user;
         const formattedRoles = roles.map(({ role }) => {
             const { permissions, ...roleWithoutPermissions } = role;
             return roleWithoutPermissions;
         });
-        const permissions = Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission))));
+        const rolePermissions = Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission))));
+        const now = new Date();
+        const validUserPermissions = userPermissions
+            .filter(up => up.isGranted && (!up.expiresAt || new Date(up.expiresAt) > now))
+            .map(up => up.permission);
+        const deniedUserPermissions = userPermissions
+            .filter(up => !up.isGranted && (!up.expiresAt || new Date(up.expiresAt) > now))
+            .map(up => up.permission.id);
+        const allPermissions = [
+            ...rolePermissions.filter(p => !deniedUserPermissions.includes(p.id)),
+            ...validUserPermissions
+        ];
+        const uniquePermissions = Array.from(new Map(allPermissions.map(p => [p.id, p])).values());
         return {
             ...userWithoutPassword,
             roles: formattedRoles.map((role) => role.name),
-            permissions,
+            permissions: uniquePermissions,
         };
     }
     async update(id, data) {

@@ -30,20 +30,50 @@ let AuthService = class AuthService {
             where: { OR: [{ email }, { SDT }] },
             include: {
                 roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } },
+                userPermissions: {
+                    include: {
+                        permission: true
+                    },
+                    where: {
+                        OR: [
+                            { expiresAt: null },
+                            { expiresAt: { gt: new Date() } },
+                        ],
+                    }
+                }
             },
         });
         if (!user || !(await bcrypt.compare(password, user.password))) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
+        const rolePermissions = Array.from(new Set(user.roles.flatMap((role) => role.role.permissions.map((p) => p.permission))));
+        const validUserPermissions = user.userPermissions
+            .filter((up) => up.isGranted)
+            .map((up) => up.permission);
+        const deniedUserPermissions = user.userPermissions
+            .filter((up) => !up.isGranted)
+            .map((up) => up.permission.id);
+        const allPermissions = [
+            ...rolePermissions.filter((p) => !deniedUserPermissions.includes(p.id)),
+            ...validUserPermissions
+        ];
+        const uniquePermissions = Array.from(new Map(allPermissions.map(p => [p.id, p])).values());
         const resultUser = {
             ...user,
             roles: user.roles.map((role) => {
                 const { permissions, ...rest } = role.role;
-                return rest;
+                return rest.name;
             }),
-            permissions: Array.from(new Set(user.roles.flatMap((role) => role.role.permissions.map((p) => p.permission)))),
+            permissions: uniquePermissions,
         };
-        const payload = { id: user.id, role: user.role, permissions: user.permissions };
+        delete resultUser.password;
+        delete resultUser.userPermissions;
+        const payload = {
+            id: user.id,
+            email: user.email,
+            roles: resultUser.roles,
+            permissions: uniquePermissions.map(p => p.name)
+        };
         const result = {
             access_token: this.jwtService.sign(payload),
             user: resultUser,

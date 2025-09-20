@@ -31,19 +31,53 @@ export class UserService {
             },
           },
         },
+        userPermissions: {
+          include: {
+            permission: true
+          },
+          where: {
+            OR: [
+              { expiresAt: null }, // Never expires
+              { expiresAt: { gt: new Date() } }, // Not expired yet
+            ],
+          }
+        }
       },
     });
   
-    return users.map(({ password, roles, ...userWithoutPassword }) => ({
-      ...userWithoutPassword,
-      roles: roles.map(({ role }) => {
-        const { permissions, ...roleWithoutPermissions } = role;
-        return roleWithoutPermissions;
-      }),
-      permissions: Array.from(
+    return users.map(({ password, roles, userPermissions, ...userWithoutPassword }) => {
+      // Get role-based permissions
+      const rolePermissions = Array.from(
         new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission)))
-      ),
-    }));
+      );
+      
+      // Get user-specific granted permissions
+      const validUserPermissions = userPermissions
+        .filter((up: any) => up.isGranted)
+        .map((up: any) => up.permission);
+      
+      // Get user-specific denied permissions
+      const deniedUserPermissions = userPermissions
+        .filter((up: any) => !up.isGranted)
+        .map((up: any) => up.permission.id);
+      
+      // Merge permissions: role permissions + user granted - user denied
+      const allPermissions = [
+        ...rolePermissions.filter((p: any) => !deniedUserPermissions.includes(p.id)),
+        ...validUserPermissions
+      ];
+      
+      // Remove duplicates based on permission id
+      const uniquePermissions = Array.from(
+        new Map(allPermissions.map((p: any) => [p.id, p])).values()
+      );
+      
+      return {
+        ...userWithoutPassword,
+        roles: roles.map(({ role }) => role.name), // Return role names consistently
+        permissions: uniquePermissions,
+      };
+    });
   }
   async findAll() {
     const users = await this.prisma.user.findMany({
@@ -57,19 +91,53 @@ export class UserService {
             },
           },
         },
+        userPermissions: {
+          include: {
+            permission: true
+          },
+          where: {
+            OR: [
+              { expiresAt: null }, // Never expires
+              { expiresAt: { gt: new Date() } }, // Not expired yet
+            ],
+          }
+        }
       },
     });
   
-    return users.map(({ password, roles, ...userWithoutPassword }) => ({
-      ...userWithoutPassword,
-      roles: roles.map(({ role }) => {
-        const { permissions, ...roleWithoutPermissions } = role;
-        return roleWithoutPermissions;
-      }),
-      permissions: Array.from(
+    return users.map(({ password, roles, userPermissions, ...userWithoutPassword }) => {
+      // Get role-based permissions
+      const rolePermissions = Array.from(
         new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission)))
-      ),
-    }));
+      );
+      
+      // Get user-specific granted permissions
+      const validUserPermissions = userPermissions
+        .filter((up: any) => up.isGranted)
+        .map((up: any) => up.permission);
+      
+      // Get user-specific denied permissions
+      const deniedUserPermissions = userPermissions
+        .filter((up: any) => !up.isGranted)
+        .map((up: any) => up.permission.id);
+      
+      // Merge permissions: role permissions + user granted - user denied
+      const allPermissions = [
+        ...rolePermissions.filter((p: any) => !deniedUserPermissions.includes(p.id)),
+        ...validUserPermissions
+      ];
+      
+      // Remove duplicates based on permission id
+      const uniquePermissions = Array.from(
+        new Map(allPermissions.map((p: any) => [p.id, p])).values()
+      );
+      
+      return {
+        ...userWithoutPassword,
+        roles: roles.map(({ role }) => role.name), // Return role names consistently
+        permissions: uniquePermissions,
+      };
+    });
   }
    
   async findOne(id: string) {
@@ -85,24 +153,55 @@ export class UserService {
             },
           },
         },
+        userPermissions: {
+          include: {
+            permission: true
+          }
+        }
       },
     }); 
     if (!user) throw new NotFoundException('User not found');
-    // Loại bỏ password một cách an toàn bằng destructuring
-    const { password, roles, ...userWithoutPassword } = user; 
+    
+    // Loại bỏ password và userPermissions một cách an toàn bằng destructuring
+    const { password, roles, userPermissions, ...userWithoutPassword } = user; 
+    
     // Lấy danh sách role nhưng bỏ đi permissions
     const formattedRoles = roles.map(({ role }) => {
       const { permissions, ...roleWithoutPermissions } = role;
       return roleWithoutPermissions;
     });
-    // Lấy danh sách permissions duy nhất
-    const permissions = Array.from(
+    
+    // Lấy danh sách permissions từ roles
+    const rolePermissions = Array.from(
       new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission)))
-    ); 
+    );
+    
+    // Lấy danh sách user-specific permissions (chỉ granted và chưa expired)
+    const now = new Date();
+    const validUserPermissions = userPermissions
+      .filter(up => up.isGranted && (!up.expiresAt || new Date(up.expiresAt) > now))
+      .map(up => up.permission);
+    
+    // Lấy danh sách user-specific denied permissions
+    const deniedUserPermissions = userPermissions
+      .filter(up => !up.isGranted && (!up.expiresAt || new Date(up.expiresAt) > now))
+      .map(up => up.permission.id);
+    
+    // Merge permissions: role permissions + user granted - user denied
+    const allPermissions = [
+      ...rolePermissions.filter(p => !deniedUserPermissions.includes(p.id)),
+      ...validUserPermissions
+    ];
+    
+    // Remove duplicates based on permission id
+    const uniquePermissions = Array.from(
+      new Map(allPermissions.map(p => [p.id, p])).values()
+    );
+    
     return {
       ...userWithoutPassword,
-      roles: formattedRoles.map((role)=>role.name),
-      permissions,
+      roles: formattedRoles.map((role) => role.name), // Ensure consistent string format
+      permissions: uniquePermissions,
     };
   }
   

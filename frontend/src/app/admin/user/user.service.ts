@@ -249,17 +249,26 @@ export class UserService {
       if (!response.ok) {
         console.log(response.status);
         this.handleError(response.status);
+        return null;
       }
       const data = await response.json();
-      const permissions = data.permissions.map((p: any) => p.name);
-      this.profile.set(data)
-      if(permissions.length>0)
-      {
+      
+      // Safe check for permissions array
+      const permissions = data.permissions && Array.isArray(data.permissions) 
+        ? data.permissions.map((p: any) => p.name || p) 
+        : [];
+        
+      this.profile.set(data);
+      if(permissions.length > 0) {
         this._StorageService.setItem('permissions', JSON.stringify(permissions));
+      } else {
+        // Clear permissions if none found
+        this._StorageService.removeItem('permissions');
       }
       return data;
     } catch (error) {
-      return console.error(error);
+      console.error('Error getting profile:', error);
+      return null;
     }
   }
   set accessToken(token: string) {
