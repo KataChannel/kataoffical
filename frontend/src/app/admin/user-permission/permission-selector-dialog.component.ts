@@ -41,13 +41,12 @@ export interface PermissionSelectorResult {
     MatDividerModule
   ],
   template: `
-    <div class="permission-selector-dialog">
-      <div mat-dialog-title class="flex items-center">
-        <mat-icon class="mr-2 text-blue-500">add_task</mat-icon>
-        <span>Cấp Quyền Mới</span>
-      </div>
-      
-      <mat-dialog-content class="min-h-96 max-h-96 overflow-y-auto">
+<div mat-dialog-title class="!flex !items-center">
+   <mat-icon class="mr-2 text-blue-500">add_task</mat-icon>
+   <span>Cấp Quyền Mới</span>
+ </div>
+<mat-dialog-content class="mat-typography">
+     <!-- <mat-dialog-content class="min-h-[90vh] max-h-[90vh] overflow-y-auto"> -->
         <div class="space-y-4">
           <!-- Grant Type Selection -->
           <div class="mb-4">
@@ -149,8 +148,8 @@ export interface PermissionSelectorResult {
             </mat-form-field>
           </div>
         </div>
-      </mat-dialog-content>
-      
+</mat-dialog-content>
+
       <mat-dialog-actions class="flex justify-between">
         <div class="text-sm text-gray-600">
           Đã chọn: {{ selectedPermissions().length }} quyền
@@ -169,18 +168,8 @@ export interface PermissionSelectorResult {
           </button>
         </div>
       </mat-dialog-actions>
-    </div>
   `,
-  styles: [`
-    .permission-selector-dialog {
-      width: 100%;
-      max-width: 600px;
-    }
-    
-    ::ng-deep .mat-mdc-dialog-content {
-      max-height: 60vh;
-    }
-  `]
+  styles: []
 })
 export class PermissionSelectorDialogComponent {
   private dialogRef = inject(MatDialogRef<PermissionSelectorDialogComponent>);

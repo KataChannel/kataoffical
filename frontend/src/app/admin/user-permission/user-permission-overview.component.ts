@@ -461,8 +461,8 @@ export class UserPermissionOverviewComponent {
     if (!currentSummary || this.isUpdatingPermission()) return;
     
     const dialogRef = this.dialog.open(PermissionSelectorDialogComponent, {
-      width: '700px',
-      maxHeight: '80vh',
+      width: '90vw',
+      maxHeight: '90vh',
       data: {
         availablePermissions: this.availablePermissions(),
         currentUserPermissions: currentSummary.userGranted.concat(currentSummary.userDenied),
