@@ -8,7 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTabsModule } from '@angular/material/tabs';
-import { Permission, UserPermissionDetailsService } from './user-permission-details.service';
+import { UserPermissionDetailsService } from './user-permission-details.service';
+import { Permission } from '../permission/permission-graphql.service'; // Use base Permission
 import { UserPermissionGraphQLService } from './user-permission-graphql.service';
 import { UserRolesInfoComponent } from '../user/detailuser/user-roles-info.component';
 
@@ -358,6 +359,8 @@ export class UserPermissionOverviewComponent {
       
       if (userDetails) {
         const summaryData = this.userPermissionService.getPermissionSummary(userDetails);
+        console.log('summaryData', summaryData);
+        
         this.summary.set(summaryData);
         this.error.set(null);
       } else {

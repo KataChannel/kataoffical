@@ -3,17 +3,9 @@ import { Observable, of, BehaviorSubject } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { UserPermissionGraphQLService, UserPermission } from './user-permission-graphql.service';
 import { PermissionGraphQLService, Permission as BasePermission } from '../permission/permission-graphql.service';
-import { UserGraphQLService, User, UserRole } from '../user/user-graphql.service';
+import { UserGraphQLService, User } from '../user/user-graphql.service';
 
-export interface Permission {
-  id: string;
-  name: string;
-  code: string;
-  description?: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// Updated interfaces to match Prisma schema
 
 export interface UserPermissionDetails {
   id: string;
@@ -25,11 +17,15 @@ export interface UserPermissionDetails {
     avatar?: string;
     bio?: string;
   };
-  roles: UserRole[];
+  roles: any[]; // Use any for compatibility with existing UserRole from user service
   userPermissions: {
     id: string;
     isGranted: boolean;
-    permission: Permission;
+    grantedBy?: string;
+    grantedAt?: string;
+    expiresAt?: string;
+    reason?: string;
+    permission: BasePermission;
     createdAt?: string;
     updatedAt?: string;
   }[];
@@ -39,8 +35,8 @@ export interface PermissionSummary {
   totalRolePermissions: number;
   grantedPermissions: number;
   deniedPermissions: number;
-  effectivePermissions: Permission[];
-  rolePermissions: Permission[];
+  effectivePermissions: BasePermission[];
+  rolePermissions: BasePermission[];
   userGranted: any[];
   userDenied: any[];
 }
@@ -54,7 +50,7 @@ export class UserPermissionDetailsService {
   private userService = inject(UserGraphQLService);
 
   private cachedUsers = new Map<string, UserPermissionDetails>();
-  private cachedPermissions: Permission[] = [];
+  private cachedPermissions: BasePermission[] = [];
 
   /**
    * Get user permission details by userId
@@ -88,7 +84,7 @@ export class UserPermissionDetailsService {
   /**
    * Get all available permissions
    */
-  getAllPermissions(): Observable<Permission[]> {
+  getAllPermissions(): Observable<BasePermission[]> {
     if (this.cachedPermissions.length > 0) {
       return of(this.cachedPermissions);
     }
@@ -113,6 +109,9 @@ export class UserPermissionDetailsService {
     const rolePermissions = this.extractRolePermissions(userDetails.roles);
     const userGranted = userDetails.userPermissions.filter(up => up.isGranted);
     const userDenied = userDetails.userPermissions.filter(up => !up.isGranted);
+    console.log('rolePermissions', rolePermissions);
+    console.log('userGranted', userGranted);
+    console.log('userDenied', userDenied);
     
     // Calculate effective permissions - convert to Permission format
     const effectivePermissions = this.calculateEffectivePermissions(
@@ -213,19 +212,21 @@ export class UserPermissionDetailsService {
     }
   }
 
-  private extractRolePermissions(roles: UserRole[]): Permission[] {
-    const permissionMap = new Map<string, Permission>();
+  private extractRolePermissions(roles: any[]): BasePermission[] {
+    const permissionMap = new Map<string, BasePermission>();
     
     roles.forEach(userRole => {
       const role = userRole.role;
+      console.log('role.permissions',role.permissions);
+      
       if (role && role.permissions) {
         role.permissions.forEach((permission: any) => {
           if (permission && permission.id) {
             // Convert to proper Permission format
-            const fullPermission: Permission = {
+            const fullPermission: BasePermission = {
               id: permission.id,
-              name: permission.name,
-              code: permission.codeId || permission.code || '',
+              name: permission?.permission?.name,
+              code: permission?.permission?.codeId || permission?.permission?.code || '',
               description: permission.description,
               isActive: true,
               createdAt: new Date(),
@@ -241,11 +242,11 @@ export class UserPermissionDetailsService {
   }
 
   private calculateEffectivePermissions(
-    rolePermissions: Permission[],
+    rolePermissions: BasePermission[],
     userGranted: any[],
     userDenied: any[]
-  ): Permission[] {
-    const effectiveMap = new Map<string, Permission>();
+  ): BasePermission[] {
+    const effectiveMap = new Map<string, BasePermission>();
     
     // Start with role permissions
     rolePermissions.forEach(permission => {
@@ -255,7 +256,7 @@ export class UserPermissionDetailsService {
     // Add user granted permissions (convert to Permission format)
     userGranted.forEach(permission => {
       if (permission && permission.id) {
-        const fullPermission: Permission = {
+        const fullPermission: BasePermission = {
           id: permission.id,
           name: permission.name,
           code: permission.codeId || permission.code || '',
