@@ -46,11 +46,12 @@ model User {
   isActive   Boolean    @default(false)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
-  AuditLog       AuditLog[]
-  Chotkho        Chotkho[]
-  Chotkhodetail  Chotkhodetail[] @relation("ChotkhodetailUser")
-  profile        Profile?
-  roles          UserRole[]
+  AuditLog          AuditLog[]
+  Chotkho           Chotkho[]
+  Chotkhodetail     Chotkhodetail[] @relation("ChotkhodetailUser")
+  profile           Profile?
+  roles             UserRole[]
+  userPermissions   UserPermission[] // Added for user-specific permissions
 }
 
 model Role {
@@ -77,9 +78,10 @@ model Permission {
   group       String?
   description String?
   order       Int?             @default(1)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  roles       RolePermission[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  roles             RolePermission[]
+  userPermissions   UserPermission[] // Added for user-specific permissions
 }
 
 model RolePermission {
@@ -88,6 +90,26 @@ model RolePermission {
   permissionId String
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
   role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+}
+
+model UserPermission {
+  id           String     @id @default(uuid())
+  userId       String
+  permissionId String
+  isGranted    Boolean    @default(true)  // true = granted, false = denied
+  grantedBy    String?    // User ID của người cấp quyền
+  grantedAt    DateTime   @default(now())
+  expiresAt    DateTime?  // Có thể set thời hạn cho permission
+  reason       String?    // Lý do cấp/thu hồi quyền
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, permissionId]) // Mỗi user chỉ có 1 record cho 1 permission
+  @@index([userId])
+  @@index([permissionId])
 }
 
 model Menu {

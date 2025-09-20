@@ -81,4 +81,27 @@ export declare class AuthService {
     })[]>;
     hasPermission(userId: string, permissionName: string): Promise<boolean>;
     checkPermission(userId: string, permissionName: string): Promise<void>;
+    getUserPermissionsDetailed(userId: string): Promise<any[]>;
+    checkPermissionDetailed(userId: string, permissionName: string): Promise<{
+        hasPermission: boolean;
+        source: string;
+        reason: string | null;
+        grantedBy: string | null;
+        expiresAt: Date | null;
+        roleName?: undefined;
+    } | {
+        hasPermission: boolean;
+        source: string;
+        roleName: string | undefined;
+        reason: string;
+        grantedBy?: undefined;
+        expiresAt?: undefined;
+    } | {
+        hasPermission: boolean;
+        source: string;
+        reason: string;
+        grantedBy?: undefined;
+        expiresAt?: undefined;
+        roleName?: undefined;
+    }>;
 }

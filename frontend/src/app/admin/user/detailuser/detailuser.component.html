@@ -94,6 +94,13 @@
                </div>
            </mat-menu>
 
+      <!-- User Permission Management Section -->
+      <div class="mt-8" *ngIf="DetailUser().id && DetailUser().id !== 'new'">
+        <div class="border-t pt-6">
+          <app-user-permission-management [userId]="DetailUser().id"></app-user-permission-management>
+        </div>
+      </div>
+
     </div>
   </ng-container>
 </div>

@@ -16,6 +16,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { MatMenuModule } from '@angular/material/menu';
 import { DrawerService } from '../shared/drawer.service';
+import { UserPermissionManagementComponent } from '../../user-permission/user-permission-management.component';
   @Component({
     selector: 'app-detailuser',
     imports: [
@@ -28,7 +29,8 @@ import { DrawerService } from '../shared/drawer.service';
       MatDialogModule,
       CommonModule,
       MatSlideToggleModule,
-      MatMenuModule
+      MatMenuModule,
+      UserPermissionManagementComponent
     ],
     templateUrl: './detailuser.component.html',
     styleUrl: './detailuser.component.scss'

@@ -113,6 +113,30 @@ export class AuthService {
   }
 
   async hasPermission(userId: string, permissionName: string): Promise<boolean> {
+    // 1. Check user-specific permissions first (highest priority)
+    const userPermission = await this.prisma.userPermission.findFirst({
+      where: {
+        userId,
+        permission: { name: permissionName },
+        OR: [
+          { expiresAt: null }, // Never expires
+          { expiresAt: { gt: new Date() } }, // Not expired yet
+        ],
+      },
+      include: { permission: true },
+    });
+
+    // If explicitly denied, return false (overrides role permissions)
+    if (userPermission && !userPermission.isGranted) {
+      return false;
+    }
+
+    // If explicitly granted, return true (no need to check roles)
+    if (userPermission && userPermission.isGranted) {
+      return true;
+    }
+
+    // 2. Fall back to role-based permissions
     const roles = await this.getUserRoles(userId);
     return roles.some((userRole) =>
       userRole.role.permissions.some((rp) => rp.permission.name === permissionName),
@@ -124,5 +148,119 @@ export class AuthService {
     if (!hasPerm) {
       throw new UnauthorizedException('Bạn không có quyền thực hiện thao tác này');
     }
+  }
+
+  /**
+   * Get comprehensive user permissions including role-based and user-specific permissions
+   */
+  async getUserPermissionsDetailed(userId: string) {
+    // Get role-based permissions
+    const roles = await this.getUserRoles(userId);
+    const rolePermissions = roles.flatMap((userRole) =>
+      userRole.role.permissions.map((rp) => ({
+        ...rp.permission,
+        source: 'role',
+        roleName: userRole.role.name,
+        isGranted: true,
+        isActive: true,
+      }))
+    );
+
+    // Get user-specific permissions
+    const userPermissions = await this.prisma.userPermission.findMany({
+      where: { userId },
+      include: {
+        permission: true,
+        user: { select: { name: true, email: true } },
+      },
+    });
+
+    const userSpecificPermissions = userPermissions.map((up) => ({
+      ...up.permission,
+      source: 'user-specific',
+      isGranted: up.isGranted,
+      isActive: !up.expiresAt || up.expiresAt > new Date(),
+      grantedBy: up.grantedBy,
+      grantedAt: up.grantedAt,
+      expiresAt: up.expiresAt,
+      reason: up.reason,
+    }));
+
+    // Combine and deduplicate
+    const allPermissions = new Map();
+
+    // Add role permissions first (lower priority)
+    rolePermissions.forEach((perm) => {
+      allPermissions.set(perm.id, perm);
+    });
+
+    // Add user-specific permissions (higher priority - will override)
+    userSpecificPermissions.forEach((perm) => {
+      if (allPermissions.has(perm.id)) {
+        // Merge with existing permission, prioritizing user-specific
+        const existing = allPermissions.get(perm.id);
+        allPermissions.set(perm.id, {
+          ...existing,
+          ...perm,
+          sources: [existing.source, perm.source], // Track multiple sources
+        });
+      } else {
+        allPermissions.set(perm.id, perm);
+      }
+    });
+
+    return Array.from(allPermissions.values());
+  }
+
+  /**
+   * Check if user has permission with detailed reason
+   */
+  async checkPermissionDetailed(userId: string, permissionName: string) {
+    const userPermission = await this.prisma.userPermission.findFirst({
+      where: {
+        userId,
+        permission: { name: permissionName },
+        OR: [
+          { expiresAt: null },
+          { expiresAt: { gt: new Date() } },
+        ],
+      },
+      include: { permission: true },
+    });
+
+    if (userPermission) {
+      return {
+        hasPermission: userPermission.isGranted,
+        source: 'user-specific',
+        reason: userPermission.reason,
+        grantedBy: userPermission.grantedBy,
+        expiresAt: userPermission.expiresAt,
+      };
+    }
+
+    // Check role permissions
+    const roles = await this.getUserRoles(userId);
+    const hasRolePermission = roles.some((userRole) =>
+      userRole.role.permissions.some((rp) => rp.permission.name === permissionName),
+    );
+
+    if (hasRolePermission) {
+      const roleWithPermission = roles.find((userRole) =>
+        userRole.role.permissions.some((rp) => rp.permission.name === permissionName),
+      );
+      
+      return {
+        hasPermission: true,
+        source: 'role',
+        roleName: roleWithPermission?.role.name,
+        reason: 'Inherited from role',
+      };
+    }
+
+    return {
+      hasPermission: false,
+      source: 'none',
+      reason: 'Permission not found in roles or user-specific permissions',
+    };
   }
 }

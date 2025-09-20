@@ -49,6 +49,7 @@ const cache_interceptor_1 = require("./common/cache.interceptor");
 const performance_interceptor_1 = require("./shared/interceptors/performance.interceptor");
 const graphql_module_1 = require("./graphql/graphql.module");
 const redis_module_1 = require("./redis/redis.module");
+const user_permission_module_1 = require("./user-permission/user-permission.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(audit_middleware_1.AuditMiddleware).forRoutes('*');
@@ -93,6 +94,7 @@ exports.AppModule = AppModule = __decorate([
             phieukho_module_1.PhieukhoModule,
             role_module_1.RoleModule,
             permission_module_1.PermissionModule,
+            user_permission_module_1.UserPermissionModule,
             googledrive_module_1.GoogledriveModule,
             shared_module_1.SharedModule,
             errorlogs_module_1.ErrorlogsModule,
