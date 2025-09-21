@@ -664,10 +664,33 @@ export class DetailDathangComponent {
   }
   ApplyFilterColum(menu: any) {
     console.log(this.ListFilter);
-
-    this.ListFilter.forEach((v) => {
-      v.sldat = v.slgiao = v.slnhan = 1;
+    
+    // Get existing products to preserve their values
+    const existingProducts = this.DetailDathang().sanpham || [];
+    const existingProductMap = new Map(existingProducts.map((item: any) => [item.id, item]));
+    
+    this.ListFilter.forEach((v: any) => {
+      // Check if this product already exists in the current order
+      const existingProduct = existingProductMap.get(v.id);
+      
+      if (existingProduct) {
+        // Preserve existing values for products already in the order
+        v.sldat = (existingProduct as any).sldat || 1;
+        v.slgiao = (existingProduct as any).slgiao || 1; 
+        v.slnhan = (existingProduct as any).slnhan || 1;
+        v.gianhap = (existingProduct as any).gianhap || 0;
+        v.ttnhan = (existingProduct as any).ttnhan || 0;
+        v.ghichu = (existingProduct as any).ghichu || '';
+        v.order = (existingProduct as any).order || v.order;
+      } else {
+        // Set default values only for new products
+        v.sldat = v.slgiao = v.slnhan = 1;
+        v.gianhap = 0;
+        v.ttnhan = 0;
+        v.ghichu = '';
+      }
     });
+    
     this.dataSource.data = this.ListFilter;
     this.DetailDathang.update((v: any) => {
       v.sanpham = this.ListFilter;
