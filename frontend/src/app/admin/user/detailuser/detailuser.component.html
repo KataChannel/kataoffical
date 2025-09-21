@@ -31,7 +31,7 @@
 
   <!-- Chi tiết User -->
   <ng-container *ngIf="!isDelete() && DetailUser()">
-    <div class="w-full flex flex-col space-y-2">
+    <div class="w-full grid grid-cols-2 gap-4">
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
         <input matInput [(ngModel)]="DetailUser().email" [disabled]="!isEdit()" placeholder="Vui lòng nhập Email" />
@@ -52,23 +52,13 @@
         <mat-label>Mật Khẩu </mat-label>
         <input matInput type="password" [(ngModel)]="DetailUser().password" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mật khẩu" />
       </mat-form-field>
-      <div class="w-full flex flex-wrap gap-2 space-x-2 ">
-        <button class="mt-2 flex items-center" mat-flat-button [disabled]="!isEdit() || isAddingRole()" color="primary" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
+      <div class="col-span-2 w-full flex flex-wrap gap-2 space-x-2 items-center">
+        <button class="flex items-center" mat-flat-button [disabled]="!isEdit() || isAddingRole()" color="primary" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
               <mat-icon>add</mat-icon>
               Thêm Nhóm
         </button>
-      </div>
-
-      <!-- Role Summary Card -->
-      <div class="mb-4">
-        <mat-card class="bg-blue-50">
-          <mat-card-header>
-            <mat-card-title class="text-sm font-medium flex items-center">
-              <mat-icon class="mr-2 text-blue-500">groups</mat-icon>
-              Nhóm Quyền ({{ DetailUser().roles?.length || 0 }})
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
+              <!-- Role Summary Card -->
+      <div class="">
             @if (DetailUser().roles && DetailUser().roles.length > 0) {
               <div class="flex flex-row flex-wrap gap-2">
                 @for (item of DetailUser().roles; track $index) {
@@ -104,8 +94,6 @@
                 }
               </div>
             }
-          </mat-card-content>
-        </mat-card>
       </div>
         <mat-menu  #menu="matMenu">
            <div (click)="$event.stopPropagation()"  class="cursor-pointer flex flex-col space-y-4 p-3">                                        
@@ -127,12 +115,15 @@
                </div>
                </div>
            </mat-menu>
+      </div>
+    </div>
+    
 
       <!-- User Permission Management Section -->
-      <div class="mt-8" *ngIf="DetailUser()?.id && DetailUser()?.id !== 'new'">
-        <div class="border-t pt-6">
+      <div class="mt-8 !w-full" *ngIf="DetailUser()?.id && DetailUser()?.id !== 'new'">
+        <div class="!w-full border-t pt-6">
           <!-- Unified Permission Overview Component -->
-          <app-user-permission-overview 
+          <app-user-permission-overview class="!w-full"
             [userId]="DetailUser()?.id"
             [user]="DetailUser()"
             *ngIf="DetailUser() && DetailUser()?.id && !isLoading()">
@@ -145,7 +136,7 @@
       </div>
 
       <!-- User đang tạo mới -->
-      <div class="mt-8" *ngIf="DetailUser()?.id === 'new'">
+      <div class="!w-full mt-8" *ngIf="DetailUser()?.id === 'new'">
         <div class="border-t pt-6">
           <div class="text-center text-gray-500 py-8">
             <mat-icon class="text-4xl text-gray-400">info</mat-icon>
@@ -155,6 +146,5 @@
         </div>
       </div>
 
-    </div>
   </ng-container>
 </div>
