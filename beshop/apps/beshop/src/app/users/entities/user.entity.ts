@@ -46,25 +46,25 @@ export enum Action {
   email: string;
   @Column({ type: "text", collation: "utf8_general_ci" })
   Gioitinh: string;
-  @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('{}')" })
+  @Column({collation: "utf8_general_ci",type:"simple-json", nullable: true })
   Image: string;
-  @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+  @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
   EditChinhanhs: string;
-  @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+  @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
   Diachi: string;
   @Column()
   password: string;
-  @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+  @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
   Profile: string;
-  @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+  @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
   roles: string;
-  @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+  @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
   Phanquyen: string;
-  @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+  @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
   Menu: string;
   @Column({collation: "utf8_general_ci",type:"simple-array"})
   fcmToken: string[];
-  @Column({ default: '' })
+  @Column({ nullable: true })
   Type: string;
   @Column({ default: 1 })
   Ordering: number;

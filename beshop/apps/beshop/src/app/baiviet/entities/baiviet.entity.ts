@@ -32,7 +32,7 @@ export class BaivietEntity {
   Image: string;
   @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('{}')" })
   MetaTags: string;
-  @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+  @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
   Tags: string;
   @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('{}')" })
   Type: string;

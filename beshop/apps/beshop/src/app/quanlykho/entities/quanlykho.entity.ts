@@ -18,7 +18,7 @@ import {
     MaKho: string;
     @Column({collation: "utf8_general_ci"})
     Diachi: string;
-    // @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+    // @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
     // Diachi: string;
     @Column({collation: "utf8_general_ci"})
     Ghichu: string;

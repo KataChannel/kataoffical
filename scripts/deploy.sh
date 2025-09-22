@@ -31,8 +31,8 @@ docker compose down
 docker volume rm rausachsite_phpmyadmin_tmp 2>/dev/null || true
 
 # Build and start with no cache to ensure fresh builds
-# docker compose -f 'docker-compose.yml' up -d --build backend-shop frontend-shop mysql phpmyadmin
-docker compose -f 'docker-compose.yml' up -d --build mysql phpmyadmin
+docker compose -f 'docker-compose.yml' up -d --build backend-shop frontend-shop mysql phpmyadmin
+#docker compose -f 'docker-compose.yml' up -d --build mysql phpmyadmin
 
 # Wait for services to stabilize
 echo "⏳ Waiting for services to initialize..."

@@ -34,15 +34,24 @@ import { QuanlykhoModule } from './quanlykho/quanlykho.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.DB_HOST || '103.221.222.71',
+      host: process.env.DB_HOST || '116.118.49.243',
       port: parseInt(process.env.DB_PORT) || 3306,
       username: process.env.DB_USERNAME || 'tazaspac_chikiet',
       password: process.env.DB_PASSWORD || '@Hikiet88',
       database: process.env.DB_DATABASE || 'tazaspac_chikiet',
       entities: [],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: process.env.NODE_ENV !== 'production',
       charset: "utf8mb4",
+      // Additional MySQL options to handle compatibility
+      extra: {
+        connectionLimit: 10,
+        acquireTimeout: 60000,
+        timeout: 60000,
+      },
+      // Disable schema sync in production since we use fixed SQL file
+      migrationsRun: false,
+      dropSchema: false,
     }), 
      DanhmucModule,
      SanphamModule,

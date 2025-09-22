@@ -12,9 +12,9 @@ import {
     id: string;
     @Column()
     Title: string;
-    @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+    @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
     users: string;
-    @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+    @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
     permission: string;
     Type: string;
     @Column({ default: 1 })

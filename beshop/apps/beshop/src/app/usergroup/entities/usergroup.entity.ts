@@ -20,7 +20,7 @@ export class UsergroupEntity {
   Slug: string;
   @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('{}')" })
   Image: string;
-  @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+  @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
   ListMenu: string;
   @Column({ default: '' })
   Type: string;

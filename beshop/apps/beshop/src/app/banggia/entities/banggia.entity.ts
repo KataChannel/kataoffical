@@ -12,7 +12,7 @@ import {
     id: string;
     @Column({collation: "utf8_general_ci"})
     Title: string;
-    @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+    @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
     ListSP: string;
     @Column({ default: '' })
     Type: string;

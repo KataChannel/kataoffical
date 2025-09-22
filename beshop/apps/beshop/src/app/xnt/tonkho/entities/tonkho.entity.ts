@@ -18,11 +18,11 @@ import {
     GiaVon: string;
     @Column({ type: 'text', collation: 'utf8_general_ci' })
     Tonggia: string;
-    @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('{}')" })
+    @Column({collation: "utf8_general_ci",type:"simple-json", nullable: true })
     Bienthe: string;
     @Column({ type: 'text', collation: 'utf8_general_ci' })
     Noidung: string;
-    @Column({ default: '' })
+    @Column({ nullable: true })
     Type: string;
     @Column({ default: 1 })
     Ordering: number;

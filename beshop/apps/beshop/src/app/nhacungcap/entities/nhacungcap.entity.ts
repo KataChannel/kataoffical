@@ -10,7 +10,7 @@ import {
    export class NhacungcapEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
-    @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+    @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
     idDonhang: string;
     @Column({collation: "utf8_general_ci"})
     MaNCC: string;
@@ -24,7 +24,7 @@ import {
     SDT: string;
     @Column({ type: "text", collation: "utf8_general_ci" })
     Ghichu: string;
-    @Column({ type: "text", collation: "utf8_general_ci",default:''})
+    @Column({ type: "text", collation: "utf8_general_ci", nullable: true })
     Type: string;
     @Column({ default: 1 })
     Ordering: number;

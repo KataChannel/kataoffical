@@ -34,7 +34,7 @@ export class SanphamEntity {
   Slug: string;
   @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('{}')" })
   Giachon: string;
-  @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+  @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
   Bienthe: string;
   @Column({ type: 'bigint' })
   giagoc: number;
@@ -54,7 +54,7 @@ export class SanphamEntity {
   Image: string;
   @Column({ type: 'text', collation: 'utf8_general_ci' })
   Tags: string;
-  @Column({collation: "utf8_general_ci",type:"simple-json",default: () => "('[]')" })
+  @Column({collation: "utf8_general_ci", type:"simple-json", nullable: true })
   ListImage: string;
   @Column({ type: 'text', collation: 'utf8_general_ci' })
   Ghichu: string;

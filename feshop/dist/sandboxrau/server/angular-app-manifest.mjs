@@ -255,8 +255,8 @@ export default {
   }
 ],
   assets: {
-    'index.csr.html': {size: 142417, hash: 'c80ea1efcd0075510dee9497e24be4c74c439aa23997752350752ebeab5e3c8f', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 89507, hash: '61eecfc5eb8e77a7a30f22306cf62c69c82859fb3f9a2c69c057585463fbd42a', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 142417, hash: 'bdd125c2c95e86d91eab1983aa9ae1e42e7f2c8b1c4f083dfaa18cb2718120da', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 89507, hash: '8ea60243631c5af6b9a6fdd564d268609c98d7ed03ba7fe6113dfc10fcd71a58', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-2IMTBKJL.css': {size: 322674, hash: '8rcTVa1SoMA', text: () => import('./assets-chunks/styles-2IMTBKJL_css.mjs').then(m => m.default)}
   },
 };

@@ -22,7 +22,7 @@ export class UploadEntity {
     alt: string;
     @Column({ type: "text", collation: "utf8_general_ci" ,nullable: true })
     Mime: string;
-    @Column({ default: '' })
+    @Column({ nullable: true })
     Type: string;
     @Column({ default: 1 })
     Ordering: number;
