@@ -13,7 +13,7 @@ echo "✅ Local changes pushed to repository"
 # Remote server operations
 echo "🌐 Deploying to remote server..."
 ssh root@116.118.49.243 << 'EOF'
-cd rausach
+cd rausachsite
 
 echo "📥 Pulling latest changes..."
 git pull

@@ -1,33 +1,4 @@
 services:
-  postgres:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: AWois79wFA1bxMK
-      POSTGRES_PASSWORD: 7bhNHJcSEbWln9v
-      POSTGRES_DB: rausachv2
-    ports:
-      - "5432:5432"
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@rausachtrangia.com
-      PGADMIN_DEFAULT_PASSWORD: 7bhNHJcSEbWln9v
-    ports:
-      - "5050:80"
-    depends_on:
-      - postgres  
-  redis:
-    image: redis:latest
-    container_name: redis
-    restart: always
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: ["redis-server", "--appendonly", "yes"]
   mysql:
     image: mysql:8.0
     container_name: mysql_rausach
@@ -56,36 +27,6 @@ services:
       - "8080:80"
     depends_on:
       - mysql
-  berausach:
-    build: ./api
-    restart: always
-    ports:
-      - "3331:3331"
-    environment:
-      #- DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:5432/testdata?schema=public
-      - DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:5432/rausachv2?schema=public
-      - GOOGLE_CLIENT_ID=897974685698-efprsqffgop935h5d5l2lidle1go9i17.apps.googleusercontent.com
-      - GOOGLE_CLIENT_SECRET=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
-      - FACEBOOK_CLIENT_ID=your-facebook-client-id
-      - FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
-      - ZALO_APP_ID=your-zalo-app-id
-      - ZALO_APP_SECRET=your-zalo-app-secret
-      - BASE_URL=https://sandbox2.rausachtrangia.com
-      - SERVER_URL=https://sandboxapi2.rausachtrangia.com
-      - PORT=3331
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-    depends_on:
-      - postgres
-      - redis      
-  ferausach:
-    build: ./frontend
-    restart: always
-    ports:
-      - "4301:4301"
-    environment:
-      - NODE_ENV=production
-
   backend-shop:
     # Build image từ Dockerfile trong thư mục hiện tại (.)
     build:
@@ -144,8 +85,6 @@ services:
 
 
 volumes:
-  pg_data:
-  redis_data:
   mysql_data:
   uploads_data:
     driver: local
