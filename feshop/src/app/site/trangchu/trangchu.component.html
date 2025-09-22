@@ -9,7 +9,7 @@
     @for (item of ListsSanpham; track item.id) {
     @if (item?.Sanphams?.length>0) {
     <app-slide-sanpham class="container order-[{{item.Ordering}}]" [Danhmuc]="item" [Slug]="item.Slug"
-      [Title]="item.Title" [Ordering]="item.Ordering"></app-slide-sanpham>
+      [Title]="item?.Title" [Ordering]="item.Ordering"></app-slide-sanpham>
     }
     }
     <!-- <div class="order-3">

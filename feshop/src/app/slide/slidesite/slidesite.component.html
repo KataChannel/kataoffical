@@ -4,7 +4,37 @@
     <!-- <div class="swiper-wrapper" loop="true" class="mySwiper{{GetID(Detail.id)}}"> -->
       @for (item of Detail?.Slides; track item.id) {
       <div class="swiper-slide" class="w-full flex flex-col space-y-2 justify-between">
-        <img loading="lazy"[src]="item?.Image?.Hinhchinh?.src" class="w-full h-full">
+        <div class="w-full h-full relative overflow-hidden rounded">
+          <!-- Loading placeholder -->
+          @if (isImageLoading(item.id)) {
+          <div class="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+            <div class="text-center">
+              <div class="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+              <span class="text-gray-500 text-sm">Đang tải...</span>
+            </div>
+          </div>
+          }
+          
+          <!-- Main image -->
+          <img 
+            loading="lazy" 
+            [src]="getImageSrc(item)" 
+            (load)="onImageLoad($event, item.id)"
+            (error)="onImageError($event, item.id)"
+            [alt]="item?.Title || item?.Image?.Hinhchinh?.alt || 'Slide image'"
+            class="w-full h-full object-cover transition-opacity duration-300"
+            [class.opacity-0]="isImageLoading(item.id)"
+            [class.opacity-100]="!isImageLoading(item.id)"
+            style="min-height: 200px;"
+          >
+          
+          <!-- Optional: Title overlay nếu có -->
+          @if (item?.Title) {
+          <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+            <h3 class="text-white text-sm font-medium">{{ item.Title }}</h3>
+          </div>
+          }
+        </div>
       </div>
       }
     <!-- </div> -->

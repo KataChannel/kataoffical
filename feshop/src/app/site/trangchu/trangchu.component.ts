@@ -65,6 +65,10 @@ export class TrangchuComponent implements OnInit {
       Type:'slide',
       Status:1
     })).items;
+
+    console.log('ListSlides',this.ListSlides);
+    
+
     this.ListsSanpham = (await this._DanhmucService.SearchDanhmuc({
       pageSize:50,
       pageNumber:0,
