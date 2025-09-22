@@ -23,8 +23,29 @@ services:
       PMA_USER: tazaspac_chikiet
       PMA_PASSWORD: "@Hikiet88"
       MYSQL_ROOT_PASSWORD: root_password_123
+      # Fix for POST Content-Length and upload limits
+      UPLOAD_LIMIT: 20M
+      POST_MAX_SIZE: 20M
+      MAX_EXECUTION_TIME: 300
+      MEMORY_LIMIT: 512M
+      # Session configuration
+      PMA_ABSOLUTE_URI: http://116.118.49.243:8080/
+      PMA_BLOWFISH_SECRET: "rausachsite-phpmyadmin-secret-key-2024-deployment"
+      # PHP configuration overrides
+      PHP_UPLOAD_MAX_FILESIZE: 20M
+      PHP_POST_MAX_SIZE: 20M
+      PHP_MAX_INPUT_VARS: 2000
+      PHP_MEMORY_LIMIT: 512M
+      PHP_MAX_EXECUTION_TIME: 300
     ports:
       - "8080:80"
+    volumes:
+      # Mount custom PHP configuration
+      - ./php.ini:/usr/local/etc/php/conf.d/99-custom.ini:ro
+      # Mount custom phpMyAdmin configuration  
+      - ./phpmyadmin-config.inc.php:/etc/phpmyadmin/config.inc.php:ro
+      # Create tmp directory for uploads and sessions
+      - phpmyadmin_tmp:/tmp
     depends_on:
       - mysql
   backend-shop:
@@ -89,3 +110,5 @@ volumes:
   uploads_data:
     driver: local
   minio_rausach:
+  phpmyadmin_tmp:
+    driver: local
