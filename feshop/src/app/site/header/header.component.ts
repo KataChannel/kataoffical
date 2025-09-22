@@ -27,6 +27,17 @@ import { SanphamService } from '../../admin/main-admin/sanpham/sanpham.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SanphamblockComponent } from '../../sanpham/sanphamblock/sanphamblock.component';
 import { DonhangsService } from '../../admin/donhang/listdonhang/listdonhang.service';
+
+/**
+ * HeaderComponent - Main navigation header với kiểm tra hình ảnh tự động
+ * 
+ * Tính năng:
+ * - Navigation menu với mega menu cho danh mục sản phẩm
+ * - User profile với avatar validation
+ * - Shopping cart và search functionality
+ * - Mobile-responsive sidebar menu
+ * - Image validation cho menu items và user avatar
+ */
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -84,6 +95,12 @@ export class HeaderComponent implements OnInit {
   sidebarVisible: boolean = false;
   Menus: any[] = []
 
+  // Image validation properties
+  private placeholderCategoryImage = 'assets/images/noimage.png';
+  private placeholderUserImage = 'assets/images/noimage.png';
+  public categoryImageLoadingStates: { [key: string]: boolean } = {};
+  public isUserImageLoading: boolean = true;
+
   private _transformer = (node: any, level: number) => {
     return {
       expandable: !!node.children && node.children.length > 0,
@@ -139,6 +156,7 @@ export class HeaderComponent implements OnInit {
       })
     }
     this.Danhmucs = await this._DanhmucService.SearchDanhmuc(this.SearchParams)
+    this.initializeCategoryImageLoadingStates();
     this.Menus =[
     { id: 1, Title: 'Về Chúng Tôi', Slug: 'blog/gioi-thieu/ve-chung-toi' },
     {
@@ -160,6 +178,122 @@ export class HeaderComponent implements OnInit {
     { id: 3, Title: 'Liên hệ', Slug: 'lien-he' },
   ]
   this.dataSource.data = this.Menus;
+  }
+
+  // Khởi tạo trạng thái loading cho hình ảnh danh mục
+  private initializeCategoryImageLoadingStates(): void {
+    if (this.Danhmucs?.items) {
+      this.Danhmucs.items.forEach((item: any) => {
+        this.categoryImageLoadingStates[item.id] = true;
+      });
+    }
+  }
+
+  // Kiểm tra và trả về src hình ảnh hợp lệ cho danh mục menu
+  getCategoryImageSrc(item: any): string {
+    // Ưu tiên: Thumb -> Hinhchinh.src -> placeholder
+    let imageSrc: string | null = null;
+
+    // Kiểm tra hình Thumb trước
+    if (item?.Image?.Thumb && item.Image.Thumb.trim() !== '') {
+      imageSrc = `assets/images/sanpham/${item.Image.Thumb}`;
+    }
+    // Nếu không có Thumb, kiểm tra Hinhchinh.src
+    else if (item?.Image?.Hinhchinh?.src && item.Image.Hinhchinh.src.trim() !== '') {
+      imageSrc = item.Image.Hinhchinh.src;
+    }
+
+    // Nếu không có src hoặc src rỗng, trả về placeholder
+    if (!imageSrc || imageSrc.trim() === '') {
+      return this.placeholderCategoryImage;
+    }
+
+    // Kiểm tra xem src có phải là URL hợp lệ không (cho Hinhchinh.src)
+    if (!imageSrc.startsWith('assets/')) {
+      try {
+        new URL(imageSrc);
+        return imageSrc;
+      } catch (error) {
+        // Nếu không phải URL hợp lệ, kiểm tra đường dẫn tương đối
+        if (imageSrc.startsWith('/') || imageSrc.startsWith('./') || imageSrc.startsWith('../')) {
+          return imageSrc;
+        }
+        // Nếu không hợp lệ, trả về placeholder
+        return this.placeholderCategoryImage;
+      }
+    }
+
+    return imageSrc;
+  }
+
+  // Kiểm tra và trả về src hình ảnh hợp lệ cho user profile
+  getUserImageSrc(): string {
+    // Ưu tiên: Main -> placeholder
+    let imageSrc: string | null = null;
+
+    // Kiểm tra hình Main
+    if (this.User?.Image?.Main && this.User.Image.Main.trim() !== '') {
+      // Nếu bắt đầu bằng http/https, sử dụng trực tiếp
+      if (this.User.Image.Main.startsWith('http://') || this.User.Image.Main.startsWith('https://')) {
+        imageSrc = this.User.Image.Main;
+      } else {
+        // Nếu không, thêm prefix assets
+        imageSrc = `assets/images/${this.User.Image.Main}`;
+      }
+    }
+    // Fallback cho Hinhchinh.src nếu có
+    else if (this.User?.Image?.Hinhchinh?.src && this.User.Image.Hinhchinh.src.trim() !== '') {
+      imageSrc = this.User.Image.Hinhchinh.src;
+    }
+
+    // Nếu không có src hoặc src rỗng, trả về placeholder
+    if (!imageSrc || imageSrc.trim() === '') {
+      return this.placeholderUserImage;
+    }
+
+    // Kiểm tra xem src có phải là URL hợp lệ không
+    if (!imageSrc.startsWith('assets/') && !imageSrc.startsWith('http://') && !imageSrc.startsWith('https://')) {
+      try {
+        new URL(imageSrc);
+        return imageSrc;
+      } catch (error) {
+        // Nếu không phải URL hợp lệ, trả về placeholder
+        return this.placeholderUserImage;
+      }
+    }
+
+    return imageSrc;
+  }
+
+  // Xử lý khi hình ảnh danh mục load thành công
+  onCategoryImageLoad(itemId: string): void {
+    this.categoryImageLoadingStates[itemId] = false;
+  }
+
+  // Xử lý khi hình ảnh danh mục load bị lỗi
+  onCategoryImageError(event: any, itemId: string): void {
+    // Thay thế hình bị lỗi bằng placeholder
+    event.target.src = this.placeholderCategoryImage;
+    this.categoryImageLoadingStates[itemId] = false;
+    
+    // Log lỗi để debug (có thể remove trong production)
+    const item = this.Danhmucs?.items?.find((i: any) => i.id === itemId);
+    console.warn('Category menu image failed to load, using placeholder:', item?.Title || 'Unknown category');
+  }
+
+  // Xử lý khi hình ảnh user load thành công
+  onUserImageLoad(): void {
+    this.isUserImageLoading = false;
+  }
+
+  // Xử lý khi hình ảnh user load bị lỗi
+  onUserImageError(event: any): void {
+    // Thay thế hình bị lỗi bằng placeholder
+    event.target.src = this.placeholderUserImage;
+    this.isUserImageLoading = false;
+    
+    // Log lỗi để debug (có thể remove trong production)
+    console.warn('User profile image failed to load, using placeholder:', this.User?.Hoten || 'Unknown user');
   }
 
   GetTongCong()

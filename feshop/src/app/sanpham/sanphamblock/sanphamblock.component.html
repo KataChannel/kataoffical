@@ -2,16 +2,25 @@
 {
   <div class="flex flex-col lg:space-y-6 lg:p-4 space-y-2">
     <a href="san-pham/{{Detail.Slug}}" class="relative cursor-pointer z-10 grid grid-cols-1 border rounded-lg p-3 bg-white transform duration-500 hover:scale-[110%] hover:shadow-lg">
-      @if(Detail?.Image?.Main != null)
-      {
-      <img loading="lazy" src="assets/images/sanpham/{{Detail.Image.Main}}" class="w-full">
+      
+      <!-- Loading skeleton while image loads -->
+      @if(isImageLoading) {
+        <div class="w-full aspect-square bg-gray-200 animate-pulse rounded-lg flex items-center justify-center">
+          <div class="text-gray-400 text-sm">Loading...</div>
+        </div>
       }
-      @else if(Detail?.Image?.Hinhchinh?.src != null){
-      <img loading="lazy" src="{{Detail.Image.Hinhchinh.src}}" class="w-full">
-      }
-      @else {
-      <img loading="lazy" src="assets/images/noimage300x300.jpg" class="p-3 mx-auto rounded-lg">
-      }
+      
+      <!-- Product image với validation và error handling -->
+      <img 
+        [style.display]="isImageLoading ? 'none' : 'block'"
+        loading="lazy" 
+        [src]="getProductImageSrc()" 
+        [alt]="Detail.Title || 'Product image'"
+        (load)="onImageLoad($event)"
+        (error)="onImageError($event)"
+        class="w-full"
+      />
+      
       <div (click)="AddtoCart(Detail);$event.preventDefault()"
         class="absolute bottom-2 right-2 z-20 flex flex-row space-x-2 justify-end">
         <span
@@ -22,8 +31,8 @@
     <span class="text-base font-bold line-clamp-2 h-12">{{Detail.Title}}</span>
     <div class="cursor-pointer flex flex-row space-x-1 items-center justify-between">
       <div class="flex flex-row items-center">
-        <span class="text-[#E1232A] font-bold text-base"> {{Detail?.giagoc| number:'1.0-0'}}đ</span>
-        <span class="text-xs italic">/1 {{Detail?.dvt}}</span>
+        <span class="text-[#E1232A] font-bold text-base">{{getProductPrice().price | number:'1.0-0'}}đ</span>
+        <span class="text-xs italic">/1 {{getProductPrice().unit}}</span>
       </div>
       @if(isMuangay){
         <div (click)="AddtoCart(Detail);$event.preventDefault()" class="hidden lg:block">

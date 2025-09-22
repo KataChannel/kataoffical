@@ -2,26 +2,30 @@
   <div class="p-2 rounded-lg bg-[#57A345] text-white text-center font-bold text-lg">DANH MỤC SẢN PHẨM</div>
   <div class="grid grid-cols-1 place-content-center divide-y justify-center mx-8 py-4">
   @for (item of Danhmucs.items; track item.id) {
-    <div class="flex flex-row space-x-2 items-center">
-      @if(item && item.Image&&item.Image.Thumb)
-      {
-      <img loading="lazy" src="assets/images/sanpham/{{item.Image.Thumb}}" class="h-10">
+    <div class="flex flex-row space-x-2 items-center py-2">
+      
+      <!-- Loading skeleton while image loads -->
+      @if(imageLoadingStates[item.id]) {
+        <div class="h-10 w-10 bg-gray-200 animate-pulse rounded flex items-center justify-center">
+          <div class="text-gray-400 text-xs">...</div>
+        </div>
       }
-      @else if(item && item.Image&&item.Image.Hinhchinh&&item.Image.Hinhchinh.src){
-      <img loading="lazy" src="{{item.Image.Hinhchinh.src}}" class="h-10">
-      }
-      @else {
-      <img loading="lazy" src="assets/images/noimage.png" class="p-3 max-h-10 rounded-lg">
-      }
-      <!-- <img loading="lazy" src="/assets/images/sanpham/rau-lang26385834.PNG" class="h-10"> -->
-      <a href="danh-muc/{{item.Slug}}">{{item.Title}}</a>
-  </div>
-  
-    <!-- <div class="py-2 flex flex-row space-x-2 items-center">
-      <img loading="lazy" src="" alt="">
-      <span>{{item.Title}}</span>  
-
-    </div> -->
+      
+      <!-- Category image với validation và error handling -->
+      <img 
+        [style.display]="imageLoadingStates[item.id] ? 'none' : 'block'"
+        loading="lazy" 
+        [src]="getCategoryImageSrc(item)" 
+        [alt]="item.Title || 'Category image'"
+        (load)="onImageLoad(item.id)"
+        (error)="onImageError($event, item.id)"
+        class="h-10 w-10 object-cover rounded"
+      />
+      
+      <a href="danh-muc/{{item.Slug}}" class="flex-1 hover:text-[#57A345] transition-colors duration-200">
+        {{item.Title}}
+      </a>
+    </div>
   }
-</div>
+  </div>
 </div>

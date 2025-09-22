@@ -22,18 +22,29 @@
                             <div class="absolute w-[80vw] -translate-x-1/2 left-1/2 text-black z-10 hidden group-hover:grid border rounded-lg grid-cols-3 gap-4 bg-white p-4"
                                 (mouseleave)="Menus[$index].Show=false">
                                 @for (item of item.children; track item.id) {
-                                <div class="flex flex-row space-x-2 items-center">
-                                    @if(item && item.Image&&item.Image.Thumb)
-                                    {
-                                    <img loading="lazy" src="assets/images/sanpham/{{item.Image.Thumb}}" class="h-10">
+                                <div class="flex flex-row space-x-2 items-center py-2">
+                                    
+                                    <!-- Loading skeleton while image loads -->
+                                    @if(categoryImageLoadingStates[item.id]) {
+                                        <div class="h-10 w-10 bg-gray-200 animate-pulse rounded flex items-center justify-center">
+                                            <div class="text-gray-400 text-xs">...</div>
+                                        </div>
                                     }
-                                    @else if(item && item.Image&&item.Image.Hinhchinh&&item.Image.Hinhchinh.src){
-                                    <img loading="lazy" src="{{item.Image.Hinhchinh.src}}" class="h-10">
-                                    }
-                                    @else {
-                                    <img loading="lazy" src="assets/images/noimage.png" class="p-3 max-h-10 rounded-lg">
-                                    }
-                                    <a href="danh-muc/{{item.Slug}}">{{item.Title}}</a>
+                                    
+                                    <!-- Category image với validation và error handling -->
+                                    <img 
+                                        [style.display]="categoryImageLoadingStates[item.id] ? 'none' : 'block'"
+                                        loading="lazy" 
+                                        [src]="getCategoryImageSrc(item)" 
+                                        [alt]="item.Title || 'Category image'"
+                                        (load)="onCategoryImageLoad(item.id)"
+                                        (error)="onCategoryImageError($event, item.id)"
+                                        class="h-10 w-10 object-cover rounded"
+                                    />
+                                    
+                                    <a href="danh-muc/{{item.Slug}}" class="hover:text-[#57A345] transition-colors duration-200">
+                                        {{item.Title}}
+                                    </a>
                                 </div>
                                 }
                             </div>
@@ -81,9 +92,24 @@
                 <div class="justify-start items-center">
                     @if(this.Token){
                     <div class="mx-2 flex flex-row space-x-2 items-center cursor-pointer text-white">
-                        <a routerLink="/profile">
-                            <img loading="lazy" [src]="User?.Image?.Main||'/assets/images/noimage.png'"
-                            class="rounded-full w-10 h-10 border">
+                        <a routerLink="/profile" class="relative">
+                            <!-- Loading skeleton while user image loads -->
+                            @if(isUserImageLoading) {
+                                <div class="rounded-full w-10 h-10 border bg-gray-200 animate-pulse flex items-center justify-center">
+                                    <div class="text-gray-400 text-xs">...</div>
+                                </div>
+                            }
+                            
+                            <!-- User profile image với validation -->
+                            <img 
+                                [style.display]="isUserImageLoading ? 'none' : 'block'"
+                                loading="lazy" 
+                                [src]="getUserImageSrc()"
+                                [alt]="User?.Hoten || 'User profile'"
+                                (load)="onUserImageLoad()"
+                                (error)="onUserImageError($event)"
+                                class="rounded-full w-10 h-10 border object-cover"
+                            />
                         </a>
                         <!-- <a routerLink="/admin" class="underline">
                             <span>Admin</span>
@@ -308,8 +334,25 @@
                 @if(this.Token){
                 <div class="w-full flex flex-row justify-between">
                     <div class="flex flex-row space-x-2 items-center">
-                        <img loading="lazy" [src]="User?.Image?.Main||'/assets/images/noimage.png'"
-                            class="rounded-full w-10 h-10 border">
+                        <div class="relative">
+                            <!-- Loading skeleton while user image loads -->
+                            @if(isUserImageLoading) {
+                                <div class="rounded-full w-10 h-10 border bg-gray-200 animate-pulse flex items-center justify-center">
+                                    <div class="text-gray-400 text-xs">...</div>
+                                </div>
+                            }
+                            
+                            <!-- User profile image với validation -->
+                            <img 
+                                [style.display]="isUserImageLoading ? 'none' : 'block'"
+                                loading="lazy" 
+                                [src]="getUserImageSrc()"
+                                [alt]="User?.Hoten || 'User profile'"
+                                (load)="onUserImageLoad()"
+                                (error)="onUserImageError($event)"
+                                class="rounded-full w-10 h-10 border object-cover"
+                            />
+                        </div>
                         <span class="font-bold">{{User.Hoten||"Guest"}}</span>
                     </div>
 
