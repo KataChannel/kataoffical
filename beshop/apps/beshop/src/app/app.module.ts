@@ -34,11 +34,11 @@ import { QuanlykhoModule } from './quanlykho/quanlykho.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '103.221.222.71',
-      port: 3306,
-      username: 'tazaspac_chikiet',
-      password: '@Hikiet88',
-      database: 'tazaspac_chikiet',
+      host: process.env.DB_HOST || '103.221.222.71',
+      port: parseInt(process.env.DB_PORT) || 3306,
+      username: process.env.DB_USERNAME || 'tazaspac_chikiet',
+      password: process.env.DB_PASSWORD || '@Hikiet88',
+      database: process.env.DB_DATABASE || 'tazaspac_chikiet',
       entities: [],
       autoLoadEntities: true,
       synchronize: true,

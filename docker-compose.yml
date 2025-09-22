@@ -96,8 +96,16 @@ services:
     # Phụ thuộc vào service 'mysql'. Backend chỉ khởi động sau khi 'mysql' healthy.
     depends_on:
       - mysql
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USERNAME=tazaspac_chikiet
+      - DB_PASSWORD=@Hikiet88
+      - DB_DATABASE=tazaspac_chikiet
+      - PORT=3200
     ports:
-      # Map cổng 3200 của container ra cổng 3200 của máy host
+      # Map cổng 3200 của container ra cổng 3500 của máy host
       - "3500:3200"
     volumes:
       # Mount named volume 'uploads_data' vào thư mục /app/uploads trong container
@@ -108,9 +116,13 @@ services:
       context: ./feshop
       dockerfile: Dockerfile
     container_name: frontend-shop
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
     ports:
       - "4500:4000"
-    restart: unless-stopped
+    depends_on:
+      - backend-shop
   minio_rausach:
     image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
     container_name: minio_rausach

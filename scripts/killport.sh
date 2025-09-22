@@ -12,6 +12,14 @@ else
     echo "No process found on port 3331"
 fi
 
+PID_6300=$(lsof -ti:6300)
+if [ ! -z "$PID_6300" ]; then
+    kill -9 $PID_6300
+    echo "Killed process $PID_6300 on port 6300"
+else
+    echo "No process found on port 6300"
+fi
+
 # Kill process on port 4301
 PID_4301=$(lsof -ti:4301)
 if [ ! -z "$PID_4301" ]; then
