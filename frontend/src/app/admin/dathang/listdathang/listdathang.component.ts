@@ -872,18 +872,22 @@ export class ListDathangComponent {
     await this._KhoService.getAllKho();
 
     try {
-      // Prepare data for import (remove temporary fields)
+      // Prepare data for import with product merging for duplicate masp
       const ordersToImport = confirmedOrders.map((order) => {
         const Kho = this._KhoService.ListKho().find(
           (k) => k.makho === order.makho);
+
+        // Group and merge products with same masp
+        const mergedProducts = this.mergeProductsByMasp(order.sanpham);
+
         return {
           ngaynhan: moment(order.ngaynhan).format('YYYY-MM-DD'),
           mancc: order?.nhacungcap.mancc,
           makho: order.makho,
           khoId: Kho?.id,
           status: order.status,
-          sanpham: order.sanpham.map((sp: any) => ({
-            masp: sp.sanpham.masp,
+          sanpham: mergedProducts.map((sp: any) => ({
+            masp: sp.masp,
             sldat: Number(sp.sldat),
             slgiao: Number(sp.slgiao),
             slnhan: Number(sp.slnhan),
@@ -983,6 +987,44 @@ export class ListDathangComponent {
   DoImportNhacungcapCu() {
     // Process import for existing suppliers
     this.ImportConfirmedDathang();
+  }
+
+  // Merge products with same masp by summing quantities
+  mergeProductsByMasp(sanphamArray: any[]): any[] {
+    const mergedMap = new Map<string, any>();
+
+    sanphamArray.forEach((sp: any) => {
+      const masp = sp.sanpham?.masp || sp.masp;
+      
+      if (mergedMap.has(masp)) {
+        // Product already exists, merge quantities
+        const existing = mergedMap.get(masp);
+        existing.sldat = (Number(existing.sldat) || 0) + (Number(sp.sldat) || 0);
+        existing.slgiao = (Number(existing.slgiao) || 0) + (Number(sp.slgiao) || 0);
+        existing.slnhan = (Number(existing.slnhan) || 0) + (Number(sp.slnhan) || 0);
+        
+        // Combine notes if they exist and are different
+        const existingNote = existing.ghichu || '';
+        const newNote = sp.ghichu || '';
+        if (newNote && existingNote !== newNote) {
+          existing.ghichu = existingNote ? `${existingNote}; ${newNote}` : newNote;
+        }
+      } else {
+        // First occurrence of this product
+        mergedMap.set(masp, {
+          masp: masp,
+          sanpham: sp.sanpham || { masp: masp },
+          sldat: Number(sp.sldat) || 0,
+          slgiao: Number(sp.slgiao) || 0,
+          slnhan: Number(sp.slnhan) || 0,
+          ghichu: sp.ghichu || '',
+          title: sp.sanpham?.title || sp.title || '',
+          dvt: sp.sanpham?.dvt || sp.dvt || ''
+        });
+      }
+    });
+
+    return Array.from(mergedMap.values());
   }
 
   // Get total quantity for an order
