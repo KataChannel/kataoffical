@@ -29,7 +29,7 @@ docker compose -f 'docker-compose.yml' up -d --build --no-cache mysql phpmyadmin
 # Clean up unused Docker resources
 echo "🧹 Cleaning up Docker resources..."
 docker builder prune -af
-docker system prune -f
+#docker system prune -f
 
 echo "✅ Deployment completed successfully!"
 
