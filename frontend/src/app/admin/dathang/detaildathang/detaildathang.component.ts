@@ -250,7 +250,10 @@ export class DetailDathangComponent {
         });
         return v;
       });
+      console.log(this.DetailDathang());
+      
       await this._DathangService.updateDathang(this.DetailDathang());
+
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,
         horizontalPosition: 'end',

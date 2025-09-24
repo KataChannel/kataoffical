@@ -258,8 +258,10 @@ export class DathangService {
         if (!response.ok) {
 
         }
-        this.getAllDathang()
-        this.getDathangByid(dulieu.id)
+        console.log('data Update',data);
+        
+        // this.getAllDathang()
+        this.getDathangByid(data.id)
     } catch (error) {
         return console.error(error);
     }

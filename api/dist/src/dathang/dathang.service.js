@@ -695,6 +695,7 @@ let DathangService = class DathangService {
                             }
                             : {}),
                     },
+                    include: { sanpham: true },
                 });
             }
             if (data.status === 'dagiao') {

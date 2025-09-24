@@ -802,6 +802,7 @@ async convertDathangImportToTransfer(
                 }
               : {}),
           },
+          include: { sanpham: true },
         });
       }
 
