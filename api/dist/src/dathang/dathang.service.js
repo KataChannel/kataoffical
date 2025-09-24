@@ -648,10 +648,24 @@ let DathangService = class DathangService {
                 return updatedDathang;
             }
             if (oldDathang.status === 'dadat' && data.status === 'dadat') {
+                const oldProductIds = oldDathang.sanpham.map((sp) => sp.idSP);
+                const newProductIds = data.sanpham.map((sp) => sp.idSP ?? sp.id);
+                const deletedProductIds = oldProductIds.filter((id) => !newProductIds.includes(id));
+                for (const deletedId of deletedProductIds) {
+                    const deletedItem = oldDathang.sanpham.find((sp) => sp.idSP === deletedId);
+                    if (deletedItem && Number(deletedItem.sldat) > 0) {
+                        await prisma.tonKho.update({
+                            where: { sanphamId: deletedId },
+                            data: {
+                                slchonhap: { decrement: parseFloat((deletedItem.sldat ?? 0).toFixed(3)) },
+                            },
+                        });
+                    }
+                }
                 for (const sp of data.sanpham) {
                     const oldItem = oldDathang.sanpham.find((o) => o.idSP === (sp.idSP ?? sp.id));
+                    const newSldat = parseFloat((sp.sldat ?? 0).toFixed(3));
                     if (oldItem) {
-                        const newSldat = parseFloat((sp.sldat ?? 0).toFixed(3));
                         const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(3));
                         const difference = newSldat - oldSldat;
                         if (difference !== 0) {
@@ -663,8 +677,32 @@ let DathangService = class DathangService {
                             });
                         }
                     }
+                    else {
+                        if (newSldat > 0) {
+                            await prisma.tonKho.upsert({
+                                where: { sanphamId: sp.idSP ?? sp.id },
+                                update: {
+                                    slchonhap: { increment: newSldat },
+                                },
+                                create: {
+                                    sanphamId: sp.idSP ?? sp.id,
+                                    slchonhap: newSldat,
+                                    slton: 0,
+                                    slchogiao: 0,
+                                },
+                            });
+                        }
+                    }
                 }
-                return prisma.dathang.update({
+                if (deletedProductIds.length > 0) {
+                    await prisma.dathangsanpham.deleteMany({
+                        where: {
+                            dathangId: id,
+                            idSP: { in: deletedProductIds },
+                        },
+                    });
+                }
+                const updatedDathang = await prisma.dathang.update({
                     where: { id },
                     data: {
                         title: data.title,
@@ -676,25 +714,49 @@ let DathangService = class DathangService {
                         order: data.order,
                         ghichu: data.ghichu,
                         status: 'dadat',
-                        ...(data.sanpham && data.sanpham.length
-                            ? {
-                                sanpham: {
-                                    updateMany: data.sanpham.map((sp) => ({
-                                        where: { idSP: sp.id },
-                                        data: {
-                                            ghichu: sp.ghichu,
-                                            sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-                                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
-                                            slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
-                                            gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
-                                            ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
-                                        },
-                                    })),
-                                },
-                            }
-                            : {}),
                     },
+                });
+                for (const sp of data.sanpham) {
+                    const existingProduct = await prisma.dathangsanpham.findFirst({
+                        where: {
+                            dathangId: id,
+                            idSP: sp.idSP ?? sp.id,
+                        },
+                    });
+                    if (existingProduct) {
+                        await prisma.dathangsanpham.update({
+                            where: { id: existingProduct.id },
+                            data: {
+                                ghichu: sp.ghichu,
+                                sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                                slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                                slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                                slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
+                                gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
+                                ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
+                            },
+                        });
+                    }
+                    else {
+                        await prisma.dathangsanpham.create({
+                            data: {
+                                dathangId: id,
+                                idSP: sp.idSP ?? sp.id,
+                                ghichu: sp.ghichu,
+                                sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                                slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                                slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                                slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
+                                ttdat: parseFloat((sp.ttdat ?? 0).toFixed(3)),
+                                ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
+                                gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
+                                ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
+                            },
+                        });
+                    }
+                }
+                return prisma.dathang.findUnique({
+                    where: { id },
                     include: { sanpham: true },
                 });
             }

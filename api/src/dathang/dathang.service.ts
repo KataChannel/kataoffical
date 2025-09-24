@@ -752,11 +752,30 @@ async convertDathangImportToTransfer(
 
       // 3. Cập nhật đơn ở trạng thái 'dadat'
       if (oldDathang.status === 'dadat' && data.status === 'dadat') {
-        // 3.1. Cập nhật slchonhap theo chênh lệch sldat
+        // 3.1. Xử lý sản phẩm bị xóa - giảm slchonhap
+        const oldProductIds = oldDathang.sanpham.map((sp: any) => sp.idSP);
+        const newProductIds = data.sanpham.map((sp: any) => sp.idSP ?? sp.id);
+        const deletedProductIds = oldProductIds.filter((id: string) => !newProductIds.includes(id));
+        
+        for (const deletedId of deletedProductIds) {
+          const deletedItem = oldDathang.sanpham.find((sp: any) => sp.idSP === deletedId);
+          if (deletedItem && Number(deletedItem.sldat) > 0) {
+            await prisma.tonKho.update({
+              where: { sanphamId: deletedId },
+              data: {
+                slchonhap: { decrement: parseFloat((deletedItem.sldat ?? 0).toFixed(3)) },
+              },
+            });
+          }
+        }
+
+        // 3.2. Xử lý sản phẩm mới và cập nhật sản phẩm hiện có
         for (const sp of data.sanpham) {
           const oldItem = oldDathang.sanpham.find((o: any) => o.idSP === (sp.idSP ?? sp.id));
+          const newSldat = parseFloat((sp.sldat ?? 0).toFixed(3));
+          
           if (oldItem) {
-            const newSldat = parseFloat((sp.sldat ?? 0).toFixed(3));
+            // Sản phẩm đã tồn tại - cập nhật theo chênh lệch
             const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(3));
             const difference = newSldat - oldSldat;
             if (difference !== 0) {
@@ -767,11 +786,37 @@ async convertDathangImportToTransfer(
                 },
               });
             }
+          } else {
+            // Sản phẩm mới - tăng slchonhap
+            if (newSldat > 0) {
+              await prisma.tonKho.upsert({
+                where: { sanphamId: sp.idSP ?? sp.id },
+                update: {
+                  slchonhap: { increment: newSldat },
+                },
+                create: {
+                  sanphamId: sp.idSP ?? sp.id,
+                  slchonhap: newSldat,
+                  slton: 0,
+                  slchogiao: 0,
+                },
+              });
+            }
           }
         }
 
-        // 3.2. Cập nhật thông tin đơn đặt hàng
-        return prisma.dathang.update({
+        // 3.3. Xóa các sản phẩm không còn trong danh sách mới
+        if (deletedProductIds.length > 0) {
+          await prisma.dathangsanpham.deleteMany({
+            where: {
+              dathangId: id,
+              idSP: { in: deletedProductIds },
+            },
+          });
+        }
+
+        // 3.4. Cập nhật thông tin đơn đặt hàng với xử lý create/update sản phẩm
+        const updatedDathang = await prisma.dathang.update({
           where: { id },
           data: {
             title: data.title,
@@ -783,25 +828,54 @@ async convertDathangImportToTransfer(
             order: data.order,
             ghichu: data.ghichu,
             status: 'dadat',
-            ...(data.sanpham && data.sanpham.length
-              ? {
-                  sanpham: {
-                    updateMany: data.sanpham.map((sp: any) => ({
-                      where: { idSP: sp.id },
-                      data: {
-                        ghichu: sp.ghichu,
-                        sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-                        slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
-                        slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
-                        gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
-                        ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
-                      },
-                    })),
-                  },
-                }
-              : {}),
           },
+        });
+
+        // 3.5. Xử lý upsert từng sản phẩm để tránh conflict
+        for (const sp of data.sanpham) {
+          const existingProduct = await prisma.dathangsanpham.findFirst({
+            where: {
+              dathangId: id,
+              idSP: sp.idSP ?? sp.id,
+            },
+          });
+
+          if (existingProduct) {
+            // Update existing product
+            await prisma.dathangsanpham.update({
+              where: { id: existingProduct.id },
+              data: {
+                ghichu: sp.ghichu,
+                sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
+                gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
+                ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
+              },
+            });
+          } else {
+            // Create new product
+            await prisma.dathangsanpham.create({
+              data: {
+                dathangId: id,
+                idSP: sp.idSP ?? sp.id,
+                ghichu: sp.ghichu,
+                sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
+                ttdat: parseFloat((sp.ttdat ?? 0).toFixed(3)),
+                ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
+                gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
+                ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
+              },
+            });
+          }
+        }
+
+        return prisma.dathang.findUnique({
+          where: { id },
           include: { sanpham: true },
         });
       }
