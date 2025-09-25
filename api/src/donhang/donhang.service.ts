@@ -387,9 +387,12 @@ export class DonhangService {
         
         // Chuẩn hóa ngày giao để đảm bảo grouping chính xác
         const normalizedDate = v.ngaygiao ? 
-          moment(v.ngaygiao).utc().startOf('day').format('YYYY-MM-DD') : 
+          moment(v.ngaygiao).tz('Asia/Ho_Chi_Minh').startOf('day').format('YYYY-MM-DD') : 
           'no-date';
-        
+          
+        // const normalizedDate = v.ngaygiao ? 
+        //   moment(v.ngaygiao).utc().startOf('day').format('YYYY-MM-DD') : 
+        //   'no-date';
         return {
           id: v.id,
           ngaygiao: v.ngaygiao,

@@ -311,7 +311,7 @@ let DonhangService = class DonhangService {
                 const vat = Number(product?.vat) || 0;
                 const thanhtiensauvat = v1.slnhan * giaban * (1 + vat);
                 const normalizedDate = v.ngaygiao ?
-                    moment(v.ngaygiao).utc().startOf('day').format('YYYY-MM-DD') :
+                    moment(v.ngaygiao).tz('Asia/Ho_Chi_Minh').startOf('day').format('YYYY-MM-DD') :
                     'no-date';
                 return {
                     id: v.id,

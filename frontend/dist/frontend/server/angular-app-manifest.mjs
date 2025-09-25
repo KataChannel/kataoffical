@@ -1146,8 +1146,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72880, hash: 'c422a3f300213e36ea5b0c50879cc131ace5e1ca9d9b43c880e6b548dfa5f33a', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24171, hash: '9e7b398d5bda58d1d463786f3dc264b059b01ef866d69c4a16730ee622056ea0', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 72880, hash: '64042b6e2471ae5e89f5783aaeb4ab1ee5c01c9548f4aa008ed96e81df1688ce', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24171, hash: '0e8cb02f9c00c69814468d087af9429285106a5ccfcb2dc391ae65e2ea574247', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-T47INHW2.css': {size: 168174, hash: 'a1ohrGLxEeA', text: () => import('./assets-chunks/styles-T47INHW2_css.mjs').then(m => m.default)}
   },
 };
