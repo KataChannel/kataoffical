@@ -18,7 +18,7 @@ export class NhomkhachhangService {
   setNhomkhachhangId(id: string | null) {
     this.nhomkhachhangId.set(id);
   }
-    private socket = io(`${environment.SHARED_APIURL}`,{
+    private socket = io(`${environment.ACADEMY_APIURL}`,{
     transports: ['websocket'],
     reconnectionAttempts: 5,
     timeout: 5000,
@@ -33,7 +33,7 @@ export class NhomkhachhangService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/nhomkhachhang/addKHtoNhom`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/nhomkhachhang/addKHtoNhom`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -70,7 +70,7 @@ export class NhomkhachhangService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/nhomkhachhang/removeKHfromNhom`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/nhomkhachhang/removeKHfromNhom`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -108,7 +108,7 @@ export class NhomkhachhangService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/nhomkhachhang`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/nhomkhachhang`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -152,7 +152,7 @@ export class NhomkhachhangService {
           'Authorization': 'Bearer '+this._StorageService.getItem('token')
         },
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/nhomkhachhang`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/nhomkhachhang`, options);
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -221,7 +221,7 @@ export class NhomkhachhangService {
           'Content-Type': 'application/json',
         },
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/nhomkhachhang/findid/${id}`, options);      
+      const response = await fetch(`${environment.ACADEMY_APIURL}/nhomkhachhang/findid/${id}`, options);      
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -255,7 +255,7 @@ export class NhomkhachhangService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/nhomkhachhang/${dulieu.id}`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/nhomkhachhang/${dulieu.id}`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -292,7 +292,7 @@ export class NhomkhachhangService {
               'Content-Type': 'application/json',
             },
           };
-          const response = await fetch(`${environment.SHARED_APIURL}/nhomkhachhang/${item.id}`, options);
+          const response = await fetch(`${environment.ACADEMY_APIURL}/nhomkhachhang/${item.id}`, options);
           if (!response.ok) {
             if (response.status === 401) {
               const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })

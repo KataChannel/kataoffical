@@ -18,7 +18,7 @@ export class RoleService {
   setRoleId(id: string | null) {
     this.roleId.set(id);
   }
-    private socket = io(`${environment.SHARED_APIURL}`,{
+    private socket = io(`${environment.ACADEMY_APIURL}`,{
     transports: ['websocket'],
     reconnectionAttempts: 5,
     timeout: 5000,
@@ -32,7 +32,7 @@ export class RoleService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/role`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/role`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -76,7 +76,7 @@ export class RoleService {
           'Authorization': 'Bearer '+this._StorageService.getItem('token')
         },
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/role`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/role`, options);
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -145,7 +145,7 @@ export class RoleService {
           'Content-Type': 'application/json',
         },
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/role/${id}`, options);            
+      const response = await fetch(`${environment.ACADEMY_APIURL}/role/${id}`, options);            
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -179,7 +179,7 @@ export class RoleService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/role/${dulieu.id}`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/role/${dulieu.id}`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -218,7 +218,7 @@ export class RoleService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/role/assign`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/role/assign`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -257,7 +257,7 @@ export class RoleService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/role/remove`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/role/remove`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -297,7 +297,7 @@ export class RoleService {
               'Content-Type': 'application/json',
             },
           };
-          const response = await fetch(`${environment.SHARED_APIURL}/role/${item.id}`, options);
+          const response = await fetch(`${environment.ACADEMY_APIURL}/role/${item.id}`, options);
           if (!response.ok) {
             if (response.status === 401) {
               const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })

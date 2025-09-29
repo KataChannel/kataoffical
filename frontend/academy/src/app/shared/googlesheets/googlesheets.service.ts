@@ -8,7 +8,7 @@ import { StorageService } from '../utils/storage.service';
 })
 export class GoogleSheetService {
   private _authenticated: boolean = false;
-  private APIURL: string = environment.SHARED_APIURL;
+  private APIURL: string = environment.ACADEMY_APIURL;
   private isBrowser: boolean;
   constructor(
     private _StorageService: StorageService,

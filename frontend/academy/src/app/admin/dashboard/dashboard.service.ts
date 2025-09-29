@@ -27,7 +27,7 @@ export class DashboardService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/chatbot/ask`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/chatbot/ask`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -51,7 +51,7 @@ export class DashboardService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/dashboard`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/dashboard`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -75,7 +75,7 @@ export class DashboardService {
           'Authorization': 'Bearer '+this._StorageService.getItem('token')
         },
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/dashboard`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/dashboard`, options);
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -107,7 +107,7 @@ export class DashboardService {
           'Content-Type': 'application/json',
         },
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/dashboard/findid/${id}`, options);      
+      const response = await fetch(`${environment.ACADEMY_APIURL}/dashboard/findid/${id}`, options);      
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -141,7 +141,7 @@ export class DashboardService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/dashboard/${dulieu.id}`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/dashboard/${dulieu.id}`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -178,7 +178,7 @@ export class DashboardService {
               'Content-Type': 'application/json',
             },
           };
-          const response = await fetch(`${environment.SHARED_APIURL}/dashboard/${item.id}`, options);
+          const response = await fetch(`${environment.ACADEMY_APIURL}/dashboard/${item.id}`, options);
           if (!response.ok) {
             if (response.status === 401) {
               const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })

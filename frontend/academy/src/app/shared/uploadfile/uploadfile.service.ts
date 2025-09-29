@@ -10,7 +10,7 @@ export class UploadService {
   async DeleteuploadDriver(data: any) {
     console.log(data);
     try {
-      const response = await fetch(environment.SHARED_APIURL + `/upload/${data.id}`, {
+      const response = await fetch(environment.ACADEMY_APIURL + `/upload/${data.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json' // Assuming the API expects JSON data
@@ -47,7 +47,7 @@ export class UploadService {
           method: "POST",
           body: formData,
         };    
-        const response = await fetch(environment.SHARED_APIURL + `/upload/${folder}`,requestOptions) 
+        const response = await fetch(environment.ACADEMY_APIURL + `/upload/${folder}`,requestOptions) 
            if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -77,7 +77,7 @@ export class UploadService {
       const year = currentDate.getFullYear();
       const formattedDate = `${day}_${month}_${year}`;
       if(type=="googledrive"){
-        const response = await fetch(environment.SHARED_APIURL + `/upload/googledrive?folderId=1aAvPsWRhjwgDjYulHkHLdEgXlk6694bc`, {
+        const response = await fetch(environment.ACADEMY_APIURL + `/upload/googledrive?folderId=1aAvPsWRhjwgDjYulHkHLdEgXlk6694bc`, {
           method: 'POST',
           body: formData
          }) 
@@ -115,7 +115,7 @@ export class UploadService {
       // const formData = new FormData();
       // formData.append('image', file);
       // console.log(formData);
-      const response = await fetch(environment.SHARED_APIURL + `/upload/image`, {
+      const response = await fetch(environment.ACADEMY_APIURL + `/upload/image`, {
         method: 'POST',
         body: file
        }) 

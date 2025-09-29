@@ -92,7 +92,7 @@ export class KhachhangService {
         },
         body: JSON.stringify(dulieu),
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/khachhang`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/khachhang`, options);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -131,7 +131,7 @@ export class KhachhangService {
 
       // Kiểm tra thời gian cập nhật từ server, trừ khi được yêu cầu forceRefresh
       if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.SHARED_APIURL}/khachhang/lastupdated`, options);
+        const lastUpdatedResponse = await fetch(`${environment.ACADEMY_APIURL}/khachhang/lastupdated`, options);
         if (!lastUpdatedResponse.ok) {
           this.handleError(lastUpdatedResponse.status);
           this.ListKhachhang.set(cached.khachhangs);
@@ -160,7 +160,7 @@ export class KhachhangService {
         page: this.page().toString(),
         limit: pageSize.toString()
       });
-      const response = await fetch(`${environment.SHARED_APIURL}/khachhang/vttech?${query}`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/khachhang/vttech?${query}`, options);
       if (!response.ok) {
         this.handleError(response.status);
         this.ListKhachhang.set(cached.khachhangs);
@@ -182,7 +182,7 @@ export class KhachhangService {
       });
       // Với forceRefresh, cập nhật luôn với thời gian mới từ server, nếu không thì sử dụng thời gian lấy từ lastUpdatedResponse
       if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.SHARED_APIURL}/khachhang/lastupdated`, options);
+        const lastUpdatedResponse = await fetch(`${environment.ACADEMY_APIURL}/khachhang/lastupdated`, options);
         const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
         this._StorageService.setItem('khachhangs_updatedAt', updatedAtServer);
       } else {
@@ -215,7 +215,7 @@ export class KhachhangService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/khachhang/updateCodeIds`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/khachhang/updateCodeIds`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -248,7 +248,7 @@ export class KhachhangService {
         },
         body: JSON.stringify({ ...param, page: this.page(), limit: pageSize }),
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/khachhang/findby`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/khachhang/findby`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -293,7 +293,7 @@ export class KhachhangService {
         },
         body: JSON.stringify(dulieu),
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/khachhang/${dulieu.id}`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/khachhang/${dulieu.id}`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -315,7 +315,7 @@ export class KhachhangService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/khachhang/${item.id}`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/khachhang/${item.id}`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -363,7 +363,7 @@ export class KhachhangService {
         },
         body: JSON.stringify(listphone),
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/khachhang/vttech/doanhthu`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/khachhang/vttech/doanhthu`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }

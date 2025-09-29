@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   //APIURL: 'http://localhost:3100',
-  SHARED_APIURL: 'https://apihethong.tazagroup.vn',
+  // ACADEMY_APIURL: 'https://apihethong.tazagroup.vn',
   ACADEMY_APIURL: 'https://apiaffiliate.tazagroup.vn',
   ImageURL: 'https://storage.timona.edu.vn',
   app_id: '1416835846626859002',

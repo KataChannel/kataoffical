@@ -18,7 +18,7 @@ export class PermissionService {
   setPermissionId(id: string | null) {
     this.permissionId.set(id);
   }
-    private socket = io(`${environment.SHARED_APIURL}`,{
+    private socket = io(`${environment.ACADEMY_APIURL}`,{
     transports: ['websocket'],
     reconnectionAttempts: 5,
     timeout: 5000,
@@ -32,7 +32,7 @@ export class PermissionService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/permission`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/permission`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -76,7 +76,7 @@ export class PermissionService {
           'Authorization': 'Bearer '+this._StorageService.getItem('token')
         },
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/permission`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/permission`, options);
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -143,7 +143,7 @@ export class PermissionService {
           'Content-Type': 'application/json',
         },
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/permission/findid/${id}`, options);      
+      const response = await fetch(`${environment.ACADEMY_APIURL}/permission/findid/${id}`, options);      
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -177,7 +177,7 @@ export class PermissionService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/permission/${dulieu.id}`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/permission/${dulieu.id}`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -214,7 +214,7 @@ export class PermissionService {
               'Content-Type': 'application/json',
             },
           };
-          const response = await fetch(`${environment.SHARED_APIURL}/permission/${item.id}`, options);
+          const response = await fetch(`${environment.ACADEMY_APIURL}/permission/${item.id}`, options);
           if (!response.ok) {
             if (response.status === 401) {
               const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })

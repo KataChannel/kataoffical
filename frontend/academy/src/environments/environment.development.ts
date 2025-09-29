@@ -1,6 +1,5 @@
 export const environment = {
   production: true,
-  SHARED_APIURL: 'http://localhost:3100',
   ACADEMY_APIURL: 'http://localhost:3105',
   ImageURL: 'https://storage.timona.edu.vn',
   app_id: '1416835846626859002',

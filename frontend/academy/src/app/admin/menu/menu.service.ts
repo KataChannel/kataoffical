@@ -31,7 +31,7 @@ export class MenuService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/menu`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/menu`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -70,7 +70,7 @@ export class MenuService {
           'Authorization': 'Bearer '+this._StorageService.getItem('token')
         },
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/menu`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/menu`, options);
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -103,7 +103,7 @@ export class MenuService {
         },
         body: JSON.stringify(params),
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/menu/tree`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/menu/tree`, options);
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -135,7 +135,7 @@ export class MenuService {
           'Content-Type': 'application/json',
         },
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/menu/${id}`, options);      
+      const response = await fetch(`${environment.ACADEMY_APIURL}/menu/${id}`, options);      
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -169,7 +169,7 @@ export class MenuService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/menu/${dulieu.id}`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/menu/${dulieu.id}`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -206,7 +206,7 @@ export class MenuService {
               'Content-Type': 'application/json',
             },
           };
-          const response = await fetch(`${environment.SHARED_APIURL}/menu/${item.id}`, options);
+          const response = await fetch(`${environment.ACADEMY_APIURL}/menu/${item.id}`, options);
           if (!response.ok) {
             if (response.status === 401) {
               const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
