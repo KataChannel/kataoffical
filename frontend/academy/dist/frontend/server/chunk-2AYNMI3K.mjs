@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{a as r}from"./chunk-CHLRJVWI.mjs";import{a as e}from"./chunk-7G3V73VQ.mjs";import{ea as o}from"./chunk-KOT4CA75.mjs";var c=class t{socket;constructor(){this.socket=r(`${e.ACADEMY_APIURL}`,{transports:["websocket"],reconnectionAttempts:5,timeout:5e3})}getSocket(){return this.socket}static \u0275fac=function(i){return new(i||t)};static \u0275prov=o({token:t,factory:t.\u0275fac,providedIn:"root"})};export{c as a};

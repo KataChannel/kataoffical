@@ -9,6 +9,7 @@ import { environment } from '../environments/environment.development';
 import { provideServiceWorker } from '@angular/service-worker';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { HeaderStripperInterceptor } from './header-stripper.interceptor';
+import { graphqlProviders } from './graphql.config';
 export const MY_DATE_FORMATS = {
   parse: {
     dateInput: 'DD/MM/YYYY',
@@ -35,6 +36,7 @@ export const appConfig: ApplicationConfig = {
     provideServiceWorker('ngsw-worker.js', {
             enabled: !isDevMode(),
             registrationStrategy: 'registerWhenStable:30000'
-          })
+          }),
+    ...graphqlProviders
   ]
 };

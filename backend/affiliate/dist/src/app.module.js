@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
+const graphql_1 = require("@nestjs/graphql");
+const apollo_1 = require("@nestjs/apollo");
+const path_1 = require("path");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const auth_module_1 = require("./auth/auth.module");
@@ -39,6 +42,7 @@ const quanlydrive_module_1 = require("./quanlydrive/quanlydrive.module");
 const quanlyqrcode_module_1 = require("./quanlyqrcode/quanlyqrcode.module");
 const googlesheet_module_1 = require("./googlesheet/googlesheet.module");
 const mail_module_1 = require("./mail/mail.module");
+const graphql_module_1 = require("./graphql/graphql.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -48,6 +52,14 @@ exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            graphql_1.GraphQLModule.forRoot({
+                driver: apollo_1.ApolloDriver,
+                autoSchemaFile: (0, path_1.join)(process.cwd(), 'src/schema.gql'),
+                sortSchema: true,
+                playground: true,
+                introspection: true,
+                context: ({ req }) => ({ req }),
+            }),
             auth_module_1.AuthModule,
             user_module_1.UserModule,
             prisma_module_1.PrismaModule,
@@ -74,7 +86,8 @@ exports.AppModule = AppModule = __decorate([
             quanlydrive_module_1.QuanlydriveModule,
             quanlyqrcode_module_1.QuanlyqrcodeModule,
             googlesheet_module_1.GooglesheetModule,
-            mail_module_1.MailModule
+            mail_module_1.MailModule,
+            graphql_module_1.GraphQLResolversModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

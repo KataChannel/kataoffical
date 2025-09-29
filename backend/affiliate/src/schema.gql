@@ -1,0 +1,271 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AffiliateLink {
+  campaignName: String
+  codeId: String
+  createdAt: DateTime!
+  createdById: String
+  description: String
+  id: ID!
+  isActive: Boolean!
+  landingPageId: String
+  order: Int!
+  updatedAt: DateTime!
+  url: String
+  utmCampaign: String
+  utmContent: String
+  utmMedium: String
+  utmSource: String
+  utmTerm: String
+}
+
+input AffiliateLinkWhereInput {
+  campaignName: String
+  codeId: String
+  createdById: String
+  id: String
+  isActive: Boolean
+}
+
+input AffiliateLinkWhereUniqueInput {
+  codeId: String
+  id: String
+}
+
+type BulkOperationResult {
+  count: Int!
+  message: String
+  success: Boolean!
+}
+
+input CreateAffiliateLinkInput {
+  campaignName: String
+  codeId: String
+  createdById: String
+  description: String
+  isActive: Boolean! = true
+  landingPageId: String
+  order: Int! = 1
+  url: String
+  utmCampaign: String
+  utmContent: String
+  utmMedium: String
+  utmSource: String
+  utmTerm: String
+}
+
+input CreatePermissionInput {
+  description: String
+  name: String!
+}
+
+input CreateRoleInput {
+  name: String!
+}
+
+input CreateUserInput {
+  SDT: String
+  affiliateCode: String
+  avatar: String
+  codeId: String
+  email: String
+  facebookId: String
+  gender: Gender
+  ghichu: String
+  googleId: String
+  inviteCode: String
+  isActive: Boolean! = false
+  isCTV: Boolean! = false
+  isSuperAdmin: Boolean! = false
+  name: String
+  password: String
+  phone: String
+  provider: String
+  providerId: String
+  referrerId: String
+  registrationSource: String
+  zaloId: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""User gender enum"""
+enum Gender {
+  FEMALE
+  MALE
+  OTHER
+}
+
+type Mutation {
+  createBulkAffiliateLinks(data: [CreateAffiliateLinkInput!]!): BulkOperationResult!
+  createBulkPermissions(data: [CreatePermissionInput!]!): BulkOperationResult!
+  createBulkRoles(data: [CreateRoleInput!]!): BulkOperationResult!
+  createBulkUsers(data: [CreateUserInput!]!): BulkOperationResult!
+  createOneAffiliateLink(data: CreateAffiliateLinkInput!): AffiliateLink!
+  createOnePermission(data: CreatePermissionInput!): Permission!
+  createOneRole(data: CreateRoleInput!): Role!
+  createOneUser(data: CreateUserInput!): User!
+  deleteBulkAffiliateLinks(where: AffiliateLinkWhereInput): BulkOperationResult!
+  deleteBulkPermissions(where: PermissionWhereInput): BulkOperationResult!
+  deleteBulkRoles(where: RoleWhereInput): BulkOperationResult!
+  deleteBulkUsers(where: UserWhereInput): BulkOperationResult!
+  deleteOneAffiliateLink(where: AffiliateLinkWhereUniqueInput!): AffiliateLink!
+  deleteOnePermission(where: PermissionWhereUniqueInput!): Permission!
+  deleteOneRole(where: RoleWhereUniqueInput!): Role!
+  deleteOneUser(where: UserWhereUniqueInput!): User!
+  updateBulkAffiliateLinks(data: UpdateAffiliateLinkInput!, where: AffiliateLinkWhereInput): BulkOperationResult!
+  updateBulkPermissions(data: UpdatePermissionInput!, where: PermissionWhereInput): BulkOperationResult!
+  updateBulkRoles(data: UpdateRoleInput!, where: RoleWhereInput): BulkOperationResult!
+  updateBulkUsers(data: UpdateUserInput!, where: UserWhereInput): BulkOperationResult!
+  updateOneAffiliateLink(data: UpdateAffiliateLinkInput!, where: AffiliateLinkWhereUniqueInput!): AffiliateLink!
+  updateOnePermission(data: UpdatePermissionInput!, where: PermissionWhereUniqueInput!): Permission!
+  updateOneRole(data: UpdateRoleInput!, where: RoleWhereUniqueInput!): Role!
+  updateOneUser(data: UpdateUserInput!, where: UserWhereUniqueInput!): User!
+}
+
+type Permission {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  name: String!
+  updatedAt: DateTime!
+}
+
+input PermissionWhereInput {
+  id: String
+  name: String
+}
+
+input PermissionWhereUniqueInput {
+  id: String
+  name: String
+}
+
+type Query {
+  countAffiliateLinks(where: AffiliateLinkWhereInput): Int!
+  countPermissions(where: PermissionWhereInput): Int!
+  countRoles(where: RoleWhereInput): Int!
+  countUsers(where: UserWhereInput): Int!
+  findAllAffiliateLinks(orderBy: String, skip: Int, take: Int, where: AffiliateLinkWhereInput): [AffiliateLink!]!
+  findAllPermissions(orderBy: String, skip: Int, take: Int, where: PermissionWhereInput): [Permission!]!
+  findAllRoles(orderBy: String, skip: Int, take: Int, where: RoleWhereInput): [Role!]!
+  findAllUsers(orderBy: String, skip: Int, take: Int, where: UserWhereInput): [User!]!
+  findOneAffiliateLink(where: AffiliateLinkWhereUniqueInput!): AffiliateLink
+  findOnePermission(where: PermissionWhereUniqueInput!): Permission
+  findOneRole(where: RoleWhereUniqueInput!): Role
+  findOneUser(where: UserWhereUniqueInput!): User
+}
+
+type Role {
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  updatedAt: DateTime!
+}
+
+input RoleWhereInput {
+  id: String
+  name: String
+}
+
+input RoleWhereUniqueInput {
+  id: String
+  name: String
+}
+
+input UpdateAffiliateLinkInput {
+  campaignName: String
+  codeId: String
+  createdById: String
+  description: String
+  isActive: Boolean
+  landingPageId: String
+  order: Int
+  url: String
+  utmCampaign: String
+  utmContent: String
+  utmMedium: String
+  utmSource: String
+  utmTerm: String
+}
+
+input UpdatePermissionInput {
+  description: String
+  name: String
+}
+
+input UpdateRoleInput {
+  name: String
+}
+
+input UpdateUserInput {
+  SDT: String
+  affiliateCode: String
+  avatar: String
+  codeId: String
+  email: String
+  facebookId: String
+  gender: Gender
+  ghichu: String
+  googleId: String
+  inviteCode: String
+  isActive: Boolean
+  isCTV: Boolean
+  isSuperAdmin: Boolean
+  name: String
+  password: String
+  phone: String
+  provider: String
+  providerId: String
+  referrerId: String
+  registrationSource: String
+  zaloId: String
+}
+
+type User {
+  SDT: String
+  affiliateCode: String
+  avatar: String
+  codeId: String
+  createdAt: DateTime!
+  email: String
+  facebookId: String
+  gender: Gender
+  ghichu: String
+  googleId: String
+  id: ID!
+  inviteCode: String
+  isActive: Boolean!
+  isCTV: Boolean!
+  isSuperAdmin: Boolean!
+  name: String
+  password: String
+  phone: String
+  provider: String
+  providerId: String
+  referrerId: String
+  registrationSource: String
+  updatedAt: DateTime!
+  zaloId: String
+}
+
+input UserWhereInput {
+  codeId: String
+  email: String
+  id: String
+  isActive: Boolean
+  isCTV: Boolean
+  name: String
+  phone: String
+}
+
+input UserWhereUniqueInput {
+  codeId: String
+  id: String
+  inviteCode: String
+}
