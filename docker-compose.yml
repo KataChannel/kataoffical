@@ -1,126 +1,9 @@
 services:
-  postgres_taza:
-    image: postgres:15
-    container_name: postgres_taza
-    restart: always
-    environment:
-      POSTGRES_USER: tazagroup
-      POSTGRES_PASSWORD: /TazaGroup*2025
-      POSTGRES_DB: datavttech
-    ports:
-      - "5434:5432"
-  pgadmin_taza:
-    image: dpage/pgadmin4
-    container_name: pgadmin_taza
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@tazagroup.com
-      PGADMIN_DEFAULT_PASSWORD: /TazaGroup*2025
-    ports:
-      - "5052:80"
-    depends_on:
-      - postgres_taza 
-  datalake_storage:
-      image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
-      container_name: datalake_minio
-      command: server /data --console-address ":9090"
-      ports:
-        - "9000:9000"
-        - "9090:9090"
-      environment:
-        # User/Pass MinIO thường vẫn cần dưới dạng biến môi trường trực tiếp
-        # Hoặc bạn cần custom entrypoint để đọc từ file.
-        # Cách an toàn hơn là tạo Access Key/Secret Key riêng cho service thay vì dùng Root User/Pass.
-        # Giả sử dùng Root cho ví dụ này (CẨN THẬN!)
-        MINIO_ROOT_USER: admin
-        MINIO_ROOT_PASSWORD: password
-      volumes:
-        - minio_data:/data
-        # Mount file secrets vào container
-        - ./secrets/minio_user.txt:/run/secrets/minio_user:ro
-        - ./secrets/minio_password.txt:/run/secrets/minio_password:ro
-      healthcheck:
-        test: ["CMD", "mc", "ready", "local"]
-        interval: 5s
-        timeout: 5s
-        retries: 5
-        start_period: 5s
-
-  minio_taza:
-    image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
-    container_name: minio_taza
-    command: server /data --console-address ":9090"
-    ports:
-      - "9002:9000"
-      - "9092:9090"
-    environment:
-      MINIO_ROOT_USER: zQBLucaykoR9Xw3
-      MINIO_ROOT_PASSWORD: ToDRFRP09AGTJo0
-    volumes:
-      - minio_data2:/data2
-    healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
-
-
-
-  processing_service:
-    build: ./processing_service # Trỏ tới thư mục chứa Dockerfile và code xử lý
-    container_name: processing_service
-    restart: always
-    environment:
-      MINIO_ENDPOINT: 'http://116.118.49.243:9000'
-      MINIO_ACCESS_KEY: 'Abgp9Bkds2lTrthAb4LV'
-      MINIO_SECRET_KEY: 'ndAmGT8jv8dxOzGPbntO1GCmA3w6SWpYsjM55qZJ'
-      MINIO_BUCKET_NAME: 'datavttech'
-      EXTERNAL_API_URL: 'https://apismsvtt.vttechsolution.com/api/'
-      DB_HOST: 'postgres_taza'
-      DB_PORT: 5432
-      DB_USER: 'tazagroup'
-      DB_PASSWORD: '/TazaGroup*2025'
-      DB_NAME: 'datavttech'
-      DATABASE_URL: "postgresql://tazagroup:%2FTazaGroup%2A2025@116.118.49.243:5434/datavttech?schema=public"
-
-    # --- Cách chạy service này ---
-    # Option 1: Chạy 1 lần khi `docker-compose up` (ví dụ: xử lý batch ban đầu)
-    # command: ["node", "process.js"]
-    # Option 2: Để service chạy liên tục (ví dụ: nếu là worker xử lý message queue hoặc chạy cron bên trong)
-    # command: ["node", "worker.js"]
-    # Option 3: Không chạy tự động, dùng `docker-compose run processing_service` để chạy khi cần
-
-
-  # --- Backend Services ---
-  data-vttech:
+  timonaaffiliate-backend:
     build:
-      context: ./backend/shared-core
+      context: ./backend
       dockerfile: Dockerfile
-    container_name: data-vttech
-    environment:
-      NODE_ENV: development
-      PORT: 3200
-    ports:
-      - "3200:3200"
-    restart: unless-stopped
-
-  shared-api:
-    build:
-      context: ./backend/shared-core
-      dockerfile: Dockerfile
-    container_name: shared-api
-    environment:
-      NODE_ENV: development
-      PORT: 3100
-    ports:
-      - "3100:3100"
-    restart: unless-stopped  
-  affiliate-api:
-    build:
-      context: ./backend/affiliate
-      dockerfile: Dockerfile
-    container_name: affiliate_api
+    container_name: timonaaffiliate-backend
     environment:
       NODE_ENV: development
       PORT: 3105
@@ -128,41 +11,11 @@ services:
       - "3105:3105"
     restart: unless-stopped  
 
-
-  # --- Frontend Services ---
-  admin-ui:
+  timonaaffiliate-frontend:
     build:
-      context: ./frontend/admin
+      context: ./frontend
       dockerfile: Dockerfile
-    container_name: admin_ui
-    ports:
-      - "4400:4400"
-    # depends_on:
-    #   shared-core-api:
-    #     condition: service_started
-    # networks:
-    #   - app-network
-    restart: unless-stopped
-
-  academy-affiliate:
-    build:
-      context: ./frontend/academy
-      dockerfile: Dockerfile
-    container_name: academy_affiliate
-    # volumes:
-    #   - ./frontend/academy:/usr/src/app
-    #   - /usr/src/app/node_modules
+    container_name: timonaaffiliate-frontend
     ports:
       - "4405:4405"
     restart: unless-stopped
-
-volumes:
-  postgres_data:
-    driver: local
-  minio_data:
-    driver: local
-  minio_data2:
-    driver: local
-# networks:
-#   app-network:
-#     driver: bridge

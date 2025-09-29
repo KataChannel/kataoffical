@@ -1,6 +1,0 @@
-<div class="block image-block" [ngStyle]="block?.styles">
-  <img *ngIf="data?.src; else placeholder" [src]="data?.src" [alt]="data?.alt || ''">
-  <ng-template #placeholder>
-    <div class="placeholder">Ảnh</div>
-  </ng-template>
-</div>
