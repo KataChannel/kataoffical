@@ -82,7 +82,6 @@ let MenuService = class MenuService {
         }
     }
     async getTree(data) {
-        console.log(data);
         if (Object.entries(data).length === 0) {
             data = ['donhang.view'];
         }
