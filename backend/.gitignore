@@ -1,7 +1,7 @@
 node_modules
 affiliate_json
 # Add this line to your .gitignore
-# .env
+.env
 
 # # You might also want to ignore all .env variations
 # .env.*
