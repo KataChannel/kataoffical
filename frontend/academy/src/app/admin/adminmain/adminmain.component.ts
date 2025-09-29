@@ -84,6 +84,8 @@ export class AdminmainComponent {
     await this._UserService.getProfile().then(async (res: any) => {
       if(res){
         this.User = res;  
+        console.log(this.User);
+        
         const permissionsadmin = this.User?.permissions?.map((v:any)=>v.name);   
         const params = {permissions:permissionsadmin,serviceType:'affiliate'}    
         await this._MenuService.getTreeMenu(params)

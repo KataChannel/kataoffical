@@ -21,7 +21,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    canActivate: [AuthAdminGuard],
+    // canActivate: [AuthAdminGuard],
     loadComponent: () =>
       import('./admin/adminmain/adminmain.component').then(
         (c) => c.AdminmainComponent
@@ -209,8 +209,8 @@ export const routes: Routes = [
       },
       {
         path: 'thongkectv',
-        canActivate: [PermissionGuard],
-        data: { permission: 'thongkectv.view' },
+       // canActivate: [PermissionGuard],
+       // data: { permission: 'thongkectv.view' },
         loadComponent: () =>
           import('./admin/thongkectv/thongkectv.component').then(
             (c) => c.ThongkectvComponent
