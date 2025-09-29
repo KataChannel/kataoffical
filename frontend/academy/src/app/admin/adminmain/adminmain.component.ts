@@ -19,6 +19,7 @@ import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { MenuService } from '../menu/menu.service';
 import { UserAdminService } from '../user/useradmin.service';
 import { StorageService } from '../../shared/utils/storage.service';
+import { UniversalGraphQLService } from '../../shared/services/graphql/universal-graphql.service';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -79,8 +80,12 @@ export class AdminmainComponent {
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   @ViewChild('drawer1', { static: true }) drawer1!: MatDrawer;
   _snackBar:MatSnackBar = inject(MatSnackBar)
+  _UniversalGraphQLService:UniversalGraphQLService = inject(UniversalGraphQLService)
   ListMenu:any[] = []
   async ngOnInit() {
+    const User = await this._UniversalGraphQLService.findOne()
+    console.log('User',User);
+    
     await this._UserService.getProfile().then(async (res: any) => {
       if(res){
         this.User = res;  

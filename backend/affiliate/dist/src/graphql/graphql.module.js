@@ -11,7 +11,10 @@ const common_1 = require("@nestjs/common");
 const user_resolver_1 = require("./resolvers/user.resolver");
 const role_resolver_1 = require("./resolvers/role.resolver");
 const affiliate_link_resolver_1 = require("./resolvers/affiliate-link.resolver");
+const universal_resolver_1 = require("./resolvers/universal.resolver");
 const prisma_module_1 = require("../../prisma/prisma.module");
+const model_configs_1 = require("./dynamic/model-configs");
+(0, model_configs_1.registerAllModels)();
 let GraphQLResolversModule = class GraphQLResolversModule {
 };
 exports.GraphQLResolversModule = GraphQLResolversModule;
@@ -23,6 +26,7 @@ exports.GraphQLResolversModule = GraphQLResolversModule = __decorate([
             role_resolver_1.RoleResolver,
             role_resolver_1.PermissionResolver,
             affiliate_link_resolver_1.AffiliateLinkResolver,
+            universal_resolver_1.UniversalResolver,
         ],
     })
 ], GraphQLResolversModule);
