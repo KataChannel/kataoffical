@@ -347,6 +347,7 @@ let DonhangService = class DonhangService {
             if (!combinationTotals.has(combinationKey)) {
                 combinationTotals.set(combinationKey, {
                     tongtiensauvat: 0,
+                    tongtientruocthue: 0,
                     itemCount: 0,
                     customerInfo: {
                         makhachhang: item.makhachhang,
@@ -363,6 +364,7 @@ let DonhangService = class DonhangService {
             }
             const combination = combinationTotals.get(combinationKey);
             combination.tongtiensauvat += item.thanhtiensauvat;
+            combination.tongtientruocthue += item.thanhtientruocvat;
             combination.itemCount += 1;
         });
         const result = flatItems.map(item => {
@@ -373,6 +375,7 @@ let DonhangService = class DonhangService {
             return {
                 ...item,
                 tongtiensauvat: combination ? combination.tongtiensauvat : item.thanhtiensauvat,
+                tongtientruocthue: combination ? combination.tongtientruocthue : item.thanhtientruocvat,
                 _debug: {
                     combinationKey: combinationKey,
                     itemsInCombination: combination?.itemCount || 0
@@ -403,6 +406,7 @@ let DonhangService = class DonhangService {
             { key: 'dongiavathoadon', header: 'Đơn Giá VAT', width: 15 },
             { key: 'thanhtiensauvat', header: 'Thành Tiền Sau VAT', width: 20 },
             { key: 'tongtiensauvat', header: 'Tổng Tiền Sau Thuế', width: 20 },
+            { key: 'tongtientruocthue', header: 'Tổng Tiền Trước Thuế', width: 20 },
             { key: 'tongcong', header: 'Tổng Cộng Khách Hàng', width: 25 }
         ];
         worksheet.columns = columns;
@@ -529,9 +533,10 @@ let DonhangService = class DonhangService {
                             thanhtiensauvat: Number(item.thanhtiensauvat) || 0,
                             ghichu: item.ghichu || '',
                             tongtiensauvat: Number(item.tongtiensauvat) || 0,
+                            tongtientruocthue: Number(item.tongtientruocthue) || 0,
                             tongcong: Number(customerData.tongtiensauvat) || 0
                         };
-                        ['soluong', 'dongia', 'thanhtientruocvat', 'dongiavathoadon', 'thanhtiensauvat', 'tongtiensauvat', 'tongcong'].forEach(col => {
+                        ['soluong', 'dongia', 'thanhtientruocvat', 'dongiavathoadon', 'thanhtiensauvat', 'tongtiensauvat', 'tongtientruocthue', 'tongcong'].forEach(col => {
                             const cell = row.getCell(col);
                             cell.numFmt = '#,##0.00';
                             cell.alignment = { horizontal: 'right' };
@@ -573,6 +578,11 @@ let DonhangService = class DonhangService {
                     mergeRanges.push({
                         range: `${String.fromCharCode(64 + tongtiensauvatColIndex)}${dateStartRow}:${String.fromCharCode(64 + tongtiensauvatColIndex)}${dateEndRow}`,
                         value: dateGroup.items[0].tongtiensauvat
+                    });
+                    const tongtientruocthueColIndex = columns.findIndex(c => c.key === 'tongtientruocthue') + 1;
+                    mergeRanges.push({
+                        range: `${String.fromCharCode(64 + tongtientruocthueColIndex)}${dateStartRow}:${String.fromCharCode(64 + tongtientruocthueColIndex)}${dateEndRow}`,
+                        value: dateGroup.items[0].tongtientruocthue
                     });
                 }
             }

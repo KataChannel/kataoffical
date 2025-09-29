@@ -433,6 +433,7 @@ export class DonhangService {
       if (!combinationTotals.has(combinationKey)) {
         combinationTotals.set(combinationKey, {
           tongtiensauvat: 0,
+          tongtientruocthue: 0,
           itemCount: 0,
           customerInfo: {
             makhachhang: item.makhachhang,
@@ -450,6 +451,7 @@ export class DonhangService {
       
       const combination = combinationTotals.get(combinationKey);
       combination.tongtiensauvat += item.thanhtiensauvat;
+      combination.tongtientruocthue += item.thanhtientruocvat;
       combination.itemCount += 1;
     });
 
@@ -463,6 +465,7 @@ export class DonhangService {
       return {
         ...item,
         tongtiensauvat: combination ? combination.tongtiensauvat : item.thanhtiensauvat,
+        tongtientruocthue: combination ? combination.tongtientruocthue : item.thanhtientruocvat,
         // Thêm debug info (có thể remove sau)
         _debug: {
           combinationKey: combinationKey,
@@ -503,6 +506,7 @@ export class DonhangService {
       { key: 'dongiavathoadon', header: 'Đơn Giá VAT', width: 15 },
       { key: 'thanhtiensauvat', header: 'Thành Tiền Sau VAT', width: 20 },
       { key: 'tongtiensauvat', header: 'Tổng Tiền Sau Thuế', width: 20 },
+      { key: 'tongtientruocthue', header: 'Tổng Tiền Trước Thuế', width: 20 },
       { key: 'tongcong', header: 'Tổng Cộng Khách Hàng', width: 25 }
     ];
 
@@ -674,11 +678,12 @@ export class DonhangService {
               thanhtiensauvat: Number(item.thanhtiensauvat) || 0,
               ghichu: item.ghichu || '',
               tongtiensauvat: Number(item.tongtiensauvat) || 0,
+              tongtientruocthue: Number(item.tongtientruocthue) || 0,
               tongcong: Number(customerData.tongtiensauvat) || 0  // Tổng cộng của cả khách hàng
             };
 
             // Format number columns
-            ['soluong', 'dongia', 'thanhtientruocvat', 'dongiavathoadon', 'thanhtiensauvat', 'tongtiensauvat', 'tongcong'].forEach(col => {
+            ['soluong', 'dongia', 'thanhtientruocvat', 'dongiavathoadon', 'thanhtiensauvat', 'tongtiensauvat', 'tongtientruocthue', 'tongcong'].forEach(col => {
               const cell = row.getCell(col);
               cell.numFmt = '#,##0.00';
               cell.alignment = { horizontal: 'right' };
@@ -738,6 +743,13 @@ export class DonhangService {
           mergeRanges.push({
             range: `${String.fromCharCode(64 + tongtiensauvatColIndex)}${dateStartRow}:${String.fromCharCode(64 + tongtiensauvatColIndex)}${dateEndRow}`,
             value: dateGroup.items[0].tongtiensauvat
+          });
+          
+          // THÊM: Merge tongtientruocthue cho cùng ngày giao của cùng khách hàng
+          const tongtientruocthueColIndex = columns.findIndex(c => c.key === 'tongtientruocthue') + 1;
+          mergeRanges.push({
+            range: `${String.fromCharCode(64 + tongtientruocthueColIndex)}${dateStartRow}:${String.fromCharCode(64 + tongtientruocthueColIndex)}${dateEndRow}`,
+            value: dateGroup.items[0].tongtientruocthue
           });
         }
       }
