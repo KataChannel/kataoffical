@@ -24,6 +24,13 @@ import { ThanhtoanhoahongModule } from './thanhtoanhoahong/thanhtoanhoahong.modu
 import { LichhenModule } from './lichhen/lichhen.module';
 import { KhoahocModule } from './khoahoc/khoahoc.module';
 import { EmailModule } from './email/email.module';
+// import { KhachhangModule } from './khachhang/khachhang.module';
+import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
+import { DexuatModule } from './dexuat/dexuat.module';
+import { QuanlydriveModule } from './quanlydrive/quanlydrive.module';
+import { QuanlyqrcodeModule } from './quanlyqrcode/quanlyqrcode.module';
+import { GooglesheetModule } from './googlesheet/googlesheet.module';
+import { MailModule } from './mail/mail.module';
 @Module({
   imports: [
     AuthModule, 
@@ -46,7 +53,14 @@ import { EmailModule } from './email/email.module';
     ThanhtoanhoahongModule,
     KhoahocModule,
     LichhenModule,
-    EmailModule
+    EmailModule,
+    // KhachhangModule,
+    NhomkhachhangModule,
+    DexuatModule,
+    QuanlydriveModule,
+    QuanlyqrcodeModule,
+    GooglesheetModule,
+    MailModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

@@ -33,6 +33,12 @@ const thanhtoanhoahong_module_1 = require("./thanhtoanhoahong/thanhtoanhoahong.m
 const lichhen_module_1 = require("./lichhen/lichhen.module");
 const khoahoc_module_1 = require("./khoahoc/khoahoc.module");
 const email_module_1 = require("./email/email.module");
+const nhomkhachhang_module_1 = require("./nhomkhachhang/nhomkhachhang.module");
+const dexuat_module_1 = require("./dexuat/dexuat.module");
+const quanlydrive_module_1 = require("./quanlydrive/quanlydrive.module");
+const quanlyqrcode_module_1 = require("./quanlyqrcode/quanlyqrcode.module");
+const googlesheet_module_1 = require("./googlesheet/googlesheet.module");
+const mail_module_1 = require("./mail/mail.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -62,7 +68,13 @@ exports.AppModule = AppModule = __decorate([
             thanhtoanhoahong_module_1.ThanhtoanhoahongModule,
             khoahoc_module_1.KhoahocModule,
             lichhen_module_1.LichhenModule,
-            email_module_1.EmailModule
+            email_module_1.EmailModule,
+            nhomkhachhang_module_1.NhomkhachhangModule,
+            dexuat_module_1.DexuatModule,
+            quanlydrive_module_1.QuanlydriveModule,
+            quanlyqrcode_module_1.QuanlyqrcodeModule,
+            googlesheet_module_1.GooglesheetModule,
+            mail_module_1.MailModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

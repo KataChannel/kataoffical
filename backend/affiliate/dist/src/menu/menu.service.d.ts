@@ -19,6 +19,7 @@ export declare class MenuService {
         icon: string | null;
         slug: string | null;
         parentId: string | null;
+        serviceType: import(".prisma/client").$Enums.serviceType | null;
     }>;
     findAll(): Promise<({
         children: {
@@ -31,6 +32,7 @@ export declare class MenuService {
             icon: string | null;
             slug: string | null;
             parentId: string | null;
+            serviceType: import(".prisma/client").$Enums.serviceType | null;
         }[];
     } & {
         id: string;
@@ -42,6 +44,7 @@ export declare class MenuService {
         icon: string | null;
         slug: string | null;
         parentId: string | null;
+        serviceType: import(".prisma/client").$Enums.serviceType | null;
     })[]>;
     findby(param: any): Promise<{
         id: string;
@@ -53,6 +56,7 @@ export declare class MenuService {
         icon: string | null;
         slug: string | null;
         parentId: string | null;
+        serviceType: import(".prisma/client").$Enums.serviceType | null;
     }>;
     findOne(id: string): Promise<({
         children: {
@@ -65,6 +69,7 @@ export declare class MenuService {
             icon: string | null;
             slug: string | null;
             parentId: string | null;
+            serviceType: import(".prisma/client").$Enums.serviceType | null;
         }[];
     } & {
         id: string;
@@ -76,6 +81,7 @@ export declare class MenuService {
         icon: string | null;
         slug: string | null;
         parentId: string | null;
+        serviceType: import(".prisma/client").$Enums.serviceType | null;
     }) | null>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -87,6 +93,7 @@ export declare class MenuService {
         icon: string | null;
         slug: string | null;
         parentId: string | null;
+        serviceType: import(".prisma/client").$Enums.serviceType | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -98,6 +105,7 @@ export declare class MenuService {
         icon: string | null;
         slug: string | null;
         parentId: string | null;
+        serviceType: import(".prisma/client").$Enums.serviceType | null;
     }>;
     getTree(data: any): Promise<any>;
     private buildTree;

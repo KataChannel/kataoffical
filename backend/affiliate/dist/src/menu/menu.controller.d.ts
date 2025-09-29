@@ -12,6 +12,7 @@ export declare class MenuController {
         icon: string | null;
         slug: string | null;
         parentId: string | null;
+        serviceType: import(".prisma/client").$Enums.serviceType | null;
     }>;
     findAll(): Promise<({
         children: {
@@ -24,6 +25,7 @@ export declare class MenuController {
             icon: string | null;
             slug: string | null;
             parentId: string | null;
+            serviceType: import(".prisma/client").$Enums.serviceType | null;
         }[];
     } & {
         id: string;
@@ -35,6 +37,7 @@ export declare class MenuController {
         icon: string | null;
         slug: string | null;
         parentId: string | null;
+        serviceType: import(".prisma/client").$Enums.serviceType | null;
     })[]>;
     getLastUpdated(): Promise<{
         updatedAt: number | Date;
@@ -49,6 +52,7 @@ export declare class MenuController {
         icon: string | null;
         slug: string | null;
         parentId: string | null;
+        serviceType: import(".prisma/client").$Enums.serviceType | null;
     }>;
     getTree(data: any): Promise<any>;
     findOne(id: string): Promise<({
@@ -62,6 +66,7 @@ export declare class MenuController {
             icon: string | null;
             slug: string | null;
             parentId: string | null;
+            serviceType: import(".prisma/client").$Enums.serviceType | null;
         }[];
     } & {
         id: string;
@@ -73,6 +78,7 @@ export declare class MenuController {
         icon: string | null;
         slug: string | null;
         parentId: string | null;
+        serviceType: import(".prisma/client").$Enums.serviceType | null;
     }) | null>;
     update(id: string, updateMenuDto: any): Promise<{
         id: string;
@@ -84,6 +90,7 @@ export declare class MenuController {
         icon: string | null;
         slug: string | null;
         parentId: string | null;
+        serviceType: import(".prisma/client").$Enums.serviceType | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -95,5 +102,6 @@ export declare class MenuController {
         icon: string | null;
         slug: string | null;
         parentId: string | null;
+        serviceType: import(".prisma/client").$Enums.serviceType | null;
     }>;
 }
