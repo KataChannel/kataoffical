@@ -1,9 +1,0 @@
-[
-  {
-    "id": "permission1",
-    "name": "view_services",
-    "description": "View service details",
-    "createdAt": "2025-06-01T08:00:00.000Z",
-    "updatedAt": "2025-06-01T08:00:00.000Z"
-  }
-]

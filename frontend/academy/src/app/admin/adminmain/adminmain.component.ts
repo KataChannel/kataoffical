@@ -82,10 +82,7 @@ export class AdminmainComponent {
   _snackBar:MatSnackBar = inject(MatSnackBar)
   _UniversalGraphQLService:UniversalGraphQLService = inject(UniversalGraphQLService)
   ListMenu:any[] = []
-  async ngOnInit() {
-    const User = await this._UniversalGraphQLService.findOne()
-    console.log('User',User);
-    
+  async ngOnInit() {    
     await this._UserService.getProfile().then(async (res: any) => {
       if(res){
         this.User = res;  
@@ -93,7 +90,7 @@ export class AdminmainComponent {
         
         const permissionsadmin = this.User?.permissions?.map((v:any)=>v.name);   
         const params = {permissions:permissionsadmin,serviceType:'affiliate'}    
-        await this._MenuService.getTreeMenu(params)
+        await this._MenuService.getTreeMenu(permissionsadmin)
         this.ListMenu = this._MenuService.ListMenu()    
         this.dataSource.data = this._MenuService.ListMenu()
       } 
