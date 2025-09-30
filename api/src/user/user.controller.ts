@@ -17,6 +17,7 @@ export class UserController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Create User', action: AuditAction.CREATE, includeResponse: true})
   @SmartCache({
     invalidate: ['users'],
@@ -39,6 +40,7 @@ export class UserController {
     return this.userService.findOne(req.user.id);
   }
   @Post('assign')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Assign Role to User', action: AuditAction.CREATE, includeResponse: true})
   @CacheInvalidate(['users', 'roles'])
   async assignRoleToUser(@Body() data: any) {
@@ -46,6 +48,7 @@ export class UserController {
   }
 
   @Delete('remove')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Remove Role from User', action: AuditAction.DELETE, includeResponse: true})
   @CacheInvalidate(['users', 'roles'])
   async removeRoleFromUser(@Body() data: any) {
@@ -59,6 +62,7 @@ export class UserController {
   }
   
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Update User', action: AuditAction.UPDATE, includeResponse: true})
   @SmartCache({
     invalidate: ['users'],
@@ -70,6 +74,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Delete User', action: AuditAction.DELETE, includeResponse: true})
   @CacheInvalidate(['users'])
   remove(@Param('id') id: string) {

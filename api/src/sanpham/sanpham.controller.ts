@@ -1,15 +1,17 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, HttpException, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, HttpException, HttpStatus, Query, UseGuards } from '@nestjs/common';
 import { SanphamService } from './sanpham.service';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
 import { Cache, CacheInvalidate } from '../common/cache.interceptor';
 import { SmartCache } from '../common/smart-cache.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('sanpham')
 export class SanphamController {
   constructor(private readonly sanphamService: SanphamService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Create Sanpham', action: AuditAction.CREATE, includeResponse: true})
   @SmartCache({
     invalidate: ['sanpham'],
@@ -21,6 +23,7 @@ export class SanphamController {
   }
 
   @Post('import')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Import Sanpham', action: AuditAction.CREATE, includeResponse: true})
   @CacheInvalidate(['sanpham'])
   import(@Body() data: any) {
@@ -28,6 +31,7 @@ export class SanphamController {
   }
 
   @Post('banggiamacdinh')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Bang Gia Mac Dinh', action: AuditAction.CREATE, includeResponse: true})
   @CacheInvalidate(['sanpham', 'banggia'])
   banggiamacdinh(@Body() data: any) {
@@ -86,6 +90,7 @@ export class SanphamController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Update Sanpham', action: AuditAction.UPDATE, includeResponse: true})
   @SmartCache({
     invalidate: ['sanpham'],
@@ -97,6 +102,7 @@ export class SanphamController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Delete Sanpham', action: AuditAction.DELETE, includeResponse: true})
   @CacheInvalidate(['sanpham'])
   remove(@Param('id') id: string) {

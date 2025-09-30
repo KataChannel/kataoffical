@@ -8,11 +8,13 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { BanggiaService } from './banggia.service';
 import { AuditAction } from '@prisma/client';
 import { Audit } from 'src/auditlog/audit.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('banggia')
 @Controller('banggia')
@@ -20,6 +22,7 @@ export class BanggiaController {
   constructor(private readonly banggiaService: BanggiaService) {}
 
   @Post('import')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Import banggia data' })
   @ApiResponse({ status: 201, description: 'Data imported successfully' })

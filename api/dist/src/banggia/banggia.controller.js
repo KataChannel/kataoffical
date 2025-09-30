@@ -18,6 +18,7 @@ const swagger_1 = require("@nestjs/swagger");
 const banggia_service_1 = require("./banggia.service");
 const client_1 = require("@prisma/client");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let BanggiaController = class BanggiaController {
     constructor(banggiaService) {
         this.banggiaService = banggiaService;
@@ -66,6 +67,7 @@ let BanggiaController = class BanggiaController {
 exports.BanggiaController = BanggiaController;
 __decorate([
     (0, common_1.Post)('import'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({ summary: 'Import banggia data' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Data imported successfully' }),

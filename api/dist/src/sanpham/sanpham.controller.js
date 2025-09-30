@@ -19,6 +19,7 @@ const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
 const cache_interceptor_1 = require("../common/cache.interceptor");
 const smart_cache_decorator_1 = require("../common/smart-cache.decorator");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let SanphamController = class SanphamController {
     constructor(sanphamService) {
         this.sanphamService = sanphamService;
@@ -79,6 +80,7 @@ let SanphamController = class SanphamController {
 exports.SanphamController = SanphamController;
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Create Sanpham', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
         invalidate: ['sanpham'],
@@ -92,6 +94,7 @@ __decorate([
 ], SanphamController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)('import'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Import Sanpham', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['sanpham']),
     __param(0, (0, common_1.Body)()),
@@ -101,6 +104,7 @@ __decorate([
 ], SanphamController.prototype, "import", null);
 __decorate([
     (0, common_1.Post)('banggiamacdinh'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Bang Gia Mac Dinh', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['sanpham', 'banggia']),
     __param(0, (0, common_1.Body)()),
@@ -154,6 +158,7 @@ __decorate([
 ], SanphamController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Update Sanpham', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
         invalidate: ['sanpham'],
@@ -168,6 +173,7 @@ __decorate([
 ], SanphamController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Sanpham', action: client_1.AuditAction.DELETE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['sanpham']),
     __param(0, (0, common_1.Param)('id')),

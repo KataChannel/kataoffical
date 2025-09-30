@@ -5,27 +5,27 @@ export declare class PhieukhoController {
     create(createPhieukhoDto: any): Promise<{
         sanpham: {
             id: string;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {
         id: string;
         title: string | null;
+        maphieu: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        type: string | null;
+        khoId: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
-        madonhang: string | null;
-        madncc: string | null;
-        khoId: string | null;
-        maphieu: string | null;
-        madathang: string | null;
-        ngay: Date | null;
         isChotkho: boolean;
     }>;
     findAll(): Promise<{
@@ -33,6 +33,11 @@ export declare class PhieukhoController {
             sanpham: {
                 id: string;
                 title: string;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                soluong: import("@prisma/client/runtime/library").Decimal | null;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -41,22 +46,17 @@ export declare class PhieukhoController {
                 dvt: string | null;
                 hinhanh: string | null;
                 loadpoint: import("@prisma/client/runtime/library").Decimal | null;
-                soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
-                ghichu: string | null;
                 order: number | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
                 giaban: import("@prisma/client/runtime/library").Decimal;
                 vat: import("@prisma/client/runtime/library").Decimal | null;
             };
             id: string;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
             phieuKhoId: string;
         }[];
@@ -74,17 +74,17 @@ export declare class PhieukhoController {
         } | null;
         id: string;
         title: string | null;
+        maphieu: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        type: string | null;
+        khoId: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
-        madonhang: string | null;
-        madncc: string | null;
-        khoId: string | null;
-        maphieu: string | null;
-        madathang: string | null;
-        ngay: Date | null;
         isChotkho: boolean;
     }[]>;
     xuatnhapton(query: any): Promise<{
@@ -113,10 +113,10 @@ export declare class PhieukhoController {
     findOne(id: string): Promise<{
         sanpham: {
             id: string;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
             phieuKhoId: string;
         }[];
@@ -135,59 +135,59 @@ export declare class PhieukhoController {
     } & {
         id: string;
         title: string | null;
+        maphieu: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        type: string | null;
+        khoId: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
-        madonhang: string | null;
-        madncc: string | null;
-        khoId: string | null;
-        maphieu: string | null;
-        madathang: string | null;
-        ngay: Date | null;
         isChotkho: boolean;
     }>;
     update(id: string, updatePhieukhoDto: any): Promise<{
         sanpham: {
             id: string;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {
         id: string;
         title: string | null;
+        maphieu: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        type: string | null;
+        khoId: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
-        madonhang: string | null;
-        madncc: string | null;
-        khoId: string | null;
-        maphieu: string | null;
-        madathang: string | null;
-        ngay: Date | null;
         isChotkho: boolean;
     }>;
     remove(id: string): Promise<{
         id: string;
         title: string | null;
+        maphieu: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        type: string | null;
+        khoId: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
-        madonhang: string | null;
-        madncc: string | null;
-        khoId: string | null;
-        maphieu: string | null;
-        madathang: string | null;
-        ngay: Date | null;
         isChotkho: boolean;
     }>;
 }

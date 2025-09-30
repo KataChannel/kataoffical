@@ -4,33 +4,33 @@ export declare class NhomkhachhangController {
     constructor(nhomkhachhangService: NhomkhachhangService);
     create(createNhomkhachhangDto: any): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     findAll(): Promise<({
         khachhang: {
             id: string;
-            subtitle: string | null;
-            ghichu: string | null;
-            isActive: boolean;
+            name: string | null;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
-            name: string | null;
-            diachi: string | null;
-            sdt: string | null;
             namenn: string | null;
+            subtitle: string | null;
             makh: string;
             makhold: string | null;
+            diachi: string | null;
+            sdt: string | null;
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
+            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
+            ghichu: string | null;
             hiengia: boolean;
+            isActive: boolean;
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
@@ -39,47 +39,47 @@ export declare class NhomkhachhangController {
         }[];
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     addMultipleKhachhangToNhom(data: any): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     removeKHfromNhom(data: any): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     findOne(id: string): Promise<{
         khachhang: {
             id: string;
-            subtitle: string | null;
-            ghichu: string | null;
-            isActive: boolean;
+            name: string | null;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
-            name: string | null;
-            diachi: string | null;
-            sdt: string | null;
             namenn: string | null;
+            subtitle: string | null;
             makh: string;
             makhold: string | null;
+            diachi: string | null;
+            sdt: string | null;
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
+            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
+            ghichu: string | null;
             hiengia: boolean;
+            isActive: boolean;
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
@@ -88,23 +88,23 @@ export declare class NhomkhachhangController {
         }[];
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     update(id: string, updateNhomkhachhangDto: any): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         name: string;
         description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }

@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const nhomkhachhang_service_1 = require("./nhomkhachhang.service");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let NhomkhachhangController = class NhomkhachhangController {
     constructor(nhomkhachhangService) {
         this.nhomkhachhangService = nhomkhachhangService;
@@ -46,6 +47,7 @@ let NhomkhachhangController = class NhomkhachhangController {
 exports.NhomkhachhangController = NhomkhachhangController;
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Create Nhomkhachhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -60,6 +62,7 @@ __decorate([
 ], NhomkhachhangController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Post)('addKHtoNhom'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Add Khachhang to Nhom', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -68,6 +71,7 @@ __decorate([
 ], NhomkhachhangController.prototype, "addMultipleKhachhangToNhom", null);
 __decorate([
     (0, common_1.Post)('removeKHfromNhom'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Remove Khachhang from Nhom', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -83,6 +87,7 @@ __decorate([
 ], NhomkhachhangController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Update Nhomkhachhang', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -92,6 +97,7 @@ __decorate([
 ], NhomkhachhangController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Nhomkhachhang', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

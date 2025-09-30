@@ -19,6 +19,7 @@ const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
 const cache_interceptor_1 = require("../common/cache.interceptor");
 const smart_cache_decorator_1 = require("../common/smart-cache.decorator");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let PhieukhoController = class PhieukhoController {
     constructor(phieukhoService) {
         this.phieukhoService = phieukhoService;
@@ -48,6 +49,7 @@ let PhieukhoController = class PhieukhoController {
 exports.PhieukhoController = PhieukhoController;
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Create Phieukho', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
         invalidate: ['phieukho', 'kho'],
@@ -68,6 +70,7 @@ __decorate([
 ], PhieukhoController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Post)('xuatnhapton'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Xuat Nhap Ton', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['phieukho', 'kho', 'sanpham']),
     __param(0, (0, common_1.Body)()),
@@ -77,6 +80,7 @@ __decorate([
 ], PhieukhoController.prototype, "xuatnhapton", null);
 __decorate([
     (0, common_1.Post)('adjustment'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Create Adjustment Phieukho', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['phieukho', 'kho', 'sanpham']),
     __param(0, (0, common_1.Body)()),
@@ -94,6 +98,7 @@ __decorate([
 ], PhieukhoController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Update Phieukho', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
         invalidate: ['phieukho', 'kho'],
@@ -108,6 +113,7 @@ __decorate([
 ], PhieukhoController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Remove Phieukho', action: client_1.AuditAction.DELETE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['phieukho', 'kho']),
     __param(0, (0, common_1.Param)('id')),
