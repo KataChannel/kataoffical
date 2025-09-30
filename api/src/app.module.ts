@@ -36,6 +36,7 @@ import { AuditInterceptor } from './auditlog/audit.interceptor';
 import { AuditService } from './auditlog/auditlog.service';
 import { AuditLogModule } from './auditlog/auditlog.module';
 import { AuditMiddleware } from './auditlog/audit.middleware';
+import { AuditUserValidationMiddleware } from './auditlog/audit-user-validation.middleware';
 import { CacheInterceptor } from './common/cache.interceptor';
 import { PerformanceInterceptor } from './shared/interceptors/performance.interceptor';
 // import { UploadModule } from './upload/upload.module';
@@ -124,6 +125,11 @@ import { UserPermissionModule } from './user-permission/user-permission.module';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuditMiddleware).forRoutes('*');
+    consumer
+      .apply(AuditUserValidationMiddleware)
+      .forRoutes('*');
+    consumer
+      .apply(AuditMiddleware)
+      .forRoutes('*');
   }
 }
