@@ -59,6 +59,7 @@ export class DathangService {
           method:'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(synchronizedData),
         };
@@ -82,6 +83,7 @@ export class DathangService {
           method:'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(dulieu),
         };
@@ -191,6 +193,7 @@ export class DathangService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
         },
       };
       const response = await fetch(`${environment.APIURL}/dathang/findid/${id}`, options);      
@@ -224,6 +227,7 @@ export class DathangService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
         },
       };
       const response = await fetch(`${environment.APIURL}/dathang/findbysanpham/${id}`, options);
@@ -248,6 +252,7 @@ export class DathangService {
           method:'PATCH',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(synchronizedData),
         };
@@ -273,6 +278,7 @@ export class DathangService {
             method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
           };
           const response = await fetch(`${environment.APIURL}/dathang/${item.id}`, options);

@@ -64,7 +64,7 @@ export class DonhangService {
     try {
       const options = {
           method:'POST',
-                    headers: {
+        headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
@@ -128,6 +128,7 @@ export class DonhangService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
         },
         body: JSON.stringify(dulieu),
       };
@@ -156,7 +157,7 @@ export class DonhangService {
     try {
       const options = {
           method:'POST',
-                    headers: {
+         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
@@ -406,6 +407,7 @@ export class DonhangService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
         },
       };
       const response = await fetch(`${environment.APIURL}/donhang/findbysanpham/${id}`, options);
@@ -446,6 +448,7 @@ export class DonhangService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
         },
       };
       const response = await fetch(`${environment.APIURL}/donhang/findid/${id}`, options);      
@@ -462,7 +465,7 @@ export class DonhangService {
     try {
       const options = {
           method:'PATCH',
-                    headers: {
+         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
@@ -513,6 +516,7 @@ export class DonhangService {
             method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
           };
           const response = await fetch(`${environment.APIURL}/donhang/${item.id}`, options);
@@ -530,6 +534,7 @@ export class DonhangService {
             method:'PATCH',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
             body: JSON.stringify(items),
           };
@@ -551,6 +556,7 @@ export class DonhangService {
             method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
             body: JSON.stringify(items),
           };
@@ -591,6 +597,7 @@ export class DonhangService {
         method:'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
         },
         body: JSON.stringify(SearchParams),
       };
