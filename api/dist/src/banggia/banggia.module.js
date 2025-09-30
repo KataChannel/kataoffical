@@ -15,12 +15,13 @@ const errorlogs_module_1 = require("../errorlogs/errorlogs.module");
 const socket_gateway_1 = require("../socket.gateway");
 const importdata_module_1 = require("../importdata/importdata.module");
 const shared_module_1 = require("../shared/shared.module");
+const auth_module_1 = require("../auth/auth.module");
 let BanggiaModule = class BanggiaModule {
 };
 exports.BanggiaModule = BanggiaModule;
 exports.BanggiaModule = BanggiaModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlogs_module_1.ErrorlogsModule, importdata_module_1.ImportdataModule, shared_module_1.SharedModule],
+        imports: [prisma_module_1.PrismaModule, errorlogs_module_1.ErrorlogsModule, importdata_module_1.ImportdataModule, shared_module_1.SharedModule, auth_module_1.AuthModule],
         controllers: [banggia_controller_1.BanggiaController],
         providers: [banggia_service_1.BanggiaService, socket_gateway_1.SocketGateway],
         exports: [banggia_service_1.BanggiaService]

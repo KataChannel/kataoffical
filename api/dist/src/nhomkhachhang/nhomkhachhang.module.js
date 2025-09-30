@@ -12,12 +12,13 @@ const nhomkhachhang_service_1 = require("./nhomkhachhang.service");
 const nhomkhachhang_controller_1 = require("./nhomkhachhang.controller");
 const nhomkhachhang_resolver_1 = require("./nhomkhachhang.resolver");
 const prisma_module_1 = require("../../prisma/prisma.module");
+const auth_module_1 = require("../auth/auth.module");
 let NhomkhachhangModule = class NhomkhachhangModule {
 };
 exports.NhomkhachhangModule = NhomkhachhangModule;
 exports.NhomkhachhangModule = NhomkhachhangModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, auth_module_1.AuthModule],
         controllers: [nhomkhachhang_controller_1.NhomkhachhangController],
         providers: [nhomkhachhang_service_1.NhomkhachhangService, nhomkhachhang_resolver_1.NhomkhachhangResolver],
         exports: [nhomkhachhang_service_1.NhomkhachhangService]

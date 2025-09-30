@@ -29,6 +29,7 @@ export class DonhangService {
           method:'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(dulieu),
         };
@@ -63,8 +64,9 @@ export class DonhangService {
     try {
       const options = {
           method:'POST',
-          headers: {
+                    headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify({ pendingOrders, userChoice }),
         };
@@ -89,8 +91,9 @@ export class DonhangService {
     try {
       const options = {
           method:'POST',
-          headers: {
+                    headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(dulieu),
         };
@@ -153,8 +156,9 @@ export class DonhangService {
     try {
       const options = {
           method:'POST',
-          headers: {
+                    headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(dulieu),
         };
@@ -178,8 +182,9 @@ export class DonhangService {
     try {
       const options = {
           method:'POST',
-          headers: {
+                    headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(dulieu),
         };
@@ -457,8 +462,9 @@ export class DonhangService {
     try {
       const options = {
           method:'PATCH',
-          headers: {
+                    headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(dulieu),
         };
@@ -481,8 +487,9 @@ export class DonhangService {
     try {
       const options = {
           method:'PATCH',
-          headers: {
+                    headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(dulieu),
         };
