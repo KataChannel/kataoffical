@@ -28,6 +28,7 @@ export class BanggiaService {
           method:'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(dulieu),
         };
@@ -61,6 +62,7 @@ export class BanggiaService {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(batch),
         };
@@ -90,6 +92,7 @@ export class BanggiaService {
           method:'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(dulieu),
         };
