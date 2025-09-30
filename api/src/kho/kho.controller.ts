@@ -1,14 +1,16 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, Query, UseGuards } from '@nestjs/common';
 import { khoService } from './kho.service';
 import { AuditAction } from '@prisma/client';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { Cache, CacheInvalidate } from '../common/cache.interceptor';
 import { SmartCache } from '../common/smart-cache.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('kho')
 export class khoController {
   constructor(private readonly khoService: khoService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   @Audit({entity: 'Create Kho', action: AuditAction.CREATE, includeResponse: true})
   @SmartCache({
@@ -40,6 +42,7 @@ export class khoController {
     return this.khoService.findOne(id);
   }
   
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @Audit({entity: 'Update Kho', action: AuditAction.UPDATE, includeResponse: true})
   @SmartCache({
@@ -51,6 +54,7 @@ export class khoController {
     return this.khoService.update(id, updatekhoDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @Audit({entity: 'Delete Kho', action: AuditAction.DELETE, includeResponse: true})
   @CacheInvalidate(['kho'])

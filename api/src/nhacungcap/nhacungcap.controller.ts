@@ -14,6 +14,7 @@ export class NhacungcapController {
   @ApiBearerAuth() 
   @ApiOperation({ summary: 'Create a new nhacungcap' }) 
   @ApiBody({ type: Object }) 
+  @UseGuards(JwtAuthGuard)
   @Post()
   @Audit({ entity: 'Nhacungcap', action: AuditAction.CREATE, includeResponse: true })
   @SmartCache({
@@ -107,6 +108,7 @@ export class NhacungcapController {
       throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @Audit({entity: 'Update Nhacungcap', action: AuditAction.UPDATE, includeResponse: true})
   @SmartCache({
@@ -131,6 +133,7 @@ export class NhacungcapController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @Audit({entity: 'Delete Nhacungcap', action: AuditAction.DELETE, includeResponse: true})
   @CacheInvalidate(['nhacungcap'])

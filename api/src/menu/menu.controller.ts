@@ -1,14 +1,16 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { AuditAction } from '@prisma/client';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { Cache, CacheInvalidate } from '../common/cache.interceptor';
 import { SmartCache } from '../common/smart-cache.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('menu')
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   @Audit({entity: 'Create Menu', action: AuditAction.CREATE, includeResponse: true})
   @SmartCache({
@@ -40,6 +42,7 @@ export class MenuController {
     return this.menuService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @Audit({entity: 'Update Menu', action: AuditAction.UPDATE, includeResponse: true})
   @SmartCache({
@@ -51,6 +54,7 @@ export class MenuController {
     return this.menuService.update(id, updateMenuDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @Audit({entity: 'Delete Menu', action: AuditAction.DELETE, includeResponse: true})
   @CacheInvalidate(['menu'])

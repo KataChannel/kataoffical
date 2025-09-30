@@ -84,7 +84,7 @@ export class UserguideController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a userguide' })
   @ApiParam({ name: 'id', type: String })
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @Audit({entity: 'Delete Userguide', action: AuditAction.DELETE, includeResponse: true})
   async remove(@Param('id') id: string) {

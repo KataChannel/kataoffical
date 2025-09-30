@@ -18,6 +18,7 @@ const nhacungcap_service_1 = require("./nhacungcap.service");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
 const swagger_1 = require("@nestjs/swagger");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const cache_interceptor_1 = require("../common/cache.interceptor");
 const smart_cache_decorator_1 = require("../common/smart-cache.decorator");
 let NhacungcapController = class NhacungcapController {
@@ -139,6 +140,7 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new nhacungcap' }),
     (0, swagger_1.ApiBody)({ type: Object }),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Nhacungcap', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
@@ -199,6 +201,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NhacungcapController.prototype, "findby", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Update Nhacungcap', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
@@ -213,6 +216,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NhacungcapController.prototype, "update", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Nhacungcap', action: client_1.AuditAction.DELETE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['nhacungcap']),

@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Query, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, Query, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { KhachhangService } from './khachhang.service';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
 import { Cache, CacheInvalidate } from '../common/cache.interceptor';
 import { SmartCache } from '../common/smart-cache.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('khachhang')
 export class KhachhangController {
@@ -18,6 +19,7 @@ export class KhachhangController {
     }
  }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   @Audit({entity: 'Create Khachhang', action: AuditAction.CREATE, includeResponse: true})
   @SmartCache({
@@ -29,6 +31,7 @@ export class KhachhangController {
     return this.khachhangService.create(createKhachhangDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('import')
   @Audit({entity: 'Import Khachhang',action: AuditAction.IMPORT,includeResponse: true})
   @CacheInvalidate(['khachhang'])
@@ -79,6 +82,7 @@ export class KhachhangController {
     return this.khachhangService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @Audit({entity: 'Update Khachhang', action: AuditAction.UPDATE, includeResponse: true})
   @SmartCache({
@@ -90,6 +94,7 @@ export class KhachhangController {
     return this.khachhangService.update(id, updateKhachhangDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @Audit({entity: 'Delete Khachhang', action: AuditAction.DELETE, includeResponse: true})
   @CacheInvalidate(['khachhang'])

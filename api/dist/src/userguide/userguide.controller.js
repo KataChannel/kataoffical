@@ -16,7 +16,6 @@ exports.UserguideController = void 0;
 const common_1 = require("@nestjs/common");
 const userguide_service_1 = require("./userguide.service");
 const swagger_1 = require("@nestjs/swagger");
-const passport_1 = require("@nestjs/passport");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
@@ -152,7 +151,7 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Delete a userguide' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: String }),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Userguide', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),

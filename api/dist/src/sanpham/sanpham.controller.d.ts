@@ -44,8 +44,8 @@ export declare class SanphamController {
             order: number | null;
             isActive: boolean;
             giaban: import("@prisma/client/runtime/library").Decimal;
-            sanphamId: string;
             banggiaId: string;
+            sanphamId: string;
         }[];
     } & {
         id: string;
@@ -75,8 +75,8 @@ export declare class SanphamController {
                 order: number | null;
                 isActive: boolean;
                 giaban: import("@prisma/client/runtime/library").Decimal;
-                sanphamId: string;
                 banggiaId: string;
+                sanphamId: string;
             }[];
         } & {
             id: string;
@@ -190,14 +190,14 @@ export declare class SanphamController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            email: string | null;
             name: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            tenfile: string | null;
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;
-            diachi: string | null;
-            email: string | null;
-            sdt: string | null;
-            tenfile: string | null;
         }[];
         id: string;
         title: string;

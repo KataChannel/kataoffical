@@ -19,6 +19,7 @@ const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
 const cache_interceptor_1 = require("../common/cache.interceptor");
 const smart_cache_decorator_1 = require("../common/smart-cache.decorator");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let KhachhangController = class KhachhangController {
     constructor(khachhangService) {
         this.khachhangService = khachhangService;
@@ -79,6 +80,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], KhachhangController.prototype, "getLastUpdated", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Create Khachhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
@@ -92,6 +94,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], KhachhangController.prototype, "create", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('import'),
     (0, audit_decorator_1.Audit)({ entity: 'Import Khachhang', action: client_1.AuditAction.IMPORT, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['khachhang']),
@@ -138,6 +141,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], KhachhangController.prototype, "findOne", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Update Khachhang', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
@@ -152,6 +156,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], KhachhangController.prototype, "update", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Khachhang', action: client_1.AuditAction.DELETE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['khachhang']),

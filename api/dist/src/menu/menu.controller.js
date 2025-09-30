@@ -19,6 +19,7 @@ const client_1 = require("@prisma/client");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const cache_interceptor_1 = require("../common/cache.interceptor");
 const smart_cache_decorator_1 = require("../common/smart-cache.decorator");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let MenuController = class MenuController {
     constructor(menuService) {
         this.menuService = menuService;
@@ -47,6 +48,7 @@ let MenuController = class MenuController {
 };
 exports.MenuController = MenuController;
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Create Menu', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
@@ -90,6 +92,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], MenuController.prototype, "findOne", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Update Menu', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
@@ -104,6 +107,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], MenuController.prototype, "update", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Menu', action: client_1.AuditAction.DELETE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['menu']),

@@ -79,6 +79,7 @@ __decorate([
 ], BanggiaController.prototype, "import", null);
 __decorate([
     (0, common_1.Post)('importspbg'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({ summary: 'Import spbg data' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Data imported successfully' }),
@@ -90,6 +91,7 @@ __decorate([
 ], BanggiaController.prototype, "importspbg", null);
 __decorate([
     (0, common_1.Post)('importbgkh'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({ summary: 'Import bgkh data' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Data imported successfully' }),
@@ -101,6 +103,7 @@ __decorate([
 ], BanggiaController.prototype, "importbgkh", null);
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new banggia' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Banggia created successfully' }),
@@ -179,6 +182,7 @@ __decorate([
 ], BanggiaController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({ summary: 'Update a banggia' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Banggia updated successfully' }),
@@ -191,6 +195,7 @@ __decorate([
 ], BanggiaController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
     (0, swagger_1.ApiOperation)({ summary: 'Remove a banggia' }),
     (0, swagger_1.ApiResponse)({ status: 204, description: 'Banggia removed successfully' }),

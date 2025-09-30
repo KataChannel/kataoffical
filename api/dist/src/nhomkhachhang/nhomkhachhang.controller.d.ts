@@ -4,33 +4,33 @@ export declare class NhomkhachhangController {
     constructor(nhomkhachhangService: NhomkhachhangService);
     create(createNhomkhachhangDto: any): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
     findAll(): Promise<({
         khachhang: {
             id: string;
-            name: string | null;
+            subtitle: string | null;
+            ghichu: string | null;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            namenn: string | null;
-            subtitle: string | null;
-            makh: string;
-            makhold: string | null;
+            email: string | null;
+            name: string | null;
             diachi: string | null;
             sdt: string | null;
+            namenn: string | null;
+            makh: string;
+            makhold: string | null;
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
-            ghichu: string | null;
             hiengia: boolean;
-            isActive: boolean;
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
@@ -39,47 +39,47 @@ export declare class NhomkhachhangController {
         }[];
     } & {
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     })[]>;
     addMultipleKhachhangToNhom(data: any): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
     removeKHfromNhom(data: any): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
     findOne(id: string): Promise<{
         khachhang: {
             id: string;
-            name: string | null;
+            subtitle: string | null;
+            ghichu: string | null;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            namenn: string | null;
-            subtitle: string | null;
-            makh: string;
-            makhold: string | null;
+            email: string | null;
+            name: string | null;
             diachi: string | null;
             sdt: string | null;
+            namenn: string | null;
+            makh: string;
+            makhold: string | null;
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
-            ghichu: string | null;
             hiengia: boolean;
-            isActive: boolean;
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
@@ -88,23 +88,23 @@ export declare class NhomkhachhangController {
         }[];
     } & {
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
     update(id: string, updateNhomkhachhangDto: any): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
 }

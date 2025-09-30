@@ -33,6 +33,7 @@ export class BanggiaController {
   }
 
   @Post('importspbg')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Import spbg data' })
   @ApiResponse({ status: 201, description: 'Data imported successfully' })
@@ -41,6 +42,7 @@ export class BanggiaController {
     return this.banggiaService.importSPBG(data);
   }
   @Post('importbgkh')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Import bgkh data' })
   @ApiResponse({ status: 201, description: 'Data imported successfully' })
@@ -50,6 +52,7 @@ export class BanggiaController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new banggia' })
   @ApiResponse({ status: 201, description: 'Banggia created successfully' })
@@ -114,6 +117,7 @@ export class BanggiaController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a banggia' })
   @ApiResponse({ status: 200, description: 'Banggia updated successfully' })
@@ -123,6 +127,7 @@ export class BanggiaController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Remove a banggia' })
   @ApiResponse({ status: 204, description: 'Banggia removed successfully' })
