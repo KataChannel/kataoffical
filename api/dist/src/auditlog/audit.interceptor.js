@@ -31,6 +31,9 @@ let AuditInterceptor = class AuditInterceptor {
         return next.handle().pipe((0, operators_1.tap)(async (result) => {
             try {
                 const dynamicConfig = request.auditConfig || {};
+                if (!request.user?.id) {
+                    console.warn(`AUDIT WARNING: Action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
+                }
                 await this.auditService.logActivity({
                     entityName: auditConfig.entity,
                     entityId: dynamicConfig.entityId || this.extractEntityId(request, result, auditConfig),
@@ -47,6 +50,7 @@ let AuditInterceptor = class AuditInterceptor {
                         endpoint: request.url,
                         method: request.method,
                         responseTime: Date.now() - startTime,
+                        authenticated: !!request.user?.id,
                         ...auditConfig.metadata,
                     },
                     status: dynamicConfig.status || 'SUCCESS',
@@ -58,6 +62,9 @@ let AuditInterceptor = class AuditInterceptor {
             }
         }), (0, operators_1.catchError)((error) => {
             const dynamicConfig = request.auditConfig || {};
+            if (!request.user?.id) {
+                console.warn(`AUDIT WARNING: Error in action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url}, Error: ${error.message}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
+            }
             this.auditService.logActivity({
                 entityName: auditConfig.entity,
                 entityId: dynamicConfig.entityId || request.params?.id || 'N/A',
@@ -74,6 +81,7 @@ let AuditInterceptor = class AuditInterceptor {
                     endpoint: request.url,
                     method: request.method,
                     responseTime: Date.now() - startTime,
+                    authenticated: !!request.user?.id,
                     ...auditConfig.metadata,
                 },
                 status: 'ERROR',

@@ -45,6 +45,7 @@ const audit_interceptor_1 = require("./auditlog/audit.interceptor");
 const auditlog_service_1 = require("./auditlog/auditlog.service");
 const auditlog_module_1 = require("./auditlog/auditlog.module");
 const audit_middleware_1 = require("./auditlog/audit.middleware");
+const audit_user_validation_middleware_1 = require("./auditlog/audit-user-validation.middleware");
 const cache_interceptor_1 = require("./common/cache.interceptor");
 const performance_interceptor_1 = require("./shared/interceptors/performance.interceptor");
 const graphql_module_1 = require("./graphql/graphql.module");
@@ -52,7 +53,12 @@ const redis_module_1 = require("./redis/redis.module");
 const user_permission_module_1 = require("./user-permission/user-permission.module");
 let AppModule = class AppModule {
     configure(consumer) {
-        consumer.apply(audit_middleware_1.AuditMiddleware).forRoutes('*');
+        consumer
+            .apply(audit_user_validation_middleware_1.AuditUserValidationMiddleware)
+            .forRoutes('*');
+        consumer
+            .apply(audit_middleware_1.AuditMiddleware)
+            .forRoutes('*');
     }
 };
 exports.AppModule = AppModule;
