@@ -20,6 +20,7 @@ const audit_decorator_1 = require("../auditlog/audit.decorator");
 const donhang_cron_service_1 = require("./donhang-cron.service");
 const cache_interceptor_1 = require("../common/cache.interceptor");
 const smart_cache_decorator_1 = require("../common/smart-cache.decorator");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let DonhangController = class DonhangController {
     constructor(donhangService, donhangCronService) {
         this.donhangService = donhangService;
@@ -159,6 +160,7 @@ let DonhangController = class DonhangController {
 exports.DonhangController = DonhangController;
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Create Donhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
         invalidate: ['donhang', 'khachhang'],
@@ -172,6 +174,7 @@ __decorate([
 ], DonhangController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)('importold'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Import Donhang Cu', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['donhang:*']),
     __param(0, (0, common_1.Body)()),
@@ -181,6 +184,7 @@ __decorate([
 ], DonhangController.prototype, "ImportDonhangOld", null);
 __decorate([
     (0, common_1.Post)('importold/confirmed'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Import Donhang Cu Confirmed', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['donhang:*']),
     __param(0, (0, common_1.Body)()),
@@ -190,6 +194,7 @@ __decorate([
 ], DonhangController.prototype, "ImportDonhangOldConfirmed", null);
 __decorate([
     (0, common_1.Post)('import'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Import Donhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['donhang:*']),
     __param(0, (0, common_1.Body)()),
@@ -271,6 +276,7 @@ __decorate([
 ], DonhangController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)('phieugiao/:id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Update Phieugiao', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -280,6 +286,7 @@ __decorate([
 ], DonhangController.prototype, "updatePhieugiao", null);
 __decorate([
     (0, common_1.Patch)('bulk'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Update bulk Donhang', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['donhang', 'khachhang']),
     __param(0, (0, common_1.Body)()),
@@ -289,6 +296,7 @@ __decorate([
 ], DonhangController.prototype, "updateBulk", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Update Donhang', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
         invalidate: ['donhang', 'khachhang'],
@@ -303,6 +311,7 @@ __decorate([
 ], DonhangController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)('bulk'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Donhang', action: client_1.AuditAction.DELETE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['donhang', 'khachhang']),
     __param(0, (0, common_1.Body)()),
@@ -312,6 +321,7 @@ __decorate([
 ], DonhangController.prototype, "removeBulk", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Donhang', action: client_1.AuditAction.DELETE, includeResponse: true }),
     (0, cache_interceptor_1.CacheInvalidate)(['donhang', 'khachhang']),
     __param(0, (0, common_1.Param)('id')),
@@ -328,6 +338,7 @@ __decorate([
 ], DonhangController.prototype, "reorder", null);
 __decorate([
     (0, common_1.Post)(':id/dagiao'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Create Donhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -337,6 +348,7 @@ __decorate([
 ], DonhangController.prototype, "dagiao", null);
 __decorate([
     (0, common_1.Post)(':id/danhan'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Create Donhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -346,6 +358,7 @@ __decorate([
 ], DonhangController.prototype, "danhan", null);
 __decorate([
     (0, common_1.Get)('autoCompleteOrdersDaily'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Manual Auto Complete Orders', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -353,6 +366,7 @@ __decorate([
 ], DonhangController.prototype, "autoCompleteOrdersDaily", null);
 __decorate([
     (0, common_1.Post)('manualAutoComplete'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Manual Auto Complete Orders', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -361,6 +375,7 @@ __decorate([
 ], DonhangController.prototype, "manualAutoComplete", null);
 __decorate([
     (0, common_1.Post)('complete-pending-deliveries/:sanphamId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Complete Pending Deliveries', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('sanphamId')),
     __metadata("design:type", Function),

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Query, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, Query, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { DonhangService } from './donhang.service';
 import { AuditAction } from '@prisma/client';
@@ -6,6 +6,7 @@ import { Audit } from 'src/auditlog/audit.decorator';
 import { DonhangCronService } from './donhang-cron.service';
 import { Cache, CacheInvalidate } from '../common/cache.interceptor';
 import { SmartCache } from '../common/smart-cache.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('donhang')
 export class DonhangController {
@@ -14,6 +15,7 @@ export class DonhangController {
     private readonly donhangCronService: DonhangCronService,
   ) {}
   @Post()
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Create Donhang', action: AuditAction.CREATE, includeResponse: true})
   @SmartCache({
     invalidate: ['donhang', 'khachhang'],
@@ -25,6 +27,7 @@ export class DonhangController {
   }
 
   @Post('importold')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Import Donhang Cu', action: AuditAction.CREATE, includeResponse: true})
   @CacheInvalidate(['donhang:*'])
   ImportDonhangOld(@Body() data: any) {
@@ -32,6 +35,7 @@ export class DonhangController {
   }
   
   @Post('importold/confirmed')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Import Donhang Cu Confirmed', action: AuditAction.CREATE, includeResponse: true})
   @CacheInvalidate(['donhang:*'])
   ImportDonhangOldConfirmed(@Body() data: { pendingOrders: any[], userChoice: 'proceed' | 'skip' }) {
@@ -39,6 +43,7 @@ export class DonhangController {
   }
 
   @Post('import')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Import Donhang', action: AuditAction.CREATE, includeResponse: true})
   @CacheInvalidate(['donhang:*'])
   ImportDonhang(@Body() data: any) {
@@ -108,12 +113,14 @@ export class DonhangController {
     return this.donhangService.findOne(id);
   }
   @Patch('phieugiao/:id')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Update Phieugiao', action: AuditAction.UPDATE, includeResponse: true})
   async updatePhieugiao(@Param('id') id: string, @Body() updateDonhangDto: any) {
     const result = await  this.donhangService.updatePhieugiao(id, updateDonhangDto);
     return result;
   }
   @Patch('bulk')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Update bulk Donhang', action: AuditAction.UPDATE, includeResponse: true})
   @CacheInvalidate(['donhang', 'khachhang'])
   updateBulk(@Body() data: any[]) {
@@ -121,6 +128,7 @@ export class DonhangController {
   }
   
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Update Donhang', action: AuditAction.UPDATE, includeResponse: true})
   @SmartCache({
     invalidate: ['donhang', 'khachhang'],
@@ -132,6 +140,7 @@ export class DonhangController {
   }
 
   @Delete('bulk')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Delete Donhang', action: AuditAction.DELETE, includeResponse: true})
   @CacheInvalidate(['donhang', 'khachhang'])
   async removeBulk(@Body() ids: any[]) {
@@ -139,6 +148,7 @@ export class DonhangController {
   }
   
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Delete Donhang', action: AuditAction.DELETE, includeResponse: true})
   @CacheInvalidate(['donhang', 'khachhang'])
   remove(@Param('id') id: string) {
@@ -149,6 +159,7 @@ export class DonhangController {
     return this.donhangService.reorderDonHangs(body.donhangIds);
   }
   @Post(':id/dagiao')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Create Donhang', action: AuditAction.CREATE, includeResponse: true})
   async dagiao(@Param('id') id: string,@Body() data: any) {
     const result =  await this.donhangService.dagiao(id,data);
@@ -156,6 +167,7 @@ export class DonhangController {
     return result;
   }
   @Post(':id/danhan')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Create Donhang', action: AuditAction.CREATE, includeResponse: true})
   async danhan(@Param('id') id: string,@Body() data: any) {
     const result =  await this.donhangService.danhan(id,data);
@@ -168,6 +180,7 @@ export class DonhangController {
   //   return this.donhangService.danhan(data);
   // }
   @Get('autoCompleteOrdersDaily')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Manual Auto Complete Orders', action: AuditAction.UPDATE, includeResponse: true})
   async autoCompleteOrdersDaily() {
     try {
@@ -187,6 +200,7 @@ export class DonhangController {
   }
 
   @Post('manualAutoComplete')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Manual Auto Complete Orders', action: AuditAction.UPDATE, includeResponse: true})
   async manualAutoComplete(@Body() body: { date?: string }) {
     try {
@@ -202,6 +216,7 @@ export class DonhangController {
   }
 
   @Post('complete-pending-deliveries/:sanphamId')
+  @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Complete Pending Deliveries', action: AuditAction.UPDATE, includeResponse: true})
   async completePendingDeliveries(@Param('sanphamId') sanphamId: string) {
     try {

@@ -18,6 +18,7 @@ const dathang_service_1 = require("./dathang.service");
 const client_1 = require("@prisma/client");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const cache_interceptor_1 = require("../common/cache.interceptor");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let DathangController = class DathangController {
     constructor(dathangService) {
         this.dathangService = dathangService;
@@ -95,6 +96,7 @@ let DathangController = class DathangController {
 exports.DathangController = DathangController;
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Create Dathang', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -103,6 +105,7 @@ __decorate([
 ], DathangController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)('import'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Import Dathang', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -111,6 +114,7 @@ __decorate([
 ], DathangController.prototype, "import", null);
 __decorate([
     (0, common_1.Post)('importcu'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Import Dathang Cu', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -119,6 +123,7 @@ __decorate([
 ], DathangController.prototype, "importcu", null);
 __decorate([
     (0, common_1.Post)('bynhucau'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Create Dathang by nhu cau', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -184,6 +189,7 @@ __decorate([
 ], DathangController.prototype, "findByProductId", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Update Dathang', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -193,6 +199,7 @@ __decorate([
 ], DathangController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Dathang', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -208,6 +215,7 @@ __decorate([
 ], DathangController.prototype, "reorder", null);
 __decorate([
     (0, common_1.Post)('deletebulk'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Bulk Dathang', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -216,6 +224,7 @@ __decorate([
 ], DathangController.prototype, "deletebulk", null);
 __decorate([
     (0, common_1.Post)('complete-pending-receipts/:sanphamId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, audit_decorator_1.Audit)({ entity: 'Complete Pending Receipts', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('sanphamId')),
     __metadata("design:type", Function),
