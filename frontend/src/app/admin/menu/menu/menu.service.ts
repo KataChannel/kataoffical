@@ -28,6 +28,7 @@ export class MenuService {
           method:'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(dulieu),
         };
@@ -90,6 +91,7 @@ export class MenuService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
         },
       };
       const response = await fetch(`${environment.APIURL}/menu/${id}`, options);      
@@ -147,6 +149,7 @@ export class MenuService {
             method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
           };
           const response = await fetch(`${environment.APIURL}/menu/${item.id}`, options);
@@ -176,6 +179,7 @@ export class MenuService {
           method:'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(dulieu),
         };
