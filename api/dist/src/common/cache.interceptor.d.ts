@@ -1,0 +1,16 @@
+import { NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { Observable } from 'rxjs';
+import { RedisService } from '../redis/redis.service';
+export declare const Cache: (ttl?: number, keyPrefix?: string) => import("@nestjs/common").CustomDecorator<string>;
+export declare const CacheInvalidate: (patterns: string[]) => import("@nestjs/common").CustomDecorator<string>;
+export declare class CacheInterceptor implements NestInterceptor {
+    private readonly redisService;
+    private readonly reflector;
+    private readonly logger;
+    constructor(redisService: RedisService, reflector: Reflector);
+    intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>>;
+    private handleNonGetRequest;
+    private generateCacheKey;
+    private cacheNewData;
+}
