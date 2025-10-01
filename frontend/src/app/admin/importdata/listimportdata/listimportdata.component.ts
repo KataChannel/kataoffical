@@ -174,6 +174,7 @@ export class ListImportdataComponent implements OnInit {
     { id: 10, title: 'Xuất Nhập Tồn', value: 'xuatnhapton', status: true },
     { id: 11, title: 'Kho', value: 'kho', status: true },
   ]);
+  /// Chọn các mục để xuất
   ListEdit = signal<any[]>([]);
   ListImportdata: any = this._ImportdataService.ListImportdata;
   TitleExport = 'export';
