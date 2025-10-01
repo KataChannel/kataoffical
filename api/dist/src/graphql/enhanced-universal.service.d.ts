@@ -61,4 +61,5 @@ export declare class EnhancedUniversalService {
     private getCacheTTL;
     invalidateCache(modelName: string): Promise<void>;
     private normalizeRelationFieldsForModel;
+    private needsFindFirstDelete;
 }

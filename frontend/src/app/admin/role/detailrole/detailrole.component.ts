@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { ListRoleComponent } from '../listrole/listrole.component';
 import { RoleService } from '../role.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { PermissionService } from '../../permission/permission.service';
 @Component({
@@ -26,6 +27,7 @@ import { PermissionService } from '../../permission/permission.service';
     MatDialogModule,
     CommonModule,
     MatSlideToggleModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './detailrole.component.html',
   styleUrl: './detailrole.component.scss',
@@ -64,6 +66,7 @@ export class DetailRoleComponent {
   DetailRole: any = {};
   isEdit = signal(false);
   isDelete = signal(false);
+  isTogglingPermission = signal<string>('');
   async ngOnInit() {
     await this._PermissionService.getAllPermission(1000);
     this.ListPermission = this._PermissionService.ListPermission();
@@ -166,19 +169,64 @@ export class DetailRoleComponent {
     //   return v;
     // });
   }
-  togglePermission(item: any) {
-    item.hasPermission = !item.hasPermission;
-    console.log(item);
-    if (item.hasPermission) {
-      this._RoleService.assignPermissionToRole({
-        roleId: this.idRole,
-        permissionId: item.id,
-      });
-    } else {
-      this._RoleService.removePermissionFromRole({
-        roleId: this.idRole,
-        permissionId: item.id,
-      });
+  async togglePermission(item: any) {
+    const originalState = item.hasPermission;
+    const newState = !item.hasPermission;
+    
+    // Set loading state for this specific permission
+    this.isTogglingPermission.set(item.id);
+    
+    // Optimistic update
+    item.hasPermission = newState;
+    
+    try {
+      let result: boolean;
+      
+      if (newState) {
+        // Assigning permission
+        result = await this._RoleService.assignPermissionToRole({
+          roleId: this.idRole,
+          permissionId: item.id,
+        });
+      } else {
+        // Removing permission
+        result = await this._RoleService.removePermissionFromRole({
+          roleId: this.idRole,
+          permissionId: item.id,
+        });
+      }
+      
+      // If operation failed, rollback the optimistic update
+      if (!result) {
+        item.hasPermission = originalState;
+        this._snackBar.open(
+          `Lỗi khi ${newState ? 'gán' : 'xóa'} quyền. Vui lòng thử lại.`, 
+          '', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          }
+        );
+      }
+      
+    } catch (error) {
+      // Rollback on error
+      item.hasPermission = originalState;
+      console.error('Error toggling permission:', error);
+      
+      this._snackBar.open(
+        `Lỗi khi ${newState ? 'gán' : 'xóa'} quyền: ${error}`, 
+        '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        }
+      );
+    } finally {
+      // Clear loading state
+      this.isTogglingPermission.set('');
     }
   }
 }

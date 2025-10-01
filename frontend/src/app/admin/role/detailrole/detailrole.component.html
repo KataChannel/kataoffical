@@ -39,9 +39,17 @@
       </div>
       <div class="grid grid-cols-3 gap-2">
         @for (item of filterPermission; track $index) {
-          <mat-slide-toggle [disabled]="!isEdit()"  [checked]="item.hasPermission"  (change)="togglePermission(item)">
-            {{ item.name }} - ({{ item.description||'Chưa Mô Tả' }})
-          </mat-slide-toggle>
+          <div class="flex items-center space-x-2">
+            <mat-slide-toggle 
+              [disabled]="!isEdit() || isTogglingPermission() === item.id"  
+              [checked]="item.hasPermission"  
+              (change)="togglePermission(item)">
+              {{ item.name }} - ({{ item.description||'Chưa Mô Tả' }})
+            </mat-slide-toggle>
+            @if (isTogglingPermission() === item.id) {
+              <mat-spinner diameter="16" class="ml-2"></mat-spinner>
+            }
+          </div>
         }
       </div>
   </ng-container>

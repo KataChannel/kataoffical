@@ -276,9 +276,23 @@ let EnhancedUniversalService = class EnhancedUniversalService {
         try {
             const model = this.getModel(modelName);
             const startTime = Date.now();
-            const result = await model.delete({
-                where: args.where
-            });
+            let result;
+            if (this.needsFindFirstDelete(modelName, args.where)) {
+                const recordToDelete = await model.findFirst({
+                    where: args.where
+                });
+                if (!recordToDelete) {
+                    throw new Error(`No ${modelName} record found with provided criteria`);
+                }
+                result = await model.delete({
+                    where: { id: recordToDelete.id }
+                });
+            }
+            else {
+                result = await model.delete({
+                    where: args.where
+                });
+            }
             const queryTime = Date.now() - startTime;
             this.dataLoader.clearLoaderCache(modelName);
             await this.invalidateCache(modelName);
@@ -612,6 +626,29 @@ let EnhancedUniversalService = class EnhancedUniversalService {
                 break;
         }
         return normalizedData;
+    }
+    needsFindFirstDelete(modelName, whereClause) {
+        const modelsNeedingFindFirst = [
+            'RolePermission',
+            'UserPermission',
+            'UserRole'
+        ];
+        if (!modelsNeedingFindFirst.includes(modelName)) {
+            return false;
+        }
+        if (whereClause.id) {
+            return false;
+        }
+        if (modelName === 'RolePermission') {
+            return whereClause.roleId && whereClause.permissionId && !whereClause.id;
+        }
+        if (modelName === 'UserPermission') {
+            return whereClause.userId && whereClause.permissionId && !whereClause.id;
+        }
+        if (modelName === 'UserRole') {
+            return whereClause.userId && whereClause.roleId && !whereClause.id;
+        }
+        return false;
     }
 };
 exports.EnhancedUniversalService = EnhancedUniversalService;

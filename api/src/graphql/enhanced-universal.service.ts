@@ -399,9 +399,30 @@ export class EnhancedUniversalService {
       const model = this.getModel(modelName);
       
       const startTime = Date.now();
-      const result = await model.delete({
-        where: args.where
-      });
+      let result;
+      
+      // Special handling for models that need compound where clauses
+      if (this.needsFindFirstDelete(modelName, args.where)) {
+        // First find the record to get its ID
+        const recordToDelete = await model.findFirst({
+          where: args.where
+        });
+        
+        if (!recordToDelete) {
+          throw new Error(`No ${modelName} record found with provided criteria`);
+        }
+        
+        // Then delete by ID
+        result = await model.delete({
+          where: { id: recordToDelete.id }
+        });
+      } else {
+        // Standard delete for models with proper unique constraints
+        result = await model.delete({
+          where: args.where
+        });
+      }
+      
       const queryTime = Date.now() - startTime;
       
       // Clear related caches - both DataLoader and Redis cache
@@ -934,5 +955,44 @@ export class EnhancedUniversalService {
     }
 
     return normalizedData;
+  }
+
+  /**
+   * Check if a model/where combination needs findFirst before delete
+   * This is needed for models without proper unique constraints on the where fields
+   */
+  private needsFindFirstDelete(modelName: string, whereClause: any): boolean {
+    // Models that typically need findFirst + delete by ID
+    const modelsNeedingFindFirst = [
+      'RolePermission',
+      'UserPermission', 
+      'UserRole'
+    ];
+    
+    if (!modelsNeedingFindFirst.includes(modelName)) {
+      return false;
+    }
+    
+    // If where clause already has ID, no need for findFirst
+    if (whereClause.id) {
+      return false;
+    }
+    
+    // For RolePermission: if we have roleId + permissionId but no id
+    if (modelName === 'RolePermission') {
+      return whereClause.roleId && whereClause.permissionId && !whereClause.id;
+    }
+    
+    // For UserPermission: if we have userId + permissionId but no id  
+    if (modelName === 'UserPermission') {
+      return whereClause.userId && whereClause.permissionId && !whereClause.id;
+    }
+    
+    // For UserRole: if we have userId + roleId but no id
+    if (modelName === 'UserRole') {
+      return whereClause.userId && whereClause.roleId && !whereClause.id;
+    }
+    
+    return false;
   }
 }

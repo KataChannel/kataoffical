@@ -245,11 +245,34 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
 
   getTitle(item: any) {
     return this.Trangthai.find((v:any) => v.value === item)?.title;
-  } 
+  }
+
+  // Permission check methods
+  hasPermission(permission: string): boolean {
+    return this._UserService.hasPermission(permission);
+  }
+
+  canEditSldat(): boolean {
+    const result = this.hasPermission('phieugiaohang.sldat');
+    console.log(result);
+    
+    return result;
+  }
+
+  canEditSlgiao(): boolean {
+    const result = this.hasPermission('phieugiaohang.slgiao');
+    return result;
+  }
+
+  canEditSlnhan(): boolean {
+    const result = this.hasPermission('phieugiaohang.slnhan');
+    return result;
+  }
+ 
  async ngOnInit() {
    await this._UserService.getProfile();
   console.log(this.profile());
-  
+    this.canEditSlnhan();
     const phieugiaohangId = this.phieugiaohangId();
     if (!phieugiaohangId) return;
 
@@ -291,7 +314,6 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
       });
     }
     this.dataSource = new MatTableDataSource(this.DetailPhieugiaohang().sanpham);
-
    // Sort by title A-Z
     this.dataSource.sortingDataAccessor = (item: any, property: string) => {
       console.log(item, property);
