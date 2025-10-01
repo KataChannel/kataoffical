@@ -40,6 +40,7 @@ import html2canvas from 'html2canvas';
 import { Debounce } from '../../../shared/utils/decorators';
 import { KhoService } from '../../kho/kho.service';
 import { SharedInputService } from '../../../shared/services/shared-input.service';
+import { UserService } from '../../user/user.service';
 @Component({
   selector: 'app-detaildathang',
   imports: [
@@ -70,6 +71,7 @@ export class DetailDathangComponent {
   _SanphamService: SanphamService = inject(SanphamService);
   _KhoService: KhoService = inject(KhoService);
   _SharedInputService: SharedInputService = inject(SharedInputService);
+  _UserService: UserService = inject(UserService);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -820,5 +822,42 @@ export class DetailDathangComponent {
     const fieldSequence = ['sldat', 'slgiao', 'slnhan', 'gianhap', 'ghichu'];
     const fieldIndex = fieldSequence.indexOf(field);
     return (rowIndex * fieldSequence.length) + fieldIndex + 1;
+  }
+
+  // ===================== Permission Methods =====================
+  
+  /**
+   * Check if user has specific permission
+   */
+  hasPermission(permission: string): boolean {
+    return this._UserService.hasPermission(permission);
+  }
+
+  /**
+   * Check if user can edit sldat field
+   */
+  canEditSldat(): boolean {
+    return this.hasPermission('dathang.sldat');
+  }
+
+  /**
+   * Check if user can edit slgiao field
+   */
+  canEditSlgiao(): boolean {
+    return this.hasPermission('dathang.slgiao');
+  }
+
+  /**
+   * Check if user can edit slnhan field
+   */
+  canEditSlnhan(): boolean {
+    return this.hasPermission('dathang.slnhan');
+  }
+
+  /**
+   * Check if user can edit gianhap field
+   */
+  canEditGianhap(): boolean {
+    return this.hasPermission('dathang.gianhap');
   }
 }

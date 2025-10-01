@@ -196,7 +196,7 @@
                       </span>
                       }
                     @case ('sldat') {
-                   <div *ngIf="dathangId()==='new' || DetailDathang().status==='dadat'" class="flex flex-row space-x-1 items-center">
+                   <div *ngIf="(dathangId()==='new' || DetailDathang().status==='dadat') && canEditSldat()" class="flex flex-row space-x-1 items-center">
                     <div
                       [contentEditable]="true"
                       [tabindex]="getTabIndex('sldat', idx)"
@@ -213,12 +213,13 @@
 
                      <!-- <div class="text-xs text-red-600 font-bold">Gợi ý ({{row.goiy}})</div> -->
                      </div>
-                     <div *ngIf="dathangId()!=='new' && DetailDathang().status !== 'dadat'">
+                     <div class="text-end" *ngIf="!canEditSldat() || (dathangId()!=='new' && DetailDathang().status !== 'dadat')">
                        {{ row[column]||0|number:'1.0-2' }}
+                       <!-- <span *ngIf="!canEditSldat()" class="text-xs text-gray-500 ml-1">(Chỉ xem)</span> -->
                      </div>
                     }
                     @case ('slgiao') {
-                    <div *ngIf="DetailDathang().status === 'dadat'"
+                    <div *ngIf="DetailDathang().status === 'dadat' && canEditSlgiao()"
                       [contentEditable]="true"
                       [tabindex]="getTabIndex('slgiao', idx)"
                       (focus)="onInputFocus($event)"
@@ -231,12 +232,13 @@
                     >
                     {{ row[column]||0 }}
                      </div>
-                     <div *ngIf="DetailDathang().status !== 'dadat'">
+                     <div class="text-end" *ngIf="!canEditSlgiao() || DetailDathang().status !== 'dadat'">
                        {{ row[column]||0|number:'1.0-2' }}
+                       <!-- <span *ngIf="!canEditSlgiao()" class="text-xs text-gray-500 ml-1">(Chỉ xem)</span> -->
                      </div>
                     }
                     @case ('slnhan') {
-                    <div *ngIf="DetailDathang().status === 'dadat'"
+                    <div *ngIf="DetailDathang().status === 'dadat' && canEditSlnhan()"
                       [contentEditable]="true"
                       [tabindex]="getTabIndex('slnhan', idx)"
                       (focus)="onInputFocus($event)"
@@ -249,12 +251,13 @@
                     >
                     {{ row[column]||0 }}
                      </div>
-                    <div *ngIf="DetailDathang().status !== 'dadat'">
+                    <div class="text-end" *ngIf="!canEditSlnhan() || DetailDathang().status !== 'dadat'">
                        {{ row[column]||0|number:'1.0-2' }}
+                       <!-- <span *ngIf="!canEditSlnhan()" class="text-xs text-gray-500 ml-1">(Chỉ xem)</span> -->
                      </div>
                     }
                     @case ('gianhap') {
-                    <div *ngIf="DetailDathang().status === 'dadat'"
+                    <div *ngIf="DetailDathang().status === 'dadat' && canEditGianhap()"
                       [contentEditable]="true"
                       [tabindex]="getTabIndex('gianhap', idx)"
                       (focus)="onInputFocus($event)"
@@ -267,8 +270,9 @@
                     >
                     {{ row[column]||0 }}
                      </div>
-                    <div *ngIf="DetailDathang().status !== 'dadat'">
+                    <div class="text-end" *ngIf="!canEditGianhap() || DetailDathang().status !== 'dadat'">
                        {{ row[column]||0|number:'1.0-2' }}
+                       <!-- <span *ngIf="!canEditGianhap()" class="text-xs text-gray-500 ml-1">(Chỉ xem)</span> -->
                      </div>
                     }
                     @case ('ttnhan') {
