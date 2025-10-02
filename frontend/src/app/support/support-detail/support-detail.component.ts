@@ -36,7 +36,7 @@ import { SupportService } from '../support.service';
         </div>
       } @else if (ticket()) {
         <div class="flex items-center gap-4 mb-6">
-          <button mat-icon-button [routerLink]="['/support']">
+          <button mat-icon-button [routerLink]="['/admin/support']">
             <mat-icon>arrow_back</mat-icon>
           </button>
           <div class="flex-1">
@@ -205,7 +205,7 @@ export class SupportDetailComponent implements OnInit {
       error: () => {
         this.loading.set(false);
         this.snackBar.open('Không tìm thấy vấn đề', 'Đóng', { duration: 3000 });
-        this.router.navigate(['/support']);
+        this.router.navigate(['/admin/support']);
       },
     });
   }

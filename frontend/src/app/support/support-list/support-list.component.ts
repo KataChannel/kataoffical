@@ -26,7 +26,7 @@ import { SupportService } from '../support.service';
     <div class="container mx-auto p-4">
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Hỗ trợ kỹ thuật</h1>
-        <button mat-raised-button color="primary" [routerLink]="['/support/new']">
+        <button mat-raised-button color="primary" [routerLink]="['/admin/support/new']">
           <mat-icon>add</mat-icon>
           Tạo vấn đề mới
         </button>
@@ -40,7 +40,7 @@ import { SupportService } from '../support.service';
         <div class="grid gap-4">
           @for (ticket of tickets(); track ticket.id) {
             <mat-card class="cursor-pointer hover:shadow-lg transition-shadow" 
-                      [routerLink]="['/support', ticket.id]">
+                      [routerLink]="['/admin/support', ticket.id]">
               <mat-card-header>
                 <mat-card-title>
                   <div class="flex items-center justify-between">

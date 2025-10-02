@@ -31,10 +31,10 @@ import { SupportService } from '../support.service';
   template: `
     <div class="container mx-auto p-4 max-w-3xl">
       <div class="flex items-center gap-4 mb-6">
-        <button mat-icon-button [routerLink]="['/support']">
+        <button mat-icon-button color="primary" [routerLink]="['/admin/support']">
           <mat-icon>arrow_back</mat-icon>
         </button>
-        <h1 class="text-2xl font-bold">Tạo vấn đề mới</h1>
+        <span class="text-2xl font-bold">Tạo vấn đề mới</span>
       </div>
 
       <mat-card>
@@ -100,7 +100,7 @@ import { SupportService } from '../support.service';
                 }
                 Gửi vấn đề
               </button>
-              <button mat-stroked-button type="button" [routerLink]="['/support']" [disabled]="loading()">
+              <button mat-stroked-button type="button" [routerLink]="['/admin/support']" [disabled]="loading()">
                 Hủy
               </button>
             </div>
@@ -155,11 +155,17 @@ export class SupportCreateComponent {
         attachmentUrls,
       }).toPromise();
 
-      this.snackBar.open('Đã tạo vấn đề thành công!', 'Đóng', { duration: 3000 });
-      this.router.navigate(['/support']);
+      this.snackBar.open('Đã tạo vấn đề thành công!', 'Đóng', { 
+        duration: 3000,
+        panelClass: ['snackbar-success']
+      });
+      this.router.navigate(['/admin/support']);
     } catch (error) {
       console.error('Error creating ticket:', error);
-      this.snackBar.open('Lỗi khi tạo vấn đề. Vui lòng thử lại.', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi tạo vấn đề', 'Đóng', { 
+        duration: 3000,
+        panelClass: ['snackbar-error']
+      });
     } finally {
       this.loading.set(false);
     }

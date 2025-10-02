@@ -77,7 +77,7 @@
         <button mat-icon-button (click)="drawer1.toggle()">
           <mat-icon>notifications</mat-icon>
         </button>
-        <a mat-icon-button href="/admin/support">
+        <a mat-icon-button [routerLink]="['/admin/support']">
           <mat-icon>chat</mat-icon>
         </a>
         <button mat-icon-button [matMenuTriggerFor]="menu1">
