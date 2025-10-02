@@ -37,18 +37,25 @@
           <input matInput [(ngModel)]="DetailRole.name" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên Nhóm"/>
         </mat-form-field>
       </div>
-      <div class="grid grid-cols-3 gap-2">
-        @for (item of filterPermission; track $index) {
-          <div class="flex items-center space-x-2">
-            <mat-slide-toggle 
-              [disabled]="!isEdit() || isTogglingPermission() === item.id"  
-              [checked]="item.hasPermission"  
-              (change)="togglePermission(item)">
-              {{ item.name }} - ({{ item.description||'Chưa Mô Tả' }})
-            </mat-slide-toggle>
-            @if (isTogglingPermission() === item.id) {
-              <mat-spinner diameter="16" class="ml-2"></mat-spinner>
-            }
+      <div class="space-y-6">
+        @for (group of groupedPermissions() | keyvalue; track group.key) {
+          <div class="border-b pb-4">
+            <h3 class="text-lg font-semibold mb-3 text-blue-600">{{group.key}}</h3>
+            <div class="grid grid-cols-3 gap-2">
+              @for (item of group.value; track item.id) {
+                <div class="flex items-center space-x-2">
+                  <mat-slide-toggle 
+                    [disabled]="!isEdit() || isTogglingPermission() === item.id"  
+                    [checked]="item.hasPermission"  
+                    (change)="togglePermission(item)">
+                    {{ item.name }} - ({{ item.description||'Chưa Mô Tả' }})
+                  </mat-slide-toggle>
+                  @if (isTogglingPermission() === item.id) {
+                    <mat-spinner diameter="16" class="ml-2"></mat-spinner>
+                  }
+                </div>
+              }
+            </div>
           </div>
         }
       </div>

@@ -67,34 +67,50 @@ export class DetailRoleComponent {
   isEdit = signal(false);
   isDelete = signal(false);
   isTogglingPermission = signal<string>('');
+  groupedPermissions = signal<{[key: string]: any[]}>({});
+
+  groupPermissionsByGroup(permissions: any[]) {
+    const groups: {[key: string]: any[]} = {};
+    permissions.forEach(permission => {
+      const group = permission.group || 'Other';
+      if (!groups[group]) {
+        groups[group] = [];
+      }
+      groups[group].push(permission);
+    });
+    return groups;
+  }
+
   async ngOnInit() {
     await this._PermissionService.getAllPermission(1000);
     this.ListPermission = this._PermissionService.ListPermission();
+
     if (!this.idRole) {
       this._router.navigate(['/admin/nhomuser']);
       this._ListroleComponent.drawer.close();
-    } else if (this.idRole === 'new') {
+      return;
+    } 
+
+    if (this.idRole === 'new') {
       this._ListroleComponent.drawer.open();
       this.isEdit.update((value) => !value);
-      this.filterPermission = this.ListPermission
+      this.filterPermission = this.ListPermission;
+      this.groupedPermissions.set(this.groupPermissionsByGroup(this.filterPermission));
       this._router.navigate(['/admin/nhomuser', 'new']);
     } else {
-      await this._RoleService.getRoleByid(this.idRole).then(() => {
-        this.DetailRole = this._RoleService.DetailRole();
-        this.filterPermission = this.ListPermission.map((v: any) => {
-          if (this.DetailRole?.permissions?.length > 0) {
-            v.hasPermission = this.DetailRole?.permissions.find((p: any) => p.permissionId === v.id)? true : false;
-          }
-          return v;
-        });
-      });
-      this._ListroleComponent.drawer.open();
-      this._router.navigate(['/admin/nhomuser', this.idRole]);
-    }
-    setTimeout(() => {
-      console.log(this.filterPermission);
+      await this._RoleService.getRoleByid(this.idRole);
+      this.DetailRole = this._RoleService.DetailRole();
       
-    }, 200);
+      // Map permissions with hasPermission flag
+      this.filterPermission = this.ListPermission.map((v: any) => ({
+        ...v,
+        hasPermission: this.DetailRole?.permissions?.some((p: any) => p.permissionId === v.id) || false
+      }));
+    }
+
+    // Group permissions by their group property
+    this.groupedPermissions.set(this.groupPermissionsByGroup(this.filterPermission));
+    this._ListroleComponent.drawer.open();
   }
   async handleRoleAction() {
     if (this.idRole === 'new') {
@@ -178,6 +194,16 @@ export class DetailRoleComponent {
     
     // Optimistic update
     item.hasPermission = newState;
+    
+    // Update the grouped permissions
+    const currentGroups = this.groupedPermissions();
+    const updatedGroup = currentGroups[item.group || 'Other'].map(p => 
+      p.id === item.id ? {...p, hasPermission: newState} : p
+    );
+    this.groupedPermissions.set({
+      ...currentGroups,
+      [item.group || 'Other']: updatedGroup
+    });
     
     try {
       let result: boolean;
