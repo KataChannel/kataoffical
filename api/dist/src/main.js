@@ -10,6 +10,7 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors();
     app.use('/images', express.static((0, path_1.join)(__dirname, '../sandbox/images')));
+    app.use('/uploads', express.static((0, path_1.join)(__dirname, '../uploads')));
     app.use(bodyParser.json({ limit: '50mb' }));
     app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
     const config = new swagger_1.DocumentBuilder()

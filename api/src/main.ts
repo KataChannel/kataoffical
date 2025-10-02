@@ -10,6 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   app.use('/images', express.static(join(__dirname, '../sandbox/images')));
+  app.use('/uploads', express.static(join(__dirname, '../uploads')));
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 

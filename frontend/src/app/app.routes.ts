@@ -106,6 +106,27 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'support',
+        loadComponent: () =>
+          import('./support/support-list/support-list.component').then(
+            (c) => c.SupportListComponent
+          ),
+      },
+      {
+        path: 'support/new',
+        loadComponent: () =>
+          import('./support/support-create/support-create.component').then(
+            (c) => c.SupportCreateComponent
+          ),
+      },
+      {
+        path: 'support/:id',
+        loadComponent: () =>
+          import('./support/support-detail/support-detail.component').then(
+            (c) => c.SupportDetailComponent
+          ),
+      },
+      {
         path: 'nhomuser',
         canActivate: [PermissionGuard],
         data: { permission: 'nhomuser.view' },
