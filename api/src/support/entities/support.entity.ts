@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { GraphQLDateTime } from 'graphql-scalars';
 
 @ObjectType()
 export class SupportUser {
@@ -29,7 +30,7 @@ export class SupportAttachment {
   @Field()
   fileUrl: string;
 
-  @Field()
+  @Field(() => GraphQLDateTime)
   createdAt: Date;
 }
 
@@ -47,10 +48,10 @@ export class SupportResponse {
   @Field(() => [SupportAttachment])
   attachments: SupportAttachment[];
 
-  @Field()
+  @Field(() => GraphQLDateTime)
   createdAt: Date;
 
-  @Field()
+  @Field(() => GraphQLDateTime)
   updatedAt: Date;
 }
 
@@ -83,9 +84,9 @@ export class SupportTicket {
   @Field(() => [SupportAttachment])
   attachments: SupportAttachment[];
 
-  @Field()
+  @Field(() => GraphQLDateTime)
   createdAt: Date;
 
-  @Field()
+  @Field(() => GraphQLDateTime)
   updatedAt: Date;
 }

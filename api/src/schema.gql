@@ -127,6 +127,44 @@ type TopProductItem {
   totalValue: Float!
 }
 
+type SupportUser {
+  id: ID!
+  name: String
+  email: String
+}
+
+type SupportAttachment {
+  id: ID!
+  fileName: String!
+  fileType: String!
+  fileSize: Float!
+  fileUrl: String!
+  createdAt: DateTime!
+}
+
+type SupportResponse {
+  id: ID!
+  content: String!
+  user: SupportUser!
+  attachments: [SupportAttachment!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type SupportTicket {
+  id: ID!
+  title: String!
+  description: String!
+  status: String!
+  priority: String!
+  user: SupportUser!
+  technician: SupportUser
+  responses: [SupportResponse!]!
+  attachments: [SupportAttachment!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 type Query {
   testQuery: [TestItem!]!
 
@@ -258,6 +296,8 @@ type Query {
   dailyMonthlyReport(batdau: String!, ketthuc: String!, groupBy: String!): [DailyMonthlyReportItem!]!
   topProductsByQuantity(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
   topProductsByValue(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
+  tickets(status: String, priority: String): [SupportTicket!]!
+  ticket(id: String!): SupportTicket
 }
 
 input NhomkhachhangFilterInput {
@@ -395,6 +435,11 @@ type Mutation {
     """Specific model to clear cache for (optional)"""
     modelName: String
   ): JSON!
+  createTicket(input: CreateTicketInput!): SupportTicket!
+  updateTicket(id: String!, input: UpdateTicketInput!): SupportTicket!
+  addResponse(ticketId: String!, input: CreateResponseInput!): SupportResponse!
+  deleteTicket(id: String!): Boolean!
+  assignTicket(ticketId: String!, technicianId: String!): Boolean!
 }
 
 input CreateNhomkhachhangInput {
@@ -419,4 +464,23 @@ input ManageKhachhangInNhomInput {
 
   """Danh sách ID khách hàng"""
   khachhangIds: [String!]!
+}
+
+input CreateTicketInput {
+  title: String!
+  description: String!
+  priority: String
+  attachmentUrls: [String!]
+}
+
+input UpdateTicketInput {
+  title: String
+  description: String
+  status: String
+  priority: String
+}
+
+input CreateResponseInput {
+  content: String!
+  attachmentUrls: [String!]
 }

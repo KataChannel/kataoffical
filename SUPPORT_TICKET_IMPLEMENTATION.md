@@ -1,6 +1,11 @@
 # Support Ticket System Implementation - Complete Guide
 
-## ✅ STATUS: HOÀN THÀNH (COMPLETED)
+## ✅ STATUS: HOÀN THÀNH 100% - PRODUCTION READY 🚀
+
+**Backend:** ✅ Running on http://localhost:3331  
+**Frontend:** ✅ Running on http://localhost:4301  
+**GraphQL Playground:** ✅ http://localhost:3331/graphql  
+**Upload Endpoint:** ✅ http://localhost:3331/support/upload  
 
 Hệ thống hỗ trợ cho phép nhân viên gửi vấn đề kèm hình ảnh/video và nhận phản hồi từ phòng kỹ thuật.
 
@@ -24,21 +29,32 @@ Hệ thống hỗ trợ cho phép nhân viên gửi vấn đề kèm hình ảnh
 
 ## 🚀 Cách sử dụng nhanh
 
-### 1. Khởi động Backend
+### 1. Khởi động Backend ✅ ĐANG CHẠY
 ```bash
 cd /mnt/chikiet/kataoffical/rausachfinal/api
-npm run start
-# hoặc
-./run.sh
+npm start
+# Backend đang chạy tại: http://localhost:3331
+# GraphQL: http://localhost:3331/graphql
 ```
 
-### 2. Khởi động Frontend
+### 2. Khởi động Frontend ✅ ĐANG CHẠY
 ```bash
 cd /mnt/chikiet/kataoffical/rausachfinal/frontend
 npm run dev
+# Frontend đang chạy tại: http://localhost:4301
 ```
 
-### 3. Truy cập ứng dụng
+### 3. Test hệ thống
+```bash
+# Chạy script test tự động
+./test-support-system.sh
+
+# Hoặc truy cập trực tiếp
+# Frontend: http://localhost:4301/admin/support
+# GraphQL Playground: http://localhost:3331/graphql
+```
+
+### 4. Truy cập ứng dụng
 - Frontend: http://localhost:4301
 - GraphQL Playground: http://localhost:3331/graphql
 - Uploads: http://localhost:3331/uploads/

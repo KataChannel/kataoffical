@@ -51,6 +51,7 @@ const performance_interceptor_1 = require("./shared/interceptors/performance.int
 const graphql_module_1 = require("./graphql/graphql.module");
 const redis_module_1 = require("./redis/redis.module");
 const user_permission_module_1 = require("./user-permission/user-permission.module");
+const support_module_1 = require("./support/support.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
@@ -112,6 +113,7 @@ exports.AppModule = AppModule = __decorate([
             redis_module_1.RedisModule,
             chotkho_module_1.ChotkhoModule,
             graphql_module_1.GraphQLUniversalModule,
+            support_module_1.SupportModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

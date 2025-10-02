@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SupportTicket = exports.SupportResponse = exports.SupportAttachment = exports.SupportUser = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const graphql_scalars_1 = require("graphql-scalars");
 let SupportUser = class SupportUser {
 };
 exports.SupportUser = SupportUser;
@@ -53,7 +54,7 @@ __decorate([
     __metadata("design:type", String)
 ], SupportAttachment.prototype, "fileUrl", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, graphql_1.Field)(() => graphql_scalars_1.GraphQLDateTime),
     __metadata("design:type", Date)
 ], SupportAttachment.prototype, "createdAt", void 0);
 exports.SupportAttachment = SupportAttachment = __decorate([
@@ -79,11 +80,11 @@ __decorate([
     __metadata("design:type", Array)
 ], SupportResponse.prototype, "attachments", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, graphql_1.Field)(() => graphql_scalars_1.GraphQLDateTime),
     __metadata("design:type", Date)
 ], SupportResponse.prototype, "createdAt", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, graphql_1.Field)(() => graphql_scalars_1.GraphQLDateTime),
     __metadata("design:type", Date)
 ], SupportResponse.prototype, "updatedAt", void 0);
 exports.SupportResponse = SupportResponse = __decorate([
@@ -129,11 +130,11 @@ __decorate([
     __metadata("design:type", Array)
 ], SupportTicket.prototype, "attachments", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, graphql_1.Field)(() => graphql_scalars_1.GraphQLDateTime),
     __metadata("design:type", Date)
 ], SupportTicket.prototype, "createdAt", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, graphql_1.Field)(() => graphql_scalars_1.GraphQLDateTime),
     __metadata("design:type", Date)
 ], SupportTicket.prototype, "updatedAt", void 0);
 exports.SupportTicket = SupportTicket = __decorate([

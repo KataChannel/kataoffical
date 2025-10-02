@@ -44,6 +44,7 @@ import { PerformanceInterceptor } from './shared/interceptors/performance.interc
 import { GraphQLUniversalModule } from './graphql/graphql.module';
 import { RedisModule } from './redis/redis.module';
 import { UserPermissionModule } from './user-permission/user-permission.module';
+import { SupportModule } from './support/support.module';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -100,6 +101,7 @@ import { UserPermissionModule } from './user-permission/user-permission.module';
     // UploadModule,
     // MinioModule,
     GraphQLUniversalModule,
+    SupportModule,
   ],
   controllers: [AppController],
   providers: [
