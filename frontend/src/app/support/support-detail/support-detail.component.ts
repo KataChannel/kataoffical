@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SupportService } from '../support.service';
+import { GetImage } from '../../shared/utils/shared.utils';
 
 @Component({
   selector: 'app-support-detail',
@@ -253,8 +254,7 @@ export class SupportDetailComponent implements OnInit {
   }
 
   getFileUrl(url: string): string {
-    if (url.startsWith('http')) return url;
-    return `http://localhost:3331${url}`;
+    return GetImage(url);
   }
 
   openFile(url: string) {

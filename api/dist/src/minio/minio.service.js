@@ -17,16 +17,25 @@ const common_2 = require("@nestjs/common");
 let MinioService = class MinioService {
     constructor(prisma) {
         this.prisma = prisma;
-        this.bucketName = process.env.MINIO_BUCKET?.trim() || 'uploads';
+        this.bucketName = process.env.MINIO_BUCKET?.trim() ||
+            process.env.MINIO_BUCKET_NAME?.trim() ||
+            'uploads';
         this.options = {
             endPoint: process.env.MINIO_ENDPOINT?.trim() || 'storage.rausachtrangia.com',
             port: parseInt(process.env.MINIO_PORT?.trim() || '9000', 10),
             useSSL: process.env.MINIO_USE_SSL?.trim() === 'true',
-            accessKey: process.env.MINIO_ROOT_USER?.trim() || 'admin',
-            secretKey: process.env.MINIO_ROOT_PASSWORD?.trim() || 'password',
+            accessKey: process.env.MINIO_ACCESS_KEY?.trim() ||
+                process.env.MINIO_ROOT_USER?.trim() ||
+                'admin',
+            secretKey: process.env.MINIO_SECRET_KEY?.trim() ||
+                process.env.MINIO_ROOT_PASSWORD?.trim() ||
+                'password',
         };
         this.client = new minio_1.Client(this.options);
-        this.ensureBucketExists();
+        this.ensureBucketExists().catch(err => {
+            console.error('MinIO bucket initialization failed:', err.message);
+            console.warn('Support upload may not work until MinIO is properly configured');
+        });
     }
     async ensureBucketExists() {
         try {

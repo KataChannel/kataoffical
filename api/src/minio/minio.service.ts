@@ -9,16 +9,25 @@ export class MinioService {
   private bucketName: string;
   private options: ClientOptions;
   constructor(private prisma: PrismaService) {
-    this.bucketName = process.env.MINIO_BUCKET?.trim() || 'uploads';
+    this.bucketName = process.env.MINIO_BUCKET?.trim() || 
+                      process.env.MINIO_BUCKET_NAME?.trim() || 
+                      'uploads';
     this.options = {
       endPoint: process.env.MINIO_ENDPOINT?.trim() || 'storage.rausachtrangia.com',
       port: parseInt(process.env.MINIO_PORT?.trim() || '9000', 10),
       useSSL: process.env.MINIO_USE_SSL?.trim() === 'true',
-      accessKey: process.env.MINIO_ROOT_USER?.trim() || 'admin',
-      secretKey: process.env.MINIO_ROOT_PASSWORD?.trim() || 'password',
+      accessKey: process.env.MINIO_ACCESS_KEY?.trim() || 
+                 process.env.MINIO_ROOT_USER?.trim() || 
+                 'admin',
+      secretKey: process.env.MINIO_SECRET_KEY?.trim() || 
+                 process.env.MINIO_ROOT_PASSWORD?.trim() || 
+                 'password',
     };
     this.client = new Client(this.options);
-    this.ensureBucketExists();
+    this.ensureBucketExists().catch(err => {
+      console.error('MinIO bucket initialization failed:', err.message);
+      console.warn('Support upload may not work until MinIO is properly configured');
+    });
   }
 
   private async ensureBucketExists(): Promise<void> {

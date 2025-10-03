@@ -8,25 +8,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SupportModule = void 0;
 const common_1 = require("@nestjs/common");
-const platform_express_1 = require("@nestjs/platform-express");
 const support_service_1 = require("./support.service");
 const support_resolver_1 = require("./support.resolver");
 const support_upload_controller_1 = require("./support-upload.controller");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const auth_module_1 = require("../auth/auth.module");
+const minio_service_1 = require("../minio/minio.service");
 let SupportModule = class SupportModule {
 };
 exports.SupportModule = SupportModule;
 exports.SupportModule = SupportModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            platform_express_1.MulterModule.register({
-                dest: './uploads',
-            }),
-            auth_module_1.AuthModule,
-        ],
+        imports: [auth_module_1.AuthModule],
         controllers: [support_upload_controller_1.SupportUploadController],
-        providers: [support_resolver_1.SupportResolver, support_service_1.SupportService, prisma_service_1.PrismaService],
+        providers: [support_resolver_1.SupportResolver, support_service_1.SupportService, prisma_service_1.PrismaService, minio_service_1.MinioService],
         exports: [support_service_1.SupportService],
     })
 ], SupportModule);

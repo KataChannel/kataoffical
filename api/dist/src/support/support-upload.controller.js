@@ -16,58 +16,50 @@ exports.SupportUploadController = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const multer_1 = require("multer");
-const path_1 = require("path");
-const uuid_1 = require("uuid");
+const minio_service_1 = require("../minio/minio.service");
 let SupportUploadController = class SupportUploadController {
-    uploadFiles(files) {
-        return files.map(file => ({
-            fileName: file.originalname,
-            fileType: file.mimetype,
-            fileSize: file.size,
-            fileUrl: `/uploads/${file.filename}`,
+    constructor(minioService) {
+        this.minioService = minioService;
+    }
+    async uploadFiles(files) {
+        const maxSize = 50 * 1024 * 1024;
+        const allowedTypes = /^(image|video)\//;
+        for (const file of files) {
+            if (!allowedTypes.test(file.mimetype)) {
+                throw new Error(`File type ${file.mimetype} not allowed. Only images and videos are supported.`);
+            }
+            if (file.size > maxSize) {
+                throw new Error(`File ${file.originalname} exceeds maximum size of 50MB`);
+            }
+        }
+        const uploadResults = await Promise.all(files.map(async (file) => {
+            const fileUrl = await this.minioService.uploadFile(file, {
+                category: 'support',
+                group: 'tickets',
+                title: file.originalname,
+            });
+            return {
+                fileName: file.originalname,
+                fileType: file.mimetype,
+                fileSize: file.size,
+                fileUrl: fileUrl,
+            };
         }));
+        return uploadResults;
     }
 };
 exports.SupportUploadController = SupportUploadController;
 __decorate([
-    (0, common_1.Post)(),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 10, {
-        storage: (0, multer_1.diskStorage)({
-            destination: './uploads',
-            filename: (req, file, cb) => {
-                const uniqueName = `${(0, uuid_1.v4)()}${(0, path_1.extname)(file.originalname)}`;
-                cb(null, uniqueName);
-            },
-        }),
-        fileFilter: (req, file, cb) => {
-            const allowedMimes = [
-                'image/jpeg',
-                'image/png',
-                'image/gif',
-                'image/webp',
-                'video/mp4',
-                'video/webm',
-                'video/quicktime',
-            ];
-            if (allowedMimes.includes(file.mimetype)) {
-                cb(null, true);
-            }
-            else {
-                cb(new Error('Invalid file type. Only images and videos are allowed.'), false);
-            }
-        },
-        limits: {
-            fileSize: 50 * 1024 * 1024,
-        },
-    })),
+    (0, common_1.Post)('upload'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files')),
     __param(0, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], SupportUploadController.prototype, "uploadFiles", null);
 exports.SupportUploadController = SupportUploadController = __decorate([
-    (0, common_1.Controller)('support/upload'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard)
+    (0, common_1.Controller)('support'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __metadata("design:paramtypes", [minio_service_1.MinioService])
 ], SupportUploadController);
 //# sourceMappingURL=support-upload.controller.js.map
