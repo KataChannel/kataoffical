@@ -3,6 +3,7 @@ import { Apollo, gql } from 'apollo-angular';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { StorageService } from '../shared/utils/storage.service';
+import { environment } from '../../environments/environment.development';
 
 const TICKETS_QUERY = gql`
   query Tickets($status: String, $priority: String) {
@@ -108,8 +109,6 @@ export class SupportService {
   private apollo = inject(Apollo);
   private http = inject(HttpClient);
   private storageService = inject(StorageService);
-  private apiUrl = 'http://localhost:3331';
-
   tickets(status?: string, priority?: string) {
     return this.apollo.watchQuery({
       query: TICKETS_QUERY,
@@ -153,6 +152,6 @@ export class SupportService {
       Authorization: `Bearer ${token}`,
     });
 
-    return this.http.post<any[]>(`${this.apiUrl}/support/upload`, formData, { headers });
+    return this.http.post<any[]>(`${environment.APIURL}/support/upload`, formData, { headers });
   }
 }
