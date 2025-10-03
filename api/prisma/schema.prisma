@@ -52,6 +52,11 @@ model User {
   profile           Profile?
   roles             UserRole[]
   userPermissions   UserPermission[] // Added for user-specific permissions
+  
+  // Support system relations
+  createdTickets    SupportTicket[] @relation("UserTickets")
+  assignedTickets   SupportTicket[] @relation("TechnicianTickets")
+  supportResponses  SupportResponse[] @relation("UserResponses")
 }
 
 model Role {
@@ -642,4 +647,76 @@ enum StatusDonhang {
   danhan
   huy
   hoanthanh
+}
+
+// Support Ticket System Models
+model SupportTicket {
+  id          String              @id @default(cuid())
+  title       String
+  description String              @postgres.Text
+  status      TicketStatus        @default(open)
+  priority    TicketPriority      @default(medium)
+  category    String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  createdBy   String
+  technicianId String?
+  
+  user        User                @relation("UserTickets", fields: [createdBy], references: [id], onDelete: Cascade)
+  technician  User?               @relation("TechnicianTickets", fields: [technicianId], references: [id], onDelete: SetNull)
+  responses   SupportResponse[]
+  attachments SupportAttachment[]
+
+  @@index([createdBy])
+  @@index([technicianId])
+  @@index([status])
+  @@map("support_tickets")
+}
+
+model SupportResponse {
+  id          String              @id @default(cuid())
+  content     String              @postgres.Text
+  createdAt   DateTime            @default(now())
+  createdBy   String
+  ticketId    String
+  
+  user        User                @relation("UserResponses", fields: [createdBy], references: [id], onDelete: Cascade)
+  ticket      SupportTicket       @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  attachments SupportAttachment[]
+
+  @@index([ticketId])
+  @@index([createdBy])
+  @@map("support_responses")
+}
+
+model SupportAttachment {
+  id         String           @id @default(cuid())
+  fileUrl    String
+  fileName   String
+  fileType   String
+  fileSize   Int              @default(0)
+  createdAt  DateTime         @default(now())
+  ticketId   String?
+  responseId String?
+  
+  ticket     SupportTicket?   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  response   SupportResponse? @relation(fields: [responseId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([responseId])
+  @@map("support_attachments")
+}
+
+enum TicketStatus {
+  open
+  in_progress
+  resolved
+  closed
+}
+
+enum TicketPriority {
+  low
+  medium
+  high
+  urgent
 }

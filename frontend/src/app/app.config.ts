@@ -13,6 +13,9 @@ import { APOLLO_OPTIONS } from 'apollo-angular';
 import { ApolloClientOptions, InMemoryCache } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
 import { Apollo } from 'apollo-angular';
+import { setContext } from '@apollo/client/link/context';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID, inject } from '@angular/core';
 export const MY_DATE_FORMATS = {
   parse: {
     dateInput: 'DD/MM/YYYY',
@@ -27,10 +30,36 @@ export const MY_DATE_FORMATS = {
 
 // Apollo GraphQL configuration
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
+  // Auth link to add token to every request
+  const authLink = setContext((_, { headers }) => {
+    // Get token from localStorage
+    let token = null;
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const tokenStr = localStorage.getItem('token');
+      if (tokenStr) {
+        try {
+          token = JSON.parse(tokenStr);
+        } catch (e) {
+          token = tokenStr; // fallback if not JSON
+        }
+      }
+    }
+    
+    // Return headers with token
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : '',
+      }
+    };
+  });
+
+  const link = httpLink.create({
+    uri: `${environment.APIURL}/graphql`,
+  });
+
   return {
-    link: httpLink.create({
-      uri: `${environment.APIURL}/graphql`,
-    }),
+    link: authLink.concat(link),
     cache: new InMemoryCache(),
     defaultOptions: {
       watchQuery: {

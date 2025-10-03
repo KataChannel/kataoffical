@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+import { StorageService } from '../shared/utils/storage.service';
 
 const TICKETS_QUERY = gql`
   query Tickets($status: String, $priority: String) {
@@ -106,6 +107,7 @@ const ADD_RESPONSE_MUTATION = gql`
 export class SupportService {
   private apollo = inject(Apollo);
   private http = inject(HttpClient);
+  private storageService = inject(StorageService);
   private apiUrl = 'http://localhost:3331';
 
   tickets(status?: string, priority?: string) {
@@ -146,7 +148,7 @@ export class SupportService {
       formData.append('files', file);
     });
 
-    const token = localStorage.getItem('token');
+    const token = this.storageService.getItem('token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
