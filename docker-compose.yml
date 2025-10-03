@@ -45,10 +45,21 @@ services:
       - ZALO_APP_ID=your-zalo-app-id
       - ZALO_APP_SECRET=your-zalo-app-secret
       - BASE_URL=https://tg.rausachtrangia.com
-      - SERVER_URL=https://apitg.rausachtrangia.com
+      - SERVER_URL=https://apitg.rausachtrangia.com 
       - PORT=3331
       - REDIS_HOST=redis
       - REDIS_PORT=56379
+      - MINIO_ENDPOINT=storage.rausachtrangia.com
+      - MINIO_PORT=59000
+      - MINIO_USE_SSL=false
+      - MINIO_ACCESS_KEY=RC4hWSS4V6QIcfl
+      - MINIO_SECRET_KEY=LEOZHZwjaasTTKk
+      - MINIO_ROOT_USER=RC4hWSS4V6QIcfl
+      - MINIO_ROOT_PASSWORD=LEOZHZwjaasTTKk
+      - MINIO_BUCKET_NAME=uploads
+      - MINIO_BUCKET=uploads
+      - MINIO_REGION=us-east-1
+      - MINIO_PUBLIC_URL=http://storage.rausachtrangia.com:59000
     depends_on:
       - postgres
       - redis      

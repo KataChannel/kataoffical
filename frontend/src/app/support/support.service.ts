@@ -152,6 +152,7 @@ export class SupportService {
       Authorization: `Bearer ${token}`,
     });
 
-    return this.http.post<any[]>(`${environment.APIURL}/support/upload`, formData, { headers });
+    // return this.http.post<any[]>(`${environment.APIURL}/support/upload`, formData, { headers });
+    return this.http.post<any[]>(`https://apitg.rausachtrangia.com/support/upload`, formData, { headers });
   }
 }

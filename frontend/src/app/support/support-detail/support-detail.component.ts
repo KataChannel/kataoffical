@@ -205,7 +205,8 @@ export class SupportDetailComponent implements OnInit {
       },
       error: () => {
         this.loading.set(false);
-        this.snackBar.open('Không tìm thấy vấn đề', 'Đóng', { duration: 3000 });
+        this.snackBar.open('Không tìm thấy vấn đề', 'Đóng', { duration: 3000,
+        panelClass: ['snackbar-error'] });
         this.router.navigate(['/admin/support']);
       },
     });
@@ -241,13 +242,15 @@ export class SupportDetailComponent implements OnInit {
         attachmentUrls,
       }).toPromise();
 
-      this.snackBar.open('Đã gửi phản hồi thành công!', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Đã gửi phản hồi thành công!', 'Đóng', { duration: 3000,
+        panelClass: ['snackbar-success'] });
       this.responseContent = '';
       this.responseFiles.set([]);
       this.loadTicket();
     } catch (error) {
       console.error('Error adding response:', error);
-      this.snackBar.open('Lỗi khi gửi phản hồi. Vui lòng thử lại.', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi gửi phản hồi. Vui lòng thử lại.', 'Đóng', { duration: 3000,
+        panelClass: ['snackbar-error'] });
     } finally {
       this.responding.set(false);
     }
