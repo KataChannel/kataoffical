@@ -511,6 +511,8 @@ export class SanphamService {
   }
 
   async remove(id: string) {
+    console.log(id);
+    
     return this.prisma.$transaction(async (tx) => {
       // Disconnect Nhacungcap relations if applicable
       await tx.sanpham.update({
@@ -527,6 +529,22 @@ export class SanphamService {
       });
       // Delete related Banggiasanpham records
       await tx.banggiasanpham.deleteMany({
+        where: { sanphamId: id },
+      });
+      // Delete related PhieuKhoSanpham records
+      await tx.phieuKhoSanpham.deleteMany({
+        where: { sanphamId: id },
+      });
+      // Delete related SanphamKho records
+      await tx.sanphamKho.deleteMany({
+        where: { sanphamId: id },
+      });
+      // Delete related Chotkhodetail records
+      await tx.chotkhodetail.deleteMany({
+        where: { sanphamId: id },
+      });
+      // Delete related TonKho record
+      await tx.tonKho.deleteMany({
         where: { sanphamId: id },
       });
       // Delete the sanpham

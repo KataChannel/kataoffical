@@ -448,6 +448,7 @@ let SanphamService = class SanphamService {
         return updatedSanpham;
     }
     async remove(id) {
+        console.log(id);
         return this.prisma.$transaction(async (tx) => {
             await tx.sanpham.update({
                 where: { id },
@@ -460,6 +461,18 @@ let SanphamService = class SanphamService {
                 where: { sanpham: { id } },
             });
             await tx.banggiasanpham.deleteMany({
+                where: { sanphamId: id },
+            });
+            await tx.phieuKhoSanpham.deleteMany({
+                where: { sanphamId: id },
+            });
+            await tx.sanphamKho.deleteMany({
+                where: { sanphamId: id },
+            });
+            await tx.chotkhodetail.deleteMany({
+                where: { sanphamId: id },
+            });
+            await tx.tonKho.deleteMany({
                 where: { sanphamId: id },
             });
             const deletedSanpham = await tx.sanpham.delete({ where: { id } });

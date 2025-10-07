@@ -122,6 +122,7 @@ import { ListSanphamComponent } from '../listsanpham/listsanpham.component';
     async DeleteData()
     {
       try {
+        
         await this._SanphamService.DeleteSanpham(this.DetailSanpham());
   
         this._snackBar.open('Xóa Thành Công', '', {
