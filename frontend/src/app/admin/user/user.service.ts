@@ -162,6 +162,7 @@ export class UserService {
             method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
             body: JSON.stringify(dulieu),
           };
@@ -182,6 +183,7 @@ export class UserService {
             method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
           };
           const response = await fetch(`${environment.APIURL}/users/${item.id}`, options);

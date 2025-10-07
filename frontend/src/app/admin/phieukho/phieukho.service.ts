@@ -145,6 +145,7 @@ export class PhieukhoService {
             method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
           };
           const response = await fetch(`${environment.APIURL}/phieukho/${item.id}`, options);

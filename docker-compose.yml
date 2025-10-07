@@ -74,7 +74,7 @@ services:
 
       
   minio_rausach:
-    image: minio/minio:RELEASE.2025-09-07T16-13-09Z-cpuv1
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
     container_name: rausach-minio
     command: server /data --console-address ":9090"
     ports:

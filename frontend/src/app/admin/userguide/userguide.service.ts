@@ -118,6 +118,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
               method:'DELETE',
               headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this._StorageService.getItem('token')
               },
             };
             const response = await fetch(`${environment.APIURL}/userguide/${item.id}`, options);

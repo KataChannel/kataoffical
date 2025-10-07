@@ -136,6 +136,7 @@ export class QuanlyfilesService {
             method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
           };
           const response = await fetch(`${environment.APIURL}/upload/${item.id}`, options);

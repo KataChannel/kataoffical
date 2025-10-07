@@ -182,6 +182,7 @@ export class NhomkhachhangService {
             method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
           };
           const response = await fetch(`${environment.APIURL}/nhomkhachhang/${item.id}`, options);

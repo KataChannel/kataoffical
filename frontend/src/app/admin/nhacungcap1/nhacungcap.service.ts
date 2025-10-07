@@ -175,6 +175,7 @@ export class NhacungcapService {
             method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
           };
           const response = await fetch(`${environment.APIURL}/nhacungcap/${item.id}`, options);

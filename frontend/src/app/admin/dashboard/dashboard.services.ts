@@ -396,6 +396,7 @@ async getTopProducts(params: any) {
             method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
           };
           const response = await fetch(`${environment.APIURL}/dashboard/${item.id}`, options);
@@ -434,6 +435,7 @@ async getTopProducts(params: any) {
             method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
             body: JSON.stringify(items),
           };
