@@ -787,7 +787,8 @@ export class ListImportdataComponent implements OnInit {
     const boardKeys = Object.keys(data[0]).filter(
       (key) => !['masp', 'title', 'giagoc'].includes(key)
     );
-
+    console.log('boardKeys', boardKeys);
+    
     // For each board key, create an object with a list of products
     const data1 = boardKeys.map((boardKey) => ({
       mabanggia: boardKey,
@@ -1414,6 +1415,8 @@ export class ListImportdataComponent implements OnInit {
       data.banggiasanpham.length > 0 &&
       this.ListEdit().some((item: any) => item.value === 'banggiasanpham')
     ) {
+      console.log('Importing banggiasanpham data:', data.banggiasanpham);
+      
       const listBGSP = this.convertBGSPToImport(data.banggiasanpham);
       const giabanList = listBGSP.find((item) => item.mabanggia === 'giaban');
       if (!giabanList) {
