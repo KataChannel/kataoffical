@@ -751,21 +751,38 @@ export class ListImportdataComponent implements OnInit {
   }
 
   convertBGSPToExport(listbanggia: any, listsp: any) {
-    const pricingTables = new Set(
-      listbanggia.map((item: any) => item.mabanggia)
+    // Filter valid banggia with mabanggia
+    const validBanggia = listbanggia.filter((item: any) => 
+      item.mabanggia && item.mabanggia.trim() !== ''
     );
-    return listsp.map((product: any) => ({
-      masp: product.masp,
-      title: product.title,
-      giaban: product.giaban.toString(),
-      ...Array.from(pricingTables).reduce(
-        (acc: Record<string, string>, table: any) => {
-          acc[table] = product.giaban.toString();
-          return acc;
-        },
-        {} as Record<string, string>
-      ),
-    }));
+    
+    const pricingTables = new Set(
+      validBanggia.map((item: any) => item.mabanggia.trim())
+    );
+
+    console.log('Valid pricing tables for export:', Array.from(pricingTables));
+
+    return listsp.map((product: any) => {
+      const result: any = {
+        masp: product.masp || '',
+        title: product.title || '',
+        giaban: product.giaban?.toString() || '0',
+      };
+
+      // Add actual prices from each banggia
+      Array.from(pricingTables).forEach((mabanggia: any) => {
+        // Find the banggia
+        const banggia = validBanggia.find((bg: any) => bg.mabanggia === mabanggia);
+        
+        // Find the product price in this banggia
+        const sanphamInBG = banggia?.sanpham?.find((sp: any) => sp.masp === product.masp);
+        
+        // Use actual price from banggia, fallback to product.giaban
+        result[mabanggia] = sanphamInBG?.giaban?.toString() || product.giaban?.toString() || '0';
+      });
+
+      return result;
+    });
   }
   convertBGSPToImport(
     data: Array<{
@@ -783,23 +800,62 @@ export class ListImportdataComponent implements OnInit {
       return [];
     }
 
-    // Extract keys representing price boards (excluding masp, title, giagoc)
-    const boardKeys = Object.keys(data[0]).filter(
-      (key) => !['masp', 'title', 'giagoc'].includes(key)
-    );
-    console.log('boardKeys', boardKeys);
+    console.log('Raw banggiasanpham data from Excel:', data[0]);
+
+    // Extract all keys from first row
+    const allKeys = Object.keys(data[0]);
+    console.log('All keys from Excel:', allKeys);
+
+    // Filter valid price board keys:
+    // - Exclude basic fields: masp, title, giagoc, giaban
+    // - Exclude __EMPTY columns (Excel columns with no header)
+    // - Only keep keys that have at least one valid price value
+    const boardKeys = allKeys.filter((key) => {
+      // Exclude basic fields
+      if (['masp', 'title', 'giagoc', 'giaban'].includes(key)) {
+        return false;
+      }
+      
+      // CRITICAL: Filter out __EMPTY columns
+      if (key.startsWith('__EMPTY')) {
+        return false;
+      }
+      
+      // Check if this key has at least one valid price
+      const hasValidPrice = data.some((sp) => {
+        const value = sp[key];
+        return value !== undefined && 
+               value !== null && 
+               value !== '' && 
+               value !== 0 && 
+               value !== '0';
+      });
+      
+      return hasValidPrice;
+    });
+    
+    console.log('Valid board keys (filtered __EMPTY):', boardKeys);
+
+    if (boardKeys.length === 0) {
+      console.warn('No valid pricing tables found in import data');
+      return [];
+    }
     
     // For each board key, create an object with a list of products
     const data1 = boardKeys.map((boardKey) => ({
       mabanggia: boardKey,
       title: `Bảng giá ${boardKey.replace('BG', '')}`,
-      sanpham: data.map((sp) => ({
-        masp: sp.masp?.toString().trim() || '',
-        title: sp.title?.toString().trim() || '',
-        giagoc: sp.giagoc || 0,
-        giaban: sp[boardKey] || 0,
-      })),
+      sanpham: data
+        .filter((sp) => sp.masp && sp.masp.trim() !== '') // Only include products with valid masp
+        .map((sp) => ({
+          masp: sp.masp?.toString().trim() || '',
+          title: sp.title?.toString().trim() || '',
+          giagoc: Number(sp.giagoc) || 0,
+          giaban: Number(sp[boardKey]) || Number(sp['giaban']) || 0,
+        })),
     }));
+    
+    console.log('Converted banggiasanpham data:', data1);
     return data1;
   }
 
@@ -1415,21 +1471,54 @@ export class ListImportdataComponent implements OnInit {
       data.banggiasanpham.length > 0 &&
       this.ListEdit().some((item: any) => item.value === 'banggiasanpham')
     ) {
-      console.log('Importing banggiasanpham data:', data.banggiasanpham);
+      console.log('Raw banggiasanpham data from Excel:', data.banggiasanpham);
       
-      const listBGSP = this.convertBGSPToImport(data.banggiasanpham);
-      const giabanList = listBGSP.find((item) => item.mabanggia === 'giaban');
-      if (!giabanList) {
-        // Optionally handle missing 'giaban' list
+      // Clean data: remove rows without masp
+      const cleanedData = data.banggiasanpham.filter((item: any) => {
+        return item.masp && item.masp.trim() !== '';
+      });
+
+      if (cleanedData.length === 0) {
+        this._snackBar.open('Không có dữ liệu bảng giá sản phẩm hợp lệ', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning'],
+        });
         return;
       }
+
+      console.log('Cleaned banggiasanpham data:', cleanedData);
+      
+      const listBGSP = this.convertBGSPToImport(cleanedData);
+      
+      console.log('Converted BGSP for import:', listBGSP);
+
+      if (listBGSP.length === 0) {
+        this._snackBar.open('Không tìm thấy bảng giá hợp lệ trong dữ liệu import', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning'],
+        });
+        return;
+      }
+
+      // Find giaban price list
+      const giabanList = listBGSP.find((item) => item.mabanggia === 'giaban');
+      
+      if (!giabanList) {
+        console.warn('No giaban price list found, using first available price list as base');
+      }
+
+      // Fix prices: if a price is 0, use giaban value
       const fixedListBGSP = listBGSP.map((banggia) => {
-        if (banggia.mabanggia === 'giaban') {
+        if (banggia.mabanggia === 'giaban' || !giabanList) {
           return banggia;
         }
 
         const fixedSanpham = banggia.sanpham.map((sp: any) => {
-          if (sp.giaban === '0') {
+          if (sp.giaban === 0 || sp.giaban === '0') {
             const match: any = giabanList.sanpham.find(
               (giabanSp) => giabanSp.masp === sp.masp
             );
@@ -1440,9 +1529,46 @@ export class ListImportdataComponent implements OnInit {
           }
           return sp;
         });
+        
         return { ...banggia, sanpham: fixedSanpham };
       });
-      await this._BanggiaService.importSPBG(fixedListBGSP);
+
+      console.log('Final BGSP data for import:', fixedListBGSP);
+
+      const importSnackbar = this._snackBar.open(
+        `Đang import ${fixedListBGSP.length} bảng giá sản phẩm...`,
+        '',
+        {
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning'],
+        }
+      );
+
+      try {
+        await this._BanggiaService.importSPBG(fixedListBGSP);
+        
+        importSnackbar.dismiss();
+        this._snackBar.open(
+          `Import thành công ${fixedListBGSP.length} bảng giá sản phẩm!`,
+          '',
+          {
+            duration: 2000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-success'],
+          }
+        );
+      } catch (error) {
+        console.error('Error importing banggiasanpham:', error);
+        importSnackbar.dismiss();
+        this._snackBar.open('Có lỗi xảy ra khi import bảng giá sản phẩm', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
     }
     if (
       data.banggiakhachhang &&
