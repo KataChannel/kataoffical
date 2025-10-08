@@ -16,6 +16,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { ListSanphamComponent } from '../listsanpham/listsanpham.component';
+import { GraphqlService } from '../../../shared/services/graphql.service';
   @Component({
     selector: 'app-detailsanpham',
     imports: [
@@ -37,6 +38,7 @@ import { ListSanphamComponent } from '../listsanpham/listsanpham.component';
     _ListsanphamComponent:ListSanphamComponent = inject(ListSanphamComponent)
     _SanphamService:SanphamService = inject(SanphamService)
     _NhacungcapService:NhacungcapService = inject(NhacungcapService)
+    _GraphqlService:GraphqlService = inject(GraphqlService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
@@ -55,8 +57,8 @@ import { ListSanphamComponent } from '../listsanpham/listsanpham.component';
   
       effect(async () => {  
         const id = this._SanphamService.sanphamId();
-        await this._NhacungcapService.getAllNhacungcap();
-        this.ListNCC = this.FilterListNCC = this._NhacungcapService.ListNhacungcap();
+        // await this._NhacungcapService.getAllNhacungcap();
+        // this.ListNCC = this.FilterListNCC = this._NhacungcapService.ListNhacungcap();
         if (!id){
           this._router.navigate(['/admin/sanpham']);
           this._ListsanphamComponent.drawer.close();
@@ -80,7 +82,22 @@ import { ListSanphamComponent } from '../listsanpham/listsanpham.component';
         }
       });
     }
-    async ngOnInit() {       
+    async ngOnInit() {    
+      this.InitListNhacungcap();
+    }
+    async InitListNhacungcap(){
+     const ListNhacungcap =  await this._GraphqlService.findAll('nhacungcap',{
+        enableParallelFetch:true,
+        take:9999,
+        select:{
+          id:true,
+          name:true,
+          mancc:true
+        }
+      });
+      console.log(ListNhacungcap);
+      
+    this.ListNCC = this.FilterListNCC = ListNhacungcap.data;
     }
     async handleSanphamAction() {
       if (this.sanphamId() === 'new') {

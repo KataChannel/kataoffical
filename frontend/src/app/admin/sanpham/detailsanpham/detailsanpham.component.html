@@ -113,7 +113,7 @@
                 </div>
               </div>
              </mat-menu>
-          <button mat-flat-button [disabled]="!isEdit()" *ngFor="let item of ChosenListNCC; let i=index">
+          <button mat-stroked-button [disabled]="!isEdit()" *ngFor="let item of ChosenListNCC; let i=index">
             {{item.name}}
           </button>   
         </div>
