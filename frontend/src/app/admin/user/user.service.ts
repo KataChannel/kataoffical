@@ -114,6 +114,7 @@ export class UserService {
           method:'PATCH',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
           },
           body: JSON.stringify(dulieu),
         };
