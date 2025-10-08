@@ -10,6 +10,7 @@
 /node_modules
 api/node_modules
 api/rausach_json
+!api/dist
 frontend/node_modules
 npm-debug.log
 yarn-error.log
