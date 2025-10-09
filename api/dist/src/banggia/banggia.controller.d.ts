@@ -181,5 +181,27 @@ export declare class BanggiaController {
         status: string | null;
         isDefault: boolean;
     }>;
-    remove(id: string): void;
+    remove(id: string): Promise<{
+        id: string;
+        title: string | null;
+        ghichu: string | null;
+        order: number | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        mabanggia: string | null;
+        type: string | null;
+        batdau: Date | null;
+        ketthuc: Date | null;
+        status: string | null;
+        isDefault: boolean;
+    }>;
+    removeBulk(body: {
+        ids: string[];
+    }): Promise<{
+        success: number;
+        fail: number;
+        errors: any[];
+        message: string;
+    }>;
 }

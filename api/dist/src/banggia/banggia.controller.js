@@ -61,7 +61,10 @@ let BanggiaController = class BanggiaController {
         return this.banggiaService.update(id, updateBanggiaDto);
     }
     remove(id) {
-        this.banggiaService.remove(id);
+        return this.banggiaService.remove(id);
+    }
+    async removeBulk(body) {
+        return this.banggiaService.removeBulk(body.ids);
     }
 };
 exports.BanggiaController = BanggiaController;
@@ -197,7 +200,7 @@ __decorate([
     (0, common_1.Delete)(':id'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
-    (0, swagger_1.ApiOperation)({ summary: 'Remove a banggia' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Remove a banggia with all related records' }),
     (0, swagger_1.ApiResponse)({ status: 204, description: 'Banggia removed successfully' }),
     (0, audit_decorator_1.Audit)({ entity: 'Remove Banggia', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
@@ -205,6 +208,18 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], BanggiaController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Post)('bulk-delete'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Bulk delete banggia with all related records' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Banggia bulk deleted successfully' }),
+    (0, audit_decorator_1.Audit)({ entity: 'Bulk Delete Banggia', action: client_1.AuditAction.DELETE, includeResponse: true }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], BanggiaController.prototype, "removeBulk", null);
 exports.BanggiaController = BanggiaController = __decorate([
     (0, swagger_1.ApiTags)('banggia'),
     (0, common_1.Controller)('banggia'),

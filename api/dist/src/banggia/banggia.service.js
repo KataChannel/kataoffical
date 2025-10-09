@@ -523,12 +523,48 @@ let BanggiaService = class BanggiaService {
     }
     async remove(id) {
         try {
-            const result = await this.prisma.banggia.delete({ where: { id } });
-            return result;
+            return await this.prisma.$transaction(async (tx) => {
+                await tx.banggia.update({
+                    where: { id },
+                    data: { khachhang: { set: [] } }
+                });
+                await tx.banggiasanpham.deleteMany({
+                    where: { banggiaId: id }
+                });
+                const deletedBanggia = await tx.banggia.delete({ where: { id } });
+                this._SocketGateway.sendBanggiaUpdate();
+                return deletedBanggia;
+            });
         }
         catch (error) {
+            console.error('Error removing banggia:', error);
             throw new common_1.InternalServerErrorException(error.message || 'Error removing banggia');
         }
+    }
+    async removeBulk(ids) {
+        let successCount = 0;
+        let failCount = 0;
+        const errors = [];
+        for (const id of ids) {
+            try {
+                await this.remove(id);
+                successCount++;
+            }
+            catch (error) {
+                console.error(`Error deleting banggia ${id}:`, error);
+                failCount++;
+                errors.push({ id, error: error.message });
+            }
+        }
+        if (successCount > 0) {
+            this._SocketGateway.sendBanggiaUpdate();
+        }
+        return {
+            success: successCount,
+            fail: failCount,
+            errors,
+            message: `Deleted ${successCount} banggia successfully${failCount > 0 ? `, ${failCount} failed` : ''}`
+        };
     }
     async addKHtoBG(banggiaId, khachhangIds) {
         try {

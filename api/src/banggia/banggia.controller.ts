@@ -129,10 +129,20 @@ export class BanggiaController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Remove a banggia' })
+  @ApiOperation({ summary: 'Remove a banggia with all related records' })
   @ApiResponse({ status: 204, description: 'Banggia removed successfully' })
   @Audit({entity: 'Remove Banggia',action: AuditAction.DELETE,includeResponse: true})
   remove(@Param('id') id: string) {
-    this.banggiaService.remove(id);
+    return this.banggiaService.remove(id);
+  }
+
+  @Post('bulk-delete')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Bulk delete banggia with all related records' })
+  @ApiResponse({ status: 200, description: 'Banggia bulk deleted successfully' })
+  @Audit({entity: 'Bulk Delete Banggia',action: AuditAction.DELETE,includeResponse: true})
+  async removeBulk(@Body() body: { ids: string[] }) {
+    return this.banggiaService.removeBulk(body.ids);
   }
 }

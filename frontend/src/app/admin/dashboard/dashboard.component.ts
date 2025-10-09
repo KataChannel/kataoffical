@@ -11,6 +11,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -19,6 +20,8 @@ import moment from 'moment';
 
 // Chart.js imports
 import { Chart as ChartJS, registerables } from 'chart.js';
+import { GraphqlService } from '../../shared/services/graphql.service';
+import { writeExcelFile } from '../../shared/utils/exceldrive.utils';
 
 // Chart.js types
 declare var Chart: any;
@@ -104,7 +107,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   retailCustomerRevenue: number = 0;
   
   private subscriptions: Subscription[] = [];
-
+  _GraphqlService: GraphqlService = inject(GraphqlService);
+  private _snackBar = inject(MatSnackBar);
+  
   constructor(private dashboardService: DashboardService) {
     // Register Chart.js components
     ChartJS.register(...registerables);
@@ -163,6 +168,165 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   onTimeFrameChange(): void {
     this.initializeDefaultDates();
     this.loadAllData();
+  }
+  async ExportDoanhsoKhachTheongay(): Promise<void> {
+    try {
+      // Show loading snackbar
+      const loadingSnackbar = this._snackBar.open(
+        'Đang xuất dữ liệu...',
+        '',
+        {
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-info']
+        }
+      );
+
+      this.isLoading = true;
+
+      // Fetch orders data
+      const ListDonhang: any = await this._GraphqlService.findAll('Donhang', {
+        aggressiveCache: true,
+        take: 99999,
+        where: {
+          ngaygiao: {
+            gte: moment(this.startDate).startOf('day'),
+            lte: moment(this.endDate).endOf('day')
+          },
+          status: { not: 'huy' } // Exclude cancelled orders
+        },
+        select: {
+          madonhang: true,
+          ngaygiao: true,
+          khachhang: {
+            select: {
+              makh: true,
+              name: true
+            }
+          },
+          tongtien: true,
+          tongvat: true,
+          status: true
+        }
+      });
+
+      if (!ListDonhang?.data || ListDonhang.data.length === 0) {
+        loadingSnackbar.dismiss();
+        this._snackBar.open(
+          'Không có dữ liệu đơn hàng trong khoảng thời gian này',
+          'Đóng',
+          {
+            duration: 4000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-warning']
+          }
+        );
+        this.isLoading = false;
+        return;
+      }
+
+      // Group orders by date and customer, calculate revenue without VAT
+      const groupedData = new Map<string, Map<string, any>>();
+
+      ListDonhang.data.forEach((donhang: any) => {
+        const ngay = moment(donhang.ngaygiao).format('DD/MM/YYYY');
+        const makh = donhang.khachhang?.makh || 'KHACH_LE';
+        const tenkh = donhang.khachhang?.name || 'Khách Lẻ';
+        const doanhsoKhongVAT = (donhang.tongtien || 0) - (donhang.tongvat || 0);
+
+        // Create date key if not exists
+        if (!groupedData.has(ngay)) {
+          groupedData.set(ngay, new Map());
+        }
+
+        const dateGroup = groupedData.get(ngay)!;
+        
+        // Create customer key format: makh|tenkh
+        const customerKey = `${makh}|${tenkh}`;
+
+        // Add or update customer revenue for this date
+        if (dateGroup.has(customerKey)) {
+          const existing = dateGroup.get(customerKey);
+          existing.doanhso += doanhsoKhongVAT;
+        } else {
+          dateGroup.set(customerKey, {
+            ngay: ngay,
+            makh: makh,
+            tenkh: tenkh,
+            doanhso: doanhsoKhongVAT
+          });
+        }
+      });
+
+      // Flatten grouped data into array
+      const excelData: any[] = [];
+      
+      // Sort by date (newest first)
+      const sortedDates = Array.from(groupedData.keys()).sort((a, b) => {
+        const dateA = moment(a, 'DD/MM/YYYY');
+        const dateB = moment(b, 'DD/MM/YYYY');
+        return dateB.diff(dateA);
+      });
+
+      sortedDates.forEach(ngay => {
+        const customers = groupedData.get(ngay)!;
+        
+        // Sort customers by revenue (highest first)
+        const sortedCustomers = Array.from(customers.values()).sort((a, b) => b.doanhso - a.doanhso);
+        
+        sortedCustomers.forEach(customer => {
+          excelData.push({
+            'Ngày': customer.ngay,
+            'Mã KH': customer.makh,
+            'Tên KH': customer.tenkh,
+            'Doanh Số Ngày (Không VAT)': customer.doanhso
+          });
+        });
+      });
+
+      // Generate filename with date range
+      const startDateStr = moment(this.startDate).format('DD-MM-YYYY');
+      const endDateStr = moment(this.endDate).format('DD-MM-YYYY');
+      const filename = `DoanhSoKhach_${startDateStr}_${endDateStr}.xlsx`;
+
+      // Export to Excel
+      writeExcelFile(
+        excelData,
+        filename,
+        ['Doanh Số Khách Hàng']
+      );
+
+      console.log(`Exported ${excelData.length} rows to ${filename}`);
+      
+      // Dismiss loading and show success message
+      loadingSnackbar.dismiss();
+      this._snackBar.open(
+        `Xuất Excel thành công! Tổng số dòng: ${excelData.length}`,
+        'Đóng',
+        {
+          duration: 5000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success']
+        }
+      );
+
+    } catch (error) {
+      console.error('Error exporting customer revenue:', error);
+      this._snackBar.open(
+        'Có lỗi xảy ra khi xuất Excel. Vui lòng thử lại.',
+        'Đóng',
+        {
+          duration: 4000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error']
+        }
+      );
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   // Handle report period change

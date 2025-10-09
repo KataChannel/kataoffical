@@ -279,14 +279,64 @@ export class BanggiaService {
       return {...item, sanpham: listSanpham}  
   }
   /**
-   * Xóa bảng giá sử dụng GraphQL
+   * Xóa bảng giá sử dụng backend API với transaction
+   * Backend sẽ tự động xóa các bản ghi liên quan
    */
   async DeleteBanggia(item: any) {    
     try {
-      await this._GraphqlService.deleteOne('banggia', { id: item.id });
+      const response = await fetch(`${environment.APIURL}/banggia/${item.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to delete banggia: ${response.statusText}`);
+      }
+
+      // Refresh danh sách
       await this.getAllBanggia();
     } catch (error) {
       console.error('Lỗi xóa bảng giá:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Xóa nhiều bảng giá cùng lúc sử dụng backend bulk delete API
+   * Backend sẽ xử lý trong transaction, nhanh và an toàn hơn
+   * @param items Array of banggia items to delete
+   * @returns Result object with success/fail counts
+   */
+  async DeleteBulkBanggia(items: any[]) {
+    try {
+      const ids = items.map(item => item.id);
+      
+      const response = await fetch(`${environment.APIURL}/banggia/bulk-delete`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ids })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to bulk delete banggia: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      // Refresh danh sách
+      await this.getAllBanggia();
+
+      return result;
+    } catch (error) {
+      console.error('Lỗi bulk delete bảng giá:', error);
       throw error;
     }
   }

@@ -41,9 +41,19 @@
                 <!-- <button matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
                     <mat-icon>cloud_download</mat-icon>
                 </button> -->
-                <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
+                <span (click)="ToggleAll()" class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{CountItem}} Bảng Giá
                 </span>
+             <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
+                    class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button [disabled]="isLoading()">
+                    @if (isLoading()) {
+                    <mat-icon class="animate-spin">autorenew</mat-icon>
+                    }
+                    @else {
+                    <mat-icon>delete</mat-icon>
+                    }
+                    <span class="whitespace-nowrap">Xoá</span>
+                </button>
             </div>
         </div>
         <div *ngIf="isSearch" class="py-2 w-full flex flex-row space-x-2 items-center">
@@ -178,7 +188,7 @@
                 </ng-container>
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100"></tr>
+                <tr (click)="AddToEdit(row)" class="hover:bg-slate-100 {{CheckItemInEdit(row)?'!bg-slate-200':''}}" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
@@ -186,4 +196,17 @@
         </div>
         <!-- <mat-paginator [pageSizeOptions]="[100,dataSource.data.length]" pageSize="100"></mat-paginator> -->
     </div>
+
+    <ng-template #DeleteDialog>
+    <mat-dialog-content>
+        <div class="flex flex-col space-y-8 items-center justify-center">
+            <div class="font-bold">Xác Nhận</div>
+            <div>Bạn chắc chắn muốn xoá không?</div>
+            <div class="flex flex-row space-x-2 items-center justify-center">
+                <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
+                <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
+            </div>
+        </div>
+    </mat-dialog-content>
+</ng-template>
 </mat-drawer-container>

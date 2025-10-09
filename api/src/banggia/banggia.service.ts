@@ -605,15 +605,72 @@ export class BanggiaService {
     }
   }
 
+  /**
+   * Delete banggia with all related records using transaction
+   * This method handles cascading delete properly to avoid foreign key violations
+   */
   async remove(id: string) {
     try {
-      const result = await this.prisma.banggia.delete({ where: { id } });
-      return result;
+      return await this.prisma.$transaction(async (tx) => {
+        // 1. Disconnect khách hàng (many-to-many relationship)
+        await tx.banggia.update({
+          where: { id },
+          data: { khachhang: { set: [] } }
+        });
+
+        // 2. Delete all Banggiasanpham records
+        await tx.banggiasanpham.deleteMany({
+          where: { banggiaId: id }
+        });
+
+        // 3. Delete the banggia
+        const deletedBanggia = await tx.banggia.delete({ where: { id } });
+
+        // 4. Send socket update
+        this._SocketGateway.sendBanggiaUpdate();
+
+        return deletedBanggia;
+      });
     } catch (error) {
+      console.error('Error removing banggia:', error);
       throw new InternalServerErrorException(
         error.message || 'Error removing banggia'
       );
     }
+  }
+
+  /**
+   * Bulk delete banggia with all related records using transaction
+   * @param ids Array of banggia IDs to delete
+   * @returns Object with success count and failed count
+   */
+  async removeBulk(ids: string[]) {
+    let successCount = 0;
+    let failCount = 0;
+    const errors: any[] = [];
+
+    for (const id of ids) {
+      try {
+        await this.remove(id);
+        successCount++;
+      } catch (error) {
+        console.error(`Error deleting banggia ${id}:`, error);
+        failCount++;
+        errors.push({ id, error: error.message });
+      }
+    }
+
+    // Send socket update once after all deletions
+    if (successCount > 0) {
+      this._SocketGateway.sendBanggiaUpdate();
+    }
+
+    return {
+      success: successCount,
+      fail: failCount,
+      errors,
+      message: `Deleted ${successCount} banggia successfully${failCount > 0 ? `, ${failCount} failed` : ''}`
+    };
   }
 
   async addKHtoBG(banggiaId: string, khachhangIds: any[]) {

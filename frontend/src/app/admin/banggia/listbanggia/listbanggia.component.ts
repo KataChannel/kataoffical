@@ -28,6 +28,8 @@ import { DonhangService } from '../../donhang/donhang.service';
 import { DathangService } from '../../dathang/dathang.service';
 import { GraphqlService } from '../../../shared/services/graphql.service';
 import { _isNumberValue } from '@angular/cdk/coercion';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { signal } from '@angular/core';
 @Component({
   selector: 'app-listbanggia',
   templateUrl: './listbanggia.component.html',
@@ -46,7 +48,8 @@ import { _isNumberValue } from '@angular/cdk/coercion';
     MatSelectModule,
     CommonModule,
     FormsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -84,6 +87,11 @@ export class ListBanggiaComponent {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
+  
+  // New properties for EditList functionality
+  EditList: any[] = [];
+  isLoading = signal<boolean>(false);
+  dialog = inject(MatDialog);
 
   private _BanggiaGraphqlService: BanggiaGraphqlService = inject(BanggiaGraphqlService);
   private _GraphqlService: GraphqlService = inject(GraphqlService);
@@ -540,6 +548,96 @@ ListStatus: any[] = [
   ];
   getName(list:any,field:any,value:any){    
     return list.find((v:any)=>v[field]===value);
+  }
+
+  /**
+   * Toggle all items selection
+   */
+  ToggleAll(): void {
+    if (this.EditList.length === this.dataSource.filteredData.length) {
+      this.EditList = [];
+    } else {
+      this.EditList = [...this.dataSource.filteredData];
+    }
+  }
+
+  /**
+   * Add item to edit list
+   */
+  AddToEdit(item: any): void {
+    const existingItem = this.EditList.find((v: any) => v.id === item.id);
+    if (existingItem) {
+      this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
+    } else {
+      this.EditList.push(item);
+    }
+  }
+
+  /**
+   * Check if item is in edit list
+   */
+  CheckItemInEdit(item: any): boolean {
+    return this.EditList.some((v: any) => v.id === item.id);
+  }
+
+  /**
+   * Open delete confirmation dialog
+   */
+  openDeleteDialog(template: any) {
+    const dialogDeleteRef = this.dialog.open(template, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+    dialogDeleteRef.afterClosed().subscribe((result) => {
+      if (result == 'true') {
+        this.DeleteListItem();
+      }
+    });
+  }
+
+  /**
+   * Delete selected items using optimized bulk delete
+   */
+  async DeleteListItem(): Promise<void> {
+    if (!this.EditList?.length) {
+      this._snackBar.open('Không có mục nào được chọn để xóa', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    this.isLoading.set(true);
+    try {
+      // Use optimized bulk delete method
+      const result = await this._BanggiaGraphqlService.DeleteBulkBanggia(this.EditList);
+
+      this._snackBar.open(
+        result.message || `Xóa thành công ${result.success} bảng giá${result.fail > 0 ? `, ${result.fail} lỗi` : ''}`,
+        '',
+        {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: result.fail > 0 ? ['snackbar-warning'] : ['snackbar-success'],
+        }
+      );
+      
+      this.EditList = [];
+      await this.ngOnInit();
+    } catch (error: any) {
+      console.error('Error deleting items:', error);
+      this._snackBar.open(`Lỗi khi xóa: ${error.message}`, '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 }
 

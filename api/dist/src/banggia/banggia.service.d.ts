@@ -184,6 +184,12 @@ export declare class BanggiaService {
         status: string | null;
         isDefault: boolean;
     }>;
+    removeBulk(ids: string[]): Promise<{
+        success: number;
+        fail: number;
+        errors: any[];
+        message: string;
+    }>;
     addKHtoBG(banggiaId: string, khachhangIds: any[]): Promise<{
         id: string;
         title: string | null;
