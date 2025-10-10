@@ -1408,7 +1408,7 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
   private async addLogoToWorksheet(worksheet: any, workbook: any): Promise<void> {
     try {
       // Try to load the actual company logo
-      const logoUrl = '/images/logo-full.png';
+      const logoUrl = '/images/logo.svg';
       const logoBase64 = await this.loadImageAsBase64(logoUrl);
       
       if (logoBase64) {

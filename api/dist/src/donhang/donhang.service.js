@@ -433,7 +433,7 @@ let DonhangService = class DonhangService {
             worksheet.getRow(1).height = 30;
         };
         try {
-            const response = await fetch('https://tg.rausachtrangia.com/images/logo-full.png');
+            const response = await fetch('https://tg.rausachtrangia.com/images/logo.svg');
             if (response.ok) {
                 const imageBuffer = await response.arrayBuffer();
                 const imageId = workbook.addImage({
