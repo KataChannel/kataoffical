@@ -611,4 +611,40 @@ export class DonhangService {
           return console.error(error);
       }
   }
+
+  /**
+   * Hủy đơn hàng với lý do
+   * @param donhangId ID đơn hàng cần hủy
+   * @param lydohuy Lý do hủy đơn (bắt buộc, tối thiểu 10 ký tự)
+   * @returns Promise với kết quả hủy đơn
+   */
+  async cancelDonhang(donhangId: string, lydohuy: string): Promise<any> {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+        body: JSON.stringify({ lydohuy }),
+      };
+      
+      const response = await fetch(`${environment.APIURL}/orders/donhang/${donhangId}/cancel`, options);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Refresh danh sách đơn hàng sau khi hủy thành công
+      this.getAllDonhang();
+      
+      return data;
+    } catch (error: any) {
+      console.error('Lỗi khi hủy đơn hàng:', error);
+      throw error;
+    }
+  }
 }

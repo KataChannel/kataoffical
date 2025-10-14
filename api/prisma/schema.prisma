@@ -250,6 +250,7 @@ model Donhang {
   ngaygiao    DateTime?
   ghichu      String?
   status      StatusDonhang    @default(dadat)
+  lydohuy     String?          @postgres.Text // Lý do hủy đơn (bắt buộc khi status = huy)
   khachhangId String?
   printCount  Int?             @default(0)
   order       Int?
@@ -337,6 +338,7 @@ model Dathang {
   madncc       String?          @unique
   ngaynhan     DateTime?
   ghichu       String?
+  lydohuy      String?          @postgres.Text // Lý do hủy đơn (bắt buộc khi status = huy)
   nhacungcapId String?
   order        Int?
   isActive     Boolean          @default(false)

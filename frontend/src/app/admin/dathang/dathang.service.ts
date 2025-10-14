@@ -440,4 +440,40 @@ export class DathangService {
       return [];
     }
   }
+
+  /**
+   * Hủy đơn đặt hàng với lý do
+   * @param dathangId ID đơn đặt hàng cần hủy
+   * @param lydohuy Lý do hủy đơn (bắt buộc, tối thiểu 10 ký tự)
+   * @returns Promise với kết quả hủy đơn
+   */
+  async cancelDathang(dathangId: string, lydohuy: string): Promise<any> {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+        body: JSON.stringify({ lydohuy }),
+      };
+      
+      const response = await fetch(`${environment.APIURL}/orders/dathang/${dathangId}/cancel`, options);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Refresh danh sách đơn đặt hàng sau khi hủy thành công
+      this.getAllDathang();
+      
+      return data;
+    } catch (error: any) {
+      console.error('Lỗi khi hủy đơn đặt hàng:', error);
+      throw error;
+    }
+  }
 }
