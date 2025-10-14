@@ -91,6 +91,12 @@
          <button (click)="isShowKH=!isShowKH" matTooltip="Ẩn hiện Tool Khách Hàng" mat-icon-button color="primary">
           <mat-icon>{{isShowKH ? 'visibility' : 'visibility_off'}}</mat-icon>
         </button>
+        <button mat-icon-button color="primary" 
+                (click)="DongboVat()" 
+                [disabled]="isLoading || editDonhang.length === 0"
+                matTooltip="Đồng bộ giá từ bảng giá cho tất cả đơn hàng đã chọn">
+            <mat-icon>currency_exchange</mat-icon>
+        </button>
       </div>
     </div>
 
@@ -622,5 +628,73 @@
   <button mat-button mat-dialog-close>Đóng</button>
 </mat-dialog-actions>
 </ng-template>
+
+<!-- Dialog xác nhận đồng bộ giá và VAT -->
+<ng-template #ConfirmDongboDialog>
+    <div mat-dialog-title class="flex items-center space-x-2">
+        <mat-icon color="primary">currency_exchange</mat-icon>
+        <span class="font-semibold text-xl">Xác nhận đồng bộ giá và VAT</span>
+    </div>
+    
+    <mat-dialog-content class="mat-typography">
+        <div class="flex flex-col space-y-4 py-4">
+            <div class="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                <mat-icon class="text-blue-600 mt-1">info</mat-icon>
+                <div class="flex-1">
+                    <h4 class="font-semibold text-blue-800 mb-2">Thông tin đồng bộ</h4>
+                    <p class="text-sm text-blue-700">
+                        Đồng bộ giá và VAT cho <strong class="font-semibold">{{editDonhang.length}} đơn hàng</strong> được chọn
+                    </p>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <h4 class="font-semibold text-gray-800">Thao tác sẽ thực hiện:</h4>
+                <ul class="space-y-2 text-sm text-gray-700">
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Cập nhật giá bán từ bảng giá tương ứng</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Tính lại tổng tiền của đơn hàng</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Tính lại VAT dựa trên tổng tiền và tỷ lệ VAT</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Cập nhật trường tongvat cho tất cả đơn hàng</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Lưu thay đổi vào cơ sở dữ liệu</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="flex items-start space-x-3 p-4 bg-amber-50 rounded-lg border-l-4 border-amber-400">
+                <mat-icon class="text-amber-600 mt-1">warning</mat-icon>
+                <div class="flex-1">
+                    <h4 class="font-semibold text-amber-800 mb-2">Lưu ý quan trọng</h4>
+                    <p class="text-sm text-amber-700">
+                        Thao tác này sẽ thay đổi dữ liệu hiện tại và không thể hoàn tác. 
+                        Vui lòng đảm bảo bạn đã kiểm tra kỹ trước khi thực hiện.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions align="end" class="border-t pt-4">
+        <button mat-button mat-dialog-close>Hủy</button>
+        <button mat-flat-button color="primary" [mat-dialog-close]="'true'" class="ml-2">
+            <mat-icon class="mr-1">currency_exchange</mat-icon>
+            Xác nhận đồng bộ
+        </button>
+    </mat-dialog-actions>
+</ng-template>
+
 
 

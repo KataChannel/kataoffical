@@ -109,6 +109,7 @@ export class ListcongnokhachhangComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
+  @ViewChild('ConfirmDongboDialog') confirmDongboDialog!: TemplateRef<any>;
   filterValues: { [key: string]: string } = {};
   private _DonhangService: DonhangService = inject(DonhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
@@ -1513,6 +1514,185 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
       printWindow.document.close();
     });
   }
+  
+  /**
+   * Đồng bộ giá và VAT cho các đơn hàng đã chọn
+   */
+  async DongboVat() {
+    this.openDongboDialog();
+  }
+
+  /**
+   * Mở dialog xác nhận đồng bộ
+   */
+  openDongboDialog() {
+    if (this.editDonhang.length === 0) {
+      this._snackBar.open('Không có đơn hàng nào để đồng bộ', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    const dialogRef = this.dialog.open(this.confirmDongboDialog, {
+      hasBackdrop: true,
+      disableClose: true,
+      width: '600px',
+      maxWidth: '90vw'
+    });
+    
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === "true") {
+        this.executeDongboVat();
+      }
+    });
+  }
+
+  /**
+   * Thực thi đồng bộ giá và VAT
+   */
+  async executeDongboVat() {
+    this.isLoading = true;
+    
+    // Hiển thị progress snackbar
+    let progressSnackbar = this._snackBar.open(
+      `Đang đồng bộ giá và VAT cho ${this.editDonhang.length} đơn hàng...`, 
+      'Đang xử lý', 
+      {
+        duration: 0, // Không tự động đóng
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-info'],
+      }
+    );
+
+    try {
+      // Bước 1: Đồng bộ giá từ bảng giá
+      const priceResult = await this._DonhangService.DongboGia(this.editDonhang);
+      
+      if (!priceResult || priceResult.status !== 'success') {
+        throw new Error(priceResult?.message || 'Lỗi đồng bộ giá');
+      }
+
+      // Bước 2: Tính VAT cho các đơn hàng đã cập nhật giá
+      let vatUpdatedCount = 0;
+      let vatErrorCount = 0;
+      const vatErrors: string[] = [];
+
+      // Lấy lại dữ liệu đơn hàng mới nhất sau khi đồng bộ giá
+      await this.loadData(this.SearchParams);
+
+      // Xử lý VAT cho từng đơn hàng trong editDonhang
+      for (const order of this.editDonhang) {
+        try {
+          // Tìm đơn hàng đã được cập nhật giá
+          const updatedOrder: any = this.dataSource.data.find((o: any) => o.id === order.id);
+          const tongtien = Number(updatedOrder?.tongtien || order.tongtien) || 0;
+          const vatRate = Number(updatedOrder?.vat || order.vat) || 0.05; // Mặc định 5% nếu không có
+          const tongvat = tongtien * vatRate;
+
+          // Cập nhật VAT qua GraphQL
+          await this._GraphqlService.updateOne('donhang', 
+            { id: order.id }, 
+            { 
+              tongvat: Math.round(tongvat * 100) / 100, // Làm tròn 2 chữ số thập phân
+              vat: vatRate 
+            }
+          );
+
+          // Cập nhật trong danh sách local
+          order.tongvat = Math.round(tongvat * 100) / 100;
+          order.tongtien = tongtien;
+          vatUpdatedCount++;
+
+        } catch (error: any) {
+          console.error(`Error updating VAT for order ${order.madonhang}:`, error);
+          vatErrorCount++;
+          vatErrors.push(`${order.madonhang}: ${error.message || 'Lỗi không xác định'}`);
+        }
+      }
+
+      // Đóng progress snackbar
+      progressSnackbar.dismiss();
+
+      // Hiển thị kết quả tổng hợp
+      if (priceResult.updatedCount > 0 || vatUpdatedCount > 0) {
+        let message = `✅ Đồng bộ hoàn tất!\n`;
+        
+        // Thông tin đồng bộ giá
+        if (priceResult.updatedCount !== undefined) {
+          const priceSuccessRate = Math.round((priceResult.updatedCount / priceResult.totalProcessed) * 100);
+          message += `📊 Giá: ${priceResult.updatedCount}/${priceResult.totalProcessed} đơn hàng (${priceSuccessRate}%)\n`;
+          
+          if (priceResult.errorCount > 0) {
+            message += `⚠️ Lỗi giá: ${priceResult.errorCount} đơn hàng\n`;
+          }
+        }
+
+        // Thông tin đồng bộ VAT
+        const vatSuccessRate = Math.round((vatUpdatedCount / this.editDonhang.length) * 100);
+        message += `💰 VAT: ${vatUpdatedCount}/${this.editDonhang.length} đơn hàng (${vatSuccessRate}%)`;
+        
+        if (vatErrorCount > 0) {
+          message += `\n⚠️ Lỗi VAT: ${vatErrorCount} đơn hàng`;
+          console.warn('VAT sync errors:', vatErrors);
+        }
+
+        this._snackBar.open(message, '✅ Thành công', {
+          duration: 8000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+
+        // Refresh data để đồng bộ với server
+        await this.loadData(this.SearchParams);
+        
+        // Clear selection sau khi hoàn thành
+        this.editDonhang = [];
+      } else {
+        this._snackBar.open('❌ Không có đơn hàng nào được cập nhật', 'Đóng', {
+          duration: 4000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
+
+    } catch (error: any) {
+      console.error('Error syncing prices and VAT:', error);
+      
+      // Đóng progress snackbar nếu còn mở
+      progressSnackbar.dismiss();
+      
+      let errorMessage = 'Lỗi khi đồng bộ giá và VAT';
+      
+      // Xử lý các loại lỗi phổ biến
+      if (error?.error?.message) {
+        errorMessage = error.error.message;
+        if (error.error.message.includes('Transaction already closed')) {
+          errorMessage = '⏱️ Thao tác mất quá nhiều thời gian. Vui lòng thử lại với ít đơn hàng hơn.';
+        }
+      } else if (error?.message) {
+        errorMessage = error.message;
+        if (error.message.includes('timeout')) {
+          errorMessage = '⏱️ Hết thời gian chờ. Hệ thống đang xử lý quá nhiều đơn hàng cùng lúc.';
+        }
+      }
+
+      this._snackBar.open(`❌ ${errorMessage}`, 'Đóng', {
+        duration: 6000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading = false;
+    }
+  }
+  
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
