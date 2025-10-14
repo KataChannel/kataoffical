@@ -50,6 +50,7 @@ import { GenId } from '../../../shared/utils/shared.utils';
 import * as XLSX from 'xlsx';
 import { KhoService } from '../../kho/kho.service';
 import { TimezoneService } from '../../../shared/services/timezone.service';
+import { CancelOrderService } from '../../../shared/services/cancel-order.service';
 @Component({
   selector: 'app-listdathang',
   templateUrl: './listdathang.component.html',
@@ -91,6 +92,7 @@ export class ListDathangComponent {
     'ghichu',
     'createdAt',
     'updatedAt',
+    'actions',
     // 'action'
   ];
 
@@ -98,6 +100,7 @@ export class ListDathangComponent {
     STT: 'STT',
     //  title: 'Tiêu Đề',
     madncc: 'Mã Đơn Nhập',
+    actions: 'Thao Tác',
     nhacungcap: 'Nhà Cung Cấp',
     sanpham: 'Sản Phẩm',
     ngaynhan: 'Ngày Nhận',
@@ -129,6 +132,7 @@ export class ListDathangComponent {
   private _KhoService: KhoService = inject(KhoService);
   private _router: Router = inject(Router);
   private _timezoneService: TimezoneService = inject(TimezoneService);
+  cancelOrderService = inject(CancelOrderService);
   Listdathang: any = this._DathangService.ListDathang;
   page = this._DathangService.page;
   pageCount = this._DathangService.pageCount;
@@ -1138,5 +1142,46 @@ export class ListDathangComponent {
       defaultMatch,
       manualMatch,
     };
+  }
+
+  /**
+   * Xử lý hủy đơn đặt hàng
+   * Sử dụng CancelOrderService để mở dialog và xử lý toàn bộ flow
+   */
+  async handleCancelDathang(order: any): Promise<void> {
+    const success = await this.cancelOrderService.cancelDathang(order);
+    
+    if (success) {
+      // Service đã tự động refresh danh sách
+      console.log('Đơn đặt hàng đã được hủy thành công');
+    }
+  }
+
+  /**
+   * Lấy label hiển thị cho status
+   */
+  getStatusLabel(status: string): string {
+    const labels: { [key: string]: string } = {
+      'choxuly': 'Chờ xử lý',
+      'dangxuly': 'Đang xử lý',
+      'hoanthanh': 'Hoàn thành',
+      'huy': 'Đã hủy',
+      'dahuy': 'Đã hủy'
+    };
+    return labels[status] || status;
+  }
+
+  /**
+   * Lấy class CSS cho status badge
+   */
+  getStatusClass(status: string): string {
+    const classes: { [key: string]: string } = {
+      'hoanthanh': 'bg-green-100 text-green-800',
+      'dangxuly': 'bg-blue-100 text-blue-800',
+      'choxuly': 'bg-yellow-100 text-yellow-800',
+      'huy': 'bg-red-100 text-red-800',
+      'dahuy': 'bg-red-100 text-red-800'
+    };
+    return classes[status] || 'bg-gray-100 text-gray-800';
   }
 }

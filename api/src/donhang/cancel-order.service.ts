@@ -60,6 +60,7 @@ export class CancelOrderService {
     // Kiểm tra xem đã có phiếu xuất kho chưa
     const hasPhieuXuatKho = donhang.PhieuKho && donhang.PhieuKho.length > 0;
     const oldStatus = donhang.status;
+    const restoredItems: any[] = [];
 
     // Transaction để đảm bảo tính toàn vẹn dữ liệu
     return await this.prisma.$transaction(async (tx) => {
@@ -69,26 +70,50 @@ export class CancelOrderService {
 
         // Hoàn trả từng sản phẩm
         for (const item of donhang.sanpham) {
-          if (item.sanpham && item.slgiao > 0) {
-            // Cập nhật lại tồn kho: tăng lại số lượng đã xuất
-            await tx.sanpham.update({
-              where: { id: item.sanphamId },
-              data: {
-                tonkho: {
-                  increment: Number(item.slgiao)
+          const slgiao = Number(item.slgiao || 0);
+          if (item.sanpham && slgiao > 0) {
+            // Lấy sanphamId từ relation
+            const sanphamId = item.sanpham.id;
+            
+            // Cập nhật TonKho: tăng lại số lượng đã xuất
+            await tx.tonKho.upsert({
+              where: { sanphamId },
+              create: {
+                sanphamId,
+                slton: slgiao,
+                sltontt: slgiao,
+                slchogiao: 0,
+                slchonhap: 0,
+              },
+              update: {
+                slton: {
+                  increment: slgiao
+                },
+                sltontt: {
+                  increment: slgiao
                 }
               }
             });
 
+            restoredItems.push({
+              masp: item.sanpham.masp,
+              tensanpham: item.sanpham.title,
+              soluong: slgiao
+            });
+
             console.log(
-              `[CancelOrder] Hoàn trả ${item.slgiao} ${item.sanpham.masp} vào kho`
+              `[CancelOrder] Hoàn trả ${slgiao} ${item.sanpham.masp} vào kho`
             );
           }
         }
 
         // Xóa các phiếu xuất kho liên quan
         await tx.phieuKho.deleteMany({
-          where: { donhangId: orderId }
+          where: { 
+            donhang: {
+              id: orderId
+            }
+          }
         });
 
         console.log(`[CancelOrder] Đã xóa ${donhang.PhieuKho.length} phiếu xuất kho`);
@@ -118,13 +143,15 @@ export class CancelOrderService {
           data: {
             userId: userId,
             action: 'UPDATE',
-            entity: 'Donhang',
+            entityName: 'Donhang',
             entityId: orderId,
-            changes: JSON.stringify({
-              before: { status: oldStatus },
-              after: { status: 'huy', lydohuy: lydohuy.trim() },
-              restoredInventory: hasPhieuXuatKho
-            })
+            oldValues: { status: oldStatus },
+            newValues: { status: 'huy', lydohuy: lydohuy.trim() },
+            metadata: {
+              actionType: 'CANCEL',
+              inventoryRestored: hasPhieuXuatKho,
+              restoredItems
+            }
           }
         });
       }
@@ -189,6 +216,7 @@ export class CancelOrderService {
     // Kiểm tra xem đã có phiếu nhập kho chưa
     const hasPhieuNhapKho = dathang.PhieuKho && dathang.PhieuKho.length > 0;
     const oldStatus = dathang.status;
+    const restoredItems: any[] = [];
 
     // Transaction để đảm bảo tính toàn vẹn dữ liệu
     return await this.prisma.$transaction(async (tx) => {
@@ -198,25 +226,37 @@ export class CancelOrderService {
 
         // Trừ từng sản phẩm
         for (const item of dathang.sanpham) {
-          if (item.sanpham && item.slnhan > 0) {
-            // Cập nhật lại tồn kho: giảm lại số lượng đã nhập
-            const currentProduct = await tx.sanpham.findUnique({
-              where: { id: item.sanphamId },
-              select: { tonkho: true, masp: true }
+          const slnhan = Number(item.slnhan || 0);
+          if (item.sanpham && slnhan > 0) {
+            const sanphamId = item.sanpham.id;
+            
+            // Cập nhật TonKho: giảm lại số lượng đã nhập
+            const currentTonKho = await tx.tonKho.findUnique({
+              where: { sanphamId }
             });
 
-            if (currentProduct) {
-              const newTonkho = Math.max(0, Number(currentProduct.tonkho) - Number(item.slnhan));
+            if (currentTonKho) {
+              const newSlton = Math.max(0, Number(currentTonKho.slton) - slnhan);
+              const newSltontt = Math.max(0, Number(currentTonKho.sltontt) - slnhan);
               
-              await tx.sanpham.update({
-                where: { id: item.sanphamId },
+              await tx.tonKho.update({
+                where: { sanphamId },
                 data: {
-                  tonkho: newTonkho
+                  slton: newSlton,
+                  sltontt: newSltontt
                 }
               });
 
+              restoredItems.push({
+                masp: item.sanpham.masp,
+                tensanpham: item.sanpham.title,
+                soluong: slnhan,
+                oldTonkho: Number(currentTonKho.slton),
+                newTonkho: newSlton
+              });
+
               console.log(
-                `[CancelOrder] Trừ ${item.slnhan} ${currentProduct.masp} khỏi kho (Tồn kho: ${currentProduct.tonkho} → ${newTonkho})`
+                `[CancelOrder] Trừ ${slnhan} ${item.sanpham.masp} khỏi kho (Tồn kho: ${currentTonKho.slton} → ${newSlton})`
               );
             }
           }
@@ -224,7 +264,11 @@ export class CancelOrderService {
 
         // Xóa các phiếu nhập kho liên quan
         await tx.phieuKho.deleteMany({
-          where: { dathangId: orderId }
+          where: { 
+            dathang: {
+              id: orderId
+            }
+          }
         });
 
         console.log(`[CancelOrder] Đã xóa ${dathang.PhieuKho.length} phiếu nhập kho`);
@@ -254,13 +298,15 @@ export class CancelOrderService {
           data: {
             userId: userId,
             action: 'UPDATE',
-            entity: 'Dathang',
+            entityName: 'Dathang',
             entityId: orderId,
-            changes: JSON.stringify({
-              before: { status: oldStatus },
-              after: { status: 'huy', lydohuy: lydohuy.trim() },
-              restoredInventory: hasPhieuNhapKho
-            })
+            oldValues: { status: oldStatus },
+            newValues: { status: 'huy', lydohuy: lydohuy.trim() },
+            metadata: {
+              actionType: 'CANCEL',
+              inventoryRestored: hasPhieuNhapKho,
+              restoredItems
+            }
           }
         });
       }

@@ -157,6 +157,19 @@
               {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
             </span>
             }
+            @case ('actions') {
+            <div class="flex items-center gap-2" (click)="$event.stopPropagation()">
+                <button 
+                    mat-icon-button
+                    color="warn"
+                    [disabled]="!cancelOrderService.canCancelOrder(row)"
+                    [matTooltip]="cancelOrderService.getCancelButtonTooltip(row)"
+                    (click)="handleCancelDathang(row)"
+                    class="text-red-600">
+                    <mat-icon>cancel</mat-icon>
+                </button>
+            </div>
+            }
             @case ('action') {
             <span class="max-w-40 line-clamp-4">
               <!-- <button *ngIf="row.status==='dadat'"  mat-flat-button color="primary" (click)="UpdateDathang(row)">

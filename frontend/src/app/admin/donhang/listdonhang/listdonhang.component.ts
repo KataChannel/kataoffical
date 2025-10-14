@@ -41,6 +41,7 @@ import { SharepaginationComponent } from '../../../shared/common/sharepagination
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { GraphqlService } from '../../../shared/services/graphql.service';
+import { CancelOrderService } from '../../../shared/services/cancel-order.service';
 @Component({
   selector: 'app-listdonhang',
   templateUrl: './listdonhang.component.html',
@@ -80,6 +81,7 @@ export class ListDonhangComponent {
     'status',
     'createdAt',
     'updatedAt',
+    'actions',
   ];
   ColumnName: any = {
     madonhang: 'Mã Đơn Hàng',
@@ -90,6 +92,7 @@ export class ListDonhangComponent {
     status: 'Trạng Thái',
     createdAt: 'Ngày Tạo',
     updatedAt: 'Ngày Cập Nhật',
+    actions: 'Thao Tác',
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('DonhangColFilter') || '[]'
@@ -110,6 +113,7 @@ export class ListDonhangComponent {
   private _SanphamService: SanphamService = inject(SanphamService);
   private _GraphqlService = inject(GraphqlService);
   private _router: Router = inject(Router);
+  cancelOrderService = inject(CancelOrderService);
   Listdonhang: any = signal<any>({});
   dataSource = new MatTableDataSource<any>([]);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -1774,6 +1778,47 @@ export class ListDonhangComponent {
         v1.ngaygiao = value;
       }
     );
+  }
+
+  /**
+   * Xử lý hủy đơn hàng
+   * Sử dụng CancelOrderService để mở dialog và xử lý toàn bộ flow
+   */
+  async handleCancelOrder(order: any): Promise<void> {
+    const success = await this.cancelOrderService.cancelDonhang(order);
+    
+    if (success) {
+      // Refresh lại danh sách sau khi hủy thành công
+      await this.LoadData();
+    }
+  }
+
+  /**
+   * Lấy label hiển thị cho status
+   */
+  getStatusLabel(status: string): string {
+    const labels: { [key: string]: string } = {
+      'choxuly': 'Chờ xử lý',
+      'dangxuly': 'Đang xử lý',
+      'hoanthanh': 'Hoàn thành',
+      'huy': 'Đã hủy',
+      'dahuy': 'Đã hủy'
+    };
+    return labels[status] || status;
+  }
+
+  /**
+   * Lấy class CSS cho status badge
+   */
+  getStatusClass(status: string): string {
+    const classes: { [key: string]: string } = {
+      'hoanthanh': 'bg-green-100 text-green-800',
+      'dangxuly': 'bg-blue-100 text-blue-800',
+      'choxuly': 'bg-yellow-100 text-yellow-800',
+      'huy': 'bg-red-100 text-red-800',
+      'dahuy': 'bg-red-100 text-red-800'
+    };
+    return classes[status] || 'bg-gray-100 text-gray-800';
   }
 }
 function memoize() {
