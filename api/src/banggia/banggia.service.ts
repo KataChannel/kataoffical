@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
 import { SocketGateway } from 'src/socket.gateway';
+import { BanggiaPriceHistoryService } from './banggia-price-history.service';
 
 @Injectable()
 export class BanggiaService {
@@ -9,6 +10,7 @@ export class BanggiaService {
     private readonly prisma: PrismaService,
     private readonly _SocketGateway: SocketGateway,
     private readonly _ImportdataService: ImportdataService,
+    private readonly priceHistoryService: BanggiaPriceHistoryService,
   ) {}
 
   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
@@ -568,11 +570,53 @@ export class BanggiaService {
 
   async update(id: string, data: any) {
     try {
-      const existingBanggia = await this.prisma.banggia.findUnique({ where: { id } });
+      const existingBanggia = await this.prisma.banggia.findUnique({ 
+        where: { id },
+        include: { sanpham: true }
+      });
       if (!existingBanggia) {
         throw new NotFoundException(`Banggia with ID "${id}" not found`);
       }
+      
       this._SocketGateway.sendBanggiaUpdate();
+      
+      // ✅ Handle price updates with audit trail
+      if (data.sanpham && Array.isArray(data.sanpham)) {
+        const validSanpham = data.sanpham.filter((sp: any) => sp.sanphamId || sp.id);
+        
+        // Track price changes for each product
+        for (const sp of validSanpham) {
+          const sanphamId = sp.sanphamId || sp.id;
+          const newPrice = Number(sp.giaban) || 0;
+          
+          // Find existing price
+          const existingPrice = existingBanggia.sanpham.find(
+            item => item.sanphamId === sanphamId
+          );
+          
+          if (existingPrice && Number(existingPrice.giaban) !== newPrice) {
+            // Price changed - use audit service
+            await this.priceHistoryService.updatePrice({
+              banggiaId: id,
+              sanphamId,
+              newPrice,
+              userId: data.userId || 'system',
+              reason: `Price updated via banggia update`
+            });
+          } else if (!existingPrice) {
+            // New product in banggia - create with audit
+            await this.priceHistoryService.updatePrice({
+              banggiaId: id,
+              sanphamId,
+              newPrice,
+              userId: data.userId || 'system',
+              reason: `Product added to banggia`
+            });
+          }
+          // If price unchanged, skip (no audit needed)
+        }
+      }
+      
       const result = await this.prisma.banggia.update({
         where: { id },
         data: {
@@ -705,6 +749,50 @@ export class BanggiaService {
     } catch (error) {
       throw new InternalServerErrorException(
         error.message || 'Error removing KH from BG'
+      );
+    }
+  }
+
+  /**
+   * ✅ Get price history for a product in a banggia
+   */
+  async getPriceHistory(banggiaId: string, sanphamId: string) {
+    try {
+      return await this.priceHistoryService.getPriceHistory(banggiaId, sanphamId);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        error.message || 'Error getting price history'
+      );
+    }
+  }
+
+  /**
+   * ✅ Get current price for a product in a banggia
+   */
+  async getCurrentPrice(banggiaId: string, sanphamId: string) {
+    try {
+      return await this.priceHistoryService.getCurrentPrice(banggiaId, sanphamId);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        error.message || 'Error getting current price'
+      );
+    }
+  }
+
+  /**
+   * ✅ Bulk update prices with audit trail
+   */
+  async bulkUpdatePrices(updates: Array<{
+    banggiaId: string;
+    sanphamId: string;
+    newPrice: number;
+    reason?: string;
+  }>, userId: string) {
+    try {
+      return await this.priceHistoryService.bulkUpdatePrices(updates, userId);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        error.message || 'Error bulk updating prices'
       );
     }
   }

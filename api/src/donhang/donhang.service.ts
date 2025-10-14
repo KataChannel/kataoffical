@@ -4,6 +4,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { StatusMachineService } from '../common/status-machine.service';
 import { TonkhoManagerService } from '../common/tonkho-manager.service';
 import { PerformanceLogger } from '../shared/performance-logger';
+import { BanggiaPriceHistoryService } from '../banggia/banggia-price-history.service';
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 const DEFAUL_BANGGIA_ID = '84a62698-5784-4ac3-b506-5e662d1511cb';
 @Injectable()
@@ -11,7 +12,8 @@ export class DonhangService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly statusMachine: StatusMachineService,
-    private readonly tonkhoManager: TonkhoManagerService
+    private readonly tonkhoManager: TonkhoManagerService,
+    private readonly priceHistoryService: BanggiaPriceHistoryService,
   ) {}
 
   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
@@ -1787,22 +1789,33 @@ export class DonhangService {
                 sanphamArray = [];
               }
               
-              return sanphamArray.map((sp) => ({
-                idSP: sp.idSP || sp.id,
-                giaban: parseFloat((sp.giaban || 0).toString()),
-                ghichu: sp.ghichu,
-                sldat: parseFloat((sp.sldat ?? 0).toString()),
-                slgiao: parseFloat((sp.slgiao ?? 0).toString()),
-                slnhan: parseFloat((sp.slnhan ?? 0).toString()),
-                slhuy: parseFloat((sp.slhuy ?? 0).toString()),
-                ttdat: parseFloat((sp.ttdat ?? 0).toString()),
-                ttgiao: parseFloat((sp.ttgiao ?? 0).toString()),
-                ttnhan: parseFloat((sp.ttnhan ?? 0).toString()),
-                vat: parseFloat((sp.vat ?? 0).toString()),
-                ttsauvat: parseFloat((sp.ttsauvat ?? 0).toString()),
-                order: sp.order || 1,
-                isActive: sp.isActive !== undefined ? sp.isActive : true,
-              }));
+              return sanphamArray.map((sp) => {
+                // ✅ Prepare price tracking metadata
+                const priceMetadata = {
+                  banggiaId: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID,
+                  sanphamId: sp.idSP || sp.id,
+                  capturedAt: new Date().toISOString(),
+                  priceSource: 'banggia',
+                  userNote: sp.ghichu || ''
+                };
+                
+                return {
+                  idSP: sp.idSP || sp.id,
+                  giaban: parseFloat((sp.giaban || 0).toString()),
+                  ghichu: JSON.stringify(priceMetadata), // ✅ Store price metadata as JSON
+                  sldat: parseFloat((sp.sldat ?? 0).toString()),
+                  slgiao: parseFloat((sp.slgiao ?? 0).toString()),
+                  slnhan: parseFloat((sp.slnhan ?? 0).toString()),
+                  slhuy: parseFloat((sp.slhuy ?? 0).toString()),
+                  ttdat: parseFloat((sp.ttdat ?? 0).toString()),
+                  ttgiao: parseFloat((sp.ttgiao ?? 0).toString()),
+                  ttnhan: parseFloat((sp.ttnhan ?? 0).toString()),
+                  vat: parseFloat((sp.vat ?? 0).toString()),
+                  ttsauvat: parseFloat((sp.ttsauvat ?? 0).toString()),
+                  order: sp.order || 1,
+                  isActive: sp.isActive !== undefined ? sp.isActive : true,
+                };
+              });
             })()
           },
         },
@@ -1857,23 +1870,34 @@ export class DonhangService {
         };
       }) || [];
 
-      // Update donhangsanpham with new prices
+      // Update donhangsanpham with new prices and metadata
       if (updatedSanpham.length > 0) {
         await Promise.all(
           updatedSanpham.map(async (sp) => {
-        await prisma.donhangsanpham.updateMany({
-          where: { 
-            donhangId: newDonhang.id,
-            idSP: sp.idSP || sp.id 
-          },
-          data: {
-            giaban: sp.giaban,
-            ttdat: sp.ttdat,
-            ttgiao: sp.ttgiao,
-            ttnhan: sp.ttnhan,
-            ttsauvat: sp.ttsauvat,
-          },
-        });
+            // ✅ Enhanced price metadata with actual price used
+            const enhancedMetadata = {
+              banggiaId: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID,
+              sanphamId: sp.idSP || sp.id,
+              capturedAt: new Date().toISOString(),
+              priceSource: 'banggia',
+              actualPrice: sp.giaban,
+              userNote: sp.ghichu || ''
+            };
+            
+            await prisma.donhangsanpham.updateMany({
+              where: { 
+                donhangId: newDonhang.id,
+                idSP: sp.idSP || sp.id 
+              },
+              data: {
+                giaban: sp.giaban,
+                ttdat: sp.ttdat,
+                ttgiao: sp.ttgiao,
+                ttnhan: sp.ttnhan,
+                ttsauvat: sp.ttsauvat,
+                ghichu: JSON.stringify(enhancedMetadata), // ✅ Update with enhanced metadata
+              },
+            });
           })
         );
       }
@@ -3316,6 +3340,171 @@ export class DonhangService {
     } catch (error) {
       console.error('Error getting pending orders for product:', error);
       return [];
+    }
+  }
+}
+
+  /**
+   * ✅ Get price metadata from donhangsanpham ghichu field
+   */
+  extractPriceMetadata(ghichu: string): any {
+    try {
+      if (!ghichu) return null;
+      return JSON.parse(ghichu);
+    } catch (error) {
+      // ghichu is not JSON, might be plain text note
+      return { userNote: ghichu };
+    }
+  }
+
+  /**
+   * ✅ Verify order price against price history
+   * Returns discrepancies if any
+   */
+  async verifyOrderPrices(donhangId: string): Promise<any> {
+    try {
+      const donhang = await this.prisma.donhang.findUnique({
+        where: { id: donhangId },
+        include: {
+          sanpham: {
+            include: {
+              sanpham: { select: { masp: true, title: true } }
+            }
+          },
+          banggia: { select: { mabanggia: true, title: true } }
+        }
+      });
+
+      if (!donhang) {
+        throw new NotFoundException('Đơn hàng không tồn tại');
+      }
+
+      const discrepancies: any[] = [];
+
+      for (const item of donhang.sanpham) {
+        // Extract price metadata
+        const metadata = this.extractPriceMetadata(item.ghichu || '');
+        
+        if (!metadata?.banggiaId || !metadata?.capturedAt) {
+          discrepancies.push({
+            sanphamId: item.idSP,
+            sanphamCode: item.sanpham.masp,
+            issue: 'NO_PRICE_METADATA',
+            message: 'Không có thông tin giá gốc'
+          });
+          continue;
+        }
+
+        // Get current price from banggia
+        try {
+          const currentPrice = await this.priceHistoryService.getCurrentPrice(
+            metadata.banggiaId,
+            item.idSP
+          );
+
+          if (!currentPrice) {
+            discrepancies.push({
+              sanphamId: item.idSP,
+              sanphamCode: item.sanpham.masp,
+              issue: 'PRICE_NOT_FOUND',
+              message: 'Không tìm thấy giá hiện tại'
+            });
+            continue;
+          }
+
+          const orderPrice = Number(item.giaban);
+          const currentPriceValue = Number(currentPrice.giaban);
+
+          if (orderPrice !== currentPriceValue) {
+            const priceDiff = currentPriceValue - orderPrice;
+            const percentChange = ((priceDiff / orderPrice) * 100).toFixed(2);
+
+            discrepancies.push({
+              sanphamId: item.idSP,
+              sanphamCode: item.sanpham.masp,
+              sanphamTitle: item.sanpham.title,
+              issue: 'PRICE_CHANGED',
+              orderPrice: orderPrice,
+              currentPrice: currentPriceValue,
+              difference: priceDiff,
+              percentChange: parseFloat(percentChange),
+              capturedAt: metadata.capturedAt,
+              message: `Giá đã thay đổi ${percentChange}% so với khi đặt hàng`
+            });
+          }
+        } catch (error) {
+          discrepancies.push({
+            sanphamId: item.idSP,
+            sanphamCode: item.sanpham.masp,
+            issue: 'VERIFICATION_ERROR',
+            message: error.message
+          });
+        }
+      }
+
+      return {
+        donhangId: donhang.id,
+        madonhang: donhang.madonhang,
+        verifiedAt: new Date().toISOString(),
+        totalItems: donhang.sanpham.length,
+        discrepancies: discrepancies,
+        hasDiscrepancies: discrepancies.length > 0
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        error.message || 'Error verifying order prices'
+      );
+    }
+  }
+
+  /**
+   * ✅ Get price at specific date from history
+   */
+  async getPriceAtDate(banggiaId: string, sanphamId: string, date: Date): Promise<any> {
+    try {
+      const history = await this.priceHistoryService.getPriceHistory(banggiaId, sanphamId);
+      
+      if (!history || !history.history || history.history.length === 0) {
+        return null;
+      }
+
+      // Find the price that was valid at the given date
+      const targetDate = new Date(date);
+      
+      // Sort history by timestamp descending
+      const sortedHistory = history.history.sort((a: any, b: any) => 
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+
+      // Find the first price change that happened before or at the target date
+      for (const change of sortedHistory) {
+        const changeDate = new Date(change.timestamp);
+        if (changeDate <= targetDate) {
+          return {
+            banggiaId,
+            sanphamId,
+            date: date,
+            price: change.newPrice,
+            priceChangeDate: change.timestamp,
+            metadata: change
+          };
+        }
+      }
+
+      // If no price change found before target date, return the oldest price
+      const oldestChange = sortedHistory[sortedHistory.length - 1];
+      return {
+        banggiaId,
+        sanphamId,
+        date: date,
+        price: oldestChange.oldPrice || oldestChange.newPrice,
+        priceChangeDate: oldestChange.timestamp,
+        note: 'Price before first recorded change'
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        error.message || 'Error getting price at date'
+      );
     }
   }
 }

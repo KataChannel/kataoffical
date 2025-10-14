@@ -119,8 +119,8 @@ export declare class SanphamService {
             order: number | null;
             isActive: boolean;
             giaban: import("@prisma/client/runtime/library").Decimal;
-            banggiaId: string;
             sanphamId: string;
+            banggiaId: string;
         }[];
     } & {
         id: string;
@@ -150,8 +150,8 @@ export declare class SanphamService {
                 order: number | null;
                 isActive: boolean;
                 giaban: import("@prisma/client/runtime/library").Decimal;
-                banggiaId: string;
                 sanphamId: string;
+                banggiaId: string;
             }[];
         } & {
             id: string;
@@ -201,12 +201,12 @@ export declare class SanphamService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            isshowvat: boolean;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             tenfile: string | null;
-            isshowvat: boolean;
             mancc: string;
             manccold: string | null;
         }[];

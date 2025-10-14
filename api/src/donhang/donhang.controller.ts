@@ -229,5 +229,26 @@ export class DonhangController {
         error: error.message
       };
     }
+
+  // ✅ Price Verification Endpoints
+
+  @Get('verify-prices/:donhangId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify order prices against current banggia prices' })
+  @ApiResponse({ status: 200, description: 'Price verification result' })
+  async verifyOrderPrices(@Param('donhangId') donhangId: string) {
+    return this.donhangService.verifyOrderPrices(donhangId);
+  }
+
+  @Get('price-at-date')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get price at specific date from history' })
+  @ApiResponse({ status: 200, description: 'Historical price data' })
+  async getPriceAtDate(
+    @Query('banggiaId') banggiaId: string,
+    @Query('sanphamId') sanphamId: string,
+    @Query('date') date: string
+  ) {
+    return this.donhangService.getPriceAtDate(banggiaId, sanphamId, new Date(date));
   }
 }

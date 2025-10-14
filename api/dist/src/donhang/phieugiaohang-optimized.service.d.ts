@@ -6,33 +6,6 @@ export declare class PhieuGiaoHangOptimizedService {
     private readonly TRANSACTION_TIMEOUT;
     constructor(prisma: PrismaService);
     updatePhieugiaoOptimized(id: string, data: any): Promise<{
-        khachhang: {
-            id: string;
-            subtitle: string | null;
-            ghichu: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            email: string | null;
-            name: string | null;
-            diachi: string | null;
-            sdt: string | null;
-            namenn: string | null;
-            makh: string;
-            makhold: string | null;
-            mst: string | null;
-            gionhanhang: string | null;
-            quan: string | null;
-            phone: string | null;
-            address: string | null;
-            loaikh: string | null;
-            hiengia: boolean;
-            istitle2: boolean;
-            tenfile: string | null;
-            tenkh: string | null;
-            banggiaId: string | null;
-            isshowvat: boolean;
-        } | null;
         sanpham: ({
             sanpham: {
                 id: string;
@@ -74,6 +47,33 @@ export declare class PhieuGiaoHangOptimizedService {
             donhangId: string;
             ttsauvat: import("@prisma/client/runtime/library").Decimal;
         })[];
+        khachhang: {
+            id: string;
+            subtitle: string | null;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            banggiaId: string | null;
+            name: string | null;
+            isshowvat: boolean;
+            email: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            namenn: string | null;
+            makh: string;
+            makhold: string | null;
+            mst: string | null;
+            gionhanhang: string | null;
+            quan: string | null;
+            phone: string | null;
+            address: string | null;
+            loaikh: string | null;
+            hiengia: boolean;
+            istitle2: boolean;
+            tenfile: string | null;
+            tenkh: string | null;
+        } | null;
     } & {
         id: string;
         title: string | null;
@@ -83,17 +83,17 @@ export declare class PhieuGiaoHangOptimizedService {
         createdAt: Date;
         updatedAt: Date;
         vat: import("@prisma/client/runtime/library").Decimal;
+        banggiaId: string | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        banggiaId: string | null;
-        isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
-        lydohuy: string | null;
         khachhangId: string | null;
         printCount: number | null;
+        isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
+        lydohuy: string | null;
     }>;
     updateBulkOptimized(ids: string[], status: string): Promise<{
         success: number;

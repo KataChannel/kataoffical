@@ -1,0 +1,108 @@
+<div class="price-history-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      <mat-icon>history</mat-icon>
+      Lịch Sử Giá
+    </h2>
+    <button mat-icon-button (click)="close()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <div class="product-info" *ngIf="data.sanphamTitle || data.banggiaTitle">
+      <p *ngIf="data.sanphamTitle"><strong>Sản phẩm:</strong> {{ data.sanphamTitle }}</p>
+      <p *ngIf="data.banggiaTitle"><strong>Bảng giá:</strong> {{ data.banggiaTitle }}</p>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Loading State -->
+    <div *ngIf="loading()" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Đang tải lịch sử giá...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error()" class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadPriceHistory()">
+        <mat-icon>refresh</mat-icon>
+        Thử lại
+      </button>
+    </div>
+
+    <!-- Price History Timeline -->
+    <div *ngIf="!loading() && !error() && priceHistory()" class="price-history-timeline">
+      <div *ngIf="priceHistory()!.history.length === 0" class="no-history">
+        <mat-icon>info</mat-icon>
+        <p>Chưa có lịch sử thay đổi giá</p>
+      </div>
+
+      <div *ngIf="priceHistory()!.history.length > 0" class="timeline">
+        <div *ngFor="let change of priceHistory()!.history; let first = first; let last = last"
+             class="timeline-item"
+             [class.first-item]="first">
+          
+          <!-- Timeline Icon -->
+          <div class="timeline-icon" [ngClass]="getPriceChangeClass(change)">
+            <mat-icon>{{ getPriceChangeIcon(change) }}</mat-icon>
+          </div>
+
+          <!-- Timeline Content -->
+          <mat-card class="timeline-content">
+            <mat-card-content>
+              <!-- Date & Time -->
+              <div class="change-header">
+                <span class="change-date">{{ formatDate(change.timestamp) }}</span>
+                <mat-chip [ngClass]="getPriceChangeClass(change)">
+                  {{ formatPercentage(change.percentChange) }}
+                </mat-chip>
+              </div>
+
+              <!-- Price Change Details -->
+              <div class="price-details">
+                <div class="price-row">
+                  <span class="label">Giá cũ:</span>
+                  <span class="old-price">{{ formatPrice(change.oldPrice) }}</span>
+                </div>
+                <div class="arrow-icon">
+                  <mat-icon>arrow_forward</mat-icon>
+                </div>
+                <div class="price-row">
+                  <span class="label">Giá mới:</span>
+                  <span class="new-price" [ngClass]="getPriceChangeClass(change)">
+                    {{ formatPrice(change.newPrice) }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Difference -->
+              <div class="price-difference" [ngClass]="getPriceChangeClass(change)">
+                <mat-icon>{{ getPriceChangeIcon(change) }}</mat-icon>
+                <span>{{ formatPrice(Math.abs(change.difference)) }}</span>
+              </div>
+
+              <!-- Reason & User -->
+              <div class="change-metadata">
+                <p *ngIf="change.reason" class="reason">
+                  <mat-icon>description</mat-icon>
+                  {{ change.reason }}
+                </p>
+                <p *ngIf="change.userId" class="user">
+                  <mat-icon>person</mat-icon>
+                  Người thay đổi: {{ change.userId }}
+                </p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-raised-button (click)="close()">Đóng</button>
+  </mat-dialog-actions>
+</div>

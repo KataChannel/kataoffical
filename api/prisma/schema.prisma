@@ -36,27 +36,25 @@ model AuditLog {
 }
 
 model User {
-  id         String     @id @default(uuid())
-  email      String?    @unique
-  SDT        String?    @unique
-  name       String?    
-  password   String
-  provider   String?
-  providerId String?    @unique
-  isActive   Boolean    @default(false)
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  AuditLog          AuditLog[]
-  Chotkho           Chotkho[]
-  Chotkhodetail     Chotkhodetail[] @relation("ChotkhodetailUser")
-  profile           Profile?
-  roles             UserRole[]
-  userPermissions   UserPermission[] // Added for user-specific permissions
-  
-  // Support system relations
-  createdTickets    SupportTicket[] @relation("UserTickets")
-  assignedTickets   SupportTicket[] @relation("TechnicianTickets")
-  supportResponses  SupportResponse[] @relation("UserResponses")
+  id               String            @id @default(uuid())
+  email            String?           @unique
+  SDT              String?           @unique
+  password         String
+  provider         String?
+  providerId       String?           @unique
+  isActive         Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  name             String?
+  AuditLog         AuditLog[]
+  Chotkho          Chotkho[]
+  Chotkhodetail    Chotkhodetail[]   @relation("ChotkhodetailUser")
+  profile          Profile?
+  userPermissions  UserPermission[]
+  roles            UserRole[]
+  supportResponses SupportResponse[] @relation("UserResponses")
+  createdTickets   SupportTicket[]   @relation("UserTickets")
+  assignedTickets  SupportTicket[]   @relation("TechnicianTickets")
 }
 
 model Role {
@@ -77,16 +75,16 @@ model UserRole {
 }
 
 model Permission {
-  id          String           @id @default(uuid())
-  codeId      String?
-  name        String           @unique
-  group       String?
-  description String?
-  order       Int?             @default(1)
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  roles             RolePermission[]
-  userPermissions   UserPermission[] // Added for user-specific permissions
+  id              String           @id @default(uuid())
+  codeId          String?
+  name            String           @unique
+  group           String?
+  description     String?
+  order           Int?             @default(1)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  roles           RolePermission[]
+  userPermissions UserPermission[]
 }
 
 model RolePermission {
@@ -101,18 +99,17 @@ model UserPermission {
   id           String     @id @default(uuid())
   userId       String
   permissionId String
-  isGranted    Boolean    @default(true)  // true = granted, false = denied
-  grantedBy    String?    // User ID của người cấp quyền
+  isGranted    Boolean    @default(true)
+  grantedBy    String?
   grantedAt    DateTime   @default(now())
-  expiresAt    DateTime?  // Có thể set thời hạn cho permission
-  reason       String?    // Lý do cấp/thu hồi quyền
+  expiresAt    DateTime?
+  reason       String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  
-  @@unique([userId, permissionId]) // Mỗi user chỉ có 1 record cho 1 permission
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionId])
   @@index([userId])
   @@index([permissionId])
 }
@@ -189,7 +186,6 @@ model Khachhang {
   banggia       Banggia?        @relation("Banggiakhachhang", fields: [banggiaId], references: [id])
   nhomkhachhang Nhomkhachhang[] @relation("KhachhangNhom")
 
-  // Index for search performance
   @@index([name])
 }
 
@@ -203,12 +199,12 @@ model Nhomkhachhang {
 }
 
 model NhomNcc {
-  id          String      @id @default(uuid())
-  name        String      @unique    
+  id          String       @id @default(uuid())
+  name        String       @unique
   description String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  nhacungcap   Nhacungcap[] @relation("NhacungcapNhom")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  nhacungcap  Nhacungcap[] @relation("NhacungcapNhom")
 }
 
 model Sanpham {
@@ -250,7 +246,6 @@ model Donhang {
   ngaygiao    DateTime?
   ghichu      String?
   status      StatusDonhang    @default(dadat)
-  lydohuy     String?          @postgres.Text // Lý do hủy đơn (bắt buộc khi status = huy)
   khachhangId String?
   printCount  Int?             @default(0)
   order       Int?
@@ -260,16 +255,16 @@ model Donhang {
   isshowvat   Boolean          @default(false)
   tongtien    Decimal          @default(0) @postgres.Decimal(20, 3)
   tongvat     Decimal          @default(0) @postgres.Decimal(20, 3)
-  vat         Decimal          @default(0.5) @postgres.Decimal(20, 3)
   banggiaId   String?
+  vat         Decimal          @default(0.5) @postgres.Decimal(20, 3)
+  lydohuy     String?
   banggia     Banggia?         @relation(fields: [banggiaId], references: [id])
   khachhang   Khachhang?       @relation(fields: [khachhangId], references: [id])
   sanpham     Donhangsanpham[]
   PhieuKho    PhieuKho[]
 
-  // Performance indexes for congnokhachhang endpoint
   @@index([ngaygiao])
-  @@index([status])  
+  @@index([status])
   @@index([khachhangId])
   @@index([ngaygiao, status])
   @@index([khachhangId, ngaygiao])
@@ -296,14 +291,13 @@ model Donhangsanpham {
   donhang   Donhang  @relation(fields: [donhangId], references: [id], onDelete: Cascade)
   sanpham   Sanpham  @relation(fields: [idSP], references: [id])
 
-  // Index for join performance
   @@index([donhangId])
   @@index([idSP])
 }
 
 model Banggiasanpham {
   id        String  @id @default(uuid())
-  giaban    Decimal  @default(0) @postgres.Decimal(20, 3)
+  giaban    Decimal @default(0) @postgres.Decimal(20, 3)
   sanphamId String
   banggiaId String
   order     Int?
@@ -327,8 +321,8 @@ model Nhacungcap {
   isshowvat Boolean   @default(true)
   tenfile   String?
   dathang   Dathang[]
-  Sanpham   Sanpham[] @relation("NhacungcapToSanpham")
   NhomNcc   NhomNcc[] @relation("NhacungcapNhom")
+  Sanpham   Sanpham[] @relation("NhacungcapToSanpham")
 }
 
 model Dathang {
@@ -338,7 +332,6 @@ model Dathang {
   madncc       String?          @unique
   ngaynhan     DateTime?
   ghichu       String?
-  lydohuy      String?          @postgres.Text // Lý do hủy đơn (bắt buộc khi status = huy)
   nhacungcapId String?
   order        Int?
   isActive     Boolean          @default(false)
@@ -348,14 +341,14 @@ model Dathang {
   updatedAt    DateTime?        @updatedAt
   subtitle     String?
   khoId        String?
+  lydohuy      String?
   kho          Kho?             @relation(fields: [khoId], references: [id])
   nhacungcap   Nhacungcap?      @relation(fields: [nhacungcapId], references: [id])
   sanpham      Dathangsanpham[]
   PhieuKho     PhieuKho[]
 
-  // ⚡ PERFORMANCE INDEXES for congnoncc optimization
   @@index([ngaynhan])
-  @@index([status])  
+  @@index([status])
   @@index([nhacungcapId])
   @@index([ngaynhan, status])
   @@index([nhacungcapId, ngaynhan])
@@ -380,7 +373,6 @@ model Dathangsanpham {
   dathang   Dathang @relation(fields: [dathangId], references: [id], onDelete: Cascade)
   sanpham   Sanpham @relation(fields: [idSP], references: [id])
 
-  // ⚡ PERFORMANCE INDEXES for join optimization
   @@index([dathangId])
   @@index([idSP])
 }
@@ -463,53 +455,55 @@ model PhieuKhoSanpham {
 }
 
 model TonKho {
-  id        String    @id @default(uuid())
-  sanphamId String    @unique
-  slton     Decimal   @default(0) @postgres.Decimal(20, 3)
-  sltontt     Decimal   @default(0) @postgres.Decimal(20, 3)
-  slchogiao Decimal   @default(0) @postgres.Decimal(20, 3)
-  slchonhap Decimal   @default(0) @postgres.Decimal(20, 3)
-  sanpham   Sanpham   @relation(fields: [sanphamId], references: [id])
+  id        String  @id @default(uuid())
+  sanphamId String  @unique
+  slton     Decimal @default(0) @postgres.Decimal(20, 3)
+  slchogiao Decimal @default(0) @postgres.Decimal(20, 3)
+  slchonhap Decimal @default(0) @postgres.Decimal(20, 3)
+  sltontt   Decimal @default(0) @postgres.Decimal(20, 3)
+  sanpham   Sanpham @relation(fields: [sanphamId], references: [id])
 }
 
 model Chotkho {
-  id            String   @id @default(uuid())
-  ngaychot      DateTime @default(now())
-  title         String?
-  ghichu        String?
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  codeId        String?  @unique
-  order         Int?     @default(1)
-  khoId         String?
-  kho           Kho?     @relation(fields: [khoId], references: [id])
-  userId        String?
-  user          User?    @relation(fields: [userId], references: [id])
-  details       Chotkhodetail[] @relation("ChotkhoDetails")
+  id        String          @id @default(uuid())
+  khoId     String?
+  ghichu    String?
+  isActive  Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  codeId    String?         @unique
+  title     String?
+  order     Int?            @default(1)
+  userId    String?
+  ngaychot  DateTime        @default(now())
+  kho       Kho?            @relation(fields: [khoId], references: [id])
+  user      User?           @relation(fields: [userId], references: [id])
+  details   Chotkhodetail[] @relation("ChotkhoDetails")
+
   @@index([codeId])
   @@index([ngaychot])
   @@index([khoId])
 }
 
 model Chotkhodetail {
-  id            String   @id @default(uuid())
-  title         String?
-  ngaychot      DateTime @default(now())
-  sltonhethong  Decimal  @default(0) @postgres.Decimal(20, 3)
-  sltonthucte   Decimal  @default(0) @postgres.Decimal(20, 3)
-  slhuy         Decimal  @default(0) @postgres.Decimal(20, 3)
-  chenhlech     Decimal  @default(0) @postgres.Decimal(20, 3)
-  ghichu        String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  order         Int?     @default(1)
-  sanphamId     String?
-  sanpham       Sanpham? @relation("ChotkhodetailSanpham", fields: [sanphamId], references: [id])
-  chotkhoId     String?
-  chotkho       Chotkho? @relation("ChotkhoDetails", fields: [chotkhoId], references: [id])
-  userId        String?
-  user          User?    @relation("ChotkhodetailUser", fields: [userId], references: [id])
+  id           String   @id @default(uuid())
+  title        String?
+  ngaychot     DateTime @default(now())
+  sltonhethong Decimal  @default(0) @postgres.Decimal(20, 3)
+  sltonthucte  Decimal  @default(0) @postgres.Decimal(20, 3)
+  slhuy        Decimal  @default(0) @postgres.Decimal(20, 3)
+  chenhlech    Decimal  @default(0) @postgres.Decimal(20, 3)
+  ghichu       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  order        Int?     @default(1)
+  sanphamId    String?
+  chotkhoId    String?
+  userId       String?
+  chotkho      Chotkho? @relation("ChotkhoDetails", fields: [chotkhoId], references: [id])
+  sanpham      Sanpham? @relation("ChotkhodetailSanpham", fields: [sanphamId], references: [id])
+  user         User?    @relation("ChotkhodetailUser", fields: [userId], references: [id])
+
   @@index([sanphamId])
   @@index([ngaychot])
 }
@@ -612,24 +606,76 @@ model ImportHistory {
 
 model PerformanceLog {
   id          String   @id @default(cuid())
-  name        String   // Operation name
-  duration    Float    // Duration in milliseconds
+  name        String
+  duration    Float
   timestamp   DateTime @default(now())
-  context     Json?    // Context data
+  context     Json?
   success     Boolean  @default(true)
-  error       String?  // Error message if failed
-  method      String?  // HTTP method
-  url         String?  // Request URL
-  statusCode  Int?     // HTTP status code
-  memoryUsage Float?   // Memory usage in MB
-  
-  // Indexes for better query performance
+  error       String?
+  method      String?
+  url         String?
+  statusCode  Int?
+  memoryUsage Float?
+
   @@index([timestamp])
   @@index([name])
   @@index([success])
   @@index([duration])
-  
   @@map("performance_logs")
+}
+
+model SupportTicket {
+  id           String              @id @default(cuid())
+  title        String
+  description  String
+  status       TicketStatus        @default(open)
+  priority     TicketPriority      @default(medium)
+  category     String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  createdBy    String
+  technicianId String?
+  attachments  SupportAttachment[]
+  responses    SupportResponse[]
+  user         User                @relation("UserTickets", fields: [createdBy], references: [id], onDelete: Cascade)
+  technician   User?               @relation("TechnicianTickets", fields: [technicianId], references: [id])
+
+  @@index([createdBy])
+  @@index([technicianId])
+  @@index([status])
+  @@map("support_tickets")
+}
+
+model SupportResponse {
+  id          String              @id @default(cuid())
+  content     String
+  createdAt   DateTime            @default(now())
+  createdBy   String
+  ticketId    String
+  attachments SupportAttachment[]
+  user        User                @relation("UserResponses", fields: [createdBy], references: [id], onDelete: Cascade)
+  ticket      SupportTicket       @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([createdBy])
+  @@map("support_responses")
+}
+
+model SupportAttachment {
+  id         String           @id @default(cuid())
+  fileUrl    String
+  fileName   String
+  fileType   String
+  fileSize   Int              @default(0)
+  createdAt  DateTime         @default(now())
+  ticketId   String?
+  responseId String?
+  response   SupportResponse? @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  ticket     SupportTicket?   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([responseId])
+  @@map("support_attachments")
 }
 
 enum AuditAction {
@@ -649,64 +695,6 @@ enum StatusDonhang {
   danhan
   huy
   hoanthanh
-}
-
-// Support Ticket System Models
-model SupportTicket {
-  id          String              @id @default(cuid())
-  title       String
-  description String              @postgres.Text
-  status      TicketStatus        @default(open)
-  priority    TicketPriority      @default(medium)
-  category    String?
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  createdBy   String
-  technicianId String?
-  
-  user        User                @relation("UserTickets", fields: [createdBy], references: [id], onDelete: Cascade)
-  technician  User?               @relation("TechnicianTickets", fields: [technicianId], references: [id], onDelete: SetNull)
-  responses   SupportResponse[]
-  attachments SupportAttachment[]
-
-  @@index([createdBy])
-  @@index([technicianId])
-  @@index([status])
-  @@map("support_tickets")
-}
-
-model SupportResponse {
-  id          String              @id @default(cuid())
-  content     String              @postgres.Text
-  createdAt   DateTime            @default(now())
-  createdBy   String
-  ticketId    String
-  
-  user        User                @relation("UserResponses", fields: [createdBy], references: [id], onDelete: Cascade)
-  ticket      SupportTicket       @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  attachments SupportAttachment[]
-
-  @@index([ticketId])
-  @@index([createdBy])
-  @@map("support_responses")
-}
-
-model SupportAttachment {
-  id         String           @id @default(cuid())
-  fileUrl    String
-  fileName   String
-  fileType   String
-  fileSize   Int              @default(0)
-  createdAt  DateTime         @default(now())
-  ticketId   String?
-  responseId String?
-  
-  ticket     SupportTicket?   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  response   SupportResponse? @relation(fields: [responseId], references: [id], onDelete: Cascade)
-
-  @@index([ticketId])
-  @@index([responseId])
-  @@map("support_attachments")
 }
 
 enum TicketStatus {

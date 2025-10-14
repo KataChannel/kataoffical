@@ -12,8 +12,8 @@ export declare class UserPermissionController {
     }): Promise<{
         user: {
             id: string;
-            email: string | null;
             name: string | null;
+            email: string | null;
         };
         permission: {
             id: string;
@@ -114,8 +114,8 @@ export declare class UserPermissionController {
         data: ({
             user: {
                 id: string;
-                email: string | null;
                 name: string | null;
+                email: string | null;
             };
             permission: {
                 id: string;

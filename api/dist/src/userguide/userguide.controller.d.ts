@@ -21,9 +21,9 @@ export declare class UserguideController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                type: string;
                 codeId: string | null;
                 description: string | null;
-                type: string;
                 listItems: string | null;
                 imageUrl: string | null;
                 imageAlt: string | null;
@@ -54,9 +54,9 @@ export declare class UserguideController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                type: string;
                 codeId: string | null;
                 description: string | null;
-                type: string;
                 listItems: string | null;
                 imageUrl: string | null;
                 imageAlt: string | null;

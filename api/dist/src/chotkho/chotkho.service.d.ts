@@ -46,8 +46,8 @@ export declare class ChotkhoService {
                 createdAt: Date;
                 updatedAt: Date;
                 sanphamId: string | null;
-                userId: string | null;
                 slhuy: Decimal;
+                userId: string | null;
                 ngaychot: Date;
                 sltonhethong: Decimal;
                 sltonthucte: Decimal;
@@ -99,8 +99,8 @@ export declare class ChotkhoService {
                 createdAt: Date;
                 updatedAt: Date;
                 sanphamId: string | null;
-                userId: string | null;
                 slhuy: Decimal;
+                userId: string | null;
                 ngaychot: Date;
                 sltonhethong: Decimal;
                 sltonthucte: Decimal;
@@ -154,8 +154,8 @@ export declare class ChotkhoService {
             createdAt: Date;
             updatedAt: Date;
             sanphamId: string | null;
-            userId: string | null;
             slhuy: Decimal;
+            userId: string | null;
             ngaychot: Date;
             sltonhethong: Decimal;
             sltonthucte: Decimal;
@@ -229,8 +229,8 @@ export declare class ChotkhoService {
                 createdAt: Date;
                 updatedAt: Date;
                 sanphamId: string | null;
-                userId: string | null;
                 slhuy: Decimal;
+                userId: string | null;
                 ngaychot: Date;
                 sltonhethong: Decimal;
                 sltonthucte: Decimal;
@@ -291,8 +291,8 @@ export declare class ChotkhoService {
             createdAt: Date;
             updatedAt: Date;
             sanphamId: string | null;
-            userId: string | null;
             slhuy: Decimal;
+            userId: string | null;
             ngaychot: Date;
             sltonhethong: Decimal;
             sltonthucte: Decimal;

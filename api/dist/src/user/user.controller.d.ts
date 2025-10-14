@@ -9,9 +9,9 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
-        name: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
@@ -23,9 +23,9 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
-        name: string | null;
         provider: string | null;
         providerId: string | null;
     }[]>;
@@ -45,9 +45,9 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
-        name: string | null;
         provider: string | null;
         providerId: string | null;
     }>;
@@ -77,9 +77,9 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
-        name: string | null;
         provider: string | null;
         providerId: string | null;
     }>;
@@ -88,9 +88,9 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
-        name: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
@@ -100,9 +100,9 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
-        name: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;

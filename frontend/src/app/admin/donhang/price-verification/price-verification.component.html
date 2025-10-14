@@ -1,0 +1,157 @@
+<div class="price-verification-container">
+  <mat-card class="verification-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>verified</mat-icon>
+        Xác Minh Giá Đơn Hàng
+      </mat-card-title>
+      <button mat-raised-button color="primary" 
+              (click)="verifyPrices()" 
+              [disabled]="loading()">
+        <mat-icon>{{ loading() ? 'hourglass_empty' : 'refresh' }}</mat-icon>
+        {{ loading() ? 'Đang kiểm tra...' : 'Kiểm tra giá' }}
+      </button>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Loading State -->
+      <div *ngIf="loading()" class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Đang xác minh giá...</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error()" class="error-state">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error() }}</p>
+      </div>
+
+      <!-- Verification Results -->
+      <div *ngIf="!loading() && !error() && verification()" class="verification-results">
+        <!-- Summary -->
+        <div class="verification-summary">
+          <div class="summary-item">
+            <mat-icon>shopping_cart</mat-icon>
+            <div class="summary-content">
+              <span class="summary-label">Mã đơn hàng</span>
+              <span class="summary-value">{{ verification()!.madonhang }}</span>
+            </div>
+          </div>
+
+          <div class="summary-item">
+            <mat-icon>inventory</mat-icon>
+            <div class="summary-content">
+              <span class="summary-label">Tổng sản phẩm</span>
+              <span class="summary-value">{{ verification()!.totalItems }}</span>
+            </div>
+          </div>
+
+          <div class="summary-item">
+            <mat-icon>schedule</mat-icon>
+            <div class="summary-content">
+              <span class="summary-label">Thời gian kiểm tra</span>
+              <span class="summary-value">{{ formatDate(verification()!.verifiedAt) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Badge -->
+        <div class="verification-status" 
+             [class.has-discrepancies]="verification()!.hasDiscrepancies"
+             [class.no-discrepancies]="!verification()!.hasDiscrepancies">
+          <mat-icon>{{ verification()!.hasDiscrepancies ? 'warning' : 'check_circle' }}</mat-icon>
+          <span>
+            {{ verification()!.hasDiscrepancies 
+               ? 'Phát hiện ' + verification()!.discrepancies.length + ' vấn đề' 
+               : 'Tất cả giá đều chính xác' }}
+          </span>
+        </div>
+
+        <!-- Discrepancies List -->
+        <div *ngIf="verification()!.discrepancies.length > 0" class="discrepancies-list">
+          <h3>Chi tiết vấn đề:</h3>
+          
+          <mat-expansion-panel *ngFor="let disc of verification()!.discrepancies; let i = index"
+                               [class.severity-high]="getDiscrepancySeverity(disc) === 'high'"
+                               [class.severity-medium]="getDiscrepancySeverity(disc) === 'medium'"
+                               [class.severity-low]="getDiscrepancySeverity(disc) === 'low'">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon [color]="getDiscrepancyColor(disc.issue)">
+                  {{ getDiscrepancyIcon(disc.issue) }}
+                </mat-icon>
+                <span class="product-code">{{ disc.sanphamCode }}</span>
+                <span class="product-title" *ngIf="disc.sanphamTitle">
+                  - {{ disc.sanphamTitle }}
+                </span>
+              </mat-panel-title>
+              <mat-panel-description>
+                <mat-chip *ngIf="disc.issue === 'PRICE_CHANGED' && disc.percentChange"
+                          [class.price-increase]="disc.percentChange! > 0"
+                          [class.price-decrease]="disc.percentChange! < 0">
+                  {{ formatPercentage(disc.percentChange!) }}
+                </mat-chip>
+                <span class="issue-type">{{ disc.issue }}</span>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <!-- Discrepancy Details -->
+            <div class="discrepancy-details">
+              <p class="message">
+                <mat-icon>info</mat-icon>
+                {{ disc.message }}
+              </p>
+
+              <div *ngIf="disc.issue === 'PRICE_CHANGED'" class="price-comparison">
+                <div class="price-item">
+                  <span class="label">Giá khi đặt hàng:</span>
+                  <span class="value old-price">{{ formatPrice(disc.orderPrice!) }}</span>
+                </div>
+                
+                <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+                
+                <div class="price-item">
+                  <span class="label">Giá hiện tại:</span>
+                  <span class="value current-price"
+                        [class.increased]="disc.difference! > 0"
+                        [class.decreased]="disc.difference! < 0">
+                    {{ formatPrice(disc.currentPrice!) }}
+                  </span>
+                </div>
+              </div>
+
+              <div *ngIf="disc.difference !== undefined" class="price-diff">
+                <mat-icon>{{ disc.difference > 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
+                <span>Chênh lệch: {{ formatPrice(Math.abs(disc.difference)) }}</span>
+              </div>
+
+              <p *ngIf="disc.capturedAt" class="captured-at">
+                <mat-icon>history</mat-icon>
+                Giá được ghi nhận lúc: {{ formatDate(disc.capturedAt) }}
+              </p>
+            </div>
+          </mat-expansion-panel>
+        </div>
+
+        <!-- Recommendations -->
+        <div *ngIf="verification()!.hasDiscrepancies" class="recommendations">
+          <h4>
+            <mat-icon>lightbulb</mat-icon>
+            Khuyến nghị
+          </h4>
+          <ul>
+            <li>Xem xét cập nhật giá đơn hàng nếu cần</li>
+            <li>Liên hệ khách hàng về thay đổi giá nếu chênh lệch lớn</li>
+            <li>Kiểm tra bảng giá có đang áp dụng đúng không</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- No Verification Yet -->
+      <div *ngIf="!loading() && !error() && !verification()" class="no-verification">
+        <mat-icon>info</mat-icon>
+        <p>Nhấn nút "Kiểm tra giá" để xác minh giá đơn hàng</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

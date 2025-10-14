@@ -145,4 +145,46 @@ export class BanggiaController {
   async removeBulk(@Body() body: { ids: string[] }) {
     return this.banggiaService.removeBulk(body.ids);
   }
+
+  // ✅ Price History Endpoints
+  
+  @Get(':banggiaId/sanpham/:sanphamId/price-history')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get price history for a product in banggia' })
+  @ApiResponse({ status: 200, description: 'Price history retrieved successfully' })
+  getPriceHistory(
+    @Param('banggiaId') banggiaId: string,
+    @Param('sanphamId') sanphamId: string
+  ) {
+    return this.banggiaService.getPriceHistory(banggiaId, sanphamId);
+  }
+
+  @Get(':banggiaId/sanpham/:sanphamId/current-price')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get current price for a product in banggia' })
+  @ApiResponse({ status: 200, description: 'Current price retrieved successfully' })
+  getCurrentPrice(
+    @Param('banggiaId') banggiaId: string,
+    @Param('sanphamId') sanphamId: string
+  ) {
+    return this.banggiaService.getCurrentPrice(banggiaId, sanphamId);
+  }
+
+  @Post('bulk-update-prices')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Bulk update prices with audit trail' })
+  @ApiResponse({ status: 200, description: 'Prices updated successfully' })
+  @Audit({entity: 'Bulk Update Prices',action: AuditAction.UPDATE,includeResponse: true})
+  bulkUpdatePrices(@Body() body: {
+    updates: Array<{
+      banggiaId: string;
+      sanphamId: string;
+      newPrice: number;
+      reason?: string;
+    }>;
+    userId: string;
+  }) {
+    return this.banggiaService.bulkUpdatePrices(body.updates, body.userId);
+  }
 }

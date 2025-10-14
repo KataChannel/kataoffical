@@ -29,8 +29,10 @@ export declare class NhomkhachhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
+            banggiaId: string | null;
             name: string | null;
+            isshowvat: boolean;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             namenn: string | null;
@@ -46,8 +48,6 @@ export declare class NhomkhachhangService {
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
-            banggiaId: string | null;
-            isshowvat: boolean;
         }[];
     } & {
         id: string;
@@ -64,8 +64,10 @@ export declare class NhomkhachhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
+            banggiaId: string | null;
             name: string | null;
+            isshowvat: boolean;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             namenn: string | null;
@@ -81,8 +83,6 @@ export declare class NhomkhachhangService {
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
-            banggiaId: string | null;
-            isshowvat: boolean;
         }[];
     } & {
         id: string;

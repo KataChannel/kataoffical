@@ -31,8 +31,8 @@ export declare class BanggiaService {
             order: number | null;
             isActive: boolean;
             giaban: import("@prisma/client/runtime/library").Decimal;
-            banggiaId: string;
             sanphamId: string;
+            banggiaId: string;
         }[];
     } & {
         id: string;
@@ -111,8 +111,10 @@ export declare class BanggiaService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
+            banggiaId: string | null;
             name: string | null;
+            isshowvat: boolean;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             namenn: string | null;
@@ -128,8 +130,6 @@ export declare class BanggiaService {
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
-            banggiaId: string | null;
-            isshowvat: boolean;
         }[];
         id: string;
         title: string | null;
@@ -151,8 +151,8 @@ export declare class BanggiaService {
             order: number | null;
             isActive: boolean;
             giaban: import("@prisma/client/runtime/library").Decimal;
-            banggiaId: string;
             sanphamId: string;
+            banggiaId: string;
         }[];
     } & {
         id: string;

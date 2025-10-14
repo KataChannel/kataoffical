@@ -10,9 +10,10 @@ import { SharedModule } from '../shared/shared.module';
 import { StatusMachineService } from 'src/common/status-machine.service';
 import { TonkhoManagerService } from 'src/common/tonkho-manager.service';
 import { AuthModule } from 'src/auth/auth.module';
+import { BanggiaModule } from 'src/banggia/banggia.module';
 
 @Module({
-  imports: [PrismaModule, ImportdataModule, SharedModule, AuthModule],
+  imports: [PrismaModule, ImportdataModule, SharedModule, AuthModule, BanggiaModule],
   controllers: [DonhangController, CancelOrderController],
   providers: [
     DonhangService, 

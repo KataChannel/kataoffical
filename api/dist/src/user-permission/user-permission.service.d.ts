@@ -22,8 +22,8 @@ export declare class UserPermissionService {
     }): Promise<{
         user: {
             id: string;
-            email: string | null;
             name: string | null;
+            email: string | null;
         };
         permission: {
             id: string;
@@ -131,8 +131,8 @@ export declare class UserPermissionService {
         data: ({
             user: {
                 id: string;
-                email: string | null;
                 name: string | null;
+                email: string | null;
             };
             permission: {
                 id: string;

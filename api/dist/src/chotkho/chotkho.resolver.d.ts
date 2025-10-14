@@ -30,8 +30,8 @@ export declare class ChotkhoResolver {
                 createdAt: Date;
                 updatedAt: Date;
                 sanphamId: string | null;
-                userId: string | null;
                 slhuy: import("@prisma/client/runtime/library").Decimal;
+                userId: string | null;
                 ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
@@ -85,8 +85,8 @@ export declare class ChotkhoResolver {
             createdAt: Date;
             updatedAt: Date;
             sanphamId: string | null;
-            userId: string | null;
             slhuy: import("@prisma/client/runtime/library").Decimal;
+            userId: string | null;
             ngaychot: Date;
             sltonhethong: import("@prisma/client/runtime/library").Decimal;
             sltonthucte: import("@prisma/client/runtime/library").Decimal;
@@ -152,8 +152,8 @@ export declare class ChotkhoResolver {
                 createdAt: Date;
                 updatedAt: Date;
                 sanphamId: string | null;
-                userId: string | null;
                 slhuy: import("@prisma/client/runtime/library").Decimal;
+                userId: string | null;
                 ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
@@ -235,8 +235,8 @@ export declare class ChotkhoResolver {
                 createdAt: Date;
                 updatedAt: Date;
                 sanphamId: string | null;
-                userId: string | null;
                 slhuy: import("@prisma/client/runtime/library").Decimal;
+                userId: string | null;
                 ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
