@@ -102,6 +102,10 @@ export class PriceHistoryDialogComponent implements OnInit {
     return `${sign}${percent.toFixed(2)}%`;
   }
 
+  formatPriceDifference(difference: number): string {
+    return this.formatPrice(Math.abs(difference));
+  }
+
   close() {
     this.dialogRef.close();
   }

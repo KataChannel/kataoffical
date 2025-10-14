@@ -3342,7 +3342,6 @@ export class DonhangService {
       return [];
     }
   }
-}
 
   /**
    * ✅ Get price metadata from donhangsanpham ghichu field
@@ -3413,7 +3412,7 @@ export class DonhangService {
           }
 
           const orderPrice = Number(item.giaban);
-          const currentPriceValue = Number(currentPrice.giaban);
+          const currentPriceValue = currentPrice; // getCurrentPrice already returns a number
 
           if (orderPrice !== currentPriceValue) {
             const priceDiff = currentPriceValue - orderPrice;
@@ -3464,28 +3463,28 @@ export class DonhangService {
     try {
       const history = await this.priceHistoryService.getPriceHistory(banggiaId, sanphamId);
       
-      if (!history || !history.history || history.history.length === 0) {
+      if (!history || !Array.isArray(history) || history.length === 0) {
         return null;
       }
 
       // Find the price that was valid at the given date
       const targetDate = new Date(date);
       
-      // Sort history by timestamp descending
-      const sortedHistory = history.history.sort((a: any, b: any) => 
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      // Sort history by changedAt descending (history is already an array)
+      const sortedHistory = history.sort((a: any, b: any) => 
+        new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime()
       );
 
       // Find the first price change that happened before or at the target date
       for (const change of sortedHistory) {
-        const changeDate = new Date(change.timestamp);
+        const changeDate = new Date(change.changedAt);
         if (changeDate <= targetDate) {
           return {
             banggiaId,
             sanphamId,
             date: date,
             price: change.newPrice,
-            priceChangeDate: change.timestamp,
+            priceChangeDate: change.changedAt,
             metadata: change
           };
         }
@@ -3498,7 +3497,7 @@ export class DonhangService {
         sanphamId,
         date: date,
         price: oldestChange.oldPrice || oldestChange.newPrice,
-        priceChangeDate: oldestChange.timestamp,
+        priceChangeDate: oldestChange.changedAt,
         note: 'Price before first recorded change'
       };
     } catch (error) {

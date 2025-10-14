@@ -81,7 +81,7 @@
               <!-- Difference -->
               <div class="price-difference" [ngClass]="getPriceChangeClass(change)">
                 <mat-icon>{{ getPriceChangeIcon(change) }}</mat-icon>
-                <span>{{ formatPrice(Math.abs(change.difference)) }}</span>
+                <span>{{ formatPriceDifference(change.difference) }}</span>
               </div>
 
               <!-- Reason & User -->

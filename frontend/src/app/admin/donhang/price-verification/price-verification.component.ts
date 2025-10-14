@@ -114,4 +114,8 @@ export class PriceVerificationComponent implements OnInit {
     const sign = percent > 0 ? '+' : '';
     return `${sign}${percent.toFixed(2)}%`;
   }
+
+  formatPriceDifference(difference: number): string {
+    return this.formatPrice(Math.abs(difference));
+  }
 }

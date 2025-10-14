@@ -122,7 +122,7 @@
 
               <div *ngIf="disc.difference !== undefined" class="price-diff">
                 <mat-icon>{{ disc.difference > 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
-                <span>Chênh lệch: {{ formatPrice(Math.abs(disc.difference)) }}</span>
+                <span>Chênh lệch: {{ formatPriceDifference(disc.difference) }}</span>
               </div>
 
               <p *ngIf="disc.capturedAt" class="captured-at">
