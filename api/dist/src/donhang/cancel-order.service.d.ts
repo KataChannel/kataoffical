@@ -1,0 +1,180 @@
+import { PrismaService } from '../../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
+export interface CancelOrderDto {
+    orderId: string;
+    lydohuy: string;
+    userId?: string;
+}
+export declare class CancelOrderService {
+    private prisma;
+    constructor(prisma: PrismaService);
+    cancelDonhang(dto: CancelOrderDto): Promise<any>;
+    cancelDathang(dto: CancelOrderDto): Promise<any>;
+    getCanceledOrders(type: 'donhang' | 'dathang', options?: {
+        skip?: number;
+        take?: number;
+        startDate?: Date;
+        endDate?: Date;
+    }): Promise<({
+        khachhang: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            isshowvat: boolean;
+            banggiaId: string | null;
+            name: string | null;
+            subtitle: string | null;
+            namenn: string | null;
+            makh: string;
+            makhold: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            mst: string | null;
+            gionhanhang: string | null;
+            quan: string | null;
+            email: string | null;
+            phone: string | null;
+            address: string | null;
+            loaikh: string | null;
+            hiengia: boolean;
+            istitle2: boolean;
+            tenfile: string | null;
+            tenkh: string | null;
+        } | null;
+        sanpham: ({
+            sanpham: {
+                id: string;
+                title: string;
+                ghichu: string | null;
+                order: number | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                vat: Prisma.Decimal | null;
+                subtitle: string | null;
+                giaban: Prisma.Decimal;
+                title2: string | null;
+                slug: string | null;
+                masp: string;
+                giagoc: Prisma.Decimal;
+                dvt: string | null;
+                hinhanh: string | null;
+                loadpoint: Prisma.Decimal | null;
+                soluong: Prisma.Decimal | null;
+                soluongkho: Prisma.Decimal | null;
+                haohut: Prisma.Decimal;
+            };
+        } & {
+            id: string;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean | null;
+            vat: Prisma.Decimal;
+            idSP: string;
+            sldat: Prisma.Decimal;
+            slgiao: Prisma.Decimal;
+            slnhan: Prisma.Decimal;
+            slhuy: Prisma.Decimal;
+            ttdat: Prisma.Decimal;
+            ttgiao: Prisma.Decimal;
+            ttnhan: Prisma.Decimal;
+            donhangId: string;
+            giaban: Prisma.Decimal;
+            ttsauvat: Prisma.Decimal;
+        })[];
+    } & {
+        id: string;
+        title: string | null;
+        type: string | null;
+        madonhang: string;
+        ngaygiao: Date | null;
+        ghichu: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        lydohuy: string | null;
+        khachhangId: string | null;
+        printCount: number | null;
+        order: number | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        isshowvat: boolean;
+        tongtien: Prisma.Decimal;
+        tongvat: Prisma.Decimal;
+        vat: Prisma.Decimal;
+        banggiaId: string | null;
+    })[] | ({
+        sanpham: ({
+            sanpham: {
+                id: string;
+                title: string;
+                ghichu: string | null;
+                order: number | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                vat: Prisma.Decimal | null;
+                subtitle: string | null;
+                giaban: Prisma.Decimal;
+                title2: string | null;
+                slug: string | null;
+                masp: string;
+                giagoc: Prisma.Decimal;
+                dvt: string | null;
+                hinhanh: string | null;
+                loadpoint: Prisma.Decimal | null;
+                soluong: Prisma.Decimal | null;
+                soluongkho: Prisma.Decimal | null;
+                haohut: Prisma.Decimal;
+            };
+        } & {
+            id: string;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            idSP: string;
+            sldat: Prisma.Decimal;
+            slgiao: Prisma.Decimal;
+            slnhan: Prisma.Decimal;
+            slhuy: Prisma.Decimal;
+            ttdat: Prisma.Decimal;
+            ttgiao: Prisma.Decimal;
+            ttnhan: Prisma.Decimal;
+            dathangId: string;
+            gianhap: Prisma.Decimal;
+        })[];
+        nhacungcap: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            isshowvat: boolean;
+            name: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            email: string | null;
+            tenfile: string | null;
+            mancc: string;
+            manccold: string | null;
+        } | null;
+    } & {
+        id: string;
+        title: string | null;
+        type: string | null;
+        ghichu: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        lydohuy: string | null;
+        printCount: number | null;
+        order: number | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date | null;
+        madncc: string | null;
+        ngaynhan: Date | null;
+        nhacungcapId: string | null;
+        subtitle: string | null;
+        khoId: string | null;
+    })[]>;
+}

@@ -57,6 +57,10 @@ export class CancelOrderService {
       throw new BadRequestException('Không thể hủy đơn hàng đã hoàn thành');
     }
 
+    if (donhang.status === 'danhan') {
+      throw new BadRequestException('Không thể hủy đơn hàng đã nhận');
+    }
+
     // Kiểm tra xem đã có phiếu xuất kho chưa
     const hasPhieuXuatKho = donhang.PhieuKho && donhang.PhieuKho.length > 0;
     const oldStatus = donhang.status;
@@ -211,6 +215,10 @@ export class CancelOrderService {
 
     if (dathang.status === 'hoanthanh') {
       throw new BadRequestException('Không thể hủy đơn đặt hàng đã hoàn thành');
+    }
+
+    if (dathang.status === 'danhan') {
+      throw new BadRequestException('Không thể hủy đơn đặt hàng đã nhận');
     }
 
     // Kiểm tra xem đã có phiếu nhập kho chưa

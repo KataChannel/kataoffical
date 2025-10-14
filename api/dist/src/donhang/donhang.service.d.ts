@@ -36,6 +36,7 @@ export declare class DonhangService {
             isshowvat: boolean;
             madonhang: string;
             ngaygiao: Date | null;
+            lydohuy: string | null;
             khachhangId: string | null;
             printCount: number | null;
             tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -100,6 +101,7 @@ export declare class DonhangService {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        lydohuy: string | null;
         khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -154,6 +156,7 @@ export declare class DonhangService {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        lydohuy: string | null;
         khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -228,6 +231,7 @@ export declare class DonhangService {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        lydohuy: string | null;
         khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -278,6 +282,7 @@ export declare class DonhangService {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        lydohuy: string | null;
         khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -380,6 +385,7 @@ export declare class DonhangService {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        lydohuy: string | null;
         khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -463,6 +469,7 @@ export declare class DonhangService {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        lydohuy: string | null;
         khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -483,6 +490,7 @@ export declare class DonhangService {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        lydohuy: string | null;
         khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -503,6 +511,7 @@ export declare class DonhangService {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        lydohuy: string | null;
         khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -523,6 +532,7 @@ export declare class DonhangService {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        lydohuy: string | null;
         khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -562,6 +572,7 @@ export declare class DonhangService {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        lydohuy: string | null;
         khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -659,6 +670,7 @@ export declare class DonhangService {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        lydohuy: string | null;
         khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;

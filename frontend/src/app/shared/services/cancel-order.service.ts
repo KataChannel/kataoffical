@@ -28,7 +28,8 @@ export class CancelOrderService {
       this.snackBar.open('❌ Đơn hàng đã được hủy trước đó', 'Đóng', {
         duration: 3000,
         horizontalPosition: 'end',
-        verticalPosition: 'top'
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
       });
       return false;
     }
@@ -37,7 +38,18 @@ export class CancelOrderService {
       this.snackBar.open('❌ Không thể hủy đơn hàng đã hoàn thành', 'Đóng', {
         duration: 3000,
         horizontalPosition: 'end',
-        verticalPosition: 'top'
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+      return false;
+    }
+
+    if (order.status === 'danhan') {
+      this.snackBar.open('❌ Không thể hủy đơn hàng đã nhận', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
       });
       return false;
     }
@@ -77,7 +89,7 @@ export class CancelOrderService {
         duration: 5000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['success-snackbar']
+        panelClass: ['snackbar-success']
       });
 
       return true;
@@ -88,7 +100,7 @@ export class CancelOrderService {
         duration: 5000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['error-snackbar']
+        panelClass: ['snackbar-error']
       });
 
       return false;
@@ -106,13 +118,23 @@ export class CancelOrderService {
       this.snackBar.open('❌ Đơn đặt hàng đã được hủy trước đó', 'Đóng', {
         duration: 3000,
         horizontalPosition: 'end',
-        verticalPosition: 'top'
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
       });
       return false;
     }
 
     if (order.status === 'hoanthanh') {
       this.snackBar.open('❌ Không thể hủy đơn đặt hàng đã hoàn thành', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      });
+      return false;
+    }
+
+    if (order.status === 'danhan') {
+      this.snackBar.open('❌ Không thể hủy đơn đặt hàng đã nhận', 'Đóng', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top'
@@ -143,7 +165,8 @@ export class CancelOrderService {
     const loadingSnack = this.snackBar.open('⏳ Đang xử lý hủy đơn đặt hàng...', '', {
       duration: 0,
       horizontalPosition: 'end',
-      verticalPosition: 'top'
+      verticalPosition: 'top',
+      panelClass: ['snackbar-warning']
     });
 
     try {
@@ -155,7 +178,7 @@ export class CancelOrderService {
         duration: 5000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['success-snackbar']
+        panelClass: ['snackbar-success']
       });
 
       return true;
@@ -166,7 +189,7 @@ export class CancelOrderService {
         duration: 5000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['error-snackbar']
+        panelClass: ['snackbar-error']
       });
 
       return false;
@@ -179,7 +202,7 @@ export class CancelOrderService {
    * @returns true nếu có thể hủy, false nếu không
    */
   canCancelOrder(order: any): boolean {
-    return order.status !== 'huy' && order.status !== 'hoanthanh';
+    return order.status !== 'huy' && order.status !== 'hoanthanh' && order.status !== 'danhan';
   }
 
   /**
@@ -193,6 +216,9 @@ export class CancelOrderService {
     }
     if (order.status === 'hoanthanh') {
       return 'Không thể hủy đơn hàng đã hoàn thành';
+    }
+    if (order.status === 'danhan') {
+      return 'Không thể hủy đơn hàng đã nhận';
     }
     return 'Hủy đơn hàng';
   }

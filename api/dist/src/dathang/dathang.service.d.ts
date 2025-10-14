@@ -53,6 +53,7 @@ export declare class DathangService {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        lydohuy: string | null;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -137,6 +138,7 @@ export declare class DathangService {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        lydohuy: string | null;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -228,6 +230,7 @@ export declare class DathangService {
             updatedAt: Date | null;
             type: string | null;
             status: import(".prisma/client").$Enums.StatusDonhang;
+            lydohuy: string | null;
             printCount: number | null;
             madncc: string | null;
             ngaynhan: Date | null;
@@ -323,6 +326,7 @@ export declare class DathangService {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        lydohuy: string | null;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -407,6 +411,7 @@ export declare class DathangService {
             updatedAt: Date | null;
             type: string | null;
             status: import(".prisma/client").$Enums.StatusDonhang;
+            lydohuy: string | null;
             printCount: number | null;
             madncc: string | null;
             ngaynhan: Date | null;
@@ -446,6 +451,7 @@ export declare class DathangService {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        lydohuy: string | null;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -480,6 +486,7 @@ export declare class DathangService {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        lydohuy: string | null;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -497,6 +504,7 @@ export declare class DathangService {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        lydohuy: string | null;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -514,6 +522,7 @@ export declare class DathangService {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        lydohuy: string | null;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -597,6 +606,7 @@ export declare class DathangService {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        lydohuy: string | null;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
