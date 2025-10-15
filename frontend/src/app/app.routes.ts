@@ -20,6 +20,26 @@ export const routes: Routes = [
         (c) => c.AdminmainComponent
       ),
     children: [
+            {
+        path: 'bulk-price-update',
+        loadComponent: () => import('./admin/banggia/bulk-price-update/bulk-price-update.component')
+          .then(m => m.BulkPriceUpdateComponent)
+      },
+      {
+        path: 'price-alerts',
+        loadComponent: () => import('./admin/banggia/price-alerts/price-alerts.component')
+          .then(m => m.PriceAlertsComponent)
+      },
+      {
+        path: 'price-analytics',
+        loadComponent: () => import('./admin/banggia/price-analytics/price-analytics.component')
+          .then(m => m.PriceAnalyticsComponent)
+      },
+      {
+        path: 'price-comparison',
+        loadComponent: () => import('./admin/banggia/price-comparison/price-comparison.component')
+          .then(m => m.PriceComparisonComponent)
+      },
       {
           path: 'auditlog',
           canActivate: [PermissionGuard],

@@ -1,0 +1,242 @@
+<div class="price-alerts-container">
+  <!-- Header with Notification Badge -->
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon [matBadge]="unreadCount()" matBadgeColor="warn" [matBadgeHidden]="unreadCount() === 0">
+          notifications_active
+        </mat-icon>
+        Cảnh Báo Giá
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p class="description">
+        Theo dõi thay đổi giá và nhận thông báo qua Email, SMS hoặc ứng dụng
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="content-grid">
+    <!-- Left Column: Alert Configuration -->
+    <div class="left-column">
+      <!-- Create New Alert -->
+      <mat-card class="create-alert-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>add_alert</mat-icon>
+            Tạo Cảnh Báo Mới
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="alertForm" (ngSubmit)="createAlert()">
+            <!-- Alert Type -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Loại cảnh báo</mat-label>
+              <mat-select formControlName="type">
+                <mat-option value="increase">Tăng giá</mat-option>
+                <mat-option value="decrease">Giảm giá</mat-option>
+                <mat-option value="change">Thay đổi bất kỳ</mat-option>
+                <mat-option value="threshold">Vượt ngưỡng</mat-option>
+              </mat-select>
+              <mat-icon matPrefix>{{ getAlertTypeIcon(alertForm.value.type) }}</mat-icon>
+            </mat-form-field>
+
+            <!-- Banggia -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Bảng giá</mat-label>
+              <mat-select formControlName="banggiaId" required>
+                <mat-option *ngFor="let banggia of banggiaList()" [value]="banggia.id">
+                  {{ banggia.title }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matPrefix>list</mat-icon>
+            </mat-form-field>
+
+            <!-- Product (optional) -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Sản phẩm (tùy chọn)</mat-label>
+              <mat-select formControlName="sanphamId">
+                <mat-option value="">Tất cả sản phẩm</mat-option>
+                <!-- Add sanpham options here -->
+              </mat-select>
+              <mat-icon matPrefix>inventory</mat-icon>
+            </mat-form-field>
+
+            <!-- Threshold (conditional) -->
+            <div *ngIf="alertForm.value.type === 'threshold'" class="threshold-group">
+              <mat-form-field appearance="outline">
+                <mat-label>Ngưỡng tiền</mat-label>
+                <input matInput type="number" formControlName="threshold">
+                <span matSuffix>đ</span>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Ngưỡng %</mat-label>
+                <input matInput type="number" formControlName="percentThreshold">
+                <span matSuffix>%</span>
+              </mat-form-field>
+            </div>
+
+            <!-- Notification Channels -->
+            <div class="notification-channels">
+              <h4>Kênh thông báo</h4>
+              <div class="channel-toggles">
+                <mat-slide-toggle formControlName="notifyInApp">
+                  <mat-icon>notifications</mat-icon>
+                  Trong ứng dụng
+                </mat-slide-toggle>
+                <mat-slide-toggle formControlName="notifyEmail">
+                  <mat-icon>email</mat-icon>
+                  Email
+                </mat-slide-toggle>
+                <mat-slide-toggle formControlName="notifySMS">
+                  <mat-icon>sms</mat-icon>
+                  SMS
+                </mat-slide-toggle>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button mat-raised-button color="primary" type="submit" [disabled]="!alertForm.valid">
+              <mat-icon>add</mat-icon>
+              Tạo Cảnh Báo
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Active Alerts List -->
+      <mat-card class="alerts-list-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>list</mat-icon>
+            Danh Sách Cảnh Báo ({{ alerts().length }})
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-list *ngIf="alerts().length > 0">
+            <mat-list-item *ngFor="let alert of alerts()">
+              <mat-icon matListItemIcon [class.enabled]="alert.enabled" [class.disabled]="!alert.enabled">
+                {{ getAlertTypeIcon(alert.type) }}
+              </mat-icon>
+              
+              <div matListItemTitle>
+                <strong>{{ getAlertTypeLabel(alert.type) }}</strong>
+                <mat-chip [class.enabled-chip]="alert.enabled" [class.disabled-chip]="!alert.enabled">
+                  {{ alert.enabled ? 'Đang bật' : 'Đã tắt' }}
+                </mat-chip>
+              </div>
+              
+              <div matListItemLine>
+                {{ alert.banggiaTitle }}
+                <span *ngIf="alert.sanphamTitle"> - {{ alert.sanphamTitle }}</span>
+              </div>
+              
+              <div matListItemLine class="notification-info">
+                <mat-icon *ngIf="alert.notifyInApp" class="mini-icon" matTooltip="Thông báo trong app">notifications</mat-icon>
+                <mat-icon *ngIf="alert.notifyEmail" class="mini-icon" matTooltip="Thông báo qua email">email</mat-icon>
+                <mat-icon *ngIf="alert.notifySMS" class="mini-icon" matTooltip="Thông báo qua SMS">sms</mat-icon>
+              </div>
+
+              <div matListItemMeta class="actions">
+                <button mat-icon-button (click)="toggleAlert(alert)" [matTooltip]="alert.enabled ? 'Tắt' : 'Bật'">
+                  <mat-icon>{{ alert.enabled ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteAlert(alert.id)" matTooltip="Xóa">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </mat-list-item>
+          </mat-list>
+
+          <div class="empty-state" *ngIf="alerts().length === 0">
+            <mat-icon>notifications_off</mat-icon>
+            <p>Chưa có cảnh báo nào</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Notifications -->
+    <div class="right-column">
+      <mat-card class="notifications-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon [matBadge]="unreadCount()" matBadgeColor="warn" [matBadgeHidden]="unreadCount() === 0">
+              inbox
+            </mat-icon>
+            Thông Báo
+          </mat-card-title>
+          <button mat-button (click)="markAllAsRead()" [disabled]="unreadCount() === 0">
+            <mat-icon>done_all</mat-icon>
+            Đánh dấu đã đọc
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="notifications-list" *ngIf="notifications().length > 0">
+            <mat-expansion-panel *ngFor="let notification of notifications()" [class.unread]="!notification.read">
+              <mat-expansion-panel-header (click)="markAsRead(notification)">
+                <mat-panel-title>
+                  <mat-icon [class.price-increase]="notification.change > 0" [class.price-decrease]="notification.change < 0">
+                    {{ notification.change > 0 ? 'trending_up' : 'trending_down' }}
+                  </mat-icon>
+                  <strong>{{ notification.sanphamTitle }}</strong>
+                  <mat-chip [class.increase]="notification.change > 0" [class.decrease]="notification.change < 0">
+                    {{ notification.changePercent > 0 ? '+' : '' }}{{ notification.changePercent.toFixed(1) }}%
+                  </mat-chip>
+                </mat-panel-title>
+                <mat-panel-description>
+                  {{ formatRelativeTime(notification.timestamp) }}
+                  <mat-icon *ngIf="!notification.read" class="unread-indicator">fiber_manual_record</mat-icon>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              <div class="notification-details">
+                <div class="detail-row">
+                  <span class="label">Bảng giá:</span>
+                  <span class="value">{{ notification.banggiaTitle }}</span>
+                </div>
+                <div class="detail-row price-comparison">
+                  <span class="label">Giá cũ:</span>
+                  <span class="value old-price">{{ formatCurrency(notification.oldPrice) }}</span>
+                </div>
+                <div class="detail-row price-comparison">
+                  <span class="label">Giá mới:</span>
+                  <span class="value new-price" [class.increase]="notification.change > 0" [class.decrease]="notification.change < 0">
+                    {{ formatCurrency(notification.newPrice) }}
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Chênh lệch:</span>
+                  <span class="value change-amount" [class.increase]="notification.change > 0" [class.decrease]="notification.change < 0">
+                    {{ notification.change > 0 ? '+' : '' }}{{ formatCurrency(notification.change) }}
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Lý do:</span>
+                  <span class="value">{{ notification.reason }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Người thay đổi:</span>
+                  <span class="value">{{ notification.changedBy }}</span>
+                </div>
+
+                <div class="notification-actions">
+                  <button mat-button color="warn" (click)="deleteNotification(notification.id)">
+                    <mat-icon>delete</mat-icon>
+                    Xóa
+                  </button>
+                </div>
+              </div>
+            </mat-expansion-panel>
+          </div>
+
+          <div class="empty-state" *ngIf="notifications().length === 0">
+            <mat-icon>notifications_none</mat-icon>
+            <p>Chưa có thông báo nào</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
