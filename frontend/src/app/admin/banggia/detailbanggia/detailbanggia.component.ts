@@ -17,9 +17,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { ListBanggiaComponent } from '../listbanggia/listbanggia.component';
+import { PriceHistoryDialogComponent } from '../price-history-dialog/price-history-dialog.component';
 import { BanggiaService } from '../banggia-graphql.service'; // Sử dụng GraphQL service
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import {
@@ -40,6 +41,7 @@ import {
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import html2canvas from 'html2canvas';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { KhachhangService } from '../../khachhang/khachhang.service';
 import { SearchfilterComponent } from '../../../shared/common/searchfilter123/searchfilter.component';
 import { GraphqlService } from '../../../shared/services/graphql.service';
@@ -60,6 +62,7 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
     MatPaginatorModule,
     MatTableModule,
     MatMenuModule,
+    MatTooltipModule,
     SearchfilterComponent,
   ],
   // providers: [provideNativeDateAdapter()],
@@ -76,15 +79,17 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
+  _dialog: MatDialog = inject(MatDialog);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  displayedColumns: string[] = ['STT', 'title', 'masp', 'dvt', 'giaban'];
+  displayedColumns: string[] = ['STT', 'title', 'masp', 'dvt', 'giaban', 'actions'];
   ColumnName: any = {
     STT: 'STT',
     title: 'Tiêu Đề',
     masp: 'Mã SP',
     dvt: 'Đơn Vị Tính',
     giaban: 'Giá Bán',
+    actions: 'Thao tác',
   };
   dataSource = signal(new MatTableDataSource<any>([]));
   CountItem = computed(() => this.dataSource().data.length);
@@ -699,5 +704,42 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
         panelClass: ['snackbar-error'],
       });
     }
+  }
+
+  /**
+   * Mở dialog lịch sử giá cho sản phẩm
+   */
+  showPriceHistory(sanpham: any) {
+    this._dialog.open(PriceHistoryDialogComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      data: {
+        banggiaId: this.banggiaId(),
+        sanphamId: sanpham.id,
+        sanphamTitle: sanpham.title,
+        currentPrice: sanpham.giaban
+      }
+    });
+  }
+
+  /**
+   * Navigate to bulk price update
+   */
+  goToBulkUpdate() {
+    this._router.navigate(['/admin/bulk-price-update']);
+  }
+
+  /**
+   * Navigate to price analytics
+   */
+  goToPriceAnalytics() {
+    this._router.navigate(['/admin/price-analytics']);
+  }
+
+  /**
+   * Navigate to price comparison
+   */
+  goToPriceComparison() {
+    this._router.navigate(['/admin/price-comparison']);
   }
 }

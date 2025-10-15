@@ -13,6 +13,18 @@
   <!-- </div> -->
   <div class="flex flex-row space-x-2 items-center">
     <mat-slide-toggle [(ngModel)]="DetailBanggia().isActive" [disabled]="!isEdit()">{{DetailBanggia().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+    
+    <!-- Nút chức năng mới -->
+    <button mat-icon-button color="primary" (click)="goToBulkUpdate()" matTooltip="Cập nhật giá hàng loạt">
+      <mat-icon>upload</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" (click)="goToPriceAnalytics()" matTooltip="Phân tích giá">
+      <mat-icon>analytics</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" (click)="goToPriceComparison()" matTooltip="So sánh giá">
+      <mat-icon>compare</mat-icon>
+    </button>
+    
     <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>
     </button>
@@ -171,6 +183,17 @@
                         {{ row[column]|number:'1.0-2' }}
                       </span>
                       }
+                    @case ('actions') {
+                      <div class="flex flex-row items-center space-x-1">
+                        <button 
+                          mat-icon-button 
+                          color="primary"
+                          (click)="showPriceHistory(row)"
+                          matTooltip="Xem lịch sử giá">
+                          <mat-icon>history</mat-icon>
+                        </button>
+                      </div>
+                    }
                     @default {
                     <span class="max-w-40 line-clamp-4">
                         {{ row[column] }}

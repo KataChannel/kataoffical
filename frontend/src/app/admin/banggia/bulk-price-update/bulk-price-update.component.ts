@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { PriceHistoryService } from '../price-history.service';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 import * as XLSX from 'xlsx';
 
 interface PriceUpdateRow {
@@ -81,6 +82,7 @@ export class BulkPriceUpdateComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private priceService: PriceHistoryService,
+    private graphqlService: GraphqlService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
   ) {}
@@ -101,12 +103,36 @@ export class BulkPriceUpdateComponent implements OnInit {
   }
 
   async loadBanggiaList() {
-    // TODO: Replace with actual API call
-    this.banggiaList.set([
-      { id: 'bg-1', title: 'Bảng giá bán lẻ' },
-      { id: 'bg-2', title: 'Bảng giá bán sỉ' },
-      { id: 'bg-3', title: 'Bảng giá khách VIP' }
-    ]);
+    try {
+      this.loading.set(true);
+      const result = await this.graphqlService.findAll('banggia', {
+        select: {
+          id: true,
+          title: true,
+          mabanggia: true,
+          status: true,
+          type: true,
+          isActive: true
+        },
+        where: { isActive: true },
+        orderBy: { title: 'asc' },
+        take: 100,
+        aggressiveCache: true
+      });
+      
+      this.banggiaList.set(result.data || []);
+      
+      // Auto-select first banggia if available
+      if (result.data && result.data.length > 0) {
+        this.updateForm.patchValue({ banggiaId: result.data[0].id });
+        this.selectedBanggiaId.set(result.data[0].id);
+      }
+    } catch (error) {
+      console.error('Error loading banggia list:', error);
+      this.snackBar.open('Lỗi tải danh sách bảng giá', 'Đóng', { duration: 3000 });
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   // Excel Import

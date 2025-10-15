@@ -11,6 +11,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 
 interface PriceComparison {
   sanphamId: string;
@@ -78,7 +79,7 @@ export class PriceComparisonComponent implements OnInit {
   // Selected product for chart view
   selectedProductForChart = signal<string>('');
 
-  constructor() {}
+  constructor(private graphqlService: GraphqlService) {}
 
   ngOnInit() {
     this.loadBanggiaList();
@@ -86,31 +87,65 @@ export class PriceComparisonComponent implements OnInit {
   }
 
   async loadBanggiaList() {
-    // Mock data
-    const mockBanggia = [
-      { id: 'bg-1', title: 'Bảng giá bán lẻ', color: '#1976d2' },
-      { id: 'bg-2', title: 'Bảng giá bán sỉ', color: '#388e3c' },
-      { id: 'bg-3', title: 'Bảng giá khách VIP', color: '#f57c00' }
-    ];
-    
-    this.banggiaList.set(mockBanggia);
-    this.selectedBanggiaIds.set(['bg-1', 'bg-2']); // Default selection
-    this.updateDisplayColumns();
+    try {
+      const result = await this.graphqlService.findAll('banggia', {
+        select: {
+          id: true,
+          title: true,
+          mabanggia: true,
+          status: true,
+          type: true,
+          isActive: true
+        },
+        where: { isActive: true },
+        orderBy: { title: 'asc' },
+        take: 100,
+        aggressiveCache: true
+      });
+      
+      const colors = ['#1976d2', '#388e3c', '#f57c00', '#d32f2f', '#7b1fa2', '#0097a7'];
+      const banggia = (result.data || []).map((bg: any, idx: number) => ({
+        ...bg,
+        color: colors[idx % colors.length]
+      }));
+      
+      this.banggiaList.set(banggia);
+      
+      // Default selection: first 2 banggia
+      if (banggia.length > 0) {
+        this.selectedBanggiaIds.set(banggia.slice(0, 2).map((bg: any) => bg.id));
+        this.updateDisplayColumns();
+      }
+    } catch (error) {
+      console.error('Error loading banggia list:', error);
+    }
   }
 
   async loadSanphamList() {
-    // Mock data
-    const mockSanpham = [
-      { id: 'sp-1', title: 'Rau xanh' },
-      { id: 'sp-2', title: 'Rau cải' },
-      { id: 'sp-3', title: 'Cà chua' },
-      { id: 'sp-4', title: 'Ớt' },
-      { id: 'sp-5', title: 'Dưa leo' }
-    ];
-    
-    this.sanphamList.set(mockSanpham);
-    this.selectedSanphamIds.set(['sp-1', 'sp-2', 'sp-3']); // Default selection
-    this.loadComparisons();
+    try {
+      const result = await this.graphqlService.findAll('sanpham', {
+        select: {
+          id: true,
+          title: true,
+          masp: true,
+          dvt: true
+        },
+        where: { isActive: true },
+        orderBy: { title: 'asc' },
+        take: 100,
+        aggressiveCache: true
+      });
+      
+      this.sanphamList.set(result.data || []);
+      
+      // Default selection: first 5 products
+      if (result.data && result.data.length > 0) {
+        this.selectedSanphamIds.set(result.data.slice(0, 5).map((sp: any) => sp.id));
+        this.loadComparisons();
+      }
+    } catch (error) {
+      console.error('Error loading sanpham list:', error);
+    }
   }
 
   async loadComparisons() {
