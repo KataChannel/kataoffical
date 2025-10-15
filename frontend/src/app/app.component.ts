@@ -29,7 +29,7 @@ export class AppComponent {
   //   console.log("asdsajdhska");
     
     
-    this.titleService.setTitle('My Dynamic Title'); 
+    this.titleService.setTitle('Rau Sạch Trần Gia'); 
     this.metaService.addTags([
       { name: 'description', content: 'Rau Sạch Trần Gia - Giải pháp chăm sóc da toàn diện với công nghệ tiên tiến, mang lại làn da khỏe mạnh, rạng rỡ.' },
       { name: 'keywords', content: 'Rau Sạch Trần Gia, chăm sóc da, công nghệ, làm đẹp, skincare, mỹ phẩm, da khỏe mạnh' },
