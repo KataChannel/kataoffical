@@ -87,12 +87,22 @@
       
       <button 
         mat-raised-button 
+        color="accent"
+        (click)="cleanupAllTestData()"
+        [disabled]="isRunning() || getTotalTestDataCount() === 0"
+        class="flex-1 !h-12 md:!h-14 !text-sm md:!text-base !font-bold !rounded-xl !shadow-lg hover:!shadow-xl !transition-all !duration-300 hover:!-translate-y-0.5 disabled:!opacity-50">
+        <mat-icon class="mr-2">delete_sweep</mat-icon>
+        Delete Test Data ({{ getTotalTestDataCount() }})
+      </button>
+      
+      <button 
+        mat-raised-button 
         color="warn" 
         (click)="resetTests()"
         [disabled]="isRunning()"
         class="flex-1 !h-12 md:!h-14 !text-sm md:!text-base !font-bold !rounded-xl !shadow-lg hover:!shadow-xl !transition-all !duration-300 hover:!-translate-y-0.5 disabled:!opacity-50">
         <mat-icon class="mr-2">refresh</mat-icon>
-        Reset All
+        Reset Status
       </button>
     </div>
 
@@ -169,8 +179,16 @@
                         color="primary"
                         (click)="runModuleTests(module.moduleName)"
                         [disabled]="isRunning()"
-                        matTooltip="Run tests">
+                        matTooltip="Run module tests">
                         <mat-icon>play_circle</mat-icon>
+                      </button>
+                      <button 
+                        mat-icon-button
+                        color="warn"
+                        (click)="cleanupModuleTestData(module.moduleName)"
+                        [disabled]="isRunning() || getModuleTestDataCount(module.moduleName) === 0"
+                        matTooltip="Delete test data ({{ getModuleTestDataCount(module.moduleName) }})">
+                        <mat-icon>delete</mat-icon>
                       </button>
                     </div>
                   </td>

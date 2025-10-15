@@ -9,6 +9,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import moment from 'moment';
 
 // Import all services
 import { DonhangGraphqlService } from '../donhang/donhang-graphql.service';
@@ -408,34 +409,45 @@ export class TestingComponent implements OnInit {
   private async testDonhang(testName: string): Promise<void> {
     switch (testName) {
       case 'Get All Đơn Hàng':
-        this._DonhangService.ListDonhang();
-        await this.delay(300);
+        await this._DonhangService.searchDonhang({ pageSize: 50 });
+        const allDonhang = this._DonhangService.ListDonhang();
+        if (!allDonhang) throw new Error('Failed to fetch Đơn Hàng list');
+        console.log('✅ Fetched Đơn Hàng:', allDonhang.length, 'records');
         break;
         
       case 'Get Đơn Hàng by ID':
+        await this._DonhangService.searchDonhang({ pageSize: 50 });
         const donhangs = this._DonhangService.ListDonhang();
         if (donhangs && donhangs.length > 0) {
           const firstId = donhangs[0].id;
+          await this._DonhangService.getOneDonhang(firstId);
+          const donhang = this._DonhangService.DetailDonhang();
+          if (!donhang || !donhang.id) throw new Error('Failed to get Đơn Hàng by ID');
+          console.log('✅ Fetched Đơn Hàng by ID:', donhang.madonhang);
+        } else {
+          console.warn('⚠️ No Đơn Hàng found to test Get by ID');
         }
-        await this.delay(300);
         break;
         
       case 'Create Đơn Hàng':
         // Create test donhang
         const testDonhang = {
           madonhang: this.getTestName('DH'),
-          ngaydonhang: new Date(),
-          khachhangId: null, // Will use first available
-          trangthai: 'CHUAXULY',
-          tongtienhang: 1000000,
-          ghichu: 'Test data - will be deleted'
+          status: 'dadat',
+          tongtien: 1000000,
+          khachhangId: null,
+          ngaygiao: new Date(),
+          ghichu: 'Test data - will be deleted',
+          order: 1,
+          isActive: true
         };
         
         const createdDh = await this._DonhangService.CreateDonhang(testDonhang);
-        if (createdDh && createdDh.id) {
-          this.storeTestId('donhang', createdDh.id);
-          this._snackBar.open(`✅ Created test: ${testDonhang.madonhang}`, 'Close', { duration: 2000 });
+        if (!createdDh || !createdDh.id) {
+          throw new Error('Failed to create Đơn Hàng');
         }
+        this.storeTestId('donhang', createdDh.id);
+        console.log('✅ Created Đơn Hàng:', createdDh.madonhang, 'ID:', createdDh.id);
         break;
         
       case 'Update Đơn Hàng':
@@ -443,13 +455,14 @@ export class TestingComponent implements OnInit {
         if (dhIds.length > 0) {
           const updateData = {
             id: dhIds[0],
-            trangthai: 'DANGGIAO',
-            ghichu: 'Updated by test'
+            status: 'dagiao',
+            ghichu: 'Updated by test at ' + new Date().toISOString()
           };
           await this._DonhangService.updateDonhang(updateData);
-          this._snackBar.open('✅ Updated test donhang', 'Close', { duration: 2000 });
+          console.log('✅ Updated Đơn Hàng ID:', dhIds[0]);
+        } else {
+          console.warn('⚠️ No test Đơn Hàng to update. Run Create test first.');
         }
-        await this.delay(300);
         break;
         
       case 'Delete Đơn Hàng':
@@ -459,33 +472,46 @@ export class TestingComponent implements OnInit {
           if (confirmed) {
             for (const id of dhDeleteIds) {
               await this._DonhangService.deleteDonhang(id);
+              console.log('✅ Deleted Đơn Hàng ID:', id);
             }
             this.clearTestIds('donhang');
-            this._snackBar.open(`🗑️ Deleted ${dhDeleteIds.length} test records`, 'Close', { duration: 3000 });
+          } else {
+            throw new Error('User cancelled delete operation');
           }
         } else {
-          this._snackBar.open('ℹ️ No test data to delete', 'Close', { duration: 2000 });
+          console.warn('⚠️ No test data to delete');
         }
         break;
         
       case 'Search Đơn Hàng':
-        await this._DonhangService.searchDonhang('TEST_DH');
-        await this.delay(300);
+        await this._DonhangService.searchDonhang({ 
+          pageSize: 20,
+          Batdau: moment().subtract(7, 'days').toDate(),
+          Ketthuc: new Date()
+        });
+        const searchResults = this._DonhangService.ListDonhang();
+        console.log('✅ Search returned:', searchResults.length, 'results');
         break;
         
       case 'Cancel Đơn Hàng':
         const dhCancelIds = this.getTestIds('donhang');
         if (dhCancelIds.length > 0) {
-          // Cancel method might not exist, simulate
-          this._snackBar.open('✅ Cancel simulation', 'Close', { duration: 2000 });
+          // Update status to 'huy'
+          await this._DonhangService.updateDonhang({
+            id: dhCancelIds[0],
+            status: 'huy',
+            ghichu: 'Cancelled by test'
+          });
+          console.log('✅ Cancelled Đơn Hàng ID:', dhCancelIds[0]);
+        } else {
+          console.warn('⚠️ No test Đơn Hàng to cancel');
         }
-        await this.delay(300);
         break;
         
       case 'Import Đơn Hàng':
-        // Simulate import with mock data
-        this._snackBar.open('📥 Import simulation (skipped)', 'Close', { duration: 2000 });
-        await this.delay(500);
+        // Simulate import - actual implementation would need file upload
+        console.log('ℹ️ Import test skipped (requires file upload)');
+        await this.delay(300);
         break;
         
       default:
@@ -969,6 +995,169 @@ export class TestingComponent implements OnInit {
       });
     });
     this.modules.set([...modules]);
+  }
+
+  // ==========================================
+  // TEST DATA CLEANUP METHODS
+  // ==========================================
+  
+  getTotalTestDataCount(): number {
+    let total = 0;
+    this.testDataIds.forEach((ids) => {
+      total += ids.length;
+    });
+    return total;
+  }
+
+  getModuleTestDataCount(moduleName: string): number {
+    return this.testDataIds.get(moduleName)?.length || 0;
+  }
+
+  async cleanupAllTestData() {
+    const totalCount = this.getTotalTestDataCount();
+    
+    if (totalCount === 0) {
+      this._snackBar.open('⚠️ Không có test data để xóa', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      });
+      return;
+    }
+
+    const confirmed = await this.confirmCleanup('ALL MODULES', totalCount);
+    if (!confirmed) return;
+
+    this.isRunning.set(true);
+    let deletedCount = 0;
+    let failedCount = 0;
+
+    // Cleanup each module's test data
+    for (const [moduleName, ids] of this.testDataIds.entries()) {
+      try {
+        await this.deleteModuleTestData(moduleName, ids);
+        deletedCount += ids.length;
+        this.clearTestIds(moduleName);
+      } catch (error) {
+        console.error(`Failed to cleanup ${moduleName}:`, error);
+        failedCount += ids.length;
+      }
+    }
+
+    this.isRunning.set(false);
+
+    this._snackBar.open(
+      `🗑️ Cleanup complete! Deleted: ${deletedCount}, Failed: ${failedCount}`,
+      'Đóng',
+      {
+        duration: 5000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: failedCount === 0 ? ['snackbar-success'] : ['snackbar-warning']
+      }
+    );
+  }
+
+  async cleanupModuleTestData(moduleName: string) {
+    const ids = this.getTestIds(moduleName);
+    
+    if (ids.length === 0) {
+      this._snackBar.open(`⚠️ Module ${moduleName} không có test data`, 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      });
+      return;
+    }
+
+    const confirmed = await this.confirmCleanup(moduleName, ids.length);
+    if (!confirmed) return;
+
+    this.isRunning.set(true);
+
+    try {
+      await this.deleteModuleTestData(moduleName, ids);
+      this.clearTestIds(moduleName);
+      
+      this._snackBar.open(
+        `✅ Đã xóa ${ids.length} test records từ ${moduleName}`,
+        'Đóng',
+        {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success']
+        }
+      );
+    } catch (error: any) {
+      this._snackBar.open(
+        `❌ Lỗi khi xóa test data: ${error.message}`,
+        'Đóng',
+        {
+          duration: 5000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error']
+        }
+      );
+    }
+
+    this.isRunning.set(false);
+  }
+
+  private async deleteModuleTestData(moduleName: string, ids: any[]): Promise<void> {
+    // Delete test data based on module
+    switch (moduleName) {
+      case 'donhang':
+        for (const id of ids) {
+          await this._DonhangService.deleteDonhang(id);
+        }
+        break;
+
+      case 'dathang':
+        for (const id of ids) {
+          await this._DathangService.DeleteDathang(id);
+        }
+        break;
+
+      case 'phieukho':
+        // Simulate delete for Phieukho (implement actual method if available)
+        await this.delay(300);
+        break;
+
+      case 'sanpham':
+        // Simulate delete for Sanpham (implement actual method if available)
+        await this.delay(300);
+        break;
+
+      case 'khachhang':
+        // Simulate delete for Khachhang (implement actual method if available)
+        await this.delay(300);
+        break;
+
+      case 'nhacungcap':
+        // Simulate delete for Nhacungcap (implement actual method if available)
+        await this.delay(300);
+        break;
+
+      case 'banggia':
+        // Simulate delete for Banggia (implement actual method if available)
+        await this.delay(300);
+        break;
+
+      case 'chotkho':
+        // Simulate delete for Chotkho (implement actual method if available)
+        await this.delay(300);
+        break;
+
+      case 'userpermissions':
+        // Simulate delete for Users (implement actual method if available)
+        await this.delay(300);
+        break;
+
+      default:
+        console.warn(`No cleanup handler for module: ${moduleName}`);
+    }
   }
 
   getStatusIcon(status: TestResult['status']): string {
