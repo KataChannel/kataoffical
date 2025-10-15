@@ -1,0 +1,172 @@
+<div class="testing-container">
+  <!-- Header Section -->
+  <div class="testing-header">
+    <h1>🧪 Test Dashboard</h1>
+    <p class="subtitle">Comprehensive Testing for All 13 Modules</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <div class="stat-label">Total Tests</div>
+        <div class="stat-value">{{ totalTests() }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card completed">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-label">Completed</div>
+        <div class="stat-value">{{ completedTests() }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card success">
+      <div class="stat-icon">🎉</div>
+      <div class="stat-content">
+        <div class="stat-label">Success</div>
+        <div class="stat-value">{{ successTests() }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card failed">
+      <div class="stat-icon">❌</div>
+      <div class="stat-content">
+        <div class="stat-label">Failed</div>
+        <div class="stat-value">{{ failedTests() }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-section" *ngIf="isRunning()">
+    <div class="progress-info">
+      <span class="progress-label">Testing Progress</span>
+      <span class="progress-percentage">{{ progressPercent() }}%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progressPercent()"></div>
+    </div>
+    <div class="current-test-info" *ngIf="currentTest()">
+      <span class="current-test-label">Current:</span>
+      <span class="current-test-name">{{ currentTest() }}</span>
+    </div>
+  </div>
+
+  <!-- Control Buttons -->
+  <div class="control-buttons">
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="runAllTests()"
+      [disabled]="isRunning()">
+      <mat-icon>play_arrow</mat-icon>
+      Run All Tests
+    </button>
+    
+    <button 
+      mat-raised-button 
+      color="warn" 
+      (click)="resetTests()"
+      [disabled]="isRunning()">
+      <mat-icon>refresh</mat-icon>
+      Reset All
+    </button>
+  </div>
+
+  <!-- Modules Grid -->
+  <div class="modules-grid">
+    <mat-accordion multi>
+      @for (module of modules(); track module.name) {
+        <mat-expansion-panel class="module-panel" [class]="getModuleStatusClass(module)">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <div class="module-header">
+                <span class="module-icon">{{ module.icon }}</span>
+                <span class="module-name">{{ module.name }}</span>
+                <span class="module-badge">{{ getModuleStats(module) }}</span>
+              </div>
+            </mat-panel-title>
+            <mat-panel-description>
+              <div class="module-status">
+                @if (getModuleStatusText(module) === 'Pending') {
+                  <mat-icon class="status-icon pending">radio_button_unchecked</mat-icon>
+                }
+                @if (getModuleStatusText(module) === 'Running...') {
+                  <mat-icon class="status-icon running">sync</mat-icon>
+                }
+                @if (getModuleStatusText(module) === 'Completed') {
+                  <mat-icon class="status-icon success">check_circle</mat-icon>
+                }
+                @if (getModuleStatusText(module) === 'Failed') {
+                  <mat-icon class="status-icon failed">error</mat-icon>
+                }
+                <span class="status-text">{{ getModuleStatusText(module) }}</span>
+              </div>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <!-- Module Content -->
+          <div class="module-content">
+            <div class="module-actions">
+              <button 
+                mat-button 
+                color="primary" 
+                (click)="runModuleTests(module.moduleName)"
+                [disabled]="isRunning()">
+                <mat-icon>play_circle</mat-icon>
+                Run Module Tests
+              </button>
+            </div>
+
+            <div class="tests-list">
+              @for (test of module.tests; track test.name) {
+                <div class="test-item" [class]="getTestStatusClass(test)">
+                  <div class="test-header">
+                    <div class="test-info">
+                      @if (test.status === 'pending') {
+                        <mat-icon class="test-status-icon pending">panorama_fish_eye</mat-icon>
+                      }
+                      @if (test.status === 'running') {
+                        <mat-icon class="test-status-icon running">cached</mat-icon>
+                      }
+                      @if (test.status === 'success') {
+                        <mat-icon class="test-status-icon success">check_circle_outline</mat-icon>
+                      }
+                      @if (test.status === 'failed') {
+                        <mat-icon class="test-status-icon failed">cancel</mat-icon>
+                      }
+                      <span class="test-name">{{ test.name }}</span>
+                    </div>
+                    
+                    @if (test.duration) {
+                      <span class="test-duration">{{ test.duration }}ms</span>
+                    }
+                  </div>
+
+                  @if (test.message && test.status === 'failed') {
+                    <div class="test-error">
+                      <mat-icon class="error-icon">warning</mat-icon>
+                      <span class="error-message">{{ test.message }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  </div>
+
+  <!-- Empty State -->
+  @if (modules().length === 0) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">science</mat-icon>
+      <h2>No Tests Available</h2>
+      <p>No test modules found. Please check the configuration.</p>
+    </div>
+  }
+</div>

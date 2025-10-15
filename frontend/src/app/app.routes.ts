@@ -69,6 +69,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'testing',
+        loadComponent: () =>
+          import('./admin/testing/testing.component').then(
+            (c) => c.TestingComponent
+          ),
+      },
+      {
         path: 'performance',
         canActivate: [PermissionGuard],
         data: { permission: 'admin.view' },

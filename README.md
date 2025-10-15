@@ -258,6 +258,57 @@ Test scripts and debugging tools are located in `archive/test-scripts/`.
 | **Get History** | `getImportHistory()` | `listimportdata.component.ts` | `findAll()` | `importdata.controller.ts` |
 | **Delete Import** | `DeleteImport()` | `listimportdata.component.ts` | `remove()` | `importdata.controller.ts` |
 
+## 🧪 Testing Dashboard
+
+### Automated Testing Component
+
+**Route:** `/admin/testing`
+
+**Purpose:** Comprehensive testing dashboard để kiểm tra tất cả 13 modules khi có thay đổi code.
+
+**Files:**
+- `frontend/src/app/admin/testing/testing.component.ts` (604 lines)
+- `frontend/src/app/admin/testing/testing.component.html`
+- `frontend/src/app/admin/testing/testing.component.scss`
+
+**Features:**
+- ✅ **13 Module Test Suites** với 61+ test cases
+- ✅ **Real-time Progress Tracking** với progress bar
+- ✅ **Statistics Dashboard** (Total, Completed, Success, Failed)
+- ✅ **Status Indicators** (Pending, Running, Success, Failed)
+- ✅ **Error Reporting** với error messages
+- ✅ **Module-level Execution** - Run tests by module
+- ✅ **Full Suite Execution** - Run all tests at once
+- ✅ **Signal-based Architecture** - OnPush change detection
+
+**Test Coverage:**
+1. Đơn Hàng (8 tests) - CRUD + Search + Export + Cancel
+2. Phiếu Giao Hàng (3 tests) - CRUD operations
+3. Đặt Hàng NCC (6 tests) - CRUD + Approval + Nhu cầu
+4. Phiếu Kho (7 tests) - CRUD + Excel + Xuất nhập tồn
+5. Sản Phẩm (6 tests) - CRUD + Import + Search
+6. Khách Hàng (5 tests) - CRUD + Import + Công nợ
+7. Nhà Cung Cấp (4 tests) - CRUD + Import
+8. Bảng Giá (5 tests) - CRUD + Import + Check Exists
+9. Chốt Kho (4 tests) - CRUD + Process
+10. Tồn Kho (3 tests) - View + Search + Sync
+11. User & Permissions (5 tests) - User/Role management
+12. Support Tickets (3 tests) - CRUD operations
+13. Import Data (2 tests) - Import + History
+
+**Usage:**
+```bash
+# Navigate to testing dashboard
+http://localhost:4200/admin/testing
+
+# Actions:
+- Click "Run All Tests" để test toàn bộ system
+- Expand module và click "Run Module Tests" để test riêng
+- Click "Reset All" để clear results
+```
+
+**Documentation:** See `TESTING_COMPONENT_COMPLETE.md` for detailed implementation guide.
+
 ## 🔄 GraphQL Universal Service
 
 Nhiều operations sử dụng **GraphQL Universal Service** thay vì REST endpoints:
