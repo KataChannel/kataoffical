@@ -55,7 +55,7 @@ interface ModuleTest {
     MatTooltipModule
   ],
   templateUrl: './testing.component.html',
-  styleUrls: ['./testing.component.scss'],
+  styleUrls: [],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TestingComponent implements OnInit {
@@ -1027,6 +1027,30 @@ export class TestingComponent implements OnInit {
 
   getTestStatusClass(test: TestResult): string {
     return `test-${test.status}`;
+  }
+
+  getTableRowClass(module: ModuleTest): string {
+    const anyRunning = module.tests.some((t: TestResult) => t.status === 'running');
+    const anyFailed = module.tests.some((t: TestResult) => t.status === 'failed');
+    const allSuccess = module.tests.every((t: TestResult) => t.status === 'success');
+    
+    if (anyRunning) return 'border-l-4 border-blue-500';
+    if (anyFailed) return 'border-l-4 border-red-500';
+    if (allSuccess && module.tests.length > 0) return 'border-l-4 border-green-500';
+    return 'border-l-4 border-slate-300';
+  }
+
+  getTestCardClass(test: TestResult): string {
+    switch (test.status) {
+      case 'running':
+        return 'border-l-4 border-blue-500 bg-blue-50';
+      case 'success':
+        return 'border-l-4 border-green-500 bg-green-50';
+      case 'failed':
+        return 'border-l-4 border-red-500 bg-red-50';
+      default:
+        return 'border-l-4 border-slate-300';
+    }
   }
 
   progressPercent = computed(() => {
