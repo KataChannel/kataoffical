@@ -5,6 +5,11 @@ export declare class SanphamController {
     create(createSanphamDto: any): Promise<{
         id: string;
         title: string;
+        order: number | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         title2: string | null;
         slug: string | null;
         masp: string;
@@ -16,11 +21,6 @@ export declare class SanphamController {
         soluong: import("@prisma/client/runtime/library").Decimal | null;
         soluongkho: import("@prisma/client/runtime/library").Decimal | null;
         haohut: import("@prisma/client/runtime/library").Decimal;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         giaban: import("@prisma/client/runtime/library").Decimal;
         vat: import("@prisma/client/runtime/library").Decimal | null;
     }>;
@@ -43,13 +43,18 @@ export declare class SanphamController {
             id: string;
             order: number | null;
             isActive: boolean;
-            giaban: import("@prisma/client/runtime/library").Decimal;
             banggiaId: string;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
         }[];
     } & {
         id: string;
         title: string;
+        order: number | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         title2: string | null;
         slug: string | null;
         masp: string;
@@ -61,11 +66,6 @@ export declare class SanphamController {
         soluong: import("@prisma/client/runtime/library").Decimal | null;
         soluongkho: import("@prisma/client/runtime/library").Decimal | null;
         haohut: import("@prisma/client/runtime/library").Decimal;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         giaban: import("@prisma/client/runtime/library").Decimal;
         vat: import("@prisma/client/runtime/library").Decimal | null;
     }) | {
@@ -74,13 +74,18 @@ export declare class SanphamController {
                 id: string;
                 order: number | null;
                 isActive: boolean;
-                giaban: import("@prisma/client/runtime/library").Decimal;
                 banggiaId: string;
+                giaban: import("@prisma/client/runtime/library").Decimal;
                 sanphamId: string;
             }[];
         } & {
             id: string;
             title: string;
+            order: number | null;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
             title2: string | null;
             slug: string | null;
             masp: string;
@@ -92,11 +97,6 @@ export declare class SanphamController {
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: import("@prisma/client/runtime/library").Decimal;
-            ghichu: string | null;
-            order: number | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
             giaban: import("@prisma/client/runtime/library").Decimal;
             vat: import("@prisma/client/runtime/library").Decimal | null;
         })[];
@@ -109,6 +109,11 @@ export declare class SanphamController {
         data: {
             id: string;
             title: string;
+            order: number | null;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
             title2: string | null;
             slug: string | null;
             masp: string;
@@ -120,11 +125,6 @@ export declare class SanphamController {
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: import("@prisma/client/runtime/library").Decimal;
-            ghichu: string | null;
-            order: number | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
             giaban: import("@prisma/client/runtime/library").Decimal;
             vat: import("@prisma/client/runtime/library").Decimal | null;
         }[];
@@ -147,6 +147,11 @@ export declare class SanphamController {
         goiy: number;
         id?: string | undefined;
         title?: string | undefined;
+        order?: number | null | undefined;
+        ghichu?: string | null | undefined;
+        isActive?: boolean | undefined;
+        createdAt?: Date | undefined;
+        updatedAt?: Date | undefined;
         title2?: string | null | undefined;
         slug?: string | null | undefined;
         masp?: string | undefined;
@@ -158,11 +163,6 @@ export declare class SanphamController {
         soluong?: import("@prisma/client/runtime/library").Decimal | null | undefined;
         soluongkho?: import("@prisma/client/runtime/library").Decimal | null | undefined;
         haohut?: import("@prisma/client/runtime/library").Decimal | undefined;
-        ghichu?: string | null | undefined;
-        order?: number | null | undefined;
-        isActive?: boolean | undefined;
-        createdAt?: Date | undefined;
-        updatedAt?: Date | undefined;
         giaban?: import("@prisma/client/runtime/library").Decimal | undefined;
         vat?: import("@prisma/client/runtime/library").Decimal | null | undefined;
     }[]>;
@@ -190,8 +190,8 @@ export declare class SanphamController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             tenfile: string | null;
@@ -201,6 +201,11 @@ export declare class SanphamController {
         }[];
         id: string;
         title: string;
+        order: number | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         title2: string | null;
         slug: string | null;
         masp: string;
@@ -212,17 +217,17 @@ export declare class SanphamController {
         soluong: import("@prisma/client/runtime/library").Decimal | null;
         soluongkho: import("@prisma/client/runtime/library").Decimal | null;
         haohut: import("@prisma/client/runtime/library").Decimal;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         giaban: import("@prisma/client/runtime/library").Decimal;
         vat: import("@prisma/client/runtime/library").Decimal | null;
     }>;
     update(id: string, updateSanphamDto: any): Promise<{
         id: string;
         title: string;
+        order: number | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         title2: string | null;
         slug: string | null;
         masp: string;
@@ -234,17 +239,17 @@ export declare class SanphamController {
         soluong: import("@prisma/client/runtime/library").Decimal | null;
         soluongkho: import("@prisma/client/runtime/library").Decimal | null;
         haohut: import("@prisma/client/runtime/library").Decimal;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         giaban: import("@prisma/client/runtime/library").Decimal;
         vat: import("@prisma/client/runtime/library").Decimal | null;
     }>;
     remove(id: string): Promise<{
         id: string;
         title: string;
+        order: number | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         title2: string | null;
         slug: string | null;
         masp: string;
@@ -256,11 +261,6 @@ export declare class SanphamController {
         soluong: import("@prisma/client/runtime/library").Decimal | null;
         soluongkho: import("@prisma/client/runtime/library").Decimal | null;
         haohut: import("@prisma/client/runtime/library").Decimal;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         giaban: import("@prisma/client/runtime/library").Decimal;
         vat: import("@prisma/client/runtime/library").Decimal | null;
     }>;

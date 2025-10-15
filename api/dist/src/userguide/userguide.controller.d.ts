@@ -17,13 +17,13 @@ export declare class UserguideController {
             UserguidBlocks: {
                 id: string;
                 title: string | null;
+                type: string;
                 order: number | null;
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
                 codeId: string | null;
                 description: string | null;
-                type: string;
                 listItems: string | null;
                 imageUrl: string | null;
                 imageAlt: string | null;
@@ -50,13 +50,13 @@ export declare class UserguideController {
             UserguidBlocks: {
                 id: string;
                 title: string | null;
+                type: string;
                 order: number | null;
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
                 codeId: string | null;
                 description: string | null;
-                type: string;
                 listItems: string | null;
                 imageUrl: string | null;
                 imageAlt: string | null;

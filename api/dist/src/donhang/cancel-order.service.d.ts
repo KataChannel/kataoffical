@@ -16,15 +16,57 @@ export declare class CancelOrderService {
         startDate?: Date;
         endDate?: Date;
     }): Promise<({
+        sanpham: ({
+            sanpham: {
+                id: string;
+                title: string;
+                order: number | null;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                title2: string | null;
+                slug: string | null;
+                masp: string;
+                subtitle: string | null;
+                giagoc: Prisma.Decimal;
+                dvt: string | null;
+                hinhanh: string | null;
+                loadpoint: Prisma.Decimal | null;
+                soluong: Prisma.Decimal | null;
+                soluongkho: Prisma.Decimal | null;
+                haohut: Prisma.Decimal;
+                giaban: Prisma.Decimal;
+                vat: Prisma.Decimal | null;
+            };
+        } & {
+            id: string;
+            order: number | null;
+            ghichu: string | null;
+            isActive: boolean | null;
+            giaban: Prisma.Decimal;
+            vat: Prisma.Decimal;
+            idSP: string;
+            sldat: Prisma.Decimal;
+            slgiao: Prisma.Decimal;
+            slnhan: Prisma.Decimal;
+            slhuy: Prisma.Decimal;
+            ttdat: Prisma.Decimal;
+            ttgiao: Prisma.Decimal;
+            ttnhan: Prisma.Decimal;
+            donhangId: string;
+            ttsauvat: Prisma.Decimal;
+        })[];
         khachhang: {
             id: string;
-            subtitle: string | null;
             ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            banggiaId: string | null;
+            subtitle: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             namenn: string | null;
@@ -40,62 +82,20 @@ export declare class CancelOrderService {
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
-            banggiaId: string | null;
             isshowvat: boolean;
         } | null;
-        sanpham: ({
-            sanpham: {
-                id: string;
-                title: string;
-                title2: string | null;
-                slug: string | null;
-                masp: string;
-                subtitle: string | null;
-                giagoc: Prisma.Decimal;
-                dvt: string | null;
-                hinhanh: string | null;
-                loadpoint: Prisma.Decimal | null;
-                soluong: Prisma.Decimal | null;
-                soluongkho: Prisma.Decimal | null;
-                haohut: Prisma.Decimal;
-                ghichu: string | null;
-                order: number | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                giaban: Prisma.Decimal;
-                vat: Prisma.Decimal | null;
-            };
-        } & {
-            id: string;
-            ghichu: string | null;
-            order: number | null;
-            isActive: boolean | null;
-            giaban: Prisma.Decimal;
-            vat: Prisma.Decimal;
-            idSP: string;
-            sldat: Prisma.Decimal;
-            slgiao: Prisma.Decimal;
-            slnhan: Prisma.Decimal;
-            slhuy: Prisma.Decimal;
-            ttdat: Prisma.Decimal;
-            ttgiao: Prisma.Decimal;
-            ttnhan: Prisma.Decimal;
-            donhangId: string;
-            ttsauvat: Prisma.Decimal;
-        })[];
     } & {
         id: string;
         title: string | null;
-        ghichu: string | null;
+        type: string | null;
         order: number | null;
+        ghichu: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        vat: Prisma.Decimal;
-        type: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         banggiaId: string | null;
+        vat: Prisma.Decimal;
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
@@ -109,6 +109,11 @@ export declare class CancelOrderService {
             sanpham: {
                 id: string;
                 title: string;
+                order: number | null;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -120,18 +125,13 @@ export declare class CancelOrderService {
                 soluong: Prisma.Decimal | null;
                 soluongkho: Prisma.Decimal | null;
                 haohut: Prisma.Decimal;
-                ghichu: string | null;
-                order: number | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
                 giaban: Prisma.Decimal;
                 vat: Prisma.Decimal | null;
             };
         } & {
             id: string;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             isActive: boolean;
             idSP: string;
             sldat: Prisma.Decimal;
@@ -150,8 +150,8 @@ export declare class CancelOrderService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             tenfile: string | null;
@@ -162,14 +162,14 @@ export declare class CancelOrderService {
     } & {
         id: string;
         title: string | null;
-        subtitle: string | null;
-        ghichu: string | null;
+        type: string | null;
         order: number | null;
+        ghichu: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        type: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
+        subtitle: string | null;
         printCount: number | null;
         lydohuy: string | null;
         madncc: string | null;

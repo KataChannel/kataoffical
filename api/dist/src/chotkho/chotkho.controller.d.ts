@@ -27,8 +27,8 @@ export declare class ChotkhoController {
             } & {
                 id: string;
                 title: string | null;
-                ghichu: string | null;
                 order: number | null;
+                ghichu: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 sanphamId: string | null;
@@ -43,8 +43,8 @@ export declare class ChotkhoController {
         } & {
             id: string;
             title: string | null;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
@@ -77,8 +77,8 @@ export declare class ChotkhoController {
         } & {
             id: string;
             title: string | null;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
             sanphamId: string | null;
@@ -93,8 +93,8 @@ export declare class ChotkhoController {
     } & {
         id: string;
         title: string | null;
-        ghichu: string | null;
         order: number | null;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -126,8 +126,8 @@ export declare class ChotkhoController {
             } & {
                 id: string;
                 title: string | null;
-                ghichu: string | null;
                 order: number | null;
+                ghichu: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 sanphamId: string | null;
@@ -142,8 +142,8 @@ export declare class ChotkhoController {
         } & {
             id: string;
             title: string | null;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
@@ -176,8 +176,8 @@ export declare class ChotkhoController {
         } & {
             id: string;
             title: string | null;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
             sanphamId: string | null;
@@ -192,8 +192,8 @@ export declare class ChotkhoController {
     } & {
         id: string;
         title: string | null;
-        ghichu: string | null;
         order: number | null;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -205,8 +205,8 @@ export declare class ChotkhoController {
     update(id: string, data: any): Promise<{
         id: string;
         title: string | null;
-        ghichu: string | null;
         order: number | null;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -218,8 +218,8 @@ export declare class ChotkhoController {
     remove(id: string): Promise<{
         id: string;
         title: string | null;
-        ghichu: string | null;
         order: number | null;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;

@@ -9,8 +9,8 @@ export declare class NhacungcapController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        email: string | null;
         name: string | null;
+        email: string | null;
         diachi: string | null;
         sdt: string | null;
         tenfile: string | null;
@@ -31,6 +31,11 @@ export declare class NhacungcapController {
             Sanpham: {
                 id: string;
                 title: string;
+                order: number | null;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -42,11 +47,6 @@ export declare class NhacungcapController {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
-                ghichu: string | null;
-                order: number | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
                 giaban: import("@prisma/client/runtime/library").Decimal;
                 vat: import("@prisma/client/runtime/library").Decimal | null;
             }[];
@@ -56,8 +56,8 @@ export declare class NhacungcapController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             tenfile: string | null;
@@ -79,8 +79,8 @@ export declare class NhacungcapController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             tenfile: string | null;
@@ -105,6 +105,11 @@ export declare class NhacungcapController {
             Sanpham: {
                 id: string;
                 title: string;
+                order: number | null;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -116,11 +121,6 @@ export declare class NhacungcapController {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
-                ghichu: string | null;
-                order: number | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
                 giaban: import("@prisma/client/runtime/library").Decimal;
                 vat: import("@prisma/client/runtime/library").Decimal | null;
             }[];
@@ -130,8 +130,8 @@ export declare class NhacungcapController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             tenfile: string | null;
@@ -152,8 +152,8 @@ export declare class NhacungcapController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        email: string | null;
         name: string | null;
+        email: string | null;
         diachi: string | null;
         sdt: string | null;
         tenfile: string | null;
@@ -167,8 +167,8 @@ export declare class NhacungcapController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             tenfile: string | null;
@@ -189,8 +189,8 @@ export declare class NhacungcapController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             tenfile: string | null;
@@ -214,8 +214,8 @@ export declare class NhacungcapController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             tenfile: string | null;

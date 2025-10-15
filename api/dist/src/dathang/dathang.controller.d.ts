@@ -6,8 +6,8 @@ export declare class DathangController {
     create(createDathangDto: any): Promise<{
         sanpham: {
             id: string;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             isActive: boolean;
             idSP: string;
             sldat: import("@prisma/client/runtime/library").Decimal;
@@ -23,14 +23,14 @@ export declare class DathangController {
     } & {
         id: string;
         title: string | null;
-        subtitle: string | null;
-        ghichu: string | null;
+        type: string | null;
         order: number | null;
+        ghichu: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        type: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
+        subtitle: string | null;
         printCount: number | null;
         lydohuy: string | null;
         madncc: string | null;
@@ -46,8 +46,8 @@ export declare class DathangController {
     createbynhucau(data: any): Promise<{
         sanpham: {
             id: string;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             isActive: boolean;
             idSP: string;
             sldat: import("@prisma/client/runtime/library").Decimal;
@@ -63,14 +63,14 @@ export declare class DathangController {
     } & {
         id: string;
         title: string | null;
-        subtitle: string | null;
-        ghichu: string | null;
+        type: string | null;
         order: number | null;
+        ghichu: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        type: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
+        subtitle: string | null;
         printCount: number | null;
         lydohuy: string | null;
         madncc: string | null;
@@ -90,6 +90,11 @@ export declare class DathangController {
                 sanpham: {
                     id: string;
                     title: string;
+                    order: number | null;
+                    ghichu: string | null;
+                    isActive: boolean;
+                    createdAt: Date;
+                    updatedAt: Date;
                     title2: string | null;
                     slug: string | null;
                     masp: string;
@@ -101,18 +106,13 @@ export declare class DathangController {
                     soluong: import("@prisma/client/runtime/library").Decimal | null;
                     soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                     haohut: import("@prisma/client/runtime/library").Decimal;
-                    ghichu: string | null;
-                    order: number | null;
-                    isActive: boolean;
-                    createdAt: Date;
-                    updatedAt: Date;
                     giaban: import("@prisma/client/runtime/library").Decimal;
                     vat: import("@prisma/client/runtime/library").Decimal | null;
                 };
             } & {
                 id: string;
-                ghichu: string | null;
                 order: number | null;
+                ghichu: string | null;
                 isActive: boolean;
                 idSP: string;
                 sldat: import("@prisma/client/runtime/library").Decimal;
@@ -131,8 +131,8 @@ export declare class DathangController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                email: string | null;
                 name: string | null;
+                email: string | null;
                 diachi: string | null;
                 sdt: string | null;
                 tenfile: string | null;
@@ -155,14 +155,14 @@ export declare class DathangController {
         } & {
             id: string;
             title: string | null;
-            subtitle: string | null;
-            ghichu: string | null;
+            type: string | null;
             order: number | null;
+            ghichu: string | null;
+            status: import(".prisma/client").$Enums.StatusDonhang;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date | null;
-            type: string | null;
-            status: import(".prisma/client").$Enums.StatusDonhang;
+            subtitle: string | null;
             printCount: number | null;
             lydohuy: string | null;
             madncc: string | null;
@@ -194,8 +194,8 @@ export declare class DathangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             tenfile: string | null;
@@ -217,14 +217,14 @@ export declare class DathangController {
         } | null;
         id: string;
         title: string | null;
-        subtitle: string | null;
-        ghichu: string | null;
+        type: string | null;
         order: number | null;
+        ghichu: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        type: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
+        subtitle: string | null;
         printCount: number | null;
         lydohuy: string | null;
         madncc: string | null;
@@ -237,6 +237,11 @@ export declare class DathangController {
             sanpham: {
                 id: string;
                 title: string;
+                order: number | null;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -248,18 +253,13 @@ export declare class DathangController {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
-                ghichu: string | null;
-                order: number | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
                 giaban: import("@prisma/client/runtime/library").Decimal;
                 vat: import("@prisma/client/runtime/library").Decimal | null;
             };
         } & {
             id: string;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             isActive: boolean;
             idSP: string;
             sldat: import("@prisma/client/runtime/library").Decimal;
@@ -278,8 +278,8 @@ export declare class DathangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             tenfile: string | null;
@@ -302,14 +302,14 @@ export declare class DathangController {
     } & {
         id: string;
         title: string | null;
-        subtitle: string | null;
-        ghichu: string | null;
+        type: string | null;
         order: number | null;
+        ghichu: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        type: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
+        subtitle: string | null;
         printCount: number | null;
         lydohuy: string | null;
         madncc: string | null;
@@ -322,6 +322,11 @@ export declare class DathangController {
                 sanpham: {
                     id: string;
                     title: string;
+                    order: number | null;
+                    ghichu: string | null;
+                    isActive: boolean;
+                    createdAt: Date;
+                    updatedAt: Date;
                     title2: string | null;
                     slug: string | null;
                     masp: string;
@@ -333,18 +338,13 @@ export declare class DathangController {
                     soluong: import("@prisma/client/runtime/library").Decimal | null;
                     soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                     haohut: import("@prisma/client/runtime/library").Decimal;
-                    ghichu: string | null;
-                    order: number | null;
-                    isActive: boolean;
-                    createdAt: Date;
-                    updatedAt: Date;
                     giaban: import("@prisma/client/runtime/library").Decimal;
                     vat: import("@prisma/client/runtime/library").Decimal | null;
                 };
             } & {
                 id: string;
-                ghichu: string | null;
                 order: number | null;
+                ghichu: string | null;
                 isActive: boolean;
                 idSP: string;
                 sldat: import("@prisma/client/runtime/library").Decimal;
@@ -363,8 +363,8 @@ export declare class DathangController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                email: string | null;
                 name: string | null;
+                email: string | null;
                 diachi: string | null;
                 sdt: string | null;
                 tenfile: string | null;
@@ -387,14 +387,14 @@ export declare class DathangController {
         } & {
             id: string;
             title: string | null;
-            subtitle: string | null;
-            ghichu: string | null;
+            type: string | null;
             order: number | null;
+            ghichu: string | null;
+            status: import(".prisma/client").$Enums.StatusDonhang;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date | null;
-            type: string | null;
-            status: import(".prisma/client").$Enums.StatusDonhang;
+            subtitle: string | null;
             printCount: number | null;
             lydohuy: string | null;
             madncc: string | null;
@@ -430,6 +430,10 @@ export declare class DathangController {
             } | null;
             id: string;
             title: string;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
             title2: string | null;
             slug: string | null;
             masp: string;
@@ -441,10 +445,6 @@ export declare class DathangController {
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: import("@prisma/client/runtime/library").Decimal;
-            order: number | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
             giaban: import("@prisma/client/runtime/library").Decimal;
             vat: import("@prisma/client/runtime/library").Decimal | null;
         }[];
@@ -454,8 +454,8 @@ export declare class DathangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             tenfile: string | null;
@@ -477,14 +477,14 @@ export declare class DathangController {
         } | null;
         id: string;
         title: string | null;
-        subtitle: string | null;
-        ghichu: string | null;
+        type: string | null;
         order: number | null;
+        ghichu: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        type: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
+        subtitle: string | null;
         printCount: number | null;
         lydohuy: string | null;
         madncc: string | null;
@@ -497,6 +497,11 @@ export declare class DathangController {
             sanpham: {
                 id: string;
                 title: string;
+                order: number | null;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -508,18 +513,13 @@ export declare class DathangController {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
-                ghichu: string | null;
-                order: number | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
                 giaban: import("@prisma/client/runtime/library").Decimal;
                 vat: import("@prisma/client/runtime/library").Decimal | null;
             };
         } & {
             id: string;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             isActive: boolean;
             idSP: string;
             sldat: import("@prisma/client/runtime/library").Decimal;
@@ -538,8 +538,8 @@ export declare class DathangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             tenfile: string | null;
@@ -561,14 +561,14 @@ export declare class DathangController {
         } | null;
         id: string;
         title: string | null;
-        subtitle: string | null;
-        ghichu: string | null;
+        type: string | null;
         order: number | null;
+        ghichu: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        type: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
+        subtitle: string | null;
         printCount: number | null;
         lydohuy: string | null;
         madncc: string | null;
@@ -579,14 +579,14 @@ export declare class DathangController {
     update(id: string, updateDathangDto: any): Promise<{
         id: string;
         title: string | null;
-        subtitle: string | null;
-        ghichu: string | null;
+        type: string | null;
         order: number | null;
+        ghichu: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        type: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
+        subtitle: string | null;
         printCount: number | null;
         lydohuy: string | null;
         madncc: string | null;
@@ -597,14 +597,14 @@ export declare class DathangController {
     remove(id: string): Promise<{
         id: string;
         title: string | null;
-        subtitle: string | null;
-        ghichu: string | null;
+        type: string | null;
         order: number | null;
+        ghichu: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        type: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
+        subtitle: string | null;
         printCount: number | null;
         lydohuy: string | null;
         madncc: string | null;

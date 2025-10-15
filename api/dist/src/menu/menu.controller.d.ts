@@ -5,11 +5,11 @@ export declare class MenuController {
     create(createMenuDto: any): Promise<{
         id: string;
         title: string;
-        slug: string | null;
         order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        slug: string | null;
         icon: string | null;
         parentId: string | null;
     }>;
@@ -17,22 +17,22 @@ export declare class MenuController {
         children: {
             id: string;
             title: string;
-            slug: string | null;
             order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            slug: string | null;
             icon: string | null;
             parentId: string | null;
         }[];
     } & {
         id: string;
         title: string;
-        slug: string | null;
         order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        slug: string | null;
         icon: string | null;
         parentId: string | null;
     })[]>;
@@ -42,44 +42,44 @@ export declare class MenuController {
         children: {
             id: string;
             title: string;
-            slug: string | null;
             order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            slug: string | null;
             icon: string | null;
             parentId: string | null;
         }[];
     } & {
         id: string;
         title: string;
-        slug: string | null;
         order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        slug: string | null;
         icon: string | null;
         parentId: string | null;
     }) | null>;
     update(id: string, updateMenuDto: any): Promise<{
         id: string;
         title: string;
-        slug: string | null;
         order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        slug: string | null;
         icon: string | null;
         parentId: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
         title: string;
-        slug: string | null;
         order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        slug: string | null;
         icon: string | null;
         parentId: string | null;
     }>;

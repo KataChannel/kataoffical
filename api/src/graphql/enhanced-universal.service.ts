@@ -355,11 +355,21 @@ export class EnhancedUniversalService {
       const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
       
       const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
+      
+      // ✅ FIX: Only take select/include from queryOptions, NOT where/data
       const updateOptions = {
         where: normalizedWhere,
         data: normalizedData,
-        ...queryOptions
+        ...(queryOptions.select && { select: queryOptions.select }),
+        ...(queryOptions.include && { include: queryOptions.include })
       };
+      
+      console.log(`📤 Final update options for ${modelName}:`, {
+        whereKeys: Object.keys(updateOptions.where || {}),
+        dataKeys: Object.keys(updateOptions.data || {}),
+        hasSelect: !!updateOptions.select,
+        hasInclude: !!updateOptions.include
+      });
       
       const startTime = Date.now();
       const result = await model.update(updateOptions);

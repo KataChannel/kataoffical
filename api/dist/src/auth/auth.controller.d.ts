@@ -17,12 +17,12 @@ export declare class AuthController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }>;
     login(body: {
         SDT: string;
@@ -40,12 +40,12 @@ export declare class AuthController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }>;
     randomPassword(req: any): Promise<{
         newPassword: string;

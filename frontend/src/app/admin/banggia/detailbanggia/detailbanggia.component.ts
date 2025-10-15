@@ -8,6 +8,8 @@ import {
   OnDestroy,
   signal,
   ViewChild,
+  EffectRef,
+  untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -104,6 +106,13 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   // UI state indicators
   public hasUnsavedChanges = signal(false);
   
+  // Loading state to prevent concurrent operations
+  private isLoadingBanggia = signal(false);
+  private isComponentInitialized = signal(false);
+  private effectRef?: EffectRef;
+  private routeSubscription?: any;
+  private lastProcessedId: string | null = null; // Track đã xử lý ID nào
+  
   filterSanpham: any[] = [];
   ListSanpham: any[] = [];
   ListKhachhang: any[] = [];
@@ -114,50 +123,188 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   ];
   filterKhachhang: any[] = [];
   CheckListKhachhang: any[] = [];
-  constructor() {
-    
-    this._route.paramMap.subscribe(async (params) => {
-      const id = params.get('id');
-      this._BanggiaService.setBanggiaId(id);
-    });
-    effect(async () => {
-      const id = this._BanggiaService.banggiaId();
-      // await this.LoadListSanpham();
-      // await this.LoadListKhachhang();
-      console.log('Detected banggiaId change:', id);
-      if (!id) {
-        this._router.navigate(['/admin/banggia']);
-        this._ListbanggiaComponent.drawer.close();
-      }
-      if (id === 'new') {
-        this.DetailBanggia.set({
-          title: `BG - ${moment().format('DD/MM/YYYY')}`,
-          status: 'baogia',
-          type: 'bansi',
-          batdau: moment().startOf('month').toDate(),
-          ketthuc: moment().endOf('month').toDate(),
-        });
-        this._ListbanggiaComponent.drawer.open();
-        this.isEdit.update((value) => !value);
-        this._router.navigate(['/admin/banggia', 'new']);
-      } else {
-        await this._BanggiaService.getBanggiaByid(id);
-        this.dataSource().data = this.DetailBanggia().sanpham || [];
-        this._ListbanggiaComponent.drawer.open();
-        this._router.navigate(['/admin/banggia', id]);
-      }
+  
+  // DetailBanggia - Chỉ là getter, KHÔNG tạo dependency
+  get DetailBanggia() {
+    return this._BanggiaService.DetailBanggia;
+  }
+  
+  /**
+   * Helper method để update DetailBanggia KHÔNG trigger effect
+   * TẤT CẢ updates phải dùng method này thay vì trực tiếp .update()
+   */
+  private updateDetailBanggiaUntracked(updateFn: (banggia: any) => any) {
+    untracked(() => {
+      this._BanggiaService.DetailBanggia.update(updateFn);
     });
   }
-  DetailBanggia: any = this._BanggiaService.DetailBanggia;
+  
+  constructor() {
+    // Effect ĐƠN GIẢN - CHỈ trigger bởi banggiaId, KHÔNG bao giờ track DetailBanggia
+    this.effectRef = effect(() => {
+      // CHỈ đọc banggiaId trong tracked context
+      const id = this._BanggiaService.banggiaId();
+      
+      // TẤT CẢ logic khác chạy trong untracked() để KHÔNG tạo dependencies
+      untracked(() => {
+        this.handleBanggiaIdChange(id);
+      });
+    });
+  }
+  
+  /**
+   * Xử lý thay đổi banggiaId - chạy trong untracked context
+   * QUAN TRỌNG: Method này KHÔNG BAO GIỜ được gọi trực tiếp từ tracked context
+   */
+  private async handleBanggiaIdChange(id: string | null) {
+    console.log('[EFFECT-HANDLER] Processing ID:', id, 'lastProcessed:', this.lastProcessedId);
+    
+    // Guard: Chờ component init
+    if (!this.isComponentInitialized()) {
+      console.log('[EFFECT-HANDLER] Component not initialized, skipping...');
+      return;
+    }
+    
+    // Guard: Ngăn xử lý duplicate ID
+    if (this.lastProcessedId === id) {
+      console.log('[EFFECT-HANDLER] ID already processed, skipping:', id);
+      return;
+    }
+    
+    // Guard: Ngăn concurrent loading
+    if (this.isLoadingBanggia()) {
+      console.log('[EFFECT-HANDLER] Already loading, skipping...');
+      return;
+    }
+    
+    // Đánh dấu đã xử lý ID này
+    this.lastProcessedId = id;
+    
+    if (!id) {
+      console.log('[EFFECT-HANDLER] No ID, navigating to list...');
+      this._router.navigate(['/admin/banggia']);
+      this._ListbanggiaComponent.drawer.close();
+      return;
+    }
+    
+    if (id === 'new') {
+      console.log('[EFFECT-HANDLER] Creating new banggia...');
+      this.handleNewBanggia();
+    } else {
+      console.log('[EFFECT-HANDLER] Loading banggia:', id);
+      await this.loadBanggiaData(id);
+    }
+    
+    console.log('[EFFECT-HANDLER] Completed for ID:', id);
+  }
+  
+  /**
+   * Xử lý tạo mới banggia
+   */
+  private handleNewBanggia() {
+    // Set data mới TRONG untracked context - KHÔNG trigger effect
+    this._BanggiaService.DetailBanggia.set({
+      title: `BG - ${moment().format('DD/MM/YYYY')}`,
+      status: 'baogia',
+      type: 'bansi',
+      batdau: moment().startOf('month').toDate(),
+      ketthuc: moment().endOf('month').toDate(),
+    });
+    
+    this._ListbanggiaComponent.drawer.open();
+    this.isEdit.set(true);
+    
+    if (this._router.url !== '/admin/banggia/new') {
+      this._router.navigate(['/admin/banggia', 'new']);
+    }
+  }
   isEdit = signal(false);
   isDelete = signal(false);
   banggiaId: any = this._BanggiaService.banggiaId;
+  
   async ngOnInit(): Promise<void> {
-    await this.LoadListKhachhang();
-    await this.LoadListSanpham(); 
+    console.log('[INIT] ===== Component Initialization Started =====');
+    
+    // Load danh sách song song
+    console.log('[INIT] Loading lists in parallel...');
+    await Promise.all([
+      this.LoadListKhachhang(),
+      this.LoadListSanpham()
+    ]);
+    console.log('[INIT] Lists loaded successfully');
+    
+    // Đánh dấu init xong - effect sẽ active từ đây
+    this.isComponentInitialized.set(true);
+    console.log('[INIT] Component initialized - effect is now active');
+    
+    // Subscribe route params
+    this.routeSubscription = this._route.paramMap.subscribe((params) => {
+      const id = params.get('id');
+      const currentId = this._BanggiaService.banggiaId();
+      
+      console.log('[ROUTE] Param changed:', { from: currentId, to: id });
+      
+      // Reset lastProcessedId khi route thay đổi để cho phép xử lý lại
+      if (currentId !== id) {
+        console.log('[ROUTE] ID changed - resetting lastProcessedId');
+        this.lastProcessedId = null; // Cho phép effect xử lý ID mới
+        this._BanggiaService.setBanggiaId(id);
+      } else {
+        console.log('[ROUTE] Same ID - no action needed');
+      }
+    });
+    
+    console.log('[INIT] ===== Component Initialization Completed =====');
+  }
+  
+  /**
+   * Load dữ liệu banggia - CHẠY TRONG UNTRACKED CONTEXT
+   */
+  private async loadBanggiaData(id: string) {
+    console.log('[LOAD] ===== Starting Load Process =====');
+    console.log('[LOAD] Target ID:', id);
+    
+    this.isLoadingBanggia.set(true);
+    
+    try {
+      console.log('[LOAD] Calling service.getBanggiaByid...');
+      await this._BanggiaService.getBanggiaByid(id);
+      
+      console.log('[LOAD] Data loaded, updating UI (in untracked)...');
+      // Đọc DetailBanggia trong untracked context
+      untracked(() => {
+        const banggia = this._BanggiaService.DetailBanggia();
+        this.dataSource().data = banggia?.sanpham || [];
+        console.log('[LOAD] DataSource updated with', banggia?.sanpham?.length || 0, 'items');
+      });
+      
+      this._ListbanggiaComponent.drawer.open();
+      
+      // Navigation check
+      const targetUrl = `/admin/banggia/${id}`;
+      if (this._router.url !== targetUrl) {
+        console.log('[LOAD] Navigating to:', targetUrl);
+        await this._router.navigate(['/admin/banggia', id]);
+      } else {
+        console.log('[LOAD] Already at target URL');
+      }
+      
+      console.log('[LOAD] ===== Load Completed Successfully =====');
+    } catch (error) {
+      console.error('[LOAD] ===== Load Failed =====');
+      console.error('[LOAD] Error:', error);
+      this._snackBar.open('Lỗi tải bảng giá', 'Đóng', { duration: 3000 });
+      
+      // Reset lastProcessedId on error để cho phép retry
+      this.lastProcessedId = null;
+    } finally {
+      console.log('[LOAD] Resetting loading state');
+      this.isLoadingBanggia.set(false);
+    }
   }
   async LoadListSanpham(){
     try{
+      console.log('Loading danh sách sản phẩm...');
       const ListSanpham = await this._GraphqlService.findAll('sanpham', {
         select: {
           id: true,
@@ -170,14 +317,16 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
         enableParallelFetch: true,
         orderBy: { title: 'asc' },
       });
-      console.log('Danh sách sản phẩm từ GraphQL:', ListSanpham);
-      this.ListSanpham = ListSanpham.data;
+      console.log('Danh sách sản phẩm từ GraphQL:', ListSanpham?.data?.length || 0, 'items');
+      this.ListSanpham = ListSanpham.data || [];
     }catch(error){
       console.error('Lỗi load danh sách sản phẩm:', error);
+      this._snackBar.open('Lỗi tải danh sách sản phẩm', 'Đóng', { duration: 3000 });
     }
   }
   async LoadListKhachhang(){
     try{
+      console.log('Loading danh sách khách hàng...');
       const Khachhangs = await this._GraphqlService.findAll('khachhang', {
         select: {
           id: true,
@@ -195,10 +344,11 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
         aggressiveCache: true,
         enableParallelFetch: true,
       });
-      console.log('Danh sách khách hàng từ GraphQL:', Khachhangs);
-      this.filterKhachhang = this.ListKhachhang = Khachhangs.data;
+      console.log('Danh sách khách hàng từ GraphQL:', Khachhangs?.data?.length || 0, 'items');
+      this.filterKhachhang = this.ListKhachhang = Khachhangs.data || [];
     }catch(error){
-      console.error('Lỗi load danh sách sản phẩm:', error);
+      console.error('Lỗi load danh sách khách hàng:', error);
+      this._snackBar.open('Lỗi tải danh sách khách hàng', 'Đóng', { duration: 3000 });
     }
   }
   ngAfterViewInit() {
@@ -211,7 +361,21 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Cleanup timers to prevent memory leaks
+    console.log('[DESTROY] Cleaning up component...');
+    
+    // Cleanup route subscription
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+      console.log('[DESTROY] Route subscription unsubscribed');
+    }
+    
+    // Cleanup effect
+    if (this.effectRef) {
+      this.effectRef.destroy();
+      console.log('[DESTROY] Effect destroyed');
+    }
+    
+    // Cleanup timers
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
     }
@@ -219,10 +383,17 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       clearTimeout(this.batchUpdateTimer);
     }
     
-    // Process any remaining pending changes before destroying (local only, no save)
+    // Flush pending changes
     if (this.pendingChanges.size > 0) {
       this.flushPendingChanges();
     }
+    
+    // Reset states
+    this.isComponentInitialized.set(false);
+    this.isLoadingBanggia.set(false);
+    this.lastProcessedId = null;
+    
+    console.log('[DESTROY] Component destroyed');
   }
 
   // Force apply all pending changes immediately (useful before save)
@@ -235,16 +406,21 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     }
     
     if (this.pendingChanges.size > 0) {
-      // Just apply changes locally without saving
-      this.DetailBanggia.update((banggia: any) => {
-        this.pendingChanges.forEach((changes, index) => {
-          Object.assign(banggia.sanpham[index], changes);
+      // Update trong untracked context
+      untracked(() => {
+        this._BanggiaService.DetailBanggia.update((banggia: any) => {
+          this.pendingChanges.forEach((changes, index) => {
+            Object.assign(banggia.sanpham[index], changes);
+          });
+          return banggia;
         });
-        return banggia;
+        
+        this.pendingChanges.clear();
+        
+        // Update dataSource cũng trong untracked
+        const banggia = this._BanggiaService.DetailBanggia();
+        this.dataSource().data = [...(banggia?.sanpham || [])];
       });
-      
-      this.pendingChanges.clear();
-      this.dataSource().data = [...this.DetailBanggia().sanpham];
     }
   }
 
@@ -282,19 +458,30 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     // Flush any pending changes before saving
     this.flushPendingChanges();
     
-    console.log(this.DetailBanggia());
+    console.log('[UPDATE] Updating banggia...');
     try {
-      await this._BanggiaService.updateBanggia(this.DetailBanggia());
+      // Get data trong untracked context
+      const banggiaData = untracked(() => this._BanggiaService.DetailBanggia());
+      console.log('[UPDATE] Data to update:', banggiaData);
+      console.log('[UPDATE] Banggia ID:', banggiaData?.id);
+      
+      if (!banggiaData?.id) {
+        throw new Error('Banggia ID is missing! Cannot update.');
+      }
+      
+      await this._BanggiaService.updateBanggia(banggiaData);
+      
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-success'],
       });
-      this.isEdit.update((value) => !value);
+      
+      this.isEdit.set(false);
       this.hasUnsavedChanges.set(false);
     } catch (error) {
-      console.error('Lỗi khi cập nhật banggia:', error);
+      console.error('[UPDATE] Error:', error);
       this._snackBar.open('Lỗi khi cập nhật!', 'Đóng', {
         duration: 3000,
         horizontalPosition: 'end',
@@ -327,22 +514,27 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     
     const changeCount = this.pendingChanges.size;
     
-    // Apply all pending changes at once
-    this.DetailBanggia.update((banggia: any) => {
-      this.pendingChanges.forEach((changes, index) => {
-        Object.assign(banggia.sanpham[index], changes);
+    // Apply trong untracked context
+    untracked(() => {
+      this._BanggiaService.DetailBanggia.update((banggia: any) => {
+        this.pendingChanges.forEach((changes, index) => {
+          Object.assign(banggia.sanpham[index], changes);
+        });
+        return banggia;
       });
-      return banggia;
     });
     
-    // Clear pending changes but keep unsaved flag
+    // Clear pending changes
     this.pendingChanges.clear();
-    this.hasUnsavedChanges.set(true); // Mark as having unsaved changes
+    this.hasUnsavedChanges.set(true);
     
-    // Update data source
-    this.dataSource().data = [...this.DetailBanggia().sanpham];
+    // Update data source trong untracked
+    untracked(() => {
+      const banggia = this._BanggiaService.DetailBanggia();
+      this.dataSource().data = [...(banggia?.sanpham || [])];
+    });
     
-    console.log(`Batch update completed for ${changeCount} items - Manual save required`);
+    console.log(`[BATCH] Updated ${changeCount} items - Manual save required`);
   }
 
   private addPendingChange(index: number, field: string, value: any) {
@@ -390,8 +582,9 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   toggleDelete() {
     this.isDelete.update((value) => !value);
   }
+  
   FillSlug() {
-    this.DetailBanggia.update((v: any) => {
+    this.updateDetailBanggiaUntracked((v: any) => {
       v.slug = convertToSlug(v.title);
       return v;
     });
@@ -449,8 +642,8 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
         }
       });
     } else {
-      // For non-giaban fields, update immediately
-      this.DetailBanggia.update((v: any) => {
+      // For non-giaban fields, update immediately TRONG UNTRACKED
+      this.updateDetailBanggiaUntracked((v: any) => {
         if (index !== null) {
           v.sanpham[index][field] = newValue;
         } else {
@@ -494,20 +687,28 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   }
   AddSanpham() {}
   EmptyCart() {
-    this.DetailBanggia.update((v: any) => {
+    this.updateDetailBanggiaUntracked((v: any) => {
       v.sanpham = [];
       return v;
     });
-    this.dataSource().data = this.DetailBanggia().sanpham;
-    this.dataSource().sort = this.sort;
+    
+    untracked(() => {
+      const banggia = this._BanggiaService.DetailBanggia();
+      this.dataSource().data = banggia?.sanpham || [];
+      this.dataSource().sort = this.sort;
+    });
   }
   RemoveSanpham(item: any) {
-    this.DetailBanggia.update((v: any) => {
+    this.updateDetailBanggiaUntracked((v: any) => {
       v.sanpham = v.sanpham.filter((v1: any) => v1.id !== item.id);
       return v;
     });
-    this.dataSource().data = this.DetailBanggia().sanpham;
-    this.dataSource().sort = this.sort;
+    
+    untracked(() => {
+      const banggia = this._BanggiaService.DetailBanggia();
+      this.dataSource().data = banggia?.sanpham || [];
+      this.dataSource().sort = this.sort;
+    });
   }
   CoppyDon() {
     this._snackBar.open('Đang Coppy Đơn Hàng', '', {
@@ -516,13 +717,18 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       verticalPosition: 'top',
       panelClass: ['snackbar-warning'],
     });
-    this.DetailBanggia.update((v: any) => {
+    
+    this.updateDetailBanggiaUntracked((v: any) => {
       delete v.id;
       v.title = `${v.title} - Coppy`;
       return v;
     });
+    
+    // Get data trong untracked
+    const dataToCopy = untracked(() => this._BanggiaService.DetailBanggia());
+    
     this._BanggiaService
-      .CreateBanggia(this.DetailBanggia())
+      .CreateBanggia(dataToCopy)
       .then((data: any) => {
         this._snackBar.open('Coppy Đơn Hàng Thành Công', '', {
           duration: 1000,
@@ -531,9 +737,6 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
           panelClass: ['snackbar-success'],
         });
         this._router.navigate(['/admin/banggia', this.banggiaId()]);
-        //  setTimeout(() => {
-        //   window.location.href = `admin/donhang/donsi/${data.id}`;
-        //  }, 1000);
       });
   }
   printContent() {
@@ -585,9 +788,9 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
         masp: v.masp?.trim() || '',
         giaban: Number(v.giaban) || 0,
       }))
-      .filter((v: any) => v.masp); // Loại bỏ các mục có masp trống
+      .filter((v: any) => v.masp);
 
-    this.DetailBanggia.update((v: any) => {
+    this.updateDetailBanggiaUntracked((v: any) => {
       const listdata = transformedData.map((item: any) => {
         item.masp = item.masp?.trim() || '';
         item.giaban = Number(item.giaban) || 0;
@@ -602,11 +805,15 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       v.sanpham = listdata;
       return v;
     });
-    console.log(this.DetailBanggia().sanpham);
+    
+    console.log('[IMPORT] Imported data');
 
-    this.dataSource().data = this.DetailBanggia().sanpham;
-    //this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;
+    untracked(() => {
+      const banggia = this._BanggiaService.DetailBanggia();
+      this.dataSource().data = banggia?.sanpham || [];
+      this.dataSource().sort = this.sort;
+    });
+    
     this._snackBar.open('Cập Nhật Thành Công', '', {
       duration: 1000,
       horizontalPosition: 'end',
@@ -616,25 +823,28 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   }
 
   async DoOutFilter(event: any) {
-    console.log('Cập nhật sản phẩm cho bảng giá:', event);
+    console.log('[FILTER] Updating products for banggia:', event);
 
     try {
-      this.DetailBanggia.update((v: any) => {
+      this.updateDetailBanggiaUntracked((v: any) => {
         v.sanpham = event.map((sp: any) => ({
-        sanphamId: sp.sanphamId || sp.id,
-        giaban: Number(sp.giaban) || 0,
-        title:sp.title,
-        masp:sp.masp,
-        dvt:sp.dvt,
-        order: sp.order || 1,
-      }));;
+          sanphamId: sp.sanphamId || sp.id,
+          giaban: Number(sp.giaban) || 0,
+          title: sp.title,
+          masp: sp.masp,
+          dvt: sp.dvt,
+          order: sp.order || 1,
+        }));
         return v;
-      }); 
-      this.filterSanpham = this.DetailBanggia().sanpham;
-      this.dataSource().data = this.DetailBanggia().sanpham;
-      this.dataSource().sort = this.sort;
-      console.log(this.DetailBanggia());
+      });
       
+      untracked(() => {
+        const banggia = this._BanggiaService.DetailBanggia();
+        this.filterSanpham = banggia?.sanpham || [];
+        this.dataSource().data = banggia?.sanpham || [];
+        this.dataSource().sort = this.sort;
+        console.log('[FILTER] Updated banggia:', banggia);
+      });
 
       this._snackBar.open('Cập nhật sản phẩm thành công', '', {
         duration: 2000,
@@ -643,7 +853,7 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
         panelClass: ['snackbar-success'],
       });
     } catch (error) {
-      console.error('Lỗi cập nhật sản phẩm:', error);
+      console.error('[FILTER] Error updating products:', error);
       this._snackBar.open('Lỗi cập nhật sản phẩm', '', {
         duration: 2000,
         horizontalPosition: 'end',
@@ -653,38 +863,10 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     }
   }
   async DoOutKhachhang(event: any) {
-    console.log('Cập nhật khách hàng cho bảng giá:', event);
+    console.log('[CUSTOMER] Updating customers for banggia:', event);
     try {
-      // Cập nhật danh sách khách hàng cho bảng giá sử dụng GraphQL
-      const updateData = {
-        khachhang: {
-          set: event.map((kh: any) => ({ id: kh.id })),
-        },
-      };
-      console.log('Dữ liệu cập nhật khách hàng:', updateData);
-      // console.log(this.banggiaId());      
-      // await this._GraphqlService.updateOne('banggia',{ id: this.banggiaId() },
-      //   updateData,
-      //   {
-      //     include: {
-      //       khachhang: {
-      //         select: {
-      //           id: true,
-      //           name: true,
-      //           makh: true,
-      //           diachi: true,
-      //           sdt: true,
-      //           email: true,
-      //           loaikh: true,
-      //           isActive: true,
-      //         },
-      //       },
-      //     },
-      //   }
-      // );
-
-      // Cập nhật DetailBanggia với dữ liệu mới
-      this.DetailBanggia.update((v: any) => {
+      // Update DetailBanggia trong untracked context
+      this.updateDetailBanggiaUntracked((v: any) => {
         v.khachhang = event;
         return v;
       });
@@ -696,7 +878,7 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
         panelClass: ['snackbar-success'],
       });
     } catch (error) {
-      console.error('Lỗi cập nhật khách hàng:', error);
+      console.error('[CUSTOMER] Error updating customers:', error);
       this._snackBar.open('Lỗi cập nhật khách hàng', '', {
         duration: 2000,
         horizontalPosition: 'end',

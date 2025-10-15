@@ -24,6 +24,11 @@ export declare class PhieukhoService {
             sanpham: {
                 id: string;
                 title: string;
+                order: number | null;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -35,19 +40,14 @@ export declare class PhieukhoService {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
-                ghichu: string | null;
-                order: number | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
                 giaban: import("@prisma/client/runtime/library").Decimal;
                 vat: import("@prisma/client/runtime/library").Decimal | null;
             };
             id: string;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
             phieuKhoId: string;
         }[];
@@ -65,11 +65,11 @@ export declare class PhieukhoService {
         } | null;
         id: string;
         title: string | null;
+        type: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         madonhang: string | null;
         madncc: string | null;
         khoId: string | null;
@@ -81,10 +81,10 @@ export declare class PhieukhoService {
     findOne(id: string): Promise<{
         sanpham: {
             id: string;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
             phieuKhoId: string;
         }[];
@@ -103,11 +103,11 @@ export declare class PhieukhoService {
     } & {
         id: string;
         title: string | null;
+        type: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         madonhang: string | null;
         madncc: string | null;
         khoId: string | null;
@@ -119,21 +119,21 @@ export declare class PhieukhoService {
     create(data: any): Promise<{
         sanpham: {
             id: string;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {
         id: string;
         title: string | null;
+        type: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         madonhang: string | null;
         madncc: string | null;
         khoId: string | null;
@@ -145,21 +145,21 @@ export declare class PhieukhoService {
     update(id: string, data: any): Promise<{
         sanpham: {
             id: string;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {
         id: string;
         title: string | null;
+        type: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         madonhang: string | null;
         madncc: string | null;
         khoId: string | null;
@@ -171,11 +171,11 @@ export declare class PhieukhoService {
     remove(id: string): Promise<{
         id: string;
         title: string | null;
+        type: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         madonhang: string | null;
         madncc: string | null;
         khoId: string | null;

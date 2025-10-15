@@ -9,9 +9,9 @@ export declare class AuditLogController {
         } | null;
     } & {
         id: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         entityName: string | null;
         entityId: string | null;
         action: import(".prisma/client").$Enums.AuditAction;
@@ -33,9 +33,9 @@ export declare class AuditLogController {
             } | null;
         } & {
             id: string;
+            status: string;
             createdAt: Date;
             updatedAt: Date;
-            status: string;
             entityName: string | null;
             entityId: string | null;
             action: import(".prisma/client").$Enums.AuditAction;

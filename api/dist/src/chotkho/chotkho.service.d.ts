@@ -41,8 +41,8 @@ export declare class ChotkhoService {
             } & {
                 id: string;
                 title: string | null;
-                ghichu: string | null;
                 order: number | null;
+                ghichu: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 sanphamId: string | null;
@@ -57,8 +57,8 @@ export declare class ChotkhoService {
         } & {
             id: string;
             title: string | null;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
@@ -94,8 +94,8 @@ export declare class ChotkhoService {
             } & {
                 id: string;
                 title: string | null;
-                ghichu: string | null;
                 order: number | null;
+                ghichu: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 sanphamId: string | null;
@@ -110,8 +110,8 @@ export declare class ChotkhoService {
         } & {
             id: string;
             title: string | null;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
@@ -149,8 +149,8 @@ export declare class ChotkhoService {
         } & {
             id: string;
             title: string | null;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
             sanphamId: string | null;
@@ -165,8 +165,8 @@ export declare class ChotkhoService {
     } & {
         id: string;
         title: string | null;
-        ghichu: string | null;
         order: number | null;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -178,8 +178,8 @@ export declare class ChotkhoService {
     update(id: string, updateData: any): Promise<{
         id: string;
         title: string | null;
-        ghichu: string | null;
         order: number | null;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -191,8 +191,8 @@ export declare class ChotkhoService {
     remove(id: string): Promise<{
         id: string;
         title: string | null;
-        ghichu: string | null;
         order: number | null;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -224,8 +224,8 @@ export declare class ChotkhoService {
             } & {
                 id: string;
                 title: string | null;
-                ghichu: string | null;
                 order: number | null;
+                ghichu: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 sanphamId: string | null;
@@ -240,8 +240,8 @@ export declare class ChotkhoService {
         } & {
             id: string;
             title: string | null;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
@@ -286,8 +286,8 @@ export declare class ChotkhoService {
         } & {
             id: string;
             title: string | null;
-            ghichu: string | null;
             order: number | null;
+            ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
             sanphamId: string | null;
@@ -302,8 +302,8 @@ export declare class ChotkhoService {
     } & {
         id: string;
         title: string | null;
-        ghichu: string | null;
         order: number | null;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;

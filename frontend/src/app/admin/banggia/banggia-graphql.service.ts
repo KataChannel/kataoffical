@@ -18,9 +18,49 @@ export class BanggiaService {
   ListBanggia = signal<any[]>([]);
   DetailBanggia = signal<any>({});
   banggiaId = signal<string | null>(null);
+  private isLoading = signal(false);
+  private currentLoadId: string | null = null;
+  private lastSetId: string | null = null; // Track last set ID to prevent duplicate sets
   
   setBanggiaId(id: string | null) {
-    this.banggiaId.set(id);
+    // Chỉ set nếu ID thay đổi - tránh trigger effect không cần thiết
+    if (this.lastSetId !== id) {
+      console.log('[SERVICE] setBanggiaId from', this.lastSetId, 'to', id);
+      this.lastSetId = id;
+      this.banggiaId.set(id);
+    } else {
+      console.log('[SERVICE] setBanggiaId called with same ID, skipping:', id);
+    }
+  }
+
+  /**
+   * Kiểm tra xem mabanggia + batdau + ketthuc đã tồn tại chưa
+   */
+  async checkBanggiaExists(mabanggia: string, batdau: Date, ketthuc: Date, excludeId?: string): Promise<boolean> {
+    try {
+      const where: any = {
+        AND: [
+          { mabanggia: { equals: mabanggia } },
+          { batdau: { equals: batdau.toISOString() } },
+          { ketthuc: { equals: ketthuc.toISOString() } }
+        ]
+      };
+
+      // Nếu đang update, loại trừ bảng giá hiện tại
+      if (excludeId) {
+        where.AND.push({ id: { not: excludeId } });
+      }
+
+      const existing = await this._GraphqlService.findMany('banggia', {
+        where,
+        take: 1
+      });
+
+      return existing && existing.length > 0;
+    } catch (error) {
+      console.error('[VALIDATE] Error checking banggia exists:', error);
+      return false;
+    }
   }
 
   /**
@@ -28,13 +68,24 @@ export class BanggiaService {
    */
   async CreateBanggia(dulieu: any) {
     try {
+      // Chuẩn bị data
+      const mabanggia = dulieu.mabanggia || this.generateMaBanggia();
+      const batdau = dulieu.batdau ? new Date(dulieu.batdau) : new Date();
+      const ketthuc = dulieu.ketthuc ? new Date(dulieu.ketthuc) : new Date(Date.now() + 30*24*60*60*1000);
+
+      // ✅ Kiểm tra unique constraint
+      const exists = await this.checkBanggiaExists(mabanggia, batdau, ketthuc);
+      if (exists) {
+        throw new Error(`Bảng giá với mã "${mabanggia}" và khoảng thời gian từ ${batdau.toLocaleDateString()} đến ${ketthuc.toLocaleDateString()} đã tồn tại!`);
+      }
+
       // Chuẩn bị data cho GraphQL mutation
       const createData = {
         title: dulieu.title,
-        mabanggia: dulieu.mabanggia || this.generateMaBanggia(),
+        mabanggia: mabanggia,
         type: dulieu.type || 'bansi',
-        batdau: dulieu.batdau ? new Date(dulieu.batdau).toISOString() : new Date().toISOString(),
-        ketthuc: dulieu.ketthuc ? new Date(dulieu.ketthuc).toISOString() : new Date(Date.now() + 30*24*60*60*1000).toISOString(),
+        batdau: batdau.toISOString(),
+        ketthuc: ketthuc.toISOString(),
         order: dulieu.order || 1,
         ghichu: dulieu.ghichu || '',
         status: dulieu.status || 'baogia',
@@ -95,6 +146,16 @@ export class BanggiaService {
    */
   async updateBanggia(dulieu: any) {
     try {
+      // ✅ Kiểm tra unique constraint nếu có thay đổi mabanggia/batdau/ketthuc
+      if (dulieu.mabanggia && dulieu.batdau && dulieu.ketthuc) {
+        const batdau = new Date(dulieu.batdau);
+        const ketthuc = new Date(dulieu.ketthuc);
+        const exists = await this.checkBanggiaExists(dulieu.mabanggia, batdau, ketthuc, dulieu.id);
+        if (exists) {
+          throw new Error(`Bảng giá với mã "${dulieu.mabanggia}" và khoảng thời gian từ ${batdau.toLocaleDateString()} đến ${ketthuc.toLocaleDateString()} đã tồn tại!`);
+        }
+      }
+
       const updateData: any = {
         title: dulieu.title,
         mabanggia: dulieu.mabanggia,
@@ -221,6 +282,26 @@ export class BanggiaService {
    * Lấy bảng giá theo ID sử dụng GraphQL
    */
   async getBanggiaByid(id: any) {
+    console.log(`[SERVICE] getBanggiaByid called with ID: ${id}`);
+    console.log(`[SERVICE] Current state - isLoading: ${this.isLoading()}, currentLoadId: ${this.currentLoadId}`);
+    
+    // Prevent concurrent loads of DIFFERENT IDs
+    if (this.isLoading() && this.currentLoadId !== id) {
+      console.log(`[SERVICE] Skipping load for ${id}, already loading ${this.currentLoadId}`);
+      return;
+    }
+    
+    // If currently loading the SAME ID, wait for it
+    if (this.isLoading() && this.currentLoadId === id) {
+      console.log(`[SERVICE] Already loading ${id}, skipping duplicate call`);
+      return;
+    }
+    
+    // Set loading state BEFORE API call
+    console.log(`[SERVICE] Setting loading state to true for ${id}`);
+    this.isLoading.set(true);
+    this.currentLoadId = id;
+    
     try {
       const options = {
         include: {
@@ -255,15 +336,30 @@ export class BanggiaService {
         }
       };
 
+      console.log(`[SERVICE] Fetching banggia data from API for ${id}...`);
       const data = await this._GraphqlService.findUnique('banggia', { id }, options);
-      const resutl = this.transformDetailBanggia(data);
-      console.log(resutl);
+      console.log(`[SERVICE] API returned data for ${id}`);
       
-      this.DetailBanggia.set(resutl);
+      // Only update if this is still the current requested ID
+      if (this.currentLoadId === id) {
+        console.log('[SERVICE] Transforming data...');
+        const result = this.transformDetailBanggia(data);
+        
+        console.log('[SERVICE] Updating DetailBanggia signal...');
+        this.DetailBanggia.set(result);
+        console.log(`[SERVICE] DetailBanggia updated for ${id}`);
+      } else {
+        console.log(`[SERVICE] Load completed for ${id}, but current ID is now ${this.currentLoadId}. Skipping update.`);
+      }
+      
       return data;
     } catch (error) {
-      console.error('Lỗi lấy chi tiết bảng giá:', error);
+      console.error('[SERVICE] Error fetching banggia:', error);
       throw error;
+    } finally {
+      console.log(`[SERVICE] Resetting isLoading to false for ${id}`);
+      this.isLoading.set(false);
+      // Don't reset currentLoadId here to allow comparison
     }
   }
   private transformDetailBanggia(item:any){

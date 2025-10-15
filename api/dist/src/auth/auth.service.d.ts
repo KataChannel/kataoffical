@@ -9,12 +9,12 @@ export declare class AuthService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }>;
     login(SDT: string, email: string, password: string): Promise<{
         access_token: string;
@@ -25,12 +25,12 @@ export declare class AuthService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }>;
     generateRandomPassword(userId: string): Promise<{
         newPassword: string;
@@ -42,12 +42,12 @@ export declare class AuthService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            name: string | null;
             email: string | null;
             SDT: string | null;
             password: string;
             provider: string | null;
             providerId: string | null;
-            name: string | null;
         };
     }>;
     getUserRoles(userId: string): Promise<({

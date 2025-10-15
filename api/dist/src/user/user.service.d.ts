@@ -9,12 +9,12 @@ export declare class UserService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }>;
     getUsers(): Promise<{
         roles: string[];
@@ -23,11 +23,11 @@ export declare class UserService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }[]>;
     findAll(): Promise<{
         roles: string[];
@@ -36,11 +36,11 @@ export declare class UserService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }[]>;
     findOne(id: string): Promise<{
         roles: string[];
@@ -58,35 +58,35 @@ export declare class UserService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }>;
     assignRoleToUser(data: {
         userId: string;

@@ -255,8 +255,15 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             const updateOptions = {
                 where: normalizedWhere,
                 data: normalizedData,
-                ...queryOptions
+                ...(queryOptions.select && { select: queryOptions.select }),
+                ...(queryOptions.include && { include: queryOptions.include })
             };
+            console.log(`📤 Final update options for ${modelName}:`, {
+                whereKeys: Object.keys(updateOptions.where || {}),
+                dataKeys: Object.keys(updateOptions.data || {}),
+                hasSelect: !!updateOptions.select,
+                hasInclude: !!updateOptions.include
+            });
             const startTime = Date.now();
             const result = await model.update(updateOptions);
             const queryTime = Date.now() - startTime;

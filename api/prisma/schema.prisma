@@ -154,6 +154,10 @@ model Banggia {
   sanpham   Banggiasanpham[]
   Donhang   Donhang[]
   khachhang Khachhang[]      @relation("Banggiakhachhang")
+
+  @@unique([mabanggia, batdau, ketthuc], name: "unique_banggia_time_range")
+  @@index([mabanggia])
+  @@index([batdau, ketthuc])
 }
 
 model Khachhang {

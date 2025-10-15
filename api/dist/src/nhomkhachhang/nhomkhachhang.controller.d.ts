@@ -12,13 +12,14 @@ export declare class NhomkhachhangController {
     findAll(): Promise<({
         khachhang: {
             id: string;
-            subtitle: string | null;
             ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            banggiaId: string | null;
+            subtitle: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             namenn: string | null;
@@ -34,7 +35,6 @@ export declare class NhomkhachhangController {
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
-            banggiaId: string | null;
             isshowvat: boolean;
         }[];
     } & {
@@ -61,13 +61,14 @@ export declare class NhomkhachhangController {
     findOne(id: string): Promise<{
         khachhang: {
             id: string;
-            subtitle: string | null;
             ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string | null;
+            banggiaId: string | null;
+            subtitle: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
             namenn: string | null;
@@ -83,7 +84,6 @@ export declare class NhomkhachhangController {
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
-            banggiaId: string | null;
             isshowvat: boolean;
         }[];
     } & {

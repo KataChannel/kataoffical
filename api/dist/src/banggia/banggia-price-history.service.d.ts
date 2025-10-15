@@ -24,8 +24,8 @@ export declare class BanggiaPriceHistoryService {
             id: string;
             order: number | null;
             isActive: boolean;
-            giaban: Decimal;
             banggiaId: string;
+            giaban: Decimal;
             sanphamId: string;
         };
         oldPrice: null;
@@ -56,8 +56,8 @@ export declare class BanggiaPriceHistoryService {
             id: string;
             order: number | null;
             isActive: boolean;
-            giaban: Decimal;
             banggiaId: string;
+            giaban: Decimal;
             sanphamId: string;
         };
         oldPrice: number;

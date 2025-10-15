@@ -9,12 +9,12 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }>;
     findAll(): Promise<{
         roles: string[];
@@ -23,11 +23,11 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }[]>;
     getProfile(req: any): Promise<{
         roles: string[];
@@ -45,11 +45,11 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }>;
     assignRoleToUser(data: any): Promise<{
         id: string;
@@ -77,34 +77,34 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        name: string | null;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        name: string | null;
     }>;
 }
