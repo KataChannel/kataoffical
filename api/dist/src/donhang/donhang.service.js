@@ -1421,13 +1421,6 @@ let DonhangService = class DonhangService {
                                 sanphamArray = [];
                             }
                             return sanphamArray.map((sp) => {
-                                const priceMetadata = {
-                                    banggiaId: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID,
-                                    sanphamId: sp.idSP || sp.id,
-                                    capturedAt: new Date().toISOString(),
-                                    priceSource: 'banggia',
-                                    userNote: sp.ghichu || ''
-                                };
                                 return {
                                     idSP: sp.idSP || sp.id,
                                     giaban: parseFloat((sp.giaban || 0).toString()),
@@ -1490,14 +1483,8 @@ let DonhangService = class DonhangService {
             }) || [];
             if (updatedSanpham.length > 0) {
                 await Promise.all(updatedSanpham.map(async (sp) => {
-                    const enhancedMetadata = {
-                        banggiaId: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID,
-                        sanphamId: sp.idSP || sp.id,
-                        capturedAt: new Date().toISOString(),
-                        priceSource: 'banggia',
-                        actualPrice: sp.giaban,
-                        userNote: sp.ghichu || ''
-                    };
+                    const originalProduct = dto.sanpham.find(p => (p.idSP || p.id) === (sp.idSP || sp.id));
+                    const originalPrice = originalProduct ? parseFloat((originalProduct.giaban || 0).toString()) : 0;
                     await prisma.donhangsanpham.updateMany({
                         where: {
                             donhangId: newDonhang.id,
@@ -1509,9 +1496,41 @@ let DonhangService = class DonhangService {
                             ttgiao: sp.ttgiao,
                             ttnhan: sp.ttnhan,
                             ttsauvat: sp.ttsauvat,
-                            ghichu: JSON.stringify(enhancedMetadata),
                         },
                     });
+                    if (sp.giaban !== originalPrice) {
+                        try {
+                            await prisma.auditLog.create({
+                                data: {
+                                    entityName: 'Donhangsanpham',
+                                    entityId: `${newDonhang.id}-${sp.idSP || sp.id}`,
+                                    action: 'UPDATE',
+                                    userId: dto.userId || null,
+                                    oldValues: { giaban: originalPrice },
+                                    newValues: { giaban: sp.giaban },
+                                    changedFields: ['giaban'],
+                                    metadata: {
+                                        donhangId: newDonhang.id,
+                                        madonhang: newDonhang.madonhang,
+                                        sanphamId: sp.idSP || sp.id,
+                                        banggiaId: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID,
+                                        capturedAt: new Date().toISOString(),
+                                        priceSource: 'banggia',
+                                        priceChange: {
+                                            from: originalPrice,
+                                            to: sp.giaban,
+                                            difference: sp.giaban - originalPrice,
+                                            percentChange: originalPrice > 0 ? ((sp.giaban - originalPrice) / originalPrice * 100) : 0
+                                        },
+                                        userNote: sp.ghichu || ''
+                                    }
+                                }
+                            });
+                        }
+                        catch (auditError) {
+                            console.error('Failed to create price audit log:', auditError);
+                        }
+                    }
                 }));
             }
             const { tongvat, tongtien } = this.calculateDonhangTotals(updatedSanpham, vatRate);
