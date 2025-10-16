@@ -36,8 +36,8 @@ services:
     ports:
       - "53331:3331"
     environment:
-      - DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:5432/testdata?schema=public
-      #- DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/rausachfinal?schema=public&connection_limit=25&pool_timeout=60&connect_timeout=20
+      #- DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:5432/testdata?schema=public
+      - DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/rausachfinal?schema=public&connection_limit=25&pool_timeout=60&connect_timeout=20
       - GOOGLE_CLIENT_ID=897974685698-efprsqffgop935h5d5l2lidle1go9i17.apps.googleusercontent.com
       - GOOGLE_CLIENT_SECRET=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
       - FACEBOOK_CLIENT_ID=your-facebook-client-id
