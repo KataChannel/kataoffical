@@ -8,23 +8,23 @@ export declare class BanggiaController {
     create(createBanggiaDto: any): Promise<{
         sanpham: {
             id: string;
-            giaban: import("@prisma/client/runtime/library").Decimal;
-            sanphamId: string;
-            banggiaId: string;
             order: number | null;
             isActive: boolean;
+            banggiaId: string;
+            giaban: import("@prisma/client/runtime/library").Decimal;
+            sanphamId: string;
         }[];
     } & {
         id: string;
-        order: number | null;
-        isActive: boolean;
         title: string | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         ghichu: string | null;
         status: string | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         isDefault: boolean;
@@ -37,15 +37,15 @@ export declare class BanggiaController {
             name: string | null;
         }[];
         id: string;
-        order: number | null;
-        isActive: boolean;
         title: string | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         ghichu: string | null;
         status: string | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         isDefault: boolean;
@@ -65,30 +65,30 @@ export declare class BanggiaController {
     }): Promise<null>;
     addMultipleKhachhangToBanggia(data: any): Promise<{
         id: string;
-        order: number | null;
-        isActive: boolean;
         title: string | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         ghichu: string | null;
         status: string | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         isDefault: boolean;
     }>;
     removeKHfromBG(data: any): Promise<{
         id: string;
-        order: number | null;
-        isActive: boolean;
         title: string | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         ghichu: string | null;
         status: string | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         isDefault: boolean;
@@ -97,10 +97,10 @@ export declare class BanggiaController {
         sanpham: {
             giaban: number;
             id: string;
-            order: number | null;
-            isActive: boolean;
             title: string;
+            order: number | null;
             ghichu: string | null;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             title2: string | null;
@@ -118,20 +118,19 @@ export declare class BanggiaController {
         }[];
         khachhang: {
             id: string;
-            banggiaId: string | null;
-            isActive: boolean;
             ghichu: string | null;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            subtitle: string | null;
             name: string | null;
+            banggiaId: string | null;
+            subtitle: string | null;
             email: string | null;
-            isshowvat: boolean;
+            diachi: string | null;
+            sdt: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
-            diachi: string | null;
-            sdt: string | null;
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
@@ -142,17 +141,18 @@ export declare class BanggiaController {
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
+            isshowvat: boolean;
         }[];
         id: string;
-        order: number | null;
-        isActive: boolean;
         title: string | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         ghichu: string | null;
         status: string | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         isDefault: boolean;
@@ -160,38 +160,38 @@ export declare class BanggiaController {
     update(id: string, updateBanggiaDto: any): Promise<{
         sanpham: {
             id: string;
-            giaban: import("@prisma/client/runtime/library").Decimal;
-            sanphamId: string;
-            banggiaId: string;
             order: number | null;
             isActive: boolean;
+            banggiaId: string;
+            giaban: import("@prisma/client/runtime/library").Decimal;
+            sanphamId: string;
         }[];
     } & {
         id: string;
-        order: number | null;
-        isActive: boolean;
         title: string | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         ghichu: string | null;
         status: string | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         isDefault: boolean;
     }>;
     remove(id: string): Promise<{
         id: string;
-        order: number | null;
-        isActive: boolean;
         title: string | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         ghichu: string | null;
         status: string | null;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         isDefault: boolean;

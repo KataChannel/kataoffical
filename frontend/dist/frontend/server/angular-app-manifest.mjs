@@ -1275,8 +1275,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72880, hash: '37eccd2a3a8a513e75ee5331a87c750ad7b88815dd741ca9e7ed1df3165481c5', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24171, hash: '4c1bbc39d5338852aa221e0decdc6641a8f0ca964685ff243f17b572e4b6dd79', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 72880, hash: '199138ada1aff2f57ba1d379b4bcdfd9df04a65426bfd904debd1d92490b25c4', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24171, hash: '414822a52f2ec832eaecf3e4acb7a3d8f538905a85c695ffe5c511c8d2111948', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-ELC43QEW.css': {size: 174634, hash: '2ips1NC6tFc', text: () => import('./assets-chunks/styles-ELC43QEW_css.mjs').then(m => m.default)}
   },
 };
