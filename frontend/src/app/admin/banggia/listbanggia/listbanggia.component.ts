@@ -139,11 +139,6 @@ export class ListBanggiaComponent {
       this.dataSource.sort = this.sort;
       this.initializeColumns();
       this.setupDrawer();
-      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-      this.paginator._intl.previousPageLabel = 'Về Trước';
-      this.paginator._intl.firstPageLabel = 'Trang Đầu';
-      this.paginator._intl.lastPageLabel = 'Trang Cuối';
 
     } catch (error) {
       console.error('Lỗi khởi tạo danh sách bảng giá:', error);

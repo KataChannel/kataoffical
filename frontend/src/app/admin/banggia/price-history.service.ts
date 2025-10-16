@@ -87,6 +87,24 @@ export class PriceHistoryService {
   }
 
   /**
+   * Get current user ID from token/storage
+   */
+  private getCurrentUserId(): string | null {
+    try {
+      // Try to get user data from localStorage
+      const userData = this.storageService.getItem('user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        return user?.id || null;
+      }
+      return null;
+    } catch (error) {
+      console.warn('Failed to get current user ID:', error);
+      return null;
+    }
+  }
+
+  /**
    * Get price history for a product in a banggia
    */
   async getPriceHistory(banggiaId: string, sanphamId: string): Promise<PriceHistory> {
@@ -122,6 +140,8 @@ export class PriceHistoryService {
   async updateSinglePrice(banggiaId: string, sanphamId: string, newPrice: number, reason?: string, userId?: string): Promise<any> {
     try {
       const url = `${this.baseUrl}/banggia/bulk-update-prices`;
+      const currentUserId = userId || this.getCurrentUserId() || 'system';
+      
       return await firstValueFrom(
         this.http.post(url, {
           updates: [{
@@ -130,7 +150,7 @@ export class PriceHistoryService {
             newPrice,
             reason: reason || 'Cập nhật giá từ bảng giá'
           }],
-          userId: userId || 'system'
+          userId: currentUserId
         }, { headers: this.getHeaders() })
       );
     } catch (error) {
@@ -144,9 +164,15 @@ export class PriceHistoryService {
    */
   async bulkUpdatePrices(request: BulkUpdateRequest): Promise<any> {
     try {
+      // Use provided userId or get current user, fallback to 'system'
+      const currentUserId = request.userId || this.getCurrentUserId() || 'system';
+      
       const url = `${this.baseUrl}/banggia/bulk-update-prices`;
       return await firstValueFrom(
-        this.http.post(url, request, { headers: this.getHeaders() })
+        this.http.post(url, {
+          ...request,
+          userId: currentUserId
+        }, { headers: this.getHeaders() })
       );
     } catch (error) {
       console.error('Error bulk updating prices:', error);

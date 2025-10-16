@@ -279,7 +279,18 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       // Đọc DetailBanggia trong untracked context
       untracked(() => {
         const banggia = this._BanggiaService.DetailBanggia();
-        this.dataSource().data = banggia?.sanpham || [];
+        
+        // CRITICAL: Tạo MatTableDataSource MỚI thay vì mutate
+        const newDataSource = new MatTableDataSource<any>(banggia?.sanpham || []);
+        
+        // Bind paginator và sort vào instance mới
+        if (this.paginator && this.sort) {
+          newDataSource.paginator = this.paginator;
+          newDataSource.sort = this.sort;
+        }
+        
+        // Set instance mới vào signal - trigger complete refresh
+        this.dataSource.set(newDataSource);
         console.log('[LOAD] DataSource updated with', banggia?.sanpham?.length || 0, 'items');
       });
       
@@ -359,11 +370,15 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     setTimeout(() => {
       if (this.paginator && this.sort) {
-        this.dataSource().paginator = this.paginator;
-        this.dataSource().sort = this.sort;
+        // Lấy instance của dataSource từ signal
+        const ds = this.dataSource();
+        ds.paginator = this.paginator;
+        ds.sort = this.sort;
+        // CRITICAL: Trigger signal update
+        this.dataSource.set(ds);
         console.log('[PAGINATION] Paginator and Sort initialized');
       }
-    }, 0);
+    }, 100);
   }
 
   ngOnDestroy() {
@@ -425,7 +440,13 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
         
         // Update dataSource cũng trong untracked
         const banggia = this._BanggiaService.DetailBanggia();
-        this.dataSource().data = [...(banggia?.sanpham || [])];
+        const ds = this.dataSource();
+        ds.data = [...(banggia?.sanpham || [])];
+        if (this.paginator && this.sort) {
+          ds.paginator = this.paginator;
+          ds.sort = this.sort;
+        }
+        this.dataSource.set(ds);
       });
     }
   }
@@ -537,7 +558,13 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     // Update data source trong untracked
     untracked(() => {
       const banggia = this._BanggiaService.DetailBanggia();
-      this.dataSource().data = [...(banggia?.sanpham || [])];
+      const ds = this.dataSource();
+      ds.data = [...(banggia?.sanpham || [])];
+      if (this.paginator && this.sort) {
+        ds.paginator = this.paginator;
+        ds.sort = this.sort;
+      }
+      this.dataSource.set(ds);
     });
     
     console.log(`[BATCH] Updated ${changeCount} items - Manual save required`);
@@ -730,7 +757,15 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       // Update dataSource
       untracked(() => {
         const banggia = this._BanggiaService.DetailBanggia();
-        this.dataSource().data = [...(banggia?.sanpham || [])];
+        const ds = this.dataSource();
+        ds.data = [...(banggia?.sanpham || [])];
+        // Re-assign paginator
+        if (this.paginator && this.sort) {
+          ds.paginator = this.paginator;
+          ds.sort = this.sort;
+        }
+        // Trigger signal update
+        this.dataSource.set(ds);
       });
       
       // Remove from pending changes
@@ -762,7 +797,13 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       
       untracked(() => {
         const banggia = this._BanggiaService.DetailBanggia();
-        this.dataSource().data = [...(banggia?.sanpham || [])];
+        const ds = this.dataSource();
+        ds.data = [...(banggia?.sanpham || [])];
+        if (this.paginator && this.sort) {
+          ds.paginator = this.paginator;
+          ds.sort = this.sort;
+        }
+        this.dataSource.set(ds);
       });
       
       const errorMessage = error instanceof Error ? error.message : 'Vui lòng thử lại';
@@ -816,8 +857,13 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     
     untracked(() => {
       const banggia = this._BanggiaService.DetailBanggia();
-      this.dataSource().data = banggia?.sanpham || [];
-      this.dataSource().sort = this.sort;
+      const ds = this.dataSource();
+      ds.data = banggia?.sanpham || [];
+      if (this.paginator && this.sort) {
+        ds.paginator = this.paginator;
+        ds.sort = this.sort;
+      }
+      this.dataSource.set(ds);
     });
   }
   RemoveSanpham(item: any) {
@@ -828,8 +874,13 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     
     untracked(() => {
       const banggia = this._BanggiaService.DetailBanggia();
-      this.dataSource().data = banggia?.sanpham || [];
-      this.dataSource().sort = this.sort;
+      const ds = this.dataSource();
+      ds.data = banggia?.sanpham || [];
+      if (this.paginator && this.sort) {
+        ds.paginator = this.paginator;
+        ds.sort = this.sort;
+      }
+      this.dataSource.set(ds);
     });
   }
   CoppyDon() {
@@ -932,8 +983,13 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
 
     untracked(() => {
       const banggia = this._BanggiaService.DetailBanggia();
-      this.dataSource().data = banggia?.sanpham || [];
-      this.dataSource().sort = this.sort;
+      const ds = this.dataSource();
+      ds.data = banggia?.sanpham || [];
+      if (this.paginator && this.sort) {
+        ds.paginator = this.paginator;
+        ds.sort = this.sort;
+      }
+      this.dataSource.set(ds);
     });
     
     this._snackBar.open('Cập Nhật Thành Công', '', {
@@ -963,8 +1019,13 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       untracked(() => {
         const banggia = this._BanggiaService.DetailBanggia();
         this.filterSanpham = banggia?.sanpham || [];
-        this.dataSource().data = banggia?.sanpham || [];
-        this.dataSource().sort = this.sort;
+        const ds = this.dataSource();
+        ds.data = banggia?.sanpham || [];
+        if (this.paginator && this.sort) {
+          ds.paginator = this.paginator;
+          ds.sort = this.sort;
+        }
+        this.dataSource.set(ds);
         console.log('[FILTER] Updated banggia:', banggia);
       });
 

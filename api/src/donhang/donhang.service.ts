@@ -1805,7 +1805,8 @@ export class DonhangService {
                 return {
                   idSP: sp.idSP || sp.id,
                   giaban: parseFloat((sp.giaban || 0).toString()),
-                  ghichu: JSON.stringify(priceMetadata), // ✅ Store price metadata as JSON
+                  ghichu: sp.ghichu || '', // ✅ Store price metadata as JSON
+                  // ghichu: JSON.stringify(priceMetadata), // ✅ Store price metadata as JSON
                   sldat: parseFloat((sp.sldat ?? 0).toString()),
                   slgiao: parseFloat((sp.slgiao ?? 0).toString()),
                   slnhan: parseFloat((sp.slnhan ?? 0).toString()),

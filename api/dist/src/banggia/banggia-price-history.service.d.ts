@@ -22,11 +22,11 @@ export declare class BanggiaPriceHistoryService {
             };
         } & {
             id: string;
-            order: number | null;
-            isActive: boolean;
-            banggiaId: string;
             giaban: Decimal;
             sanphamId: string;
+            banggiaId: string;
+            order: number | null;
+            isActive: boolean;
         };
         oldPrice: null;
         newPrice: number;
@@ -54,11 +54,11 @@ export declare class BanggiaPriceHistoryService {
             };
         } & {
             id: string;
-            order: number | null;
-            isActive: boolean;
-            banggiaId: string;
             giaban: Decimal;
             sanphamId: string;
+            banggiaId: string;
+            order: number | null;
+            isActive: boolean;
         };
         oldPrice: number;
         newPrice: number;

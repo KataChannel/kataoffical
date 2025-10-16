@@ -106,34 +106,53 @@ let BanggiaPriceHistoryService = class BanggiaPriceHistoryService {
                     sanpham: { select: { masp: true, title: true } }
                 }
             });
-            if (userId) {
-                await tx.auditLog.create({
-                    data: {
-                        entityName: 'Banggiasanpham',
-                        entityId: currentBgsp.id,
-                        action: 'UPDATE',
-                        userId,
-                        oldValues: { giaban: oldPrice },
-                        newValues: { giaban: newPrice },
-                        changedFields: ['giaban'],
-                        metadata: {
-                            banggiaId,
-                            banggiaCode: currentBgsp.banggia.mabanggia,
-                            banggiaTitle: currentBgsp.banggia.title,
-                            sanphamId,
-                            sanphamCode: currentBgsp.sanpham.masp,
-                            sanphamTitle: currentBgsp.sanpham.title,
-                            priceChange: {
-                                oldPrice,
-                                newPrice,
-                                difference: newPrice - oldPrice,
-                                percentChange: priceChange * 100
-                            },
-                            reason: reason || `Cập nhật giá: ${oldPrice.toLocaleString()} → ${newPrice.toLocaleString()}`,
-                            timestamp: new Date().toISOString()
-                        }
+            if (userId && userId !== 'system') {
+                try {
+                    const userExists = await tx.user.findUnique({
+                        where: { id: userId },
+                        select: { id: true }
+                    });
+                    if (userExists) {
+                        await tx.auditLog.create({
+                            data: {
+                                entityName: 'Banggiasanpham',
+                                entityId: currentBgsp.id,
+                                action: 'UPDATE',
+                                userId,
+                                oldValues: { giaban: oldPrice },
+                                newValues: { giaban: newPrice },
+                                changedFields: ['giaban'],
+                                metadata: {
+                                    banggiaId,
+                                    banggiaCode: currentBgsp.banggia.mabanggia,
+                                    banggiaTitle: currentBgsp.banggia.title,
+                                    sanphamId,
+                                    sanphamCode: currentBgsp.sanpham.masp,
+                                    sanphamTitle: currentBgsp.sanpham.title,
+                                    priceChange: {
+                                        oldPrice,
+                                        newPrice,
+                                        difference: newPrice - oldPrice,
+                                        percentChange: priceChange * 100
+                                    },
+                                    reason: reason || `Cập nhật giá: ${oldPrice.toLocaleString()} → ${newPrice.toLocaleString()}`,
+                                    timestamp: new Date().toISOString()
+                                }
+                            }
+                        });
+                        console.log(`📝 Audit log created for user ${userId}`);
                     }
-                });
+                    else {
+                        console.warn(`⚠️  User ${userId} not found - skipping audit log`);
+                    }
+                }
+                catch (auditError) {
+                    console.error(`❌ Failed to create audit log:`, auditError.message);
+                    console.warn(`⚠️  Continuing without audit log...`);
+                }
+            }
+            else {
+                console.log(`ℹ️  No valid userId provided - skipping audit log`);
             }
             console.log(`✅ Updated price: ${currentBgsp.sanpham.masp} in ${currentBgsp.banggia.mabanggia}: ${oldPrice} → ${newPrice}`);
             return {
