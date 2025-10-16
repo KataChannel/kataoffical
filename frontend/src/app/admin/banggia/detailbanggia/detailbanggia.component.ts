@@ -23,6 +23,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { ListBanggiaComponent } from '../listbanggia/listbanggia.component';
 import { PriceHistoryDialogComponent } from '../price-history-dialog/price-history-dialog.component';
+import { PriceHistoryService } from '../price-history.service';
 import { BanggiaService } from '../banggia-graphql.service'; // Sử dụng GraphQL service
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import {
@@ -74,6 +75,7 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
 export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   _ListbanggiaComponent: ListBanggiaComponent = inject(ListBanggiaComponent);
   _BanggiaService: BanggiaService = inject(BanggiaService);
+  _PriceHistoryService: PriceHistoryService = inject(PriceHistoryService);
   _SanphamService: SanphamService = inject(SanphamService);
   _KhachhangService: KhachhangService = inject(KhachhangService);
   _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
@@ -94,6 +96,9 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     actions: 'Thao tác',
   };
   dataSource = signal(new MatTableDataSource<any>([]));
+  
+  // Price update state
+  updatingPriceForRow = signal<number | null>(null);
   CountItem = computed(() => this.dataSource().data.length);
   
   // Performance optimization properties
@@ -353,9 +358,10 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   }
   ngAfterViewInit() {
     setTimeout(() => {
-      if (this.paginator) {
-        //this.dataSource().paginator = this.paginator;
+      if (this.paginator && this.sort) {
+        this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;
+        console.log('[PAGINATION] Paginator and Sort initialized');
       }
     }, 0);
   }
@@ -609,6 +615,13 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     const keyboardEvent = event as KeyboardEvent;
     if (keyboardEvent.key === 'Enter' && !keyboardEvent.shiftKey) {
       event.preventDefault();
+      
+      // Tối ưu: Cập nhật giá tức thì lên server khi nhấn Enter
+      if (index !== null && field === 'giaban' && element) {
+        this.updatePriceToServer(index, element, Number(newValue));
+        this.moveToNextInput(index);
+      }
+      return;
     }
     
     if (type === 'number') {
@@ -631,16 +644,8 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
 
     // Optimized update logic
     if (index !== null && field === 'giaban') {
-      // Use debounced update for better performance
-      this.debounceUpdate(() => {
-        // Add to pending changes instead of immediate update
-        this.addPendingChange(index, field, newValue);
-        
-        // Handle keyboard navigation without heavy DOM manipulation
-        if (keyboardEvent.key === 'Enter') {
-          this.moveToNextInput(index);
-        }
-      });
+      // Update local state immediately for responsive UI
+      this.addPendingChange(index, field, newValue);
     } else {
       // For non-giaban fields, update immediately TRONG UNTRACKED
       this.updateDetailBanggiaUntracked((v: any) => {
@@ -656,6 +661,123 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     // Reduced logging for better performance
     if (console && console.log) {
       console.log(`Updated ${String(field)}:`, newValue);
+    }
+  }
+
+  /**
+   * Cập nhật giá tức thì lên server khi nhấn Enter
+   */
+  private async updatePriceToServer(index: number, element: any, newPrice: number) {
+    const banggiaId = this.banggiaId();
+    // FIX: element.id là ID của Banggiasanpham, cần dùng element.sanphamId
+    const sanphamId = element.sanphamId || element.id;
+    const oldPrice = element.giaban || 0;
+    
+    console.log('[UPDATE-PRICE] Debug:', {
+      banggiaId,
+      elementId: element.id,
+      sanphamId: element.sanphamId,
+      usingSanphamId: sanphamId,
+      element
+    });
+    
+    if (!banggiaId || !sanphamId) {
+      console.error('[UPDATE-PRICE] Missing banggiaId or sanphamId');
+      this._snackBar.open(
+        '✗ Lỗi: Thiếu thông tin bảng giá hoặc sản phẩm',
+        'Đóng',
+        {
+          duration: 3000,
+          panelClass: ['snackbar-error']
+        }
+      );
+      return;
+    }
+    
+    if (newPrice === oldPrice) {
+      console.log('[UPDATE-PRICE] Price unchanged, skipping');
+      return;
+    }
+    
+    // Set loading state
+    this.updatingPriceForRow.set(index);
+    
+    try {
+      console.log(`[UPDATE-PRICE] Updating price for ${element.title}: ${oldPrice} → ${newPrice}`);
+      
+      // Calculate percentage change
+      const percentChange = oldPrice > 0 ? ((newPrice - oldPrice) / oldPrice) * 100 : 0;
+      const reason = percentChange > 20 || percentChange < -20
+        ? `Thay đổi giá ${percentChange > 0 ? '+' : ''}${percentChange.toFixed(1)}%`
+        : 'Cập nhật giá từ bảng giá';
+      
+      // Call API to update price with audit trail
+      await this._PriceHistoryService.updateSinglePrice(
+        banggiaId,
+        sanphamId,
+        newPrice,
+        reason
+      );
+      
+      // Update local state in untracked context
+      this.updateDetailBanggiaUntracked((v: any) => {
+        if (v.sanpham && v.sanpham[index]) {
+          v.sanpham[index].giaban = newPrice;
+        }
+        return v;
+      });
+      
+      // Update dataSource
+      untracked(() => {
+        const banggia = this._BanggiaService.DetailBanggia();
+        this.dataSource().data = [...(banggia?.sanpham || [])];
+      });
+      
+      // Remove from pending changes
+      this.pendingChanges.delete(index);
+      
+      // Show success notification
+      this._snackBar.open(
+        `✓ Đã cập nhật giá: ${newPrice.toLocaleString('vi-VN')} VND`,
+        '',
+        {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        }
+      );
+      
+      console.log('[UPDATE-PRICE] Success');
+    } catch (error) {
+      console.error('[UPDATE-PRICE] Failed:', error);
+      
+      // Revert to old price on error
+      this.updateDetailBanggiaUntracked((v: any) => {
+        if (v.sanpham && v.sanpham[index]) {
+          v.sanpham[index].giaban = oldPrice;
+        }
+        return v;
+      });
+      
+      untracked(() => {
+        const banggia = this._BanggiaService.DetailBanggia();
+        this.dataSource().data = [...(banggia?.sanpham || [])];
+      });
+      
+      const errorMessage = error instanceof Error ? error.message : 'Vui lòng thử lại';
+      this._snackBar.open(
+        `✗ Lỗi cập nhật giá: ${errorMessage}`,
+        'Đóng',
+        {
+          duration: 4000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        }
+      );
+    } finally {
+      this.updatingPriceForRow.set(null);
     }
   }
 

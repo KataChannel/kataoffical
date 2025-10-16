@@ -117,6 +117,29 @@ export class PriceHistoryService {
   }
 
   /**
+   * Update single product price with audit trail
+   */
+  async updateSinglePrice(banggiaId: string, sanphamId: string, newPrice: number, reason?: string, userId?: string): Promise<any> {
+    try {
+      const url = `${this.baseUrl}/banggia/bulk-update-prices`;
+      return await firstValueFrom(
+        this.http.post(url, {
+          updates: [{
+            banggiaId,
+            sanphamId,
+            newPrice,
+            reason: reason || 'Cập nhật giá từ bảng giá'
+          }],
+          userId: userId || 'system'
+        }, { headers: this.getHeaders() })
+      );
+    } catch (error) {
+      console.error('Error updating single price:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Bulk update prices with audit trail
    */
   async bulkUpdatePrices(request: BulkUpdateRequest): Promise<any> {

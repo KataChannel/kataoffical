@@ -170,9 +170,18 @@
                   <div *ngIf="isEdit()"
                       [contentEditable]="true"
                       (keydown.enter)="updateValue($event,idx, row, 'giaban','number')"
-                      class="giaban-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                      (blur)="updateValue($event,idx, row, 'giaban','number')"
+                      class="giaban-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none relative"
+                      [class.opacity-50]="updatingPriceForRow() === idx"
+                      [attr.contenteditable]="updatingPriceForRow() === idx ? 'false' : 'true'"
                       >
                     {{ row[column]||0|number:'1.0-2' }}
+                    <mat-icon 
+                      *ngIf="updatingPriceForRow() === idx" 
+                      class="absolute right-1 top-1 text-blue-600 animate-spin"
+                      style="font-size: 16px; width: 16px; height: 16px;">
+                      sync
+                    </mat-icon>
                      </div>
                      <span *ngIf="!isEdit()" class="max-w-20 line-clamp-4">
                       {{ row[column]|number:'1.0-2' }}
@@ -209,7 +218,13 @@
                 <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
             </tr>
         </table>
-        <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
+        <!-- Pagination để tăng tốc load giao diện -->
+        <mat-paginator 
+          [pageSizeOptions]="[10, 25, 50, 100]" 
+          [pageSize]="25"
+          showFirstLastButtons
+          aria-label="Chọn trang sản phẩm">
+        </mat-paginator>
     </div>
     }
 

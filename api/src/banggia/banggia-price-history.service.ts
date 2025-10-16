@@ -91,12 +91,30 @@ export class BanggiaPriceHistoryService {
         };
       }
       
-      // Check for large price changes (>50%)
+      // Calculate price change percentage
       const priceChange = Math.abs((newPrice - oldPrice) / oldPrice);
-      if (priceChange > 0.5 && !reason) {
-        throw new BadRequestException(
-          `Thay đổi giá quá lớn (${(priceChange * 100).toFixed(1)}%). Vui lòng nhập lý do.`
-        );
+      
+      // Note: Log warning for large price changes (>20%)
+      // Frontend auto-generates reason when change > 20%
+      // But still allow the update to proceed
+      const hasValidReason = reason && reason.trim().length > 0;
+      
+      if (priceChange > 0.2) {
+        if (hasValidReason) {
+          console.log(`⚠️  [PRICE-UPDATE] Large price change with reason:`, {
+            oldPrice,
+            newPrice,
+            priceChange: (priceChange * 100).toFixed(1) + '%',
+            reason
+          });
+        } else {
+          console.warn(`⚠️  [PRICE-UPDATE] Large price change WITHOUT reason:`, {
+            oldPrice,
+            newPrice,
+            priceChange: (priceChange * 100).toFixed(1) + '%',
+            note: 'Consider adding reason for audit purposes'
+          });
+        }
       }
       
       // 2. Update price in Banggiasanpham
