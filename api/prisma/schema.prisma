@@ -300,14 +300,59 @@ model Donhangsanpham {
 }
 
 model Banggiasanpham {
-  id        String  @id @default(uuid())
-  giaban    Decimal @default(0) @postgres.Decimal(20, 3)
+  id        String                     @id @default(uuid())
+  giaban    Decimal                    @default(0) @postgres.Decimal(20, 3)
   sanphamId String
   banggiaId String
   order     Int?
-  isActive  Boolean @default(false)
-  banggia   Banggia @relation(fields: [banggiaId], references: [id])
-  sanpham   Sanpham @relation(fields: [sanphamId], references: [id])
+  isActive  Boolean                    @default(false)
+  banggia   Banggia                    @relation(fields: [banggiaId], references: [id])
+  sanpham   Sanpham                    @relation(fields: [sanphamId], references: [id])
+  history   BanggiasanphamHistory[]
+}
+
+model BanggiasanphamHistory {
+  id                  String            @id @default(uuid())
+  banggiasanphamId    String
+  banggiaId           String
+  sanphamId           String
+  oldPrice            Decimal           @postgres.Decimal(20, 3)
+  newPrice            Decimal           @postgres.Decimal(20, 3)
+  changePercent       Decimal?          @postgres.Decimal(10, 2)
+  changeReason        String?
+  changedBy           String?
+  changedAt           DateTime          @default(now())
+  sourceType          String?           // MANUAL, IMPORT, SYNC, BULK_UPDATE
+  batchId             String?           // For bulk operations
+  metadata            Json?
+  banggiasanpham      Banggiasanpham    @relation(fields: [banggiasanphamId], references: [id], onDelete: Cascade)
+
+  @@index([banggiasanphamId])
+  @@index([banggiaId])
+  @@index([sanphamId])
+  @@index([changedAt])
+}
+
+model DonhangPriceAudit {
+  id                String    @id @default(uuid())
+  donhangId         String
+  donhangsanphamId  String
+  sanphamId         String
+  oldPrice          Decimal   @postgres.Decimal(20, 3)
+  newPrice          Decimal   @postgres.Decimal(20, 3)
+  changePercent     Decimal?  @postgres.Decimal(10, 2)
+  changeReason      String
+  changedBy         String?
+  changedByEmail    String?
+  ipAddress         String?
+  userAgent         String?
+  createdAt         DateTime  @default(now())
+  metadata          Json?
+
+  @@index([donhangId])
+  @@index([donhangsanphamId])
+  @@index([sanphamId])
+  @@index([createdAt])
 }
 
 model Nhacungcap {

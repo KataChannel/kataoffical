@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { DonhangService } from './donhang.service';
 import { DonhangController } from './donhang.controller';
+import { DonhangPriceController } from './donhang-price.controller';
 import { DonhangCronService } from './donhang-cron.service';
 import { CancelOrderService } from './cancel-order.service';
 import { CancelOrderController } from './cancel-order.controller';
+import { PriceHistoryService } from './price-history.service';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ImportdataModule } from 'src/importdata/importdata.module';
 import { SharedModule } from '../shared/shared.module';
@@ -14,14 +16,15 @@ import { BanggiaModule } from 'src/banggia/banggia.module';
 
 @Module({
   imports: [PrismaModule, ImportdataModule, SharedModule, AuthModule, BanggiaModule],
-  controllers: [DonhangController, CancelOrderController],
+  controllers: [DonhangController, DonhangPriceController, CancelOrderController],
   providers: [
     DonhangService, 
     DonhangCronService, 
     CancelOrderService,
+    PriceHistoryService,
     StatusMachineService, 
     TonkhoManagerService
   ],
-  exports: [DonhangService, CancelOrderService]
+  exports: [DonhangService, CancelOrderService, PriceHistoryService]
 })
 export class DonhangModule {}

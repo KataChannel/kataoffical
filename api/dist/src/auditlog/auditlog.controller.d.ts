@@ -1,0 +1,58 @@
+import { AuditService } from './auditlog.service';
+export declare class AuditLogController {
+    private auditService;
+    constructor(auditService: AuditService);
+    getAuditLogs(param: any): Promise<({
+        user: {
+            email: string | null;
+            SDT: string | null;
+        } | null;
+    } & {
+        id: string;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        entityName: string | null;
+        entityId: string | null;
+        action: import(".prisma/client").$Enums.AuditAction;
+        userId: string | null;
+        userEmail: string | null;
+        oldValues: import("@prisma/client/runtime/library").JsonValue | null;
+        newValues: import("@prisma/client/runtime/library").JsonValue | null;
+        changedFields: string[];
+        ipAddress: string | null;
+        userAgent: string | null;
+        sessionId: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
+    }) | {
+        data: ({
+            user: {
+                email: string | null;
+                SDT: string | null;
+            } | null;
+        } & {
+            id: string;
+            status: string;
+            createdAt: Date;
+            updatedAt: Date;
+            entityName: string | null;
+            entityId: string | null;
+            action: import(".prisma/client").$Enums.AuditAction;
+            userId: string | null;
+            userEmail: string | null;
+            oldValues: import("@prisma/client/runtime/library").JsonValue | null;
+            newValues: import("@prisma/client/runtime/library").JsonValue | null;
+            changedFields: string[];
+            ipAddress: string | null;
+            userAgent: string | null;
+            sessionId: string | null;
+            metadata: import("@prisma/client/runtime/library").JsonValue | null;
+            errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
+        })[];
+        page: any;
+        pageSize: any;
+        total: number;
+        pageCount: number;
+    } | null>;
+}

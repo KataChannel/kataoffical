@@ -5,6 +5,8 @@ import { StatusMachineService } from '../common/status-machine.service';
 import { TonkhoManagerService } from '../common/tonkho-manager.service';
 import { PerformanceLogger } from '../shared/performance-logger';
 import { BanggiaPriceHistoryService } from '../banggia/banggia-price-history.service';
+import { PriceHistoryService } from './price-history.service';
+import { UpdateProductPriceDto } from './dto/price-management.dto';
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 const DEFAUL_BANGGIA_ID = '84a62698-5784-4ac3-b506-5e662d1511cb';
 @Injectable()
@@ -14,6 +16,7 @@ export class DonhangService {
     private readonly statusMachine: StatusMachineService,
     private readonly tonkhoManager: TonkhoManagerService,
     private readonly priceHistoryService: BanggiaPriceHistoryService,
+    private readonly donhangPriceHistoryService: PriceHistoryService,
   ) {}
 
   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
@@ -3503,6 +3506,121 @@ export class DonhangService {
     } catch (error) {
       throw new InternalServerErrorException(
         error.message || 'Error getting price at date'
+      );
+    }
+  }
+
+  /**
+   * ⭐ NEW: Update product price in order with audit trail
+   */
+  async updateProductPrice(dto: UpdateProductPriceDto) {
+    try {
+      // Validate order status
+      const donhang = await this.prisma.donhang.findUnique({
+        where: { id: dto.donhangId },
+        include: {
+          sanpham: {
+            where: { id: dto.donhangsanphamId },
+            include: { sanpham: true }
+          }
+        }
+      });
+
+      if (!donhang) {
+        throw new NotFoundException(`Đơn hàng không tồn tại`);
+      }
+
+      // Không cho sửa đơn đã giao/hoàn thành
+      if (donhang.status === 'dagiao' || donhang.status === 'hoanthanh') {
+        throw new BadRequestException('Không thể sửa giá đơn hàng đã giao/hoàn thành');
+      }
+
+      const donhangsanpham = donhang.sanpham[0];
+      if (!donhangsanpham) {
+        throw new NotFoundException('Sản phẩm không tồn tại trong đơn hàng');
+      }
+
+      const oldPrice = Number(donhangsanpham.giaban);
+
+      // Validate price change percentage
+      const changePercent = oldPrice !== 0 ? ((dto.newPrice - oldPrice) / oldPrice) * 100 : 0;
+      
+      // Require reason if change > 20%
+      if (Math.abs(changePercent) > 20 && !dto.changeReason) {
+        throw new BadRequestException('Thay đổi giá > 20% yêu cầu nhập lý do');
+      }
+
+      // Execute in transaction
+      return await this.prisma.$transaction(async (tx) => {
+        // 1. Update price
+        const updated = await tx.donhangsanpham.update({
+          where: { id: dto.donhangsanphamId },
+          data: {
+            giaban: dto.newPrice,
+            ttnhan: dto.newPrice * Number(donhangsanpham.slnhan),
+            ttgiao: dto.newPrice * Number(donhangsanpham.slgiao),
+            ttdat: dto.newPrice * Number(donhangsanpham.sldat),
+          }
+        });
+
+        // 2. Track in audit log
+        await this.donhangPriceHistoryService.trackDonhangPriceChange(dto, oldPrice);
+
+        // 3. Recalculate order totals
+        const allProducts = await tx.donhangsanpham.findMany({
+          where: { donhangId: dto.donhangId }
+        });
+
+        const tongtien = allProducts.reduce((sum, p) => sum + Number(p.ttnhan), 0);
+        const tongvat = tongtien * (Number(donhang.vat || 0) / 100);
+
+        await tx.donhang.update({
+          where: { id: dto.donhangId },
+          data: {
+            tongtien,
+            tongvat
+          }
+        });
+
+        return {
+          success: true,
+          message: 'Cập nhật giá thành công',
+          data: {
+            donhangsanphamId: dto.donhangsanphamId,
+            sanpham: donhangsanpham.sanpham.title,
+            oldPrice,
+            newPrice: dto.newPrice,
+            changePercent: changePercent.toFixed(2) + '%',
+            newTotals: {
+              tongtien,
+              tongvat,
+              tongcong: tongtien + tongvat
+            }
+          }
+        };
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        error.message || 'Lỗi khi cập nhật giá sản phẩm'
+      );
+    }
+  }
+
+  /**
+   * ⭐ NEW: Get price audit history for order
+   */
+  async getDonhangPriceAudit(donhangId: string) {
+    try {
+      return await this.donhangPriceHistoryService.getDonhangPriceAudit({ 
+        donhangId,
+        limit: 100 
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(
+        error.message || 'Lỗi khi lấy lịch sử giá'
       );
     }
   }
