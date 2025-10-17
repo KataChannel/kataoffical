@@ -105,6 +105,24 @@
                   }
             </mat-select>
           </mat-form-field>
+
+                    <!-- Search box -->
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search-field">
+            <mat-label>Tìm kiếm sản phẩm</mat-label>
+            <input 
+              matInput 
+              [value]="searchText()"
+              (input)="applyFilter($event)" 
+              placeholder="Tìm theo tên, mã SP, ĐVT..."
+              autocomplete="off">
+          </mat-form-field>
+          
+          <!-- Hiển thị số lượng filtered -->
+          <span *ngIf="searchText()" class="whitespace-nowrap p-2 rounded-lg bg-blue-100 text-blue-700">
+            {{dataSource().filteredData.length}} / {{CountItem()}} sản phẩm
+          </span>
+
+
           <app-searchfilter
           [isEdit]="isEdit"
           [title]="'Sản Phẩm'"
@@ -142,9 +160,7 @@
           </button> -->
           
           <button [disabled]="!isEdit()" mat-icon-button color="warn" (click)="EmptyCart()"><mat-icon>delete</mat-icon></button>
-            <!-- <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
-                {{CountItem()}} Sản Phẩm
-            </span> -->
+          
 
 
         </div>

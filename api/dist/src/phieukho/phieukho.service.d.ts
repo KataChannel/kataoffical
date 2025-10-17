@@ -29,6 +29,7 @@ export declare class PhieukhoService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                giaban: import("@prisma/client/runtime/library").Decimal;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -40,15 +41,14 @@ export declare class PhieukhoService {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
-                giaban: import("@prisma/client/runtime/library").Decimal;
                 vat: import("@prisma/client/runtime/library").Decimal | null;
             };
             id: string;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             phieuKhoId: string;
         }[];
         kho: {
@@ -84,8 +84,8 @@ export declare class PhieukhoService {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             phieuKhoId: string;
         }[];
         kho: {
@@ -122,8 +122,8 @@ export declare class PhieukhoService {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             phieuKhoId: string;
         }[];
     } & {
@@ -148,8 +148,8 @@ export declare class PhieukhoService {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             phieuKhoId: string;
         }[];
     } & {

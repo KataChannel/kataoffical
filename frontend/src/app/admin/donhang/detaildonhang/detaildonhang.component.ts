@@ -56,6 +56,7 @@ import {
   DonhangcodeToNumber,
   DonhangnumberToCode,
 } from '../../../shared/utils/madonhang.utils';
+import { Title } from '@angular/platform-browser';
 @Component({
   selector: 'app-detaildonhang',
   imports: [
@@ -92,6 +93,7 @@ export class DetailDonhangComponent {
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
+  private titleService: Title = inject(Title);
   @ViewChild('BgHethanDialog') BgHethanDialog!: TemplateRef<any>;
   @ViewChild('confirmRemoveDialog') confirmRemoveDialog!: TemplateRef<any>;
   ListFilter: any[] = [];
@@ -292,6 +294,9 @@ export class DetailDonhangComponent {
       },
     });
     this.ListKhachhang = this.filterKhachhang = Khachhangs.data;
+    if(this.DetailDonhang()?.madonhang){
+      this.titleService.setTitle(`${this.DetailDonhang()?.madonhang}`);
+    }
   }
 
   async handleDonhangAction() {

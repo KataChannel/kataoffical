@@ -41,6 +41,7 @@ import { Debounce } from '../../../shared/utils/decorators';
 import { KhoService } from '../../kho/kho.service';
 import { SharedInputService } from '../../../shared/services/shared-input.service';
 import { UserService } from '../../user/user.service';
+import { Title } from '@angular/platform-browser';
 @Component({
   selector: 'app-detaildathang',
   imports: [
@@ -75,6 +76,7 @@ export class DetailDathangComponent {
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
+  private titleService: Title = inject(Title);
   constructor() {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
@@ -114,6 +116,7 @@ export class DetailDathangComponent {
         this.ListFilter = this.DetailDathang().sanpham;
         this._ListdathangComponent.drawer.open();
         this._router.navigate(['/admin/dathang', id]);
+        this.titleService.setTitle(`${this.DetailDathang()?.madncc}`);
       }
     });
   }
@@ -127,7 +130,8 @@ export class DetailDathangComponent {
   filterBanggia: any[] = [];
   filterSanpham: any[] = [];
   dathangId: any = this._DathangService.dathangId;
-  async ngOnInit() {}
+  async ngOnInit() {
+  }
   async handleDathangAction() {
     if (this.dathangId() === 'new') {
       await this.createDathang();

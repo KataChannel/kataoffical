@@ -129,6 +129,7 @@ export declare class DonhangService {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
+            email: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -137,7 +138,6 @@ export declare class DonhangService {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -176,9 +176,9 @@ export declare class DonhangService {
                     id: string;
                     order: number | null;
                     isActive: boolean;
-                    banggiaId: string;
                     giaban: import("@prisma/client/runtime/library").Decimal;
                     sanphamId: string;
+                    banggiaId: string;
                 }[];
             } & {
                 id: string;
@@ -204,6 +204,7 @@ export declare class DonhangService {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
+            email: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -212,7 +213,6 @@ export declare class DonhangService {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -330,9 +330,9 @@ export declare class DonhangService {
                     id: string;
                     order: number | null;
                     isActive: boolean;
-                    banggiaId: string;
                     giaban: import("@prisma/client/runtime/library").Decimal;
                     sanphamId: string;
+                    banggiaId: string;
                 }[];
             } & {
                 id: string;
@@ -358,6 +358,7 @@ export declare class DonhangService {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
+            email: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -366,7 +367,6 @@ export declare class DonhangService {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -602,6 +602,7 @@ export declare class DonhangService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                giaban: import("@prisma/client/runtime/library").Decimal;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -613,7 +614,6 @@ export declare class DonhangService {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
-                giaban: import("@prisma/client/runtime/library").Decimal;
                 vat: import("@prisma/client/runtime/library").Decimal | null;
             };
         } & {
@@ -643,6 +643,7 @@ export declare class DonhangService {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
+            email: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -651,7 +652,6 @@ export declare class DonhangService {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;

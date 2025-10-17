@@ -62,9 +62,9 @@ export declare class ChotkhoService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            userId: string | null;
             codeId: string | null;
             khoId: string | null;
-            userId: string | null;
             ngaychot: Date;
         }) | null;
     }>;
@@ -115,9 +115,9 @@ export declare class ChotkhoService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            userId: string | null;
             codeId: string | null;
             khoId: string | null;
-            userId: string | null;
             ngaychot: Date;
         })[];
         pagination: {
@@ -170,9 +170,9 @@ export declare class ChotkhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        userId: string | null;
         codeId: string | null;
         khoId: string | null;
-        userId: string | null;
         ngaychot: Date;
     }) | null>;
     update(id: string, updateData: any): Promise<{
@@ -183,9 +183,9 @@ export declare class ChotkhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        userId: string | null;
         codeId: string | null;
         khoId: string | null;
-        userId: string | null;
         ngaychot: Date;
     }>;
     remove(id: string): Promise<{
@@ -196,9 +196,9 @@ export declare class ChotkhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        userId: string | null;
         codeId: string | null;
         khoId: string | null;
-        userId: string | null;
         ngaychot: Date;
     }>;
     search(searchParams: any): Promise<{
@@ -245,9 +245,9 @@ export declare class ChotkhoService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            userId: string | null;
             codeId: string | null;
             khoId: string | null;
-            userId: string | null;
             ngaychot: Date;
         })[];
         pagination: {
@@ -307,9 +307,9 @@ export declare class ChotkhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        userId: string | null;
         codeId: string | null;
         khoId: string | null;
-        userId: string | null;
         ngaychot: Date;
     }) | null>;
 }

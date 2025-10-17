@@ -42,27 +42,35 @@ let BanggiaPriceHistoryService = class BanggiaPriceHistoryService {
                         sanpham: { select: { masp: true, title: true } }
                     }
                 });
-                if (userId) {
-                    await tx.auditLog.create({
-                        data: {
-                            entityName: 'Banggiasanpham',
-                            entityId: newBgsp.id,
-                            action: 'CREATE',
-                            userId,
-                            newValues: { giaban: newPrice },
-                            metadata: {
-                                banggiaId,
-                                banggiaCode: newBgsp.banggia.mabanggia,
-                                banggiaTitle: newBgsp.banggia.title,
-                                sanphamId,
-                                sanphamCode: newBgsp.sanpham.masp,
-                                sanphamTitle: newBgsp.sanpham.title,
-                                reason: reason || 'Tạo giá mới',
-                                timestamp: new Date().toISOString()
-                            }
-                        }
+                let userEmail = 'system';
+                if (userId && userId !== 'system') {
+                    const user = await tx.user.findUnique({
+                        where: { id: userId },
+                        select: { email: true, name: true }
                     });
+                    userEmail = user?.email || user?.name || userId;
                 }
+                await tx.banggiasanphamHistory.create({
+                    data: {
+                        banggiasanphamId: newBgsp.id,
+                        banggiaId,
+                        sanphamId,
+                        oldPrice: 0,
+                        newPrice: newPrice,
+                        changePercent: 0,
+                        changeReason: reason || 'Tạo giá mới',
+                        changedBy: userEmail,
+                        sourceType: 'MANUAL',
+                        metadata: {
+                            userId: userId,
+                            banggiaCode: newBgsp.banggia.mabanggia,
+                            banggiaTitle: newBgsp.banggia.title,
+                            sanphamCode: newBgsp.sanpham.masp,
+                            sanphamTitle: newBgsp.sanpham.title,
+                            action: 'CREATE'
+                        }
+                    }
+                });
                 return {
                     action: 'CREATED',
                     data: newBgsp,
@@ -106,54 +114,44 @@ let BanggiaPriceHistoryService = class BanggiaPriceHistoryService {
                     sanpham: { select: { masp: true, title: true } }
                 }
             });
+            const percentChange = oldPrice > 0 ? ((newPrice - oldPrice) / oldPrice) * 100 : 0;
+            let userEmail = 'system';
+            let userName = 'system';
             if (userId && userId !== 'system') {
-                try {
-                    const userExists = await tx.user.findUnique({
-                        where: { id: userId },
-                        select: { id: true }
-                    });
-                    if (userExists) {
-                        await tx.auditLog.create({
-                            data: {
-                                entityName: 'Banggiasanpham',
-                                entityId: currentBgsp.id,
-                                action: 'UPDATE',
-                                userId,
-                                oldValues: { giaban: oldPrice },
-                                newValues: { giaban: newPrice },
-                                changedFields: ['giaban'],
-                                metadata: {
-                                    banggiaId,
-                                    banggiaCode: currentBgsp.banggia.mabanggia,
-                                    banggiaTitle: currentBgsp.banggia.title,
-                                    sanphamId,
-                                    sanphamCode: currentBgsp.sanpham.masp,
-                                    sanphamTitle: currentBgsp.sanpham.title,
-                                    priceChange: {
-                                        oldPrice,
-                                        newPrice,
-                                        difference: newPrice - oldPrice,
-                                        percentChange: priceChange * 100
-                                    },
-                                    reason: reason || `Cập nhật giá: ${oldPrice.toLocaleString()} → ${newPrice.toLocaleString()}`,
-                                    timestamp: new Date().toISOString()
-                                }
-                            }
-                        });
-                        console.log(`📝 Audit log created for user ${userId}`);
-                    }
-                    else {
-                        console.warn(`⚠️  User ${userId} not found - skipping audit log`);
+                const user = await tx.user.findUnique({
+                    where: { id: userId },
+                    select: { email: true, name: true }
+                });
+                userEmail = user?.email || user?.name || userId;
+                userName = user?.name || user?.email || userId;
+            }
+            await tx.banggiasanphamHistory.create({
+                data: {
+                    banggiasanphamId: currentBgsp.id,
+                    banggiaId,
+                    sanphamId,
+                    oldPrice: oldPrice,
+                    newPrice: newPrice,
+                    changePercent: percentChange,
+                    changeReason: reason || `Cập nhật giá: ${oldPrice.toLocaleString()} → ${newPrice.toLocaleString()}`,
+                    changedBy: userEmail,
+                    sourceType: 'MANUAL',
+                    metadata: {
+                        userId: userId,
+                        userName: userName,
+                        banggiaCode: currentBgsp.banggia.mabanggia,
+                        banggiaTitle: currentBgsp.banggia.title,
+                        sanphamCode: currentBgsp.sanpham.masp,
+                        sanphamTitle: currentBgsp.sanpham.title,
+                        difference: newPrice - oldPrice,
+                        action: 'UPDATE'
                     }
                 }
-                catch (auditError) {
-                    console.error(`❌ Failed to create audit log:`, auditError.message);
-                    console.warn(`⚠️  Continuing without audit log...`);
-                }
-            }
-            else {
-                console.log(`ℹ️  No valid userId provided - skipping audit log`);
-            }
+            });
+            console.log(`📝 Price history logged for ${currentBgsp.sanpham.masp}`);
+            console.log(`   Old: ${oldPrice} → New: ${newPrice} (${percentChange.toFixed(2)}%)`);
+            console.log(`   Changed by: ${userEmail} (${userName})`);
+            console.log(`   Reason: ${reason || 'No reason provided'}`);
             console.log(`✅ Updated price: ${currentBgsp.sanpham.masp} in ${currentBgsp.banggia.mabanggia}: ${oldPrice} → ${newPrice}`);
             return {
                 action: 'UPDATED',
@@ -172,66 +170,71 @@ let BanggiaPriceHistoryService = class BanggiaPriceHistoryService {
                 sanpham: { select: { masp: true, title: true } }
             }
         });
+        console.log('[PRICE-HISTORY] Query for:', { banggiaId, sanphamId });
+        console.log('[PRICE-HISTORY] Found bgsp:', bgsp ? bgsp.id : 'NOT FOUND');
         if (!bgsp) {
+            console.warn('[PRICE-HISTORY] No banggiasanpham found');
             return [];
         }
         const where = {
-            entityName: 'Banggiasanpham',
-            entityId: bgsp.id,
-            action: { in: ['CREATE', 'UPDATE'] }
+            banggiasanphamId: bgsp.id
         };
         if (options?.from || options?.to) {
-            where.createdAt = {};
+            where.changedAt = {};
             if (options.from)
-                where.createdAt.gte = options.from;
+                where.changedAt.gte = options.from;
             if (options.to)
-                where.createdAt.lte = options.to;
+                where.changedAt.lte = options.to;
         }
-        const logs = await this.prisma.auditLog.findMany({
+        const history = await this.prisma.banggiasanphamHistory.findMany({
             where,
-            orderBy: { createdAt: 'desc' },
+            orderBy: { changedAt: 'desc' },
             take: options?.limit || 100,
             select: {
                 id: true,
-                action: true,
-                oldValues: true,
-                newValues: true,
-                metadata: true,
-                createdAt: true,
-                userId: true,
-                user: {
-                    select: {
-                        id: true,
-                        email: true,
-                        name: true
-                    }
-                }
+                oldPrice: true,
+                newPrice: true,
+                changePercent: true,
+                changeReason: true,
+                changedBy: true,
+                changedAt: true,
+                sourceType: true,
+                batchId: true,
+                metadata: true
             }
         });
-        return logs.map(log => ({
-            id: log.id,
-            action: log.action,
-            oldPrice: log.oldValues?.['giaban'] || null,
-            newPrice: log.newValues?.['giaban'] || null,
-            reason: log.metadata?.['reason'] || null,
-            priceChange: log.metadata?.['priceChange'] || null,
-            changedAt: log.createdAt,
-            changedBy: log.user ? {
-                id: log.user.id,
-                email: log.user.email,
-                name: log.user.name
-            } : null,
-            banggia: {
-                id: banggiaId,
-                code: bgsp.banggia.mabanggia,
-                title: bgsp.banggia.title
-            },
-            sanpham: {
-                id: sanphamId,
-                code: bgsp.sanpham.masp,
-                title: bgsp.sanpham.title
-            }
-        }));
+        console.log(`[PRICE-HISTORY] Found ${history.length} records`);
+        return history.map(record => {
+            const difference = Number(record.newPrice) - Number(record.oldPrice);
+            const percentChange = Number(record.changePercent);
+            const userName = record.metadata?.['userName'] || record.changedBy;
+            const userId = record.metadata?.['userId'] || null;
+            return {
+                id: record.id,
+                oldPrice: Number(record.oldPrice),
+                newPrice: Number(record.newPrice),
+                difference,
+                percentChange,
+                reason: record.changeReason,
+                changedAt: record.changedAt,
+                changedBy: record.changedBy,
+                changedByName: userName,
+                changedByUserId: userId,
+                sourceType: record.sourceType,
+                batchId: record.batchId,
+                banggia: {
+                    id: banggiaId,
+                    code: bgsp.banggia.mabanggia,
+                    title: bgsp.banggia.title
+                },
+                sanpham: {
+                    id: sanphamId,
+                    code: bgsp.sanpham.masp,
+                    title: bgsp.sanpham.title
+                },
+                metadata: record.metadata
+            };
+        });
     }
     async getCurrentPrice(banggiaId, sanphamId) {
         const bgsp = await this.prisma.banggiasanpham.findFirst({

@@ -1,4 +1,4 @@
-<div class="price-history-dialog">
+<div class="price-history-dialog mx-auto">
   <div class="dialog-header">
     <h2 mat-dialog-title>
       <mat-icon>history</mat-icon>
@@ -35,13 +35,13 @@
 
     <!-- Price History Timeline -->
     <div *ngIf="!loading() && !error() && priceHistory()" class="price-history-timeline">
-      <div *ngIf="priceHistory()!.history.length === 0" class="no-history">
+      <div *ngIf="priceHistory().length === 0" class="no-history">
         <mat-icon>info</mat-icon>
         <p>Chưa có lịch sử thay đổi giá</p>
       </div>
 
-      <div *ngIf="priceHistory()!.history.length > 0" class="timeline">
-        <div *ngFor="let change of priceHistory()!.history; let first = first; let last = last"
+      <div *ngIf="priceHistory().length > 0" class="timeline">
+        <div *ngFor="let change of priceHistory(); let first = first; let last = last"
              class="timeline-item"
              [class.first-item]="first">
           
@@ -55,7 +55,7 @@
             <mat-card-content>
               <!-- Date & Time -->
               <div class="change-header">
-                <span class="change-date">{{ formatDate(change.timestamp) }}</span>
+                <span class="change-date">{{ formatDate(change.changedAt) }}</span>
                 <mat-chip [ngClass]="getPriceChangeClass(change)">
                   {{ formatPercentage(change.percentChange) }}
                 </mat-chip>
@@ -90,9 +90,13 @@
                   <mat-icon>description</mat-icon>
                   {{ change.reason }}
                 </p>
-                <p *ngIf="change.userId" class="user">
+                <p *ngIf="change.changedBy" class="user">
                   <mat-icon>person</mat-icon>
-                  Người thay đổi: {{ change.userId }}
+                  Người thay đổi: {{ change.changedByName || change.changedBy }}
+                </p>
+                <p *ngIf="change.sourceType" class="source-type">
+                  <mat-icon>source</mat-icon>
+                  Nguồn: {{ change.sourceType }}
                 </p>
               </div>
             </mat-card-content>

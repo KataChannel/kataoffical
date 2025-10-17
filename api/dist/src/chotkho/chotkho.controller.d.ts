@@ -48,9 +48,9 @@ export declare class ChotkhoController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            userId: string | null;
             codeId: string | null;
             khoId: string | null;
-            userId: string | null;
             ngaychot: Date;
         }) | null;
     }>;
@@ -98,9 +98,9 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        userId: string | null;
         codeId: string | null;
         khoId: string | null;
-        userId: string | null;
         ngaychot: Date;
     }) | null>;
     findAll(page?: string, limit?: string): Promise<{
@@ -147,9 +147,9 @@ export declare class ChotkhoController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            userId: string | null;
             codeId: string | null;
             khoId: string | null;
-            userId: string | null;
             ngaychot: Date;
         })[];
         pagination: {
@@ -197,9 +197,9 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        userId: string | null;
         codeId: string | null;
         khoId: string | null;
-        userId: string | null;
         ngaychot: Date;
     }) | null>;
     update(id: string, data: any): Promise<{
@@ -210,9 +210,9 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        userId: string | null;
         codeId: string | null;
         khoId: string | null;
-        userId: string | null;
         ngaychot: Date;
     }>;
     remove(id: string): Promise<{
@@ -223,9 +223,9 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        userId: string | null;
         codeId: string | null;
         khoId: string | null;
-        userId: string | null;
         ngaychot: Date;
     }>;
 }

@@ -10,9 +10,9 @@ export declare class BanggiaController {
             id: string;
             order: number | null;
             isActive: boolean;
-            banggiaId: string;
             giaban: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
+            banggiaId: string;
         }[];
     } & {
         id: string;
@@ -96,6 +96,8 @@ export declare class BanggiaController {
     findOne(id: string): Promise<{
         sanpham: {
             giaban: number;
+            banggiasanphamId: string;
+            sanphamId: string;
             id: string;
             title: string;
             order: number | null;
@@ -125,6 +127,7 @@ export declare class BanggiaController {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
+            email: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -133,7 +136,6 @@ export declare class BanggiaController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -162,9 +164,9 @@ export declare class BanggiaController {
             id: string;
             order: number | null;
             isActive: boolean;
-            banggiaId: string;
             giaban: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
+            banggiaId: string;
         }[];
     } & {
         id: string;
@@ -206,17 +208,17 @@ export declare class BanggiaController {
     }>;
     getPriceHistory(banggiaId: string, sanphamId: string): Promise<{
         id: string;
-        action: import(".prisma/client").$Enums.AuditAction;
-        oldPrice: any;
-        newPrice: any;
-        reason: any;
-        priceChange: any;
+        oldPrice: number;
+        newPrice: number;
+        difference: number;
+        percentChange: number;
+        reason: string | null;
         changedAt: Date;
-        changedBy: {
-            id: string;
-            email: string | null;
-            name: string | null;
-        } | null;
+        changedBy: string | null;
+        changedByName: any;
+        changedByUserId: any;
+        sourceType: string | null;
+        batchId: string | null;
         banggia: {
             id: string;
             code: string | null;
@@ -227,6 +229,7 @@ export declare class BanggiaController {
             code: string;
             title: string;
         };
+        metadata: import("@prisma/client/runtime/library").JsonValue;
     }[]>;
     getCurrentPrice(banggiaId: string, sanphamId: string): Promise<number | null>;
     bulkUpdatePrices(body: {

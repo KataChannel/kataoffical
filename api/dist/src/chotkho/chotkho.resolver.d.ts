@@ -46,9 +46,9 @@ export declare class ChotkhoResolver {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            userId: string | null;
             codeId: string | null;
             khoId: string | null;
-            userId: string | null;
             ngaychot: Date;
         })[];
         pagination: {
@@ -101,9 +101,9 @@ export declare class ChotkhoResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        userId: string | null;
         codeId: string | null;
         khoId: string | null;
-        userId: string | null;
         ngaychot: Date;
     }) | null>;
     getProductsByWarehouse(khoId: string): Promise<any[]>;
@@ -168,9 +168,9 @@ export declare class ChotkhoResolver {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            userId: string | null;
             codeId: string | null;
             khoId: string | null;
-            userId: string | null;
             ngaychot: Date;
         }) | null;
     }>;
@@ -182,9 +182,9 @@ export declare class ChotkhoResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        userId: string | null;
         codeId: string | null;
         khoId: string | null;
-        userId: string | null;
         ngaychot: Date;
     }>;
     remove(id: string): Promise<{
@@ -195,9 +195,9 @@ export declare class ChotkhoResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        userId: string | null;
         codeId: string | null;
         khoId: string | null;
-        userId: string | null;
         ngaychot: Date;
     }>;
     search(filters?: {
@@ -251,9 +251,9 @@ export declare class ChotkhoResolver {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            userId: string | null;
             codeId: string | null;
             khoId: string | null;
-            userId: string | null;
             ngaychot: Date;
         })[];
         pagination: {

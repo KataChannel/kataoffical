@@ -5,16 +5,29 @@ import { firstValueFrom } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 export interface PriceChange {
-  timestamp: string;
+  id: string;
   oldPrice: number;
   newPrice: number;
   difference: number;
   percentChange: number;
-  userId: string;
   reason: string;
-  banggiaCode?: string;
-  sanphamCode?: string;
-  sanphamTitle?: string;
+  changedAt: string;
+  changedBy: string;           // Email của user
+  changedByName?: string;      // Name của user (nếu có)
+  changedByUserId?: string;    // Original userId (nếu có)
+  sourceType?: string;
+  batchId?: string;
+  banggia?: {
+    id: string;
+    code: string;
+    title: string;
+  };
+  sanpham?: {
+    id: string;
+    code: string;
+    title: string;
+  };
+  metadata?: any;
 }
 
 export interface PriceHistory {
@@ -91,15 +104,29 @@ export class PriceHistoryService {
    */
   private getCurrentUserId(): string | null {
     try {
-      // Try to get user data from localStorage
-      const userData = this.storageService.getItem('user');
-      if (userData) {
-        const user = JSON.parse(userData);
-        return user?.id || null;
+      // Decode JWT token to get userId
+      const token = this.storageService.getItem('token');
+      if (!token) {
+        console.warn('[PRICE-HISTORY] No token found');
+        return null;
       }
-      return null;
+
+      // JWT format: header.payload.signature
+      // Decode the payload (middle part)
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      
+      // Backend stores userId in 'id' field
+      const userId = payload.id || null;
+      
+      if (userId) {
+        console.log('[PRICE-HISTORY] Got userId from token:', userId);
+      } else {
+        console.warn('[PRICE-HISTORY] No userId in token payload:', payload);
+      }
+      
+      return userId;
     } catch (error) {
-      console.warn('Failed to get current user ID:', error);
+      console.error('[PRICE-HISTORY] Failed to decode token:', error);
       return null;
     }
   }
@@ -107,11 +134,11 @@ export class PriceHistoryService {
   /**
    * Get price history for a product in a banggia
    */
-  async getPriceHistory(banggiaId: string, sanphamId: string): Promise<PriceHistory> {
+  async getPriceHistory(banggiaId: string, sanphamId: string): Promise<PriceChange[]> {
     try {
       const url = `${this.baseUrl}/banggia/${banggiaId}/sanpham/${sanphamId}/price-history`;
       return await firstValueFrom(
-        this.http.get<PriceHistory>(url, { headers: this.getHeaders() })
+        this.http.get<PriceChange[]>(url, { headers: this.getHeaders() })
       );
     } catch (error) {
       console.error('Error fetching price history:', error);

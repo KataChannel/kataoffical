@@ -14,6 +14,7 @@ export declare class KhachhangController {
         name: string | null;
         banggiaId: string | null;
         subtitle: string | null;
+        email: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -22,7 +23,6 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
-        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
@@ -61,6 +61,7 @@ export declare class KhachhangController {
         name: string | null;
         banggiaId: string | null;
         subtitle: string | null;
+        email: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -69,7 +70,6 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
-        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
@@ -104,6 +104,7 @@ export declare class KhachhangController {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
+            email: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -112,7 +113,6 @@ export declare class KhachhangController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -152,6 +152,7 @@ export declare class KhachhangController {
         name: string | null;
         banggiaId: string | null;
         subtitle: string | null;
+        email: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -160,7 +161,6 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
-        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
@@ -210,6 +210,7 @@ export declare class KhachhangController {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
+            email: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -218,7 +219,6 @@ export declare class KhachhangController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -258,6 +258,7 @@ export declare class KhachhangController {
         name: string | null;
         banggiaId: string | null;
         subtitle: string | null;
+        email: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -266,7 +267,6 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
-        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
@@ -301,6 +301,7 @@ export declare class KhachhangController {
         name: string | null;
         banggiaId: string | null;
         subtitle: string | null;
+        email: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -309,7 +310,6 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
-        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
@@ -328,6 +328,7 @@ export declare class KhachhangController {
         name: string | null;
         banggiaId: string | null;
         subtitle: string | null;
+        email: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -336,7 +337,6 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
-        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;

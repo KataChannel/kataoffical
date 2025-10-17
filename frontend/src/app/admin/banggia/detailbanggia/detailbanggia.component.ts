@@ -71,6 +71,7 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
   // providers: [provideNativeDateAdapter()],
   templateUrl: './detailbanggia.component.html',
   styleUrl: './detailbanggia.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   _ListbanggiaComponent: ListBanggiaComponent = inject(ListBanggiaComponent);
@@ -100,6 +101,10 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   // Price update state
   updatingPriceForRow = signal<number | null>(null);
   CountItem = computed(() => this.dataSource().data.length);
+  
+  // Search functionality
+  searchText = signal<string>('');
+  filteredCount = computed(() => this.dataSource().filteredData?.length || 0);
   
   // Performance optimization properties
   private pendingChanges = new Map<number, any>(); // Cache changes
@@ -321,6 +326,8 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   async LoadListSanpham(){
     try{
       console.log('Loading danh sách sản phẩm...');
+      
+      // Tối ưu: Chỉ load các field cần thiết, giảm payload
       const ListSanpham = await this._GraphqlService.findAll('sanpham', {
         select: {
           id: true,
@@ -333,7 +340,10 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
         enableParallelFetch: true,
         orderBy: { title: 'asc' },
       });
+      
       console.log('Danh sách sản phẩm từ GraphQL:', ListSanpham?.data?.length || 0, 'items');
+      
+      // Tối ưu: Không freeze, chỉ assign trực tiếp
       this.ListSanpham = ListSanpham.data || [];
     }catch(error){
       console.error('Lỗi load danh sách sản phẩm:', error);
@@ -361,6 +371,8 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
         enableParallelFetch: true,
       });
       console.log('Danh sách khách hàng từ GraphQL:', Khachhangs?.data?.length || 0, 'items');
+      
+      // Tối ưu: Assign trực tiếp
       this.filterKhachhang = this.ListKhachhang = Khachhangs.data || [];
     }catch(error){
       console.error('Lỗi load danh sách khách hàng:', error);
@@ -374,9 +386,25 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
         const ds = this.dataSource();
         ds.paginator = this.paginator;
         ds.sort = this.sort;
+        
+        // Setup custom filter predicate cho search
+        ds.filterPredicate = (data: any, filter: string) => {
+          const searchStr = filter.toLowerCase().trim();
+          if (!searchStr) return true;
+          
+          // Tìm kiếm trên nhiều fields
+          const title = (data.title || '').toLowerCase();
+          const masp = (data.masp || '').toLowerCase();
+          const dvt = (data.dvt || '').toLowerCase();
+          
+          return title.includes(searchStr) || 
+                 masp.includes(searchStr) || 
+                 dvt.includes(searchStr);
+        };
+        
         // CRITICAL: Trigger signal update
         this.dataSource.set(ds);
-        console.log('[PAGINATION] Paginator and Sort initialized');
+        console.log('[PAGINATION] Paginator, Sort, and Filter initialized');
       }
     }, 100);
   }
@@ -743,7 +771,7 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
         banggiaId,
         sanphamId,
         newPrice,
-        reason
+        reason,
       );
       
       // Update local state in untracked context
@@ -1080,7 +1108,7 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       maxWidth: '95vw',
       data: {
         banggiaId: this.banggiaId(),
-        sanphamId: sanpham.id,
+        sanphamId: sanpham.sanphamId || sanpham.id,  // ✅ Use sanphamId first, fallback to id
         sanphamTitle: sanpham.title,
         currentPrice: sanpham.giaban
       }
@@ -1106,5 +1134,42 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
    */
   goToPriceComparison() {
     this._router.navigate(['/admin/price-comparison']);
+  }
+
+  /**
+   * Apply search filter to table
+   */
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.searchText.set(filterValue);
+    
+    const ds = this.dataSource();
+    ds.filter = filterValue.trim().toLowerCase();
+    
+    // Reset về trang đầu khi search
+    if (ds.paginator) {
+      ds.paginator.firstPage();
+    }
+    
+    // Update signal để trigger change detection
+    this.dataSource.set(ds);
+    
+    console.log(`[SEARCH] Filtered: ${this.filteredCount()} / ${this.CountItem()} items`);
+  }
+
+  /**
+   * Clear search filter
+   */
+  clearFilter() {
+    this.searchText.set('');
+    const ds = this.dataSource();
+    ds.filter = '';
+    
+    if (ds.paginator) {
+      ds.paginator.firstPage();
+    }
+    
+    this.dataSource.set(ds);
+    console.log('[SEARCH] Filter cleared');
   }
 }

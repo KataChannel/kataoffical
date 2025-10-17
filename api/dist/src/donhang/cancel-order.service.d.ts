@@ -25,6 +25,7 @@ export declare class CancelOrderService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                giaban: Prisma.Decimal;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -36,7 +37,6 @@ export declare class CancelOrderService {
                 soluong: Prisma.Decimal | null;
                 soluongkho: Prisma.Decimal | null;
                 haohut: Prisma.Decimal;
-                giaban: Prisma.Decimal;
                 vat: Prisma.Decimal | null;
             };
         } & {
@@ -66,6 +66,7 @@ export declare class CancelOrderService {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
+            email: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -74,7 +75,6 @@ export declare class CancelOrderService {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -114,6 +114,7 @@ export declare class CancelOrderService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                giaban: Prisma.Decimal;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -125,7 +126,6 @@ export declare class CancelOrderService {
                 soluong: Prisma.Decimal | null;
                 soluongkho: Prisma.Decimal | null;
                 haohut: Prisma.Decimal;
-                giaban: Prisma.Decimal;
                 vat: Prisma.Decimal | null;
             };
         } & {
@@ -151,9 +151,9 @@ export declare class CancelOrderService {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
-            email: string | null;
             tenfile: string | null;
             isshowvat: boolean;
             mancc: string;

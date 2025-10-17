@@ -34,7 +34,7 @@ export interface PriceHistoryDialogData {
 })
 export class PriceHistoryDialogComponent implements OnInit {
   loading = signal(true);
-  priceHistory = signal<PriceHistory | null>(null);
+  priceHistory = signal<PriceChange[]>([]);
   error = signal<string | null>(null);
 
   constructor(

@@ -14,6 +14,7 @@ export declare class CancelOrderController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                giaban: import("@prisma/client/runtime/library").Decimal;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -25,7 +26,6 @@ export declare class CancelOrderController {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
-                giaban: import("@prisma/client/runtime/library").Decimal;
                 vat: import("@prisma/client/runtime/library").Decimal | null;
             };
         } & {
@@ -55,6 +55,7 @@ export declare class CancelOrderController {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
+            email: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -63,7 +64,6 @@ export declare class CancelOrderController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -103,6 +103,7 @@ export declare class CancelOrderController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                giaban: import("@prisma/client/runtime/library").Decimal;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -114,7 +115,6 @@ export declare class CancelOrderController {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
-                giaban: import("@prisma/client/runtime/library").Decimal;
                 vat: import("@prisma/client/runtime/library").Decimal | null;
             };
         } & {
@@ -140,9 +140,9 @@ export declare class CancelOrderController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
-            email: string | null;
             tenfile: string | null;
             isshowvat: boolean;
             mancc: string;
@@ -176,6 +176,7 @@ export declare class CancelOrderController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                giaban: import("@prisma/client/runtime/library").Decimal;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -187,7 +188,6 @@ export declare class CancelOrderController {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
-                giaban: import("@prisma/client/runtime/library").Decimal;
                 vat: import("@prisma/client/runtime/library").Decimal | null;
             };
         } & {
@@ -217,6 +217,7 @@ export declare class CancelOrderController {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
+            email: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -225,7 +226,6 @@ export declare class CancelOrderController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -265,6 +265,7 @@ export declare class CancelOrderController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                giaban: import("@prisma/client/runtime/library").Decimal;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -276,7 +277,6 @@ export declare class CancelOrderController {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
-                giaban: import("@prisma/client/runtime/library").Decimal;
                 vat: import("@prisma/client/runtime/library").Decimal | null;
             };
         } & {
@@ -302,9 +302,9 @@ export declare class CancelOrderController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
-            email: string | null;
             tenfile: string | null;
             isshowvat: boolean;
             mancc: string;

@@ -558,6 +558,8 @@ export class BanggiaService {
         sanpham: banggia.sanpham.map(item => ({
           ...item.sanpham,
           giaban: Number(item.giaban),
+          banggiasanphamId: item.id,  // ✅ Preserve banggiasanpham ID
+          sanphamId: item.sanphamId,  // ✅ Preserve sanpham ID for price history
         })),
       };
       return result;

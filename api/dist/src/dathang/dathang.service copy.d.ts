@@ -15,9 +15,9 @@ export declare class DathangService {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
-            email: string | null;
             tenfile: string | null;
             isshowvat: boolean;
             mancc: string;
@@ -56,6 +56,7 @@ export declare class DathangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             title2: string | null;
             slug: string | null;
             masp: string;
@@ -67,7 +68,6 @@ export declare class DathangService {
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: import("@prisma/client/runtime/library").Decimal;
-            giaban: import("@prisma/client/runtime/library").Decimal;
             vat: import("@prisma/client/runtime/library").Decimal | null;
         }[];
         nhacungcap: {
@@ -77,9 +77,9 @@ export declare class DathangService {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
+            email: string | null;
             diachi: string | null;
             sdt: string | null;
-            email: string | null;
             tenfile: string | null;
             isshowvat: boolean;
             mancc: string;

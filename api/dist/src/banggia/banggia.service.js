@@ -479,6 +479,8 @@ let BanggiaService = class BanggiaService {
                 sanpham: banggia.sanpham.map(item => ({
                     ...item.sanpham,
                     giaban: Number(item.giaban),
+                    banggiasanphamId: item.id,
+                    sanphamId: item.sanphamId,
                 })),
             };
             return result;

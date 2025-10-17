@@ -128,7 +128,6 @@ export class AdminmainComponent {
     });
   }
   searchFunction(event: any) {
-    console.log(event.target.value,"ạhdkjsahdjkash");
     
     this.FilterListMenu = this.ListMenu.filter((item: any) => {
       return removeVietnameseAccents(item.title).toLowerCase().includes(event.target.value.toLowerCase()) 

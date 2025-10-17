@@ -24,9 +24,9 @@ export declare class BanggiaPriceHistoryService {
             id: string;
             order: number | null;
             isActive: boolean;
-            banggiaId: string;
             giaban: Decimal;
             sanphamId: string;
+            banggiaId: string;
         };
         oldPrice: null;
         newPrice: number;
@@ -56,9 +56,9 @@ export declare class BanggiaPriceHistoryService {
             id: string;
             order: number | null;
             isActive: boolean;
-            banggiaId: string;
             giaban: Decimal;
             sanphamId: string;
+            banggiaId: string;
         };
         oldPrice: number;
         newPrice: number;
@@ -72,17 +72,17 @@ export declare class BanggiaPriceHistoryService {
         limit?: number;
     }): Promise<{
         id: string;
-        action: import(".prisma/client").$Enums.AuditAction;
-        oldPrice: any;
-        newPrice: any;
-        reason: any;
-        priceChange: any;
+        oldPrice: number;
+        newPrice: number;
+        difference: number;
+        percentChange: number;
+        reason: string | null;
         changedAt: Date;
-        changedBy: {
-            id: string;
-            email: string | null;
-            name: string | null;
-        } | null;
+        changedBy: string | null;
+        changedByName: any;
+        changedByUserId: any;
+        sourceType: string | null;
+        batchId: string | null;
         banggia: {
             id: string;
             code: string | null;
@@ -93,6 +93,7 @@ export declare class BanggiaPriceHistoryService {
             code: string;
             title: string;
         };
+        metadata: import("@prisma/client/runtime/library").JsonValue;
     }[]>;
     getCurrentPrice(banggiaId: string, sanphamId: string): Promise<number | null>;
     bulkUpdatePrices(updates: Array<{

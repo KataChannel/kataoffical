@@ -93,14 +93,12 @@ export class ListDathangComponent {
     'createdAt',
     'updatedAt',
     // 'actions',
-    // 'action'
   ];
 
   ColumnName: any = {
     STT: 'STT',
     //  title: 'Tiêu Đề',
     madncc: 'Mã Đơn Nhập',
-    // actions: 'Thao Tác',
     nhacungcap: 'Nhà Cung Cấp',
     sanpham: 'Sản Phẩm',
     ngaynhan: 'Ngày Nhận',
@@ -108,7 +106,7 @@ export class ListDathangComponent {
     ghichu: 'Ghi Chú',
     createdAt: 'Ngày Tạo',
     updatedAt: 'Ngày Cập Nhật',
-    // action: 'Hành Động'
+    // actions: 'Thao Tác',
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('DathangColFilter') || '[]'
