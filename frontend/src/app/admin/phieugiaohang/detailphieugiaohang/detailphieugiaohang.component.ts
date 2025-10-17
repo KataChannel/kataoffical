@@ -46,6 +46,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
 import { UserService } from '../../user/user.service';
 import { SharedInputService } from '../../../shared/services/shared-input.service';
 import { LoadingUtils } from '../../../shared/utils/loading.utils';
+import { Title } from '@angular/platform-browser';
 @Component({
   selector: 'app-detailphieugiaohang',
   imports: [
@@ -81,6 +82,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
   _snackBar: MatSnackBar = inject(MatSnackBar);
   _dialog: MatDialog = inject(MatDialog);
   _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private titleService: Title = inject(Title);
     displayedColumns: string[] = [
     'STT',
     'title',
@@ -363,7 +365,9 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
     setTimeout(() => {
       this.dataSource.sort = this.sort;
     }, 300);
-
+     if(this.DetailPhieugiaohang()?.madonhang){
+      this.titleService.setTitle(`${this.DetailPhieugiaohang()?.madonhang}`);
+    }
     // this.setupDataSource();
   }
 
