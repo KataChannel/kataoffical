@@ -92,7 +92,7 @@ export class ListDathangComponent {
     'ghichu',
     'createdAt',
     'updatedAt',
-    'actions',
+    // 'actions',
     // 'action'
   ];
 
@@ -100,7 +100,7 @@ export class ListDathangComponent {
     STT: 'STT',
     //  title: 'Tiêu Đề',
     madncc: 'Mã Đơn Nhập',
-    actions: 'Thao Tác',
+    // actions: 'Thao Tác',
     nhacungcap: 'Nhà Cung Cấp',
     sanpham: 'Sản Phẩm',
     ngaynhan: 'Ngày Nhận',

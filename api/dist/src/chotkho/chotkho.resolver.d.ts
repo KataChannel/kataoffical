@@ -6,10 +6,10 @@ export declare class ChotkhoResolver {
         data: ({
             user: {
                 id: string;
+                email: string | null;
                 profile: {
                     name: string;
                 } | null;
-                email: string | null;
             } | null;
             kho: {
                 id: string;
@@ -61,10 +61,10 @@ export declare class ChotkhoResolver {
     findOne(id: string): Promise<({
         user: {
             id: string;
+            email: string | null;
             profile: {
                 name: string;
             } | null;
-            email: string | null;
         } | null;
         kho: {
             id: string;
@@ -128,10 +128,10 @@ export declare class ChotkhoResolver {
         data: ({
             user: {
                 id: string;
+                email: string | null;
                 profile: {
                     name: string;
                 } | null;
-                email: string | null;
             } | null;
             kho: {
                 id: string;
@@ -211,10 +211,10 @@ export declare class ChotkhoResolver {
         data: ({
             user: {
                 id: string;
+                email: string | null;
                 profile: {
                     name: string;
                 } | null;
-                email: string | null;
             } | null;
             kho: {
                 id: string;

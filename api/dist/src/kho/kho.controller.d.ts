@@ -9,9 +9,9 @@ export declare class khoController {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        makho: string | null;
         diachi: string | null;
         sdt: string | null;
+        makho: string | null;
         congtyId: string | null;
     }>;
     getPaginated(page: string, limit: string): Promise<{
@@ -43,9 +43,9 @@ export declare class khoController {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        makho: string | null;
         diachi: string | null;
         sdt: string | null;
+        makho: string | null;
         congtyId: string | null;
     }[]>;
     findOne(id: string): Promise<{
@@ -55,9 +55,9 @@ export declare class khoController {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        makho: string | null;
         diachi: string | null;
         sdt: string | null;
+        makho: string | null;
         congtyId: string | null;
     }>;
     update(id: string, updatekhoDto: any): Promise<{
@@ -67,9 +67,9 @@ export declare class khoController {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        makho: string | null;
         diachi: string | null;
         sdt: string | null;
+        makho: string | null;
         congtyId: string | null;
     }>;
     remove(id: string): Promise<{
@@ -79,9 +79,9 @@ export declare class khoController {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        makho: string | null;
         diachi: string | null;
         sdt: string | null;
+        makho: string | null;
         congtyId: string | null;
     }>;
 }

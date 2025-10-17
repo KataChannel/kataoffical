@@ -130,7 +130,7 @@ async function validateForeignKeys(table, data) {
             case 'Donhang':
                 const khachhang = await prisma.khachhang.findMany({ select: { id: true } });
                 const validKhachhangIds = new Set(khachhang.map(k => k.id));
-                return data.filter(record => validKhachhangIds.has(record.khachhangId));
+                return data.filter(record => !record.khachhangId || validKhachhangIds.has(record.khachhangId));
             case 'Dathang':
                 const [nhacungcap, kho2] = await Promise.all([
                     prisma.nhacungcap.findMany({ select: { id: true } }),
@@ -211,6 +211,22 @@ async function validateForeignKeys(table, data) {
                 const congty = await prisma.congty.findMany({ select: { id: true } });
                 const validCongtyIds = new Set(congty.map(c => c.id));
                 return data.filter(record => !record.congtyId || validCongtyIds.has(record.congtyId));
+            case '_KhachhangNhom':
+                const [khachhangList, nhomList] = await Promise.all([
+                    prisma.khachhang.findMany({ select: { id: true } }),
+                    prisma.nhomkhachhang.findMany({ select: { id: true } })
+                ]);
+                const validKhIds = new Set(khachhangList.map(k => k.id));
+                const validNhomIds2 = new Set(nhomList.map(n => n.id));
+                return data.filter(record => validKhIds.has(record.A) && validNhomIds2.has(record.B));
+            case '_MenuRole':
+                const [menuList, roleList] = await Promise.all([
+                    prisma.menu.findMany({ select: { id: true } }),
+                    prisma.role.findMany({ select: { id: true } })
+                ]);
+                const validMenuIds = new Set(menuList.map(m => m.id));
+                const validRoleIds3 = new Set(roleList.map(r => r.id));
+                return data.filter(record => validMenuIds.has(record.A) && validRoleIds3.has(record.B));
             default:
                 console.log(`➡️ ${table}: No FK validation needed, returning all ${data.length} records`);
                 return data;
@@ -386,10 +402,15 @@ async function restoreAuditLogWithFix(auditLogs) {
 }
 async function restoreWithRawSQL(table, data) {
     try {
+        if (table === 'performance_logs') {
+            console.log(`⚠️  Bỏ qua bảng ${table} - có JSON array syntax issues`);
+            stats.warnings.push(`${table}: Skipped due to JSON array syntax`);
+            return;
+        }
         const columns = Object.keys(data[0])
             .map((col) => `"${col}"`)
             .join(', ');
-        const batchSize = 100;
+        const batchSize = 50;
         let totalInserted = 0;
         for (let i = 0; i < data.length; i += batchSize) {
             try {
@@ -399,11 +420,22 @@ async function restoreWithRawSQL(table, data) {
                     return ('(' +
                         Object.values(item)
                             .map((val) => {
-                            if (typeof val === 'string') {
+                            if (val === null || val === undefined) {
+                                return 'NULL';
+                            }
+                            else if (typeof val === 'string') {
                                 return `'${val.replace(/'/g, "''")}'`;
                             }
-                            else if (val === null || val === undefined) {
-                                return 'NULL';
+                            else if (typeof val === 'object') {
+                                try {
+                                    return `'${JSON.stringify(val).replace(/'/g, "''")}'::jsonb`;
+                                }
+                                catch {
+                                    return 'NULL';
+                                }
+                            }
+                            else if (typeof val === 'boolean') {
+                                return val ? 'true' : 'false';
                             }
                             return val;
                         })
@@ -505,13 +537,16 @@ async function restoreAllTablesFromJson() {
         'PhieuKhoSanpham',
         'Chotkho',
         'UserguidBlock',
+        '_KhachhangNhom',
+        '_MenuRole',
         ...tables.filter(t => ![
             'Role', 'Permission', 'Menu', 'Congty', 'Nhomkhachhang', 'ErrorLog',
             'FileManager', 'ChatAIMessage', 'ChatAIHistory', 'File', 'ImportHistory',
             'UserguidStep', 'User', 'Profile', 'UserRole', 'RolePermission', 'AuditLog',
             'Banggia', 'Sanpham', 'Nhacungcap', 'Kho', 'Banggiasanpham', 'Khachhang',
             'SanphamKho', 'TonKho', 'Donhang', 'Dathang', 'PhieuKho', 'Donhangsanpham',
-            'Dathangsanpham', 'PhieuKhoSanpham', 'Chotkho', 'UserguidBlock'
+            'Dathangsanpham', 'PhieuKhoSanpham', 'Chotkho', 'UserguidBlock',
+            '_KhachhangNhom', '_MenuRole'
         ].includes(t))
     ];
     const orderedTables = tables.length > 0

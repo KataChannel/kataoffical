@@ -115,15 +115,15 @@ export declare class BanggiaService {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
-            email: string | null;
-            diachi: string | null;
-            sdt: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
+            diachi: string | null;
+            sdt: string | null;
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
+            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;

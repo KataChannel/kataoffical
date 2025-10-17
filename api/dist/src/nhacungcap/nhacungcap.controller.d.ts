@@ -10,9 +10,9 @@ export declare class NhacungcapController {
         createdAt: Date;
         updatedAt: Date;
         name: string | null;
-        email: string | null;
         diachi: string | null;
         sdt: string | null;
+        email: string | null;
         tenfile: string | null;
         isshowvat: boolean;
         mancc: string;
@@ -57,9 +57,9 @@ export declare class NhacungcapController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            email: string | null;
             diachi: string | null;
             sdt: string | null;
+            email: string | null;
             tenfile: string | null;
             isshowvat: boolean;
             mancc: string;
@@ -80,9 +80,9 @@ export declare class NhacungcapController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            email: string | null;
             diachi: string | null;
             sdt: string | null;
+            email: string | null;
             tenfile: string | null;
             isshowvat: boolean;
             mancc: string;
@@ -131,9 +131,9 @@ export declare class NhacungcapController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            email: string | null;
             diachi: string | null;
             sdt: string | null;
+            email: string | null;
             tenfile: string | null;
             isshowvat: boolean;
             mancc: string;
@@ -153,9 +153,9 @@ export declare class NhacungcapController {
         createdAt: Date;
         updatedAt: Date;
         name: string | null;
-        email: string | null;
         diachi: string | null;
         sdt: string | null;
+        email: string | null;
         tenfile: string | null;
         isshowvat: boolean;
         mancc: string;
@@ -168,9 +168,9 @@ export declare class NhacungcapController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            email: string | null;
             diachi: string | null;
             sdt: string | null;
+            email: string | null;
             tenfile: string | null;
             isshowvat: boolean;
             mancc: string;
@@ -190,9 +190,9 @@ export declare class NhacungcapController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            email: string | null;
             diachi: string | null;
             sdt: string | null;
+            email: string | null;
             tenfile: string | null;
             isshowvat: boolean;
             mancc: string;
@@ -215,9 +215,9 @@ export declare class NhacungcapController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            email: string | null;
             diachi: string | null;
             sdt: string | null;
+            email: string | null;
             tenfile: string | null;
             isshowvat: boolean;
             mancc: string;

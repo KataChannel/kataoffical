@@ -67,9 +67,9 @@ export declare class PhieukhoController {
             createdAt: Date;
             updatedAt: Date;
             name: string;
-            makho: string | null;
             diachi: string | null;
             sdt: string | null;
+            makho: string | null;
             congtyId: string | null;
         } | null;
         id: string;
@@ -127,9 +127,9 @@ export declare class PhieukhoController {
             createdAt: Date;
             updatedAt: Date;
             name: string;
-            makho: string | null;
             diachi: string | null;
             sdt: string | null;
+            makho: string | null;
             congtyId: string | null;
         } | null;
     } & {

@@ -8,10 +8,10 @@ export declare class ChotkhoController {
         data: ({
             user: {
                 id: string;
+                email: string | null;
                 profile: {
                     name: string;
                 } | null;
-                email: string | null;
             } | null;
             kho: {
                 id: string;
@@ -58,10 +58,10 @@ export declare class ChotkhoController {
     findOne(id: string): Promise<({
         user: {
             id: string;
+            email: string | null;
             profile: {
                 name: string;
             } | null;
-            email: string | null;
         } | null;
         kho: {
             id: string;
@@ -107,10 +107,10 @@ export declare class ChotkhoController {
         data: ({
             user: {
                 id: string;
+                email: string | null;
                 profile: {
                     name: string;
                 } | null;
-                email: string | null;
             } | null;
             kho: {
                 id: string;
@@ -162,10 +162,10 @@ export declare class ChotkhoController {
     updateWithDetails(id: string, data: any): Promise<({
         user: {
             id: string;
+            email: string | null;
             profile: {
                 name: string;
             } | null;
-            email: string | null;
         } | null;
         details: ({
             sanpham: {
