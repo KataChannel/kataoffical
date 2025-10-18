@@ -346,8 +346,8 @@ export class ListBanggiaComponent {
     this._router.navigate(['admin/banggia', 'new']);
   }
   goToDetail(item: any): void {
-    // Store banggia ID for detail view using GraphQL service
-    this._BanggiaGraphqlService.setBanggiaId(item.id);
+    // Don't pre-set ID here - let detailbanggia component handle it via route params
+    // This prevents the "Same ID - no action needed" bug
     this.drawer.open();
     this._router.navigate(['admin/banggia', item.id]);
   }

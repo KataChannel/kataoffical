@@ -149,14 +149,20 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   }
   
   constructor() {
-    // Effect ĐƠN GIẢN - CHỈ trigger bởi banggiaId, KHÔNG bao giờ track DetailBanggia
+    // Effect ĐƠN GIẢN - CHỈ trigger bởi banggiaId hoặc isComponentInitialized
     this.effectRef = effect(() => {
-      // CHỈ đọc banggiaId trong tracked context
+      // Track both banggiaId AND isComponentInitialized
       const id = this._BanggiaService.banggiaId();
+      const isInit = this.isComponentInitialized();
       
       // TẤT CẢ logic khác chạy trong untracked() để KHÔNG tạo dependencies
       untracked(() => {
-        this.handleBanggiaIdChange(id);
+        // Only proceed if component is initialized
+        if (isInit) {
+          this.handleBanggiaIdChange(id);
+        } else {
+          console.log('[EFFECT] Waiting for component initialization...');
+        }
       });
     });
   }
@@ -164,15 +170,10 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   /**
    * Xử lý thay đổi banggiaId - chạy trong untracked context
    * QUAN TRỌNG: Method này KHÔNG BAO GIỜ được gọi trực tiếp từ tracked context
+   * NOTE: isComponentInitialized check is now in the effect itself
    */
   private async handleBanggiaIdChange(id: string | null) {
     console.log('[EFFECT-HANDLER] Processing ID:', id, 'lastProcessed:', this.lastProcessedId);
-    
-    // Guard: Chờ component init
-    if (!this.isComponentInitialized()) {
-      console.log('[EFFECT-HANDLER] Component not initialized, skipping...');
-      return;
-    }
     
     // Guard: Ngăn xử lý duplicate ID
     if (this.lastProcessedId === id) {
