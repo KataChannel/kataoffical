@@ -70,8 +70,7 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
   ],
   // providers: [provideNativeDateAdapter()],
   templateUrl: './detailbanggia.component.html',
-  styleUrl: './detailbanggia.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrl: './detailbanggia.component.scss'
 })
 export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   _ListbanggiaComponent: ListBanggiaComponent = inject(ListBanggiaComponent);
