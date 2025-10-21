@@ -1424,63 +1424,203 @@ export class ListDathangComponent {
   }
 
   /**
-   * Export Excel with full data - Format mới
+   * Export Excel with full data - Format mới giống y hệt table hiển thị
    */
   async exportComparePriceExcel() {
     try {
       console.log('[EXPORT] Exporting', this.comparePriceData.length, 'rows...');
       
-      // Prepare data for Excel - Direct mapping
-      const excelData: any[] = [];
+      const workbook = XLSX.utils.book_new();
       
-      // Header row
-      const headerRow: any = {};
-      this.comparePriceColumns.forEach(col => {
-        headerRow[col] = col;
+      // Create a 2D array for the worksheet data
+      const wsData: any[][] = [];
+      
+      // ===== HEADER ROW 1: Dates (merged) =====
+      const headerRow1: any[] = [
+        'Mã SP',      // A1
+        'Tên SP',     // B1
+        'Tên NCC'     // C1
+      ];
+      
+      // Add date headers (will span 2 columns each)
+      this.comparePriceDateColumns.forEach(date => {
+        headerRow1.push(date);  // Date header
+        headerRow1.push('');    // Empty cell for merge
       });
-      excelData.push(headerRow);
       
-      // Data rows
-      this.comparePriceData.forEach((row, index) => {
-        const excelRow: any = {};
+      wsData.push(headerRow1);
+      
+      // ===== HEADER ROW 2: SL đặt / Giá nhập =====
+      const headerRow2: any[] = [
+        '',           // A2 - merged from A1
+        '',           // B2 - merged from B1
+        ''            // C2 - merged from C1
+      ];
+      
+      // Add "SL đặt" and "Giá nhập" for each date
+      this.comparePriceDateColumns.forEach(() => {
+        headerRow2.push('SL đặt');
+        headerRow2.push('Giá nhập');
+      });
+      
+      wsData.push(headerRow2);
+      
+      // ===== DATA ROWS =====
+      this.comparePriceData.forEach((row) => {
+        const dataRow: any[] = [];
         
         // Static columns
-        excelRow['Mã SP'] = row['Mã SP'] || '';
-        excelRow['Tên SP'] = row['Tên SP'] || '';
-        excelRow['Tên NCC'] = row['Tên NCC'] || '';
+        dataRow.push(row['Mã SP'] || '');
+        dataRow.push(row['Tên SP'] || '');
+        dataRow.push(row['Tên NCC'] || '');
         
-        // Dynamic date columns - split into SL and GIA
+        // Dynamic date columns - SL đặt and Giá nhập
         this.comparePriceDateColumns.forEach(date => {
           const data = row[date];
           if (data && typeof data === 'object') {
-            excelRow[`${date}_SL`] = data.sldat || 0;
-            excelRow[`${date}_GIA`] = data.gianhap ? data.gianhap : '';
+            dataRow.push(data.sldat || 0);
+            dataRow.push(data.gianhap || 0);
           } else {
-            excelRow[`${date}_SL`] = '';
-            excelRow[`${date}_GIA`] = '';
+            dataRow.push('');
+            dataRow.push('');
           }
         });
         
-        excelData.push(excelRow);
+        wsData.push(dataRow);
       });
       
-      // Create workbook
-      const worksheet = XLSX.utils.json_to_sheet(excelData, { skipHeader: true });
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'So sánh giá');
+      // Create worksheet from 2D array
+      const worksheet = XLSX.utils.aoa_to_sheet(wsData);
       
-      // Auto column width
-      const maxWidths: any = {};
-      excelData.forEach(row => {
-        Object.keys(row).forEach(key => {
-          const value = String(row[key] || '');
-          maxWidths[key] = Math.max(maxWidths[key] || 10, value.length);
+      // ===== MERGE CELLS =====
+      const merges: XLSX.Range[] = [];
+      
+      // Merge header row 1: Mã SP, Tên SP, Tên NCC (A1:A2, B1:B2, C1:C2)
+      merges.push(
+        { s: { r: 0, c: 0 }, e: { r: 1, c: 0 } }, // Mã SP: A1:A2
+        { s: { r: 0, c: 1 }, e: { r: 1, c: 1 } }, // Tên SP: B1:B2
+        { s: { r: 0, c: 2 }, e: { r: 1, c: 2 } }  // Tên NCC: C1:C2
+      );
+      
+      // Merge date headers (each date spans 2 columns)
+      this.comparePriceDateColumns.forEach((date, index) => {
+        const colIndex = 3 + (index * 2); // Start from column D (index 3)
+        merges.push({
+          s: { r: 0, c: colIndex },     // Start cell
+          e: { r: 0, c: colIndex + 1 }  // End cell (next column)
         });
       });
       
-      worksheet['!cols'] = Object.keys(excelData[0] || {}).map(key => ({
-        wch: Math.min(maxWidths[key] || 10, 50)
-      }));
+      // Merge cells for Mã SP and Tên SP in data rows (based on _rowspanMasp and _rowspanTensp)
+      let currentRow = 2; // Start from row 3 (index 2) - after 2 header rows
+      let rowIndex = 0;
+      
+      while (rowIndex < this.comparePriceData.length) {
+        const row = this.comparePriceData[rowIndex];
+        
+        if (row._showMasp && row._rowspanMasp > 1) {
+          // Merge Mã SP cells
+          merges.push({
+            s: { r: currentRow, c: 0 },
+            e: { r: currentRow + row._rowspanMasp - 1, c: 0 }
+          });
+        }
+        
+        if (row._showTensp && row._rowspanTensp > 1) {
+          // Merge Tên SP cells
+          merges.push({
+            s: { r: currentRow, c: 1 },
+            e: { r: currentRow + row._rowspanTensp - 1, c: 1 }
+          });
+        }
+        
+        // Move to next group
+        if (row._rowspanMasp > 1) {
+          currentRow += row._rowspanMasp;
+          rowIndex += row._rowspanMasp;
+        } else {
+          currentRow++;
+          rowIndex++;
+        }
+      }
+      
+      worksheet['!merges'] = merges;
+      
+      // ===== COLUMN WIDTHS =====
+      const colWidths: XLSX.ColInfo[] = [
+        { wch: 15 },  // Mã SP
+        { wch: 40 },  // Tên SP
+        { wch: 30 },  // Tên NCC
+      ];
+      
+      // Add widths for date columns (SL đặt and Giá nhập)
+      this.comparePriceDateColumns.forEach(() => {
+        colWidths.push({ wch: 12 }); // SL đặt
+        colWidths.push({ wch: 15 }); // Giá nhập
+      });
+      
+      worksheet['!cols'] = colWidths;
+      
+      // ===== CELL STYLES =====
+      const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
+      
+      for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+          if (!worksheet[cellAddress]) continue;
+          
+          // Header rows styling
+          if (R === 0 || R === 1) {
+            worksheet[cellAddress].s = {
+              font: { bold: true, color: { rgb: '000000' } },
+              fill: { fgColor: { rgb: R === 0 && C >= 3 ? 'DBEAFE' : 'F3F4F6' } },
+              alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+              border: {
+                top: { style: 'thin', color: { rgb: '000000' } },
+                bottom: { style: 'thin', color: { rgb: '000000' } },
+                left: { style: 'thin', color: { rgb: '000000' } },
+                right: { style: 'thin', color: { rgb: '000000' } }
+              }
+            };
+          }
+          // Data rows
+          else {
+            const alignment: any = { vertical: 'center', wrapText: true };
+            
+            // Text alignment based on column
+            if (C === 0 || C === 1 || C === 2) {
+              alignment.horizontal = 'left'; // Mã SP, Tên SP, Tên NCC
+            } else {
+              alignment.horizontal = 'right'; // Numbers
+            }
+            
+            worksheet[cellAddress].s = {
+              alignment,
+              border: {
+                top: { style: 'thin', color: { rgb: 'D1D5DB' } },
+                bottom: { style: 'thin', color: { rgb: 'D1D5DB' } },
+                left: { style: 'thin', color: { rgb: 'D1D5DB' } },
+                right: { style: 'thin', color: { rgb: 'D1D5DB' } }
+              }
+            };
+            
+            // Format numbers
+            if (C >= 3 && worksheet[cellAddress].v !== '') {
+              const colOffset = (C - 3) % 2;
+              if (colOffset === 0) {
+                // SL đặt - integer format
+                worksheet[cellAddress].z = '#,##0';
+              } else {
+                // Giá nhập - currency format
+                worksheet[cellAddress].z = '#,##0 "đ"';
+              }
+            }
+          }
+        }
+      }
+      
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'So sánh giá');
       
       // Export
       const fileName = `So_sanh_gia_${moment(this.searchParam.Batdau).format('DDMMYYYY')}_${moment(this.searchParam.Ketthuc).format('DDMMYYYY')}.xlsx`;
