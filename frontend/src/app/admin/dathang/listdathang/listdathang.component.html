@@ -564,11 +564,11 @@
       <div class="flex justify-between items-center px-4 py-3 bg-blue-50 border-b">
         <div class="text-sm font-medium text-blue-900">
           Hiển thị <span class="font-bold">{{ getDisplayedComparePriceData().length }}</span> / 
-          <span class="font-bold">{{ comparePriceTotalRecords }}</span> sản phẩm
+          <span class="font-bold">{{ comparePriceTotalRecords }}</span> dòng
         </div>
         <button mat-flat-button color="primary" (click)="exportComparePriceExcel()">
           <mat-icon>download</mat-icon>
-          <span>Xuất Excel (Toàn bộ {{ comparePriceTotalRecords }} SP)</span>
+          <span>Xuất Excel (Toàn bộ {{ comparePriceTotalRecords }} dòng)</span>
         </button>
       </div>
 
@@ -576,75 +576,49 @@
       <div class="overflow-auto flex-1" style="max-height: calc(90vh - 200px);">
         <table mat-table [dataSource]="getDisplayedComparePriceData()" class="w-full">
           
-          <!-- STT Column -->
-          <ng-container matColumnDef="stt">
-            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !text-center !border !sticky !left-0 !z-20">STT</th>
-            <td mat-cell *matCellDef="let element; let i = index" class="!text-center !border !sticky !left-0 !z-10 !bg-white">
-              {{ i + 1 }}
-            </td>
-          </ng-container>
-
           <!-- Mã SP Column -->
-          <ng-container matColumnDef="masp">
-            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !sticky !left-12 !z-20">Mã SP</th>
-            <td mat-cell *matCellDef="let element" class="!border !font-mono !text-sm !sticky !left-12 !z-10 !bg-white">
-              {{ element.masp }}
+          <ng-container matColumnDef="Mã SP">
+            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !sticky !left-0 !z-20 !min-w-[120px]">Mã SP</th>
+            <td mat-cell *matCellDef="let element" class="!border !font-mono !text-sm !sticky !left-0 !z-10 !bg-white !min-w-[120px]">
+              {{ element['Mã SP'] }}
             </td>
           </ng-container>
 
           <!-- Tên SP Column -->
-          <ng-container matColumnDef="title">
-            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !sticky !left-36 !z-20 !min-w-[250px]">Tên sản phẩm</th>
-            <td mat-cell *matCellDef="let element" class="!border !sticky !left-36 !z-10 !bg-white !min-w-[250px]">
-              {{ element.title }}
+          <ng-container matColumnDef="Tên SP">
+            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !sticky !left-[120px] !z-20 !min-w-[250px]">Tên SP</th>
+            <td mat-cell *matCellDef="let element" class="!border !sticky !left-[120px] !z-10 !bg-white !min-w-[250px]">
+              {{ element['Tên SP'] }}
             </td>
           </ng-container>
 
-          <!-- ĐVT Column -->
-          <ng-container matColumnDef="dvt">
-            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !text-center">ĐVT</th>
-            <td mat-cell *matCellDef="let element" class="!border !text-center !text-sm">
-              {{ element.dvt }}
+          <!-- Tên NCC Column -->
+          <ng-container matColumnDef="Tên NCC">
+            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !sticky !left-[370px] !z-20 !min-w-[200px]">Tên NCC</th>
+            <td mat-cell *matCellDef="let element" class="!border !sticky !left-[370px] !z-10 !bg-white !min-w-[200px]">
+              {{ element['Tên NCC'] }}
             </td>
           </ng-container>
 
-          <!-- Dynamic Supplier Columns -->
-          @for (supplierKey of comparePriceColumns; track supplierKey) {
-            @if (supplierKey !== 'stt' && supplierKey !== 'masp' && supplierKey !== 'title' && supplierKey !== 'dvt') {
-              <ng-container [matColumnDef]="supplierKey">
-                <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !min-w-[200px]">
-                  <div class="flex flex-col gap-1 p-2">
-                    <div class="font-bold text-blue-800">
-                      {{ getDisplayedComparePriceData()[0]?.suppliers[supplierKey]?.nhacungcap || 'N/A' }}
-                    </div>
-                    <div class="text-xs text-gray-600">
-                      Mã: {{ getDisplayedComparePriceData()[0]?.suppliers[supplierKey]?.nhacungcapCode || 'N/A' }}
-                    </div>
-                    <div class="text-xs text-gray-500">
-                      Ngày: {{ getDisplayedComparePriceData()[0]?.suppliers[supplierKey]?.ngaynhan || 'N/A' }}
-                    </div>
-                  </div>
-                </th>
-                <td mat-cell *matCellDef="let element" class="!border">
-                  @if (element.suppliers[supplierKey]) {
-                    <div class="flex flex-col gap-1 p-2">
-                      <div class="text-sm">
-                        <span class="text-gray-600">SL:</span>
-                        <span class="font-semibold text-blue-600 ml-1">{{ element.suppliers[supplierKey].sldat }}</span>
-                      </div>
-                      <div class="text-sm">
-                        <span class="text-gray-600">Giá:</span>
-                        <span class="font-semibold text-green-600 ml-1">
-                          {{ element.suppliers[supplierKey].gianhap | number:'1.0-0' }} đ
-                        </span>
-                      </div>
-                    </div>
-                  } @else {
-                    <div class="text-center text-gray-400 p-2">-</div>
-                  }
-                </td>
-              </ng-container>
-            }
+          <!-- Dynamic Date Columns -->
+          @for (dateCol of comparePriceDateColumns; track dateCol) {
+            <ng-container [matColumnDef]="dateCol">
+              <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !min-w-[150px] !text-center">
+                <div class="flex flex-col gap-1 p-2">
+                  <div class="font-bold text-blue-800">{{ dateCol }}</div>
+                  <div class="text-xs text-gray-600">Giá nhập</div>
+                </div>
+              </th>
+              <td mat-cell *matCellDef="let element" class="!border !text-right !px-4">
+                @if (element[dateCol]) {
+                  <span class="font-semibold text-green-600">
+                    {{ element[dateCol] | number:'1.0-0' }} đ
+                  </span>
+                } @else {
+                  <span class="text-gray-400">-</span>
+                }
+              </td>
+            </ng-container>
           }
 
           <tr mat-header-row *matHeaderRowDef="comparePriceColumns; sticky: true"></tr>

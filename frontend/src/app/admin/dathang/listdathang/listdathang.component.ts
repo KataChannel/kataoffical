@@ -1189,6 +1189,7 @@ export class ListDathangComponent {
   @ViewChild('dialogComparePrice') dialogComparePrice!: TemplateRef<any>;
   comparePriceData: any[] = [];
   comparePriceColumns: string[] = [];
+  comparePriceDateColumns: string[] = []; // Các cột ngày
   comparePriceTotalRecords = 0;
   
   async openComparePriceDialog() {
@@ -1201,6 +1202,7 @@ export class ListDathangComponent {
         duration: 0,
         horizontalPosition: 'end',
         verticalPosition: 'top',
+        panelClass: ['snackbar-info']
       });
 
       // Fetch all data trong khoảng thời gian
@@ -1223,9 +1225,10 @@ export class ListDathangComponent {
       this.comparePriceTotalRecords = allData.length;
       
       // Build dynamic columns
-      this.buildComparePriceColumns(allData);
+      this.buildComparePriceColumns();
       
-      console.log('[COMPARE-PRICE] Data loaded:', allData.length, 'products');
+      console.log('[COMPARE-PRICE] Data loaded:', allData.length, 'rows');
+      console.log('[COMPARE-PRICE] Columns:', this.comparePriceColumns);
       
       // Open dialog
       this.dialog.open(this.dialogComparePrice, {
@@ -1246,7 +1249,8 @@ export class ListDathangComponent {
   }
 
   /**
-   * Fetch data cho so sánh giá
+   * Fetch data cho so sánh giá - Format mới
+   * Mỗi row: Mã SP | Tên SP | Tên NCC | [Ngày 1] | [Ngày 2] | ...
    */
   private async fetchComparePriceData(): Promise<any[]> {
     // Fetch tất cả đơn hàng trong khoảng thời gian
@@ -1260,142 +1264,128 @@ export class ListDathangComponent {
     
     const dathangList = this._DathangService.ListDathang();
     
-    // Group theo sản phẩm
-    const productMap = new Map<string, any>();
+    // Tạo map: key = "masp_tenncc", value = { masp, tensp, tenncc, dates: { "1/1/2025": gianhap, ... } }
+    const dataMap = new Map<string, any>();
     
     dathangList.forEach((dathang: any) => {
       const nhacungcap = dathang.nhacungcap?.name || 'N/A';
-      const nhacungcapCode = dathang.nhacungcap?.mancc || 'N/A';
-      const ngaynhan = dathang.ngaynhan ? moment(dathang.ngaynhan).format('DD/MM/YYYY') : 'N/A';
+      const ngaynhan = dathang.ngaynhan ? moment(dathang.ngaynhan).format('D/M/YYYY') : null;
+      
+      if (!ngaynhan) return; // Skip nếu không có ngày nhận
       
       dathang.sanpham?.forEach((sp: any) => {
         const masp = sp.sanpham?.masp || sp.masp || 'N/A';
-        const title = sp.sanpham?.title || sp.title || 'N/A';
-        const dvt = sp.sanpham?.dvt || sp.dvt || '';
+        const tensp = sp.sanpham?.title || sp.title || 'N/A';
+        const gianhap = sp.gianhap || 0;
+        const sldat = sp.sldat || 0;
         
-        const key = masp; // Group by product code
+        // Key = masp + tenncc để group theo sản phẩm và nhà cung cấp
+        const key = `${masp}_${nhacungcap}`;
         
-        if (!productMap.has(key)) {
-          productMap.set(key, {
-            masp,
-            title,
-            dvt,
-            suppliers: {}
+        if (!dataMap.has(key)) {
+          dataMap.set(key, {
+            'Mã SP': masp,
+            'Tên SP': tensp,
+            'Tên NCC': nhacungcap,
+            dates: {} // { "1/1/2025": gianhap, "2/1/2025": gianhap }
           });
         }
         
-        const product = productMap.get(key);
-        const supplierKey = `${nhacungcapCode}_${ngaynhan}`;
+        const row = dataMap.get(key);
         
-        if (!product.suppliers[supplierKey]) {
-          product.suppliers[supplierKey] = {
-            nhacungcap,
-            nhacungcapCode,
-            ngaynhan,
-            sldat: 0,
-            gianhap: sp.gianhap || 0,
-            count: 0
-          };
+        // Lưu giá theo ngày (nếu có nhiều đơn cùng ngày, lấy giá mới nhất)
+        if (!row.dates[ngaynhan] || gianhap > 0) {
+          row.dates[ngaynhan] = gianhap;
         }
-        
-        product.suppliers[supplierKey].sldat += (sp.sldat || 0);
-        product.suppliers[supplierKey].count += 1;
       });
     });
     
-    // Convert Map to Array
-    return Array.from(productMap.values());
+    // Convert Map to Array và flatten dates thành columns
+    const result: any[] = [];
+    
+    dataMap.forEach((row) => {
+      const flatRow: any = {
+        'Mã SP': row['Mã SP'],
+        'Tên SP': row['Tên SP'],
+        'Tên NCC': row['Tên NCC']
+      };
+      
+      // Add date columns
+      Object.keys(row.dates).forEach((date) => {
+        flatRow[date] = row.dates[date];
+      });
+      
+      result.push(flatRow);
+    });
+    
+    return result;
   }
 
   /**
-   * Build dynamic columns for compare table
+   * Build dynamic columns: Mã SP, Tên SP, Tên NCC, [Date1], [Date2], ...
    */
-  private buildComparePriceColumns(data: any[]) {
-    const supplierSet = new Set<string>();
+  private buildComparePriceColumns() {
+    // Get all unique date columns from data
+    const dateSet = new Set<string>();
     
-    data.forEach(product => {
-      Object.keys(product.suppliers || {}).forEach(key => {
-        supplierSet.add(key);
+    this.comparePriceData.forEach(row => {
+      Object.keys(row).forEach(key => {
+        if (key !== 'Mã SP' && key !== 'Tên SP' && key !== 'Tên NCC') {
+          dateSet.add(key);
+        }
       });
     });
     
-    this.comparePriceColumns = ['stt', 'masp', 'title', 'dvt', ...Array.from(supplierSet)];
+    // Sort dates chronologically
+    this.comparePriceDateColumns = Array.from(dateSet).sort((a, b) => {
+      const dateA = moment(a, 'D/M/YYYY');
+      const dateB = moment(b, 'D/M/YYYY');
+      return dateA.valueOf() - dateB.valueOf();
+    });
+    
+    // Build full column list
+    this.comparePriceColumns = ['Mã SP', 'Tên SP', 'Tên NCC', ...this.comparePriceDateColumns];
   }
 
   /**
-   * Get displayed data (first 10 for demo)
+   * Get displayed data (first 10 rows)
    */
   getDisplayedComparePriceData(): any[] {
     return this.comparePriceData.slice(0, 10);
   }
 
   /**
-   * Export Excel with full data
+   * Export Excel with full data - Format mới
    */
   async exportComparePriceExcel() {
     try {
-      console.log('[EXPORT] Exporting', this.comparePriceData.length, 'products...');
+      console.log('[EXPORT] Exporting', this.comparePriceData.length, 'rows...');
       
-      // Prepare data for Excel
+      // Prepare data for Excel - Direct mapping
       const excelData: any[] = [];
       
-      // Get all unique supplier keys
-      const supplierKeys = new Set<string>();
-      this.comparePriceData.forEach(product => {
-        Object.keys(product.suppliers || {}).forEach(key => supplierKeys.add(key));
+      // Header row
+      const headerRow: any = {};
+      this.comparePriceColumns.forEach(col => {
+        headerRow[col] = col;
       });
-      
-      const sortedSupplierKeys = Array.from(supplierKeys).sort();
-      
-      // Header row 1: Supplier names
-      const headerRow1: any = {
-        'STT': 'STT',
-        'Mã SP': 'Mã SP',
-        'Tên sản phẩm': 'Tên sản phẩm',
-        'ĐVT': 'ĐVT'
-      };
-      
-      sortedSupplierKeys.forEach(key => {
-        const supplier = this.comparePriceData[0]?.suppliers[key];
-        if (supplier) {
-          headerRow1[key] = `${supplier.nhacungcap} (${supplier.nhacungcapCode}) - ${supplier.ngaynhan}`;
-        }
-      });
-      
-      // Header row 2: Column names
-      const headerRow2: any = {
-        'STT': '',
-        'Mã SP': '',
-        'Tên sản phẩm': '',
-        'ĐVT': ''
-      };
-      
-      sortedSupplierKeys.forEach(key => {
-        headerRow2[key] = 'SL Đặt | Giá nhập';
-      });
-      
-      excelData.push(headerRow1);
-      excelData.push(headerRow2);
+      excelData.push(headerRow);
       
       // Data rows
-      this.comparePriceData.forEach((product, index) => {
-        const row: any = {
-          'STT': index + 1,
-          'Mã SP': product.masp,
-          'Tên sản phẩm': product.title,
-          'ĐVT': product.dvt
-        };
+      this.comparePriceData.forEach((row, index) => {
+        const excelRow: any = {};
         
-        sortedSupplierKeys.forEach(key => {
-          const supplier = product.suppliers[key];
-          if (supplier) {
-            row[key] = `${supplier.sldat} | ${supplier.gianhap.toLocaleString('vi-VN')} đ`;
+        this.comparePriceColumns.forEach(col => {
+          if (col === 'Mã SP' || col === 'Tên SP' || col === 'Tên NCC') {
+            excelRow[col] = row[col] || '';
           } else {
-            row[key] = '-';
+            // Date columns - format giá
+            const gia = row[col];
+            excelRow[col] = gia ? gia.toLocaleString('vi-VN') + ' đ' : '';
           }
         });
         
-        excelData.push(row);
+        excelData.push(excelRow);
       });
       
       // Create workbook
