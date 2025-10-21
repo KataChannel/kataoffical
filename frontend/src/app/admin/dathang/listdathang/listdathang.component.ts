@@ -1182,4 +1182,257 @@ export class ListDathangComponent {
     };
     return classes[status] || 'bg-gray-100 text-gray-800';
   }
+
+  /**
+   * Mở dialog so sánh giá từ các nhà cung cấp
+   */
+  @ViewChild('dialogComparePrice') dialogComparePrice!: TemplateRef<any>;
+  comparePriceData: any[] = [];
+  comparePriceColumns: string[] = [];
+  comparePriceTotalRecords = 0;
+  
+  async openComparePriceDialog() {
+    try {
+      console.log('[COMPARE-PRICE] Opening dialog...');
+      console.log('[COMPARE-PRICE] Date range:', this.searchParam.Batdau, '->', this.searchParam.Ketthuc);
+      
+      // Show loading
+      const loadingSnackBar = this._snackBar.open('Đang tải dữ liệu so sánh giá...', '', {
+        duration: 0,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+      });
+
+      // Fetch all data trong khoảng thời gian
+      const allData = await this.fetchComparePriceData();
+      
+      loadingSnackBar.dismiss();
+      
+      if (!allData || allData.length === 0) {
+        this._snackBar.open('Không có dữ liệu trong khoảng thời gian này', 'Đóng', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning']
+        });
+        return;
+      }
+
+      // Store full data for export
+      this.comparePriceData = allData;
+      this.comparePriceTotalRecords = allData.length;
+      
+      // Build dynamic columns
+      this.buildComparePriceColumns(allData);
+      
+      console.log('[COMPARE-PRICE] Data loaded:', allData.length, 'products');
+      
+      // Open dialog
+      this.dialog.open(this.dialogComparePrice, {
+        width: '95vw',
+        maxWidth: '95vw',
+        height: '90vh',
+        maxHeight: '90vh',
+        panelClass: 'compare-price-dialog',
+      });
+      
+    } catch (error) {
+      console.error('[COMPARE-PRICE] Error:', error);
+      this._snackBar.open('Lỗi tải dữ liệu so sánh giá', 'Đóng', {
+        duration: 3000,
+        panelClass: ['snackbar-error']
+      });
+    }
+  }
+
+  /**
+   * Fetch data cho so sánh giá
+   */
+  private async fetchComparePriceData(): Promise<any[]> {
+    // Fetch tất cả đơn hàng trong khoảng thời gian
+    const originalPageSize = this.searchParam.pageSize;
+    this.searchParam.pageSize = 99999; // Get all
+    
+    await this._DathangService.getDathangBy(this.searchParam);
+    
+    // Restore
+    this.searchParam.pageSize = originalPageSize;
+    
+    const dathangList = this._DathangService.ListDathang();
+    
+    // Group theo sản phẩm
+    const productMap = new Map<string, any>();
+    
+    dathangList.forEach((dathang: any) => {
+      const nhacungcap = dathang.nhacungcap?.name || 'N/A';
+      const nhacungcapCode = dathang.nhacungcap?.mancc || 'N/A';
+      const ngaynhan = dathang.ngaynhan ? moment(dathang.ngaynhan).format('DD/MM/YYYY') : 'N/A';
+      
+      dathang.sanpham?.forEach((sp: any) => {
+        const masp = sp.sanpham?.masp || sp.masp || 'N/A';
+        const title = sp.sanpham?.title || sp.title || 'N/A';
+        const dvt = sp.sanpham?.dvt || sp.dvt || '';
+        
+        const key = masp; // Group by product code
+        
+        if (!productMap.has(key)) {
+          productMap.set(key, {
+            masp,
+            title,
+            dvt,
+            suppliers: {}
+          });
+        }
+        
+        const product = productMap.get(key);
+        const supplierKey = `${nhacungcapCode}_${ngaynhan}`;
+        
+        if (!product.suppliers[supplierKey]) {
+          product.suppliers[supplierKey] = {
+            nhacungcap,
+            nhacungcapCode,
+            ngaynhan,
+            sldat: 0,
+            gianhap: sp.gianhap || 0,
+            count: 0
+          };
+        }
+        
+        product.suppliers[supplierKey].sldat += (sp.sldat || 0);
+        product.suppliers[supplierKey].count += 1;
+      });
+    });
+    
+    // Convert Map to Array
+    return Array.from(productMap.values());
+  }
+
+  /**
+   * Build dynamic columns for compare table
+   */
+  private buildComparePriceColumns(data: any[]) {
+    const supplierSet = new Set<string>();
+    
+    data.forEach(product => {
+      Object.keys(product.suppliers || {}).forEach(key => {
+        supplierSet.add(key);
+      });
+    });
+    
+    this.comparePriceColumns = ['stt', 'masp', 'title', 'dvt', ...Array.from(supplierSet)];
+  }
+
+  /**
+   * Get displayed data (first 10 for demo)
+   */
+  getDisplayedComparePriceData(): any[] {
+    return this.comparePriceData.slice(0, 10);
+  }
+
+  /**
+   * Export Excel with full data
+   */
+  async exportComparePriceExcel() {
+    try {
+      console.log('[EXPORT] Exporting', this.comparePriceData.length, 'products...');
+      
+      // Prepare data for Excel
+      const excelData: any[] = [];
+      
+      // Get all unique supplier keys
+      const supplierKeys = new Set<string>();
+      this.comparePriceData.forEach(product => {
+        Object.keys(product.suppliers || {}).forEach(key => supplierKeys.add(key));
+      });
+      
+      const sortedSupplierKeys = Array.from(supplierKeys).sort();
+      
+      // Header row 1: Supplier names
+      const headerRow1: any = {
+        'STT': 'STT',
+        'Mã SP': 'Mã SP',
+        'Tên sản phẩm': 'Tên sản phẩm',
+        'ĐVT': 'ĐVT'
+      };
+      
+      sortedSupplierKeys.forEach(key => {
+        const supplier = this.comparePriceData[0]?.suppliers[key];
+        if (supplier) {
+          headerRow1[key] = `${supplier.nhacungcap} (${supplier.nhacungcapCode}) - ${supplier.ngaynhan}`;
+        }
+      });
+      
+      // Header row 2: Column names
+      const headerRow2: any = {
+        'STT': '',
+        'Mã SP': '',
+        'Tên sản phẩm': '',
+        'ĐVT': ''
+      };
+      
+      sortedSupplierKeys.forEach(key => {
+        headerRow2[key] = 'SL Đặt | Giá nhập';
+      });
+      
+      excelData.push(headerRow1);
+      excelData.push(headerRow2);
+      
+      // Data rows
+      this.comparePriceData.forEach((product, index) => {
+        const row: any = {
+          'STT': index + 1,
+          'Mã SP': product.masp,
+          'Tên sản phẩm': product.title,
+          'ĐVT': product.dvt
+        };
+        
+        sortedSupplierKeys.forEach(key => {
+          const supplier = product.suppliers[key];
+          if (supplier) {
+            row[key] = `${supplier.sldat} | ${supplier.gianhap.toLocaleString('vi-VN')} đ`;
+          } else {
+            row[key] = '-';
+          }
+        });
+        
+        excelData.push(row);
+      });
+      
+      // Create workbook
+      const worksheet = XLSX.utils.json_to_sheet(excelData, { skipHeader: true });
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'So sánh giá');
+      
+      // Auto column width
+      const maxWidths: any = {};
+      excelData.forEach(row => {
+        Object.keys(row).forEach(key => {
+          const value = String(row[key] || '');
+          maxWidths[key] = Math.max(maxWidths[key] || 10, value.length);
+        });
+      });
+      
+      worksheet['!cols'] = Object.keys(excelData[0] || {}).map(key => ({
+        wch: Math.min(maxWidths[key] || 10, 50)
+      }));
+      
+      // Export
+      const fileName = `So_sanh_gia_${moment(this.searchParam.Batdau).format('DDMMYYYY')}_${moment(this.searchParam.Ketthuc).format('DDMMYYYY')}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
+      
+      this._snackBar.open('✓ Xuất Excel thành công', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+      
+    } catch (error) {
+      console.error('[EXPORT] Error:', error);
+      this._snackBar.open('Lỗi xuất Excel', 'Đóng', {
+        duration: 3000,
+        panelClass: ['snackbar-error']
+      });
+    }
+  }
 }

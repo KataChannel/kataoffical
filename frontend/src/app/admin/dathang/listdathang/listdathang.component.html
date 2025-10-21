@@ -543,3 +543,127 @@
     </div>
   </mat-dialog-actions>
 </ng-template>
+
+<!-- Dialog So Sánh Giá -->
+<ng-template #dialogComparePrice>
+  <div mat-dialog-title class="flex justify-between items-center border-b pb-3 mb-4">
+    <div>
+      <h2 class="text-xl font-semibold text-gray-800">So Sánh Giá Nhà Cung Cấp</h2>
+      <div class="text-sm text-gray-500 mt-1">
+        Từ {{ searchParam.Batdau | date:'dd/MM/yyyy' }} đến {{ searchParam.Ketthuc | date:'dd/MM/yyyy' }}
+      </div>
+    </div>
+    <button mat-icon-button mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="!p-0">
+    <div class="flex flex-col h-full">
+      <!-- Info Header -->
+      <div class="flex justify-between items-center px-4 py-3 bg-blue-50 border-b">
+        <div class="text-sm font-medium text-blue-900">
+          Hiển thị <span class="font-bold">{{ getDisplayedComparePriceData().length }}</span> / 
+          <span class="font-bold">{{ comparePriceTotalRecords }}</span> sản phẩm
+        </div>
+        <button mat-flat-button color="primary" (click)="exportComparePriceExcel()">
+          <mat-icon>download</mat-icon>
+          <span>Xuất Excel (Toàn bộ {{ comparePriceTotalRecords }} SP)</span>
+        </button>
+      </div>
+
+      <!-- Table Container -->
+      <div class="overflow-auto flex-1" style="max-height: calc(90vh - 200px);">
+        <table mat-table [dataSource]="getDisplayedComparePriceData()" class="w-full">
+          
+          <!-- STT Column -->
+          <ng-container matColumnDef="stt">
+            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !text-center !border !sticky !left-0 !z-20">STT</th>
+            <td mat-cell *matCellDef="let element; let i = index" class="!text-center !border !sticky !left-0 !z-10 !bg-white">
+              {{ i + 1 }}
+            </td>
+          </ng-container>
+
+          <!-- Mã SP Column -->
+          <ng-container matColumnDef="masp">
+            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !sticky !left-12 !z-20">Mã SP</th>
+            <td mat-cell *matCellDef="let element" class="!border !font-mono !text-sm !sticky !left-12 !z-10 !bg-white">
+              {{ element.masp }}
+            </td>
+          </ng-container>
+
+          <!-- Tên SP Column -->
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !sticky !left-36 !z-20 !min-w-[250px]">Tên sản phẩm</th>
+            <td mat-cell *matCellDef="let element" class="!border !sticky !left-36 !z-10 !bg-white !min-w-[250px]">
+              {{ element.title }}
+            </td>
+          </ng-container>
+
+          <!-- ĐVT Column -->
+          <ng-container matColumnDef="dvt">
+            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !text-center">ĐVT</th>
+            <td mat-cell *matCellDef="let element" class="!border !text-center !text-sm">
+              {{ element.dvt }}
+            </td>
+          </ng-container>
+
+          <!-- Dynamic Supplier Columns -->
+          @for (supplierKey of comparePriceColumns; track supplierKey) {
+            @if (supplierKey !== 'stt' && supplierKey !== 'masp' && supplierKey !== 'title' && supplierKey !== 'dvt') {
+              <ng-container [matColumnDef]="supplierKey">
+                <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !min-w-[200px]">
+                  <div class="flex flex-col gap-1 p-2">
+                    <div class="font-bold text-blue-800">
+                      {{ getDisplayedComparePriceData()[0]?.suppliers[supplierKey]?.nhacungcap || 'N/A' }}
+                    </div>
+                    <div class="text-xs text-gray-600">
+                      Mã: {{ getDisplayedComparePriceData()[0]?.suppliers[supplierKey]?.nhacungcapCode || 'N/A' }}
+                    </div>
+                    <div class="text-xs text-gray-500">
+                      Ngày: {{ getDisplayedComparePriceData()[0]?.suppliers[supplierKey]?.ngaynhan || 'N/A' }}
+                    </div>
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let element" class="!border">
+                  @if (element.suppliers[supplierKey]) {
+                    <div class="flex flex-col gap-1 p-2">
+                      <div class="text-sm">
+                        <span class="text-gray-600">SL:</span>
+                        <span class="font-semibold text-blue-600 ml-1">{{ element.suppliers[supplierKey].sldat }}</span>
+                      </div>
+                      <div class="text-sm">
+                        <span class="text-gray-600">Giá:</span>
+                        <span class="font-semibold text-green-600 ml-1">
+                          {{ element.suppliers[supplierKey].gianhap | number:'1.0-0' }} đ
+                        </span>
+                      </div>
+                    </div>
+                  } @else {
+                    <div class="text-center text-gray-400 p-2">-</div>
+                  }
+                </td>
+              </ng-container>
+            }
+          }
+
+          <tr mat-header-row *matHeaderRowDef="comparePriceColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: comparePriceColumns;" class="hover:bg-gray-50"></tr>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      @if (comparePriceData.length === 0) {
+        <div class="flex flex-col items-center justify-center py-12">
+          <mat-icon class="text-gray-300 !text-6xl mb-4">inventory_2</mat-icon>
+          <div class="text-gray-500 text-lg">Không có dữ liệu</div>
+          <div class="text-gray-400 text-sm mt-1">Vui lòng chọn khoảng thời gian khác</div>
+        </div>
+      }
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="border-t px-4 py-3" align="end">
+    <button mat-stroked-button mat-dialog-close>Đóng</button>
+  </mat-dialog-actions>
+</ng-template>

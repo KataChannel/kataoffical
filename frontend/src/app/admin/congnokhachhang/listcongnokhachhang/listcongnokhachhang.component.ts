@@ -1571,7 +1571,7 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
     try {
       // Bước 1: Đồng bộ giá từ bảng giá
       const priceResult = await this._DonhangService.DongboGia(this.editDonhang);
-      
+
       if (!priceResult || priceResult.status !== 'success') {
         throw new Error(priceResult?.message || 'Lỗi đồng bộ giá');
       }
