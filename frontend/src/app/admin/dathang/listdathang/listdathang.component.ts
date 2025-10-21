@@ -1611,8 +1611,8 @@ export class ListDathangComponent {
                 // SL đặt - integer format
                 worksheet[cellAddress].z = '#,##0';
               } else {
-                // Giá nhập - currency format
-                worksheet[cellAddress].z = '#,##0 "đ"';
+                // Giá nhập - integer format (no currency symbol)
+                worksheet[cellAddress].z = '#,##0';
               }
             }
           }
