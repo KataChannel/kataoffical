@@ -1327,7 +1327,7 @@ export class ListDathangComponent {
   }
 
   /**
-   * Build dynamic columns: Mã SP, Tên SP, Tên NCC, [Date1], [Date2], ...
+   * Build dynamic columns: Mã SP, Tên SP, Tên NCC, [Date1_SL], [Date1_GIA], [Date2_SL], [Date2_GIA], ...
    */
   private buildComparePriceColumns() {
     // Get all unique date columns from data
@@ -1348,8 +1348,68 @@ export class ListDathangComponent {
       return dateA.valueOf() - dateB.valueOf();
     });
     
-    // Build full column list
-    this.comparePriceColumns = ['Mã SP', 'Tên SP', 'Tên NCC', ...this.comparePriceDateColumns];
+    // Build full column list with SL and GIA for each date
+    const dynamicColumns: string[] = [];
+    this.comparePriceDateColumns.forEach(date => {
+      dynamicColumns.push(`${date}_SL`);
+      dynamicColumns.push(`${date}_GIA`);
+    });
+    
+    this.comparePriceColumns = ['Mã SP', 'Tên SP', 'Tên NCC', ...dynamicColumns];
+    
+    // Calculate rowspan for merging
+    this.calculateRowspans();
+  }
+
+  /**
+   * Calculate rowspan values for merging rows with same Mã SP + Tên SP
+   * Tên NCC sẽ hiển thị riêng trên mỗi row (không merge)
+   */
+  private calculateRowspans() {
+    if (!this.comparePriceData || this.comparePriceData.length === 0) {
+      return;
+    }
+
+    // Sort data by Mã SP, then Tên SP, then Tên NCC
+    this.comparePriceData.sort((a, b) => {
+      if (a['Mã SP'] !== b['Mã SP']) {
+        return a['Mã SP'].localeCompare(b['Mã SP']);
+      }
+      if (a['Tên SP'] !== b['Tên SP']) {
+        return a['Tên SP'].localeCompare(b['Tên SP']);
+      }
+      return a['Tên NCC'].localeCompare(b['Tên NCC']);
+    });
+
+    // Group by Mã SP + Tên SP (NOT including Tên NCC)
+    const groups: { [key: string]: number } = {};
+    
+    // First pass: count group sizes
+    this.comparePriceData.forEach(row => {
+      const key = `${row['Mã SP']}_${row['Tên SP']}`;
+      groups[key] = (groups[key] || 0) + 1;
+    });
+
+    // Second pass: assign rowspan values
+    const processedKeys = new Set<string>();
+    this.comparePriceData.forEach((row) => {
+      const key = `${row['Mã SP']}_${row['Tên SP']}`;
+      
+      if (!processedKeys.has(key)) {
+        // First row of the group - set rowspan
+        row._rowspanMasp = groups[key];
+        row._rowspanTensp = groups[key];
+        row._showMasp = true;
+        row._showTensp = true;
+        processedKeys.add(key);
+      } else {
+        // Subsequent rows - hide cells
+        row._rowspanMasp = 0;
+        row._rowspanTensp = 0;
+        row._showMasp = false;
+        row._showTensp = false;
+      }
+    });
   }
 
   /**
@@ -1380,19 +1440,20 @@ export class ListDathangComponent {
       this.comparePriceData.forEach((row, index) => {
         const excelRow: any = {};
         
-        this.comparePriceColumns.forEach(col => {
-          if (col === 'Mã SP' || col === 'Tên SP' || col === 'Tên NCC') {
-            excelRow[col] = row[col] || '';
+        // Static columns
+        excelRow['Mã SP'] = row['Mã SP'] || '';
+        excelRow['Tên SP'] = row['Tên SP'] || '';
+        excelRow['Tên NCC'] = row['Tên NCC'] || '';
+        
+        // Dynamic date columns - split into SL and GIA
+        this.comparePriceDateColumns.forEach(date => {
+          const data = row[date];
+          if (data && typeof data === 'object') {
+            excelRow[`${date}_SL`] = data.sldat || 0;
+            excelRow[`${date}_GIA`] = data.gianhap ? data.gianhap.toLocaleString('vi-VN') + ' đ' : '';
           } else {
-            // Date columns - format: SL: xxx | Giá: xxx đ
-            const data = row[col];
-            if (data && typeof data === 'object') {
-              const sldat = data.sldat || 0;
-              const gianhap = data.gianhap || 0;
-              excelRow[col] = `SL: ${sldat} | Giá: ${gianhap.toLocaleString('vi-VN')} đ`;
-            } else {
-              excelRow[col] = '';
-            }
+            excelRow[`${date}_SL`] = '';
+            excelRow[`${date}_GIA`] = '';
           }
         });
         

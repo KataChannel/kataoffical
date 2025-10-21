@@ -574,64 +574,81 @@
 
       <!-- Table Container -->
       <div class="overflow-auto flex-1" style="max-height: calc(90vh - 200px);">
-        <table mat-table [dataSource]="getDisplayedComparePriceData()" class="w-full">
-          
-          <!-- Mã SP Column -->
-          <ng-container matColumnDef="Mã SP">
-            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !sticky !left-0 !z-20 !min-w-[120px]">Mã SP</th>
-            <td mat-cell *matCellDef="let element" class="!border !font-mono !text-sm !sticky !left-0 !z-10 !bg-white !min-w-[120px]">
-              {{ element['Mã SP'] }}
-            </td>
-          </ng-container>
-
-          <!-- Tên SP Column -->
-          <ng-container matColumnDef="Tên SP">
-            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !sticky !left-[120px] !z-20 !min-w-[250px]">Tên SP</th>
-            <td mat-cell *matCellDef="let element" class="!border !sticky !left-[120px] !z-10 !bg-white !min-w-[250px]">
-              {{ element['Tên SP'] }}
-            </td>
-          </ng-container>
-
-          <!-- Tên NCC Column -->
-          <ng-container matColumnDef="Tên NCC">
-            <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !sticky !left-[370px] !z-20 !min-w-[200px]">Tên NCC</th>
-            <td mat-cell *matCellDef="let element" class="!border !sticky !left-[370px] !z-10 !bg-white !min-w-[200px]">
-              {{ element['Tên NCC'] }}
-            </td>
-          </ng-container>
-
-          <!-- Dynamic Date Columns -->
-          @for (dateCol of comparePriceDateColumns; track dateCol) {
-            <ng-container [matColumnDef]="dateCol">
-              <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !min-w-[180px] !text-center">
-                <div class="flex flex-col gap-1 p-2">
+        <table class="w-full border-collapse border border-gray-300">
+          <thead class="sticky top-0 z-10">
+            <!-- Header Row 1: Dates (merged) -->
+            <tr>
+              <th rowspan="2" class="!font-semibold !bg-gray-100 !border !sticky !left-0 !z-20 !min-w-[120px] !p-2">Mã SP</th>
+              <th rowspan="2" class="!font-semibold !bg-gray-100 !border !sticky !left-[120px] !z-20 !min-w-[250px] !p-2">Tên SP</th>
+              <th rowspan="2" class="!font-semibold !bg-gray-100 !border !sticky !left-[370px] !z-20 !min-w-[200px] !p-2">Tên NCC</th>
+              
+              @for (dateCol of comparePriceDateColumns; track dateCol) {
+                <th colspan="2" class="!font-semibold !bg-blue-100 !border !text-center !p-2 !min-w-[180px]">
                   <div class="font-bold text-blue-800">{{ dateCol }}</div>
-                  <div class="text-xs text-gray-600">SL đặt | Giá nhập</div>
-                </div>
-              </th>
-              <td mat-cell *matCellDef="let element" class="!border !px-3">
-                @if (element[dateCol]) {
-                  <div class="flex flex-col gap-1 py-2">
-                    <div class="text-sm">
-                      <span class="text-gray-600">SL:</span>
-                      <span class="font-semibold text-blue-600 ml-1">{{ element[dateCol].sldat || 0 }}</span>
-                    </div>
-                    <div class="text-sm">
-                      <span class="text-gray-600">Giá:</span>
-                      <span class="font-semibold text-green-600 ml-1">
+                </th>
+              }
+            </tr>
+            
+            <!-- Header Row 2: SL đặt / Giá nhập -->
+            <tr>
+              @for (dateCol of comparePriceDateColumns; track dateCol) {
+                <th class="!font-semibold !bg-gray-100 !border !text-center !p-2 !min-w-[90px]">
+                  <div class="text-xs text-gray-700">SL đặt</div>
+                </th>
+                <th class="!font-semibold !bg-gray-100 !border !text-center !p-2 !min-w-[90px]">
+                  <div class="text-xs text-gray-700">Giá nhập</div>
+                </th>
+              }
+            </tr>
+          </thead>
+          
+          <tbody>
+            @for (element of getDisplayedComparePriceData(); track $index) {
+              <tr class="hover:bg-gray-50">
+                <!-- Mã SP (merged by Mã SP + Tên SP) -->
+                @if (element._showMasp) {
+                  <td [attr.rowspan]="element._rowspanMasp" class="!border !font-mono !text-sm !sticky !left-0 !z-10 !bg-white !p-2 !align-top">
+                    {{ element['Mã SP'] }}
+                  </td>
+                }
+                
+                <!-- Tên SP (merged by Mã SP + Tên SP) -->
+                @if (element._showTensp) {
+                  <td [attr.rowspan]="element._rowspanTensp" class="!border !sticky !left-[120px] !z-10 !bg-white !p-2 !align-top">
+                    {{ element['Tên SP'] }}
+                  </td>
+                }
+                
+                <!-- Tên NCC (NOT merged, shown on every row) -->
+                <td class="!border !sticky !left-[370px] !z-10 !bg-white !p-2">
+                  {{ element['Tên NCC'] }}
+                </td>
+                
+                <!-- Dynamic Date Columns (2 columns per date) -->
+                @for (dateCol of comparePriceDateColumns; track dateCol) {
+                  <!-- SL đặt -->
+                  <td class="!border !text-right !p-2">
+                    @if (element[dateCol]) {
+                      <span class="font-semibold text-blue-600">{{ element[dateCol].sldat || 0 }}</span>
+                    } @else {
+                      <span class="text-gray-400">-</span>
+                    }
+                  </td>
+                  
+                  <!-- Giá nhập -->
+                  <td class="!border !text-right !p-2">
+                    @if (element[dateCol]) {
+                      <span class="font-semibold text-green-600">
                         {{ element[dateCol].gianhap | number:'1.0-0' }} đ
                       </span>
-                    </div>
-                  </div>
-                } @else {
-                  <span class="text-gray-400 text-center block">-</span>
+                    } @else {
+                      <span class="text-gray-400">-</span>
+                    }
+                  </td>
                 }
-              </td>
-            </ng-container>
-          }
-
-          <tr mat-header-row *matHeaderRowDef="comparePriceColumns; sticky: true"></tr>
-          <tr mat-row *matRowDef="let row; columns: comparePriceColumns;" class="hover:bg-gray-50"></tr>
+              </tr>
+            }
+          </tbody>
         </table>
       </div>
 
