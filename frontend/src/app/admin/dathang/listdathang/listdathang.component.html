@@ -628,8 +628,8 @@
                 @for (dateCol of comparePriceDateColumns; track dateCol) {
                   <!-- SL đặt -->
                   <td class="!border !text-right !p-2">
-                    @if (element[dateCol]) {
-                      <span class="font-semibold text-blue-600">{{ element[dateCol].sldat || 0 }}</span>
+                    @if (element[dateCol] && element[dateCol].sldat > 0) {
+                      <span class="font-semibold text-blue-600">{{ element[dateCol].sldat | number:'1.0-0' }}</span>
                     } @else {
                       <span class="text-gray-400">-</span>
                     }
@@ -637,7 +637,7 @@
                   
                   <!-- Giá nhập -->
                   <td class="!border !text-right !p-2">
-                    @if (element[dateCol]) {
+                    @if (element[dateCol] && element[dateCol].gianhap > 0) {
                       <span class="font-semibold text-green-600">
                         {{ element[dateCol].gianhap | number:'1.0-0' }} đ
                       </span>

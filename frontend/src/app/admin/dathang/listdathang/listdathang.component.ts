@@ -1276,8 +1276,10 @@ export class ListDathangComponent {
       dathang.sanpham?.forEach((sp: any) => {
         const masp = sp.sanpham?.masp || sp.masp || 'N/A';
         const tensp = sp.sanpham?.title || sp.title || 'N/A';
-        const gianhap = sp.gianhap || 0;
-        const sldat = sp.sldat || 0;
+        
+        // Convert to number to ensure numeric operations
+        const gianhap = parseFloat(sp.gianhap) || 0;
+        const sldat = parseFloat(sp.sldat) || 0;
         
         // Key = masp + tenncc để group theo sản phẩm và nhà cung cấp
         const key = `${masp}_${nhacungcap}`;
