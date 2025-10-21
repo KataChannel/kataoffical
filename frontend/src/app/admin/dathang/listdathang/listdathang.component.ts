@@ -92,7 +92,8 @@ export class ListDathangComponent {
     'ghichu',
     'createdAt',
     'updatedAt',
-    // 'actions',
+    'actions',
+    'lydohuy',
   ];
 
   ColumnName: any = {
@@ -106,7 +107,8 @@ export class ListDathangComponent {
     ghichu: 'Ghi Chú',
     createdAt: 'Ngày Tạo',
     updatedAt: 'Ngày Cập Nhật',
-    // actions: 'Thao Tác',
+    actions: 'Thao Tác',
+    lydohuy: 'Lý Do Hủy',
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('DathangColFilter') || '[]'
@@ -1452,7 +1454,7 @@ export class ListDathangComponent {
           const data = row[date];
           if (data && typeof data === 'object') {
             excelRow[`${date}_SL`] = data.sldat || 0;
-            excelRow[`${date}_GIA`] = data.gianhap ? data.gianhap.toLocaleString('vi-VN') + ' đ' : '';
+            excelRow[`${date}_GIA`] = data.gianhap ? data.gianhap : '';
           } else {
             excelRow[`${date}_SL`] = '';
             excelRow[`${date}_GIA`] = '';

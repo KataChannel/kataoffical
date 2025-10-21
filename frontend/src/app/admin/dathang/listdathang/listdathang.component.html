@@ -173,6 +173,13 @@
                 </button>
             </div>
             }
+            @case ('lydohuy') {
+            <span class="max-w-40 line-clamp-4" [ngClass]="{
+              'text-red-600': row.status === 'huy' || row.status === 'dahuy'
+            }">
+              {{ row.lydohuy || '-' }}
+            </span>
+            }
             @case ('action') {
             <span class="max-w-40 line-clamp-4">
               <!-- <button *ngIf="row.status==='dadat'"  mat-flat-button color="primary" (click)="UpdateDathang(row)">

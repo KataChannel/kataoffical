@@ -82,6 +82,7 @@ export class ListDonhangComponent {
     'createdAt',
     'updatedAt',
     'actions',
+    'lydohuy',
   ];
   ColumnName: any = {
     madonhang: 'Mã Đơn Hàng',
@@ -93,6 +94,7 @@ export class ListDonhangComponent {
     createdAt: 'Ngày Tạo',
     updatedAt: 'Ngày Cập Nhật',
     actions: 'Thao Tác',
+    lydohuy: 'Lý Do Hủy',
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('DonhangColFilter') || '[]'
@@ -237,6 +239,7 @@ export class ListDonhangComponent {
           tongtien: true,
           vat: true,
           type: true,
+          lydohuy: true,
           sanpham: {
             select: {
               sanpham: { select: { masp: true } },
@@ -275,7 +278,8 @@ export class ListDonhangComponent {
           updatedAt: v.updatedAt || v.createdAt,
           tongtien:v.tongtien,
           vat:v.vat,
-          tongvat:v.tongvat
+          tongvat:v.tongvat,
+          lydohuy: v.lydohuy || ''
         }));
       this.Listdonhang.set(donhangs);
       if (donhangs) {

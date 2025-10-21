@@ -258,6 +258,13 @@
                             </button>
                         </div>
                         }
+                        @case ('lydohuy') {
+                        <span class="max-w-40 line-clamp-4" [ngClass]="{
+                          'text-red-600': row.status === 'huy' || row.status === 'dahuy'
+                        }">
+                            {{ row.lydohuy || '-' }}
+                        </span>
+                        }
                         @default {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column] }}
