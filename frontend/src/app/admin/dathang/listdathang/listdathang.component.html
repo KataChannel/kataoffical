@@ -603,19 +603,28 @@
           <!-- Dynamic Date Columns -->
           @for (dateCol of comparePriceDateColumns; track dateCol) {
             <ng-container [matColumnDef]="dateCol">
-              <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !min-w-[150px] !text-center">
+              <th mat-header-cell *matHeaderCellDef class="!font-semibold !bg-gray-100 !border !min-w-[180px] !text-center">
                 <div class="flex flex-col gap-1 p-2">
                   <div class="font-bold text-blue-800">{{ dateCol }}</div>
-                  <div class="text-xs text-gray-600">Giá nhập</div>
+                  <div class="text-xs text-gray-600">SL đặt | Giá nhập</div>
                 </div>
               </th>
-              <td mat-cell *matCellDef="let element" class="!border !text-right !px-4">
+              <td mat-cell *matCellDef="let element" class="!border !px-3">
                 @if (element[dateCol]) {
-                  <span class="font-semibold text-green-600">
-                    {{ element[dateCol] | number:'1.0-0' }} đ
-                  </span>
+                  <div class="flex flex-col gap-1 py-2">
+                    <div class="text-sm">
+                      <span class="text-gray-600">SL:</span>
+                      <span class="font-semibold text-blue-600 ml-1">{{ element[dateCol].sldat || 0 }}</span>
+                    </div>
+                    <div class="text-sm">
+                      <span class="text-gray-600">Giá:</span>
+                      <span class="font-semibold text-green-600 ml-1">
+                        {{ element[dateCol].gianhap | number:'1.0-0' }} đ
+                      </span>
+                    </div>
+                  </div>
                 } @else {
-                  <span class="text-gray-400">-</span>
+                  <span class="text-gray-400 text-center block">-</span>
                 }
               </td>
             </ng-container>

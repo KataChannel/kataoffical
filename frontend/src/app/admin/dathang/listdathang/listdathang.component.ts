@@ -1287,15 +1287,20 @@ export class ListDathangComponent {
             'Mã SP': masp,
             'Tên SP': tensp,
             'Tên NCC': nhacungcap,
-            dates: {} // { "1/1/2025": gianhap, "2/1/2025": gianhap }
+            dates: {} // { "1/1/2025": { sldat, gianhap }, "2/1/2025": { sldat, gianhap } }
           });
         }
         
         const row = dataMap.get(key);
         
-        // Lưu giá theo ngày (nếu có nhiều đơn cùng ngày, lấy giá mới nhất)
-        if (!row.dates[ngaynhan] || gianhap > 0) {
-          row.dates[ngaynhan] = gianhap;
+        // Lưu sldat và giá theo ngày (nếu có nhiều đơn cùng ngày, cộng dồn sldat và lấy giá mới nhất)
+        if (!row.dates[ngaynhan]) {
+          row.dates[ngaynhan] = { sldat: 0, gianhap: 0 };
+        }
+        
+        row.dates[ngaynhan].sldat += sldat;
+        if (gianhap > 0) {
+          row.dates[ngaynhan].gianhap = gianhap;
         }
       });
     });
@@ -1310,9 +1315,9 @@ export class ListDathangComponent {
         'Tên NCC': row['Tên NCC']
       };
       
-      // Add date columns
+      // Add date columns với format: { sldat, gianhap }
       Object.keys(row.dates).forEach((date) => {
-        flatRow[date] = row.dates[date];
+        flatRow[date] = row.dates[date]; // { sldat: 100, gianhap: 10000 }
       });
       
       result.push(flatRow);
@@ -1379,9 +1384,15 @@ export class ListDathangComponent {
           if (col === 'Mã SP' || col === 'Tên SP' || col === 'Tên NCC') {
             excelRow[col] = row[col] || '';
           } else {
-            // Date columns - format giá
-            const gia = row[col];
-            excelRow[col] = gia ? gia.toLocaleString('vi-VN') + ' đ' : '';
+            // Date columns - format: SL: xxx | Giá: xxx đ
+            const data = row[col];
+            if (data && typeof data === 'object') {
+              const sldat = data.sldat || 0;
+              const gianhap = data.gianhap || 0;
+              excelRow[col] = `SL: ${sldat} | Giá: ${gianhap.toLocaleString('vi-VN')} đ`;
+            } else {
+              excelRow[col] = '';
+            }
           }
         });
         
