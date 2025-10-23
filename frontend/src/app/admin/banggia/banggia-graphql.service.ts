@@ -261,6 +261,27 @@ export class BanggiaService {
       console.log('[UPDATE-BG] GraphQL response khachhang count:', updatedBanggia?.khachhang?.length || 0);
       console.log('[UPDATE-BG] GraphQL response khachhang:', updatedBanggia?.khachhang);
 
+      // ✅ CRITICAL: Invalidate Redis cache for banggia
+      console.log('[UPDATE-BG] Invalidating cache for banggia...');
+      try {
+        // Gọi API backend để clear Redis cache
+        const response = await fetch(`${environment.APIURL}/cache/invalidate/banggia`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this._StorageService.getItem('token')}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        if (response.ok) {
+          console.log('[UPDATE-BG] ✅ Cache invalidated successfully');
+        } else {
+          console.warn('[UPDATE-BG] ⚠️ Cache invalidation returned:', response.status);
+        }
+      } catch (cacheError) {
+        console.warn('[UPDATE-BG] ⚠️ Cache invalidation error:', cacheError);
+        // Không throw error, chỉ warn - update vẫn thành công
+      }
+
       this.DetailBanggia.set(updatedBanggia);
       await this.getAllBanggia();
       

@@ -52,6 +52,7 @@ const graphql_module_1 = require("./graphql/graphql.module");
 const redis_module_1 = require("./redis/redis.module");
 const user_permission_module_1 = require("./user-permission/user-permission.module");
 const support_module_1 = require("./support/support.module");
+const cache_module_1 = require("./cache/cache.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
@@ -111,6 +112,7 @@ exports.AppModule = AppModule = __decorate([
             importdata_module_1.ImportdataModule,
             auditlog_module_1.AuditLogModule,
             redis_module_1.RedisModule,
+            cache_module_1.CacheModule,
             chotkho_module_1.ChotkhoModule,
             graphql_module_1.GraphQLUniversalModule,
             support_module_1.SupportModule,

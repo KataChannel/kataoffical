@@ -45,6 +45,7 @@ import { GraphQLUniversalModule } from './graphql/graphql.module';
 import { RedisModule } from './redis/redis.module';
 import { UserPermissionModule } from './user-permission/user-permission.module';
 import { SupportModule } from './support/support.module';
+import { CacheModule } from './cache/cache.module';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -97,6 +98,7 @@ import { SupportModule } from './support/support.module';
     ImportdataModule,    
     AuditLogModule,
     RedisModule,
+    CacheModule,
     ChotkhoModule,
     // UploadModule,
     // MinioModule,
