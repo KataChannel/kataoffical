@@ -1335,8 +1335,8 @@ export class DonhangService {
             sanpham: true,
           },
         },
-        khachhang: true,
-        // khachhang: { include: { banggia: { include: { sanpham: true } } } },
+        // khachhang: true,
+        khachhang: { include: { banggia: {select: {id:true,title:true,mabanggia:true}} } },
         banggia: {select: {id:true,title:true,mabanggia:true}},
       },
     });

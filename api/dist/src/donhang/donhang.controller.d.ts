@@ -180,7 +180,13 @@ export declare class DonhangController {
             title: string | null;
             mabanggia: string | null;
         } | null;
-        khachhang: {
+        khachhang: ({
+            banggia: {
+                id: string;
+                title: string | null;
+                mabanggia: string | null;
+            } | null;
+        } & {
             id: string;
             ghichu: string | null;
             isActive: boolean;
@@ -206,7 +212,7 @@ export declare class DonhangController {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
-        } | null;
+        }) | null;
         id: string;
         title: string | null;
         type: string | null;
