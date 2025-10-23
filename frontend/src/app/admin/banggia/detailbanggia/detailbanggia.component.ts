@@ -519,12 +519,22 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       const banggiaData = untracked(() => this._BanggiaService.DetailBanggia());
       console.log('[UPDATE] Data to update:', banggiaData);
       console.log('[UPDATE] Banggia ID:', banggiaData?.id);
+      console.log('[UPDATE] Khachhang to save:', banggiaData?.khachhang);
       
       if (!banggiaData?.id) {
         throw new Error('Banggia ID is missing! Cannot update.');
       }
       
-      await this._BanggiaService.updateBanggia(banggiaData);
+      // Chuẩn bị dữ liệu cập nhật - BẮT BUỘC phải include khachhang
+      const updateData = {
+        ...banggiaData,
+        // Đảm bảo khachhang được gửi đi kèm (map khachhang array thành IDs nếu cần)
+        khachhang: banggiaData?.khachhang || [],
+      };
+      
+      console.log('[UPDATE] Final data being sent:', updateData);
+      
+      await this._BanggiaService.updateBanggia(updateData);
       
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,
@@ -1076,26 +1086,95 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   async DoOutKhachhang(event: any) {
     console.log('[CUSTOMER] Updating customers for banggia:', event);
     try {
-      // Update DetailBanggia trong untracked context
-      this.updateDetailBanggiaUntracked((v: any) => {
-        v.khachhang = event;
-        return v;
-      });
-
-      this._snackBar.open('Cập nhật khách hàng thành công', '', {
-        duration: 2000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
+      const banggiaId = this.banggiaId();
+      console.log('[CUSTOMER] Banggia ID:', banggiaId);
+      
+      if (!banggiaId) {
+        throw new Error('Không có banggia ID, vui lòng lưu bảng giá trước!');
+      }
+      
+      // ✅ FIX: Normalize khachhang data to ensure proper persistence
+      const normalizedKhachhang = Array.isArray(event) 
+        ? event.map((kh: any) => ({
+            id: kh.id,
+            name: kh.name,
+            makh: kh.makh,
+            loaikh: kh.loaikh,
+          }))
+        : [];
+      
+      console.log('[CUSTOMER] Normalized khachhang:', normalizedKhachhang);
+      console.log('[CUSTOMER] Event count:', normalizedKhachhang.length);
+      
+      // Lấy dữ liệu TRỰC TIẾP từ server TRƯỚC khi update (không dùng cache)
+      const currentBanggiaData = await this._BanggiaService.getBanggiaByid(banggiaId);
+      console.log('[CUSTOMER] Current banggia from server:', currentBanggiaData);
+      
+      // Calculate current customer IDs từ server
+      const currentIds = currentBanggiaData?.khachhang?.map((kh: any) => kh.id) || [];
+      const newIds = normalizedKhachhang.map((kh: any) => kh.id);
+      
+      // Calculate toConnect and toDisconnect for Prisma
+      const toConnect = newIds.filter((id: string) => !currentIds.includes(id));
+      const toDisconnect = currentIds.filter((id: string) => !newIds.includes(id));
+      
+      console.log('[CUSTOMER] Current IDs from server:', currentIds);
+      console.log('[CUSTOMER] New IDs:', newIds);
+      console.log('[CUSTOMER] To Connect:', toConnect);
+      console.log('[CUSTOMER] To Disconnect:', toDisconnect);
+      
+      // Build proper Prisma relation update structure
+      const updateData = {
+        id: banggiaId,
+        khachhang: {
+          disconnect: toDisconnect.map((id: string) => ({ id })),
+          connect: toConnect.map((id: string) => ({ id }))
+        }
+      };
+      
+      console.log('[CUSTOMER] Sending update with structure:', updateData);
+      
+      // Gửi update
+      const result = await this._BanggiaService.updateBanggia(updateData);
+      console.log('[CUSTOMER] Khachhang saved successfully:', result);
+      
+      // ✅ CRITICAL: Load lại dữ liệu từ server (KHÔNG dùng cache)
+      console.log('[CUSTOMER] Reloading data from server...');
+      await this._BanggiaService.getBanggiaByid(banggiaId);
+      
+      // ✅ CRITICAL: Đợi component update xong rồi mới show success
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Verify dữ liệu sau khi reload
+      const verifiedData = untracked(() => this._BanggiaService.DetailBanggia());
+      const finalKhachhangCount = verifiedData?.khachhang?.length || 0;
+      
+      console.log('[CUSTOMER] Verified data after reload:', verifiedData?.khachhang);
+      console.log('[CUSTOMER] Final customer count:', finalKhachhangCount);
+      
+      // Show success với số lượng khách hàng mới
+      this._snackBar.open(
+        `✓ Cập nhật ${finalKhachhangCount} khách hàng thành công`, 
+        '', 
+        {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        }
+      );
     } catch (error) {
       console.error('[CUSTOMER] Error updating customers:', error);
-      this._snackBar.open('Lỗi cập nhật khách hàng', '', {
-        duration: 2000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-      });
+      this._snackBar.open(
+        '✗ Lỗi cập nhật khách hàng: ' + (error instanceof Error ? error.message : 'Vui lòng thử lại'), 
+        'Đóng', 
+        {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        }
+      );
     }
   }
 

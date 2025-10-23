@@ -784,6 +784,7 @@ let DonhangService = class DonhangService {
                                 },
                             });
                             console.log(`Đơn hàng ${donhangId} đã được tìm thấy`);
+                            console.log(`Đơn hàng ${donhang} đã được tìm thấy`);
                             if (!donhang) {
                                 console.warn(`Đơn hàng ${donhangId} không tồn tại`);
                                 errorCount++;

@@ -141,7 +141,7 @@
           [title]="'Khách Hàng'"
           [ListFilter]="this.DetailBanggia()?.khachhang || []"
           [filterItem]="filterKhachhang"
-          [CountItems]="this.DetailBanggia()?.khachhang?.length"
+          [CountItems]="(this.DetailBanggia()?.khachhang?.length || 0)"
           [fieldsearch]="'name'"
           [ListItem]="ListKhachhang"
           (OutFilter)="DoOutKhachhang($event)"

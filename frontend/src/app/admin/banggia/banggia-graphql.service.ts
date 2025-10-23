@@ -146,6 +146,9 @@ export class BanggiaService {
    */
   async updateBanggia(dulieu: any) {
     try {
+      console.log('[UPDATE-BG] ========== START UPDATE ==========');
+      console.log('[UPDATE-BG] Input dulieu:', JSON.stringify(dulieu, null, 2));
+      
       // ✅ Kiểm tra unique constraint nếu có thay đổi mabanggia/batdau/ketthuc
       if (dulieu.mabanggia && dulieu.batdau && dulieu.ketthuc) {
         const batdau = new Date(dulieu.batdau);
@@ -177,11 +180,41 @@ export class BanggiaService {
             isActive: sp.isActive !== false
           }))
         } : undefined,
-        // Cập nhật khách hàng - disconnect tất cả và connect mới
-        khachhang: dulieu.khachhang ? {
-          set: dulieu.khachhang.map((kh: any) => ({ id: kh.id || kh }))
-        } : undefined
+        // Cập nhật khách hàng - hỗ trợ cả array và Prisma relation structure
+        khachhang: dulieu.khachhang ? (() => {
+          console.log('[UPDATE-BG] Processing khachhang:', dulieu.khachhang);
+          
+          // ✅ Nếu là array, chuyển thành Prisma set structure
+          if (Array.isArray(dulieu.khachhang)) {
+            const result = {
+              set: dulieu.khachhang.map((kh: any) => ({ id: kh.id || kh }))
+            };
+            console.log('[UPDATE-BG] khachhang is array, converted to set:', result);
+            return result;
+          }
+          
+          // ✅ Nếu đã là Prisma structure (có disconnect/connect), dùng trực tiếp
+          if (dulieu.khachhang.disconnect !== undefined || dulieu.khachhang.connect !== undefined) {
+            const result = {
+              disconnect: dulieu.khachhang.disconnect || [],
+              connect: dulieu.khachhang.connect || []
+            };
+            console.log('[UPDATE-BG] khachhang is Prisma structure:', result);
+            console.log('[UPDATE-BG] Disconnect count:', result.disconnect.length);
+            console.log('[UPDATE-BG] Connect count:', result.connect.length);
+            return result;
+          }
+          
+          // ✅ Fallback: treat as set
+          const result = {
+            set: [{ id: dulieu.khachhang.id || dulieu.khachhang }]
+          };
+          console.log('[UPDATE-BG] khachhang fallback to set:', result);
+          return result;
+        })() : undefined
       };
+
+      console.log('[UPDATE-BG] updateData before cleanup:', JSON.stringify(updateData, null, 2));
 
       // Loại bỏ các field undefined
       Object.keys(updateData).forEach(key => {
@@ -189,6 +222,8 @@ export class BanggiaService {
           delete (updateData as any)[key];
         }
       });
+
+      console.log('[UPDATE-BG] updateData after cleanup:', JSON.stringify(updateData, null, 2));
 
       const include = {
         sanpham: {
@@ -215,6 +250,7 @@ export class BanggiaService {
         }
       };
 
+      console.log('[UPDATE-BG] Calling GraphQL updateOne with ID:', dulieu.id);
       const updatedBanggia = await this._GraphqlService.updateOne(
         'banggia', 
         { id: dulieu.id }, 
@@ -222,12 +258,17 @@ export class BanggiaService {
         { include }
       );
 
+      console.log('[UPDATE-BG] GraphQL response khachhang count:', updatedBanggia?.khachhang?.length || 0);
+      console.log('[UPDATE-BG] GraphQL response khachhang:', updatedBanggia?.khachhang);
+
       this.DetailBanggia.set(updatedBanggia);
       await this.getAllBanggia();
       
+      console.log('[UPDATE-BG] ========== END UPDATE SUCCESS ==========');
       return updatedBanggia;
     } catch (error) {
-      console.error('Lỗi cập nhật bảng giá:', error);
+      console.error('[UPDATE-BG] ========== END UPDATE FAILED ==========');
+      console.error('[UPDATE-BG] Lỗi cập nhật bảng giá:', error);
       throw error;
     }
   }

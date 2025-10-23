@@ -278,6 +278,11 @@ async findMany(modelName: string, options: {
       // Validate data for relations to prevent "Required exactly one parent ID" error
       const cleanData = this.validateAndCleanRelationData(data);
       
+      console.log(`🧹 [CLEAN] Original data keys:`, Object.keys(data));
+      console.log(`🧹 [CLEAN] Cleaned data keys:`, Object.keys(cleanData));
+      console.log(`🧹 [CLEAN] Original khachhang:`, data.khachhang);
+      console.log(`🧹 [CLEAN] Cleaned khachhang:`, cleanData.khachhang);
+      
       const updateOptions: any = {
         where,
         data: cleanData
@@ -291,7 +296,7 @@ async findMany(modelName: string, options: {
         updateOptions.select = select;
       }
 
-      console.log(`📤 Final update options for ${mappedModel}:`, updateOptions);
+      console.log(`📤 Final update options for ${mappedModel}:`, JSON.stringify(updateOptions, null, 2));
 
       const result = await prismaModel.update(updateOptions);
       
@@ -306,6 +311,7 @@ async findMany(modelName: string, options: {
 
   /**
    * Validate and clean relation data to prevent Prisma errors
+   * ✅ FIX: Support many-to-many relations like khachhang, nhomkhachhang with connect/disconnect
    */
   private validateAndCleanRelationData(data: any): any {
     if (!data || typeof data !== 'object') return data;
@@ -313,9 +319,10 @@ async findMany(modelName: string, options: {
     const cleanData = { ...data };
     
     // Define fields that should be excluded from updates because they are complex relations
+    // ✅ REMOVED khachhang and nhomkhachhang - they support connect/disconnect
     const excludeFromUpdates = [
       'roles', 'permissions', 'profile', 'userRoles', 'rolePermissions',
-      'user', 'role', 'permission', 'khachhang', 'nhomkhachhang'
+      'user', 'role', 'permission'  // ✅ Removed khachhang and nhomkhachhang here
     ];
     
     // Remove complex relation fields that cause Prisma errors
@@ -340,25 +347,45 @@ async findMany(modelName: string, options: {
       }
     });
     
-    // Recursive validation for relation fields
+    // ✅ NEW: Enhanced validation for relation fields including many-to-many
     Object.keys(cleanData).forEach(key => {
       const value = cleanData[key];
       
       if (value && typeof value === 'object' && !Array.isArray(value)) {
+        // ✅ Support many-to-many relations (khachhang, nhomkhachhang, ncc, etc)
         // Handle connect/disconnect operations
         if (value.connect) {
           cleanData[key].connect = this.validateConnectArray(value.connect);
+          console.log(`✅ [RELATION] Validated connect for '${key}':`, cleanData[key].connect);
+          console.log(`✅ [RELATION] Connect count for '${key}':`, cleanData[key].connect.length);
         }
         if (value.disconnect) {
           cleanData[key].disconnect = this.validateConnectArray(value.disconnect);
+          console.log(`✅ [RELATION] Validated disconnect for '${key}':`, cleanData[key].disconnect);
+          console.log(`✅ [RELATION] Disconnect count for '${key}':`, cleanData[key].disconnect.length);
+        }
+        
+        // ✅ NEW: Support 'set' operation for many-to-many (replaces all with new values)
+        if (value.set !== undefined) {
+          if (Array.isArray(value.set)) {
+            cleanData[key].set = this.validateConnectArray(value.set);
+            console.log(`✅ [RELATION] Validated set for '${key}':`, cleanData[key].set);
+            console.log(`✅ [RELATION] Set count for '${key}':`, cleanData[key].set.length);
+          }
         }
         
         // Clean empty operations
         if (value.connect && value.connect.length === 0) {
+          console.log(`🧹 [RELATION] Removing empty connect for '${key}'`);
           delete cleanData[key].connect;
         }
         if (value.disconnect && value.disconnect.length === 0) {
+          console.log(`🧹 [RELATION] Removing empty disconnect for '${key}'`);
           delete cleanData[key].disconnect;
+        }
+        if (value.set !== undefined && Array.isArray(value.set) && value.set.length === 0) {
+          console.log(`🧹 [RELATION] Removing empty set for '${key}'`);
+          delete cleanData[key].set;
         }
         
         // Remove empty relation object
@@ -368,6 +395,7 @@ async findMany(modelName: string, options: {
       }
     });
     
+    console.log(`📋 Final cleaned data:`, Object.keys(cleanData));
     return cleanData;
   }
 

@@ -203,6 +203,10 @@ let UniversalService = class UniversalService {
                 });
             }
             const cleanData = this.validateAndCleanRelationData(data);
+            console.log(`🧹 [CLEAN] Original data keys:`, Object.keys(data));
+            console.log(`🧹 [CLEAN] Cleaned data keys:`, Object.keys(cleanData));
+            console.log(`🧹 [CLEAN] Original khachhang:`, data.khachhang);
+            console.log(`🧹 [CLEAN] Cleaned khachhang:`, cleanData.khachhang);
             const updateOptions = {
                 where,
                 data: cleanData
@@ -213,7 +217,7 @@ let UniversalService = class UniversalService {
             if (select) {
                 updateOptions.select = select;
             }
-            console.log(`📤 Final update options for ${mappedModel}:`, updateOptions);
+            console.log(`📤 Final update options for ${mappedModel}:`, JSON.stringify(updateOptions, null, 2));
             const result = await prismaModel.update(updateOptions);
             console.log(`✅ Update result for ${mappedModel}:`, result);
             return result;
@@ -229,7 +233,7 @@ let UniversalService = class UniversalService {
         const cleanData = { ...data };
         const excludeFromUpdates = [
             'roles', 'permissions', 'profile', 'userRoles', 'rolePermissions',
-            'user', 'role', 'permission', 'khachhang', 'nhomkhachhang'
+            'user', 'role', 'permission'
         ];
         excludeFromUpdates.forEach(field => {
             if (cleanData[field]) {
@@ -252,21 +256,39 @@ let UniversalService = class UniversalService {
             if (value && typeof value === 'object' && !Array.isArray(value)) {
                 if (value.connect) {
                     cleanData[key].connect = this.validateConnectArray(value.connect);
+                    console.log(`✅ [RELATION] Validated connect for '${key}':`, cleanData[key].connect);
+                    console.log(`✅ [RELATION] Connect count for '${key}':`, cleanData[key].connect.length);
                 }
                 if (value.disconnect) {
                     cleanData[key].disconnect = this.validateConnectArray(value.disconnect);
+                    console.log(`✅ [RELATION] Validated disconnect for '${key}':`, cleanData[key].disconnect);
+                    console.log(`✅ [RELATION] Disconnect count for '${key}':`, cleanData[key].disconnect.length);
+                }
+                if (value.set !== undefined) {
+                    if (Array.isArray(value.set)) {
+                        cleanData[key].set = this.validateConnectArray(value.set);
+                        console.log(`✅ [RELATION] Validated set for '${key}':`, cleanData[key].set);
+                        console.log(`✅ [RELATION] Set count for '${key}':`, cleanData[key].set.length);
+                    }
                 }
                 if (value.connect && value.connect.length === 0) {
+                    console.log(`🧹 [RELATION] Removing empty connect for '${key}'`);
                     delete cleanData[key].connect;
                 }
                 if (value.disconnect && value.disconnect.length === 0) {
+                    console.log(`🧹 [RELATION] Removing empty disconnect for '${key}'`);
                     delete cleanData[key].disconnect;
+                }
+                if (value.set !== undefined && Array.isArray(value.set) && value.set.length === 0) {
+                    console.log(`🧹 [RELATION] Removing empty set for '${key}'`);
+                    delete cleanData[key].set;
                 }
                 if (Object.keys(cleanData[key]).length === 0) {
                     delete cleanData[key];
                 }
             }
         });
+        console.log(`📋 Final cleaned data:`, Object.keys(cleanData));
         return cleanData;
     }
     validateConnectArray(items) {
