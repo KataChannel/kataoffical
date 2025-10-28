@@ -600,6 +600,7 @@ export class ListImportdataComponent implements OnInit {
         filteredData.ListBG,
         filteredData.ListSP
       );
+      console.log('ListBGSP', ListBGSP);
 
       const ListBGKH: any[] = filteredData.ListKH.map((v: any) => {
         const result: any = {
@@ -637,8 +638,8 @@ export class ListImportdataComponent implements OnInit {
         }
         return result;
       });
-      console.log('dynamicKeys', dynamicKeys);
-      console.log('ListNCCSP1123', ListNCCSP);
+      // console.log('dynamicKeys', dynamicKeys);
+      // console.log('ListNCCSP1123', ListNCCSP);
       
       const ListTonkho = filteredData.ListTonkho.map((v: any) => ({
         masp: v.masp,
@@ -761,6 +762,8 @@ export class ListImportdataComponent implements OnInit {
     );
 
     console.log('Valid pricing tables for export:', Array.from(pricingTables));
+    console.log("listsp",listsp);
+    
 
     return listsp.map((product: any) => {
       const result: any = {

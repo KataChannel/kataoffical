@@ -34,26 +34,6 @@ export class CancelOrderService {
       return false;
     }
 
-    if (order.status === 'hoanthanh') {
-      this.snackBar.open('❌ Không thể hủy đơn hàng đã hoàn thành', 'Đóng', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error']
-      });
-      return false;
-    }
-
-    if (order.status === 'danhan') {
-      this.snackBar.open('❌ Không thể hủy đơn hàng đã nhận', 'Đóng', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error']
-      });
-      return false;
-    }
-
     // Open dialog to get cancellation reason
     const dialogRef = this.dialog.open(CancelReasonDialogComponent, {
       width: '500px',
@@ -124,24 +104,6 @@ export class CancelOrderService {
       return false;
     }
 
-    if (order.status === 'hoanthanh') {
-      this.snackBar.open('❌ Không thể hủy đơn đặt hàng đã hoàn thành', 'Đóng', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top'
-      });
-      return false;
-    }
-
-    if (order.status === 'danhan') {
-      this.snackBar.open('❌ Không thể hủy đơn đặt hàng đã nhận', 'Đóng', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top'
-      });
-      return false;
-    }
-
     // Open dialog to get cancellation reason
     const dialogRef = this.dialog.open(CancelReasonDialogComponent, {
       width: '500px',
@@ -202,7 +164,7 @@ export class CancelOrderService {
    * @returns true nếu có thể hủy, false nếu không
    */
   canCancelOrder(order: any): boolean {
-    return order.status !== 'huy' && order.status !== 'hoanthanh' && order.status !== 'danhan';
+    return order.status !== 'huy';
   }
 
   /**
@@ -213,12 +175,6 @@ export class CancelOrderService {
   getCancelButtonTooltip(order: any): string {
     if (order.status === 'huy') {
       return 'Đơn hàng đã được hủy';
-    }
-    if (order.status === 'hoanthanh') {
-      return 'Không thể hủy đơn hàng đã hoàn thành';
-    }
-    if (order.status === 'danhan') {
-      return 'Không thể hủy đơn hàng đã nhận';
     }
     return 'Hủy đơn hàng';
   }
