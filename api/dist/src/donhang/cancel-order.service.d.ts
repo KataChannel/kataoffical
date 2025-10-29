@@ -7,7 +7,10 @@ export interface CancelOrderDto {
 }
 export declare class CancelOrderService {
     private prisma;
+    private redis;
     constructor(prisma: PrismaService);
+    private invalidateDonhangCache;
+    private invalidateDathangCache;
     cancelDonhang(dto: CancelOrderDto): Promise<any>;
     cancelDathang(dto: CancelOrderDto): Promise<any>;
     getCanceledOrders(type: 'donhang' | 'dathang', options?: {

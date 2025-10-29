@@ -12,9 +12,54 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CancelOrderService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const ioredis_1 = require("ioredis");
 let CancelOrderService = class CancelOrderService {
     constructor(prisma) {
         this.prisma = prisma;
+        this.redis = new ioredis_1.default({
+            host: process.env.REDIS_HOST || 'localhost',
+            port: parseInt(process.env.REDIS_PORT || '6379'),
+        });
+    }
+    async invalidateDonhangCache(orderId) {
+        try {
+            const patterns = [
+                `*donhang*${orderId}*`,
+                `*donhang*`,
+                `*tonkho*`,
+                `*phieukho*`
+            ];
+            for (const pattern of patterns) {
+                const keys = await this.redis.keys(pattern);
+                if (keys && keys.length > 0) {
+                    await this.redis.del(...keys);
+                    console.log(`[CACHE] Invalidated ${keys.length} keys for pattern: ${pattern}`);
+                }
+            }
+        }
+        catch (error) {
+            console.error('[CACHE] Error invalidating donhang cache:', error);
+        }
+    }
+    async invalidateDathangCache(orderId) {
+        try {
+            const patterns = [
+                `*dathang*${orderId}*`,
+                `*dathang*`,
+                `*tonkho*`,
+                `*phieukho*`
+            ];
+            for (const pattern of patterns) {
+                const keys = await this.redis.keys(pattern);
+                if (keys && keys.length > 0) {
+                    await this.redis.del(...keys);
+                    console.log(`[CACHE] Invalidated ${keys.length} keys for pattern: ${pattern}`);
+                }
+            }
+        }
+        catch (error) {
+            console.error('[CACHE] Error invalidating dathang cache:', error);
+        }
     }
     async cancelDonhang(dto) {
         const { orderId, lydohuy, userId } = dto;
@@ -41,16 +86,10 @@ let CancelOrderService = class CancelOrderService {
         if (donhang.status === 'huy') {
             throw new common_1.BadRequestException('Đơn hàng đã được hủy trước đó');
         }
-        if (donhang.status === 'hoanthanh') {
-            throw new common_1.BadRequestException('Không thể hủy đơn hàng đã hoàn thành');
-        }
-        if (donhang.status === 'danhan') {
-            throw new common_1.BadRequestException('Không thể hủy đơn hàng đã nhận');
-        }
         const hasPhieuXuatKho = donhang.PhieuKho && donhang.PhieuKho.length > 0;
         const oldStatus = donhang.status;
         const restoredItems = [];
-        return await this.prisma.$transaction(async (tx) => {
+        const result = await this.prisma.$transaction(async (tx) => {
             if (hasPhieuXuatKho && donhang.sanpham && donhang.sanpham.length > 0) {
                 console.log(`[CancelOrder] Hoàn trả tồn kho cho đơn hàng ${donhang.madonhang}`);
                 for (const item of donhang.sanpham) {
@@ -135,6 +174,9 @@ let CancelOrderService = class CancelOrderService {
                 oldStatus
             };
         });
+        await this.invalidateDonhangCache(orderId);
+        console.log(`[CancelOrder] Cache invalidated for donhang: ${orderId}`);
+        return result;
     }
     async cancelDathang(dto) {
         const { orderId, lydohuy, userId } = dto;
@@ -161,16 +203,10 @@ let CancelOrderService = class CancelOrderService {
         if (dathang.status === 'huy') {
             throw new common_1.BadRequestException('Đơn đặt hàng đã được hủy trước đó');
         }
-        if (dathang.status === 'hoanthanh') {
-            throw new common_1.BadRequestException('Không thể hủy đơn đặt hàng đã hoàn thành');
-        }
-        if (dathang.status === 'danhan') {
-            throw new common_1.BadRequestException('Không thể hủy đơn đặt hàng đã nhận');
-        }
         const hasPhieuNhapKho = dathang.PhieuKho && dathang.PhieuKho.length > 0;
         const oldStatus = dathang.status;
         const restoredItems = [];
-        return await this.prisma.$transaction(async (tx) => {
+        const result = await this.prisma.$transaction(async (tx) => {
             if (hasPhieuNhapKho && dathang.sanpham && dathang.sanpham.length > 0) {
                 console.log(`[CancelOrder] Trừ tồn kho cho đơn đặt hàng ${dathang.madncc}`);
                 for (const item of dathang.sanpham) {
@@ -253,6 +289,9 @@ let CancelOrderService = class CancelOrderService {
                 oldStatus
             };
         });
+        await this.invalidateDathangCache(orderId);
+        console.log(`[CancelOrder] Cache invalidated for dathang: ${orderId}`);
+        return result;
     }
     async getCanceledOrders(type, options) {
         const where = {

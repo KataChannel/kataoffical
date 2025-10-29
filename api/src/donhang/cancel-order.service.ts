@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import Redis from 'ioredis';
 
 export interface CancelOrderDto {
   orderId: string;
@@ -10,7 +11,62 @@ export interface CancelOrderDto {
 
 @Injectable()
 export class CancelOrderService {
-  constructor(private prisma: PrismaService) {}
+  private redis: Redis;
+
+  constructor(private prisma: PrismaService) {
+    this.redis = new Redis({
+      host: process.env.REDIS_HOST || 'localhost',
+      port: parseInt(process.env.REDIS_PORT || '6379'),
+    });
+  }
+
+  /**
+   * Invalidate cache cho đơn hàng
+   */
+  private async invalidateDonhangCache(orderId: string): Promise<void> {
+    try {
+      const patterns = [
+        `*donhang*${orderId}*`,
+        `*donhang*`,
+        `*tonkho*`,
+        `*phieukho*`
+      ];
+
+      for (const pattern of patterns) {
+        const keys = await this.redis.keys(pattern);
+        if (keys && keys.length > 0) {
+          await this.redis.del(...keys);
+          console.log(`[CACHE] Invalidated ${keys.length} keys for pattern: ${pattern}`);
+        }
+      }
+    } catch (error) {
+      console.error('[CACHE] Error invalidating donhang cache:', error);
+    }
+  }
+
+  /**
+   * Invalidate cache cho đơn đặt hàng
+   */
+  private async invalidateDathangCache(orderId: string): Promise<void> {
+    try {
+      const patterns = [
+        `*dathang*${orderId}*`,
+        `*dathang*`,
+        `*tonkho*`,
+        `*phieukho*`
+      ];
+
+      for (const pattern of patterns) {
+        const keys = await this.redis.keys(pattern);
+        if (keys && keys.length > 0) {
+          await this.redis.del(...keys);
+          console.log(`[CACHE] Invalidated ${keys.length} keys for pattern: ${pattern}`);
+        }
+      }
+    } catch (error) {
+      console.error('[CACHE] Error invalidating dathang cache:', error);
+    }
+  }
 
   /**
    * Hủy đơn hàng (Donhang)
@@ -53,13 +109,13 @@ export class CancelOrderService {
       throw new BadRequestException('Đơn hàng đã được hủy trước đó');
     }
 
-    if (donhang.status === 'hoanthanh') {
-      throw new BadRequestException('Không thể hủy đơn hàng đã hoàn thành');
-    }
+    // if (donhang.status === 'hoanthanh') {
+    //   throw new BadRequestException('Không thể hủy đơn hàng đã hoàn thành');
+    // }
 
-    if (donhang.status === 'danhan') {
-      throw new BadRequestException('Không thể hủy đơn hàng đã nhận');
-    }
+    // if (donhang.status === 'danhan') {
+    //   throw new BadRequestException('Không thể hủy đơn hàng đã nhận');
+    // }
 
     // Kiểm tra xem đã có phiếu xuất kho chưa
     const hasPhieuXuatKho = donhang.PhieuKho && donhang.PhieuKho.length > 0;
@@ -67,7 +123,7 @@ export class CancelOrderService {
     const restoredItems: any[] = [];
 
     // Transaction để đảm bảo tính toàn vẹn dữ liệu
-    return await this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       // Nếu đơn hàng đã xuất kho (có PhieuKho), cần hoàn trả tồn kho
       if (hasPhieuXuatKho && donhang.sanpham && donhang.sanpham.length > 0) {
         console.log(`[CancelOrder] Hoàn trả tồn kho cho đơn hàng ${donhang.madonhang}`);
@@ -170,6 +226,12 @@ export class CancelOrderService {
         oldStatus
       };
     });
+
+    // Invalidate cache sau khi hủy đơn hàng thành công
+    await this.invalidateDonhangCache(orderId);
+    console.log(`[CancelOrder] Cache invalidated for donhang: ${orderId}`);
+
+    return result;
   }
 
   /**
@@ -213,13 +275,13 @@ export class CancelOrderService {
       throw new BadRequestException('Đơn đặt hàng đã được hủy trước đó');
     }
 
-    if (dathang.status === 'hoanthanh') {
-      throw new BadRequestException('Không thể hủy đơn đặt hàng đã hoàn thành');
-    }
+    // if (dathang.status === 'hoanthanh') {
+    //   throw new BadRequestException('Không thể hủy đơn đặt hàng đã hoàn thành');
+    // }
 
-    if (dathang.status === 'danhan') {
-      throw new BadRequestException('Không thể hủy đơn đặt hàng đã nhận');
-    }
+    // if (dathang.status === 'danhan') {
+    //   throw new BadRequestException('Không thể hủy đơn đặt hàng đã nhận');
+    // }
 
     // Kiểm tra xem đã có phiếu nhập kho chưa
     const hasPhieuNhapKho = dathang.PhieuKho && dathang.PhieuKho.length > 0;
@@ -227,7 +289,7 @@ export class CancelOrderService {
     const restoredItems: any[] = [];
 
     // Transaction để đảm bảo tính toàn vẹn dữ liệu
-    return await this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       // Nếu đơn đặt hàng đã nhập kho (có PhieuKho), cần trừ lại tồn kho
       if (hasPhieuNhapKho && dathang.sanpham && dathang.sanpham.length > 0) {
         console.log(`[CancelOrder] Trừ tồn kho cho đơn đặt hàng ${dathang.madncc}`);
@@ -329,6 +391,12 @@ export class CancelOrderService {
         oldStatus
       };
     });
+
+    // Invalidate cache sau khi hủy đơn đặt hàng thành công
+    await this.invalidateDathangCache(orderId);
+    console.log(`[CancelOrder] Cache invalidated for dathang: ${orderId}`);
+
+    return result;
   }
 
   /**
