@@ -97,6 +97,11 @@ export declare class DonhangService {
         tongsomon: number;
         soluongtt: number;
         loadpoint: number;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
         id: string;
         title: string | null;
         type: string | null;
@@ -116,11 +121,6 @@ export declare class DonhangService {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
-        shipper: string | null;
-        phieuve: string | null;
-        giodi: string | null;
-        giove: string | null;
-        kynhan: string | null;
     }[]>;
     phieugiao(params: any): Promise<{
         loadpoint: number;

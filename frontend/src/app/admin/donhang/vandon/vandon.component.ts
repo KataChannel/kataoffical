@@ -383,8 +383,7 @@ export class VandonComponent {
    */
   async ImportPhieuChuyenExcel(event: any) {
     try {
-      const data = await readExcelFileNoWorkerArray(event);
-      console.log('[IMPORT-PHIEU-CHUYEN] event:', event.target?.files?.[0]);
+      const data = await readExcelFileNoWorkerArray(event,'Phiếu Chuyển');
       console.log('[IMPORT-PHIEU-CHUYEN] Excel data:', data);
       
       if (!data || data.length === 0) {

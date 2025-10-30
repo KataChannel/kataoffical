@@ -1322,6 +1322,12 @@ export class DonhangService {
         tongsomon: sanpham.length,
         soluongtt: parseFloat(sanpham.reduce((total, item: any) => total + Number(item.slgiao || 0), 0).toFixed(3)),
         loadpoint: parseFloat(sanpham.reduce((total, item: any) => total + (Number(item.sanpham?.loadpoint || 0) * Number(item.sldat || 0)), 0).toFixed(3)),
+        // ✅ Include 5 trường mới cho phiếu chuyển
+        shipper: donhang.shipper,
+        phieuve: donhang.phieuve,
+        giodi: donhang.giodi,
+        giove: donhang.giove,
+        kynhan: donhang.kynhan,
       };
     });
   }

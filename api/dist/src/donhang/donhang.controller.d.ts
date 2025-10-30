@@ -149,6 +149,11 @@ export declare class DonhangController {
         tongsomon: number;
         soluongtt: number;
         loadpoint: number;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
         id: string;
         title: string | null;
         type: string | null;
@@ -168,11 +173,6 @@ export declare class DonhangController {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
-        shipper: string | null;
-        phieuve: string | null;
-        giodi: string | null;
-        giove: string | null;
-        kynhan: string | null;
     }[]>;
     dongbogia(params: any): Promise<{
         status: string;
