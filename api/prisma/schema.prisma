@@ -186,6 +186,7 @@ model Khachhang {
   tenkh         String?
   banggiaId     String?
   isshowvat     Boolean         @default(true)
+  machuyen      String?
   donhang       Donhang[]
   banggia       Banggia?        @relation("Banggiakhachhang", fields: [banggiaId], references: [id])
   nhomkhachhang Nhomkhachhang[] @relation("KhachhangNhom")

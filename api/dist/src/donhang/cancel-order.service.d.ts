@@ -86,6 +86,7 @@ export declare class CancelOrderService {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         } | null;
     } & {
         id: string;

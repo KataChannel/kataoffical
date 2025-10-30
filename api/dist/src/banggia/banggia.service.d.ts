@@ -134,6 +134,7 @@ export declare class BanggiaService {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         }[];
         id: string;
         title: string | null;

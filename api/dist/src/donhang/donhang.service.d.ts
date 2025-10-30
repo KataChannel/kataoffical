@@ -94,6 +94,7 @@ export declare class DonhangService {
         diachi: string | null | undefined;
         sdt: string | null | undefined;
         gionhanhang: string | null | undefined;
+        machuyen: string | null | undefined;
         tongsomon: number;
         soluongtt: number;
         loadpoint: number;
@@ -162,6 +163,7 @@ export declare class DonhangService {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         }) | null;
         id: string;
         title: string | null;
@@ -242,6 +244,7 @@ export declare class DonhangService {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         }) | null;
         id: string;
         title: string | null;
@@ -406,6 +409,7 @@ export declare class DonhangService {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         }) | null;
         id: string;
         title: string | null;
@@ -721,6 +725,7 @@ export declare class DonhangService {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         } | null;
         id: string;
         title: string | null;

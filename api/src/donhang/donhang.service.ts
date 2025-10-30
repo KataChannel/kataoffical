@@ -1319,6 +1319,7 @@ export class DonhangService {
         diachi: khachhang?.diachi,
         sdt: khachhang?.sdt,
         gionhanhang: khachhang?.gionhanhang,
+        machuyen: khachhang?.machuyen,
         tongsomon: sanpham.length,
         soluongtt: parseFloat(sanpham.reduce((total, item: any) => total + Number(item.slgiao || 0), 0).toFixed(3)),
         loadpoint: parseFloat(sanpham.reduce((total, item: any) => total + (Number(item.sanpham?.loadpoint || 0) * Number(item.sldat || 0)), 0).toFixed(3)),

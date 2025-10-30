@@ -146,6 +146,7 @@ export declare class DonhangController {
         diachi: string | null | undefined;
         sdt: string | null | undefined;
         gionhanhang: string | null | undefined;
+        machuyen: string | null | undefined;
         tongsomon: number;
         soluongtt: number;
         loadpoint: number;
@@ -227,6 +228,7 @@ export declare class DonhangController {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         }) | null;
         id: string;
         title: string | null;
@@ -377,6 +379,7 @@ export declare class DonhangController {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         } | null;
         id: string;
         title: string | null;
@@ -485,6 +488,7 @@ export declare class DonhangController {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         }) | null;
         id: string;
         title: string | null;

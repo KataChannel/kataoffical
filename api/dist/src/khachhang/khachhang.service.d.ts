@@ -35,6 +35,7 @@ export declare class KhachhangService {
         tenfile: string | null;
         tenkh: string | null;
         isshowvat: boolean;
+        machuyen: string | null;
     }>;
     import(data: any[]): Promise<{
         message: string;
@@ -97,6 +98,7 @@ export declare class KhachhangService {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         })[];
         total: number;
         page: number;
@@ -145,6 +147,7 @@ export declare class KhachhangService {
         tenfile: string | null;
         tenkh: string | null;
         isshowvat: boolean;
+        machuyen: string | null;
     }) | {
         data: ({
             banggia: {
@@ -188,6 +191,7 @@ export declare class KhachhangService {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         })[];
         page: any;
         pageSize: any;
@@ -236,6 +240,7 @@ export declare class KhachhangService {
         tenfile: string | null;
         tenkh: string | null;
         isshowvat: boolean;
+        machuyen: string | null;
     }>;
     searchfield(searchParams: Record<string, any>): Promise<{
         banggia: {
@@ -279,6 +284,7 @@ export declare class KhachhangService {
         tenfile: string | null;
         tenkh: string | null;
         isshowvat: boolean;
+        machuyen: string | null;
     }>;
     update(id: string, data: any): Promise<{
         banggia: {
@@ -322,6 +328,7 @@ export declare class KhachhangService {
         tenfile: string | null;
         tenkh: string | null;
         isshowvat: boolean;
+        machuyen: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -349,5 +356,6 @@ export declare class KhachhangService {
         tenfile: string | null;
         tenkh: string | null;
         isshowvat: boolean;
+        machuyen: string | null;
     }>;
 }

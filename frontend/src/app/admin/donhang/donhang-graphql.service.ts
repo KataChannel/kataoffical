@@ -475,7 +475,7 @@ export class DonhangGraphqlService {
         'Ngày Giao': item.ngaygiao ? new Date(item.ngaygiao).toLocaleString('vi-VN') : '',
         'Tên Khách Hàng': item.name || '',
         'Số Lượng': item.soluongtt || 0,
-        'Chuyến': item.chuyen || '',
+        'Mã Chuyến': item.machuyen || '',
         'Địa Chỉ': item.diachi || '',
         'Liên Hệ': '',
         'Số Điện Thoại': item.sdt || '',
@@ -586,7 +586,12 @@ export class DonhangGraphqlService {
           }
 
           const donhang = await this._GraphqlService.findFirst('donhang', {
-            where: { madonhang }
+            where: { madonhang },
+            include: {
+              khachhang: {
+                select: { id: true, makh: true }
+              }
+            }
           });
 
           if (!donhang) {
@@ -603,9 +608,20 @@ export class DonhangGraphqlService {
           if (row['Giờ Về']) updateData.giove = row['Giờ Về'].toString().trim();
           if (row['Ký Nhận']) updateData.kynhan = row['Ký Nhận'].toString().trim();
 
+          // Update donhang if needed
           if (Object.keys(updateData).length > 0) {
             await this._GraphqlService.updateOne('donhang', { id: donhang.id }, updateData);
             successCount++;
+          }
+
+          // Update machuyen to khachhang if provided
+          if (row['Mã Chuyến'] && donhang.khachhang?.id) {
+            const machuyen = row['Mã Chuyến'].toString().trim();
+            await this._GraphqlService.updateOne('khachhang', 
+              { id: donhang.khachhang.id }, 
+              { machuyen }
+            );
+            console.log(`[IMPORT] Updated machuyen: ${machuyen} for khachhang: ${donhang.khachhang.makh}`);
           }
 
         } catch (rowError: any) {

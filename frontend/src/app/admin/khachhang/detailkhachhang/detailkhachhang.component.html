@@ -72,6 +72,10 @@
       <mat-label>Giờ Nhận Hàng</mat-label>
       <input matInput [value]="DetailKhachhang()?.gionhanhang || ''" (input)="updateGionhanhang($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giờ Nhận Hàng"/>
     </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Mã Chuyến</mat-label>
+      <input matInput [value]="DetailKhachhang()?.machuyen || ''" (input)="updateMachuyen($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Chuyến"/>
+    </mat-form-field>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Địa Chỉ</mat-label>
         <input matInput [value]="DetailKhachhang()?.diachi || ''" (input)="updateDiachi($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Địa Chỉ"/>

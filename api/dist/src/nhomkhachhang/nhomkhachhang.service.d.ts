@@ -48,6 +48,7 @@ export declare class NhomkhachhangService {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         }[];
     } & {
         id: string;
@@ -83,6 +84,7 @@ export declare class NhomkhachhangService {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         }[];
     } & {
         id: string;

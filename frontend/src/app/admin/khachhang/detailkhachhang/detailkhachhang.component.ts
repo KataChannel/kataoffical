@@ -344,6 +344,13 @@ export class DetailKhachhangComponent {
     }));
   }
 
+  updateMachuyen(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      machuyen: event.target.value
+    }));
+  }
+
   updateDiachi(event: any) {
     this.DetailKhachhang.update((v: any) => ({
       ...v,

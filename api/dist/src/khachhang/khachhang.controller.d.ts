@@ -31,6 +31,7 @@ export declare class KhachhangController {
         tenfile: string | null;
         tenkh: string | null;
         isshowvat: boolean;
+        machuyen: string | null;
     }>;
     import(data: any): Promise<{
         message: string;
@@ -78,6 +79,7 @@ export declare class KhachhangController {
         tenfile: string | null;
         tenkh: string | null;
         isshowvat: boolean;
+        machuyen: string | null;
     }) | {
         data: ({
             banggia: {
@@ -121,6 +123,7 @@ export declare class KhachhangController {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         })[];
         page: any;
         pageSize: any;
@@ -169,6 +172,7 @@ export declare class KhachhangController {
         tenfile: string | null;
         tenkh: string | null;
         isshowvat: boolean;
+        machuyen: string | null;
     }>;
     findAllForSelect(): Promise<{
         data: {
@@ -227,6 +231,7 @@ export declare class KhachhangController {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         })[];
         total: number;
         page: number;
@@ -275,6 +280,7 @@ export declare class KhachhangController {
         tenfile: string | null;
         tenkh: string | null;
         isshowvat: boolean;
+        machuyen: string | null;
     }>;
     update(id: string, updateKhachhangDto: any): Promise<{
         banggia: {
@@ -318,6 +324,7 @@ export declare class KhachhangController {
         tenfile: string | null;
         tenkh: string | null;
         isshowvat: boolean;
+        machuyen: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -345,5 +352,6 @@ export declare class KhachhangController {
         tenfile: string | null;
         tenkh: string | null;
         isshowvat: boolean;
+        machuyen: string | null;
     }>;
 }

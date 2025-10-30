@@ -144,6 +144,7 @@ export declare class BanggiaController {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         }[];
         id: string;
         title: string | null;

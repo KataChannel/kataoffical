@@ -73,6 +73,7 @@ export declare class PhieuGiaoHangOptimizedService {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         } | null;
     } & {
         id: string;

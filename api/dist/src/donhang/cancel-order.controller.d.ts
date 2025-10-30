@@ -72,6 +72,7 @@ export declare class CancelOrderController {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         } | null;
     } & {
         id: string;
@@ -239,6 +240,7 @@ export declare class CancelOrderController {
             tenfile: string | null;
             tenkh: string | null;
             isshowvat: boolean;
+            machuyen: string | null;
         } | null;
     } & {
         id: string;
