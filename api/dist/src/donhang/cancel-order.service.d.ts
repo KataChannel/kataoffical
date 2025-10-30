@@ -107,6 +107,11 @@ export declare class CancelOrderService {
         tongtien: Prisma.Decimal;
         tongvat: Prisma.Decimal;
         lydohuy: string | null;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
     })[] | ({
         sanpham: ({
             sanpham: {

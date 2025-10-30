@@ -44,6 +44,11 @@ export declare class DonhangController {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
     }>;
     ImportDonhangOld(data: any): Promise<{
         status: string;
@@ -113,6 +118,11 @@ export declare class DonhangController {
             tongtien: import("@prisma/client/runtime/library").Decimal;
             tongvat: import("@prisma/client/runtime/library").Decimal;
             lydohuy: string | null;
+            shipper: string | null;
+            phieuve: string | null;
+            giodi: string | null;
+            giove: string | null;
+            kynhan: string | null;
         }[];
         total: number;
         pageNumber: any;
@@ -158,6 +168,11 @@ export declare class DonhangController {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
     }[]>;
     dongbogia(params: any): Promise<{
         status: string;
@@ -232,6 +247,11 @@ export declare class DonhangController {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
     }>;
     searchfield(searchParams: Record<string, any>): Promise<{
         sanpham: {
@@ -283,6 +303,11 @@ export declare class DonhangController {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
     }>;
     findByProductId(id: string): Promise<{
         sanpham: ({
@@ -372,6 +397,11 @@ export declare class DonhangController {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
     }[]>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -475,6 +505,11 @@ export declare class DonhangController {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
     }>;
     updatePhieugiao(id: string, updateDonhangDto: any): Promise<{
         sanpham: {
@@ -515,6 +550,11 @@ export declare class DonhangController {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
     }>;
     updateBulk(data: any[]): Promise<{
         success: number;
@@ -540,6 +580,11 @@ export declare class DonhangController {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
     }>;
     removeBulk(ids: any[]): Promise<{
         success: number;
@@ -569,6 +614,11 @@ export declare class DonhangController {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
     }>;
     danhan(id: string, data: any): Promise<{
         id: string;
@@ -590,6 +640,11 @@ export declare class DonhangController {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
     }>;
     autoCompleteOrdersDaily(): Promise<{
         success: boolean;

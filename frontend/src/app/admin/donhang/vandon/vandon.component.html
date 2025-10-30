@@ -41,6 +41,16 @@
                     [disabled]="loading()" (click)="exportVandonToExcel()">
                 <mat-icon>file_download</mat-icon>
             </button>
+            
+            <!-- Import Excel Phiếu Chuyển Button -->
+            <input class="hidden" (change)="ImportPhieuChuyenExcel($event)" type="file" #uploadPhieuChuyen accept=".xlsx,.xls">
+            <button matTooltip="Import Phiếu Chuyển (Cập nhật Shipper, Giờ đi/về, v.v.)" 
+                    mat-icon-button color="primary" 
+                    [disabled]="loading()"
+                    (click)="uploadPhieuChuyen.click()">
+                <mat-icon>file_upload</mat-icon>
+            </button>
+            
             <!-- <button matTooltip="Xuất Excel (Toàn bộ)" mat-icon-button color="warn" 
                     [disabled]="loading()" (click)="exportAllToExcel()">
                 <mat-icon>download</mat-icon>

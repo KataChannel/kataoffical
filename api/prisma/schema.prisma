@@ -262,6 +262,11 @@ model Donhang {
   banggiaId   String?
   vat         Decimal          @default(0.5) @postgres.Decimal(20, 3)
   lydohuy     String?
+  shipper     String?
+  phieuve     String?
+  giodi       String?
+  giove       String?
+  kynhan      String?
   banggia     Banggia?         @relation(fields: [banggiaId], references: [id])
   khachhang   Khachhang?       @relation(fields: [khachhangId], references: [id])
   sanpham     Donhangsanpham[]

@@ -93,6 +93,11 @@ export declare class CancelOrderController {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
     })[] | ({
         sanpham: ({
             sanpham: {
@@ -255,6 +260,11 @@ export declare class CancelOrderController {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        shipper: string | null;
+        phieuve: string | null;
+        giodi: string | null;
+        giove: string | null;
+        kynhan: string | null;
     })[] | ({
         sanpham: ({
             sanpham: {

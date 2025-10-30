@@ -20,7 +20,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { DonhangGraphqlService } from '../donhang-graphql.service';
 import { DonhangService } from '../donhang.service';
-import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
+import { readExcelFile, readExcelFileNoWorker, readExcelFileNoWorkerArray, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import moment from 'moment';
@@ -87,6 +87,11 @@ export class VandonComponent {
     order: 'Thứ Tự',
     ghichu: 'Ghi Chú',
     ngaygiao: 'Ngày Giao',
+    shipper: 'Shipper',
+    phieuve: 'Phiếu Về',
+    giodi: 'Giờ Đi',
+    giove: 'Giờ Về',
+    kynhan: 'Ký Nhận'
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('VandonColFilter') || '[]'
@@ -371,6 +376,44 @@ export class VandonComponent {
   async ImporExcel(event: any) {
     const data = await readExcelFile(event)
     this.DoImportData(data);
+  }
+
+  /**
+   * Import Excel phiếu chuyển - Update shipper, phieuve, giodi, giove, kynhan
+   */
+  async ImportPhieuChuyenExcel(event: any) {
+    try {
+      const data = await readExcelFileNoWorkerArray(event);
+      console.log('[IMPORT-PHIEU-CHUYEN] event:', event.target?.files?.[0]);
+      console.log('[IMPORT-PHIEU-CHUYEN] Excel data:', data);
+      
+      if (!data || data.length === 0) {
+        this._snackBar.open('File Excel không có dữ liệu', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning']
+        });
+        return;
+      }
+
+      console.log('[IMPORT-PHIEU-CHUYEN] Excel data:', data);
+
+      // Gọi service để xử lý import
+      await this._DonhangGraphqlService.importPhieuChuyenFromExcel(data);
+
+      // Refresh lại data sau khi import
+      await this.refresh();
+
+    } catch (error: any) {
+      console.error('[IMPORT-PHIEU-CHUYEN] Error:', error);
+      this._snackBar.open('Lỗi khi import file Excel: ' + error.message, '', {
+        duration: 5000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+    }
   }
   
   ExportExcel(data: any, title: any) {
