@@ -382,12 +382,21 @@ export class VandonComponent {
    * Import Excel phiếu chuyển - Update shipper, phieuve, giodi, giove, kynhan
    */
   async ImportPhieuChuyenExcel(event: any) {
+    const startTime = Date.now();
+    
     try {
-      const data = await readExcelFileNoWorkerArray(event,'Phiếu Chuyển');
-      console.log('[IMPORT-PHIEU-CHUYEN] Excel data:', data);
+      // Show loading immediately
+      this._snackBar.open('📂 Đang đọc file Excel...', '', {
+        duration: undefined,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-info']
+      });
+
+      const data = await readExcelFileNoWorkerArray(event, 'Phiếu Chuyển');
       
       if (!data || data.length === 0) {
-        this._snackBar.open('File Excel không có dữ liệu', '', {
+        this._snackBar.open('⚠️ File không có dữ liệu', 'Đóng', {
           duration: 3000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
@@ -396,22 +405,31 @@ export class VandonComponent {
         return;
       }
 
-      console.log('[IMPORT-PHIEU-CHUYEN] Excel data:', data);
+      console.log(`[IMPORT] Đọc được ${data.length} dòng từ Excel`);
 
-      // Gọi service để xử lý import
-      await this._DonhangGraphqlService.importPhieuChuyenFromExcel(data);
+      // Process import with progress
+      const result = await this._DonhangGraphqlService.importPhieuChuyenFromExcel(data);
 
-      // Refresh lại data sau khi import
+      // Calculate duration
+      const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+
+      // Refresh UI
       await this.refresh();
 
+      // Show detailed result
+      console.log(`[IMPORT] Hoàn thành trong ${duration}s:`, result);
+
     } catch (error: any) {
-      console.error('[IMPORT-PHIEU-CHUYEN] Error:', error);
-      this._snackBar.open('Lỗi khi import file Excel: ' + error.message, '', {
-        duration: 5000,
+      console.error('[IMPORT] Error:', error);
+      this._snackBar.open(`❌ ${error.message || 'Lỗi import'}`, 'Đóng', {
+        duration: 4000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-error']
       });
+    } finally {
+      // Reset file input để có thể import lại cùng file
+      event.target.value = '';
     }
   }
   

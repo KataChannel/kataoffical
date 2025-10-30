@@ -543,7 +543,7 @@ export class DonhangGraphqlService {
   /**
    * Import Excel dữ liệu phiếu chuyển để cập nhật shipper, phieuve, giodi, giove, kynhan
    */
-  async importPhieuChuyenFromExcel(excelData: any[]): Promise<void> {
+  async importPhieuChuyenFromExcel(excelData: any[]): Promise<{ success: number; error: number; total: number }> {
     try {
       this.loading.set(true);
       this.error.set(null);
@@ -551,64 +551,72 @@ export class DonhangGraphqlService {
       let successCount = 0;
       let errorCount = 0;
       const errors: string[] = [];
+      const total = excelData.length;
 
-      console.log('[IMPORT-PHIEU-CHUYEN] Starting import...', excelData.length, 'rows');
+      console.log(`[IMPORT] Bắt đầu import ${total} dòng...`);
 
-      for (const row of excelData) {
+      // Show initial progress
+      this._snackBar.open(`⏳ Đang xử lý 0/${total}...`, '', {
+        duration: undefined,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-info']
+      });
+
+      for (let i = 0; i < excelData.length; i++) {
+        const row = excelData[i];
+        
+        // Update progress every 10 rows or at milestones
+        if (i % 10 === 0 || i === total - 1) {
+          const progress = Math.round(((i + 1) / total) * 100);
+          this._snackBar.open(`⏳ Đang xử lý ${i + 1}/${total} (${progress}%)...`, '', {
+            duration: undefined,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-info']
+          });
+        }
+
         try {
-          // Map Excel columns to donhang fields
           const madonhang = row['Mã Đơn Hàng']?.toString().trim();
           
           if (!madonhang) {
-            console.warn('[IMPORT-PHIEU-CHUYEN] Skipping row without Mã Đơn Hàng:', row);
+            console.warn(`[IMPORT] Dòng ${i + 1}: Bỏ qua - không có mã đơn hàng`);
             continue;
           }
 
-          // Tìm đơn hàng theo mã
           const donhang = await this._GraphqlService.findFirst('donhang', {
             where: { madonhang }
           });
 
           if (!donhang) {
-            errors.push(`Không tìm thấy đơn hàng: ${madonhang}`);
+            errors.push(`${madonhang}: Không tìm thấy`);
             errorCount++;
             continue;
           }
 
-          // Chuẩn bị data update - chỉ update các field có giá trị
           const updateData: any = {};
           
-          if (row['Shipper']) {
-            updateData.shipper = row['Shipper'].toString().trim();
-          }
-          if (row['Phiếu Về']) {
-            updateData.phieuve = row['Phiếu Về'].toString().trim();
-          }
-          if (row['Giờ Đi']) {
-            updateData.giodi = row['Giờ Đi'].toString().trim();
-          }
-          if (row['Giờ Về']) {
-            updateData.giove = row['Giờ Về'].toString().trim();
-          }
-          if (row['Ký Nhận']) {
-            updateData.kynhan = row['Ký Nhận'].toString().trim();
-          }
+          if (row['Shipper']) updateData.shipper = row['Shipper'].toString().trim();
+          if (row['Phiếu Về']) updateData.phieuve = row['Phiếu Về'].toString().trim();
+          if (row['Giờ Đi']) updateData.giodi = row['Giờ Đi'].toString().trim();
+          if (row['Giờ Về']) updateData.giove = row['Giờ Về'].toString().trim();
+          if (row['Ký Nhận']) updateData.kynhan = row['Ký Nhận'].toString().trim();
 
-          // Chỉ update nếu có dữ liệu
           if (Object.keys(updateData).length > 0) {
             await this._GraphqlService.updateOne('donhang', { id: donhang.id }, updateData);
             successCount++;
-            console.log(`[IMPORT-PHIEU-CHUYEN] Updated: ${madonhang}`, updateData);
           }
 
         } catch (rowError: any) {
-          console.error('[IMPORT-PHIEU-CHUYEN] Error processing row:', row, rowError);
-          errors.push(`Lỗi xử lý dòng ${row['STT'] || 'N/A'}: ${rowError.message}`);
+          const rowNum = row['STT'] || i + 1;
+          errors.push(`Dòng ${rowNum}: ${rowError.message}`);
           errorCount++;
         }
       }
 
-      // Invalidate cache sau khi import
+      // Invalidate cache
+      console.log('[IMPORT] Đang xóa cache...');
       const token = this._StorageService.getItem('token');
       if (token) {
         await fetch(`${environment.APIURL}/cache/invalidate/donhang`, {
@@ -618,38 +626,42 @@ export class DonhangGraphqlService {
       }
 
       // Refresh data
+      console.log('[IMPORT] Đang làm mới dữ liệu...');
       await this.refreshDonhangData();
 
       this.loading.set(false);
 
-      // Show result notification
-      let message = `Import thành công: ${successCount} đơn hàng`;
-      if (errorCount > 0) {
-        message += ` | Lỗi: ${errorCount}`;
-      }
+      // Show compact result
+      const icon = errorCount > 0 ? '⚠️' : '✅';
+      const message = errorCount > 0 
+        ? `${icon} ${successCount} thành công, ${errorCount} lỗi`
+        : `${icon} Import thành công ${successCount} đơn hàng`;
 
-      this._snackBar.open(message, '', {
-        duration: 5000,
+      this._snackBar.open(message, 'Đóng', {
+        duration: 4000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: errorCount > 0 ? ['snackbar-warning'] : ['snackbar-success']
       });
 
-      if (errors.length > 0 && errors.length <= 5) {
-        console.warn('[IMPORT-PHIEU-CHUYEN] Errors:', errors);
-        await this._ErrorLogService.logError(`Import phiếu chuyển errors: ${errors.join(', ')}`);
+      // Log errors if any
+      if (errors.length > 0) {
+        console.warn('[IMPORT] Lỗi:', errors.slice(0, 10));
+        if (errors.length > 10) {
+          console.warn(`[IMPORT] ... và ${errors.length - 10} lỗi khác`);
+        }
       }
 
+      return { success: successCount, error: errorCount, total };
+
     } catch (error: any) {
-      this.error.set(error.message || 'Lỗi khi import dữ liệu');
+      this.error.set(error.message || 'Lỗi import');
       this.loading.set(false);
 
-      await this._ErrorLogService.logError(
-        `Lỗi import phiếu chuyển: ${error.message || error}`
-      );
+      await this._ErrorLogService.logError(`Import error: ${error.message || error}`);
 
-      this._snackBar.open('Lỗi khi import: ' + error.message, '', {
-        duration: 5000,
+      this._snackBar.open(`❌ ${error.message}`, 'Đóng', {
+        duration: 4000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-error']
