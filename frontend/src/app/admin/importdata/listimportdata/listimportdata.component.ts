@@ -797,6 +797,8 @@ export class ListImportdataComponent implements OnInit {
   ): Array<{
     mabanggia: string;
     title: string;
+    batdau?: Date;
+    ketthuc?: Date;
     sanpham: Array<{ masp: string; title: string; giagoc: any }>;
   }> {
     if (!data || data.length === 0) {
@@ -811,11 +813,12 @@ export class ListImportdataComponent implements OnInit {
 
     // Filter valid price board keys:
     // - Exclude basic fields: masp, title, giagoc, giaban
+    // - Exclude date fields: batdau, ketthuc (we'll handle these separately)
     // - Exclude __EMPTY columns (Excel columns with no header)
     // - Only keep keys that have at least one valid price value
     const boardKeys = allKeys.filter((key) => {
       // Exclude basic fields
-      if (['masp', 'title', 'giagoc', 'giaban'].includes(key)) {
+      if (['masp', 'title', 'giagoc', 'giaban', 'batdau', 'ketthuc'].includes(key.toLowerCase())) {
         return false;
       }
       
@@ -844,10 +847,48 @@ export class ListImportdataComponent implements OnInit {
       return [];
     }
     
+    // Extract batdau and ketthuc from first row if they exist
+    // These should be the same for all products in a price list
+    const firstRow = data[0];
+    let batdau: Date | undefined;
+    let ketthuc: Date | undefined;
+    
+    // Check for batdau (case-insensitive)
+    const batdauKey = allKeys.find(key => key.toLowerCase() === 'batdau');
+    if (batdauKey && firstRow[batdauKey]) {
+      const batdauValue = firstRow[batdauKey];
+      // Check if it's an Excel serial date (number)
+      if (typeof batdauValue === 'number') {
+        batdau = excelSerialDateToJSDate(batdauValue);
+      } else if (batdauValue instanceof Date) {
+        batdau = batdauValue;
+      } else if (typeof batdauValue === 'string') {
+        batdau = new Date(batdauValue);
+      }
+      console.log('Found batdau in Excel:', batdauValue, '-> Converted to:', batdau);
+    }
+    
+    // Check for ketthuc (case-insensitive)
+    const ketthucKey = allKeys.find(key => key.toLowerCase() === 'ketthuc');
+    if (ketthucKey && firstRow[ketthucKey]) {
+      const ketthucValue = firstRow[ketthucKey];
+      // Check if it's an Excel serial date (number)
+      if (typeof ketthucValue === 'number') {
+        ketthuc = excelSerialDateToJSDate(ketthucValue);
+      } else if (ketthucValue instanceof Date) {
+        ketthuc = ketthucValue;
+      } else if (typeof ketthucValue === 'string') {
+        ketthuc = new Date(ketthucValue);
+      }
+      console.log('Found ketthuc in Excel:', ketthucValue, '-> Converted to:', ketthuc);
+    }
+    
     // For each board key, create an object with a list of products
     const data1 = boardKeys.map((boardKey) => ({
       mabanggia: boardKey,
       title: `Bảng giá ${boardKey.replace('BG', '')}`,
+      ...(batdau && { batdau }), // Only include if batdau exists
+      ...(ketthuc && { ketthuc }), // Only include if ketthuc exists
       sanpham: data
         .filter((sp) => sp.masp && sp.masp.trim() !== '') // Only include products with valid masp
         .map((sp) => ({
@@ -858,7 +899,7 @@ export class ListImportdataComponent implements OnInit {
         })),
     }));
     
-    console.log('Converted banggiasanpham data:', data1);
+    console.log('Converted banggiasanpham data with dates:', data1);
     return data1;
   }
 
