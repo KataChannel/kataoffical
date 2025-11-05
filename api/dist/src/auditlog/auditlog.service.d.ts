@@ -33,9 +33,6 @@ export declare class AuditService {
         } | null;
     } & {
         id: string;
-        status: string;
-        createdAt: Date;
-        updatedAt: Date;
         entityName: string | null;
         entityId: string | null;
         action: import(".prisma/client").$Enums.AuditAction;
@@ -48,6 +45,9 @@ export declare class AuditService {
         userAgent: string | null;
         sessionId: string | null;
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        createdAt: Date;
+        updatedAt: Date;
+        status: string;
         errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
     }) | {
         data: ({
@@ -57,9 +57,6 @@ export declare class AuditService {
             } | null;
         } & {
             id: string;
-            status: string;
-            createdAt: Date;
-            updatedAt: Date;
             entityName: string | null;
             entityId: string | null;
             action: import(".prisma/client").$Enums.AuditAction;
@@ -72,6 +69,9 @@ export declare class AuditService {
             userAgent: string | null;
             sessionId: string | null;
             metadata: import("@prisma/client/runtime/library").JsonValue | null;
+            createdAt: Date;
+            updatedAt: Date;
+            status: string;
             errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
         })[];
         page: any;

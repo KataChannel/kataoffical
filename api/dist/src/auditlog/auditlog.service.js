@@ -100,12 +100,20 @@ let AuditService = class AuditService {
         if (where.status) {
             whereClause.status = { contains: where.status, mode: 'insensitive' };
         }
-        if (where.startDate || where.endDate) {
+        const dateFrom = where.createdAtFrom || where.startDate;
+        const dateTo = where.createdAtTo || where.endDate;
+        if (dateFrom || dateTo) {
             whereClause.createdAt = {};
-            if (where.startDate)
-                whereClause.createdAt.gte = new Date(where.startDate);
-            if (where.endDate)
-                whereClause.createdAt.lte = new Date(where.endDate);
+            if (dateFrom) {
+                const fromDate = new Date(dateFrom);
+                fromDate.setHours(0, 0, 0, 0);
+                whereClause.createdAt.gte = fromDate;
+            }
+            if (dateTo) {
+                const toDate = new Date(dateTo);
+                toDate.setHours(23, 59, 59, 999);
+                whereClause.createdAt.lte = toDate;
+            }
         }
         if (isOne) {
             const result = await this.prisma.auditLog.findFirst({

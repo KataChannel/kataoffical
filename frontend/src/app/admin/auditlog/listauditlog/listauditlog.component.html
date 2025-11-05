@@ -6,15 +6,57 @@
     <div class="p-2 cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center bg-white rounded-lg">
       <div class="w-full flex flex-col gap-2  lg:flex-row lg:items-center lg:justify-between">
 
-        <div class="flex flex-row space-x-2 items-center">
-          <div class="relative w-full">
-            <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
+        <div class="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2 items-center w-full">
+          <div class="relative w-full lg:w-64">
+            <input type="text" placeholder="Tìm kiếm module..." [(ngModel)]="searchModule" (keyup.enter)="applySearch()"
               class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <span class="material-symbols-outlined text-gray-500">search</span>
+              <span class="material-symbols-outlined text-gray-500">category</span>
             </div>
           </div>
-     <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
+          
+          <div class="relative w-full lg:w-64">
+            <input type="text" placeholder="Tìm kiếm hành động..." [(ngModel)]="searchAction" (keyup.enter)="applySearch()"
+              class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <span class="material-symbols-outlined text-gray-500">bolt</span>
+            </div>
+          </div>
+
+          <div class="relative w-full lg:w-48">
+            <input type="date" placeholder="Từ ngày..." [(ngModel)]="searchDateFrom"
+              class="block w-full pl-3 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+          </div>
+
+          <div class="relative w-full lg:w-48">
+            <input type="date" placeholder="Đến ngày..." [(ngModel)]="searchDateTo"
+              class="block w-full pl-3 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+          </div>
+
+          <button matTooltip="Tìm kiếm" mat-icon-button color="primary" (click)="applySearch()">
+            <mat-icon>search</mat-icon>
+          </button>
+
+          <button matTooltip="Xóa bộ lọc" mat-icon-button color="warn" (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+          </button>
+
+          <button matTooltip="Xuất Excel" mat-icon-button color="accent" [matMenuTriggerFor]="exportMenu"
+            [disabled]="Listauditlog().length === 0">
+            <mat-icon>file_download</mat-icon>
+          </button>
+          <mat-menu #exportMenu="matMenu">
+            <button mat-menu-item (click)="exportToExcel('current')">
+              <mat-icon>description</mat-icon>
+              <span>Xuất trang hiện tại ({{Listauditlog().length}} bản ghi)</span>
+            </button>
+            <button mat-menu-item (click)="exportToExcel('all')">
+              <mat-icon>library_books</mat-icon>
+              <span>Xuất tất cả ({{total()}} bản ghi)</span>
+            </button>
+          </mat-menu>
+
+          <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
             <mat-icon>tune</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
@@ -34,17 +76,7 @@
               }
             </div>
           </mat-menu>
-          <!-- <button class="flex flex-row items-center" color="primary" matTooltip="Thêm mới" (click)="create()"
-            mat-flat-button>
-            <mat-icon>add_circle</mat-icon>
-            <span class="whitespace-nowrap">Tạo Mới</span>
-          </button>
-          <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
-            class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button>
-            <mat-icon>delete</mat-icon>
-            <span class="whitespace-nowrap">Xoá</span>
-          </button> -->
-          </div>
+        </div>
 
         <div class="flex flex-row space-x-2 items-center">
 

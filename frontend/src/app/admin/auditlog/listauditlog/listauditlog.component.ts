@@ -23,6 +23,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
 import { environment } from '../../../../environments/environment.development';
 import { memoize, Debounce } from '../../../shared/utils/decorators';
+import { StorageService } from '../../../shared/utils/storage.service';
 @Component({
   selector: 'app-listauditlog',
   templateUrl: './listauditlog.component.html',
@@ -73,6 +74,7 @@ export class ListAuditlogComponent implements OnInit {
   private _router: Router = inject(Router);
   private _dialog: MatDialog = inject(MatDialog);
   private _snackBar: MatSnackBar = inject(MatSnackBar);
+  private _StorageService: StorageService = inject(StorageService);
 
   Listauditlog = this._AuditlogService.ListAuditlog;
   page = this._AuditlogService.page;
@@ -85,6 +87,13 @@ export class ListAuditlogComponent implements OnInit {
   isSearch = signal<boolean>(false);
   param: any = {};
   isLoading = signal<boolean>(false);
+  
+  // Search filters
+  searchModule: string = '';
+  searchAction: string = '';
+  searchDateFrom: string = '';
+  searchDateTo: string = '';
+  
   constructor() {
     effect(() => {
       this.dataSource.data = this.Listauditlog();
@@ -118,7 +127,75 @@ export class ListAuditlogComponent implements OnInit {
   async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.param.status = filterValue
-     await this._AuditlogService.getAuditlogBy(this.param);
+    await this._AuditlogService.getAuditlogBy(this.param);
+  }
+
+  async applySearch() {
+    // Build search params
+    this.param = {};
+    
+    if (this.searchModule && this.searchModule.trim()) {
+      this.param.entityName = this.searchModule.trim();
+    }
+    
+    if (this.searchAction && this.searchAction.trim()) {
+      this.param.action = this.searchAction.trim();
+    }
+    
+    if (this.searchDateFrom) {
+      this.param.createdAtFrom = this.searchDateFrom;
+    }
+    
+    if (this.searchDateTo) {
+      this.param.createdAtTo = this.searchDateTo;
+    }
+    
+    // Reset to first page when searching
+    this._AuditlogService.page.set(1);
+    
+    // Show loading indicator
+    this.isLoading.set(true);
+    
+    try {
+      await this._AuditlogService.getAuditlogBy(this.param);
+      this._snackBar.open('Tìm kiếm thành công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      this._snackBar.open('Lỗi khi tìm kiếm', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async clearFilters() {
+    this.searchModule = '';
+    this.searchAction = '';
+    this.searchDateFrom = '';
+    this.searchDateTo = '';
+    this.param = {};
+    this._AuditlogService.page.set(1);
+    
+    this.isLoading.set(true);
+    try {
+      await this._AuditlogService.getAuditlogBy(this.param);
+      this._snackBar.open('Đã xóa bộ lọc', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   async getUpdatedCodeIds() {
@@ -360,6 +437,157 @@ export class ListAuditlogComponent implements OnInit {
     writeExcelFile(dulieu, title);
   }
 
+  exportToExcel(type: 'current' | 'all' = 'current') {
+    if (!this.Listauditlog() || this.Listauditlog().length === 0) {
+      this._snackBar.open('Không có dữ liệu để xuất', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+      return;
+    }
+
+    if (type === 'all') {
+      this.exportAllData();
+    } else {
+      this.exportCurrentPage();
+    }
+  }
+
+  private exportCurrentPage() {
+    try {
+      const exportData = this.prepareExportData(this.Listauditlog());
+      const filename = this.generateFilename('page');
+      
+      writeExcelFile(exportData, filename);
+
+      this._snackBar.open(`Đã xuất ${exportData.length} bản ghi ra Excel`, '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      this._snackBar.open('Lỗi khi xuất Excel', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+  private async exportAllData() {
+    this.isLoading.set(true);
+    
+    try {
+      // Fetch all data with current filters
+      const allDataParam = {
+        ...this.param,
+        page: 1,
+        pageSize: this.total(), // Get all records
+      };
+
+      const response = await fetch(`${environment.APIURL}/auditlog/findby`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+        body: JSON.stringify(allDataParam),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch all data');
+      }
+
+      const result = await response.json();
+      const allData = result.data || [];
+
+      const exportData = this.prepareExportData(allData);
+      const filename = this.generateFilename('all');
+      
+      writeExcelFile(exportData, filename);
+
+      this._snackBar.open(`Đã xuất ${exportData.length} bản ghi ra Excel`, '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      console.error('Error exporting all data to Excel:', error);
+      this._snackBar.open('Lỗi khi xuất toàn bộ dữ liệu', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  private prepareExportData(data: any[]) {
+    return data.map((log: any, index: number) => ({
+      'STT': index + 1,
+      'Module': log.entityName || '',
+      'ID Đối Tượng': log.entityId || '',
+      'Hành Động': log.action || '',
+      'Trạng Thái': log.status || '',
+      'Người Dùng': log.user?.email || log.userEmail || '',
+      'SĐT': log.user?.SDT || '',
+      'Địa Chỉ IP': log.ipAddress || '',
+      'User Agent': log.userAgent || '',
+      'Session ID': log.sessionId || '',
+      'Các Trường Thay Đổi': Array.isArray(log.changedFields) ? log.changedFields.join(', ') : '',
+      'Giá Trị Cũ': log.oldValues ? JSON.stringify(log.oldValues) : '',
+      'Giá Trị Mới': log.newValues ? JSON.stringify(log.newValues) : '',
+      'Chi Tiết Lỗi': log.errorDetails ? JSON.stringify(log.errorDetails) : '',
+      'Metadata': log.metadata ? JSON.stringify(log.metadata) : '',
+      'Ngày Tạo': log.createdAt ? this.formatDateTime(log.createdAt) : '',
+      'Ngày Cập Nhật': log.updatedAt ? this.formatDateTime(log.updatedAt) : '',
+    }));
+  }
+
+  private generateFilename(type: 'page' | 'all'): string {
+    let filename = 'AuditLog';
+    
+    if (type === 'all') {
+      filename += '_ToanBo';
+    } else {
+      filename += `_Trang${this.page()}`;
+    }
+    
+    if (this.searchModule) {
+      filename += `_${this.searchModule}`;
+    }
+    if (this.searchAction) {
+      filename += `_${this.searchAction}`;
+    }
+    if (this.searchDateFrom || this.searchDateTo) {
+      const dateRange = `${this.searchDateFrom || 'start'}_${this.searchDateTo || 'end'}`;
+      filename += `_${dateRange}`;
+    }
+    filename += `_${new Date().toISOString().split('T')[0]}`;
+    
+    return filename;
+  }
+
+  private formatDateTime(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
+  }
+
   trackByFn(index: number, item: any): any {
     return item.id;
   }
@@ -374,10 +602,12 @@ export class ListAuditlogComponent implements OnInit {
       });
       size = this.total();
     }
+    this._AuditlogService.pageSize.set(size);
     this._AuditlogService.page.set(1);
     this._AuditlogService.getAuditlogBy(this.param);
     menuHienthi.closeMenu();
   }
+  
   onPreviousPage(){
     if (this.page() > 1) {
       this._AuditlogService.page.set(this.page() - 1);

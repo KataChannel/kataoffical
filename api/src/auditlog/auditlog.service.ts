@@ -101,38 +101,62 @@ export class AuditService {
   }
 
   async getAuditLogs(param: any) {
-    const { page = 1, pageSize = 50,isOne, ...where } = param;
+    const { page = 1, pageSize = 50, isOne, ...where } = param;
     const skip = (page - 1) * pageSize;
     const whereClause: any = {};
+    
     if (where.id) whereClause.id = where.id;
+    
     if (where.entityName) {
       whereClause.entityName = { contains: where.entityName, mode: 'insensitive' };
     }
+    
     if (where.entityId) {
       whereClause.entityId = { contains: where.entityId, mode: 'insensitive' };
     }
+    
     if (where.userId) {
       whereClause.userId = { contains: where.userId, mode: 'insensitive' };
     }
+    
     if (where.action) {
       whereClause.action = { contains: where.action, mode: 'insensitive' };
     }
+    
     if (where.status) {
       whereClause.status = { contains: where.status, mode: 'insensitive' };
     }
-    if (where.startDate || where.endDate) {
+    
+    // Handle date range filtering - support both old and new parameter names
+    const dateFrom = where.createdAtFrom || where.startDate;
+    const dateTo = where.createdAtTo || where.endDate;
+    
+    if (dateFrom || dateTo) {
       whereClause.createdAt = {};
-      if (where.startDate) whereClause.createdAt.gte = new Date(where.startDate);
-      if (where.endDate) whereClause.createdAt.lte = new Date(where.endDate);
+      
+      if (dateFrom) {
+        // Set to start of day (00:00:00)
+        const fromDate = new Date(dateFrom);
+        fromDate.setHours(0, 0, 0, 0);
+        whereClause.createdAt.gte = fromDate;
+      }
+      
+      if (dateTo) {
+        // Set to end of day (23:59:59.999)
+        const toDate = new Date(dateTo);
+        toDate.setHours(23, 59, 59, 999);
+        whereClause.createdAt.lte = toDate;
+      }
     }
-    if(isOne){
-        const result =  await this.prisma.auditLog.findFirst({
+    
+    if (isOne) {
+      const result = await this.prisma.auditLog.findFirst({
         where: whereClause,
         include: {
           user: { select: { email: true, SDT: true } },
         },
-      })
-      return result
+      });
+      return result;
     }
 
     const [logs, total] = await Promise.all([
@@ -155,8 +179,6 @@ export class AuditService {
       total,
       pageCount: Math.ceil(total / pageSize),
     };
-
-
   }
 
   private getChangedFields(oldValues: any, newValues: any): string[] {
