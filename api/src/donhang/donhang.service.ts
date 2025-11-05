@@ -1726,6 +1726,10 @@ export class DonhangService {
 
   async ImportDonhang(data: any) {
     const acc: Record<string, any> = {};
+    
+    // ✅ FIX: Track duplicate products per customer to merge quantities
+    const productTracker: Record<string, Map<string, any>> = {};
+    
     for (const curr of data) {
       if (!acc[curr.makh]) {
         const khachhang = await this.prisma.khachhang.findFirst({
@@ -1743,28 +1747,81 @@ export class DonhangService {
             makh: curr.makh,
           },
         };
+        // Initialize product tracker for this customer
+        productTracker[curr.makh] = new Map();
       }
+      
       const sanphamRecord = await this.prisma.sanpham.findFirst({
         where: { masp: curr.masp },
       });
-      acc[curr.makh].sanpham.push({
-        masp: curr.masp,
-        id: sanphamRecord?.id,
-        sldat: Number(curr.sldat),
-        slgiao: Number(curr.slgiao),
-        slnhan: Number(curr.slnhan),
-        ghichu: curr.ghichu,
-      });
+      
+      // ✅ FIX: Check if product already exists for this customer
+      const tracker = productTracker[curr.makh];
+      const existingProduct = tracker.get(curr.masp);
+      
+      if (existingProduct) {
+        // Product already exists - merge quantities
+        console.log(`⚠️ [IMPORT] Duplicate product ${curr.masp} for customer ${curr.makh} - merging quantities`);
+        existingProduct.sldat = Number(existingProduct.sldat) + Number(curr.sldat);
+        existingProduct.slgiao = Number(existingProduct.slgiao) + Number(curr.slgiao);
+        existingProduct.slnhan = Number(existingProduct.slnhan) + Number(curr.slnhan);
+        
+        // Append notes if different
+        if (curr.ghichu && curr.ghichu !== existingProduct.ghichu) {
+          existingProduct.ghichu = existingProduct.ghichu 
+            ? `${existingProduct.ghichu}; ${curr.ghichu}` 
+            : curr.ghichu;
+        }
+      } else {
+        // New product - add to tracker and list
+        const productData = {
+          masp: curr.masp,
+          id: sanphamRecord?.id,
+          sldat: Number(curr.sldat),
+          slgiao: Number(curr.slgiao),
+          slnhan: Number(curr.slnhan),
+          ghichu: curr.ghichu,
+        };
+        
+        tracker.set(curr.masp, productData);
+        acc[curr.makh].sanpham.push(productData);
+      }
     }
     const convertData: any = Object.values(acc);
+    
+    // ✅ Enhanced tracking with detailed results
     let success = 0;
     let fail = 0;
+    const successList: any[] = [];
+    const failList: any[] = [];
+    const duplicateInfo: any[] = [];
+    
     for (const element of convertData) {
       try {
-        await this.create(element);
+        const result = await this.create(element);
         success += 1;
+        successList.push({
+          makh: element.makh,
+          name: element.name,
+          madonhang: result.madonhang,
+          totalProducts: element.sanpham.length,
+          ngaygiao: element.ngaygiao
+        });
+        
+        // Track if any products were merged (duplicates detected)
+        const mergedProducts = element.sanpham.filter((sp: any) => 
+          sp.sldat > 0 || sp.slgiao > 0 || sp.slnhan > 0
+        );
+        if (mergedProducts.length < data.filter((d: any) => d.makh === element.makh).length) {
+          duplicateInfo.push({
+            makh: element.makh,
+            originalCount: data.filter((d: any) => d.makh === element.makh).length,
+            mergedCount: mergedProducts.length,
+            saved: data.filter((d: any) => d.makh === element.makh).length - mergedProducts.length
+          });
+        }
       } catch (error) {
-        // console.log('error', error);
+        console.error(`❌ [IMPORT] Failed to import order for ${element.makh}:`, error.message);
 
         await this.prisma.importHistory.create({
           data: {
@@ -1780,12 +1837,34 @@ export class DonhangService {
             createdBy: 'system', // replace with the actual account ID if available
           },
         });
+        
         fail += 1;
+        failList.push({
+          makh: element.makh,
+          name: element.name,
+          error: error.message
+        });
       }
     }
-    return {
+    
+    // ✅ Return detailed import summary
+    console.log('✅ [IMPORT] Import completed:', {
+      total: convertData.length,
       success,
       fail,
+      duplicatesDetected: duplicateInfo.length
+    });
+    
+    return {
+      total: convertData.length,
+      success,
+      fail,
+      successList,
+      failList,
+      duplicateInfo: duplicateInfo.length > 0 ? duplicateInfo : undefined,
+      message: `Imported ${success}/${convertData.length} orders successfully${
+        duplicateInfo.length > 0 ? `, merged ${duplicateInfo.reduce((sum, d) => sum + d.saved, 0)} duplicate products` : ''
+      }`
     };
   }
 

@@ -91,8 +91,13 @@ export declare class DonhangController {
         message: string;
     }>;
     ImportDonhang(data: any): Promise<{
+        total: any;
         success: number;
         fail: number;
+        successList: any[];
+        failList: any[];
+        duplicateInfo: any[] | undefined;
+        message: string;
     }>;
     search(params: any): Promise<{
         data: {

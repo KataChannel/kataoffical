@@ -704,3 +704,105 @@
         </button>
     </mat-dialog-actions>
 </ng-template>
+
+<!-- ✅ Dialog hiển thị thông tin gộp sản phẩm trùng -->
+<ng-template #DuplicateMergeDialog>
+    <div mat-dialog-title class="flex items-center space-x-2 bg-blue-50 p-4 rounded-t-lg">
+        <mat-icon class="text-blue-600">merge_type</mat-icon>
+        <span class="font-semibold text-xl text-blue-800">Đã gộp sản phẩm trùng lặp</span>
+    </div>
+    
+    <mat-dialog-content class="mat-typography">
+        <div class="flex flex-col space-y-4 py-4 px-2">
+            <!-- Summary section -->
+            <div class="flex items-center space-x-3 p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
+                <mat-icon class="text-green-600 text-3xl">check_circle</mat-icon>
+                <div class="flex-1">
+                    <h4 class="font-bold text-green-800 text-lg">Gộp thành công!</h4>
+                    <p class="text-sm text-green-700 mt-1">
+                        Đã gộp <span class="font-bold text-lg">{{duplicateMergeData?.totalCount}}</span> sản phẩm trùng lặp 
+                        trong <span class="font-bold">{{duplicateMergeData?.details?.length}}</span> đơn hàng
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Detailed merge information -->
+            <div class="space-y-3" *ngIf="duplicateMergeData?.details?.length">
+                <h4 class="font-semibold text-gray-800 flex items-center space-x-2">
+                    <mat-icon class="text-gray-600">inventory_2</mat-icon>
+                    <span>Chi tiết sản phẩm đã gộp:</span>
+                </h4>
+                
+                <div class="max-h-96 overflow-y-auto border rounded-lg bg-white">
+                    <div *ngFor="let detail of duplicateMergeData?.details; let orderIndex = index" 
+                         class="border-b last:border-b-0">
+                        <!-- Order header -->
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-3 sticky top-0 z-10">
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+                                    {{orderIndex + 1}}
+                                </span>
+                                <mat-icon class="text-blue-600">shopping_cart</mat-icon>
+                                <span class="font-bold text-blue-800">{{detail.orderName}}</span>
+                                <span class="ml-auto bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                    {{detail.duplicates.length}} sản phẩm trùng
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Product duplicates -->
+                        <div class="divide-y divide-gray-100">
+                            <div *ngFor="let dup of detail.duplicates; let i = index" 
+                                 class="p-3 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                                            <mat-icon class="text-orange-600">inventory</mat-icon>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="font-mono text-sm font-bold text-gray-800">{{dup.productCode}}</span>
+                                            <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
+                                                {{dup.count}} lần trùng
+                                            </span>
+                                        </div>
+                                        <div class="mt-1 flex items-center space-x-2 text-sm">
+                                            <div class="flex items-center space-x-1 text-gray-500">
+                                                <mat-icon class="text-xs">trending_flat</mat-icon>
+                                                <span>Trước:</span>
+                                                <span class="font-medium">{{dup.count}} dòng</span>
+                                            </div>
+                                            <mat-icon class="text-green-600 text-sm">arrow_forward</mat-icon>
+                                            <div class="flex items-center space-x-1 text-green-600">
+                                                <mat-icon class="text-xs">done</mat-icon>
+                                                <span>Sau:</span>
+                                                <span class="font-bold">1 dòng (SL: {{dup.mergedQty}})</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Info note -->
+            <div class="flex items-start space-x-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <mat-icon class="text-blue-600 mt-0.5 text-sm">info</mat-icon>
+                <p class="text-sm text-blue-800">
+                    <span class="font-semibold">Lưu ý:</span> Các sản phẩm trùng đã được tự động gộp theo mã sản phẩm, 
+                    số lượng được cộng dồn và ghi chú được kết hợp lại.
+                </p>
+            </div>
+        </div>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions class="border-t px-6 py-4 bg-gray-50" align="end">
+        <button mat-flat-button color="primary" mat-dialog-close class="px-6">
+            <mat-icon class="mr-1">check</mat-icon>
+            Đã hiểu, tiếp tục
+        </button>
+    </mat-dialog-actions>
+</ng-template>

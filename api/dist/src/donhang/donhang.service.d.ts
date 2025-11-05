@@ -474,8 +474,13 @@ export declare class DonhangService {
         message: string;
     }>;
     ImportDonhang(data: any): Promise<{
+        total: any;
         success: number;
         fail: number;
+        successList: any[];
+        failList: any[];
+        duplicateInfo: any[] | undefined;
+        message: string;
     }>;
     DonhangcodeToNumber(code: any): Promise<number>;
     DonhangnumberToCode(number: any): Promise<string>;

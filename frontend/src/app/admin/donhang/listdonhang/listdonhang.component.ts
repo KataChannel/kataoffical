@@ -107,6 +107,7 @@ export class ListDonhangComponent {
   @ViewChild('dialogImportExcelCu') dialogImportExcelCu!: TemplateRef<any>;
   @ViewChild('ConfirmDongboDialog') confirmDongboDialog!: TemplateRef<any>;
   @ViewChild('ConfirmDuplicateDialog') confirmDuplicateDialog!: TemplateRef<any>;
+  @ViewChild('DuplicateMergeDialog') duplicateMergeDialog!: TemplateRef<any>;
   filterValues: { [key: string]: string } = {};
   private _DonhangService: DonhangService = inject(DonhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
@@ -917,6 +918,7 @@ export class ListDonhangComponent {
   ListImportData: any[] = [];
   EditList: any[] = [];
   duplicateDialogData: any = null;
+  duplicateMergeData: { totalCount: number; details: any[] } | null = null;
 
   async ImporExcel(event: any) {
     this.isLoading.set(true);
@@ -1522,6 +1524,29 @@ export class ListDonhangComponent {
   }
 
   /**
+   * Show duplicate merge dialog with detailed information
+   */
+  async showDuplicateMergeDialog(totalCount: number, details: any[]): Promise<void> {
+    return new Promise((resolve) => {
+      this.duplicateMergeData = { totalCount, details };
+      
+      const dialogRef = this.dialog.open(this.duplicateMergeDialog, {
+        hasBackdrop: true,
+        disableClose: false,
+        maxWidth: '95vw',
+        maxHeight: '95vh',
+        width: '80vw',
+        height: '95vh',
+      });
+      
+      dialogRef.afterClosed().subscribe(() => {
+        this.duplicateMergeData = null;
+        resolve();
+      });
+    });
+  }
+
+  /**
    * Toggle expansion for all orders
    */
   toggleAllOrdersExpansion(): void {
@@ -1728,21 +1753,166 @@ export class ListDonhangComponent {
    * Import confirmed orders
    */
   async ImportConfirmedDonhang(): Promise<void> {
-    const confirmedOrders = this.ListImportData.filter(
-      (_, index) => this.statusDetails[index]?.configOptions?.confirmed
-    );
+    this.isLoading.set(true);
+    
+    try {
+      // ✅ BƯỚC 1: Match đúng giữa statusDetails và ListImportData
+      // Lọc các order đã được confirmed dựa trên tenkhongdau (tên file)
+      const confirmedDetails = this.statusDetails.filter(
+        (detail) => detail.status === 'Processed' && detail.configOptions?.confirmed
+      );
 
-    if (confirmedOrders.length === 0) {
-      this._snackBar.open('Không có đơn hàng nào được xác nhận để nhập', '', {
-        duration: 3000,
+      if (confirmedDetails.length === 0) {
+        this._snackBar.open('Không có đơn hàng nào được xác nhận để nhập', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning'],
+        });
+        this.isLoading.set(false);
+        return;
+      }
+
+      // Match với ListImportData dựa trên tenkh (tên khách hàng không dấu)
+      const confirmedOrders = this.ListImportData.filter((order) =>
+        confirmedDetails.some((detail) => detail.tenkhongdau === order.tenkh)
+      );
+
+      console.log('📋 Confirmed orders matched:', {
+        confirmedDetailsCount: confirmedDetails.length,
+        confirmedOrdersCount: confirmedOrders.length,
+        confirmedOrders: confirmedOrders.map(o => ({ tenkh: o.tenkh, khachhangId: o.khachhangId }))
+      });
+
+      // ✅ BƯỚC 2: Gộp duplicate products trong TỪNG đơn hàng
+      let totalDuplicatesFound = 0;
+      const mergeDetails: Array<{
+        orderName: string;
+        duplicates: Array<{ productCode: string; originalQty: number; mergedQty: number; count: number }>;
+      }> = [];
+
+      const processedOrders = confirmedOrders.map((order) => {
+        if (!order.sanpham || !Array.isArray(order.sanpham)) {
+          return order;
+        }
+
+        // Group products by ItemCode
+        const productMap = new Map<string, { 
+          ItemCode: string; 
+          Quantity: number; 
+          Remark: string;
+          count: number; // Số lần xuất hiện
+          originalQuantities: number[]; // Lưu các số lượng gốc
+        }>();
+
+        order.sanpham.forEach((item: any) => {
+          const itemCode = item.ItemCode?.trim();
+          if (!itemCode) return;
+
+          if (productMap.has(itemCode)) {
+            const existing = productMap.get(itemCode)!;
+            existing.Quantity += Number(item.Quantity) || 0;
+            existing.count += 1;
+            existing.originalQuantities.push(Number(item.Quantity) || 0);
+            
+            // Merge remarks if different
+            if (item.Remark && !existing.Remark.includes(item.Remark)) {
+              existing.Remark = existing.Remark 
+                ? `${existing.Remark}; ${item.Remark}` 
+                : item.Remark;
+            }
+          } else {
+            productMap.set(itemCode, {
+              ItemCode: itemCode,
+              Quantity: Number(item.Quantity) || 0,
+              Remark: item.Remark || '',
+              count: 1,
+              originalQuantities: [Number(item.Quantity) || 0]
+            });
+          }
+        });
+
+        // Identify duplicates for this order
+        const orderDuplicates: Array<{ 
+          productCode: string; 
+          originalQty: number; 
+          mergedQty: number; 
+          count: number;
+        }> = [];
+
+        productMap.forEach((value, key) => {
+          if (value.count > 1) {
+            totalDuplicatesFound += (value.count - 1);
+            orderDuplicates.push({
+              productCode: key,
+              originalQty: value.originalQuantities.reduce((a, b) => a + b, 0) / value.count, // Average
+              mergedQty: value.Quantity,
+              count: value.count
+            });
+          }
+        });
+
+        if (orderDuplicates.length > 0) {
+          mergeDetails.push({
+            orderName: order.tenfile || order.tenkh,
+            duplicates: orderDuplicates
+          });
+        }
+
+        // Convert Map back to array (deduplicated products)
+        const mergedProducts = Array.from(productMap.values()).map(item => ({
+          ItemCode: item.ItemCode,
+          Quantity: item.Quantity,
+          Remark: item.Remark
+        }));
+
+        console.log(`🔄 Order "${order.tenkh}": ${order.sanpham.length} products → ${mergedProducts.length} products (removed ${order.sanpham.length - mergedProducts.length} duplicates)`);
+
+        return {
+          ...order,
+          sanpham: mergedProducts
+        };
+      });
+
+      // ✅ BƯỚC 3: Hiển thị thông báo chi tiết về sản phẩm trùng
+      if (totalDuplicatesFound > 0) {
+        // Prepare detailed message for console
+        let detailMessage = `🔄 Đã gộp ${totalDuplicatesFound} sản phẩm trùng lặp:\n\n`;
+        
+        mergeDetails.forEach((detail, index) => {
+          detailMessage += `📦 ${detail.orderName}:\n`;
+          detail.duplicates.forEach(dup => {
+            detailMessage += `   • ${dup.productCode}: ${dup.count} lần → Tổng SL: ${dup.mergedQty}\n`;
+          });
+          if (index < mergeDetails.length - 1) {
+            detailMessage += '\n';
+          }
+        });
+
+        console.log(detailMessage);
+
+        // ✅ Show detailed dialog to user
+        this.isLoading.set(false); // Tạm dừng loading để hiển thị dialog
+        await this.showDuplicateMergeDialog(totalDuplicatesFound, mergeDetails);
+        this.isLoading.set(true); // Tiếp tục loading
+      } else {
+        console.log('✅ Không có sản phẩm trùng lặp');
+      }
+
+      // ✅ BƯỚC 4: Import các đơn hàng đã được gộp duplicate
+      await this.DoImportKhachhangCu(processedOrders);
+
+    } catch (error: any) {
+      console.error('Error importing confirmed orders:', error);
+      this._snackBar.open(`Lỗi khi nhập đơn hàng: ${error.message}`, '', {
+        duration: 5000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['snackbar-warning'],
+        panelClass: ['snackbar-error'],
       });
-      return;
+    } finally {
+      this.isLoading.set(false);
     }
-
-    await this.DoImportKhachhangCu(confirmedOrders);
   }
 
   @Debounce(100)

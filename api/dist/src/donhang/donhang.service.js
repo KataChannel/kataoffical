@@ -1373,6 +1373,7 @@ let DonhangService = class DonhangService {
     }
     async ImportDonhang(data) {
         const acc = {};
+        const productTracker = {};
         for (const curr of data) {
             if (!acc[curr.makh]) {
                 const khachhang = await this.prisma.khachhang.findFirst({
@@ -1390,28 +1391,66 @@ let DonhangService = class DonhangService {
                         makh: curr.makh,
                     },
                 };
+                productTracker[curr.makh] = new Map();
             }
             const sanphamRecord = await this.prisma.sanpham.findFirst({
                 where: { masp: curr.masp },
             });
-            acc[curr.makh].sanpham.push({
-                masp: curr.masp,
-                id: sanphamRecord?.id,
-                sldat: Number(curr.sldat),
-                slgiao: Number(curr.slgiao),
-                slnhan: Number(curr.slnhan),
-                ghichu: curr.ghichu,
-            });
+            const tracker = productTracker[curr.makh];
+            const existingProduct = tracker.get(curr.masp);
+            if (existingProduct) {
+                console.log(`⚠️ [IMPORT] Duplicate product ${curr.masp} for customer ${curr.makh} - merging quantities`);
+                existingProduct.sldat = Number(existingProduct.sldat) + Number(curr.sldat);
+                existingProduct.slgiao = Number(existingProduct.slgiao) + Number(curr.slgiao);
+                existingProduct.slnhan = Number(existingProduct.slnhan) + Number(curr.slnhan);
+                if (curr.ghichu && curr.ghichu !== existingProduct.ghichu) {
+                    existingProduct.ghichu = existingProduct.ghichu
+                        ? `${existingProduct.ghichu}; ${curr.ghichu}`
+                        : curr.ghichu;
+                }
+            }
+            else {
+                const productData = {
+                    masp: curr.masp,
+                    id: sanphamRecord?.id,
+                    sldat: Number(curr.sldat),
+                    slgiao: Number(curr.slgiao),
+                    slnhan: Number(curr.slnhan),
+                    ghichu: curr.ghichu,
+                };
+                tracker.set(curr.masp, productData);
+                acc[curr.makh].sanpham.push(productData);
+            }
         }
         const convertData = Object.values(acc);
         let success = 0;
         let fail = 0;
+        const successList = [];
+        const failList = [];
+        const duplicateInfo = [];
         for (const element of convertData) {
             try {
-                await this.create(element);
+                const result = await this.create(element);
                 success += 1;
+                successList.push({
+                    makh: element.makh,
+                    name: element.name,
+                    madonhang: result.madonhang,
+                    totalProducts: element.sanpham.length,
+                    ngaygiao: element.ngaygiao
+                });
+                const mergedProducts = element.sanpham.filter((sp) => sp.sldat > 0 || sp.slgiao > 0 || sp.slnhan > 0);
+                if (mergedProducts.length < data.filter((d) => d.makh === element.makh).length) {
+                    duplicateInfo.push({
+                        makh: element.makh,
+                        originalCount: data.filter((d) => d.makh === element.makh).length,
+                        mergedCount: mergedProducts.length,
+                        saved: data.filter((d) => d.makh === element.makh).length - mergedProducts.length
+                    });
+                }
             }
             catch (error) {
+                console.error(`❌ [IMPORT] Failed to import order for ${element.makh}:`, error.message);
                 await this.prisma.importHistory.create({
                     data: {
                         codeId: element.madonhang,
@@ -1427,11 +1466,27 @@ let DonhangService = class DonhangService {
                     },
                 });
                 fail += 1;
+                failList.push({
+                    makh: element.makh,
+                    name: element.name,
+                    error: error.message
+                });
             }
         }
-        return {
+        console.log('✅ [IMPORT] Import completed:', {
+            total: convertData.length,
             success,
             fail,
+            duplicatesDetected: duplicateInfo.length
+        });
+        return {
+            total: convertData.length,
+            success,
+            fail,
+            successList,
+            failList,
+            duplicateInfo: duplicateInfo.length > 0 ? duplicateInfo : undefined,
+            message: `Imported ${success}/${convertData.length} orders successfully${duplicateInfo.length > 0 ? `, merged ${duplicateInfo.reduce((sum, d) => sum + d.saved, 0)} duplicate products` : ''}`
         };
     }
     async DonhangcodeToNumber(code) {
