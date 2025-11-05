@@ -82,58 +82,124 @@ let AuditService = class AuditService {
     async getAuditLogs(param) {
         const { page = 1, pageSize = 50, isOne, ...where } = param;
         const skip = (page - 1) * pageSize;
-        const whereClause = {};
+        const baseWhere = {};
         if (where.id)
-            whereClause.id = where.id;
+            baseWhere.id = where.id;
         if (where.entityName) {
-            whereClause.entityName = { contains: where.entityName, mode: 'insensitive' };
+            baseWhere.entityName = { contains: where.entityName, mode: 'insensitive' };
         }
         if (where.entityId) {
-            whereClause.entityId = { contains: where.entityId, mode: 'insensitive' };
+            baseWhere.entityId = { contains: where.entityId, mode: 'insensitive' };
         }
         if (where.userId) {
-            whereClause.userId = { contains: where.userId, mode: 'insensitive' };
+            baseWhere.userId = { contains: where.userId, mode: 'insensitive' };
         }
         if (where.action) {
-            whereClause.action = { contains: where.action, mode: 'insensitive' };
+            baseWhere.action = { contains: where.action, mode: 'insensitive' };
         }
         if (where.status) {
-            whereClause.status = { contains: where.status, mode: 'insensitive' };
+            baseWhere.status = { contains: where.status, mode: 'insensitive' };
         }
         const dateFrom = where.createdAtFrom || where.startDate;
         const dateTo = where.createdAtTo || where.endDate;
         if (dateFrom || dateTo) {
-            whereClause.createdAt = {};
+            baseWhere.createdAt = {};
             if (dateFrom) {
                 const fromDate = new Date(dateFrom);
                 fromDate.setHours(0, 0, 0, 0);
-                whereClause.createdAt.gte = fromDate;
+                baseWhere.createdAt.gte = fromDate;
             }
             if (dateTo) {
                 const toDate = new Date(dateTo);
                 toDate.setHours(23, 59, 59, 999);
-                whereClause.createdAt.lte = toDate;
+                baseWhere.createdAt.lte = toDate;
             }
         }
         if (where.searchValue) {
-            whereClause.OR = [
-                {
-                    oldValues: {
-                        path: [],
-                        string_contains: where.searchValue
+            const sqlConditions = [];
+            const sqlParams = [];
+            let paramIndex = 1;
+            if (baseWhere.entityName) {
+                sqlConditions.push(`"entityName" ILIKE $${paramIndex}`);
+                sqlParams.push(`%${where.entityName}%`);
+                paramIndex++;
+            }
+            if (baseWhere.entityId) {
+                sqlConditions.push(`"entityId" ILIKE $${paramIndex}`);
+                sqlParams.push(`%${where.entityId}%`);
+                paramIndex++;
+            }
+            if (baseWhere.userId) {
+                sqlConditions.push(`"userId" ILIKE $${paramIndex}`);
+                sqlParams.push(`%${where.userId}%`);
+                paramIndex++;
+            }
+            if (baseWhere.action) {
+                sqlConditions.push(`action::text ILIKE $${paramIndex}`);
+                sqlParams.push(`%${where.action}%`);
+                paramIndex++;
+            }
+            if (baseWhere.status) {
+                sqlConditions.push(`status ILIKE $${paramIndex}`);
+                sqlParams.push(`%${where.status}%`);
+                paramIndex++;
+            }
+            if (baseWhere.createdAt?.gte) {
+                sqlConditions.push(`"createdAt" >= $${paramIndex}`);
+                sqlParams.push(baseWhere.createdAt.gte);
+                paramIndex++;
+            }
+            if (baseWhere.createdAt?.lte) {
+                sqlConditions.push(`"createdAt" <= $${paramIndex}`);
+                sqlParams.push(baseWhere.createdAt.lte);
+                paramIndex++;
+            }
+            sqlConditions.push(`("oldValues"::text ILIKE $${paramIndex} OR "newValues"::text ILIKE $${paramIndex + 1})`);
+            sqlParams.push(`%${where.searchValue}%`);
+            sqlParams.push(`%${where.searchValue}%`);
+            paramIndex += 2;
+            const whereClause = sqlConditions.length > 0 ? `WHERE ${sqlConditions.join(' AND ')}` : '';
+            if (isOne) {
+                const result = await this.prisma.$queryRawUnsafe(`SELECT * FROM "AuditLog" ${whereClause} ORDER BY "createdAt" DESC LIMIT 1`, ...sqlParams);
+                if (result.length > 0) {
+                    const log = result[0];
+                    if (log.userId) {
+                        const user = await this.prisma.user.findUnique({
+                            where: { id: log.userId },
+                            select: { email: true, SDT: true }
+                        });
+                        log.user = user;
                     }
-                },
-                {
-                    newValues: {
-                        path: [],
-                        string_contains: where.searchValue
-                    }
+                    return log;
                 }
-            ];
+                return null;
+            }
+            const countResult = await this.prisma.$queryRawUnsafe(`SELECT COUNT(*)::int as count FROM "AuditLog" ${whereClause}`, ...sqlParams);
+            const total = countResult[0]?.count || 0;
+            sqlParams.push(pageSize);
+            sqlParams.push(skip);
+            const logs = await this.prisma.$queryRawUnsafe(`SELECT * FROM "AuditLog" ${whereClause} ORDER BY "createdAt" DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`, ...sqlParams);
+            const logsWithUsers = await Promise.all(logs.map(async (log) => {
+                if (log.userId) {
+                    const user = await this.prisma.user.findUnique({
+                        where: { id: log.userId },
+                        select: { email: true, SDT: true }
+                    });
+                    return { ...log, user };
+                }
+                return log;
+            }));
+            return {
+                data: logsWithUsers,
+                page,
+                pageSize,
+                total,
+                pageCount: Math.ceil(total / pageSize),
+            };
         }
         if (isOne) {
             const result = await this.prisma.auditLog.findFirst({
-                where: whereClause,
+                where: baseWhere,
                 include: {
                     user: { select: { email: true, SDT: true } },
                 },
@@ -142,7 +208,7 @@ let AuditService = class AuditService {
         }
         const [logs, total] = await Promise.all([
             this.prisma.auditLog.findMany({
-                where: whereClause,
+                where: baseWhere,
                 include: {
                     user: { select: { email: true, SDT: true } },
                 },
@@ -150,7 +216,7 @@ let AuditService = class AuditService {
                 take: pageSize,
                 orderBy: { createdAt: 'desc' },
             }),
-            this.prisma.auditLog.count({ where: whereClause }),
+            this.prisma.auditLog.count({ where: baseWhere }),
         ]);
         return {
             data: logs,

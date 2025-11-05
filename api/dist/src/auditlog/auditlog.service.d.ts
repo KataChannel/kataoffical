@@ -26,58 +26,6 @@ export declare class AuditService {
     logActivity(data: AuditLogData): Promise<void>;
     private processBatch;
     private processBatchPeriodically;
-    getAuditLogs(param: any): Promise<({
-        user: {
-            email: string | null;
-            SDT: string | null;
-        } | null;
-    } & {
-        id: string;
-        entityName: string | null;
-        entityId: string | null;
-        action: import(".prisma/client").$Enums.AuditAction;
-        userId: string | null;
-        userEmail: string | null;
-        oldValues: import("@prisma/client/runtime/library").JsonValue | null;
-        newValues: import("@prisma/client/runtime/library").JsonValue | null;
-        changedFields: string[];
-        ipAddress: string | null;
-        userAgent: string | null;
-        sessionId: string | null;
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
-        status: string;
-        errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
-    }) | {
-        data: ({
-            user: {
-                email: string | null;
-                SDT: string | null;
-            } | null;
-        } & {
-            id: string;
-            entityName: string | null;
-            entityId: string | null;
-            action: import(".prisma/client").$Enums.AuditAction;
-            userId: string | null;
-            userEmail: string | null;
-            oldValues: import("@prisma/client/runtime/library").JsonValue | null;
-            newValues: import("@prisma/client/runtime/library").JsonValue | null;
-            changedFields: string[];
-            ipAddress: string | null;
-            userAgent: string | null;
-            sessionId: string | null;
-            metadata: import("@prisma/client/runtime/library").JsonValue | null;
-            createdAt: Date;
-            updatedAt: Date;
-            status: string;
-            errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
-        })[];
-        page: any;
-        pageSize: any;
-        total: number;
-        pageCount: number;
-    } | null>;
+    getAuditLogs(param: any): Promise<any>;
     private getChangedFields;
 }

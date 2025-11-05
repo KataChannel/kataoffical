@@ -103,28 +103,30 @@ export class AuditService {
   async getAuditLogs(param: any) {
     const { page = 1, pageSize = 50, isOne, ...where } = param;
     const skip = (page - 1) * pageSize;
-    const whereClause: any = {};
     
-    if (where.id) whereClause.id = where.id;
+    // Build base where clause
+    const baseWhere: any = {};
+    
+    if (where.id) baseWhere.id = where.id;
     
     if (where.entityName) {
-      whereClause.entityName = { contains: where.entityName, mode: 'insensitive' };
+      baseWhere.entityName = { contains: where.entityName, mode: 'insensitive' };
     }
     
     if (where.entityId) {
-      whereClause.entityId = { contains: where.entityId, mode: 'insensitive' };
+      baseWhere.entityId = { contains: where.entityId, mode: 'insensitive' };
     }
     
     if (where.userId) {
-      whereClause.userId = { contains: where.userId, mode: 'insensitive' };
+      baseWhere.userId = { contains: where.userId, mode: 'insensitive' };
     }
     
     if (where.action) {
-      whereClause.action = { contains: where.action, mode: 'insensitive' };
+      baseWhere.action = { contains: where.action, mode: 'insensitive' };
     }
     
     if (where.status) {
-      whereClause.status = { contains: where.status, mode: 'insensitive' };
+      baseWhere.status = { contains: where.status, mode: 'insensitive' };
     }
     
     // Handle date range filtering - support both old and new parameter names
@@ -132,45 +134,143 @@ export class AuditService {
     const dateTo = where.createdAtTo || where.endDate;
     
     if (dateFrom || dateTo) {
-      whereClause.createdAt = {};
+      baseWhere.createdAt = {};
       
       if (dateFrom) {
         // Set to start of day (00:00:00)
         const fromDate = new Date(dateFrom);
         fromDate.setHours(0, 0, 0, 0);
-        whereClause.createdAt.gte = fromDate;
+        baseWhere.createdAt.gte = fromDate;
       }
       
       if (dateTo) {
         // Set to end of day (23:59:59.999)
         const toDate = new Date(dateTo);
         toDate.setHours(23, 59, 59, 999);
-        whereClause.createdAt.lte = toDate;
+        baseWhere.createdAt.lte = toDate;
       }
     }
 
-    // Search in oldValues or newValues JSON fields
-    // This uses PostgreSQL's JSON operators
+    // For JSON search, we need to use raw SQL due to Prisma limitations
     if (where.searchValue) {
-      whereClause.OR = [
-        {
-          oldValues: {
-            path: [],
-            string_contains: where.searchValue
+      // Build SQL conditions array
+      const sqlConditions: string[] = [];
+      const sqlParams: any[] = [];
+      let paramIndex = 1;
+
+      // Add all base where conditions
+      if (baseWhere.entityName) {
+        sqlConditions.push(`"entityName" ILIKE $${paramIndex}`);
+        sqlParams.push(`%${where.entityName}%`);
+        paramIndex++;
+      }
+      
+      if (baseWhere.entityId) {
+        sqlConditions.push(`"entityId" ILIKE $${paramIndex}`);
+        sqlParams.push(`%${where.entityId}%`);
+        paramIndex++;
+      }
+      
+      if (baseWhere.userId) {
+        sqlConditions.push(`"userId" ILIKE $${paramIndex}`);
+        sqlParams.push(`%${where.userId}%`);
+        paramIndex++;
+      }
+      
+      if (baseWhere.action) {
+        sqlConditions.push(`action::text ILIKE $${paramIndex}`);
+        sqlParams.push(`%${where.action}%`);
+        paramIndex++;
+      }
+      
+      if (baseWhere.status) {
+        sqlConditions.push(`status ILIKE $${paramIndex}`);
+        sqlParams.push(`%${where.status}%`);
+        paramIndex++;
+      }
+      
+      if (baseWhere.createdAt?.gte) {
+        sqlConditions.push(`"createdAt" >= $${paramIndex}`);
+        sqlParams.push(baseWhere.createdAt.gte);
+        paramIndex++;
+      }
+      
+      if (baseWhere.createdAt?.lte) {
+        sqlConditions.push(`"createdAt" <= $${paramIndex}`);
+        sqlParams.push(baseWhere.createdAt.lte);
+        paramIndex++;
+      }
+
+      // Add JSON search condition
+      sqlConditions.push(`("oldValues"::text ILIKE $${paramIndex} OR "newValues"::text ILIKE $${paramIndex + 1})`);
+      sqlParams.push(`%${where.searchValue}%`);
+      sqlParams.push(`%${where.searchValue}%`);
+      paramIndex += 2;
+
+      const whereClause = sqlConditions.length > 0 ? `WHERE ${sqlConditions.join(' AND ')}` : '';
+      
+      if (isOne) {
+        const result: any = await this.prisma.$queryRawUnsafe(
+          `SELECT * FROM "AuditLog" ${whereClause} ORDER BY "createdAt" DESC LIMIT 1`,
+          ...sqlParams
+        );
+        
+        if (result.length > 0) {
+          const log = result[0];
+          // Fetch user data separately
+          if (log.userId) {
+            const user = await this.prisma.user.findUnique({
+              where: { id: log.userId },
+              select: { email: true, SDT: true }
+            });
+            log.user = user;
           }
-        },
-        {
-          newValues: {
-            path: [],
-            string_contains: where.searchValue
-          }
+          return log;
         }
-      ];
+        return null;
+      }
+
+      // Get total count
+      const countResult: any = await this.prisma.$queryRawUnsafe(
+        `SELECT COUNT(*)::int as count FROM "AuditLog" ${whereClause}`,
+        ...sqlParams
+      );
+      const total = countResult[0]?.count || 0;
+
+      // Get paginated data
+      sqlParams.push(pageSize);
+      sqlParams.push(skip);
+      
+      const logs: any = await this.prisma.$queryRawUnsafe(
+        `SELECT * FROM "AuditLog" ${whereClause} ORDER BY "createdAt" DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
+        ...sqlParams
+      );
+
+      // Fetch user data for all logs
+      const logsWithUsers = await Promise.all(logs.map(async (log: any) => {
+        if (log.userId) {
+          const user = await this.prisma.user.findUnique({
+            where: { id: log.userId },
+            select: { email: true, SDT: true }
+          });
+          return { ...log, user };
+        }
+        return log;
+      }));
+
+      return {
+        data: logsWithUsers,
+        page,
+        pageSize,
+        total,
+        pageCount: Math.ceil(total / pageSize),
+      };
     }
-    
+
+    // No JSON search - use normal Prisma query
     if (isOne) {
       const result = await this.prisma.auditLog.findFirst({
-        where: whereClause,
+        where: baseWhere,
         include: {
           user: { select: { email: true, SDT: true } },
         },
@@ -180,7 +280,7 @@ export class AuditService {
 
     const [logs, total] = await Promise.all([
       this.prisma.auditLog.findMany({
-        where: whereClause,
+        where: baseWhere,
         include: {
           user: { select: { email: true, SDT: true } },
         },
@@ -188,7 +288,7 @@ export class AuditService {
         take: pageSize,
         orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.auditLog.count({ where: whereClause }),
+      this.prisma.auditLog.count({ where: baseWhere }),
     ]);
 
     return {
