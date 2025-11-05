@@ -91,6 +91,7 @@ export class ListAuditlogComponent implements OnInit {
   // Search filters
   searchModule: string = '';
   searchAction: string = '';
+  searchValue: string = '';  // Search in oldValues/newValues
   searchDateFrom: string = '';
   searchDateTo: string = '';
   
@@ -141,6 +142,10 @@ export class ListAuditlogComponent implements OnInit {
     if (this.searchAction && this.searchAction.trim()) {
       this.param.action = this.searchAction.trim();
     }
+
+    if (this.searchValue && this.searchValue.trim()) {
+      this.param.searchValue = this.searchValue.trim();
+    }
     
     if (this.searchDateFrom) {
       this.param.createdAtFrom = this.searchDateFrom;
@@ -179,6 +184,7 @@ export class ListAuditlogComponent implements OnInit {
   async clearFilters() {
     this.searchModule = '';
     this.searchAction = '';
+    this.searchValue = '';
     this.searchDateFrom = '';
     this.searchDateTo = '';
     this.param = {};
@@ -566,6 +572,9 @@ export class ListAuditlogComponent implements OnInit {
     }
     if (this.searchAction) {
       filename += `_${this.searchAction}`;
+    }
+    if (this.searchValue) {
+      filename += `_${this.searchValue.substring(0, 20)}`;  // Limit to 20 chars for filename
     }
     if (this.searchDateFrom || this.searchDateTo) {
       const dateRange = `${this.searchDateFrom || 'start'}_${this.searchDateTo || 'end'}`;

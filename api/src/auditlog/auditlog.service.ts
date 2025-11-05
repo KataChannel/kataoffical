@@ -148,6 +148,25 @@ export class AuditService {
         whereClause.createdAt.lte = toDate;
       }
     }
+
+    // Search in oldValues or newValues JSON fields
+    // This uses PostgreSQL's JSON operators
+    if (where.searchValue) {
+      whereClause.OR = [
+        {
+          oldValues: {
+            path: [],
+            string_contains: where.searchValue
+          }
+        },
+        {
+          newValues: {
+            path: [],
+            string_contains: where.searchValue
+          }
+        }
+      ];
+    }
     
     if (isOne) {
       const result = await this.prisma.auditLog.findFirst({

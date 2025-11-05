@@ -115,6 +115,22 @@ let AuditService = class AuditService {
                 whereClause.createdAt.lte = toDate;
             }
         }
+        if (where.searchValue) {
+            whereClause.OR = [
+                {
+                    oldValues: {
+                        path: [],
+                        string_contains: where.searchValue
+                    }
+                },
+                {
+                    newValues: {
+                        path: [],
+                        string_contains: where.searchValue
+                    }
+                }
+            ];
+        }
         if (isOne) {
             const result = await this.prisma.auditLog.findFirst({
                 where: whereClause,
