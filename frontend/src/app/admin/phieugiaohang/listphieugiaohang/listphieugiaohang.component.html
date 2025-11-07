@@ -108,7 +108,7 @@
             
             <!-- Nút Tìm Kiếm -->
             <button 
-                mat-flat-button 
+                mat-icon-button 
                 color="primary" 
                 (click)="searchData()"
                 [disabled]="isLoading()"
@@ -120,7 +120,6 @@
                 @else {
                     <mat-icon>search</mat-icon>
                 }
-                <span class="ml-2">Tìm Kiếm</span>
             </button>
         </div>
         

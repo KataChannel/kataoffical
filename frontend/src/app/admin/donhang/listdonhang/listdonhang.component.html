@@ -6,7 +6,7 @@
 
         <div
             class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
-            <div class="flex flex-row space-x-2 items-center">
+            <div class="flex flex-row flex-wrap space-x-2 items-center">
                 <div class="relative w-full">
                     <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
                         class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
@@ -50,9 +50,13 @@
                     <mat-icon>file_upload</mat-icon>
                 </button>
                 <input multiple class="hidden" (change)="ImporExcel($event)" type="file" #uploadfile>
-                <span (click)="ToggleAll()" class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
+                <div class="flex flex-row space-x-2 items-center whitespace-nowrap">
+                <span (click)="ToggleAll()" class="p-2 rounded-lg bg-slate-200">
                     {{Listdonhang().length}} Đơn Hàng
                 </span>
+                    <span class="p-2 rounded-lg text-white bg-blue-600">Đã Giao {{countDagiao()}}</span>
+                    <span class="p-2 rounded-lg text-white bg-yellow-600">Chưa Giao {{countChuagiao()}}</span>
+                </div>
                 <button mat-icon-button color="primary" 
                         (click)="DongboVat()" 
                         [disabled]="isLoading() || Listdonhang().length === 0"
@@ -93,10 +97,7 @@
                         Lẻ
                     </mat-button-toggle>
             </mat-button-toggle-group>
-             <div class="flex flex-row space-x-2 items-center">
-                    <span class="p-2 rounded-lg text-white bg-blue-600">Đã Giao {{countDagiao()}}</span>
-                    <span class="p-2 rounded-lg text-white bg-yellow-600">Chưa Giao {{countChuagiao()}}</span>
-                </div>
+
             <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
                 <mat-label>Bắt Đầu</mat-label>
                 <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau"
@@ -115,7 +116,7 @@
             
             <!-- Nút Tìm Kiếm -->
             <button 
-                mat-flat-button 
+                mat-icon-button 
                 color="primary" 
                 (click)="searchData()"
                 [disabled]="isLoading()"
@@ -127,7 +128,6 @@
                 @else {
                     <mat-icon>search</mat-icon>
                 }
-                <span class="ml-2">Tìm Kiếm</span>
             </button>
         </div>
         <!-- <div class="flex flex-row space-x-2">

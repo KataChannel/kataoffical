@@ -73,20 +73,7 @@
             </mat-form-field>
             <button mat-icon-button color="warn" (click)="isSearch=!isSearch"><mat-icon>cancel</mat-icon></button>
         </div>
-        <div class="w-full grid lg:grid-cols-4 grid-cols-2 gap-2 items-center">
-            <!-- <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Loại Đơn</mat-label>
-              <mat-select [(ngModel)]="SearchParams.Type" [ngModelOptions]="{standalone: true}"
-                (selectionChange)="onSelectionChange($event)">
-                @for (item of [
-                {id:1,Title:'Đơn Sỉ',value:'donsi'},
-                {id:2,Title:'Đơn Lẻ',value:'donle'},
-                ]; track item) {
-                <mat-option [value]="item.value">{{item.Title}}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field> -->
-              
+        <div class="flex flex-row flex-wrap gap-2 items-center">             
             <mat-button-toggle-group 
                     [(ngModel)]="SearchParams.Type" 
                     [ngModelOptions]="{standalone: true}"
@@ -127,14 +114,14 @@
             
             <!-- Nút Tìm Kiếm -->
             <button 
-                mat-flat-button 
+                mat-icon-button 
                 color="primary" 
                 (click)="searchData()"
                 class="!h-12"
                 matTooltip="Nhấn để tải dữ liệu phiếu chia hàng">
                 <mat-icon>search</mat-icon>
-                <span class="ml-2">Tìm Kiếm</span>
             </button>
+            
           </div>
           <div class="flex flex-row space-x-2">
             <!-- <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button> -->
@@ -250,12 +237,12 @@
                         <div class="max-w-40 line-clamp-4">
                             @if (editingNhanvienId === row.id) {
                                 <!-- Edit mode -->
-                                <div class="flex items-center gap-1">
+                                <div class="grid grid-cols-2 items-center gap-1">
                                     <input 
                                         type="text" 
                                         [(ngModel)]="tempNhanvienValue"
                                         placeholder="Nhập tên nhân viên"
-                                        class="flex-1 px-2 py-1 text-sm border border-blue-500 rounded focus:border-blue-600 focus:outline-none"
+                                        class="col-span-2 flex-1 px-2 py-1 text-sm border border-blue-500 rounded focus:border-blue-600 focus:outline-none"
                                     />
                                     <button 
                                         mat-icon-button 
@@ -282,21 +269,6 @@
                                 </span>
                             }
                         </div>
-                        }
-                        @case ('trangthaiin') {
-                        <span class="max-w-40 line-clamp-4">
-                            <span 
-                                [ngClass]="{
-                                    'bg-gray-200 text-gray-700': !getTrangthaiIn(row),
-                                    'bg-green-500 text-white': getTrangthaiIn(row)
-                                }"
-                                class="inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full font-medium">
-                                {{ getTrangthaiInLabel(row) }}
-                                @if (getTrangthaiIn(row)) {
-                                    <span class="text-xs opacity-90">({{ row.printCount }})</span>
-                                }
-                            </span>
-                        </span>
                         }
                         @case ('isActive') {
                         <span class="max-w-40 line-clamp-4">
@@ -336,7 +308,13 @@
                 </ng-container>
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="toggleDonhang(row)" class="hover:bg-slate-100 {{CheckItemInDonhang(row)?'!bg-slate-200':''}}"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="toggleDonhang(row)" 
+                    [ngClass]="{
+                        'hover:bg-slate-100': true,
+                        '!bg-blue-100': getTrangthaiIn(row) && !CheckItemInDonhang(row),
+                        '!bg-red-100': !getTrangthaiIn(row) && !CheckItemInDonhang(row),
+                        '!bg-slate-200': CheckItemInDonhang(row)
+                    }"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
