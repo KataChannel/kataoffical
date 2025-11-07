@@ -51,6 +51,7 @@ export declare class DonhangService {
             giodi: string | null;
             giove: string | null;
             kynhan: string | null;
+            nhanvienchiahang: string | null;
         }[];
         total: number;
         pageNumber: any;
@@ -122,6 +123,7 @@ export declare class DonhangService {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        nhanvienchiahang: string | null;
     }[]>;
     phieugiao(params: any): Promise<{
         loadpoint: number;
@@ -189,6 +191,7 @@ export declare class DonhangService {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
+        nhanvienchiahang: string | null;
     }>;
     findAll(): Promise<{
         sanpham: any[];
@@ -270,6 +273,7 @@ export declare class DonhangService {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
+        nhanvienchiahang: string | null;
     }[]>;
     searchfield(searchParams: Record<string, any>): Promise<{
         sanpham: {
@@ -326,6 +330,7 @@ export declare class DonhangService {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
+        nhanvienchiahang: string | null;
     }>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -435,6 +440,7 @@ export declare class DonhangService {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
+        nhanvienchiahang: string | null;
     }>;
     ImportDonhangOld(dulieu: any): Promise<{
         status: string;
@@ -529,6 +535,7 @@ export declare class DonhangService {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
+        nhanvienchiahang: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -555,6 +562,7 @@ export declare class DonhangService {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
+        nhanvienchiahang: string | null;
     }>;
     danhan(id: string, data: any): Promise<{
         id: string;
@@ -581,6 +589,7 @@ export declare class DonhangService {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
+        nhanvienchiahang: string | null;
     }>;
     dagiao(id: string, data: any): Promise<{
         id: string;
@@ -607,6 +616,7 @@ export declare class DonhangService {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
+        nhanvienchiahang: string | null;
     }>;
     updatePhieugiao(id: string, data: any): Promise<{
         sanpham: {
@@ -652,6 +662,7 @@ export declare class DonhangService {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
+        nhanvienchiahang: string | null;
     }>;
     updateBulk(ids: string[], status: string): Promise<{
         success: number;
@@ -756,6 +767,7 @@ export declare class DonhangService {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
+        nhanvienchiahang: string | null;
     }[]>;
     findOrdersByStatus(params: {
         sanphamId: string;

@@ -820,12 +820,23 @@ export class ListPhieuchiahangComponent {
    */
   async confirmEditNhanvien(row: any): Promise<void> {
     try {
-      row.nhanvienchiahang = this.tempNhanvienValue;
-      
-      await this._DonhangService.updateDonhang({
-        id: row.id,
-        nhanvienchiahang: this.tempNhanvienValue
+      // ✅ Fetch full order data first to avoid sending partial/invalid data
+      const fullOrder = await this._DonhangService.SearchField({
+        madonhang: row.madonhang
       });
+      
+      if (!fullOrder) {
+        throw new Error('Không tìm thấy đơn hàng');
+      }
+      
+      // ✅ Update only the nhanvienchiahang field on the full order object
+      fullOrder.nhanvienchiahang = this.tempNhanvienValue;
+      
+      // ✅ Send the complete order object to avoid undefined/invalid fields
+      await this._DonhangService.updateDonhang(fullOrder);
+      
+      // Update local row
+      row.nhanvienchiahang = this.tempNhanvienValue;
       
       this.editingNhanvienId = null;
       this.tempNhanvienValue = '';

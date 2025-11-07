@@ -1734,7 +1734,7 @@ export class ListDonhangComponent {
     const orders = this.Listdonhang();
     if (!Array.isArray(orders)) return 0;
     return orders.filter((item: any) => 
-      ['dagiao', 'danhan', 'hoanthanh'].includes(item.status)
+      ['danhan', 'hoanthanh'].includes(item.status)
     ).length;
   }
   
@@ -1746,7 +1746,7 @@ export class ListDonhangComponent {
     const orders = this.Listdonhang();
     if (!Array.isArray(orders)) return 0;
     return orders.filter((item: any) => 
-      ['dadat', 'huy'].includes(item.status)
+      ['dadat','dagiao', 'huy'].includes(item.status)
     ).length;
   }
   

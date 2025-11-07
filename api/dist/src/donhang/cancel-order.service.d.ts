@@ -113,6 +113,7 @@ export declare class CancelOrderService {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
+        nhanvienchiahang: string | null;
     })[] | ({
         sanpham: ({
             sanpham: {

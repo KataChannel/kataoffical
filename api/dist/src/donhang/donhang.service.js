@@ -2267,7 +2267,7 @@ let DonhangService = class DonhangService {
                     data: {
                         title: data.title,
                         type: data.type,
-                        ngaygiao: new Date(data.ngaygiao),
+                        ngaygiao: data.ngaygiao ? new Date(data.ngaygiao) : undefined,
                         khachhangId: data.khachhangId,
                         banggiaId: data.banggiaId,
                         vat: data.vat ? parseFloat(data.vat.toString()) : undefined,
@@ -2275,6 +2275,7 @@ let DonhangService = class DonhangService {
                         order: data.order,
                         ghichu: data.ghichu,
                         status: data.status,
+                        nhanvienchiahang: data.nhanvienchiahang,
                     },
                     include: {
                         sanpham: true,

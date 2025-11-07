@@ -100,6 +100,7 @@ export declare class PhieuGiaoHangOptimizedService {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
+        nhanvienchiahang: string | null;
     }>;
     updateBulkOptimized(ids: string[], status: string): Promise<{
         success: number;

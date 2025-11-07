@@ -268,6 +268,7 @@ model Donhang {
   giodi       String?
   giove       String?
   kynhan      String?
+  nhanvienchiahang String?
   banggia     Banggia?         @relation(fields: [banggiaId], references: [id])
   khachhang   Khachhang?       @relation(fields: [khachhangId], references: [id])
   sanpham     Donhangsanpham[]
