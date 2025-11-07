@@ -1738,7 +1738,12 @@ export class ListDonhangComponent {
     // This would need to be implemented based on your pricing calculation logic
     return 0;
   }
-
+  countDagiao(): number {
+    return this.EditList.filter((item) => item.status === 'dagiao' || item.status === 'hoanthanh').length;
+  }
+  countChuagiao(): number {
+    return this.EditList.filter((item) => item.status !== 'dagiao' || item.status !== 'hoanthanh').length;
+  }
   /**
    * Format currency
    */
