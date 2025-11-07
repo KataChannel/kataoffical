@@ -131,18 +131,34 @@ export class ListPhieuchuyenComponent {
       this.dataSource.paginator.firstPage();
     }
   }
-  onDateChange(event: any): void {
-    this.ngOnInit()
+  
+  /**
+   * Method để tìm kiếm - chỉ load data khi user nhấn nút
+   */
+  async searchData(): Promise<void> {
+    await this.loadData();
   }
+  
+  onDateChange(event: any): void {
+    // Chỉ update SearchParams, không load data tự động
+    // User cần nhấn nút Tìm Kiếm để load data
+  }
+  
   async ngOnInit(): Promise<void> {    
+    // ⚠️ KHÔNG GỌI LOAD DATA TỰ ĐỘNG - Chỉ init UI
+    // Data chỉ được load khi user nhấn nút Tìm Kiếm
     this.updateDisplayData();
+    this.initializeColumns();
+    this.setupDrawer();
+  }
+  
+  async loadData(): Promise<void> {
     await this._PhieuchuyenService.Phieuchuyen(this.SearchParams);
     this.dataSource = new MatTableDataSource(this.Listphieuchuyen());
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    this.initializeColumns();
-    this.setupDrawer();
   }
+  
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
       key,

@@ -173,15 +173,27 @@ export class ListPhieuchiahangComponent {
     };
 
     timeFrames[event.value]?.();
-    this.ngOnInit();
+    // Chỉ update SearchParams, không load data tự động
+    // User cần nhấn nút Tìm Kiếm để load data
   }
+  
   onDateChange(event: any): void {
-    this.ngOnInit();
+    // Chỉ update SearchParams, không load data tự động
+    // User cần nhấn nút Tìm Kiếm để load data
   }
+  
   async onTypeChange(value: string): Promise<void> {
     this.SearchParams.Type = value;
     this.SearchParams.pageNumber = 1; // Reset to first page
-    await this.ngOnInit();
+    // Chỉ update SearchParams, không load data tự động
+    // User cần nhấn nút Tìm Kiếm để load data
+  }
+  
+  /**
+   * Method để tìm kiếm - chỉ load data khi user nhấn nút
+   */
+  async searchData(): Promise<void> {
+    await this.loadData();
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -207,22 +219,32 @@ export class ListPhieuchiahangComponent {
     }
   }
   async ngOnInit(): Promise<void> {
-    await this._DonhangService.searchDonhang(this.SearchParams);
-    this.CountItem = this.Listdonhang().length;
+    // ⚠️ KHÔNG GỌI LOAD DATA TỰ ĐỘNG - Chỉ init UI
+    // Data chỉ được load khi user nhấn nút Tìm Kiếm
     this.initializeColumns();
     this.setupDrawer();
+    
+    // Setup paginator
+    if (this.paginator) {
+      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+      this.paginator._intl.previousPageLabel = 'Về Trước';
+      this.paginator._intl.firstPageLabel = 'Trang Đầu';
+      this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    }
+  }
+  
+  async loadData(): Promise<void> {
+    await this._DonhangService.searchDonhang(this.SearchParams);
+    this.CountItem = this.Listdonhang().length;
     this.dataSource = new MatTableDataSource(this.Listdonhang());
     console.log(this.dataSource.data);
 
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.createFilter();
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
+  
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
       key,

@@ -116,17 +116,34 @@ export class ListPhieukhoComponent {
   applyFilter() {
     this.dataSource().filter = JSON.stringify(this.filterValues);
   }
+  /**
+   * Method để tìm kiếm - chỉ load data khi user nhấn nút
+   */
+  async searchData(): Promise<void> {
+    await this.loadData();
+  }
+  
   async ngOnInit(): Promise<void> {    
-    await this._PhieukhoService.getAllPhieukho();
-    this.CountItem = this.Listphieukho().length;
+    // ⚠️ KHÔNG GỌI LOAD DATA TỰ ĐỘNG - Chỉ init UI
+    // Data chỉ được load khi user nhấn nút Tìm Kiếm
     this.initializeColumns();
     this.setupDrawer();
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    
+    // Setup paginator
+    if (this.paginator) {
+      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+      this.paginator._intl.previousPageLabel = 'Về Trước';
+      this.paginator._intl.firstPageLabel = 'Trang Đầu';
+      this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    }
   }
+  
+  async loadData(): Promise<void> {
+    await this._PhieukhoService.getAllPhieukho();
+    this.CountItem = this.Listphieukho().length;
+  }
+  
   async refresh() {
    await this._PhieukhoService.getAllPhieukho();
   }

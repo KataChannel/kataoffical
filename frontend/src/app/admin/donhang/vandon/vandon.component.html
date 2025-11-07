@@ -107,8 +107,41 @@
             <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
             <mat-datepicker #pickerKetthuc></mat-datepicker>
           </mat-form-field>
+          
+          <!-- Nút Tìm Kiếm -->
+          <button 
+              mat-flat-button 
+              color="primary" 
+              (click)="searchData()"
+              [disabled]="loading()"
+              class="!h-12"
+              matTooltip="Nhấn để tải dữ liệu vận đơn">
+              @if (loading()) {
+                  <mat-spinner diameter="20"></mat-spinner>
+              }
+              @else {
+                  <mat-icon>search</mat-icon>
+              }
+              <span class="ml-2">Tìm Kiếm</span>
+          </button>
         </div>
       <div class="w-full overflow-auto relative">
+          <!-- Empty State - Chưa tìm kiếm -->
+          @if (!loading() && Listvandon.length === 0) {
+          <div class="flex flex-col items-center justify-center p-12 bg-gray-50 rounded-lg">
+              <mat-icon class="!text-6xl !w-24 !h-24 text-gray-400 mb-4">search</mat-icon>
+              <h3 class="text-xl font-semibold text-gray-700 mb-2">Chưa có dữ liệu</h3>
+              <p class="text-gray-500 text-center mb-4">
+                  Vui lòng chọn thời gian tìm kiếm<br>
+                  và nhấn nút <strong class="text-blue-600">Tìm Kiếm</strong> để tải dữ liệu vận đơn
+              </p>
+              <button mat-flat-button color="primary" (click)="searchData()">
+                  <mat-icon>search</mat-icon>
+                  <span class="ml-2">Tìm Kiếm Ngay</span>
+              </button>
+          </div>
+          }
+          
           <!-- Loading Overlay -->
           <div *ngIf="loading()" class="absolute inset-0 bg-white bg-opacity-75 z-10 flex items-center justify-center">
             <div class="text-center">

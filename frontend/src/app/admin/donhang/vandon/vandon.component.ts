@@ -153,12 +153,22 @@ export class VandonComponent {
   get Listvandon() {
     return this._DonhangGraphqlService.ListVandon();
   }
+  
+  /**
+   * Method để tìm kiếm - chỉ load data khi user nhấn nút
+   */
+  async searchData(): Promise<void> {
+    await this.loadData();
+  }
+  
   onSelectionChange(event: MatSelectChange): void {
-    this.ngOnInit()
+    // Chỉ update SearchParams, không load data tự động
+    // User cần nhấn nút Tìm Kiếm để load data
   }
   
   onDateChange(event: any): void {
-    this.ngOnInit()
+    // Chỉ update SearchParams, không load data tự động
+    // User cần nhấn nút Tìm Kiếm để load data
   }
   
   createFilter(): (data: any, filter: string) => boolean {
@@ -184,11 +194,23 @@ export class VandonComponent {
   }
   
   async ngOnInit(): Promise<void> {    
+    // ⚠️ KHÔNG GỌI METHOD NÀY TỰ ĐỘNG - Chỉ init UI
+    // Data chỉ được load khi user nhấn nút Tìm Kiếm
+    this.initializeColumns();
+    this.setupDrawer();
+    
+    // Cấu hình paginator
+    if (this.paginator) {
+      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+      this.paginator._intl.previousPageLabel = 'Về Trước';
+      this.paginator._intl.firstPageLabel = 'Trang Đầu';
+      this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    }
+  }
+  
+  async loadData(): Promise<void> {
     try {
-      // Khởi tạo columns trước để tránh delay UI
-      this.initializeColumns();
-      this.setupDrawer();
-      
       // Dùng setTimeout để tránh blocking UI thread
       setTimeout(async () => {
         // Load dữ liệu vận đơn với GraphQL
@@ -204,13 +226,6 @@ export class VandonComponent {
           const dataSource = this.dataSource();
           dataSource.data = this.Listvandon;
           dataSource.paginator = this.paginator;
-          
-          // Cấu hình paginator
-          this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-          this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-          this.paginator._intl.previousPageLabel = 'Về Trước';
-          this.paginator._intl.firstPageLabel = 'Trang Đầu';
-          this.paginator._intl.lastPageLabel = 'Trang Cuối';
         });
       }, 0);
       
