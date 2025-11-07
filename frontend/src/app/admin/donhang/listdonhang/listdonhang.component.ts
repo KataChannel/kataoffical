@@ -1751,6 +1751,52 @@ export class ListDonhangComponent {
   }
   
   /**
+   * Filter by delivered status (danhan, hoanthanh)
+   */
+  filterDagiao(): void {
+    const orders = this.Listdonhang();
+    if (!Array.isArray(orders)) return;
+    
+    this.dataSource.data = orders.filter((item: any) => 
+      ['danhan', 'hoanthanh'].includes(item.status)
+    );
+    
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+  
+  /**
+   * Filter by undelivered status (dadat, dagiao, huy)
+   */
+  filterChuagiao(): void {
+    const orders = this.Listdonhang();
+    if (!Array.isArray(orders)) return;
+    
+    this.dataSource.data = orders.filter((item: any) => 
+      ['dadat', 'dagiao', 'huy'].includes(item.status)
+    );
+    
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+  
+  /**
+   * Reset filter to show all orders
+   */
+  resetStatusFilter(): void {
+    const orders = this.Listdonhang();
+    if (!Array.isArray(orders)) return;
+    
+    this.dataSource.data = orders;
+    
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+  
+  /**
    * Format currency
    */
   formatCurrency(amount: number): string {
