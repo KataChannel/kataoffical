@@ -30,7 +30,7 @@ let DonhangCronService = DonhangCronService_1 = class DonhangCronService {
             const ordersToUpdate = await this.prisma.donhang.findMany({
                 where: {
                     status: {
-                        in: ['dadat', 'dagiao']
+                        in: ['dagiao']
                     },
                     ngaygiao: {
                         gte: startOfDay,

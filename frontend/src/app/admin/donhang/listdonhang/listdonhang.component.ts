@@ -117,7 +117,7 @@ export class ListDonhangComponent {
   private _GraphqlService = inject(GraphqlService);
   private _router: Router = inject(Router);
   cancelOrderService = inject(CancelOrderService);
-  Listdonhang: any = signal<any>({});
+  Listdonhang = signal<any[]>([]);
   dataSource = new MatTableDataSource<any>([]);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   Trangthaidon: any = TrangThaiDon;
@@ -1738,12 +1738,29 @@ export class ListDonhangComponent {
     // This would need to be implemented based on your pricing calculation logic
     return 0;
   }
+  
+  /**
+   * Count delivered orders (dagiao, danhan, hoanthanh)
+   * Safely handles signal value and ensures array type
+   */
   countDagiao(): number {
-    return this.EditList.filter((item) => item.status === 'dagiao' || item.status === 'hoanthanh').length;
+    const orders = this.Listdonhang();
+    if (!Array.isArray(orders)) return 0;
+    return orders.filter((item: any) => 
+      ['dagiao', 'danhan', 'hoanthanh'].includes(item.status)
+    ).length;
   }
+  
+  /**
+   * Count undelivered orders (dadat)
+   * Safely handles signal value and ensures array type
+   */
   countChuagiao(): number {
-    return this.EditList.filter((item) => item.status !== 'dagiao' || item.status !== 'hoanthanh').length;
+    const orders = this.Listdonhang();
+    if (!Array.isArray(orders)) return 0;
+    return orders.filter((item: any) => item.status === 'dadat').length;
   }
+  
   /**
    * Format currency
    */
