@@ -1758,7 +1758,9 @@ export class ListDonhangComponent {
   countChuagiao(): number {
     const orders = this.Listdonhang();
     if (!Array.isArray(orders)) return 0;
-    return orders.filter((item: any) => item.status === 'dadat').length;
+    return orders.filter((item: any) => 
+      ['dadat', 'huy'].includes(item.status)
+    ).length;
   }
   
   /**
