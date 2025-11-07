@@ -161,8 +161,16 @@ export class ListPhieugiaohangComponent implements OnDestroy {
       return isMatch;
     };
   }
-  async ngOnInit(): Promise<void> {
+  
+  /**
+   * Method để tìm kiếm - chỉ load data khi user nhấn nút
+   */
+  async searchData(): Promise<void> {
     await this.LoadData();
+  }
+  
+  async ngOnInit(): Promise<void> {
+    // ⚠️ Không load data khi vào trang - chỉ load khi nhấn nút Tìm Kiếm
     this.initializeColumns();
     this.setupDrawer();
     if (this.paginator) {
@@ -351,41 +359,18 @@ export class ListPhieugiaohangComponent implements OnDestroy {
   }
 
   async onTypeChange(value: string): Promise<void> {
-    this.isLoading.set(true);
-    try {
-      this.SearchParams.Type = value;
-      this.SearchParams.pageNumber = 1; // Reset to first page
-      await this.LoadData();
-    } catch (error) {
-      console.error('Error changing type:', error);
-      this._snackBar.open('Lỗi khi thay đổi loại khách hàng', '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-      });
-    } finally {
-      this.isLoading.set(false);
-    }
+    // Chỉ update SearchParams, không load data tự động
+    this.SearchParams.Type = value;
+    this.SearchParams.pageNumber = 1; // Reset to first page
+    // User cần nhấn nút Tìm Kiếm để load data
   }
 
   onDateChange(event: any): void {
-    this.isLoading.set(true);
-    try {
-      this.SearchParams.pageNumber = 1; // Reset to first page
-      this.LoadData();
-    } catch (error) {
-      console.error('Error changing date:', error);
-      this._snackBar.open('Lỗi khi thay đổi ngày', '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-      });
-    } finally {
-      this.isLoading.set(false);
-    }
+    // Chỉ update SearchParams, không load data tự động
+    this.SearchParams.pageNumber = 1; // Reset to first page
+    // User cần nhấn nút Tìm Kiếm để load data
   }
+  
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
       key,

@@ -219,6 +219,58 @@
                             {{ row[column].length }}
                         </span>
                         }
+                        @case ('nhanvienchiahang') {
+                        <div class="max-w-40 line-clamp-4">
+                            @if (editingNhanvienId === row.id) {
+                                <!-- Edit mode -->
+                                <div class="flex items-center gap-1">
+                                    <input 
+                                        type="text" 
+                                        [(ngModel)]="tempNhanvienValue"
+                                        placeholder="Nhập tên nhân viên"
+                                        class="flex-1 px-2 py-1 text-sm border border-blue-500 rounded focus:border-blue-600 focus:outline-none"
+                                    />
+                                    <button 
+                                        mat-icon-button 
+                                        (click)="confirmEditNhanvien(row)"
+                                        class="!w-7 !h-7 !text-green-600"
+                                        matTooltip="Xác nhận">
+                                        <mat-icon class="!text-base">check</mat-icon>
+                                    </button>
+                                    <button 
+                                        mat-icon-button 
+                                        (click)="cancelEditNhanvien()"
+                                        class="!w-7 !h-7 !text-red-600"
+                                        matTooltip="Hủy">
+                                        <mat-icon class="!text-base">close</mat-icon>
+                                    </button>
+                                </div>
+                            } @else {
+                                <!-- View mode -->
+                                <span 
+                                    (dblclick)="startEditNhanvien(row)"
+                                    class="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded block text-sm"
+                                    matTooltip="Double-click để chỉnh sửa">
+                                    {{ row.nhanvienchiahang || '(Double-click để nhập)' }}
+                                </span>
+                            }
+                        </div>
+                        }
+                        @case ('trangthaiin') {
+                        <span class="max-w-40 line-clamp-4">
+                            <span 
+                                [ngClass]="{
+                                    'bg-gray-200 text-gray-700': !getTrangthaiIn(row),
+                                    'bg-green-500 text-white': getTrangthaiIn(row)
+                                }"
+                                class="inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full font-medium">
+                                {{ getTrangthaiInLabel(row) }}
+                                @if (getTrangthaiIn(row)) {
+                                    <span class="text-xs opacity-90">({{ row.printCount }})</span>
+                                }
+                            </span>
+                        </span>
+                        }
                         @case ('isActive') {
                         <span class="max-w-40 line-clamp-4">
                             @if (row[column]) {

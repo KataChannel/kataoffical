@@ -75,9 +75,11 @@ export class ListPhieuchiahangComponent {
   displayedColumns: string[] = [
     'madonhang',
     'name',
+    'nhanvienchiahang',
     'sanpham',
     'ngaygiao',
     'ghichu',
+    'trangthaiin',
     'status',
     'createdAt',
     'updatedAt',
@@ -85,9 +87,11 @@ export class ListPhieuchiahangComponent {
   ColumnName: any = {
     madonhang: 'Mã Đơn Hàng',
     name: 'Khách Hàng',
+    nhanvienchiahang: 'Nhân Viên Chia Hàng',
     sanpham: 'Sản Phẩm',
     ngaygiao: 'Ngày Giao',
     ghichu: 'Ghi Chú',
+    trangthaiin: 'Trạng Thái In',
     status: 'Trạng Thái',
     createdAt: 'Ngày Tạo',
     updatedAt: 'Ngày Cập Nhật',
@@ -98,6 +102,11 @@ export class ListPhieuchiahangComponent {
   Columns: any[] = [];
   isFilter: boolean = false;
   Trangthaidon: any = TrangThaiDon;
+  
+  // Track edit mode for nhanvienchiahang
+  editingNhanvienId: string | null = null;
+  tempNhanvienValue: string = '';
+  
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
@@ -117,7 +126,6 @@ export class ListPhieuchiahangComponent {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
     Type: 'all',
-    Status: 'dadat',
     pageSize: 99999,
   };
   ListDate: any[] = [
@@ -749,12 +757,20 @@ export class ListPhieuchiahangComponent {
       const v1 = await this._DonhangService.SearchField({
         madonhang: v.madonhang,
       });
+      
+      // Update sản phẩm
       v1.sanpham.forEach((v2: any) => {
         const item = v.sanpham.find((v3: any) => v3.masp === v2.masp);
         if (item) {
           v2.slgiao = item.slgiao;
         }
       });
+      
+      // ✅ Update nhân viên chia hàng nếu có trong template
+      if (v.nhanvienchiahang !== undefined && v.nhanvienchiahang !== null) {
+        v1.nhanvienchiahang = v.nhanvienchiahang;
+      }
+      
       console.log(v1);
       await this._DonhangService.updateDonhang(v1);
     });
@@ -767,6 +783,68 @@ export class ListPhieuchiahangComponent {
         panelClass: ['snackbar-success'],
       });
     });
+  }
+  
+  /**
+   * Start editing nhân viên chia hàng (double-click mode)
+   */
+  startEditNhanvien(row: any): void {
+    this.editingNhanvienId = row.id;
+    this.tempNhanvienValue = row.nhanvienchiahang || '';
+  }
+  
+  /**
+   * Confirm and save nhân viên chia hàng
+   */
+  async confirmEditNhanvien(row: any): Promise<void> {
+    try {
+      row.nhanvienchiahang = this.tempNhanvienValue;
+      
+      await this._DonhangService.updateDonhang({
+        id: row.id,
+        nhanvienchiahang: this.tempNhanvienValue
+      });
+      
+      this.editingNhanvienId = null;
+      this.tempNhanvienValue = '';
+      
+      this._snackBar.open('Cập nhật nhân viên chia hàng thành công', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      console.error('Error updating nhanvienchiahang:', error);
+      this._snackBar.open('Lỗi khi cập nhật nhân viên', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+  
+  /**
+   * Cancel editing nhân viên chia hàng
+   */
+  cancelEditNhanvien(): void {
+    this.editingNhanvienId = null;
+    this.tempNhanvienValue = '';
+  }
+  
+  /**
+   * Get trạng thái in based on printCount
+   */
+  getTrangthaiIn(row: any): boolean {
+    return (row.printCount || 0) > 0;
+  }
+  
+  /**
+   * Get trạng thái in label
+   */
+  getTrangthaiInLabel(row: any): string {
+    return this.getTrangthaiIn(row) ? 'Đã in' : 'Chưa in';
   }
 }
 

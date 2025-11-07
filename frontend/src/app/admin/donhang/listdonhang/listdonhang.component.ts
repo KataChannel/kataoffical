@@ -137,7 +137,7 @@ export class ListDonhangComponent {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
-    this.LoadData()
+    // ⚠️ Không load data khi vào trang - chỉ load khi nhấn nút Tìm Kiếm
   }
   async onPageChange(event: any): Promise<void> {
     console.log('Page change event:', event);
@@ -214,6 +214,14 @@ export class ListDonhangComponent {
       });
       this.ListKhachhang = result.data;
   }
+  
+  /**
+   * Method để tìm kiếm - chỉ load data khi user nhấn nút
+   */
+  async searchData(): Promise<void> {
+    await this.LoadData();
+  }
+  
   async LoadData() {
     // await this._KhachhangService.getAllKhachhang();
     this.LoadListKhachhang();    
@@ -338,37 +346,15 @@ export class ListDonhangComponent {
   }
 
   async onTypeChange(value: string): Promise<void> {
-    this.isLoading.set(true);
-    try {
-      this.SearchParams.Type = value;
-      await this.LoadData();
-    } catch (error) {
-      console.error('Error changing type selection:', error);
-      this._snackBar.open('Lỗi khi thay đổi loại đơn hàng', '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-      });
-    }
+    // Chỉ update SearchParams, không load data tự động
+    this.SearchParams.Type = value;
+    // User cần nhấn nút Tìm Kiếm để load data
   }
+  
   onDateChange(event: any): void {
-    // Show loading indicator during date change
-    this.isLoading.set(true);
-
-    try {
-      // Reset to first page when changing date
-      this.SearchParams.pageNumber = 1;
-      this.LoadData();
-    } catch (error) {
-      console.error('Error changing date:', error);
-      this._snackBar.open('Lỗi khi thay đổi ngày', '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-      });
-    }
+    // Chỉ update SearchParams, không load data tự động
+    this.SearchParams.pageNumber = 1;
+    // User cần nhấn nút Tìm Kiếm để load data
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -443,7 +429,8 @@ export class ListDonhangComponent {
     try {
       this.initializeColumns();
       this.setupDrawer();
-      await this.LoadData();
+      // ⚠️ Không load data khi vào trang - chỉ load khi nhấn nút Tìm Kiếm
+      // await this.LoadData();
     } catch (error) {
       console.error('Error initializing component:', error);
       this._snackBar.open('Lỗi khởi tạo trang', '', {
