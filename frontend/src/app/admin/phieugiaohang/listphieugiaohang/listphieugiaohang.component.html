@@ -182,7 +182,7 @@
                                     </div>
 
                                     <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
-                                </div>xxxx
+                                </div>
                                 <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
                                     <div *ngFor="let item of FilterHederColumn(dataSource.filteredData,column); trackBy:trackByFn"
                                         (click)="ChosenItem(item,column)"
