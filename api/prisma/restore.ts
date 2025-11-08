@@ -354,26 +354,64 @@ async function validateBackupData(data: any[], table: string): Promise<any[]> {
 
 async function restoreTableFromJson(table: string, backupFolder: string): Promise<void> {
   try {
-    const filePath: string = path.join(
-      BACKUP_ROOT_DIR,
-      backupFolder,
-      `${table}.json`,
-    );
+    const backupPath = path.join(BACKUP_ROOT_DIR, backupFolder);
+    const singleFilePath: string = path.join(backupPath, `${table}.json`);
+    const firstChunkPath: string = path.join(backupPath, `${table}_part1.json`);
+    const metadataPath: string = path.join(backupPath, `${table}_metadata.json`);
     
-    if (!fs.existsSync(filePath)) {
+    let rawData: any[] = [];
+    
+    // ✅ Ưu tiên kiểm tra chunk files trước
+    if (fs.existsSync(firstChunkPath)) {
+      console.log(`📥 Đọc dữ liệu cho bảng: ${table} (từ chunks)`);
+      
+      // Đọc metadata hoặc tự detect số chunks
+      let chunks = 1;
+      if (fs.existsSync(metadataPath)) {
+        try {
+          const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+          chunks = metadata.chunks;
+          console.log(`   📦 Phát hiện ${chunks} chunks (${metadata.totalRecords} records)`);
+        } catch (error) {
+          console.log(`   ⚠️  Không đọc được metadata, tự detect chunks`);
+        }
+      }
+      
+      // Auto-detect chunks nếu không có metadata
+      if (chunks === 1) {
+        while (fs.existsSync(path.join(backupPath, `${table}_part${chunks + 1}.json`))) {
+          chunks++;
+        }
+        console.log(`   📦 Auto-detect: ${chunks} chunks`);
+      }
+      
+      // Đọc tất cả chunks
+      for (let i = 1; i <= chunks; i++) {
+        const chunkPath = path.join(backupPath, `${table}_part${i}.json`);
+        try {
+          const chunkData = JSON.parse(fs.readFileSync(chunkPath, 'utf8'));
+          rawData = rawData.concat(chunkData);
+          console.log(`   ✅ Chunk ${i}/${chunks}: ${chunkData.length} records`);
+        } catch (error) {
+          console.log(`   ⚠️  Lỗi đọc chunk ${i}: ${error}`);
+          stats.warnings.push(`Không thể đọc chunk ${i} của bảng ${table}`);
+        }
+      }
+      
+    } else if (fs.existsSync(singleFilePath)) {
+      // File đơn (bảng nhỏ)
+      console.log(`📥 Đọc dữ liệu cho bảng: ${table}`);
+      try {
+        rawData = JSON.parse(fs.readFileSync(singleFilePath, 'utf8'));
+      } catch (error) {
+        console.log(`⚠️ Không thể đọc file ${table}.json: ${error} - Bỏ qua`);
+        stats.warnings.push(`Không thể đọc file backup cho bảng ${table}`);
+        return;
+      }
+      
+    } else {
       console.log(`⚠️  Không tìm thấy file backup cho bảng ${table}, bỏ qua.`);
       stats.warnings.push(`File backup không tồn tại cho bảng ${table}`);
-      return;
-    }
-    
-    console.log(`📥 Đọc dữ liệu cho bảng: ${table}`);
-    let rawData: any[];
-    
-    try {
-      rawData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    } catch (error) {
-      console.log(`⚠️ Không thể đọc file ${table}.json: ${error} - Bỏ qua`);
-      stats.warnings.push(`Không thể đọc file backup cho bảng ${table}`);
       return;
     }
     
@@ -441,54 +479,126 @@ async function restoreAuditLogWithFix(auditLogs: any[]): Promise<void> {
   let successCount = 0;
   let errorCount = 0;
   
-  console.log('💾 Đang insert dữ liệu đã fix...');
+  console.log('💾 Đang insert dữ liệu với batch processing...');
   
-  for (let i = 0; i < auditLogs.length; i++) {
-    try {
-      const record = auditLogs[i];
-      
-      // Transform the data to match Prisma schema
-      const transformedRecord = {
-        id: record.id,
-        entityName: record.entityName,
-        entityId: record.entityId,
-        action: record.action,
-        userEmail: record.userEmail,
-        oldValues: record.oldValues,
-        newValues: record.newValues,
-        changedFields: record.changedFields || [],
-        ipAddress: record.ipAddress,
-        userAgent: record.userAgent,
-        sessionId: record.sessionId,
-        status: record.status || 'SUCCESS',
-        errorDetails: record.error_details, // Map error_details to errorDetails
-        metadata: record.metadata,
-        createdAt: record.createdAt ? new Date(record.createdAt) : new Date(),
-        updatedAt: record.updatedAt ? new Date(record.updatedAt) : new Date(),
-        // Handle user relation - only set if userId exists and is valid
-        ...(record.userId && record.userId.trim() !== '' ? {
-          user: {
-            connect: { id: record.userId }
+  // 🚀 Transform all records first (fast operation)
+  const transformedRecords: any[] = [];
+  const recordsWithRelation: any[] = [];
+  
+  for (const record of auditLogs) {
+    const transformedRecord = {
+      id: record.id,
+      entityName: record.entityName,
+      entityId: record.entityId,
+      action: record.action,
+      userEmail: record.userEmail,
+      oldValues: record.oldValues,
+      newValues: record.newValues,
+      changedFields: record.changedFields || [],
+      ipAddress: record.ipAddress,
+      userAgent: record.userAgent,
+      sessionId: record.sessionId,
+      status: record.status || 'SUCCESS',
+      errorDetails: record.error_details,
+      metadata: record.metadata,
+      createdAt: record.createdAt ? new Date(record.createdAt) : new Date(),
+      updatedAt: record.updatedAt ? new Date(record.updatedAt) : new Date(),
+      userId: record.userId && record.userId.trim() !== '' ? record.userId : null
+    };
+    
+    // Separate records with relations (need individual create) vs simple records (can batch)
+    if (record.userId && record.userId.trim() !== '') {
+      recordsWithRelation.push(transformedRecord);
+    } else {
+      transformedRecords.push(transformedRecord);
+    }
+  }
+  
+  // 🚀 BATCH 1: Insert records without relations (FAST - using createMany)
+  if (transformedRecords.length > 0) {
+    console.log(`   📦 Batch insert ${transformedRecords.length} records without relations...`);
+    const BATCH_SIZE = 1000;
+    
+    for (let i = 0; i < transformedRecords.length; i += BATCH_SIZE) {
+      const batch = transformedRecords.slice(i, i + BATCH_SIZE);
+      try {
+        await prisma.auditLog.createMany({
+          data: batch,
+          skipDuplicates: true
+        });
+        successCount += batch.length;
+        console.log(`   ✅ Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${batch.length} records (${successCount}/${auditLogs.length})`);
+      } catch (error: any) {
+        console.log(`   ⚠️  Batch error, trying individual inserts for this batch...`);
+        // Fallback to individual insert for this batch
+        for (const record of batch) {
+          try {
+            await prisma.auditLog.create({ data: record });
+            successCount++;
+          } catch (err: any) {
+            errorCount++;
+            if (errorCount <= 5) {
+              console.log(`   ⚠️  Error: ${err.message}`);
+            }
           }
-        } : {})
-      };
-      
-      await prisma.auditLog.create({
-        data: transformedRecord
-      });
-      
-      successCount++;
-      
-      if (i % 100 === 0 && i > 0) {
-        console.log(`   Progress: ${i}/${auditLogs.length} processed...`);
+        }
       }
+    }
+  }
+  
+  // 🚀 BATCH 2: Insert records with relations using RAW SQL (much faster)
+  if (recordsWithRelation.length > 0) {
+    console.log(`   📦 Inserting ${recordsWithRelation.length} records with user relations (raw SQL)...`);
+    const BATCH_SIZE = 1000;
+    const totalBatches = Math.ceil(recordsWithRelation.length / BATCH_SIZE);
+    
+    for (let i = 0; i < recordsWithRelation.length; i += BATCH_SIZE) {
+      const batch = recordsWithRelation.slice(i, i + BATCH_SIZE);
+      const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
       
-    } catch (error: any) {
-      errorCount++;
-      
-      // Only log first 5 errors to avoid spam
-      if (errorCount <= 5) {
-        console.log(`   ⚠️  Error at record ${i}: ${error.message}`);
+      try {
+        // Build multi-row INSERT statement
+        const values = batch.map(record => {
+          const id = record.id ? `'${record.id}'` : 'uuid_generate_v4()';
+          const entityName = record.entityName ? `'${record.entityName.replace(/'/g, "''")}'` : 'NULL';
+          const entityId = record.entityId ? `'${record.entityId.replace(/'/g, "''")}'` : 'NULL';
+          const action = record.action ? `'${record.action.replace(/'/g, "''")}'` : 'NULL';
+          const userEmail = record.userEmail ? `'${record.userEmail.replace(/'/g, "''")}'` : 'NULL';
+          const userId = record.userId ? `'${record.userId.replace(/'/g, "''")}'` : 'NULL';
+          const oldValues = record.oldValues ? `'${JSON.stringify(record.oldValues).replace(/'/g, "''")}'::jsonb` : 'NULL';
+          const newValues = record.newValues ? `'${JSON.stringify(record.newValues).replace(/'/g, "''")}'::jsonb` : 'NULL';
+          const changedFields = record.changedFields ? `'${JSON.stringify(record.changedFields).replace(/'/g, "''")}'::jsonb` : 'NULL';
+          const ipAddress = record.ipAddress ? `'${record.ipAddress.replace(/'/g, "''")}'` : 'NULL';
+          const userAgent = record.userAgent ? `'${record.userAgent.replace(/'/g, "''")}'` : 'NULL';
+          const sessionId = record.sessionId ? `'${record.sessionId.replace(/'/g, "''")}'` : 'NULL';
+          const status = record.status ? `'${record.status.replace(/'/g, "''")}'` : "'SUCCESS'";
+          const errorDetails = record.errorDetails ? 
+            (typeof record.errorDetails === 'string' ? 
+              `'${record.errorDetails.replace(/'/g, "''")}'` : 
+              `'${JSON.stringify(record.errorDetails).replace(/'/g, "''")}'`) : 
+            'NULL';
+          const metadata = record.metadata ? `'${JSON.stringify(record.metadata).replace(/'/g, "''")}'::jsonb` : 'NULL';
+          const createdAt = record.createdAt ? `'${new Date(record.createdAt).toISOString()}'` : 'NOW()';
+          const updatedAt = record.updatedAt ? `'${new Date(record.updatedAt).toISOString()}'` : 'NOW()';
+          
+          return `(${id}, ${entityName}, ${entityId}, ${action}, ${userEmail}, ${userId}, ${oldValues}, ${newValues}, ${changedFields}, ${ipAddress}, ${userAgent}, ${sessionId}, ${status}, ${errorDetails}, ${metadata}, ${createdAt}, ${updatedAt})`;
+        }).join(', ');
+        
+        await prisma.$executeRawUnsafe(`
+          INSERT INTO "AuditLog" (
+            "id", "entityName", "entityId", "action", "userEmail", "userId",
+            "oldValues", "newValues", "changedFields", "ipAddress", "userAgent",
+            "sessionId", "status", "errorDetails", "metadata", "createdAt", "updatedAt"
+          ) VALUES ${values}
+          ON CONFLICT (id) DO NOTHING
+        `);
+        
+        successCount += batch.length;
+        console.log(`   ✅ Batch ${currentBatch}/${totalBatches}: ${batch.length} records (${successCount}/${auditLogs.length})`);
+        
+      } catch (error: any) {
+        console.log(`   ⚠️  Batch ${currentBatch} error: ${error.message}`);
+        errorCount += batch.length;
       }
     }
   }
@@ -518,9 +628,10 @@ async function restoreWithRawSQL(table: string, data: any[]): Promise<void> {
       .map((col) => `"${col}"`)
       .join(', ');
 
-    // Process in smaller batches for stability
-    const batchSize = 50;
+    // 🚀 Tăng batch size lên 500 (10x faster)
+    const batchSize = 500;
     let totalInserted = 0;
+    const totalBatches = Math.ceil(data.length / batchSize);
     
     for (let i = 0; i < data.length; i += batchSize) {
       try {
@@ -559,8 +670,15 @@ async function restoreWithRawSQL(table: string, data: any[]): Promise<void> {
         );
         
         totalInserted += batch.length;
+        
+        // Progress indicator
+        const currentBatch = Math.floor(i / batchSize) + 1;
+        if (currentBatch % 5 === 0 || currentBatch === totalBatches) {
+          console.log(`   📝 Batch ${currentBatch}/${totalBatches}: ${totalInserted}/${data.length} records`);
+        }
+        
       } catch (batchError) {
-        console.log(`⚠️ Raw SQL batch ${i/batchSize + 1} failed: ${batchError} - Bỏ qua`);
+        console.log(`⚠️ Raw SQL batch ${Math.floor(i/batchSize) + 1} failed: ${batchError} - Bỏ qua`);
         stats.warnings.push(`Raw SQL batch failed cho bảng ${table}: ${batchError}`);
       }
     }
@@ -578,22 +696,43 @@ async function restoreRecordsIndividually(model: any, table: string, data: any[]
   let successCount = 0;
   let errorCount = 0;
   
-  for (let i = 0; i < data.length; i++) {
+  console.log(`   🔄 Đang thử insert với transaction batching...`);
+  
+  // 🚀 Tối ưu: Group creates into transactions (50x faster)
+  const TRANSACTION_BATCH = 500;
+  const totalBatches = Math.ceil(data.length / TRANSACTION_BATCH);
+  
+  for (let i = 0; i < data.length; i += TRANSACTION_BATCH) {
+    const batch = data.slice(i, i + TRANSACTION_BATCH);
+    const currentBatch = Math.floor(i / TRANSACTION_BATCH) + 1;
+    
     try {
-      await model.create({
-        data: data[i]
+      // Try transaction batch first
+      await prisma.$transaction(async (tx) => {
+        for (const record of batch) {
+          await (tx as any)[table].create({ data: record });
+        }
       });
-      successCount++;
+      successCount += batch.length;
       
-      // Progress indicator for large datasets
-      if (i % 100 === 0 && i > 0) {
-        console.log(`   Progress: ${i}/${data.length} records processed...`);
+      if (currentBatch % 5 === 0 || currentBatch === totalBatches) {
+        console.log(`   ✅ Batch ${currentBatch}/${totalBatches}: ${successCount}/${data.length} records`);
       }
       
-    } catch (recordError: any) {
-      errorCount++;
-      if (errorCount <= 5) { // Only log first 5 errors to avoid spam
-        console.log(`   ⚠️  Error inserting record ${i}: ${recordError.message}`);
+    } catch (batchError: any) {
+      // Transaction failed, try individual inserts for this batch
+      console.log(`   ⚠️  Transaction batch ${currentBatch} failed, trying individual inserts...`);
+      
+      for (let j = 0; j < batch.length; j++) {
+        try {
+          await model.create({ data: batch[j] });
+          successCount++;
+        } catch (recordError: any) {
+          errorCount++;
+          if (errorCount <= 5) {
+            console.log(`   ⚠️  Error at record ${i + j}: ${recordError.message}`);
+          }
+        }
       }
     }
   }

@@ -18,9 +18,31 @@ async function getTables() {
 async function backupTableToJson(table) {
     try {
         const data = await prisma.$queryRawUnsafe(`SELECT * FROM "${table}"`);
-        const filePath = path.join(BACKUP_DIR, `${table}.json`);
-        fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-        console.log(`✅ Backup JSON thành công: ${filePath}`);
+        const CHUNK_SIZE = 10000;
+        if (data.length > CHUNK_SIZE) {
+            console.log(`⚠️  Bảng ${table} có ${data.length} records, đang chia thành chunks...`);
+            const chunks = Math.ceil(data.length / CHUNK_SIZE);
+            for (let i = 0; i < chunks; i++) {
+                const start = i * CHUNK_SIZE;
+                const end = Math.min(start + CHUNK_SIZE, data.length);
+                const chunk = data.slice(start, end);
+                const filePath = path.join(BACKUP_DIR, `${table}_part${i + 1}.json`);
+                fs.writeFileSync(filePath, JSON.stringify(chunk, null, 2));
+                console.log(`✅ Backup chunk ${i + 1}/${chunks} thành công: ${filePath} (${chunk.length} records)`);
+            }
+            const metadataPath = path.join(BACKUP_DIR, `${table}_metadata.json`);
+            fs.writeFileSync(metadataPath, JSON.stringify({
+                table,
+                totalRecords: data.length,
+                chunks,
+                chunkSize: CHUNK_SIZE
+            }, null, 2));
+        }
+        else {
+            const filePath = path.join(BACKUP_DIR, `${table}.json`);
+            fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+            console.log(`✅ Backup JSON thành công: ${filePath} (${data.length} records)`);
+        }
     }
     catch (error) {
         console.error(`❌ Lỗi backup bảng ${table}:`, error);
@@ -42,16 +64,40 @@ async function restoreTableFromJson(table) {
             console.error(`❌ Không tìm thấy thư mục backup.`);
             return;
         }
-        const filePath = path.join(BACKUP_ROOT_DIR, latestBackupDir, `${table}.json`);
-        if (!fs.existsSync(filePath)) {
-            console.error(`❌ Không tìm thấy file backup cho bảng ${table}`);
-            return;
+        const backupPath = path.join(BACKUP_ROOT_DIR, latestBackupDir);
+        const metadataPath = path.join(backupPath, `${table}_metadata.json`);
+        let allData = [];
+        if (fs.existsSync(metadataPath)) {
+            const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+            console.log(`📦 Đang restore bảng ${table} từ ${metadata.chunks} chunks...`);
+            for (let i = 0; i < metadata.chunks; i++) {
+                const chunkPath = path.join(backupPath, `${table}_part${i + 1}.json`);
+                if (!fs.existsSync(chunkPath)) {
+                    console.error(`❌ Không tìm thấy chunk file: ${chunkPath}`);
+                    continue;
+                }
+                const chunkData = JSON.parse(fs.readFileSync(chunkPath, 'utf8'));
+                allData = allData.concat(chunkData);
+                console.log(`  ✅ Đọc chunk ${i + 1}/${metadata.chunks} (${chunkData.length} records)`);
+            }
         }
-        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        for (const row of data) {
+        else {
+            const filePath = path.join(backupPath, `${table}.json`);
+            if (!fs.existsSync(filePath)) {
+                console.error(`❌ Không tìm thấy file backup cho bảng ${table}`);
+                return;
+            }
+            allData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        }
+        let insertedCount = 0;
+        for (const row of allData) {
             await prisma.$queryRawUnsafe(`INSERT INTO "${table}" (${Object.keys(row).join(', ')}) VALUES (${Object.values(row).map((_, i) => `$${i + 1}`).join(', ')})`, ...Object.values(row));
+            insertedCount++;
+            if (insertedCount % 1000 === 0) {
+                console.log(`  📝 Đã insert ${insertedCount}/${allData.length} records...`);
+            }
         }
-        console.log(`✅ Khôi phục dữ liệu thành công cho bảng ${table}`);
+        console.log(`✅ Khôi phục dữ liệu thành công cho bảng ${table} (${allData.length} records)`);
     }
     catch (error) {
         console.error(`❌ Lỗi khôi phục bảng ${table}:`, error);
