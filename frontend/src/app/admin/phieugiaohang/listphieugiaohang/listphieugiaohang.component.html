@@ -182,7 +182,7 @@
                                     </div>
 
                                     <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
-                                </div>
+                                </div>xxxx
                                 <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
                                     <div *ngFor="let item of FilterHederColumn(dataSource.filteredData,column); trackBy:trackByFn"
                                         (click)="ChosenItem(item,column)"
@@ -289,7 +289,12 @@
                 </ng-container>
                 }                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="AddToEdit(row)"
-                    class="hover:bg-slate-100 {{CheckItemInEdit(row)?'!bg-slate-200':''}}"></tr>
+                    class="hover:bg-slate-100" 
+                    [ngClass]="{
+                      '!bg-blue-100': getTrangthaiIn(row) && !CheckItemInEdit(row),
+                      '!bg-red-100': !getTrangthaiIn(row) && !CheckItemInEdit(row),
+                      '!bg-slate-200': CheckItemInEdit(row)
+                    }"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>

@@ -1011,7 +1011,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
     
   }
 
-  printContent()
+  async printContent()
   {
    const isCheck = this.CheckVatDonhang();
    if(!isCheck){
@@ -1023,6 +1023,32 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
     });
     return;
    }
+
+    // 🔥 CẬP NHẬT printCount khi in phiếu giao hàng
+    const currentPhieugiaohang = this.DetailPhieugiaohang();
+    if (currentPhieugiaohang && currentPhieugiaohang.id) {
+      try {
+        const oldPrintCount = currentPhieugiaohang.printCount || 0;
+        currentPhieugiaohang.printCount = oldPrintCount + 1;
+        
+        // Cập nhật lên server
+        await this._PhieugiaohangService.updateDonhang({
+          id: currentPhieugiaohang.id,
+          printCount: currentPhieugiaohang.printCount
+        });
+        
+        console.log(`✅ [printContent] Đã cập nhật printCount: ${oldPrintCount} → ${currentPhieugiaohang.printCount}`);
+        
+        this._snackBar.open(`✅ Đã cập nhật trạng thái in (lần thứ ${currentPhieugiaohang.printCount})`, '', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+        });
+      } catch (error) {
+        console.error('❌ [printContent] Lỗi khi cập nhật printCount:', error);
+      }
+    }
+
     const printContent = document.getElementById('printContent');
     if (printContent) {
       const newWindow = window.open('', '_blank');

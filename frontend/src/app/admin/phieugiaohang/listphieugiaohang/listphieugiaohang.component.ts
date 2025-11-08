@@ -665,6 +665,11 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
   CheckItemInEdit(item: any): boolean {
     return this.EditList.some((v: any) => v.id === item.id);
   }
+
+  // Kiểm tra trạng thái đã in (printCount > 0)
+  getTrangthaiIn(item: any): boolean {
+    return item.printCount && item.printCount > 0;
+  }
   ApplyFilterColum(menu: any) {
     // Filter based on selected items in ListFilter
     const originalData = this.Listphieugiaohang() || [];

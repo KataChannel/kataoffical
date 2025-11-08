@@ -607,9 +607,59 @@ export class ListPhieuchiahangComponent {
   ExportExcel(data: any, title: any) {
     writeExcelFile(data, title);
   }
-  printContent() {
+  async printContent() {
     const printContent = document.getElementById('printContent');
     if (printContent) {
+      // 🔥 CẬP NHẬT printCount cho tất cả đơn hàng được chọn
+      console.log('🔍 [printContent] Bắt đầu kiểm tra editDonhang:', this.editDonhang);
+      console.log('🔍 [printContent] Số đơn được chọn:', this.editDonhang?.length || 0);
+      
+      if (this.editDonhang && this.editDonhang.length > 0) {
+        console.log('✅ [printContent] Đang cập nhật printCount cho', this.editDonhang.length, 'đơn hàng');
+        
+        try {
+          for (const order of this.editDonhang) {
+            const oldPrintCount = order.printCount || 0;
+            // Tăng printCount
+            order.printCount = oldPrintCount + 1;
+            
+            console.log(`📝 [printContent] Đơn ${order.madonhang}: printCount ${oldPrintCount} → ${order.printCount}`);
+            
+            // Update lên server
+            const updateData = {
+              id: order.id,
+              printCount: order.printCount
+            };
+            console.log('🚀 [printContent] Gửi update lên server:', updateData);
+            
+            const result = await this._DonhangService.updateDonhang(updateData);
+            console.log('✅ [printContent] Server response:', result);
+          }
+          
+          // Refresh dataSource để update màu nền
+          console.log('🔄 [printContent] Refresh dataSource');
+          this.dataSource.data = [...this.dataSource.data];
+          
+          this._snackBar.open(`✅ Đã cập nhật trạng thái in cho ${this.editDonhang.length} đơn hàng`, '', {
+            duration: 2000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-success'],
+          });
+        } catch (error) {
+          console.error('❌ [printContent] Error updating printCount:', error);
+          this._snackBar.open('⚠️ Lỗi khi cập nhật trạng thái in', '', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+        }
+      } else {
+        console.warn('⚠️ [printContent] Không có đơn hàng nào được chọn để cập nhật printCount');
+      }
+      
+      // Tiếp tục in
       const newWindow = window.open('', '_blank');
       const tailwindCSS = `
     <script src="https://cdn.tailwindcss.com"></script>
