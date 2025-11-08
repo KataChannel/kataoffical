@@ -276,6 +276,17 @@
                             }
                         </span>
                         }
+
+                        @case ('trangthaiin') {
+                        <span class="max-w-40 line-clamp-4">
+                            @if (getTrangthaiIn(row)) {
+                                <span class="text-green-500"> {{getTrangthaiInLabel(row)}} </span>
+                            }
+                            @else {
+                            <span class="text-red-500"> {{getTrangthaiInLabel(row)}} </span>    
+                                                    }
+                        </span>
+                        }
                      @case ('status') {
                         <span class="max-w-40 line-clamp-4 font-bold"
                                   [ngClass]="{
@@ -305,12 +316,7 @@
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="toggleDonhang(row)" 
-                    [ngClass]="{
-                        'hover:bg-slate-100': true,
-                        '!bg-blue-100': getTrangthaiIn(row) && !CheckItemInDonhang(row),
-                        '!bg-red-100': !getTrangthaiIn(row) && !CheckItemInDonhang(row),
-                        '!bg-slate-200': CheckItemInDonhang(row)
-                    }"></tr>
+                    [ngClass]="{'hover:bg-slate-100': true,'!bg-slate-200': CheckItemInDonhang(row)}"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>

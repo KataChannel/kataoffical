@@ -111,8 +111,8 @@ export class ListPhieuchuyenComponent {
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   isSearch: boolean = false;  SearchParams: any = {
-      Batdau: DateHelpers.now(),
-      Ketthuc: DateHelpers.now(),
+      Batdau: moment().startOf('day').toDate(),  // 00:00:00 ngày hiện tại
+      Ketthuc: moment().endOf('day').toDate(),   // 23:59:59 ngày hiện tại
       // Status:'dadat'
     };
   constructor() {
@@ -146,11 +146,13 @@ export class ListPhieuchuyenComponent {
   }
   
   async ngOnInit(): Promise<void> {    
-    // ⚠️ KHÔNG GỌI LOAD DATA TỰ ĐỘNG - Chỉ init UI
-    // Data chỉ được load khi user nhấn nút Tìm Kiếm
+    // 🔥 AUTO-LOAD: Tự động load dữ liệu trong ngày khi vào trang
     this.updateDisplayData();
     this.initializeColumns();
     this.setupDrawer();
+    
+    // 🔥 Load dữ liệu trong ngày khi khởi tạo
+    await this.loadData();
   }
   
   async loadData(): Promise<void> {

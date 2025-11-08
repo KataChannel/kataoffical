@@ -132,8 +132,8 @@ export class VandonComponent {
   
   CountItem: any = 0;
   SearchParams: any = {
-    Batdau: moment().toDate(),
-    Ketthuc: moment().toDate(),
+    Batdau: moment().startOf('day').toDate(),  // 00:00:00 ngày hiện tại
+    Ketthuc: moment().endOf('day').toDate(),   // 23:59:59 ngày hiện tại
     pageSize: 9999,
   };
   ListDate: any[] = [
@@ -196,8 +196,7 @@ export class VandonComponent {
   }
   
   async ngOnInit(): Promise<void> {    
-    // ⚠️ KHÔNG GỌI METHOD NÀY TỰ ĐỘNG - Chỉ init UI
-    // Data chỉ được load khi user nhấn nút Tìm Kiếm
+    // 🔥 AUTO-LOAD: Tự động load dữ liệu trong ngày khi vào trang
     this.initializeColumns();
     this.setupDrawer();
     
@@ -209,6 +208,9 @@ export class VandonComponent {
       this.paginator._intl.firstPageLabel = 'Trang Đầu';
       this.paginator._intl.lastPageLabel = 'Trang Cuối';
     }
+    
+    // 🔥 Load dữ liệu trong ngày khi khởi tạo
+    await this.loadData();
   }
   
   async loadData(): Promise<void> {

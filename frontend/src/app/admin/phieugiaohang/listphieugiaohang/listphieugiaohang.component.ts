@@ -126,8 +126,8 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
   total = signal<number>(0);  pageSize = signal<number>(10);
   Trangthaidon: any = TrangThaiDon;
   SearchParams: any = {
-    Batdau: DateHelpers.now(),
-    Ketthuc: DateHelpers.now(),
+    Batdau: moment().startOf('day').toDate(),  // 00:00:00 ngày hiện tại
+    Ketthuc: moment().endOf('day').toDate(),   // 23:59:59 ngày hiện tại
     Type: 'all',
     Status: ['dadat', 'dagiao','danhan','hoanthanh'],
     pageSize: 10,
@@ -170,7 +170,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
   }
   
   async ngOnInit(): Promise<void> {
-    // ⚠️ Không load data khi vào trang - chỉ load khi nhấn nút Tìm Kiếm
+    // 🔥 AUTO-LOAD: Tự động load dữ liệu trong ngày khi vào trang
     this.initializeColumns();
     this.setupDrawer();
     if (this.paginator) {
@@ -180,6 +180,9 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
       this.paginator._intl.firstPageLabel = 'Trang Đầu';
       this.paginator._intl.lastPageLabel = 'Trang Cuối';
     }
+    
+    // 🔥 Load dữ liệu trong ngày khi khởi tạo
+    await this.LoadData();
   }
 
   ngAfterViewInit(): void {

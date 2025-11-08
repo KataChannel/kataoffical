@@ -291,8 +291,6 @@
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="AddToEdit(row)"
                     class="hover:bg-slate-100" 
                     [ngClass]="{
-                      '!bg-blue-100': getTrangthaiIn(row) && !CheckItemInEdit(row),
-                      '!bg-red-100': !getTrangthaiIn(row) && !CheckItemInEdit(row),
                       '!bg-slate-200': CheckItemInEdit(row)
                     }"></tr>
                 <tr class="mat-row" *matNoDataRow>

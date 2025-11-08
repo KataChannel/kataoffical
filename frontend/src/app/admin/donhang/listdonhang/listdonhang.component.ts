@@ -429,8 +429,8 @@ export class ListDonhangComponent {
     try {
       this.initializeColumns();
       this.setupDrawer();
-      // ⚠️ Không load data khi vào trang - chỉ load khi nhấn nút Tìm Kiếm
-      // await this.LoadData();
+      // 🔥 AUTO-LOAD: Tự động load dữ liệu trong ngày khi vào trang
+      await this.LoadData();
     } catch (error) {
       console.error('Error initializing component:', error);
       this._snackBar.open('Lỗi khởi tạo trang', '', {
