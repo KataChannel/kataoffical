@@ -110,6 +110,7 @@ export class ListPhieuchuyenComponent {
   dataSource = new MatTableDataSource<any>([]);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
+  isLoading: boolean = false;  // 🔥 Thêm loading indicator
   isSearch: boolean = false;  SearchParams: any = {
       Batdau: moment().startOf('day').toDate(),  // 00:00:00 ngày hiện tại
       Ketthuc: moment().endOf('day').toDate(),   // 23:59:59 ngày hiện tại
@@ -156,10 +157,23 @@ export class ListPhieuchuyenComponent {
   }
   
   async loadData(): Promise<void> {
-    await this._PhieuchuyenService.Phieuchuyen(this.SearchParams);
-    this.dataSource = new MatTableDataSource(this.Listphieuchuyen());
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.isLoading = true;  // 🔥 Bắt đầu loading
+    try {
+      await this._PhieuchuyenService.Phieuchuyen(this.SearchParams);
+      this.dataSource = new MatTableDataSource(this.Listphieuchuyen());
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    } catch (error) {
+      console.error('Error loading data:', error);
+      this._snackBar.open('❌ Lỗi khi tải dữ liệu', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading = false;  // 🔥 Dừng loading
+    }
   }
   
   private initializeColumns(): void {

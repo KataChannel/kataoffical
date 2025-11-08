@@ -4,6 +4,7 @@ import {
   computed,
   effect,
   inject,
+  signal,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -46,6 +47,8 @@ import { SearchService } from '../../../shared/services/search.service';
 import { StorageService } from '../../../shared/utils/storage.service';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import { DateHelpers } from '../../../shared/utils/date-helpers';
+import * as XLSX from 'xlsx';
+
 @Component({
   selector: 'app-listphieuchiahang',
   templateUrl: './listphieuchiahang.component.html',
@@ -81,7 +84,7 @@ export class ListPhieuchiahangComponent {
     'sanpham',
     'ngaygiao',
     'ghichu',
-    'trangthaiin',
+    'printCount',
     'status',
     'createdAt',
     'updatedAt',
@@ -93,7 +96,7 @@ export class ListPhieuchiahangComponent {
     sanpham: 'Sản Phẩm',
     ngaygiao: 'Ngày Giao',
     ghichu: 'Ghi Chú',
-    trangthaiin: 'Trạng Thái In',
+    printCount: 'Số Lượng In',
     status: 'Trạng Thái',
     createdAt: 'Ngày Tạo',
     updatedAt: 'Ngày Cập Nhật',
@@ -239,14 +242,27 @@ export class ListPhieuchiahangComponent {
   }
   
   async loadData(): Promise<void> {
-    await this._DonhangService.searchDonhang(this.SearchParams);
-    this.CountItem = this.Listdonhang().length;
-    this.dataSource = new MatTableDataSource(this.Listdonhang());
-    console.log(this.dataSource.data);
+    this.isLoading.set(true);  // 🔥 Bắt đầu loading
+    try {
+      await this._DonhangService.searchDonhang(this.SearchParams);
+      this.CountItem = this.Listdonhang().length;
+      this.dataSource = new MatTableDataSource(this.Listdonhang());
+      console.log(this.dataSource.data);
 
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.dataSource.filterPredicate = this.createFilter();
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = this.createFilter();
+    } catch (error) {
+      console.error('Error loading data:', error);
+      this._snackBar.open('❌ Lỗi khi tải dữ liệu', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading.set(false);  // 🔥 Dừng loading
+    }
   }
   
   private initializeColumns(): void {
@@ -756,7 +772,7 @@ export class ListPhieuchiahangComponent {
 
   selectedFile!: File;
   ListBill: any = this._StorageService.getItem('ListBill') || [];
-  isLoading = false; // Biến để kiểm tra trạng thái loading
+  isLoading = signal<boolean>(false); // 🔥 Loading indicator (signal)
   uploadMessage = ''; // Hiển thị thông báo sau khi upload
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0]; // Lấy file từ input
@@ -769,7 +785,7 @@ export class ListPhieuchiahangComponent {
       alert('Chọn file trước khi upload!');
       return;
     }
-    this.isLoading = true; // Bắt đầu loading
+    this.isLoading.set(true); // Bắt đầu loading
     this.uploadMessage = '';
 
     const formData = new FormData();
@@ -798,7 +814,7 @@ export class ListPhieuchiahangComponent {
       this.uploadMessage = 'Lỗi khi upload file!';
       console.error('Lỗi upload file', error);
     } finally {
-      this.isLoading = false; // Dừng loading dù có lỗi hay không
+      this.isLoading.set(false); // Dừng loading dù có lỗi hay không
     }
   }
   async GetDonhang(items: any) {
@@ -876,38 +892,214 @@ export class ListPhieuchiahangComponent {
       }
     }
   }
-  UpdateListBill() {
-    console.log(this.ListBillXuly);
-    const updatePromises = this.ListBillXuly.map(async (v) => {
-      const v1 = await this._DonhangService.SearchField({
-        madonhang: v.madonhang,
-      });
-      
-      // Update sản phẩm
-      v1.sanpham.forEach((v2: any) => {
-        const item = v.sanpham.find((v3: any) => v3.masp === v2.masp);
-        if (item) {
-          v2.slgiao = item.slgiao;
+  /**
+   * Update hàng loạt từ Excel Template
+   * File Excel cần có sheet "data" với columns: id, nhanvienchiahang, trangthaiin
+   */
+  async UpdateListBill(event?: any): Promise<void> {
+    try {
+      // 🔥 Nếu có event (upload file Excel), đọc file
+      if (event && event.target && event.target.files && event.target.files.length > 0) {
+        const file = event.target.files[0];
+        
+        if (!file) {
+          this._snackBar.open('⚠️ Vui lòng chọn file Excel', '', {
+            duration: 2000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+          return;
         }
-      });
-      
-      // ✅ Update nhân viên chia hàng nếu có trong template
-      if (v.nhanvienchiahang !== undefined && v.nhanvienchiahang !== null) {
-        v1.nhanvienchiahang = v.nhanvienchiahang;
-      }
-      
-      console.log(v1);
-      await this._DonhangService.updateDonhang(v1);
-    });
 
-    Promise.all(updatePromises).then(() => {
-      this._snackBar.open('Cập Nhật Thành Công', '', {
-        duration: 1000,
+        console.log('📁 [UpdateListBill] Reading file:', file.name);
+        this.isLoading.set(true);
+
+        // 2️⃣ Parse Excel file
+        const reader = new FileReader();
+        
+        reader.onload = async (e: any) => {
+          try {
+            const data = e.target.result;
+            const workbook = XLSX.read(data, { type: 'binary' });
+            
+            // 3️⃣ Read from "data" sheet
+            const worksheetName = 'data';
+            const worksheet = workbook.Sheets[worksheetName];
+            
+            if (!worksheet) {
+              throw new Error(`Sheet "${worksheetName}" không tồn tại trong file Excel`);
+            }
+
+            // 4️⃣ Convert to JSON
+            const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
+            console.log('📊 [UpdateListBill] Parsed data:', jsonData);
+            console.log('📊 [UpdateListBill] Total rows:', jsonData.length);
+
+            if (jsonData.length === 0) {
+              throw new Error('File Excel không có dữ liệu');
+            }
+
+            // 5️⃣ Validate required columns
+            const firstRow = jsonData[0];
+            const hasId = 'id' in firstRow;
+            const hasNhanvien = 'nhanvienchiahang' in firstRow;
+            const hasTrangthaiin = 'trangthaiin' in firstRow;
+            
+            console.log('✅ [UpdateListBill] Columns found:', {
+              id: hasId,
+              nhanvienchiahang: hasNhanvien,
+              trangthaiin: hasTrangthaiin
+            });
+
+            if (!hasId) {
+              throw new Error('File Excel thiếu cột "id"');
+            }
+
+            // 6️⃣ Update từng đơn hàng
+            let successCount = 0;
+            let errorCount = 0;
+            const errors: string[] = [];
+
+            for (const row of jsonData) {
+              try {
+                // Fetch full order data
+                console.log(`🔍 [UpdateListBill] Searching order: ${row['id']}`);
+                const orderData = await this._DonhangService.SearchField({
+                  id: row['id']
+                });
+
+                if (!orderData) {
+                  const errorMsg = `Không tìm thấy đơn hàng: ${row['id']}`;
+                  console.warn(`⚠️ [UpdateListBill] ${errorMsg}`);
+                  errors.push(errorMsg);
+                  errorCount++;
+                  continue;
+                }
+
+                // Update nhanvienchiahang if provided
+                if (hasNhanvien && row['nhanvienchiahang'] !== undefined && row['nhanvienchiahang'] !== null) {
+                  orderData.nhanvienchiahang = String(row['nhanvienchiahang']).trim();
+                  console.log(`📝 [UpdateListBill] Updating order ${orderData.madonhang}: nhanvienchiahang = "${orderData.nhanvienchiahang}"`);
+                }
+
+                // Update trangthaiin if provided
+                if (hasTrangthaiin && row['trangthaiin'] !== undefined && row['trangthaiin'] !== null) {
+                  orderData.trangthaiin = String(row['trangthaiin']).trim();
+                  console.log(`📝 [UpdateListBill] Updating order ${orderData.madonhang}: trangthaiin = "${orderData.trangthaiin}"`);
+                }
+
+                // Update to server
+                await this._DonhangService.updateDonhang(orderData);
+                successCount++;
+                console.log(`✅ [UpdateListBill] Updated order ${orderData.madonhang}`);
+
+              } catch (err) {
+                const errorMsg = `Lỗi cập nhật ${row['id']}: ${err instanceof Error ? err.message : 'Unknown error'}`;
+                console.error(`❌ [UpdateListBill] ${errorMsg}`, err);
+                errors.push(errorMsg);
+                errorCount++;
+              }
+            }
+
+            // 7️⃣ Show result
+            console.log('📈 [UpdateListBill] Summary:', { successCount, errorCount, errors });
+            
+            let message = `✅ Cập nhật thành công ${successCount}/${jsonData.length} đơn hàng`;
+            if (errorCount > 0) {
+              message += ` (${errorCount} lỗi)`;
+              if (errors.length > 0 && errors.length <= 3) {
+                message += `\n${errors.join('\n')}`;
+              }
+            }
+            
+            this._snackBar.open(message, '', {
+              duration: errorCount > 0 ? 5000 : 3000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: successCount > 0 ? ['snackbar-success'] : ['snackbar-error'],
+            });
+
+            // 8️⃣ Reload data
+            if (successCount > 0) {
+              await this.loadData();
+            }
+
+          } catch (error) {
+            console.error('❌ [UpdateListBill] Error processing Excel:', error);
+            this._snackBar.open(
+              `❌ Lỗi: ${error instanceof Error ? error.message : 'Không thể xử lý file Excel'}`,
+              '',
+              {
+                duration: 4000,
+                horizontalPosition: 'end',
+                verticalPosition: 'top',
+                panelClass: ['snackbar-error'],
+              }
+            );
+          } finally {
+            this.isLoading.set(false);
+          }
+        };
+
+        reader.onerror = () => {
+          this._snackBar.open('❌ Lỗi khi đọc file Excel', '', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+          this.isLoading.set(false);
+        };
+
+        reader.readAsBinaryString(file);
+
+      } else {
+        // 🔥 Không có event - update từ ListBillXuly (logic cũ)
+        console.log('📋 [UpdateListBill] Updating from ListBillXuly:', this.ListBillXuly);
+        
+        const updatePromises = this.ListBillXuly.map(async (v) => {
+          const v1 = await this._DonhangService.SearchField({
+            madonhang: v.madonhang,
+          });
+          
+          // Update sản phẩm
+          v1.sanpham.forEach((v2: any) => {
+            const item = v.sanpham.find((v3: any) => v3.masp === v2.masp);
+            if (item) {
+              v2.slgiao = item.slgiao;
+            }
+          });
+          
+          // ✅ Update nhân viên chia hàng nếu có trong template
+          if (v.nhanvienchiahang !== undefined && v.nhanvienchiahang !== null) {
+            v1.nhanvienchiahang = v.nhanvienchiahang;
+          }
+          
+          console.log('📝 [UpdateListBill] Updating:', v1);
+          await this._DonhangService.updateDonhang(v1);
+        });
+
+        await Promise.all(updatePromises);
+        
+        this._snackBar.open('✅ Cập Nhật Thành Công', '', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+      }
+
+    } catch (error) {
+      console.error('❌ [UpdateListBill] Error:', error);
+      this._snackBar.open('❌ Lỗi khi cập nhật đơn hàng', '', {
+        duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
+        panelClass: ['snackbar-error'],
       });
-    });
+      this.isLoading.set(false);
+    }
   }
   
   /**

@@ -44,10 +44,10 @@
                 <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{CountItem}} Đơn Hàng
                 </span>
-                <!-- <button mat-flat-button color="primary" (click)="uploadfile.click()" [disabled]="isLoading">Upload</button> -->
+                <!-- <button mat-flat-button color="primary" (click)="uploadfile.click()" [disabled]="isLoading()">Upload</button> -->
                 <button mat-flat-button color="primary" (click)="openXembillDialog(dialogXembill)" [disabled]="ListBill.length===0">Xem Bill</button>
                 <input hidden type="file" (change)="onFileSelected($event)" #uploadfile>
-                <div *ngIf="isLoading" class="flex flex-row items-center space-x-2">
+                <div *ngIf="isLoading()" class="flex flex-row items-center space-x-2">
 
                     <div role="status">
                         <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
@@ -277,13 +277,13 @@
                         </span>
                         }
 
-                        @case ('trangthaiin') {
+                        @case ('printCount') {
                         <span class="max-w-40 line-clamp-4">
                             @if (getTrangthaiIn(row)) {
-                                <span class="text-green-500"> {{getTrangthaiInLabel(row)}} </span>
+                                <span class="text-green-500"> {{getTrangthaiInLabel(row)}} ({{row[column]}}) </span>
                             }
                             @else {
-                            <span class="text-red-500"> {{getTrangthaiInLabel(row)}} </span>    
+                            <span class="text-red-500"> {{getTrangthaiInLabel(row)}} ({{row[column]}})</span>    
                                                     }
                         </span>
                         }
