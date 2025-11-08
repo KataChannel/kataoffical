@@ -45,6 +45,7 @@ import { environment } from '../../../../environments/environment.development';
 import { SearchService } from '../../../shared/services/search.service';
 import { StorageService } from '../../../shared/utils/storage.service';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
+import { DateHelpers } from '../../../shared/utils/date-helpers';
 @Component({
   selector: 'app-listphieuchiahang',
   templateUrl: './listphieuchiahang.component.html',
@@ -71,6 +72,7 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
   // providers: [provideNativeDateAdapter()],
 })
 export class ListPhieuchiahangComponent {
+  DateHelpers = DateHelpers;
   Detail: any = {};
   displayedColumns: string[] = [
     'madonhang',
@@ -118,7 +120,7 @@ export class ListPhieuchiahangComponent {
   private _StorageService: StorageService = inject(StorageService);
   private _router: Router = inject(Router);
   Listdonhang: any = this._DonhangService.ListDonhang;
-  dataSource = new MatTableDataSource([]);
+  dataSource = new MatTableDataSource<any>([]);
   donhangId: any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;

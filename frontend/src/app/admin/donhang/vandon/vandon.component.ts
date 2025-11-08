@@ -26,6 +26,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 import moment from 'moment';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
+import { DateHelpers } from '../../../shared/utils/date-helpers';
 @Component({
   selector: 'app-vandon',
   templateUrl: './vandon.component.html',
@@ -48,10 +49,11 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
     MatTooltipModule,
     MatDatepickerModule,
     MatProgressSpinnerModule,
-    MatProgressBarModule
+    MatProgressBarModule,
   ]
 })
 export class VandonComponent {
+  DateHelpers = DateHelpers;
   Detail: any = {};
   displayedColumns: string[] = [
     'madonhang',

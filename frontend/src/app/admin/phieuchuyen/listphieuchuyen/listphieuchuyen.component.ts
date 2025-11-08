@@ -44,11 +44,12 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
     FormsModule,
     MatTooltipModule,
     MatDialogModule,
-    MatDatepickerModule
+    MatDatepickerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListPhieuchuyenComponent {
+  DateHelpers = DateHelpers;
   displayedColumns: string[] = [
     'ngaygiao',
     'name',
@@ -106,7 +107,7 @@ export class ListPhieuchuyenComponent {
   private _dialog: MatDialog = inject(MatDialog);
   Listphieuchuyen:any = this._PhieuchuyenService.ListDonhang;
   EditList:any=[];
-  dataSource = new MatTableDataSource([]);
+  dataSource = new MatTableDataSource<any>([]);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   isSearch: boolean = false;  SearchParams: any = {

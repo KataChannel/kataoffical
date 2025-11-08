@@ -116,7 +116,7 @@ export class ListPhieugiaohangComponent implements OnDestroy {
   private _GraphqlService: GraphqlService = inject(GraphqlService);
   private _router: Router = inject(Router);
   Listphieugiaohang: any = signal<any>({});
-  dataSource = new MatTableDataSource([]);
+  dataSource = new MatTableDataSource<any>([]);
   donhangId: any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   isSearch: boolean = false;
@@ -238,7 +238,7 @@ export class ListPhieugiaohangComponent implements OnDestroy {
         this.pageSize.set(10);
         this.page.set(1);
         this.pageCount.set(0);
-        this.dataSource = new MatTableDataSource([]);
+        this.dataSource = new MatTableDataSource<any>([]);
       } finally {
         this.isLoading.set(false);
       }
@@ -442,33 +442,42 @@ export class ListPhieugiaohangComponent implements OnDestroy {
     console.log(query, column, filteredData);
   }
   ListFilter: any[] = [];
-  ChosenItem(item: any) {
-    if (this.ListFilter.includes(item.id)) {
-      this.ListFilter = this.ListFilter.filter((v) => v !== item.id);
+  ChosenItem(item: any, column: any) {
+    const CheckItem = this.dataSource.data.filter(
+      (v: any) => v[column] === item[column]
+    );
+    const CheckItem1 = this.ListFilter.filter(
+      (v: any) => v[column] === item[column]
+    );
+    if (CheckItem1.length > 0) {
+      this.ListFilter = this.ListFilter.filter(
+        (v) => v[column] !== item[column]
+      );
     } else {
-      this.ListFilter.push(item.id);
+      this.ListFilter = [...this.ListFilter, ...CheckItem];
     }
-    console.log(this.ListFilter);
   }
   ChosenAll(list: any) {
     list.forEach((v: any) => {
-      if (this.ListFilter.includes(v.id)) {
-        this.ListFilter = this.ListFilter.filter((v) => v !== v.id);
+      const CheckItem = this.ListFilter.find((v1) => v1.id === v.id)
+        ? true
+        : false;
+      if (CheckItem) {
+        this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
       } else {
-        this.ListFilter.push(v.id);
+        this.ListFilter.push(v);
       }
     });
   }
   ResetFilter() {
-    this.ListFilter = this.dataSource.data.map((v: any) => v.id);
-    // Reset the filtered data to show all current page data
-    this.dataSource.filteredData = this.dataSource.data;
+    this.ListFilter = this.dataSource.data || [];
+    this.dataSource.filteredData = this.dataSource.data || [];
   }
   EmptyFiter() {
     this.ListFilter = [];
   }
   CheckItem(item: any) {
-    return this.ListFilter.includes(item.id);
+    return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
 
   EditList: any = [];
@@ -543,11 +552,9 @@ export class ListPhieugiaohangComponent implements OnDestroy {
     return this.EditList.some((v: any) => v.id === item.id);
   }
   ApplyFilterColum(menu: any) {
-    // Apply the filter to current page data only since we're using server-side pagination
-    this.dataSource.filteredData = this.dataSource.data.filter((v: any) =>
-      this.ListFilter.includes(v.id)
+    this.dataSource.data = this.dataSource.data.filter((v: any) =>
+      this.ListFilter.some((v1) => v1.id === v.id)
     );
-    console.log(this.dataSource.filteredData);
     menu.closeMenu();
   }
   private updateDisplayedColumns(): void {
