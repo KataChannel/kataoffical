@@ -71,7 +71,7 @@ import { LoadingUtils } from '../../../shared/utils/loading.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
   // providers: [provideNativeDateAdapter()],
 })
-export class ListPhieugiaohangComponent implements OnDestroy {
+export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
   Detail: any = {};
   displayedColumns: string[] = [
     'STT',
@@ -182,6 +182,29 @@ export class ListPhieugiaohangComponent implements OnDestroy {
     }
   }
 
+  ngAfterViewInit(): void {
+    // Kết nối MatSort với dataSource sau khi view đã init
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+      
+      // Configure custom sort accessor for complex fields
+      this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+        switch (property) {
+          case 'khachhang':
+            return item.khachhang?.name || '';
+          case 'sanpham':
+            return item.sanpham?.length || 0;
+          case 'ngaygiao':
+          case 'createdAt':
+          case 'updatedAt':
+            return new Date(item[property]).getTime();
+          default:
+            return item[property];
+        }
+      };
+    }
+  }
+
   async onPageChange(event: any): Promise<void> {
     console.log('Page change event:', event);
 
@@ -221,9 +244,27 @@ export class ListPhieugiaohangComponent implements OnDestroy {
         
         // Set data to table without client-side pagination since we're using server-side
         this.dataSource = new MatTableDataSource(data);
-        // Disable client-side pagination/sorting since we're using server-side
+        // Keep sorting enabled for client-side, but disable pagination
         this.dataSource.paginator = null;
-        this.dataSource.sort = null;
+        if (this.sort) {
+          this.dataSource.sort = this.sort;
+        }
+        
+        // Configure custom sort accessor for complex fields
+        this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+          switch (property) {
+            case 'khachhang':
+              return item.khachhang?.name || '';
+            case 'sanpham':
+              return item.sanpham?.length || 0;
+            case 'ngaygiao':
+            case 'createdAt':
+            case 'updatedAt':
+              return new Date(item[property]).getTime();
+            default:
+              return item[property];
+          }
+        };
       } catch (error) {
         console.error('Error loading data:', error);
         this._snackBar.open('Lỗi khi tải dữ liệu', '', {

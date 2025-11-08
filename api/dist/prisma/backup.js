@@ -66,38 +66,71 @@ async function restoreTableFromJson(table) {
         }
         const backupPath = path.join(BACKUP_ROOT_DIR, latestBackupDir);
         const metadataPath = path.join(backupPath, `${table}_metadata.json`);
+        const singleFilePath = path.join(backupPath, `${table}.json`);
+        const firstChunkPath = path.join(backupPath, `${table}_part1.json`);
         let allData = [];
-        if (fs.existsSync(metadataPath)) {
-            const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-            console.log(`📦 Đang restore bảng ${table} từ ${metadata.chunks} chunks...`);
-            for (let i = 0; i < metadata.chunks; i++) {
-                const chunkPath = path.join(backupPath, `${table}_part${i + 1}.json`);
+        if (fs.existsSync(firstChunkPath)) {
+            let chunks = 1;
+            if (fs.existsSync(metadataPath)) {
+                const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+                chunks = metadata.chunks;
+                console.log(`📦 Đang restore bảng ${table} từ ${chunks} chunks (${metadata.totalRecords} records)...`);
+            }
+            else {
+                while (fs.existsSync(path.join(backupPath, `${table}_part${chunks + 1}.json`))) {
+                    chunks++;
+                }
+                console.log(`📦 Đang restore bảng ${table} từ ${chunks} chunks (auto-detected)...`);
+            }
+            for (let i = 1; i <= chunks; i++) {
+                const chunkPath = path.join(backupPath, `${table}_part${i}.json`);
                 if (!fs.existsSync(chunkPath)) {
-                    console.error(`❌ Không tìm thấy chunk file: ${chunkPath}`);
+                    console.error(`⚠️  Không tìm thấy chunk file: ${chunkPath}`);
                     continue;
                 }
                 const chunkData = JSON.parse(fs.readFileSync(chunkPath, 'utf8'));
                 allData = allData.concat(chunkData);
-                console.log(`  ✅ Đọc chunk ${i + 1}/${metadata.chunks} (${chunkData.length} records)`);
+                console.log(`  ✅ Đọc chunk ${i}/${chunks} (${chunkData.length} records)`);
             }
+        }
+        else if (fs.existsSync(singleFilePath)) {
+            allData = JSON.parse(fs.readFileSync(singleFilePath, 'utf8'));
+            console.log(`📄 Đang restore bảng ${table} từ file đơn (${allData.length} records)...`);
         }
         else {
-            const filePath = path.join(backupPath, `${table}.json`);
-            if (!fs.existsSync(filePath)) {
-                console.error(`❌ Không tìm thấy file backup cho bảng ${table}`);
-                return;
-            }
-            allData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+            console.error(`❌ Không tìm thấy file backup cho bảng ${table}`);
+            console.error(`   Đã tìm: ${singleFilePath}`);
+            console.error(`   Đã tìm: ${firstChunkPath}`);
+            return;
         }
+        if (allData.length === 0) {
+            console.log(`⚠️  Bảng ${table} không có dữ liệu để restore`);
+            return;
+        }
+        console.log(`🔄 Bắt đầu insert ${allData.length} records vào bảng ${table}...`);
         let insertedCount = 0;
+        let errorCount = 0;
         for (const row of allData) {
-            await prisma.$queryRawUnsafe(`INSERT INTO "${table}" (${Object.keys(row).join(', ')}) VALUES (${Object.values(row).map((_, i) => `$${i + 1}`).join(', ')})`, ...Object.values(row));
-            insertedCount++;
-            if (insertedCount % 1000 === 0) {
-                console.log(`  📝 Đã insert ${insertedCount}/${allData.length} records...`);
+            try {
+                await prisma.$queryRawUnsafe(`INSERT INTO "${table}" (${Object.keys(row).join(', ')}) VALUES (${Object.values(row).map((_, i) => `$${i + 1}`).join(', ')})`, ...Object.values(row));
+                insertedCount++;
+                if (insertedCount % 1000 === 0) {
+                    console.log(`  📝 Đã insert ${insertedCount}/${allData.length} records...`);
+                }
+            }
+            catch (insertError) {
+                errorCount++;
+                if (errorCount <= 5) {
+                    console.error(`  ⚠️  Lỗi insert record:`, insertError.message);
+                }
             }
         }
-        console.log(`✅ Khôi phục dữ liệu thành công cho bảng ${table} (${allData.length} records)`);
+        if (errorCount > 0) {
+            console.log(`⚠️  Khôi phục bảng ${table} với ${insertedCount} records thành công, ${errorCount} lỗi`);
+        }
+        else {
+            console.log(`✅ Khôi phục dữ liệu thành công cho bảng ${table} (${insertedCount} records)`);
+        }
     }
     catch (error) {
         console.error(`❌ Lỗi khôi phục bảng ${table}:`, error);
