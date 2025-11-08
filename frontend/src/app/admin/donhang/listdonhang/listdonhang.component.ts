@@ -1009,7 +1009,17 @@ export class ListDonhangComponent {
         continue;
       }
     }
+    
+    // 🔥 FIX: Load danh sách sản phẩm và khách hàng trước khi auto-select
     await this._SanphamService.getAllSanpham({ pageSize: 99999 });
+    
+    // 🔥 FIX: Đảm bảo ListKhachhang đã load xong trước khi auto-select
+    if (!this.ListKhachhang || this.ListKhachhang.length === 0) {
+      console.log('📋 Loading customer list for auto-selection...');
+      await this.LoadListKhachhang();
+      console.log(`✅ Loaded ${this.ListKhachhang?.length || 0} customers`);
+    }
+    
     this.dialog.open(this.dialogImportExcelCu, {
       disableClose: true,
     });
@@ -1298,11 +1308,16 @@ export class ListDonhangComponent {
       !this.statusDetails?.length ||
       !this.ListKhachhang?.length
     ) {
+      console.warn('❌ [autoSelectCustomers] Cannot auto-select:', {
+        statusDetailsLength: this.statusDetails?.length || 0,
+        ListKhachhangLength: this.ListKhachhang?.length || 0
+      });
       return;
     }
 
     const customers = this.ListKhachhang;
-    console.log(customers);
+    console.log('🔍 [autoSelectCustomers] Starting with', customers.length, 'customers');
+    console.log('🔍 [autoSelectCustomers] Processing', this.statusDetails.length, 'files');
     
     let matchedCount = 0;
     let skippedCount = 0;
@@ -1322,6 +1337,7 @@ export class ListDonhangComponent {
       }
 
       const filename = detail.tenkhongdau.toLowerCase();
+      console.log(`\n🔎 [autoSelectCustomers] File ${index + 1}/${this.statusDetails.length}: "${detail.fileName}" → "${filename}"`);
 
       // Try to match with customer data using multiple strategies
       let matchedCustomer = null;
@@ -1333,6 +1349,9 @@ export class ListDonhangComponent {
         ).toLowerCase();
         return customerNameNoAccent === filename;
       });
+      if (matchedCustomer) {
+        console.log('✅ [Strategy 1] Exact name match:', matchedCustomer.name);
+      }
 
       // Strategy 2: Exact match with customer subtitle (without accents)
       if (!matchedCustomer) {
@@ -1342,6 +1361,9 @@ export class ListDonhangComponent {
           ).toLowerCase();
           return customerSubtitleNoAccent === filename;
         });
+        if (matchedCustomer) {
+          console.log('✅ [Strategy 2] Exact subtitle match:', matchedCustomer.name, '(subtitle:', matchedCustomer.subtitle + ')');
+        }
       }
 
       // Strategy 3: Exact match with customer code (makh)
@@ -1350,6 +1372,9 @@ export class ListDonhangComponent {
           const customerCode = (customer.makh || '').toLowerCase();
           return customerCode === filename;
         });
+        if (matchedCustomer) {
+          console.log('✅ [Strategy 3] Exact makh match:', matchedCustomer.name, '(makh:', matchedCustomer.makh + ')');
+        }
       }
 
       // Strategy 4: Partial match - filename contains customer name
@@ -1362,6 +1387,9 @@ export class ListDonhangComponent {
             customerNameNoAccent && filename.includes(customerNameNoAccent)
           );
         });
+        if (matchedCustomer) {
+          console.log('✅ [Strategy 4] Partial match (filename contains name):', matchedCustomer.name);
+        }
       }
 
       // Strategy 5: Partial match - customer name contains filename
@@ -1374,6 +1402,9 @@ export class ListDonhangComponent {
             customerNameNoAccent && customerNameNoAccent.includes(filename)
           );
         });
+        if (matchedCustomer) {
+          console.log('✅ [Strategy 5] Partial match (name contains filename):', matchedCustomer.name);
+        }
       }
 
       // Strategy 6: Partial match with subtitle
@@ -1388,6 +1419,14 @@ export class ListDonhangComponent {
               customerSubtitleNoAccent.includes(filename))
           );
         });
+        if (matchedCustomer) {
+          console.log('✅ [Strategy 6] Partial subtitle match:', matchedCustomer.name, '(subtitle:', matchedCustomer.subtitle + ')');
+        }
+      }
+
+      // Log if no match found
+      if (!matchedCustomer) {
+        console.log('❌ [autoSelectCustomers] No match found for:', filename);
       }
 
       // If we found a match, auto-select it
@@ -1414,11 +1453,12 @@ export class ListDonhangComponent {
         detail.autoSelected = true;
         matchedCount++;
         console.log(
-          `Auto-selected customer "${matchedCustomer.name}" for file "${detail.fileName}"`
+          `✅ Auto-selected customer "${matchedCustomer.name}" (ID: ${matchedCustomer.id}) for file "${detail.fileName}"`
         );
       }
     });
-    console.log(matchedCount, skippedCount);
+    
+    console.log(`\n📊 [autoSelectCustomers] Summary: Matched=${matchedCount}, Skipped=${skippedCount}, Total=${this.statusDetails.length}`);
 
     // Show notification about auto-selection results
     if (matchedCount > 0 || skippedCount > 0) {
