@@ -312,34 +312,83 @@ export class ListPhieuchiahangComponent {
   }
   @memoize()
   FilterHederColumn(list: any, column: any) {
-    const uniqueList = list.filter(
-      (obj: any, index: number, self: any) =>
-        index === self.findIndex((t: any) => t[column] === obj[column])
-    );
-    return uniqueList;
+    // Handle special columns with objects
+    if (column === 'sanpham') {
+      // Group by product count
+      const uniqueList = list.filter(
+        (obj: any, index: number, self: any) =>
+          index === self.findIndex((t: any) => 
+            (t[column]?.length || 0) === (obj[column]?.length || 0)
+          )
+      );
+      return uniqueList;
+    } else {
+      // Standard comparison for primitive values
+      const uniqueList = list.filter(
+        (obj: any, index: number, self: any) =>
+          index === self.findIndex((t: any) => t[column] === obj[column])
+      );
+      return uniqueList;
+    }
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listdonhang().filter(
-      (v: any) =>
-        removeVietnameseAccents(v[column]).includes(
-          event.target.value.toLowerCase()
-        ) || v[column].toLowerCase().includes(event.target.value.toLowerCase())
-    );
     const query = event.target.value.toLowerCase();
+    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => {
+      let value: any;
+      
+      // Handle special columns with objects
+      if (column === 'sanpham') {
+        value = `${v[column]?.length || 0} sản phẩm`;
+      } else {
+        value = v[column];
+      }
+      
+      if (value) {
+        return (
+          removeVietnameseAccents(value.toString())
+            .toLowerCase()
+            .includes(query) || value.toString().toLowerCase().includes(query)
+        );
+      }
+      return false;
+    });
   }
   ListFilter: any[] = [];
   ChosenItem(item: any, column: any) {
-    const CheckItem = this.dataSource.filteredData.filter(
-      (v: any) => v[column] === item[column]
-    );
-    const CheckItem1 = this.ListFilter.filter(
-      (v: any) => v[column] === item[column]
-    );
-    if (CheckItem1.length > 0) {
-      this.ListFilter = this.ListFilter.filter(
-        (v) => v[column] !== item[column]
+    let CheckItem: any[] = [];
+    let CheckItem1: any[] = [];
+    
+    // Handle special columns with objects
+    if (column === 'sanpham') {
+      // Filter by product count
+      CheckItem = this.dataSource.filteredData.filter(
+        (v: any) => (v[column]?.length || 0) === (item[column]?.length || 0)
       );
+      CheckItem1 = this.ListFilter.filter(
+        (v: any) => (v[column]?.length || 0) === (item[column]?.length || 0)
+      );
+    } else {
+      // Standard comparison for primitive values
+      CheckItem = this.dataSource.filteredData.filter(
+        (v: any) => v[column] === item[column]
+      );
+      CheckItem1 = this.ListFilter.filter(
+        (v: any) => v[column] === item[column]
+      );
+    }
+    
+    if (CheckItem1.length > 0) {
+      // Remove items with matching column value
+      if (column === 'sanpham') {
+        this.ListFilter = this.ListFilter.filter(
+          (v) => (v[column]?.length || 0) !== (item[column]?.length || 0)
+        );
+      } else {
+        this.ListFilter = this.ListFilter.filter(
+          (v) => v[column] !== item[column]
+        );
+      }
     } else {
       this.ListFilter = [...this.ListFilter, ...CheckItem];
     }

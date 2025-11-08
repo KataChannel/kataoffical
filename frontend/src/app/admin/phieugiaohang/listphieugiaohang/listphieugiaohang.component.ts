@@ -416,17 +416,50 @@ export class ListPhieugiaohangComponent implements OnDestroy {
   FilterHederColumn(list: any, column: any) {
     // Use the current data source data instead of the full list for filtering
     const dataToFilter = this.dataSource.data || [];
-    const uniqueList = dataToFilter.filter(
-      (obj: any, index: number, self: any) =>
-        index === self.findIndex((t: any) => t[column] === obj[column])
-    );
-    return uniqueList;
+    
+    // Handle special columns with objects
+    if (column === 'sanpham') {
+      // Group by product count
+      const uniqueList = dataToFilter.filter(
+        (obj: any, index: number, self: any) =>
+          index === self.findIndex((t: any) => 
+            (t[column]?.length || 0) === (obj[column]?.length || 0)
+          )
+      );
+      return uniqueList;
+    } else if (column === 'khachhang') {
+      // Group by customer name
+      const uniqueList = dataToFilter.filter(
+        (obj: any, index: number, self: any) =>
+          index === self.findIndex((t: any) => 
+            (t[column]?.name || '') === (obj[column]?.name || '')
+          )
+      );
+      return uniqueList;
+    } else {
+      // Standard comparison for primitive values
+      const uniqueList = dataToFilter.filter(
+        (obj: any, index: number, self: any) =>
+          index === self.findIndex((t: any) => t[column] === obj[column])
+      );
+      return uniqueList;
+    }
   }
   doFilterHederColumn(event: any, column: any): void {
     // Since we're using server-side pagination, this should filter within current page data
     const query = event.target.value.toLowerCase();
     const filteredData = this.dataSource.data.filter((v: any) => {
-      const value = v[column];
+      let value: any;
+      
+      // Handle special columns with objects
+      if (column === 'sanpham') {
+        value = `${v[column]?.length || 0} sản phẩm`;
+      } else if (column === 'khachhang') {
+        value = v[column]?.name || '';
+      } else {
+        value = v[column];
+      }
+      
       if (value) {
         return (
           removeVietnameseAccents(value.toString())
@@ -443,16 +476,51 @@ export class ListPhieugiaohangComponent implements OnDestroy {
   }
   ListFilter: any[] = [];
   ChosenItem(item: any, column: any) {
-    const CheckItem = this.dataSource.data.filter(
-      (v: any) => v[column] === item[column]
-    );
-    const CheckItem1 = this.ListFilter.filter(
-      (v: any) => v[column] === item[column]
-    );
-    if (CheckItem1.length > 0) {
-      this.ListFilter = this.ListFilter.filter(
-        (v) => v[column] !== item[column]
+    let CheckItem: any[] = [];
+    let CheckItem1: any[] = [];
+    
+    // Handle special columns with objects
+    if (column === 'sanpham') {
+      // Filter by product count
+      CheckItem = this.dataSource.data.filter(
+        (v: any) => (v[column]?.length || 0) === (item[column]?.length || 0)
       );
+      CheckItem1 = this.ListFilter.filter(
+        (v: any) => (v[column]?.length || 0) === (item[column]?.length || 0)
+      );
+    } else if (column === 'khachhang') {
+      // Filter by customer name
+      CheckItem = this.dataSource.data.filter(
+        (v: any) => (v[column]?.name || '') === (item[column]?.name || '')
+      );
+      CheckItem1 = this.ListFilter.filter(
+        (v: any) => (v[column]?.name || '') === (item[column]?.name || '')
+      );
+    } else {
+      // Standard comparison for primitive values
+      CheckItem = this.dataSource.data.filter(
+        (v: any) => v[column] === item[column]
+      );
+      CheckItem1 = this.ListFilter.filter(
+        (v: any) => v[column] === item[column]
+      );
+    }
+    
+    if (CheckItem1.length > 0) {
+      // Remove items with matching column value
+      if (column === 'sanpham') {
+        this.ListFilter = this.ListFilter.filter(
+          (v) => (v[column]?.length || 0) !== (item[column]?.length || 0)
+        );
+      } else if (column === 'khachhang') {
+        this.ListFilter = this.ListFilter.filter(
+          (v) => (v[column]?.name || '') !== (item[column]?.name || '')
+        );
+      } else {
+        this.ListFilter = this.ListFilter.filter(
+          (v) => v[column] !== item[column]
+        );
+      }
     } else {
       this.ListFilter = [...this.ListFilter, ...CheckItem];
     }
@@ -470,8 +538,13 @@ export class ListPhieugiaohangComponent implements OnDestroy {
     });
   }
   ResetFilter() {
-    this.ListFilter = this.dataSource.data || [];
-    this.dataSource.filteredData = this.dataSource.data || [];
+    // Reset to original data from signal
+    const originalData = this.Listphieugiaohang() || [];
+    console.log('ResetFilter - Original data length:', originalData.length);
+    this.ListFilter = [...originalData];
+    this.dataSource.data = [...originalData];
+    this.dataSource.filteredData = [...originalData];
+    console.log('ResetFilter - After reset, dataSource.data length:', this.dataSource.data.length);
   }
   EmptyFiter() {
     this.ListFilter = [];
@@ -552,9 +625,12 @@ export class ListPhieugiaohangComponent implements OnDestroy {
     return this.EditList.some((v: any) => v.id === item.id);
   }
   ApplyFilterColum(menu: any) {
-    this.dataSource.data = this.dataSource.data.filter((v: any) =>
+    // Filter based on selected items in ListFilter
+    const originalData = this.Listphieugiaohang() || [];
+    this.dataSource.data = originalData.filter((v: any) =>
       this.ListFilter.some((v1) => v1.id === v.id)
     );
+    console.log('ApplyFilterColum - Filtered data length:', this.dataSource.data.length, 'from', originalData.length);
     menu.closeMenu();
   }
   private updateDisplayedColumns(): void {

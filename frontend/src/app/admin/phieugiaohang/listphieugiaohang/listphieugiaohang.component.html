@@ -199,6 +199,12 @@
                                         @case ('ngaygiao') {
                                         <span>{{item[column]|date:'dd/MM/yyyy'}}</span>
                                         }
+                                        @case ('sanpham') {
+                                        <span>{{item[column]?.length || 0}} sản phẩm</span>
+                                        }
+                                        @case ('khachhang') {
+                                        <span>{{item[column]?.name || 'Trống'}}</span>
+                                        }
                                         @default {
                                         <span> {{item[column]||'Trống'}}</span>
                                         }

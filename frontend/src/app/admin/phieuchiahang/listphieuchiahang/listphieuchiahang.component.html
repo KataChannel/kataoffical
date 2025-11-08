@@ -179,6 +179,9 @@
                                                 @case ('thanhtien') {
                                                     <span class="whitespace-nowrap">{{ item[column] | number:'1.0-0' }}</span>
                                                 }
+                                                @case ('sanpham') {
+                                                    <span class="whitespace-nowrap">{{ item[column]?.length || 0 }} sản phẩm</span>
+                                                }
                                                 @default {
                                                     <span class="whitespace-nowrap">{{ item[column] || 'Trống' }}</span>
                                                 }
@@ -255,10 +258,10 @@
                             } @else {
                                 <!-- View mode -->
                                 <span 
-                                    (dblclick)="startEditNhanvien(row)"
-                                    class="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded block text-sm"
-                                    matTooltip="Double-click để chỉnh sửa">
-                                    {{ row.nhanvienchiahang || '(Double-click để nhập)' }}
+                                    (click)="startEditNhanvien(row)"
+                                    class="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded block text-sm !border-dashed !border !border-blue-500"
+                                    matTooltip="Click để chỉnh sửa">
+                                    {{ row.nhanvienchiahang || '(Click để nhập)' }}
                                 </span>
                             }
                         </div>
