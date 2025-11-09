@@ -682,7 +682,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     const orders = this.Listphieugiaohang();
     if (!Array.isArray(orders)) return 0;
     return orders.filter((item: any) => 
-      ['danhan', 'hoanthanh'].includes(item.status)
+      ['danhan', 'hoanthanh', 'dagiao'].includes(item.status)
     ).length;
   }
   
@@ -694,7 +694,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     const orders = this.Listphieugiaohang();
     if (!Array.isArray(orders)) return 0;
     return orders.filter((item: any) => 
-      ['dadat', 'dagiao'].includes(item.status)
+      ['dadat', 'huy'].includes(item.status)
     ).length;
   }
 
@@ -706,7 +706,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     if (!Array.isArray(orders)) return;
     
     this.dataSource.data = orders.filter((item: any) => 
-      ['danhan', 'hoanthanh'].includes(item.status)
+      ['danhan','dagiao', 'hoanthanh'].includes(item.status)
     );
     
     if (this.dataSource.paginator) {
@@ -719,10 +719,11 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
    */
   filterChuagiao(): void {
     const orders = this.Listphieugiaohang();
+    console.log('Filtering undelivered orders', orders);
     if (!Array.isArray(orders)) return;
     
     this.dataSource.data = orders.filter((item: any) => 
-      ['dadat', 'dagiao'].includes(item.status)
+      ['dadat', 'huy'].includes(item.status)
     );
     
     if (this.dataSource.paginator) {
