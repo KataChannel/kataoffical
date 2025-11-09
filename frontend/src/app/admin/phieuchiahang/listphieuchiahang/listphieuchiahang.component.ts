@@ -190,8 +190,8 @@ export class ListPhieuchiahangComponent {
   async onTypeChange(value: string): Promise<void> {
     this.SearchParams.Type = value;
     this.SearchParams.pageNumber = 1; // Reset to first page
-    // Chỉ update SearchParams, không load data tự động
-    // User cần nhấn nút Tìm Kiếm để load data
+    // 🔥 Auto-load data when type changes for better UX
+    await this.loadData();
   }
   
   /**

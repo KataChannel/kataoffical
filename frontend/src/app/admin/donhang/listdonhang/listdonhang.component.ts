@@ -346,9 +346,10 @@ export class ListDonhangComponent {
   }
 
   async onTypeChange(value: string): Promise<void> {
-    // Chỉ update SearchParams, không load data tự động
     this.SearchParams.Type = value;
-    // User cần nhấn nút Tìm Kiếm để load data
+    this.SearchParams.pageNumber = 1; // Reset to first page
+    // 🔥 Auto-load data when type changes for better UX
+    await this.LoadData();
   }
   
   onDateChange(event: any): void {

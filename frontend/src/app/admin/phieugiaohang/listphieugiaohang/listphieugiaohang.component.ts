@@ -403,10 +403,10 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
   }
 
   async onTypeChange(value: string): Promise<void> {
-    // Chỉ update SearchParams, không load data tự động
     this.SearchParams.Type = value;
     this.SearchParams.pageNumber = 1; // Reset to first page
-    // User cần nhấn nút Tìm Kiếm để load data
+    // 🔥 Auto-load data when type changes for better UX
+    await this.LoadData();
   }
 
   onDateChange(event: any): void {
@@ -673,6 +673,77 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
   getTrangthaiIn(item: any): boolean {
     return item.printCount && item.printCount > 0;
   }
+
+  /**
+   * Count delivered orders (danhan, hoanthanh)
+   * Safely handles signal value and ensures array type
+   */
+  countDagiao(): number {
+    const orders = this.Listphieugiaohang();
+    if (!Array.isArray(orders)) return 0;
+    return orders.filter((item: any) => 
+      ['danhan', 'hoanthanh'].includes(item.status)
+    ).length;
+  }
+  
+  /**
+   * Count undelivered orders (dadat, dagiao)
+   * Safely handles signal value and ensures array type
+   */
+  countChuagiao(): number {
+    const orders = this.Listphieugiaohang();
+    if (!Array.isArray(orders)) return 0;
+    return orders.filter((item: any) => 
+      ['dadat', 'dagiao'].includes(item.status)
+    ).length;
+  }
+
+  /**
+   * Filter by delivered status (danhan, hoanthanh)
+   */
+  filterDagiao(): void {
+    const orders = this.Listphieugiaohang();
+    if (!Array.isArray(orders)) return;
+    
+    this.dataSource.data = orders.filter((item: any) => 
+      ['danhan', 'hoanthanh'].includes(item.status)
+    );
+    
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+  
+  /**
+   * Filter by undelivered status (dadat, dagiao)
+   */
+  filterChuagiao(): void {
+    const orders = this.Listphieugiaohang();
+    if (!Array.isArray(orders)) return;
+    
+    this.dataSource.data = orders.filter((item: any) => 
+      ['dadat', 'dagiao'].includes(item.status)
+    );
+    
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  /**
+   * Reset filter to show all orders
+   */
+  resetStatusFilter(): void {
+    const orders = this.Listphieugiaohang();
+    if (!Array.isArray(orders)) return;
+    
+    this.dataSource.data = orders;
+    
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
   ApplyFilterColum(menu: any) {
     // Filter based on selected items in ListFilter
     const originalData = this.Listphieugiaohang() || [];

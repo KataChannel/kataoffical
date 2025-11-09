@@ -5,7 +5,7 @@
     <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
         <div *ngIf="!isSearch"
             class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
-            <div class="flex flex-row space-x-2 items-center">
+            <div class="flex flex-row flex-wrap space-x-2 items-center whitespace-nowrap">
 
                 <div class="relative w-full">
                     <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
@@ -54,6 +54,16 @@
               <span (click)="ToggleAll()" class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{total()}} Phiếu giao hàng
                 </span>
+                   <span (click)="filterDagiao()" 
+                          class="p-2 rounded-lg text-white bg-blue-600 cursor-pointer hover:bg-blue-700 transition-colors"
+                          matTooltip="Click để lọc đơn đã giao">
+                        Đã Giao {{countDagiao()}}
+                    </span>
+                    <span (click)="filterChuagiao()" 
+                          class="p-2 rounded-lg text-white bg-yellow-600 cursor-pointer hover:bg-yellow-700 transition-colors"
+                          matTooltip="Click để lọc đơn chưa giao">
+                        Chưa Giao {{countChuagiao()}}
+                    </span>
                   <button (click)="UpdateBulk()" *ngIf="EditList.length > 0" 
                     [disabled]="isBulkUpdating() || isLoading()"
                     class="flex flex-row items-center space-x-2" color="primary" mat-flat-button>
@@ -121,6 +131,39 @@
                     <mat-icon>search</mat-icon>
                 }
             </button>
+
+            <!-- Filter Buttons -->
+            <!-- <button 
+                mat-raised-button 
+                color="primary"
+                (click)="filterDagiao()"
+                [disabled]="isLoading()"
+                class="!h-12"
+                matTooltip="Lọc phiếu giao hàng đã giao">
+                <mat-icon>check_circle</mat-icon>
+                <span class="ml-2">Đã Giao ({{ countDagiao() }})</span>
+            </button>
+
+            <button 
+                mat-raised-button 
+                color="warn"
+                (click)="filterChuagiao()"
+                [disabled]="isLoading()"
+                class="!h-12"
+                matTooltip="Lọc phiếu giao hàng chưa giao">
+                <mat-icon>pending</mat-icon>
+                <span class="ml-2">Chưa Giao ({{ countChuagiao() }})</span>
+            </button> -->
+
+            <!-- <button 
+                mat-stroked-button
+                (click)="resetStatusFilter()"
+                [disabled]="isLoading()"
+                class="!h-12"
+                matTooltip="Hiển thị tất cả">
+                <mat-icon>refresh</mat-icon>
+                <span class="ml-2">Tất Cả</span>
+            </button> -->
         </div>
         
         <div class="w-full overflow-auto relative">

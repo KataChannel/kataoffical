@@ -2221,6 +2221,7 @@ export class DonhangService {
             order: data.order,
             ghichu: data.ghichu,
             status: 'dadat',
+            printCount: data.printCount !== undefined ? data.printCount : undefined,
             ...(data.sanpham && data.sanpham.length
               ? {
                   sanpham: {
@@ -2315,6 +2316,7 @@ export class DonhangService {
             isActive: data.isActive,
             order: data.order,
             ghichu: data.ghichu,
+            printCount: data.printCount !== undefined ? data.printCount : undefined,
             ...(data.sanpham && data.sanpham.length
               ? {
                   sanpham: {
@@ -2426,6 +2428,7 @@ export class DonhangService {
           where: { id },
           data: {
             status: 'dagiao',
+            printCount: data.printCount !== undefined ? data.printCount : undefined,
             sanpham: {
               updateMany: data.sanpham.map((sp: any) => ({
                 where: { idSP: sp.id },
@@ -2494,6 +2497,7 @@ export class DonhangService {
           where: { id },
           data: {
             status: 'danhan',
+            printCount: data.printCount !== undefined ? data.printCount : undefined,
             sanpham: {
               updateMany: data.sanpham.map((item: any) => {
                 const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
@@ -2523,6 +2527,7 @@ export class DonhangService {
           where: { id },
           data: {
             status: 'hoanthanh',
+            printCount: data.printCount !== undefined ? data.printCount : undefined,
           },
         });
       }
@@ -2640,6 +2645,7 @@ export class DonhangService {
             ...data,
             status: 'dagiao',
             ngaygiao: new Date(data.ngaygiao),
+            printCount: data.printCount !== undefined ? data.printCount : undefined,
             sanpham: {
               updateMany: data.sanpham.map((sp: any) => ({
                 where: { idSP: sp.id },
@@ -2711,6 +2717,7 @@ export class DonhangService {
           data: {
             ...data,
             status: 'danhan',
+            printCount: data.printCount !== undefined ? data.printCount : undefined,
             sanpham: {
               updateMany: data.sanpham.map((sp: any) => ({
                 where: { idSP: sp.id },
@@ -2730,6 +2737,7 @@ export class DonhangService {
           where: { id },
           data: {
             status: 'hoanthanh',
+            printCount: data.printCount !== undefined ? data.printCount : undefined,
           },
         });
       }
@@ -2789,6 +2797,7 @@ export class DonhangService {
           data: {
             status: 'huy',
             ghichu: data.ghichu || 'Đơn hàng đã hủy',
+            printCount: data.printCount !== undefined ? data.printCount : undefined,
           },
         });
       }
@@ -2809,6 +2818,7 @@ export class DonhangService {
             ghichu: data.ghichu,
             status: data.status,
             nhanvienchiahang: data.nhanvienchiahang,
+            printCount: data.printCount !== undefined ? data.printCount : undefined,
           },
           include: {
             sanpham: true,

@@ -1029,23 +1029,32 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
     if (currentPhieugiaohang && currentPhieugiaohang.id) {
       try {
         const oldPrintCount = currentPhieugiaohang.printCount || 0;
-        currentPhieugiaohang.printCount = oldPrintCount + 1;
+        const newPrintCount = oldPrintCount + 1;
         
-        // Cập nhật lên server
+        // Cập nhật lên server trước
         await this._PhieugiaohangService.updateDonhang({
           id: currentPhieugiaohang.id,
-          printCount: currentPhieugiaohang.printCount
+          printCount: newPrintCount
         });
         
-        console.log(`✅ [printContent] Đã cập nhật printCount: ${oldPrintCount} → ${currentPhieugiaohang.printCount}`);
+        // Chỉ cập nhật local state sau khi API thành công
+        currentPhieugiaohang.printCount = newPrintCount;
         
-        this._snackBar.open(`✅ Đã cập nhật trạng thái in (lần thứ ${currentPhieugiaohang.printCount})`, '', {
+        console.log(`✅ [printContent] Đã cập nhật printCount: ${oldPrintCount} → ${newPrintCount}`);
+        
+        this._snackBar.open(`✅ Đã cập nhật trạng thái in (lần thứ ${newPrintCount})`, '', {
           duration: 2000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
         });
       } catch (error) {
         console.error('❌ [printContent] Lỗi khi cập nhật printCount:', error);
+        this._snackBar.open('❌ Không thể cập nhật trạng thái in. Vui lòng thử lại!', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error']
+        });
       }
     }
 

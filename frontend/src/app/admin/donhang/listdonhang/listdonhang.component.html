@@ -95,14 +95,15 @@
             <mat-button-toggle-group 
                     [(ngModel)]="SearchParams.Type" 
                     [ngModelOptions]="{standalone: true}"
+                    [disabled]="isLoading()"
                     (change)="onTypeChange($event.value)">
-                    <mat-button-toggle value="all">
+                    <mat-button-toggle value="all" [disabled]="isLoading()">
                         All
                     </mat-button-toggle>
-                    <mat-button-toggle value="khachsi">
+                    <mat-button-toggle value="khachsi" [disabled]="isLoading()">
                         Sỉ
                     </mat-button-toggle>
-                    <mat-button-toggle value="khachle">
+                    <mat-button-toggle value="khachle" [disabled]="isLoading()">
                         Lẻ
                     </mat-button-toggle>
             </mat-button-toggle-group>
