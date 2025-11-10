@@ -245,8 +245,18 @@ export class ListPhieuchiahangComponent {
     this.isLoading.set(true);  // 🔥 Bắt đầu loading
     try {
       await this._DonhangService.searchDonhang(this.SearchParams);
-      this.CountItem = this.Listdonhang().length;
-      this.dataSource = new MatTableDataSource(this.Listdonhang());
+      const listData = this.Listdonhang();
+      
+      // Phòng thủ: kiểm tra dữ liệu hợp lệ
+      if (!Array.isArray(listData)) {
+        console.error('Listdonhang không phải là array:', listData);
+        this.CountItem = 0;
+        this.dataSource = new MatTableDataSource<any>([]);
+      } else {
+        this.CountItem = listData.length;
+        this.dataSource = new MatTableDataSource(listData);
+      }
+      
       console.log(this.dataSource.data);
 
       this.dataSource.paginator = this.paginator;
@@ -352,7 +362,16 @@ export class ListPhieuchiahangComponent {
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
     const query = event.target.value.toLowerCase();
-    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => {
+    const listData = this.Listdonhang();
+    
+    // Phòng thủ: kiểm tra dữ liệu hợp lệ
+    if (!Array.isArray(listData)) {
+      console.error('Listdonhang không phải là array:', listData);
+      this.dataSource.filteredData = [];
+      return;
+    }
+    
+    this.dataSource.filteredData = listData.filter((v: any) => {
       let value: any;
       
       // Handle special columns with objects
@@ -424,8 +443,13 @@ export class ListPhieuchiahangComponent {
     });
   }
   ResetFilter() {
-    this.ListFilter = this.Listdonhang();
-    this.dataSource.data = this.Listdonhang();
+    const listData = this.Listdonhang();
+    if (!Array.isArray(listData)) {
+      console.error('Listdonhang không phải là array:', listData);
+      return;
+    }
+    this.ListFilter = listData;
+    this.dataSource.data = listData;
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -436,7 +460,21 @@ export class ListPhieuchiahangComponent {
     return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
   ApplyFilterColum(menu: any) {
-    this.dataSource.data = this.Listdonhang().filter((v: any) =>
+    // Phòng thủ: kiểm tra Listdonhang có phải array không
+    const listData = this.Listdonhang();
+    if (!Array.isArray(listData)) {
+      console.error('Listdonhang không phải là array:', listData);
+      this._snackBar.open('Lỗi: Dữ liệu không hợp lệ', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+      menu.closeMenu();
+      return;
+    }
+    
+    this.dataSource.data = listData.filter((v: any) =>
       this.ListFilter.some((v1) => v1.id === v.id)
     );
     this.dataSource.paginator = this.paginator;

@@ -102,11 +102,9 @@ export class DonhangService {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        if (!response.ok) {
-
-        }
-        this.getAllDonhang()
-        this.donhangId.set(data.id)
+        
+        // ✅ Không gọi getAllDonhang() - component sẽ reload khi cần
+        this.donhangId.set(data.id);
         return data;
     } catch (error) {
         return console.error(error);
@@ -141,8 +139,8 @@ export class DonhangService {
       
       const data = await response.json();
       
-      // Refresh danh sách đơn hàng sau khi đồng bộ
-      this.getAllDonhang();
+      // ✅ Không gọi getAllDonhang() - component sẽ reload khi cần
+      // Component có thể gọi searchDonhang() để refresh data
       
       return data;
     } catch (error: any) {
@@ -168,14 +166,21 @@ export class DonhangService {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        if (!response.ok) {
-
+        
+        // ✅ Không gọi getAllDonhang() nữa vì endpoint không tồn tại
+        // Component sẽ tự reload data khi cần
+        this.donhangId.set(data.id);
+        
+        // ✅ Thêm đơn hàng mới vào ListDonhang thay vì reload toàn bộ
+        const currentList = this.ListDonhang();
+        if (Array.isArray(currentList)) {
+          this.ListDonhang.set([data, ...currentList]);
         }
-        this.getAllDonhang()
-        this.donhangId.set(data.id)
+        
         return data;
     } catch (error) {
-        return console.error(error);
+        console.error('Error in CreateDonhang:', error);
+        throw error;
     }
   }
 
@@ -256,17 +261,28 @@ export class DonhangService {
       };
       const response = await fetch(`${environment.APIURL}/donhang/search`, options);
       if (!response.ok) {
-
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();                 
-      this.ListDonhang.set(data.data)
-      this.page.set(data.pageNumber);
-      this.pageCount.set(data.totalPages);
-      this.total.set(data.total);
-      this.pageSize.set(data.pageSize);
-      return data
+      const data = await response.json();
+      
+      // ✅ Đảm bảo data.data là array trước khi set
+      if (Array.isArray(data.data)) {
+        this.ListDonhang.set(data.data);
+      } else {
+        console.error('searchDonhang: data.data is not an array:', data.data);
+        this.ListDonhang.set([]);
+      }
+      
+      this.page.set(data.pageNumber || 1);
+      this.pageCount.set(data.totalPages || 0);
+      this.total.set(data.total || 0);
+      this.pageSize.set(data.pageSize || 50);
+      return data;
     } catch (error) {
-      return console.error(error);
+      console.error('Error in searchDonhang:', error);
+      // ✅ Đảm bảo ListDonhang luôn là array khi có lỗi
+      this.ListDonhang.set([]);
+      return { data: [], pageNumber: 1, totalPages: 0, total: 0, pageSize: 50 };
     }
   }
 
@@ -424,22 +440,22 @@ export class DonhangService {
 
 
   async getAllDonhang() {
+    // ⚠️ DEPRECATED: Không nên dùng GET /donhang vì không có endpoint này
+    // Sử dụng searchDonhang() với params rỗng thay thế
+    console.warn('getAllDonhang() is deprecated. Use searchDonhang() instead.');
+    
     try {
-      const options = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer '+this._StorageService.getItem('token')
-        },
-      };
-      const response = await fetch(`${environment.APIURL}/donhang`, options);
-      if (!response.ok) {
-
-      }
-      const data = await response.json();           
-      this.ListDonhang.set(data)
+      // Gọi searchDonhang với params mặc định để lấy tất cả đơn hàng
+      await this.searchDonhang({
+        pageSize: 999999,
+        Type: 'all'
+      });
     } catch (error) {
-      return console.error(error);
+      console.error('Error in getAllDonhang:', error);
+      // Đảm bảo ListDonhang luôn là array
+      if (!Array.isArray(this.ListDonhang())) {
+        this.ListDonhang.set([]);
+      }
     }
   }
   async getDonhangByid(id: any) {
@@ -476,12 +492,19 @@ export class DonhangService {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        if (!response.ok) {
-          
+        
+        // ✅ Không gọi getAllDonhang() - update item trong ListDonhang thay vì reload
+        const currentList = this.ListDonhang();
+        if (Array.isArray(currentList)) {
+          const index = currentList.findIndex((item: any) => item.id === dulieu.id);
+          if (index !== -1) {
+            currentList[index] = { ...currentList[index], ...data };
+            this.ListDonhang.set([...currentList]);
+          }
         }
-        this.getAllDonhang()
-        this.getDonhangByid(dulieu.id)
-        return data
+        
+        this.getDonhangByid(dulieu.id);
+        return data;
     } catch (error) {
         return console.error(error);
     }
@@ -540,13 +563,16 @@ export class DonhangService {
           };
           const response = await fetch(`${environment.APIURL}/donhang/bulk`, options);
           if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-           this.getAllDonhang()
           const data = await response.json();
-          return data
+          
+          // ✅ Không gọi getAllDonhang() - component sẽ reload khi cần
+          return data;
   
       } catch (error) {
-          return console.error(error);
+          console.error('Error in UpdateBulkDonhang:', error);
+          throw error;
       }
   }
 
@@ -562,13 +588,16 @@ export class DonhangService {
           };
           const response = await fetch(`${environment.APIURL}/donhang/bulk`, options);
           if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-           this.getAllDonhang()
           const data = await response.json();
-          return data
+          
+          // ✅ Không gọi getAllDonhang() - component sẽ reload khi cần
+          return data;
   
       } catch (error) {
-          return console.error(error);
+          console.error('Error in DeleteBulkDonhang:', error);
+          throw error;
       }
   }
 
@@ -638,8 +667,15 @@ export class DonhangService {
       
       const data = await response.json();
       
-      // Refresh danh sách đơn hàng sau khi hủy thành công
-      this.getAllDonhang();
+      // ✅ Không gọi getAllDonhang() - update item trong list thay vì reload
+      const currentList = this.ListDonhang();
+      if (Array.isArray(currentList)) {
+        const index = currentList.findIndex((item: any) => item.id === donhangId);
+        if (index !== -1) {
+          currentList[index] = { ...currentList[index], ...data };
+          this.ListDonhang.set([...currentList]);
+        }
+      }
       
       return data;
     } catch (error: any) {
