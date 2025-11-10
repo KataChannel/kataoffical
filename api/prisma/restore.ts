@@ -162,8 +162,23 @@ async function validateForeignKeys(table: string, data: any[]): Promise<any[]> {
       case 'Donhang':
         const khachhang = await prisma.khachhang.findMany({ select: { id: true } });
         const validKhachhangIds = new Set(khachhang.map(k => k.id));
-        // Only validate if khachhangId is provided
-        return data.filter(record => !record.khachhangId || validKhachhangIds.has(record.khachhangId));
+        
+        // ✅ Clean up data: Remove old string fields (nhanvienchiahang, shipper)
+        // Set FK fields to null since we don't have Nhanvien data yet
+        return data
+          .filter(record => !record.khachhangId || validKhachhangIds.has(record.khachhangId))
+          .map(record => {
+            // Remove old string fields that are now relations
+            const cleaned = { ...record };
+            delete cleaned.nhanvienchiahang;  // Old string field
+            delete cleaned.shipper;  // Old string field
+            
+            // Set new FK fields to null (will be populated later by user)
+            cleaned.nhanvienchiahangId = null;
+            cleaned.shipperId = null;
+            
+            return cleaned;
+          });
         
       case 'Dathang':
         const [nhacungcap, kho2] = await Promise.all([
@@ -788,6 +803,7 @@ async function restoreAllTablesFromJson(): Promise<void> {
     'UserRole',       // depends on User + Role
     'RolePermission', // depends on Role + Permission
     'AuditLog',       // depends on User (optional FK)
+    'Nhanvien',       // independent employee table (new - no backup data yet)
     
     // Phase 3: Core business entities (independent)
     'Banggia',        // independent
@@ -824,10 +840,10 @@ async function restoreAllTablesFromJson(): Promise<void> {
       'Role', 'Permission', 'Menu', 'Congty', 'Nhomkhachhang', 'ErrorLog', 
       'FileManager', 'ChatAIMessage', 'ChatAIHistory', 'File', 'ImportHistory',
       'UserguidStep', 'User', 'Profile', 'UserRole', 'RolePermission', 'AuditLog',
-      'Banggia', 'Sanpham', 'Nhacungcap', 'Kho', 'Banggiasanpham', 'Khachhang',
-      'SanphamKho', 'TonKho', 'Donhang', 'Dathang', 'PhieuKho', 'Donhangsanpham',
-      'Dathangsanpham', 'PhieuKhoSanpham', 'Chotkho', 'UserguidBlock',
-      '_KhachhangNhom', '_MenuRole'
+      'Nhanvien', 'Banggia', 'Sanpham', 'Nhacungcap', 'Kho', 'Banggiasanpham', 
+      'Khachhang', 'SanphamKho', 'TonKho', 'Donhang', 'Dathang', 'PhieuKho', 
+      'Donhangsanpham', 'Dathangsanpham', 'PhieuKhoSanpham', 'Chotkho', 
+      'UserguidBlock', '_KhachhangNhom', '_MenuRole'
     ].includes(t))
   ];
   

@@ -117,12 +117,14 @@ export class ListPhieuchiahangComponent {
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
   private _DonhangService: DonhangService = inject(DonhangService);
+  private _NhanvienService: any; // Will inject after migration
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _SearchService: SearchService = inject(SearchService);
   private _StorageService: StorageService = inject(StorageService);
   private _router: Router = inject(Router);
   Listdonhang: any = this._DonhangService.ListDonhang;
+  ListNhanvien: any[] = []; // List of available Nhanvien
   dataSource = new MatTableDataSource<any>([]);
   donhangId: any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -236,6 +238,13 @@ export class ListPhieuchiahangComponent {
       this.paginator._intl.firstPageLabel = 'Trang Đầu';
       this.paginator._intl.lastPageLabel = 'Trang Cuối';
     }
+    
+    // 🔥 Load nhân viên list for dropdown (will enable after migration)
+    // try {
+    //   this.ListNhanvien = await this._NhanvienService.getNhanvienforselect();
+    // } catch (error) {
+    //   console.error('Error loading nhanvien list:', error);
+    // }
     
     // 🔥 Load dữ liệu trong ngày khi khởi tạo
     await this.loadData();
@@ -1141,11 +1150,12 @@ export class ListPhieuchiahangComponent {
   }
   
   /**
-   * Start editing nhân viên chia hàng (double-click mode)
+   * Start editing nhân viên chia hàng (select mode)
    */
   startEditNhanvien(row: any): void {
     this.editingNhanvienId = row.id;
-    this.tempNhanvienValue = row.nhanvienchiahang || '';
+    // Store the nhanvienchiahangId instead of name
+    this.tempNhanvienValue = row.nhanvienchiahangId || '';
   }
   
   /**
@@ -1162,19 +1172,36 @@ export class ListPhieuchiahangComponent {
         throw new Error('Không tìm thấy đơn hàng');
       }
       
-      // ✅ Update only the nhanvienchiahang field on the full order object
-      fullOrder.nhanvienchiahang = this.tempNhanvienValue;
+      // ✅ Update the nhanvienchiahangId field (after migration, this will be a relation)
+      // For now, keep backward compatibility with string field
+      if (this.tempNhanvienValue) {
+        // After migration: set nhanvienchiahangId
+        // fullOrder.nhanvienchiahangId = this.tempNhanvienValue;
+        
+        // Before migration: set string name (backward compatible)
+        const selectedNhanvien = this.ListNhanvien.find(nv => nv.id === this.tempNhanvienValue);
+        fullOrder.nhanvienchiahang = selectedNhanvien ? selectedNhanvien.tennv : this.tempNhanvienValue;
+      } else {
+        fullOrder.nhanvienchiahang = '';
+      }
       
       // ✅ Send the complete order object to avoid undefined/invalid fields
       await this._DonhangService.updateDonhang(fullOrder);
       
       // Update local row
-      row.nhanvienchiahang = this.tempNhanvienValue;
+      if (this.tempNhanvienValue) {
+        const selectedNhanvien = this.ListNhanvien.find(nv => nv.id === this.tempNhanvienValue);
+        row.nhanvienchiahang = selectedNhanvien ? selectedNhanvien.tennv : this.tempNhanvienValue;
+        row.nhanvienchiahangId = this.tempNhanvienValue;
+      } else {
+        row.nhanvienchiahang = '';
+        row.nhanvienchiahangId = null;
+      }
       
       this.editingNhanvienId = null;
       this.tempNhanvienValue = '';
       
-      this._snackBar.open('Cập nhật nhân viên chia hàng thành công', '', {
+      this._snackBar.open('✅ Cập nhật nhân viên chia hàng thành công', '', {
         duration: 2000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
@@ -1182,7 +1209,7 @@ export class ListPhieuchiahangComponent {
       });
     } catch (error) {
       console.error('Error updating nhanvienchiahang:', error);
-      this._snackBar.open('Lỗi khi cập nhật nhân viên', '', {
+      this._snackBar.open('❌ Lỗi khi cập nhật nhân viên', '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
@@ -1197,6 +1224,15 @@ export class ListPhieuchiahangComponent {
   cancelEditNhanvien(): void {
     this.editingNhanvienId = null;
     this.tempNhanvienValue = '';
+  }
+  
+  /**
+   * Get Nhanvien display name
+   */
+  getNhanvienName(nhanvienId: string): string {
+    if (!nhanvienId || this.ListNhanvien.length === 0) return '';
+    const nhanvien = this.ListNhanvien.find(nv => nv.id === nhanvienId);
+    return nhanvien ? nhanvien.tennv : '';
   }
   
   /**

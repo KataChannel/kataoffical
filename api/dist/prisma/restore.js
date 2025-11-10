@@ -130,7 +130,16 @@ async function validateForeignKeys(table, data) {
             case 'Donhang':
                 const khachhang = await prisma.khachhang.findMany({ select: { id: true } });
                 const validKhachhangIds = new Set(khachhang.map(k => k.id));
-                return data.filter(record => !record.khachhangId || validKhachhangIds.has(record.khachhangId));
+                return data
+                    .filter(record => !record.khachhangId || validKhachhangIds.has(record.khachhangId))
+                    .map(record => {
+                    const cleaned = { ...record };
+                    delete cleaned.nhanvienchiahang;
+                    delete cleaned.shipper;
+                    cleaned.nhanvienchiahangId = null;
+                    cleaned.shipperId = null;
+                    return cleaned;
+                });
             case 'Dathang':
                 const [nhacungcap, kho2] = await Promise.all([
                     prisma.nhacungcap.findMany({ select: { id: true } }),
@@ -646,6 +655,7 @@ async function restoreAllTablesFromJson() {
         'UserRole',
         'RolePermission',
         'AuditLog',
+        'Nhanvien',
         'Banggia',
         'Sanpham',
         'Nhacungcap',
@@ -668,10 +678,10 @@ async function restoreAllTablesFromJson() {
             'Role', 'Permission', 'Menu', 'Congty', 'Nhomkhachhang', 'ErrorLog',
             'FileManager', 'ChatAIMessage', 'ChatAIHistory', 'File', 'ImportHistory',
             'UserguidStep', 'User', 'Profile', 'UserRole', 'RolePermission', 'AuditLog',
-            'Banggia', 'Sanpham', 'Nhacungcap', 'Kho', 'Banggiasanpham', 'Khachhang',
-            'SanphamKho', 'TonKho', 'Donhang', 'Dathang', 'PhieuKho', 'Donhangsanpham',
-            'Dathangsanpham', 'PhieuKhoSanpham', 'Chotkho', 'UserguidBlock',
-            '_KhachhangNhom', '_MenuRole'
+            'Nhanvien', 'Banggia', 'Sanpham', 'Nhacungcap', 'Kho', 'Banggiasanpham',
+            'Khachhang', 'SanphamKho', 'TonKho', 'Donhang', 'Dathang', 'PhieuKho',
+            'Donhangsanpham', 'Dathangsanpham', 'PhieuKhoSanpham', 'Chotkho',
+            'UserguidBlock', '_KhachhangNhom', '_MenuRole'
         ].includes(t))
     ];
     const orderedTables = tables.length > 0

@@ -24,6 +24,7 @@ import { PhieukhoModule } from './phieukho/phieukho.module';
 import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
 import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
+import { NhanvienModule } from './nhanvien/nhanvien.module';
 import { GoogledriveModule } from './shared/googledrive/googledrive.module';
 import { SharedModule } from './shared/shared.module';
 import { ErrorlogsModule } from './errorlogs/errorlogs.module';
@@ -82,6 +83,7 @@ import { CacheModule } from './cache/cache.module';
     DonhangModule,
     KhachhangModule,
     NhomkhachhangModule,
+    NhanvienModule,
     NhacungcapModule,
     DathangModule,
     khoModule,

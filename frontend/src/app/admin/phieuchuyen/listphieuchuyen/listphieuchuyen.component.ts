@@ -101,12 +101,14 @@ export class ListPhieuchuyenComponent {
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
   private _PhieuchuyenService: DonhangService = inject(DonhangService);
+  private _NhanvienService: any; // Will inject after migration
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   private _dialog: MatDialog = inject(MatDialog);
   Listphieuchuyen:any = this._PhieuchuyenService.ListDonhang;
   EditList:any=[];
+  ListNhanvien: any[] = []; // List of available Nhanvien for shipper dropdown
   dataSource = new MatTableDataSource<any>([]);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
@@ -151,6 +153,13 @@ export class ListPhieuchuyenComponent {
     this.updateDisplayData();
     this.initializeColumns();
     this.setupDrawer();
+    
+    // 🔥 Load nhân viên list for dropdown (will enable after migration)
+    // try {
+    //   this.ListNhanvien = await this._NhanvienService.getNhanvienforselect();
+    // } catch (error) {
+    //   console.error('Error loading nhanvien list:', error);
+    // }
     
     // 🔥 Load dữ liệu trong ngày khi khởi tạo
     await this.loadData();

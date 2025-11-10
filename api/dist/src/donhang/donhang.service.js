@@ -1016,10 +1016,12 @@ let DonhangService = class DonhangService {
                     },
                 },
                 khachhang: { include: { banggia: { include: { sanpham: true } } } },
+                shipper: true,
+                nhanvienchiahang: true,
             },
             orderBy: { createdAt: 'desc' },
         });
-        return result.map(({ khachhang, sanpham, ...donhang }) => {
+        return result.map(({ khachhang, sanpham, shipper, nhanvienchiahang, ...donhang }) => {
             console.log('sanpham', sanpham);
             return {
                 ...donhang,
@@ -1031,7 +1033,10 @@ let DonhangService = class DonhangService {
                 tongsomon: sanpham.length,
                 soluongtt: parseFloat(sanpham.reduce((total, item) => total + Number(item.slgiao || 0), 0).toFixed(3)),
                 loadpoint: parseFloat(sanpham.reduce((total, item) => total + (Number(item.sanpham?.loadpoint || 0) * Number(item.sldat || 0)), 0).toFixed(3)),
-                shipper: donhang.shipper,
+                shipper: shipper?.tennv || null,
+                shipperId: donhang.shipperId,
+                nhanvienchiahang: nhanvienchiahang?.tennv || null,
+                nhanvienchiahangId: donhang.nhanvienchiahangId,
                 phieuve: donhang.phieuve,
                 giodi: donhang.giodi,
                 giove: donhang.giove,
@@ -2284,7 +2289,12 @@ let DonhangService = class DonhangService {
                         order: data.order,
                         ghichu: data.ghichu,
                         status: data.status,
-                        nhanvienchiahang: data.nhanvienchiahang,
+                        nhanvienchiahangId: data.nhanvienchiahangId,
+                        shipperId: data.shipperId,
+                        phieuve: data.phieuve,
+                        giodi: data.giodi,
+                        giove: data.giove,
+                        kynhan: data.kynhan,
                         printCount: data.printCount !== undefined ? data.printCount : undefined,
                     },
                     include: {

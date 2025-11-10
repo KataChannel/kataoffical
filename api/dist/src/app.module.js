@@ -33,6 +33,7 @@ const phieukho_module_1 = require("./phieukho/phieukho.module");
 const role_module_1 = require("./role/role.module");
 const permission_module_1 = require("./permission/permission.module");
 const nhomkhachhang_module_1 = require("./nhomkhachhang/nhomkhachhang.module");
+const nhanvien_module_1 = require("./nhanvien/nhanvien.module");
 const googledrive_module_1 = require("./shared/googledrive/googledrive.module");
 const shared_module_1 = require("./shared/shared.module");
 const errorlogs_module_1 = require("./errorlogs/errorlogs.module");
@@ -96,6 +97,7 @@ exports.AppModule = AppModule = __decorate([
             donhang_module_1.DonhangModule,
             khachhang_module_1.KhachhangModule,
             nhomkhachhang_module_1.NhomkhachhangModule,
+            nhanvien_module_1.NhanvienModule,
             nhacungcap_module_1.NhacungcapModule,
             dathang_module_1.DathangModule,
             kho_module_1.khoModule,
