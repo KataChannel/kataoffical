@@ -112,8 +112,8 @@ export declare class CancelOrderService {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
-        nhanvienchiahangId: string | null;
-        shipperId: string | null;
+        nhanvienchiahang: string | null;
+        shipper: string | null;
     })[] | ({
         sanpham: ({
             sanpham: {

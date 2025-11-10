@@ -48,8 +48,8 @@ export declare class DonhangController {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
-        nhanvienchiahangId: string | null;
-        shipperId: string | null;
+        nhanvienchiahang: string | null;
+        shipper: string | null;
     }>;
     ImportDonhangOld(data: any): Promise<{
         status: string;
@@ -128,8 +128,8 @@ export declare class DonhangController {
             giodi: string | null;
             giove: string | null;
             kynhan: string | null;
-            nhanvienchiahangId: string | null;
-            shipperId: string | null;
+            nhanvienchiahang: string | null;
+            shipper: string | null;
         }[];
         total: number;
         pageNumber: any;
@@ -158,9 +158,7 @@ export declare class DonhangController {
         soluongtt: number;
         loadpoint: number;
         shipper: string | null;
-        shipperId: string | null;
         nhanvienchiahang: string | null;
-        nhanvienchiahangId: string | null;
         phieuve: string | null;
         giodi: string | null;
         giove: string | null;
@@ -263,8 +261,8 @@ export declare class DonhangController {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
-        nhanvienchiahangId: string | null;
-        shipperId: string | null;
+        nhanvienchiahang: string | null;
+        shipper: string | null;
     }>;
     searchfield(searchParams: Record<string, any>): Promise<{
         sanpham: {
@@ -320,8 +318,8 @@ export declare class DonhangController {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
-        nhanvienchiahangId: string | null;
-        shipperId: string | null;
+        nhanvienchiahang: string | null;
+        shipper: string | null;
     }>;
     findByProductId(id: string): Promise<{
         sanpham: ({
@@ -416,8 +414,8 @@ export declare class DonhangController {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
-        nhanvienchiahangId: string | null;
-        shipperId: string | null;
+        nhanvienchiahang: string | null;
+        shipper: string | null;
     }[]>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -526,8 +524,8 @@ export declare class DonhangController {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
-        nhanvienchiahangId: string | null;
-        shipperId: string | null;
+        nhanvienchiahang: string | null;
+        shipper: string | null;
     }>;
     updatePhieugiao(id: string, updateDonhangDto: any): Promise<{
         sanpham: {
@@ -572,8 +570,8 @@ export declare class DonhangController {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
-        nhanvienchiahangId: string | null;
-        shipperId: string | null;
+        nhanvienchiahang: string | null;
+        shipper: string | null;
     }>;
     updateBulk(data: any[]): Promise<{
         success: number;
@@ -603,8 +601,8 @@ export declare class DonhangController {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
-        nhanvienchiahangId: string | null;
-        shipperId: string | null;
+        nhanvienchiahang: string | null;
+        shipper: string | null;
     }>;
     removeBulk(ids: any[]): Promise<{
         success: number;
@@ -638,8 +636,8 @@ export declare class DonhangController {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
-        nhanvienchiahangId: string | null;
-        shipperId: string | null;
+        nhanvienchiahang: string | null;
+        shipper: string | null;
     }>;
     danhan(id: string, data: any): Promise<{
         id: string;
@@ -665,8 +663,8 @@ export declare class DonhangController {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
-        nhanvienchiahangId: string | null;
-        shipperId: string | null;
+        nhanvienchiahang: string | null;
+        shipper: string | null;
     }>;
     autoCompleteOrdersDaily(): Promise<{
         success: boolean;

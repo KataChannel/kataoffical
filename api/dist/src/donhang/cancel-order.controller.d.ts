@@ -98,8 +98,8 @@ export declare class CancelOrderController {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
-        nhanvienchiahangId: string | null;
-        shipperId: string | null;
+        nhanvienchiahang: string | null;
+        shipper: string | null;
     })[] | ({
         sanpham: ({
             sanpham: {
@@ -267,8 +267,8 @@ export declare class CancelOrderController {
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;
-        nhanvienchiahangId: string | null;
-        shipperId: string | null;
+        nhanvienchiahang: string | null;
+        shipper: string | null;
     })[] | ({
         sanpham: ({
             sanpham: {

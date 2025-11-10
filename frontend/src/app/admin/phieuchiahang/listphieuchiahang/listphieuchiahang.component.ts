@@ -117,14 +117,12 @@ export class ListPhieuchiahangComponent {
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
   private _DonhangService: DonhangService = inject(DonhangService);
-  private _NhanvienService: any; // Will inject after migration
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _SearchService: SearchService = inject(SearchService);
   private _StorageService: StorageService = inject(StorageService);
   private _router: Router = inject(Router);
   Listdonhang: any = this._DonhangService.ListDonhang;
-  ListNhanvien: any[] = []; // List of available Nhanvien
   dataSource = new MatTableDataSource<any>([]);
   donhangId: any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -238,13 +236,6 @@ export class ListPhieuchiahangComponent {
       this.paginator._intl.firstPageLabel = 'Trang Đầu';
       this.paginator._intl.lastPageLabel = 'Trang Cuối';
     }
-    
-    // 🔥 Load nhân viên list for dropdown (will enable after migration)
-    // try {
-    //   this.ListNhanvien = await this._NhanvienService.getNhanvienforselect();
-    // } catch (error) {
-    //   console.error('Error loading nhanvien list:', error);
-    // }
     
     // 🔥 Load dữ liệu trong ngày khi khởi tạo
     await this.loadData();
@@ -1154,8 +1145,8 @@ export class ListPhieuchiahangComponent {
    */
   startEditNhanvien(row: any): void {
     this.editingNhanvienId = row.id;
-    // Store the nhanvienchiahangId instead of name
-    this.tempNhanvienValue = row.nhanvienchiahangId || '';
+    // Store the nhanvienchiahang string value directly
+    this.tempNhanvienValue = row.nhanvienchiahang || '';
   }
   
   /**
@@ -1172,15 +1163,9 @@ export class ListPhieuchiahangComponent {
         throw new Error('Không tìm thấy đơn hàng');
       }
       
-      // ✅ Update the nhanvienchiahangId field (after migration, this will be a relation)
-      // For now, keep backward compatibility with string field
+      // ✅ Update the nhanvienchiahang string field directly
       if (this.tempNhanvienValue) {
-        // After migration: set nhanvienchiahangId
-        // fullOrder.nhanvienchiahangId = this.tempNhanvienValue;
-        
-        // Before migration: set string name (backward compatible)
-        const selectedNhanvien = this.ListNhanvien.find(nv => nv.id === this.tempNhanvienValue);
-        fullOrder.nhanvienchiahang = selectedNhanvien ? selectedNhanvien.tennv : this.tempNhanvienValue;
+        fullOrder.nhanvienchiahang = this.tempNhanvienValue;
       } else {
         fullOrder.nhanvienchiahang = '';
       }
@@ -1190,12 +1175,9 @@ export class ListPhieuchiahangComponent {
       
       // Update local row
       if (this.tempNhanvienValue) {
-        const selectedNhanvien = this.ListNhanvien.find(nv => nv.id === this.tempNhanvienValue);
-        row.nhanvienchiahang = selectedNhanvien ? selectedNhanvien.tennv : this.tempNhanvienValue;
-        row.nhanvienchiahangId = this.tempNhanvienValue;
+        row.nhanvienchiahang = this.tempNhanvienValue;
       } else {
         row.nhanvienchiahang = '';
-        row.nhanvienchiahangId = null;
       }
       
       this.editingNhanvienId = null;
@@ -1227,12 +1209,10 @@ export class ListPhieuchiahangComponent {
   }
   
   /**
-   * Get Nhanvien display name
+   * Get Nhanvien display name (now returns the string value directly)
    */
-  getNhanvienName(nhanvienId: string): string {
-    if (!nhanvienId || this.ListNhanvien.length === 0) return '';
-    const nhanvien = this.ListNhanvien.find(nv => nv.id === nhanvienId);
-    return nhanvien ? nhanvien.tennv : '';
+  getNhanvienName(nhanvienName: string): string {
+    return nhanvienName || '';
   }
   
   /**

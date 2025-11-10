@@ -243,57 +243,36 @@ model Sanpham {
   Nhacungcap      Nhacungcap[]      @relation("NhacungcapToSanpham")
 }
 
-model Nhanvien {
-  id                    String    @id @default(uuid())
-  manv                  String    @unique
-  tennv                 String
-  sdtnv                 String?
-  ngaysinhnv            DateTime?
-  emailnv               String?
-  diachinv              String?
-  hinhccnv              String?
-  isActive              Boolean   @default(true)
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-  donhangChiahang       Donhang[] @relation("DonhangNhanvienChiahang")
-  donhangShipper        Donhang[] @relation("DonhangShipper")
-
-  @@index([manv])
-  @@index([tennv])
-}
-
 model Donhang {
-  id                   String           @id @default(uuid())
-  title                String?
-  type                 String?
-  madonhang            String           @unique
-  ngaygiao             DateTime?
-  ghichu               String?
-  status               StatusDonhang    @default(dadat)
-  khachhangId          String?
-  printCount           Int?             @default(0)
-  order                Int?
-  isActive             Boolean          @default(false)
-  createdAt            DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt
-  isshowvat            Boolean          @default(false)
-  tongtien             Decimal          @default(0) @postgres.Decimal(20, 3)
-  tongvat              Decimal          @default(0) @postgres.Decimal(20, 3)
-  banggiaId            String?
-  vat                  Decimal          @default(0.5) @postgres.Decimal(20, 3)
-  lydohuy              String?
-  phieuve              String?
-  giodi                String?
-  giove                String?
-  kynhan               String?
-  nhanvienchiahangId   String?
-  shipperId            String?
-  banggia              Banggia?         @relation(fields: [banggiaId], references: [id])
-  khachhang            Khachhang?       @relation(fields: [khachhangId], references: [id])
-  nhanvienchiahang     Nhanvien?        @relation("DonhangNhanvienChiahang", fields: [nhanvienchiahangId], references: [id])
-  shipper              Nhanvien?        @relation("DonhangShipper", fields: [shipperId], references: [id])
-  sanpham              Donhangsanpham[]
-  PhieuKho             PhieuKho[]
+  id               String           @id @default(uuid())
+  title            String?
+  type             String?
+  madonhang        String           @unique
+  ngaygiao         DateTime?
+  ghichu           String?
+  status           StatusDonhang    @default(dadat)
+  khachhangId      String?
+  printCount       Int?             @default(0)
+  order            Int?
+  isActive         Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  isshowvat        Boolean          @default(false)
+  tongtien         Decimal          @default(0) @postgres.Decimal(20, 3)
+  tongvat          Decimal          @default(0) @postgres.Decimal(20, 3)
+  banggiaId        String?
+  vat              Decimal          @default(0.5) @postgres.Decimal(20, 3)
+  lydohuy          String?
+  phieuve          String?
+  giodi            String?
+  giove            String?
+  kynhan           String?
+  nhanvienchiahang String?
+  shipper          String?
+  banggia          Banggia?         @relation(fields: [banggiaId], references: [id])
+  khachhang        Khachhang?       @relation(fields: [khachhangId], references: [id])
+  sanpham          Donhangsanpham[]
+  PhieuKho         PhieuKho[]
 
   @@index([ngaygiao])
   @@index([status])
@@ -301,8 +280,6 @@ model Donhang {
   @@index([ngaygiao, status])
   @@index([khachhangId, ngaygiao])
   @@index([createdAt])
-  @@index([nhanvienchiahangId])
-  @@index([shipperId])
 }
 
 model Donhangsanpham {
@@ -330,32 +307,32 @@ model Donhangsanpham {
 }
 
 model Banggiasanpham {
-  id        String                     @id @default(uuid())
-  giaban    Decimal                    @default(0) @postgres.Decimal(20, 3)
+  id        String                  @id @default(uuid())
+  giaban    Decimal                 @default(0) @postgres.Decimal(20, 3)
   sanphamId String
   banggiaId String
   order     Int?
-  isActive  Boolean                    @default(false)
-  banggia   Banggia                    @relation(fields: [banggiaId], references: [id])
-  sanpham   Sanpham                    @relation(fields: [sanphamId], references: [id])
+  isActive  Boolean                 @default(false)
+  banggia   Banggia                 @relation(fields: [banggiaId], references: [id])
+  sanpham   Sanpham                 @relation(fields: [sanphamId], references: [id])
   history   BanggiasanphamHistory[]
 }
 
 model BanggiasanphamHistory {
-  id                  String            @id @default(uuid())
-  banggiasanphamId    String
-  banggiaId           String
-  sanphamId           String
-  oldPrice            Decimal           @postgres.Decimal(20, 3)
-  newPrice            Decimal           @postgres.Decimal(20, 3)
-  changePercent       Decimal?          @postgres.Decimal(10, 2)
-  changeReason        String?
-  changedBy           String?
-  changedAt           DateTime          @default(now())
-  sourceType          String?           // MANUAL, IMPORT, SYNC, BULK_UPDATE
-  batchId             String?           // For bulk operations
-  metadata            Json?
-  banggiasanpham      Banggiasanpham    @relation(fields: [banggiasanphamId], references: [id], onDelete: Cascade)
+  id               String         @id @default(uuid())
+  banggiasanphamId String
+  banggiaId        String
+  sanphamId        String
+  oldPrice         Decimal        @postgres.Decimal(20, 3)
+  newPrice         Decimal        @postgres.Decimal(20, 3)
+  changePercent    Decimal?       @postgres.Decimal(10, 2)
+  changeReason     String?
+  changedBy        String?
+  changedAt        DateTime       @default(now())
+  sourceType       String? // MANUAL, IMPORT, SYNC, BULK_UPDATE
+  batchId          String? // For bulk operations
+  metadata         Json?
+  banggiasanpham   Banggiasanpham @relation(fields: [banggiasanphamId], references: [id], onDelete: Cascade)
 
   @@index([banggiasanphamId])
   @@index([banggiaId])
@@ -364,20 +341,20 @@ model BanggiasanphamHistory {
 }
 
 model DonhangPriceAudit {
-  id                String    @id @default(uuid())
-  donhangId         String
-  donhangsanphamId  String
-  sanphamId         String
-  oldPrice          Decimal   @postgres.Decimal(20, 3)
-  newPrice          Decimal   @postgres.Decimal(20, 3)
-  changePercent     Decimal?  @postgres.Decimal(10, 2)
-  changeReason      String
-  changedBy         String?
-  changedByEmail    String?
-  ipAddress         String?
-  userAgent         String?
-  createdAt         DateTime  @default(now())
-  metadata          Json?
+  id               String   @id @default(uuid())
+  donhangId        String
+  donhangsanphamId String
+  sanphamId        String
+  oldPrice         Decimal  @postgres.Decimal(20, 3)
+  newPrice         Decimal  @postgres.Decimal(20, 3)
+  changePercent    Decimal? @postgres.Decimal(10, 2)
+  changeReason     String
+  changedBy        String?
+  changedByEmail   String?
+  ipAddress        String?
+  userAgent        String?
+  createdAt        DateTime @default(now())
+  metadata         Json?
 
   @@index([donhangId])
   @@index([donhangsanphamId])

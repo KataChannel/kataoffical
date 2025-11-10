@@ -1307,13 +1307,11 @@ export class DonhangService {
           },
         },
         khachhang: { include: { banggia: { include: { sanpham: true } } } },
-        shipper: true,  // ✅ Include shipper relation (Nhanvien)
-        nhanvienchiahang: true,  // ✅ Include nhanvienchiahang relation (Nhanvien)
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    return result.map(({ khachhang, sanpham, shipper, nhanvienchiahang, ...donhang }) => {
+    return result.map(({ khachhang, sanpham, ...donhang }) => {
       console.log('sanpham', sanpham);
       return {
         ...donhang,
@@ -1325,11 +1323,9 @@ export class DonhangService {
         tongsomon: sanpham.length,
         soluongtt: parseFloat(sanpham.reduce((total, item: any) => total + Number(item.slgiao || 0), 0).toFixed(3)),
         loadpoint: parseFloat(sanpham.reduce((total, item: any) => total + (Number(item.sanpham?.loadpoint || 0) * Number(item.sldat || 0)), 0).toFixed(3)),
-        // ✅ Include fields for phiếu chuyển with Nhanvien relations
-        shipper: shipper?.tennv || null,  // Return employee name instead of ID
-        shipperId: donhang.shipperId,  // Keep ID for reference
-        nhanvienchiahang: nhanvienchiahang?.tennv || null,  // Return employee name
-        nhanvienchiahangId: donhang.nhanvienchiahangId,  // Keep ID for reference
+        // ✅ nhanvienchiahang and shipper are now string fields
+        shipper: donhang.shipper || null,
+        nhanvienchiahang: donhang.nhanvienchiahang || null,
         phieuve: donhang.phieuve,
         giodi: donhang.giodi,
         giove: donhang.giove,
@@ -2822,8 +2818,8 @@ export class DonhangService {
             order: data.order,
             ghichu: data.ghichu,
             status: data.status,
-            nhanvienchiahangId: data.nhanvienchiahangId,  // ✅ Use relation ID
-            shipperId: data.shipperId,  // ✅ Use relation ID
+            nhanvienchiahang: data.nhanvienchiahang,  // ✅ Now a string field
+            shipper: data.shipper,  // ✅ Now a string field
             phieuve: data.phieuve,
             giodi: data.giodi,
             giove: data.giove,

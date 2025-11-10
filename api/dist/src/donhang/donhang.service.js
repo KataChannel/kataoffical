@@ -1016,12 +1016,10 @@ let DonhangService = class DonhangService {
                     },
                 },
                 khachhang: { include: { banggia: { include: { sanpham: true } } } },
-                shipper: true,
-                nhanvienchiahang: true,
             },
             orderBy: { createdAt: 'desc' },
         });
-        return result.map(({ khachhang, sanpham, shipper, nhanvienchiahang, ...donhang }) => {
+        return result.map(({ khachhang, sanpham, ...donhang }) => {
             console.log('sanpham', sanpham);
             return {
                 ...donhang,
@@ -1033,10 +1031,8 @@ let DonhangService = class DonhangService {
                 tongsomon: sanpham.length,
                 soluongtt: parseFloat(sanpham.reduce((total, item) => total + Number(item.slgiao || 0), 0).toFixed(3)),
                 loadpoint: parseFloat(sanpham.reduce((total, item) => total + (Number(item.sanpham?.loadpoint || 0) * Number(item.sldat || 0)), 0).toFixed(3)),
-                shipper: shipper?.tennv || null,
-                shipperId: donhang.shipperId,
-                nhanvienchiahang: nhanvienchiahang?.tennv || null,
-                nhanvienchiahangId: donhang.nhanvienchiahangId,
+                shipper: donhang.shipper || null,
+                nhanvienchiahang: donhang.nhanvienchiahang || null,
                 phieuve: donhang.phieuve,
                 giodi: donhang.giodi,
                 giove: donhang.giove,
@@ -2289,8 +2285,8 @@ let DonhangService = class DonhangService {
                         order: data.order,
                         ghichu: data.ghichu,
                         status: data.status,
-                        nhanvienchiahangId: data.nhanvienchiahangId,
-                        shipperId: data.shipperId,
+                        nhanvienchiahang: data.nhanvienchiahang,
+                        shipper: data.shipper,
                         phieuve: data.phieuve,
                         giodi: data.giodi,
                         giove: data.giove,
