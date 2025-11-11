@@ -1131,6 +1131,10 @@ export class DonhangService {
                   const ttnhan = giaban * slnhan;
                   const ttsauvat = ttnhan * (1 + vat);
 
+                  // 🔥 BUGFIX: Luôn cộng ttnhan vào tongchua để tính tongtien chính xác
+                  // Không phụ thuộc vào việc giá có thay đổi hay không
+                  tongchua += ttnhan;
+
                   // Kiểm tra có thay đổi giá không
                   const hasGiaChange = oldGiaban !== giaban;
 
@@ -1186,30 +1190,35 @@ export class DonhangService {
                       },
                     });
 
-                    tongchua += ttnhan;
                     hasUpdates = true;
 
                     console.log(`✅ Cập nhật sản phẩm ${donhangSanpham.sanpham?.title} - Giá: ${oldGiaban} → ${giaban} (từ ${giaSource})`);
                   } else {
-                    // Giá không đổi, chỉ cập nhật các tính toán (nếu cần)
-                    tongchua += ttnhan;
+                    // Giá không đổi, nhưng vẫn tính tongchua để cập nhật tongtien
                     console.log(`ℹ️ Sản phẩm ${donhangSanpham.sanpham?.title} - Giá không đổi: ${giaban} (từ ${giaSource})`);
                   }
                 } else {
-                  console.warn(`⚠️ Sản phẩm ${donhangSanpham.sanpham?.title} - ${giaSource}, giữ nguyên giá cũ`);
+                  // Nếu không có giá hợp lệ, vẫn cộng ttnhan hiện tại vào tongchua
+                  const currentTtnhan = Number(donhangSanpham.ttnhan) || 0;
+                  tongchua += currentTtnhan;
+                  console.warn(`⚠️ Sản phẩm ${donhangSanpham.sanpham?.title} - ${giaSource}, sử dụng ttnhan hiện tại: ${currentTtnhan}`);
                 }
               }
 
-              // 5. Tính lại tổng tiền cho đơn hàng
-              if (hasUpdates) {
-                // Lưu giá trị cũ của đơn hàng
-                const oldTongvat = Number(donhang.tongvat) || 0;
-                const oldTongtien = Number(donhang.tongtien) || 0;
+              // 5. 🔥 BUGFIX: Luôn tính lại tổng tiền cho đơn hàng dựa trên tongchua
+              // Không chỉ khi hasUpdates = true, vì slnhan có thể đã thay đổi trước đó
+              // Lưu giá trị cũ của đơn hàng
+              const oldTongvat = Number(donhang.tongvat) || 0;
+              const oldTongtien = Number(donhang.tongtien) || 0;
 
-                const vatRate = Number(donhang.vat) || 0;
-                const tongvat = tongchua * (vatRate);
-                const tongtien = tongchua + tongvat;
+              const vatRate = Number(donhang.vat) || 0;
+              const tongvat = tongchua * (vatRate);
+              const tongtien = tongchua + tongvat;
 
+              // Chỉ cập nhật nếu có sự thay đổi về tổng tiền
+              const hasTotalChange = Math.abs(tongtien - oldTongtien) > 0.01; // Tolerance cho làm tròn
+
+              if (hasTotalChange || hasUpdates) {
                 await prisma.donhang.update({
                   where: { id: donhangId },
                   data: {
@@ -1245,12 +1254,15 @@ export class DonhangService {
                       tongtienDifference: tongtien - oldTongtien,
                       percentChange: oldTongtien > 0 ? ((tongtien - oldTongtien) / oldTongtien * 100).toFixed(2) + '%' : 'N/A',
                       updatedProductsCount: donhang.sanpham.length,
+                      reason: hasUpdates ? 'Price changed' : 'Total recalculation (slnhan may have changed)',
                     },
                     status: 'SUCCESS',
                   },
                 });
 
-                console.log(`Cập nhật tổng tiền đơn hàng ${donhang.madonhang}: Tổng chưa VAT: ${tongchua}, VAT: ${tongvat}, Tổng tiền: ${oldTongtien} → ${tongtien}`);
+                console.log(`✅ Cập nhật tổng tiền đơn hàng ${donhang.madonhang}: Tổng chưa VAT: ${tongchua}, VAT: ${tongvat}, Tổng tiền: ${oldTongtien} → ${tongtien} ${hasUpdates ? '(giá thay đổi)' : '(tính lại từ slnhan)'}`);
+              } else {
+                console.log(`ℹ️ Đơn hàng ${donhang.madonhang}: Tổng tiền không thay đổi (${tongtien})`);
               }
 
               

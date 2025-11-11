@@ -863,6 +863,7 @@ let DonhangService = class DonhangService {
                                     const ttgiao = giaban * slgiao;
                                     const ttnhan = giaban * slnhan;
                                     const ttsauvat = ttnhan * (1 + vat);
+                                    tongchua += ttnhan;
                                     const hasGiaChange = oldGiaban !== giaban;
                                     if (hasGiaChange) {
                                         await prisma.donhangsanpham.update({
@@ -913,25 +914,26 @@ let DonhangService = class DonhangService {
                                                 status: 'SUCCESS',
                                             },
                                         });
-                                        tongchua += ttnhan;
                                         hasUpdates = true;
                                         console.log(`✅ Cập nhật sản phẩm ${donhangSanpham.sanpham?.title} - Giá: ${oldGiaban} → ${giaban} (từ ${giaSource})`);
                                     }
                                     else {
-                                        tongchua += ttnhan;
                                         console.log(`ℹ️ Sản phẩm ${donhangSanpham.sanpham?.title} - Giá không đổi: ${giaban} (từ ${giaSource})`);
                                     }
                                 }
                                 else {
-                                    console.warn(`⚠️ Sản phẩm ${donhangSanpham.sanpham?.title} - ${giaSource}, giữ nguyên giá cũ`);
+                                    const currentTtnhan = Number(donhangSanpham.ttnhan) || 0;
+                                    tongchua += currentTtnhan;
+                                    console.warn(`⚠️ Sản phẩm ${donhangSanpham.sanpham?.title} - ${giaSource}, sử dụng ttnhan hiện tại: ${currentTtnhan}`);
                                 }
                             }
-                            if (hasUpdates) {
-                                const oldTongvat = Number(donhang.tongvat) || 0;
-                                const oldTongtien = Number(donhang.tongtien) || 0;
-                                const vatRate = Number(donhang.vat) || 0;
-                                const tongvat = tongchua * (vatRate);
-                                const tongtien = tongchua + tongvat;
+                            const oldTongvat = Number(donhang.tongvat) || 0;
+                            const oldTongtien = Number(donhang.tongtien) || 0;
+                            const vatRate = Number(donhang.vat) || 0;
+                            const tongvat = tongchua * (vatRate);
+                            const tongtien = tongchua + tongvat;
+                            const hasTotalChange = Math.abs(tongtien - oldTongtien) > 0.01;
+                            if (hasTotalChange || hasUpdates) {
                                 await prisma.donhang.update({
                                     where: { id: donhangId },
                                     data: {
@@ -965,11 +967,15 @@ let DonhangService = class DonhangService {
                                             tongtienDifference: tongtien - oldTongtien,
                                             percentChange: oldTongtien > 0 ? ((tongtien - oldTongtien) / oldTongtien * 100).toFixed(2) + '%' : 'N/A',
                                             updatedProductsCount: donhang.sanpham.length,
+                                            reason: hasUpdates ? 'Price changed' : 'Total recalculation (slnhan may have changed)',
                                         },
                                         status: 'SUCCESS',
                                     },
                                 });
-                                console.log(`Cập nhật tổng tiền đơn hàng ${donhang.madonhang}: Tổng chưa VAT: ${tongchua}, VAT: ${tongvat}, Tổng tiền: ${oldTongtien} → ${tongtien}`);
+                                console.log(`✅ Cập nhật tổng tiền đơn hàng ${donhang.madonhang}: Tổng chưa VAT: ${tongchua}, VAT: ${tongvat}, Tổng tiền: ${oldTongtien} → ${tongtien} ${hasUpdates ? '(giá thay đổi)' : '(tính lại từ slnhan)'}`);
+                            }
+                            else {
+                                console.log(`ℹ️ Đơn hàng ${donhang.madonhang}: Tổng tiền không thay đổi (${tongtien})`);
                             }
                             updatedCount++;
                         }
