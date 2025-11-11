@@ -1898,8 +1898,10 @@ async deletebulk(data: any) {
       let soluong = 0;
       
       // 🔥 OPTIMIZATION: Direct arithmetic without parseFloat overhead
+      // ✅ BUGFIX: Skip products with slnhan = 0 (not actually received)
       for (const item of v.sanpham) {
         const slnhan = Number(item.slnhan) || 0;
+        if (slnhan === 0) continue; // Skip unreceived products
         const giaban = Number(item.sanpham?.giaban) || 0;
         tong += slnhan * giaban;
         soluong += slnhan;
@@ -1967,26 +1969,29 @@ async deletebulk(data: any) {
     const Sanphams = await this.prisma.sanpham.findMany();
     
     // Step 1: Flatten all order items với thông tin cơ bản
+    // ✅ BUGFIX: Filter out products with slnhan = 0 (not actually received)
     const flatItems = dathangs.flatMap((v: any) => {
-      return v.sanpham.map((item: any) => ({
-        madathang: v.madncc, // Thay đổi từ madonhang
-        ngaynhan: v.ngaynhan,
-        tennhacungcap: v.nhacungcap?.name, // Thay đổi từ tenkhachhang
-        manhacungcap: v.nhacungcap?.mancc, // Thay đổi từ makhachhang
-        sdt: v.nhacungcap?.sdt,
-        diachi: v.nhacungcap?.diachi,
-        sanphamId: item.sanphamId,
-        title: item.sanpham?.title,
-        masp: item.sanpham?.masp,
-        dvt: item.sanpham?.dvt,
-        giaban: parseFloat((item.sanpham?.giaban || 0).toString()),
-        slnhan: parseFloat((item.slnhan || 0).toString()),
-        tongtien: parseFloat((item.slnhan || 0).toString()) * parseFloat((item.sanpham?.giaban || 0).toString()),
-        ghichu: item.ghichu,
-        vat: v.vat || 0,
-        tongvat: v.tongvat || 0,
-        tongtienOrder: v.tongtien || 0,
-      }));
+      return v.sanpham
+        .filter((item: any) => Number(item.slnhan) > 0) // Skip unreceived products
+        .map((item: any) => ({
+          madathang: v.madncc, // Thay đổi từ madonhang
+          ngaynhan: v.ngaynhan,
+          tennhacungcap: v.nhacungcap?.name, // Thay đổi từ tenkhachhang
+          manhacungcap: v.nhacungcap?.mancc, // Thay đổi từ makhachhang
+          sdt: v.nhacungcap?.sdt,
+          diachi: v.nhacungcap?.diachi,
+          sanphamId: item.sanphamId,
+          title: item.sanpham?.title,
+          masp: item.sanpham?.masp,
+          dvt: item.sanpham?.dvt,
+          giaban: parseFloat((item.sanpham?.giaban || 0).toString()),
+          slnhan: parseFloat((item.slnhan || 0).toString()),
+          tongtien: parseFloat((item.slnhan || 0).toString()) * parseFloat((item.sanpham?.giaban || 0).toString()),
+          ghichu: item.ghichu,
+          vat: v.vat || 0,
+          tongvat: v.tongvat || 0,
+          tongtienOrder: v.tongtien || 0,
+        }));
     });
 
     // Step 2: Group by customer and calculate totals

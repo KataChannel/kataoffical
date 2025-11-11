@@ -317,8 +317,13 @@ export class DonhangService {
       let soluong = 0;
 
       // Calculate totals efficiently without parseFloat overhead
+      // 🔥 Loại bỏ sản phẩm có slnhan = 0
       for (const item of donhang.sanpham) {
         const slnhan = Number(item.slnhan) || 0;
+        
+        // Skip items with zero received quantity
+        if (slnhan === 0) continue;
+        
         const giaban = Number(item.giaban) || 0;
         tong += slnhan * giaban;
         soluong += slnhan;
@@ -383,43 +388,49 @@ export class DonhangService {
     const Sanphams = await this.prisma.sanpham.findMany();
     
     // Step 1: Flatten all order items với thông tin cơ bản
+    // 🔥 Loại bỏ sản phẩm có slnhan = 0
     const flatItems = donhangs.flatMap((v: any) => {
-      return v.sanpham.map((v1: any) => {
-        const product = Sanphams.find((sp: any) => sp.id === v1.idSP);
-        const giaban = v1.giaban || 0;
-        const vat: any = Number(product?.vat) || 0;
-        const thanhtiensauvat = v1.slnhan * giaban * (1 + vat);
-        
-        // Chuẩn hóa ngày giao để đảm bảo grouping chính xác
-        const normalizedDate = v.ngaygiao ? 
-          moment(v.ngaygiao).tz('Asia/Ho_Chi_Minh').startOf('day').format('YYYY-MM-DD') : 
-          'no-date';
+      return v.sanpham
+        .filter((v1: any) => {
+          const slnhan = Number(v1.slnhan) || 0;
+          return slnhan > 0; // Only include items with received quantity > 0
+        })
+        .map((v1: any) => {
+          const product = Sanphams.find((sp: any) => sp.id === v1.idSP);
+          const giaban = v1.giaban || 0;
+          const vat: any = Number(product?.vat) || 0;
+          const thanhtiensauvat = v1.slnhan * giaban * (1 + vat);
           
-        // const normalizedDate = v.ngaygiao ? 
-        //   moment(v.ngaygiao).utc().startOf('day').format('YYYY-MM-DD') : 
-        //   'no-date';
-        return {
-          id: v.id,
-          ngaygiao: v.ngaygiao,
-          ngaygiaoNormalized: normalizedDate, // Thêm field để group chính xác
-          tenkhachhang: v.khachhang?.name,
-          makhachhang: v.khachhang?.makh,
-          diachi: v.khachhang?.diachi,
-          SDT: v.khachhang?.SDT,
-          email: v.khachhang?.email,
-          madonhang: v.madonhang,
-          tenhang: product?.title || '',
-          mahang: product?.masp || '',
-          dvt: product?.dvt || '',
-          soluong: v1.slnhan,
-          dongia: giaban,
-          thanhtientruocvat: v1.slnhan * giaban,
-          vat: vat,
-          dongiavathoadon: giaban * (1 + vat),
-          thanhtiensauvat: thanhtiensauvat,
-          ghichu: v1.ghichu,
-        };
-      });
+          // Chuẩn hóa ngày giao để đảm bảo grouping chính xác
+          const normalizedDate = v.ngaygiao ? 
+            moment(v.ngaygiao).tz('Asia/Ho_Chi_Minh').startOf('day').format('YYYY-MM-DD') : 
+            'no-date';
+            
+          // const normalizedDate = v.ngaygiao ? 
+          //   moment(v.ngaygiao).utc().startOf('day').format('YYYY-MM-DD') : 
+          //   'no-date';
+          return {
+            id: v.id,
+            ngaygiao: v.ngaygiao,
+            ngaygiaoNormalized: normalizedDate, // Thêm field để group chính xác
+            tenkhachhang: v.khachhang?.name,
+            makhachhang: v.khachhang?.makh,
+            diachi: v.khachhang?.diachi,
+            SDT: v.khachhang?.SDT,
+            email: v.khachhang?.email,
+            madonhang: v.madonhang,
+            tenhang: product?.title || '',
+            mahang: product?.masp || '',
+            dvt: product?.dvt || '',
+            soluong: v1.slnhan,
+            dongia: giaban,
+            thanhtientruocvat: v1.slnhan * giaban,
+            vat: vat,
+            dongiavathoadon: giaban * (1 + vat),
+            thanhtiensauvat: thanhtiensauvat,
+            ghichu: v1.ghichu,
+          };
+        });
     });
 
     // Step 2: Tính tongtiensauvat cho mỗi combination duy nhất (ngaygiao + khachhang)
@@ -2494,30 +2505,57 @@ export class DonhangService {
           };
           await prisma.phieuKho.create({ data: phieuKhoData });
         }
+        // 🔥 Tính lại ttnhan, ttsauvat và tổng tiền cho đơn hàng
+        let tongchua = 0;
+        
+        // Update từng sản phẩm với tính toán lại giá trị
+        for (const item of data.sanpham) {
+          const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
+          const received = parseFloat((item.slnhan ?? 0).toFixed(3));
+          
+          // Tìm sản phẩm trong DB để lấy giaban và vat
+          const donhangSanpham = oldDonhang.sanpham.find((sp: any) => sp.idSP === item.id);
+          if (!donhangSanpham) continue;
+          
+          const giaban = parseFloat((donhangSanpham.giaban ?? 0).toFixed(3));
+          const vat = parseFloat((donhangSanpham.vat ?? 0).toFixed(3));
+          
+          // 🔥 Tính lại ttnhan và ttsauvat dựa trên slnhan
+          const ttnhan = giaban * received;
+          const ttsauvat = ttnhan * (1 + vat);
+          
+          tongchua += ttnhan;
+          
+          const shortageNote =
+            received < delivered
+              ? item.ghichu
+                ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(3)}`
+                : `Thiếu ${(delivered - received).toFixed(3)}`
+              : item.ghichu || '';
+          
+          await prisma.donhangsanpham.update({
+            where: { id: donhangSanpham.id },
+            data: {
+              ghichu: shortageNote,
+              slnhan: received,
+              ttnhan: parseFloat(ttnhan.toFixed(3)),
+              ttsauvat: parseFloat(ttsauvat.toFixed(3)),
+            },
+          });
+        }
+        
+        // 🔥 Tính lại tổng tiền cho đơn hàng
+        const vatRate = parseFloat((oldDonhang.vat ?? 0).toFixed(3));
+        const tongvat = tongchua * vatRate;
+        const tongtien = tongchua + tongvat;
+        
         return prisma.donhang.update({
           where: { id },
           data: {
             status: 'danhan',
             printCount: data.printCount !== undefined ? data.printCount : undefined,
-            sanpham: {
-              updateMany: data.sanpham.map((item: any) => {
-                const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
-                const received = parseFloat((item.slnhan ?? 0).toFixed(3));
-                const shortageNote =
-                  received < delivered
-                    ? item.ghichu
-                      ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(3)}`
-                      : `Thiếu ${(delivered - received).toFixed(3)}`
-                    : item.ghichu || '';
-                return {
-                  where: { idSP: item.id },
-                  data: {
-                    ghichu: shortageNote,
-                    slnhan: received,
-                  },
-                };
-              }),
-            },
+            tongtien: parseFloat(tongtien.toFixed(3)),
+            tongvat: parseFloat(tongvat.toFixed(3)),
           },
         });
       }
@@ -2805,6 +2843,74 @@ export class DonhangService {
 
       // 8. Regular update without status change
       if (!data.status || data.status === oldDonhang.status) {
+        // 🔥 SPECIAL CASE: If order is in 'danhan' status and slnhan is being updated
+        if (oldDonhang.status === 'danhan' && data.sanpham && data.sanpham.length > 0) {
+          let tongchua = 0;
+          
+          // Update each product with recalculated values based on slnhan
+          for (const item of data.sanpham) {
+            const received = parseFloat((item.slnhan ?? 0).toFixed(3));
+            
+            // Find product in DB to get giaban and vat
+            const donhangSanpham = oldDonhang.sanpham.find((sp: any) => sp.idSP === item.id);
+            if (!donhangSanpham) continue;
+            
+            const giaban = parseFloat((donhangSanpham.giaban ?? 0).toFixed(3));
+            const vat = parseFloat((donhangSanpham.vat ?? 0).toFixed(3));
+            
+            // 🔥 Recalculate ttnhan and ttsauvat based on slnhan
+            const ttnhan = giaban * received;
+            const ttsauvat = ttnhan * (1 + vat);
+            
+            tongchua += ttnhan;
+            
+            await prisma.donhangsanpham.update({
+              where: { id: donhangSanpham.id },
+              data: {
+                slnhan: received,
+                ttnhan: parseFloat(ttnhan.toFixed(3)),
+                ttsauvat: parseFloat(ttsauvat.toFixed(3)),
+                ghichu: item.ghichu,
+              },
+            });
+          }
+          
+          // 🔥 Recalculate total amount for the order
+          const vatRate = parseFloat((oldDonhang.vat ?? 0).toFixed(3));
+          const tongvat = tongchua * vatRate;
+          const tongtien = tongchua + tongvat;
+          
+          // Update order with recalculated totals
+          return prisma.donhang.update({
+            where: { id },
+            data: {
+              title: data.title,
+              type: data.type,
+              ngaygiao: data.ngaygiao ? new Date(data.ngaygiao) : undefined,
+              khachhangId: data.khachhangId,
+              banggiaId: data.banggiaId,
+              vat: data.vat ? parseFloat(data.vat.toString()) : undefined,
+              isActive: data.isActive,
+              order: data.order,
+              ghichu: data.ghichu,
+              status: data.status,
+              nhanvienchiahang: data.nhanvienchiahang,
+              shipper: data.shipper,
+              phieuve: data.phieuve,
+              giodi: data.giodi,
+              giove: data.giove,
+              kynhan: data.kynhan,
+              printCount: data.printCount !== undefined ? data.printCount : undefined,
+              tongtien: parseFloat(tongtien.toFixed(3)),
+              tongvat: parseFloat(tongvat.toFixed(3)),
+            },
+            include: {
+              sanpham: true,
+            },
+          });
+        }
+        
+        // Regular update for other cases
         const updatedDonhang = await prisma.donhang.update({
           where: { id },
           data: {
@@ -3319,19 +3425,32 @@ export class DonhangService {
           }
         });
 
-        // Cập nhật số lượng nhận trong donhangsanpham
+        // Cập nhật số lượng nhận trong donhangsanpham và tính lại ttnhan, ttsauvat
+        let tongchua = 0;
+        
         for (const sp of donhang.sanpham) {
+          const giaban = parseFloat((sp.giaban || 0).toString());
+          const vat = parseFloat((sp.vat || 0).toString());
+          const newSlnhan = parseFloat(data.slnhan.toString());
+          
+          // 🔥 Tính lại ttnhan và ttsauvat dựa trên slnhan
+          const ttnhan = giaban * newSlnhan;
+          const ttsauvat = ttnhan * (1 + vat);
+          
+          tongchua += ttnhan;
+          
           await prisma.donhangsanpham.update({
             where: { id: sp.id },
             data: {
-              slnhan: data.slnhan,
+              slnhan: newSlnhan,
+              ttnhan: parseFloat(ttnhan.toFixed(3)),
+              ttsauvat: parseFloat(ttsauvat.toFixed(3)),
               ghichu: data.ghichu
             }
           });
 
           // 🎯 QUAN TRỌNG: Cập nhật TonKho - giảm slchogiao về 0
           const oldSlgiao = parseFloat((sp.slgiao || 0).toString());
-          const newSlnhan = parseFloat(data.slnhan.toString());
           
           // Nếu nhận đủ: slchogiao = 0
           // Nếu nhận thiếu: hoàn lại phần thiếu vào slton
@@ -3342,6 +3461,19 @@ export class DonhangService {
             ...(shortage > 0 && { slton: { increment: shortage } }) // Hoàn lại nếu thiếu
           });
         }
+        
+        // 🔥 Tính lại tổng tiền cho đơn hàng
+        const vatRate = parseFloat((donhang.vat || 0).toString());
+        const tongvat = tongchua * vatRate;
+        const tongtien = tongchua + tongvat;
+        
+        await prisma.donhang.update({
+          where: { id },
+          data: {
+            tongtien: parseFloat(tongtien.toFixed(3)),
+            tongvat: parseFloat(tongvat.toFixed(3)),
+          }
+        });
 
         return { success: true, message: 'Hoàn tất đơn hàng thành công' };
       });
@@ -3393,18 +3525,42 @@ export class DonhangService {
           let batchCount = 0;
           
           for (const order of batch) {
+            // 🔥 Tính lại tổng tiền cho đơn hàng
+            let tongchua = 0;
+            
             // Collect all sanpham updates for this order
-            const sanphamUpdates = order.sanpham.map(sp => ({
-              id: sp.id,
-              slnhan: sp.slgiao,
-              ghichu: (sp.ghichu || '') + ' | Auto-completed for inventory close'
-            }));
+            const sanphamUpdates = order.sanpham.map(sp => {
+              const giaban = parseFloat((sp.giaban || 0).toString());
+              const vat = parseFloat((sp.vat || 0).toString());
+              const slnhan = parseFloat((sp.slgiao || 0).toString()); // slnhan = slgiao khi auto-complete
+              
+              // 🔥 Tính lại ttnhan và ttsauvat
+              const ttnhan = giaban * slnhan;
+              const ttsauvat = ttnhan * (1 + vat);
+              
+              tongchua += ttnhan;
+              
+              return {
+                id: sp.id,
+                slnhan: slnhan,
+                ttnhan: parseFloat(ttnhan.toFixed(3)),
+                ttsauvat: parseFloat(ttsauvat.toFixed(3)),
+                ghichu: (sp.ghichu || '') + ' | Auto-completed for inventory close'
+              };
+            });
+
+            // 🔥 Tính tổng tiền đơn hàng
+            const vatRate = parseFloat((order.vat || 0).toString());
+            const tongvat = tongchua * vatRate;
+            const tongtien = tongchua + tongvat;
 
             // Update order status
             await prisma.donhang.update({
               where: { id: order.id },
               data: {
                 status: 'danhan',
+                tongtien: parseFloat(tongtien.toFixed(3)),
+                tongvat: parseFloat(tongvat.toFixed(3)),
                 ghichu: (order.ghichu || '') + ' | Tự động hoàn tất trước chốt kho',
                 updatedAt: new Date()
               }
@@ -3416,6 +3572,8 @@ export class DonhangService {
                 where: { id: update.id },
                 data: {
                   slnhan: update.slnhan,
+                  ttnhan: update.ttnhan,
+                  ttsauvat: update.ttsauvat,
                   ghichu: update.ghichu
                 }
               });

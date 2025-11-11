@@ -254,6 +254,8 @@ let DonhangService = class DonhangService {
                 let soluong = 0;
                 for (const item of donhang.sanpham) {
                     const slnhan = Number(item.slnhan) || 0;
+                    if (slnhan === 0)
+                        continue;
                     const giaban = Number(item.giaban) || 0;
                     tong += slnhan * giaban;
                     soluong += slnhan;
@@ -309,7 +311,12 @@ let DonhangService = class DonhangService {
         });
         const Sanphams = await this.prisma.sanpham.findMany();
         const flatItems = donhangs.flatMap((v) => {
-            return v.sanpham.map((v1) => {
+            return v.sanpham
+                .filter((v1) => {
+                const slnhan = Number(v1.slnhan) || 0;
+                return slnhan > 0;
+            })
+                .map((v1) => {
                 const product = Sanphams.find((sp) => sp.id === v1.idSP);
                 const giaban = v1.giaban || 0;
                 const vat = Number(product?.vat) || 0;
@@ -2008,29 +2015,43 @@ let DonhangService = class DonhangService {
                     };
                     await prisma.phieuKho.create({ data: phieuKhoData });
                 }
+                let tongchua = 0;
+                for (const item of data.sanpham) {
+                    const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
+                    const received = parseFloat((item.slnhan ?? 0).toFixed(3));
+                    const donhangSanpham = oldDonhang.sanpham.find((sp) => sp.idSP === item.id);
+                    if (!donhangSanpham)
+                        continue;
+                    const giaban = parseFloat((donhangSanpham.giaban ?? 0).toFixed(3));
+                    const vat = parseFloat((donhangSanpham.vat ?? 0).toFixed(3));
+                    const ttnhan = giaban * received;
+                    const ttsauvat = ttnhan * (1 + vat);
+                    tongchua += ttnhan;
+                    const shortageNote = received < delivered
+                        ? item.ghichu
+                            ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(3)}`
+                            : `Thiếu ${(delivered - received).toFixed(3)}`
+                        : item.ghichu || '';
+                    await prisma.donhangsanpham.update({
+                        where: { id: donhangSanpham.id },
+                        data: {
+                            ghichu: shortageNote,
+                            slnhan: received,
+                            ttnhan: parseFloat(ttnhan.toFixed(3)),
+                            ttsauvat: parseFloat(ttsauvat.toFixed(3)),
+                        },
+                    });
+                }
+                const vatRate = parseFloat((oldDonhang.vat ?? 0).toFixed(3));
+                const tongvat = tongchua * vatRate;
+                const tongtien = tongchua + tongvat;
                 return prisma.donhang.update({
                     where: { id },
                     data: {
                         status: 'danhan',
                         printCount: data.printCount !== undefined ? data.printCount : undefined,
-                        sanpham: {
-                            updateMany: data.sanpham.map((item) => {
-                                const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
-                                const received = parseFloat((item.slnhan ?? 0).toFixed(3));
-                                const shortageNote = received < delivered
-                                    ? item.ghichu
-                                        ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(3)}`
-                                        : `Thiếu ${(delivered - received).toFixed(3)}`
-                                    : item.ghichu || '';
-                                return {
-                                    where: { idSP: item.id },
-                                    data: {
-                                        ghichu: shortageNote,
-                                        slnhan: received,
-                                    },
-                                };
-                            }),
-                        },
+                        tongtien: parseFloat(tongtien.toFixed(3)),
+                        tongvat: parseFloat(tongvat.toFixed(3)),
                     },
                 });
             }
@@ -2272,6 +2293,59 @@ let DonhangService = class DonhangService {
                 });
             }
             if (!data.status || data.status === oldDonhang.status) {
+                if (oldDonhang.status === 'danhan' && data.sanpham && data.sanpham.length > 0) {
+                    let tongchua = 0;
+                    for (const item of data.sanpham) {
+                        const received = parseFloat((item.slnhan ?? 0).toFixed(3));
+                        const donhangSanpham = oldDonhang.sanpham.find((sp) => sp.idSP === item.id);
+                        if (!donhangSanpham)
+                            continue;
+                        const giaban = parseFloat((donhangSanpham.giaban ?? 0).toFixed(3));
+                        const vat = parseFloat((donhangSanpham.vat ?? 0).toFixed(3));
+                        const ttnhan = giaban * received;
+                        const ttsauvat = ttnhan * (1 + vat);
+                        tongchua += ttnhan;
+                        await prisma.donhangsanpham.update({
+                            where: { id: donhangSanpham.id },
+                            data: {
+                                slnhan: received,
+                                ttnhan: parseFloat(ttnhan.toFixed(3)),
+                                ttsauvat: parseFloat(ttsauvat.toFixed(3)),
+                                ghichu: item.ghichu,
+                            },
+                        });
+                    }
+                    const vatRate = parseFloat((oldDonhang.vat ?? 0).toFixed(3));
+                    const tongvat = tongchua * vatRate;
+                    const tongtien = tongchua + tongvat;
+                    return prisma.donhang.update({
+                        where: { id },
+                        data: {
+                            title: data.title,
+                            type: data.type,
+                            ngaygiao: data.ngaygiao ? new Date(data.ngaygiao) : undefined,
+                            khachhangId: data.khachhangId,
+                            banggiaId: data.banggiaId,
+                            vat: data.vat ? parseFloat(data.vat.toString()) : undefined,
+                            isActive: data.isActive,
+                            order: data.order,
+                            ghichu: data.ghichu,
+                            status: data.status,
+                            nhanvienchiahang: data.nhanvienchiahang,
+                            shipper: data.shipper,
+                            phieuve: data.phieuve,
+                            giodi: data.giodi,
+                            giove: data.giove,
+                            kynhan: data.kynhan,
+                            printCount: data.printCount !== undefined ? data.printCount : undefined,
+                            tongtien: parseFloat(tongtien.toFixed(3)),
+                            tongvat: parseFloat(tongvat.toFixed(3)),
+                        },
+                        include: {
+                            sanpham: true,
+                        },
+                    });
+                }
                 const updatedDonhang = await prisma.donhang.update({
                     where: { id },
                     data: {
@@ -2663,22 +2737,40 @@ let DonhangService = class DonhangService {
                         updatedAt: new Date()
                     }
                 });
+                let tongchua = 0;
                 for (const sp of donhang.sanpham) {
+                    const giaban = parseFloat((sp.giaban || 0).toString());
+                    const vat = parseFloat((sp.vat || 0).toString());
+                    const newSlnhan = parseFloat(data.slnhan.toString());
+                    const ttnhan = giaban * newSlnhan;
+                    const ttsauvat = ttnhan * (1 + vat);
+                    tongchua += ttnhan;
                     await prisma.donhangsanpham.update({
                         where: { id: sp.id },
                         data: {
-                            slnhan: data.slnhan,
+                            slnhan: newSlnhan,
+                            ttnhan: parseFloat(ttnhan.toFixed(3)),
+                            ttsauvat: parseFloat(ttsauvat.toFixed(3)),
                             ghichu: data.ghichu
                         }
                     });
                     const oldSlgiao = parseFloat((sp.slgiao || 0).toString());
-                    const newSlnhan = parseFloat(data.slnhan.toString());
                     const shortage = oldSlgiao - newSlnhan;
                     await this.updateTonKhoSafely(sp.idSP, {
                         slchogiao: { decrement: oldSlgiao },
                         ...(shortage > 0 && { slton: { increment: shortage } })
                     });
                 }
+                const vatRate = parseFloat((donhang.vat || 0).toString());
+                const tongvat = tongchua * vatRate;
+                const tongtien = tongchua + tongvat;
+                await prisma.donhang.update({
+                    where: { id },
+                    data: {
+                        tongtien: parseFloat(tongtien.toFixed(3)),
+                        tongvat: parseFloat(tongvat.toFixed(3)),
+                    }
+                });
                 return { success: true, message: 'Hoàn tất đơn hàng thành công' };
             });
         }
@@ -2719,15 +2811,31 @@ let DonhangService = class DonhangService {
                 const batchResult = await this.prisma.$transaction(async (prisma) => {
                     let batchCount = 0;
                     for (const order of batch) {
-                        const sanphamUpdates = order.sanpham.map(sp => ({
-                            id: sp.id,
-                            slnhan: sp.slgiao,
-                            ghichu: (sp.ghichu || '') + ' | Auto-completed for inventory close'
-                        }));
+                        let tongchua = 0;
+                        const sanphamUpdates = order.sanpham.map(sp => {
+                            const giaban = parseFloat((sp.giaban || 0).toString());
+                            const vat = parseFloat((sp.vat || 0).toString());
+                            const slnhan = parseFloat((sp.slgiao || 0).toString());
+                            const ttnhan = giaban * slnhan;
+                            const ttsauvat = ttnhan * (1 + vat);
+                            tongchua += ttnhan;
+                            return {
+                                id: sp.id,
+                                slnhan: slnhan,
+                                ttnhan: parseFloat(ttnhan.toFixed(3)),
+                                ttsauvat: parseFloat(ttsauvat.toFixed(3)),
+                                ghichu: (sp.ghichu || '') + ' | Auto-completed for inventory close'
+                            };
+                        });
+                        const vatRate = parseFloat((order.vat || 0).toString());
+                        const tongvat = tongchua * vatRate;
+                        const tongtien = tongchua + tongvat;
                         await prisma.donhang.update({
                             where: { id: order.id },
                             data: {
                                 status: 'danhan',
+                                tongtien: parseFloat(tongtien.toFixed(3)),
+                                tongvat: parseFloat(tongvat.toFixed(3)),
                                 ghichu: (order.ghichu || '') + ' | Tự động hoàn tất trước chốt kho',
                                 updatedAt: new Date()
                             }
@@ -2737,6 +2845,8 @@ let DonhangService = class DonhangService {
                                 where: { id: update.id },
                                 data: {
                                     slnhan: update.slnhan,
+                                    ttnhan: update.ttnhan,
+                                    ttsauvat: update.ttsauvat,
                                     ghichu: update.ghichu
                                 }
                             });

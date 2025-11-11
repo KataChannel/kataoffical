@@ -1485,6 +1485,8 @@ let DathangService = class DathangService {
             let soluong = 0;
             for (const item of v.sanpham) {
                 const slnhan = Number(item.slnhan) || 0;
+                if (slnhan === 0)
+                    continue;
                 const giaban = Number(item.sanpham?.giaban) || 0;
                 tong += slnhan * giaban;
                 soluong += slnhan;
@@ -1540,7 +1542,9 @@ let DathangService = class DathangService {
         });
         const Sanphams = await this.prisma.sanpham.findMany();
         const flatItems = dathangs.flatMap((v) => {
-            return v.sanpham.map((item) => ({
+            return v.sanpham
+                .filter((item) => Number(item.slnhan) > 0)
+                .map((item) => ({
                 madathang: v.madncc,
                 ngaynhan: v.ngaynhan,
                 tennhacungcap: v.nhacungcap?.name,

@@ -502,6 +502,8 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
       const customerTotals = new Map();
       // Tính tổng tiền sau thuế cho từng khách hàng
       this.ListCongno = this.Listdonhang()
+      console.log('this.ListCongno', this.ListCongno);
+      
       this.dataSource = new MatTableDataSource(this.ListCongno);
       // this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -750,7 +752,10 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
     }
   }
   convertFlatData(data:any) {
-    return data?.sanpham?.map((item:any) => ({
+    // ✅ BUGFIX: Filter out products with slnhan = 0 (not actually received)
+    return data?.sanpham
+      ?.filter((item:any) => Number(item.slnhan) > 0) // Skip unreceived products
+      ?.map((item:any) => ({
         "madonhang": data.madonhang,
         "ngaygiao": data.ngaygiao,
         "masp": item.sanpham.masp,
