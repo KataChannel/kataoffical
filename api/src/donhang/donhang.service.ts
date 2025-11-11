@@ -295,6 +295,7 @@ export class DonhangService {
         ngaygiao: true,
         tongtien: true,
         tongvat: true,
+        vat: true, // 🔥 Thêm vat để tính lại tongtien từ tong
         khachhang: {
           select: {
             name: true,
@@ -329,14 +330,20 @@ export class DonhangService {
         soluong += slnhan;
       }
 
+      // 🔥 BUGFIX: Tính lại tongvat và tongtien từ tong (đã tính từ slnhan)
+      // Thay vì lấy trực tiếp từ DB (có thể cũ)
+      const vatRate = Number(donhang.vat) || 0;
+      const tongvat = tong * vatRate;
+      const tongtien = tong + tongvat;
+
       return {
         id: donhang.id,
         madonhang: donhang.madonhang,
         ngaygiao: donhang.ngaygiao,
         tong: tong.toFixed(3),
         soluong: soluong.toFixed(3),
-        tongtien: donhang.tongtien,
-        tongvat: donhang.tongvat,
+        tongtien: parseFloat(tongtien.toFixed(3)),
+        tongvat: parseFloat(tongvat.toFixed(3)),
         name: donhang.khachhang?.name,
         makh: donhang.khachhang?.makh,
       };
@@ -2892,6 +2899,8 @@ export class DonhangService {
           const tongvat = tongchua * vatRate;
           const tongtien = tongchua + tongvat;
           
+          console.log(`🔥 [danhan special case] tongchua=${tongchua}, tongvat=${tongvat}, tongtien=${tongtien}`);
+          
           // Update order with recalculated totals
           return prisma.donhang.update({
             where: { id },
@@ -2951,13 +2960,28 @@ export class DonhangService {
 
         // Recalculate totals if sanpham data is provided or VAT rate changed
         if (data.sanpham || data.vat) {
-          const sanphamForCalculation = data.sanpham || updatedDonhang.sanpham.map(sp => ({
+          // 🔥 BUGFIX: Query lại để lấy sanpham mới nhất sau khi đã update các donhangsanpham records
+          // Vì updatedDonhang.sanpham được query TRƯỚC khi update donhangsanpham, nên có thể chứa slnhan cũ
+          const donhangWithLatestSanpham = await prisma.donhang.findUnique({
+            where: { id },
+            include: {
+              sanpham: true,
+            },
+          });
+          
+          if (!donhangWithLatestSanpham) {
+            throw new Error(`Không tìm thấy đơn hàng với id ${id}`);
+          }
+          
+          const sanphamForCalculation = data.sanpham || donhangWithLatestSanpham.sanpham.map(sp => ({
             giaban: sp.giaban,
             slnhan: sp.slnhan
           }));
           
           const vatRate = data.vat ? parseFloat(data.vat.toString()) : parseFloat(updatedDonhang.vat.toString());
           const { tongvat, tongtien } = this.calculateDonhangTotals(sanphamForCalculation, vatRate);
+
+          console.log(`🔥 [regular update] Recalculating with slnhan from latest data: tongvat=${tongvat}, tongtien=${tongtien}`);
 
           await prisma.donhang.update({
             where: { id },
