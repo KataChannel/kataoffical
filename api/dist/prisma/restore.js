@@ -95,7 +95,12 @@ async function validateForeignKeys(table, data) {
             case 'AuditLog':
                 const existingUserIds3 = await prisma.user.findMany({ select: { id: true } });
                 const validUserIds3 = new Set(existingUserIds3.map(u => u.id));
-                return data.filter(record => !record.userId || validUserIds3.has(record.userId));
+                return data.map(record => {
+                    if (record.userId && !validUserIds3.has(record.userId)) {
+                        return { ...record, userId: null };
+                    }
+                    return record;
+                });
             case 'Banggiasanpham':
                 const [banggia, sanpham] = await Promise.all([
                     prisma.banggia.findMany({ select: { id: true } }),
@@ -134,10 +139,12 @@ async function validateForeignKeys(table, data) {
                     .filter(record => !record.khachhangId || validKhachhangIds.has(record.khachhangId))
                     .map(record => {
                     const cleaned = { ...record };
-                    delete cleaned.nhanvienchiahang;
-                    delete cleaned.shipper;
-                    cleaned.nhanvienchiahangId = null;
-                    cleaned.shipperId = null;
+                    delete cleaned.nhanvienchiahangId;
+                    delete cleaned.shipperId;
+                    if (!cleaned.nhanvienchiahang)
+                        cleaned.nhanvienchiahang = '';
+                    if (!cleaned.shipper)
+                        cleaned.shipper = '';
                     return cleaned;
                 });
             case 'Dathang':
@@ -655,7 +662,6 @@ async function restoreAllTablesFromJson() {
         'UserRole',
         'RolePermission',
         'AuditLog',
-        'Nhanvien',
         'Banggia',
         'Sanpham',
         'Nhacungcap',
@@ -678,7 +684,7 @@ async function restoreAllTablesFromJson() {
             'Role', 'Permission', 'Menu', 'Congty', 'Nhomkhachhang', 'ErrorLog',
             'FileManager', 'ChatAIMessage', 'ChatAIHistory', 'File', 'ImportHistory',
             'UserguidStep', 'User', 'Profile', 'UserRole', 'RolePermission', 'AuditLog',
-            'Nhanvien', 'Banggia', 'Sanpham', 'Nhacungcap', 'Kho', 'Banggiasanpham',
+            'Banggia', 'Sanpham', 'Nhacungcap', 'Kho', 'Banggiasanpham',
             'Khachhang', 'SanphamKho', 'TonKho', 'Donhang', 'Dathang', 'PhieuKho',
             'Donhangsanpham', 'Dathangsanpham', 'PhieuKhoSanpham', 'Chotkho',
             'UserguidBlock', '_KhachhangNhom', '_MenuRole'

@@ -117,7 +117,13 @@ async function validateForeignKeys(table: string, data: any[]): Promise<any[]> {
       case 'AuditLog':
         const existingUserIds3 = await prisma.user.findMany({ select: { id: true } });
         const validUserIds3 = new Set(existingUserIds3.map(u => u.id));
-        return data.filter(record => !record.userId || validUserIds3.has(record.userId));
+        // More lenient: Set invalid userId to null instead of filtering out records
+        return data.map(record => {
+          if (record.userId && !validUserIds3.has(record.userId)) {
+            return { ...record, userId: null };
+          }
+          return record;
+        });
         
       case 'Banggiasanpham':
         const [banggia, sanpham] = await Promise.all([
@@ -163,19 +169,22 @@ async function validateForeignKeys(table: string, data: any[]): Promise<any[]> {
         const khachhang = await prisma.khachhang.findMany({ select: { id: true } });
         const validKhachhangIds = new Set(khachhang.map(k => k.id));
         
-        // ✅ Clean up data: Remove old string fields (nhanvienchiahang, shipper)
-        // Set FK fields to null since we don't have Nhanvien data yet
+        // ✅ Handle migration: old backup has nhanvienchiahangId/shipperId (FK fields)
+        // New schema has nhanvienchiahang/shipper (string fields)
+        // Since Nhanvien table is removed, we can't lookup names, so set to empty strings
         return data
           .filter(record => !record.khachhangId || validKhachhangIds.has(record.khachhangId))
           .map(record => {
-            // Remove old string fields that are now relations
             const cleaned = { ...record };
-            delete cleaned.nhanvienchiahang;  // Old string field
-            delete cleaned.shipper;  // Old string field
             
-            // Set new FK fields to null (will be populated later by user)
-            cleaned.nhanvienchiahangId = null;
-            cleaned.shipperId = null;
+            // Remove old FK fields that don't exist in new schema
+            delete cleaned.nhanvienchiahangId;
+            delete cleaned.shipperId;
+            
+            // Set string fields to empty if not present (backup from old schema won't have them)
+            // New inserts after migration will have proper string values
+            if (!cleaned.nhanvienchiahang) cleaned.nhanvienchiahang = '';
+            if (!cleaned.shipper) cleaned.shipper = '';
             
             return cleaned;
           });
@@ -803,7 +812,6 @@ async function restoreAllTablesFromJson(): Promise<void> {
     'UserRole',       // depends on User + Role
     'RolePermission', // depends on Role + Permission
     'AuditLog',       // depends on User (optional FK)
-    'Nhanvien',       // independent employee table (new - no backup data yet)
     
     // Phase 3: Core business entities (independent)
     'Banggia',        // independent
@@ -840,7 +848,7 @@ async function restoreAllTablesFromJson(): Promise<void> {
       'Role', 'Permission', 'Menu', 'Congty', 'Nhomkhachhang', 'ErrorLog', 
       'FileManager', 'ChatAIMessage', 'ChatAIHistory', 'File', 'ImportHistory',
       'UserguidStep', 'User', 'Profile', 'UserRole', 'RolePermission', 'AuditLog',
-      'Nhanvien', 'Banggia', 'Sanpham', 'Nhacungcap', 'Kho', 'Banggiasanpham', 
+      'Banggia', 'Sanpham', 'Nhacungcap', 'Kho', 'Banggiasanpham', 
       'Khachhang', 'SanphamKho', 'TonKho', 'Donhang', 'Dathang', 'PhieuKho', 
       'Donhangsanpham', 'Dathangsanpham', 'PhieuKhoSanpham', 'Chotkho', 
       'UserguidBlock', '_KhachhangNhom', '_MenuRole'
