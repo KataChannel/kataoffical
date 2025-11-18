@@ -55,6 +55,7 @@ model User {
   supportResponses SupportResponse[] @relation("UserResponses")
   createdTickets   SupportTicket[]   @relation("UserTickets")
   assignedTickets  SupportTicket[]   @relation("TechnicianTickets")
+  nhanvien         Nhanvien?         @relation("UserNhanvien")
 }
 
 model Role {
@@ -765,4 +766,131 @@ enum TicketPriority {
   medium
   high
   urgent
+}
+
+// ===========================
+// MODELS: NHÂN VIÊN & PHÒNG BAN
+// ===========================
+
+model Phongban {
+  id            String       @id @default(uuid())
+  ma            String       @unique // Mã phòng ban (ví dụ: PB001, BP002)
+  ten           String // Tên phòng ban
+  loai          LoaiPhongban @default(PHONGBAN) // Loại: Phòng ban, Bộ phận, Phòng, Ban, Tổ, v.v.
+  level         Int          @default(1) // Cấp bậc: 1 = cao nhất, 2 = thuộc cấp 1, v.v.
+  moTa          String? // Mô tả phòng ban
+  dienThoai     String? // Số điện thoại phòng ban
+  email         String? // Email phòng ban
+  diaChi        String? // Địa chỉ phòng ban
+  truongPhongId String? // ID nhân viên làm trưởng phòng
+  parentId      String? // ID phòng ban cha (để tạo cấu trúc phân cấp)
+  order         Int?         @default(1) // Thứ tự sắp xếp
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // Relations
+  parent      Phongban?  @relation("PhongbanChildren", fields: [parentId], references: [id])
+  children    Phongban[] @relation("PhongbanChildren")
+  truongPhong Nhanvien?  @relation("TruongPhong", fields: [truongPhongId], references: [id])
+  nhanviens   Nhanvien[] @relation("PhongbanNhanvien")
+
+  @@index([ma])
+  @@index([parentId])
+  @@index([level])
+  @@index([truongPhongId])
+}
+
+model Nhanvien {
+  id              String    @id @default(uuid())
+  maNV            String    @unique // Mã nhân viên
+  hoTen           String // Họ và tên
+  hoTenDem        String? // Họ và tên đệm (để tách riêng)
+  ten             String? // Tên (để tách riêng)
+  gioiTinh        GioiTinh? @default(KHAC) // Giới tính
+  ngaySinh        DateTime? // Ngày sinh
+  soDienThoai     String? // Số điện thoại
+  email           String?   @unique // Email
+  cmnd            String?   @unique // CMND/CCCD
+  ngayCapCmnd     DateTime? // Ngày cấp CMND
+  noiCapCmnd      String? // Nơi cấp CMND
+  diaChiThuongTru String? // Địa chỉ thường trú
+  diaChiTamTru    String? // Địa chỉ tạm trú
+  diaChiHienTai   String? // Địa chỉ hiện tại
+
+  // Thông tin công việc
+  phongbanId   String? // ID phòng ban
+  chucVu       String? // Chức vụ
+  viTri        String? // Vị trí công việc
+  ngayVaoLam   DateTime? // Ngày vào làm
+  ngayNghiViec DateTime? // Ngày nghỉ việc (nếu có)
+  trangThai    TrangThaiNhanvien @default(DANGLAMVIEC) // Trạng thái nhân viên
+  loaiHopDong  String? // Loại hợp động: Thử việc, Chính thức, Hợp đồng, v.v.
+
+  // Thông tin lương
+  luongCoBan Decimal? @default(0) @postgres.Decimal(20, 3) // Lương cơ bản
+  phuCap     Decimal? @default(0) @postgres.Decimal(20, 3) // Phụ cấp
+  heSoLuong  Decimal? @default(1) @postgres.Decimal(10, 2) // Hệ số lương
+
+  // Thông tin ngân hàng
+  soTaiKhoan String? // Số tài khoản
+  nganHang   String? // Tên ngân hàng
+  chiNhanh   String? // Chi nhánh
+
+  // Thông tin liên hệ khẩn cấp
+  nguoiLienHeKhanCap String? // Người liên hệ khẩn cấp
+  sdtKhanCap         String? // SĐT khẩn cấp
+  quanHeKhanCap      String? // Quan hệ với người liên hệ
+
+  // Metadata
+  ghiChu    String? // Ghi chú
+  avatar    String? // Ảnh đại diện
+  order     Int?     @default(1)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Tích hợp với User
+  userId String? @unique // ID của User nếu nhân viên có tài khoản
+
+  // Relations
+  phongban      Phongban?  @relation("PhongbanNhanvien", fields: [phongbanId], references: [id])
+  user          User?      @relation("UserNhanvien", fields: [userId], references: [id])
+  truongPhongOf Phongban[] @relation("TruongPhong")
+
+  @@index([maNV])
+  @@index([hoTen])
+  @@index([phongbanId])
+  @@index([userId])
+  @@index([email])
+  @@index([trangThai])
+}
+
+// ===========================
+// ENUMS: NHÂN VIÊN & PHÒNG BAN
+// ===========================
+
+enum LoaiPhongban {
+  PHONGBAN // Phòng ban
+  BOPHAN // Bộ phận
+  PHONG // Phòng
+  BAN // Ban
+  TO // Tổ
+  NHOM // Nhóm
+  KHAC // Khác
+}
+
+enum GioiTinh {
+  NAM
+  NU
+  KHAC
+}
+
+enum TrangThaiNhanvien {
+  DANGLAMVIEC // Đang làm việc
+  NGHIPHEP // Nghỉ phép
+  THUVIEC // Thử việc
+  DANGHIVIEC // Đã nghỉ việc
+  TAMNGHI // Tạm nghỉ
+  KHAC // Khác
 }
