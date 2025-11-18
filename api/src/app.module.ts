@@ -46,6 +46,8 @@ import { RedisModule } from './redis/redis.module';
 import { UserPermissionModule } from './user-permission/user-permission.module';
 import { SupportModule } from './support/support.module';
 import { CacheModule } from './cache/cache.module';
+import { PhongbanModule } from './phongban/phongban.module';
+import { NhanvienModule } from './nhanvien/nhanvien.module';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -104,6 +106,8 @@ import { CacheModule } from './cache/cache.module';
     // MinioModule,
     GraphQLUniversalModule,
     SupportModule,
+    PhongbanModule,
+    NhanvienModule,
   ],
   controllers: [AppController],
   providers: [

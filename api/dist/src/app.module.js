@@ -53,6 +53,8 @@ const redis_module_1 = require("./redis/redis.module");
 const user_permission_module_1 = require("./user-permission/user-permission.module");
 const support_module_1 = require("./support/support.module");
 const cache_module_1 = require("./cache/cache.module");
+const phongban_module_1 = require("./phongban/phongban.module");
+const nhanvien_module_1 = require("./nhanvien/nhanvien.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
@@ -116,6 +118,8 @@ exports.AppModule = AppModule = __decorate([
             chotkho_module_1.ChotkhoModule,
             graphql_module_1.GraphQLUniversalModule,
             support_module_1.SupportModule,
+            phongban_module_1.PhongbanModule,
+            nhanvien_module_1.NhanvienModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [
