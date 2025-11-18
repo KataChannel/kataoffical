@@ -302,6 +302,11 @@
                             {{Trangthaidon[row[column]]}}
                         </span>
                         }
+                        @case ('tongdon') {
+                        <span class="max-w-40 line-clamp-4">
+                            {{ getTongdon(row) | number:'1.0-0' }} đ
+                        </span>
+                        }
                         @case ('sanpham') {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column].length }}

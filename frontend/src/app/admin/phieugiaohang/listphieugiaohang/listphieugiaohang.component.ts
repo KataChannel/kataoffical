@@ -78,6 +78,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     'madonhang',
     'khachhang',
     'sanpham',
+    'tongdon',
     'ngaygiao',
     'status',
     'ghichu',
@@ -89,6 +90,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     madonhang: 'Mã Đơn Hàng',
     khachhang: 'Khách Hàng',
     sanpham: 'Sản Phẩm',
+    tongdon: 'Tổng Đơn',
     ngaygiao: 'Ngày Giao',
     status: 'Trạng Thái',
     ghichu: 'Ghi Chú',
@@ -168,7 +170,10 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
   async searchData(): Promise<void> {
     await this.LoadData();
   }
-  
+  getTongdon(row: any): number {
+    // Assuming 'tongdon' is the total amount for the order
+    return Number(row.tongtien) + Number(row.tongvat) || 0;
+  }
   async ngOnInit(): Promise<void> {
     // 🔥 AUTO-LOAD: Tự động load dữ liệu trong ngày khi vào trang
     this.initializeColumns();
@@ -310,6 +315,8 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
         id:true,
         madonhang:true,
         ngaygiao:true,
+        tongtien:true,
+        tongvat:true,
         status:true,
         ghichu:true,
         createdAt:true,
