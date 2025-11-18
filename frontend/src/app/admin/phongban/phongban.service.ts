@@ -31,7 +31,7 @@ export class PhongbanService {
   error = signal<string | null>(null);
 
   private getHeaders(): HttpHeaders {
-    const token = this.storageService.getItem('accessToken');
+    const token = this.storageService.getItem('token');
     return new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`

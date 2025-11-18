@@ -15,7 +15,36 @@ export const phongbanRoutes: Routes = [
       breadcrumb: 'Danh sách'
     }
   },
-  // TODO: Uncomment after creating components
+  {
+    path: 'create',
+    loadComponent: () => 
+      import('./formphongban/formphongban.component').then(m => m.FormPhongbanComponent),
+    data: { 
+      title: 'Thêm Phòng Ban',
+      breadcrumb: 'Thêm mới',
+      mode: 'create'
+    }
+  },
+  {
+    path: 'edit/:id',
+    loadComponent: () => 
+      import('./formphongban/formphongban.component').then(m => m.FormPhongbanComponent),
+    data: { 
+      title: 'Sửa Phòng Ban',
+      breadcrumb: 'Chỉnh sửa',
+      mode: 'edit'
+    }
+  },
+  {
+    path: 'detail/:id',
+    loadComponent: () => 
+      import('./detailphongban/detailphongban.component').then(m => m.DetailPhongbanComponent),
+    data: { 
+      title: 'Chi Tiết Phòng Ban',
+      breadcrumb: 'Chi tiết'
+    }
+  }
+  // TODO: Tree view coming soon
   // {
   //   path: 'tree',
   //   loadComponent: () => 
@@ -23,35 +52,6 @@ export const phongbanRoutes: Routes = [
   //   data: { 
   //     title: 'Sơ Đồ Tổ Chức',
   //     breadcrumb: 'Sơ đồ'
-  //   }
-  // },
-  // {
-  //   path: 'create',
-  //   loadComponent: () => 
-  //     import('./formphongban/formphongban.component').then(m => m.FormPhongbanComponent),
-  //   data: { 
-  //     title: 'Thêm Phòng Ban',
-  //     breadcrumb: 'Thêm mới',
-  //     mode: 'create'
-  //   }
-  // },
-  // {
-  //   path: 'edit/:id',
-  //   loadComponent: () => 
-  //     import('./formphongban/formphongban.component').then(m => m.FormPhongbanComponent),
-  //   data: { 
-  //     title: 'Sửa Phòng Ban',
-  //     breadcrumb: 'Chỉnh sửa',
-  //     mode: 'edit'
-  //   }
-  // },
-  // {
-  //   path: 'detail/:id',
-  //   loadComponent: () => 
-  //     import('./detailphongban/detailphongban.component').then(m => m.DetailPhongbanComponent),
-  //   data: { 
-  //     title: 'Chi Tiết Phòng Ban',
-  //     breadcrumb: 'Chi tiết'
   //   }
   // }
 ];

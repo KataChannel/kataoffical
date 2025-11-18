@@ -11,8 +11,8 @@ export declare class RoleService {
     findAll(): Promise<({
         permissions: {
             id: string;
-            roleId: string;
             permissionId: string;
+            roleId: string;
         }[];
     } & {
         id: string;
@@ -23,8 +23,8 @@ export declare class RoleService {
     findOne(id: string): Promise<({
         permissions: {
             id: string;
-            roleId: string;
             permissionId: string;
+            roleId: string;
         }[];
     } & {
         id: string;
@@ -49,8 +49,8 @@ export declare class RoleService {
             };
         } & {
             id: string;
-            roleId: string;
             permissionId: string;
+            roleId: string;
         })[];
     } & {
         id: string;
@@ -66,12 +66,12 @@ export declare class RoleService {
     }>;
     assignPermissionToRole(data: any): Promise<{
         id: string;
-        roleId: string;
         permissionId: string;
+        roleId: string;
     }>;
     removePermissionFromRole(data: any): Promise<{
         id: string;
-        roleId: string;
         permissionId: string;
+        roleId: string;
     }>;
 }

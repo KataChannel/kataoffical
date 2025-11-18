@@ -2,7 +2,7 @@ import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection, isD
 import { provideRouter, withRouterConfig } from '@angular/router';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { environment } from '../environments/environment.development';
@@ -16,6 +16,7 @@ import { Apollo } from 'apollo-angular';
 import { setContext } from '@apollo/client/link/context';
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID, inject } from '@angular/core';
+import { authInterceptor } from './shared/interceptors/auth.interceptor';
 export const MY_DATE_FORMATS = {
   parse: {
     dateInput: 'DD/MM/YYYY',
@@ -88,7 +89,11 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes), 
     provideClientHydration(withEventReplay()),
     provideNativeDateAdapter(),
-    provideHttpClient(withFetch()), provideAnimationsAsync(),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([authInterceptor])
+    ), 
+    provideAnimationsAsync(),
     { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig }, 
     provideServiceWorker('ngsw-worker.js', {
             enabled: !isDevMode(),
