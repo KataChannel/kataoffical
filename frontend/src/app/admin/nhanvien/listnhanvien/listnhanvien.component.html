@@ -1,0 +1,274 @@
+<div class="container">
+  <!-- Header with Statistics -->
+  <div class="header-section">
+    <h1 class="page-title">
+      <mat-icon>people</mat-icon>
+      Quản Lý Nhân Viên
+    </h1>
+
+    <div class="stats-cards" *ngIf="statistics()">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Tổng số</span>
+            <span class="stat-value">{{ statistics()?.total || 0 }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card active">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Đang làm việc</span>
+            <span class="stat-value">{{ statistics()?.dangLamViec || 0 }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card trial">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>hourglass_empty</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Thử việc</span>
+            <span class="stat-value">{{ statistics()?.thuViec || 0 }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card inactive">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>cancel</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Đã nghỉ</span>
+            <span class="stat-value">{{ statistics()?.daNghiViec || 0 }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <mat-card class="toolbar-card">
+    <mat-card-content>
+      <div class="toolbar">
+        <!-- Search -->
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Tìm kiếm</mat-label>
+          <input 
+            matInput 
+            placeholder="Tìm theo tên, mã NV, SĐT, email..."
+            [value]="searchTerm()"
+            (input)="onSearch($event)">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- Phongban Filter -->
+        <mat-form-field appearance="outline">
+          <mat-label>Phòng ban</mat-label>
+          <mat-select 
+            [value]="selectedPhongban()"
+            (selectionChange)="onPhongbanFilter($event.value)">
+            <mat-option [value]="null">-- Tất cả --</mat-option>
+            <mat-option *ngFor="let pb of phongbans()" [value]="pb.id">
+              {{ pb.ten }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Trang thai Filter -->
+        <mat-form-field appearance="outline">
+          <mat-label>Trạng thái</mat-label>
+          <mat-select 
+            [value]="selectedTrangThai()"
+            (selectionChange)="onTrangThaiFilter($event.value)">
+            <mat-option [value]="null">-- Tất cả --</mat-option>
+            <mat-option *ngFor="let opt of trangThaiOptions" [value]="opt.value">
+              {{ opt.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Clear Filters -->
+        <button 
+          mat-icon-button 
+          matTooltip="Xóa bộ lọc"
+          (click)="clearFilters()">
+          <mat-icon>filter_alt_off</mat-icon>
+        </button>
+
+        <div class="spacer"></div>
+
+        <!-- Action Buttons -->
+        <button 
+          mat-raised-button 
+          color="accent"
+          (click)="importExcel()">
+          <mat-icon>upload</mat-icon>
+          Import
+        </button>
+
+        <button 
+          mat-raised-button 
+          (click)="exportExcel()">
+          <mat-icon>download</mat-icon>
+          Export
+        </button>
+
+        <button 
+          mat-raised-button 
+          color="primary"
+          (click)="createNew()">
+          <mat-icon>add</mat-icon>
+          Thêm mới
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Table -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <div class="table-container" *ngIf="!loading(); else loadingTemplate">
+        <table mat-table [dataSource]="dataSource" matSort class="nhanvien-table">
+          <!-- Mã NV Column -->
+          <ng-container matColumnDef="maNV">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Mã NV</th>
+            <td mat-cell *matCellDef="let row">
+              <strong>{{ row.maNV }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Họ tên Column -->
+          <ng-container matColumnDef="hoTen">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Họ và tên</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="employee-info">
+                <span class="employee-name">{{ row.hoTen }}</span>
+                <span class="employee-email" *ngIf="row.email">{{ row.email }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Giới tính Column -->
+          <ng-container matColumnDef="gioiTinh">
+            <th mat-header-cell *matHeaderCellDef>Giới tính</th>
+            <td mat-cell *matCellDef="let row">
+              {{ getGioiTinhLabel(row.gioiTinh) }}
+            </td>
+          </ng-container>
+
+          <!-- Số điện thoại Column -->
+          <ng-container matColumnDef="soDienThoai">
+            <th mat-header-cell *matHeaderCellDef>Điện thoại</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.soDienThoai || 'N/A' }}
+            </td>
+          </ng-container>
+
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.email || 'N/A' }}
+            </td>
+          </ng-container>
+
+          <!-- Phòng ban Column -->
+          <ng-container matColumnDef="phongban">
+            <th mat-header-cell *matHeaderCellDef>Phòng ban</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.phongban?.ten || 'Chưa phân' }}
+            </td>
+          </ng-container>
+
+          <!-- Chức vụ Column -->
+          <ng-container matColumnDef="chucVu">
+            <th mat-header-cell *matHeaderCellDef>Chức vụ</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.chucVu || 'N/A' }}
+            </td>
+          </ng-container>
+
+          <!-- Trạng thái Column -->
+          <ng-container matColumnDef="trangThai">
+            <th mat-header-cell *matHeaderCellDef>Trạng thái</th>
+            <td mat-cell *matCellDef="let row">
+              <mat-chip [style.background-color]="getTrangThaiColor(row.trangThai)">
+                {{ getTrangThaiLabel(row.trangThai) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+            <td mat-cell *matCellDef="let row">
+              <button 
+                mat-icon-button 
+                [matMenuTriggerFor]="menu"
+                matTooltip="Thao tác">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="viewDetail(row.id)">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Xem chi tiết</span>
+                </button>
+                <button mat-menu-item (click)="editNhanvien(row.id)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Chỉnh sửa</span>
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="deleteNhanvien(row)" class="delete-action">
+                  <mat-icon>delete</mat-icon>
+                  <span>Xóa</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          <!-- No data row -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+              <div class="no-data-container">
+                <mat-icon>inbox</mat-icon>
+                <p>Không tìm thấy nhân viên nào</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Loading Template -->
+      <ng-template #loadingTemplate>
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Đang tải dữ liệu...</p>
+        </div>
+      </ng-template>
+
+      <!-- Paginator -->
+      <mat-paginator
+        [length]="total()"
+        [pageSize]="limit()"
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        [pageIndex]="page() - 1"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>
