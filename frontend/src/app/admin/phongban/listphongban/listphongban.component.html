@@ -176,10 +176,10 @@
 
             <!-- Loại Column -->
             <ng-container matColumnDef="loai">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnLabels['loai'] }}</th>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnLabels['loại'] }}</th>
               <td mat-cell *matCellDef="let row">
                 <mat-chip [color]="getLoaiColor(row.loai)" highlighted>
-                  {{ loaiPhongbanLabels[row.loai] }}
+                  {{ getLoaiLabel(row.loai) }}
                 </mat-chip>
               </td>
             </ng-container>

@@ -219,6 +219,20 @@ export const routes: Routes = [
       //       (c) => c.UserPermissionDemoComponent
       //     ),
       // },
+      {
+        path: 'phongban',
+        canActivate: [PermissionGuard],
+        data: { permission: 'phongban.view' },
+        loadChildren: () =>
+          import('./admin/phongban/phongban.route').then(m => m.phongbanRoutes),
+      },
+      {
+        path: 'nhanvien',
+        canActivate: [PermissionGuard],
+        data: { permission: 'nhanvien.view' },
+        loadChildren: () =>
+          import('./admin/nhanvien/nhanvien.route').then(m => m.nhanvienRoutes),
+      },
     {
             path: 'importdata',
             canActivate: [PermissionGuard],

@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 // Material imports
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -25,6 +25,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatCardModule } from '@angular/material/card';
 
 // Services & Models
 import { PhongbanService } from '../phongban.service';
@@ -41,7 +42,6 @@ import {
   imports: [
     CommonModule,
     FormsModule,
-    RouterLink,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
@@ -54,7 +54,8 @@ import {
     MatSelectModule,
     MatMenuModule,
     MatProgressSpinnerModule,
-    MatDialogModule
+    MatDialogModule,
+    MatCardModule
   ],
   templateUrl: './listphongban.component.html',
   styleUrls: ['./listphongban.component.scss']
@@ -294,6 +295,13 @@ export class ListPhongbanComponent implements OnInit {
   getLevelColor(level: number): string {
     const colors = ['primary', 'accent', 'warn'];
     return colors[Math.min(level - 1, colors.length - 1)];
+  }
+
+  /**
+   * Get loại label
+   */
+  getLoaiLabel(loai: string): string {
+    return this.loaiPhongbanLabels[loai as LoaiPhongban] || loai;
   }
 
   /**
