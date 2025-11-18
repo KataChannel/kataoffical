@@ -1,0 +1,272 @@
+<div class="phongban-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-title">
+      <h1>
+        <mat-icon>business</mat-icon>
+        Quản lý Phòng Ban
+      </h1>
+      <p class="subtitle">Tổng số: {{ stats().total }} phòng ban | {{ stats().totalNhanvien }} nhân viên</p>
+    </div>
+    
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="onCreate()">
+        <mat-icon>add</mat-icon>
+        Thêm Phòng Ban
+      </button>
+      <button mat-button (click)="onViewTree()">
+        <mat-icon>account_tree</mat-icon>
+        Sơ Đồ Tổ Chức
+      </button>
+      <button mat-icon-button [matMenuTriggerFor]="moreMenu" matTooltip="Thêm">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #moreMenu="matMenu">
+        <button mat-menu-item (click)="onRefresh()">
+          <mat-icon>refresh</mat-icon>
+          <span>Làm mới</span>
+        </button>
+        <button mat-menu-item (click)="onExport()">
+          <mat-icon>download</mat-icon>
+          <span>Xuất Excel</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-cards">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon primary">
+          <mat-icon>business_center</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value">{{ stats().total }}</div>
+          <div class="stat-label">Tổng phòng ban</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon accent">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value">{{ stats().totalNhanvien }}</div>
+          <div class="stat-label">Tổng nhân viên</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    @for (level of [1, 2, 3]; track level) {
+      @if (stats().byLevel[level]) {
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon warn">
+              <mat-icon>layers</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ stats().byLevel[level] }}</div>
+              <div class="stat-label">Cấp {{ level }}</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    }
+  </div>
+
+  <!-- Filter Section -->
+  <mat-card class="filter-card">
+    <mat-card-content>
+      <div class="filter-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Tìm kiếm</mat-label>
+          <input matInput 
+                 placeholder="Mã hoặc tên phòng ban..." 
+                 [value]="searchText()"
+                 (input)="onSearch($event)">
+          <mat-icon matPrefix>search</mat-icon>
+          @if (searchText()) {
+            <button matSuffix mat-icon-button (click)="searchText.set(''); updateDataSource()">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Loại</mat-label>
+          <mat-select [(value)]="selectedLoai" (selectionChange)="onLoaiChange()">
+            <mat-option value="">Tất cả</mat-option>
+            @for (loai of loaiPhongbanOptions; track loai) {
+              <mat-option [value]="loai">{{ loaiPhongbanLabels[loai] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Cấp độ</mat-label>
+          <mat-select [(value)]="selectedLevel" (selectionChange)="onLevelChange()">
+            <mat-option value="">Tất cả</mat-option>
+            <mat-option [value]="1">Cấp 1</mat-option>
+            <mat-option [value]="2">Cấp 2</mat-option>
+            <mat-option [value]="3">Cấp 3</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        @if (searchText() || selectedLoai() || selectedLevel()) {
+          <button mat-button color="warn" (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Xóa bộ lọc
+          </button>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Data Table -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      @if (loading()) {
+        <div class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Đang tải dữ liệu...</p>
+        </div>
+      } @else if (error()) {
+        <div class="error-container">
+          <mat-icon color="warn">error</mat-icon>
+          <p>{{ error() }}</p>
+          <button mat-raised-button color="primary" (click)="onRefresh()">Thử lại</button>
+        </div>
+      } @else if (filteredData().length === 0) {
+        <div class="empty-container">
+          <mat-icon>inbox</mat-icon>
+          <p>Không có dữ liệu</p>
+          <button mat-raised-button color="primary" (click)="onCreate()">Thêm phòng ban đầu tiên</button>
+        </div>
+      } @else {
+        <div class="table-container">
+          <table mat-table [dataSource]="dataSource" matSort class="phongban-table">
+            
+            <!-- STT Column -->
+            <ng-container matColumnDef="stt">
+              <th mat-header-cell *matHeaderCellDef>{{ columnLabels['stt'] }}</th>
+              <td mat-cell *matCellDef="let row; let i = index">{{ i + 1 }}</td>
+            </ng-container>
+
+            <!-- Mã Column -->
+            <ng-container matColumnDef="ma">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnLabels['ma'] }}</th>
+              <td mat-cell *matCellDef="let row">
+                <strong>{{ row.ma }}</strong>
+              </td>
+            </ng-container>
+
+            <!-- Tên Column -->
+            <ng-container matColumnDef="ten">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnLabels['ten'] }}</th>
+              <td mat-cell *matCellDef="let row">
+                <div class="ten-cell">
+                  <mat-icon class="dept-icon">business</mat-icon>
+                  <span>{{ row.ten }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Loại Column -->
+            <ng-container matColumnDef="loai">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnLabels['loai'] }}</th>
+              <td mat-cell *matCellDef="let row">
+                <mat-chip [color]="getLoaiColor(row.loai)" highlighted>
+                  {{ loaiPhongbanLabels[row.loai] }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Level Column -->
+            <ng-container matColumnDef="level">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnLabels['level'] }}</th>
+              <td mat-cell *matCellDef="let row">
+                <mat-chip [color]="getLevelColor(row.level)" class="level-chip">
+                  <mat-icon>layers</mat-icon>
+                  {{ row.level }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Parent Column -->
+            <ng-container matColumnDef="parent">
+              <th mat-header-cell *matHeaderCellDef>{{ columnLabels['parent'] }}</th>
+              <td mat-cell *matCellDef="let row">
+                @if (row.parent) {
+                  <span class="parent-name">{{ row.parent.ten }}</span>
+                } @else {
+                  <span class="text-muted">-</span>
+                }
+              </td>
+            </ng-container>
+
+            <!-- Nhân viên Count Column -->
+            <ng-container matColumnDef="nhanvienCount">
+              <th mat-header-cell *matHeaderCellDef>{{ columnLabels['nhanvienCount'] }}</th>
+              <td mat-cell *matCellDef="let row">
+                <div class="count-badge">
+                  <mat-icon>people</mat-icon>
+                  <span>{{ row._count?.nhanviens || 0 }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Children Count Column -->
+            <ng-container matColumnDef="childrenCount">
+              <th mat-header-cell *matHeaderCellDef>{{ columnLabels['childrenCount'] }}</th>
+              <td mat-cell *matCellDef="let row">
+                <div class="count-badge">
+                  <mat-icon>account_tree</mat-icon>
+                  <span>{{ row._count?.children || 0 }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>{{ columnLabels['actions'] }}</th>
+              <td mat-cell *matCellDef="let row">
+                <div class="action-buttons">
+                  <button mat-icon-button 
+                          (click)="onView(row)" 
+                          matTooltip="Xem chi tiết"
+                          color="primary">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                  <button mat-icon-button 
+                          (click)="onEdit(row)" 
+                          matTooltip="Chỉnh sửa"
+                          color="accent">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button 
+                          (click)="onDelete(row)" 
+                          matTooltip="Xóa"
+                          color="warn">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+          </table>
+
+          <mat-paginator 
+            [pageSizeOptions]="[10, 25, 50, 100]"
+            [pageSize]="25"
+            showFirstLastButtons>
+          </mat-paginator>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

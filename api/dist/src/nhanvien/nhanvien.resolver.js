@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NhanvienResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const common_1 = require("@nestjs/common");
+const graphql_type_json_1 = require("graphql-type-json");
 const nhanvien_service_1 = require("./nhanvien.service");
 const dto_1 = require("./dto");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
@@ -59,14 +60,14 @@ let NhanvienResolver = class NhanvienResolver {
 };
 exports.NhanvienResolver = NhanvienResolver;
 __decorate([
-    (0, graphql_1.Mutation)('createNhanvien'),
-    __param(0, (0, graphql_1.Args)('input')),
+    (0, graphql_1.Mutation)(() => graphql_type_json_1.default, { name: 'createNhanvien' }),
+    __param(0, (0, graphql_1.Args)('input', { type: () => graphql_type_json_1.default })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [dto_1.CreateNhanvienDto]),
     __metadata("design:returntype", void 0)
 ], NhanvienResolver.prototype, "create", null);
 __decorate([
-    (0, graphql_1.Query)('nhanviens'),
+    (0, graphql_1.Query)(() => graphql_type_json_1.default, { name: 'nhanviens' }),
     __param(0, (0, graphql_1.Args)('phongbanId', { nullable: true })),
     __param(1, (0, graphql_1.Args)('trangThai', { nullable: true })),
     __param(2, (0, graphql_1.Args)('chucVu', { nullable: true })),
@@ -78,42 +79,42 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], NhanvienResolver.prototype, "findAll", null);
 __decorate([
-    (0, graphql_1.Query)('nhanvienStatistics'),
+    (0, graphql_1.Query)(() => graphql_type_json_1.default, { name: 'nhanvienStatistics' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], NhanvienResolver.prototype, "getStatistics", null);
 __decorate([
-    (0, graphql_1.Query)('nhanvien'),
+    (0, graphql_1.Query)(() => graphql_type_json_1.default, { name: 'nhanvien' }),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], NhanvienResolver.prototype, "findOne", null);
 __decorate([
-    (0, graphql_1.Query)('nhanvienByMaNV'),
+    (0, graphql_1.Query)(() => graphql_type_json_1.default, { name: 'nhanvienByMaNV' }),
     __param(0, (0, graphql_1.Args)('maNV')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], NhanvienResolver.prototype, "findByMaNV", null);
 __decorate([
-    (0, graphql_1.Mutation)('updateNhanvien'),
+    (0, graphql_1.Mutation)(() => graphql_type_json_1.default, { name: 'updateNhanvien' }),
     __param(0, (0, graphql_1.Args)('id')),
-    __param(1, (0, graphql_1.Args)('input')),
+    __param(1, (0, graphql_1.Args)('input', { type: () => graphql_type_json_1.default })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, dto_1.UpdateNhanvienDto]),
     __metadata("design:returntype", void 0)
 ], NhanvienResolver.prototype, "update", null);
 __decorate([
-    (0, graphql_1.Mutation)('deleteNhanvien'),
+    (0, graphql_1.Mutation)(() => graphql_type_json_1.default, { name: 'deleteNhanvien' }),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], NhanvienResolver.prototype, "remove", null);
 __decorate([
-    (0, graphql_1.Mutation)('linkNhanvienToUser'),
+    (0, graphql_1.Mutation)(() => graphql_type_json_1.default, { name: 'linkNhanvienToUser' }),
     __param(0, (0, graphql_1.Args)('nhanvienId')),
     __param(1, (0, graphql_1.Args)('userId')),
     __metadata("design:type", Function),
@@ -121,7 +122,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], NhanvienResolver.prototype, "linkToUser", null);
 __decorate([
-    (0, graphql_1.Mutation)('unlinkNhanvienFromUser'),
+    (0, graphql_1.Mutation)(() => graphql_type_json_1.default, { name: 'unlinkNhanvienFromUser' }),
     __param(0, (0, graphql_1.Args)('nhanvienId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

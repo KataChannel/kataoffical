@@ -298,6 +298,15 @@ type Query {
   topProductsByValue(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
   tickets(status: String, priority: String): [SupportTicket!]!
   ticket(id: String!): SupportTicket
+  phongbans(level: Int, loai: String, parentId: String, includeChildren: Boolean): [JSON!]!
+  phongbanTree: [JSON!]!
+  phongbanStatistics: JSON!
+  phongban(id: String!): JSON!
+  phongbanByMa(ma: String!): JSON!
+  nhanviens(phongbanId: String, trangThai: String, chucVu: String, search: String, page: Int, limit: Int): JSON!
+  nhanvienStatistics: JSON!
+  nhanvien(id: String!): JSON!
+  nhanvienByMaNV(maNV: String!): JSON!
 }
 
 input NhomkhachhangFilterInput {
@@ -440,6 +449,14 @@ type Mutation {
   addResponse(ticketId: String!, input: CreateResponseInput!): SupportResponse!
   deleteTicket(id: String!): Boolean!
   assignTicket(ticketId: String!, technicianId: String!): Boolean!
+  createPhongban(input: JSON!): JSON!
+  updatePhongban(id: String!, input: JSON!): JSON!
+  deletePhongban(id: String!): JSON!
+  createNhanvien(input: JSON!): JSON!
+  updateNhanvien(id: String!, input: JSON!): JSON!
+  deleteNhanvien(id: String!): JSON!
+  linkNhanvienToUser(nhanvienId: String!, userId: String!): JSON!
+  unlinkNhanvienFromUser(nhanvienId: String!): JSON!
 }
 
 input CreateNhomkhachhangInput {

@@ -1,5 +1,6 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
+import GraphQLJSON from 'graphql-type-json';
 import { PhongbanService } from './phongban.service';
 import { CreatePhongbanDto, UpdatePhongbanDto } from './dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -9,12 +10,12 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class PhongbanResolver {
   constructor(private readonly phongbanService: PhongbanService) {}
 
-  @Mutation('createPhongban')
-  create(@Args('input') createPhongbanDto: CreatePhongbanDto) {
+  @Mutation(() => GraphQLJSON, { name: 'createPhongban' })
+  create(@Args('input', { type: () => GraphQLJSON }) createPhongbanDto: CreatePhongbanDto) {
     return this.phongbanService.create(createPhongbanDto);
   }
 
-  @Query('phongbans')
+  @Query(() => [GraphQLJSON], { name: 'phongbans' })
   findAll(
     @Args('level', { type: () => Int, nullable: true }) level?: number,
     @Args('loai', { nullable: true }) loai?: string,
@@ -29,35 +30,35 @@ export class PhongbanResolver {
     });
   }
 
-  @Query('phongbanTree')
+  @Query(() => [GraphQLJSON], { name: 'phongbanTree' })
   getTree() {
     return this.phongbanService.getTree();
   }
 
-  @Query('phongbanStatistics')
+  @Query(() => GraphQLJSON, { name: 'phongbanStatistics' })
   getStatistics() {
     return this.phongbanService.getStatistics();
   }
 
-  @Query('phongban')
+  @Query(() => GraphQLJSON, { name: 'phongban' })
   findOne(@Args('id') id: string) {
     return this.phongbanService.findOne(id);
   }
 
-  @Query('phongbanByMa')
+  @Query(() => GraphQLJSON, { name: 'phongbanByMa' })
   findByMa(@Args('ma') ma: string) {
     return this.phongbanService.findByMa(ma);
   }
 
-  @Mutation('updatePhongban')
+  @Mutation(() => GraphQLJSON, { name: 'updatePhongban' })
   update(
     @Args('id') id: string,
-    @Args('input') updatePhongbanDto: UpdatePhongbanDto
+    @Args('input', { type: () => GraphQLJSON }) updatePhongbanDto: UpdatePhongbanDto
   ) {
     return this.phongbanService.update(id, updatePhongbanDto);
   }
 
-  @Mutation('deletePhongban')
+  @Mutation(() => GraphQLJSON, { name: 'deletePhongban' })
   remove(@Args('id') id: string) {
     return this.phongbanService.remove(id);
   }

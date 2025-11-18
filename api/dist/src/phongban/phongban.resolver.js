@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PhongbanResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const common_1 = require("@nestjs/common");
+const graphql_type_json_1 = require("graphql-type-json");
 const phongban_service_1 = require("./phongban.service");
 const dto_1 = require("./dto");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
@@ -54,14 +55,14 @@ let PhongbanResolver = class PhongbanResolver {
 };
 exports.PhongbanResolver = PhongbanResolver;
 __decorate([
-    (0, graphql_1.Mutation)('createPhongban'),
-    __param(0, (0, graphql_1.Args)('input')),
+    (0, graphql_1.Mutation)(() => graphql_type_json_1.default, { name: 'createPhongban' }),
+    __param(0, (0, graphql_1.Args)('input', { type: () => graphql_type_json_1.default })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [dto_1.CreatePhongbanDto]),
     __metadata("design:returntype", void 0)
 ], PhongbanResolver.prototype, "create", null);
 __decorate([
-    (0, graphql_1.Query)('phongbans'),
+    (0, graphql_1.Query)(() => [graphql_type_json_1.default], { name: 'phongbans' }),
     __param(0, (0, graphql_1.Args)('level', { type: () => graphql_1.Int, nullable: true })),
     __param(1, (0, graphql_1.Args)('loai', { nullable: true })),
     __param(2, (0, graphql_1.Args)('parentId', { nullable: true })),
@@ -71,41 +72,41 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PhongbanResolver.prototype, "findAll", null);
 __decorate([
-    (0, graphql_1.Query)('phongbanTree'),
+    (0, graphql_1.Query)(() => [graphql_type_json_1.default], { name: 'phongbanTree' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PhongbanResolver.prototype, "getTree", null);
 __decorate([
-    (0, graphql_1.Query)('phongbanStatistics'),
+    (0, graphql_1.Query)(() => graphql_type_json_1.default, { name: 'phongbanStatistics' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PhongbanResolver.prototype, "getStatistics", null);
 __decorate([
-    (0, graphql_1.Query)('phongban'),
+    (0, graphql_1.Query)(() => graphql_type_json_1.default, { name: 'phongban' }),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PhongbanResolver.prototype, "findOne", null);
 __decorate([
-    (0, graphql_1.Query)('phongbanByMa'),
+    (0, graphql_1.Query)(() => graphql_type_json_1.default, { name: 'phongbanByMa' }),
     __param(0, (0, graphql_1.Args)('ma')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PhongbanResolver.prototype, "findByMa", null);
 __decorate([
-    (0, graphql_1.Mutation)('updatePhongban'),
+    (0, graphql_1.Mutation)(() => graphql_type_json_1.default, { name: 'updatePhongban' }),
     __param(0, (0, graphql_1.Args)('id')),
-    __param(1, (0, graphql_1.Args)('input')),
+    __param(1, (0, graphql_1.Args)('input', { type: () => graphql_type_json_1.default })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, dto_1.UpdatePhongbanDto]),
     __metadata("design:returntype", void 0)
 ], PhongbanResolver.prototype, "update", null);
 __decorate([
-    (0, graphql_1.Mutation)('deletePhongban'),
+    (0, graphql_1.Mutation)(() => graphql_type_json_1.default, { name: 'deletePhongban' }),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
