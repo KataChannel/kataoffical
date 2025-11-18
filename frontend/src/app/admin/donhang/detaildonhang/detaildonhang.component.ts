@@ -150,7 +150,7 @@ export class DetailDonhangComponent {
         this.DetailDonhang.set({
           title: 'Đơn Hàng' + moment().format('DD_MM_YYYY'),
           madonhang: GenId(8, false),
-          ngaygiao: moment().add(1, 'days').format('YYYY-MM-DD'),
+          ngaygiao: moment().format('YYYY-MM-DD'),
           type: 'donsi',
           status: 'dadat',
           isshowvat: false,

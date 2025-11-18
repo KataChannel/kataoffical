@@ -91,7 +91,7 @@ import { ListcongnokhachhangComponent } from '../listcongnokhachhang/listcongnok
           this.DetailDonhang.set({
             title: GenId(8, false),
             madonhang: GenId(8, false),
-            ngaygiao: moment().add(1, 'days').format('YYYY-MM-DD'),
+            ngaygiao: moment().format('YYYY-MM-DD'),
           });
           this._ListcongnokhachhangComponent.drawer.open();
           this.isEdit.update((value) => !value);
