@@ -2466,14 +2466,14 @@ let DonhangService = class DonhangService {
                     },
                     data: {
                         ghichu: sp.ghichu,
-                        sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-                        slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
-                        ttdat: parseFloat((sp.ttdat ?? 0).toFixed(3)),
-                        ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
-                        ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(3)),
-                        vat: parseFloat((sp.vat ?? 0).toFixed(3)),
-                        ttsauvat: parseFloat((sp.ttsauvat ?? 0).toFixed(3)),
+                        sldat: parseFloat((Number(sp.sldat) || 0).toFixed(3)),
+                        slgiao: parseFloat((Number(sp.slgiao) || 0).toFixed(3)),
+                        slnhan: parseFloat((Number(sp.slnhan) || 0).toFixed(3)),
+                        ttdat: parseFloat((Number(sp.ttdat) || 0).toFixed(3)),
+                        ttgiao: parseFloat((Number(sp.ttgiao) || 0).toFixed(3)),
+                        ttnhan: parseFloat((Number(sp.ttnhan) || 0).toFixed(3)),
+                        vat: parseFloat((Number(sp.vat) || 0).toFixed(3)),
+                        ttsauvat: parseFloat((Number(sp.ttsauvat) || 0).toFixed(3)),
                     },
                 }));
                 await Promise.all(updatePromises);

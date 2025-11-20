@@ -786,16 +786,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
         // Apply the update function from shared service
         this.DetailPhieugiaohang.update(updateFn);
         
-        // Update dataSource after changes
+        // Update dataSource after changes - NO SORT (keep current order)
         this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
-        
-        // 🔥 Re-apply current sort (keep user's sort preference)
-        if (this.sort && this.sort.active && this.sort.direction) {
-          // Trigger MatSort to re-sort with current settings
-          setTimeout(() => {
-            this.dataSource.sort = this.sort;
-          }, 0);
-        }
       },
       this.dataSource.filteredData.length
     );
@@ -819,16 +811,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
         // Apply the update function from shared service
         this.DetailPhieugiaohang.update(updateFn);
         
-        // Update dataSource after changes
+        // Update dataSource after changes - NO SORT (keep current order)
         this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
-        
-        // 🔥 Re-apply current sort (keep user's sort preference)
-        if (this.sort && this.sort.active && this.sort.direction) {
-          // Trigger MatSort to re-sort with current settings
-          setTimeout(() => {
-            this.dataSource.sort = this.sort;
-          }, 0);
-        }
       }
     );
   }
@@ -943,15 +927,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
       return v;
     })
     
-    // Update dataSource to reflect changes in the table
+    // Update dataSource to reflect changes - NO SORT (keep current order)
     this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
-    
-    // 🔥 Re-apply current sort
-    if (this.sort && this.sort.active && this.sort.direction) {
-      setTimeout(() => {
-        this.dataSource.sort = this.sort;
-      }, 0);
-    }
   }
 
   RemoveSanpham(item: any) {
@@ -981,15 +958,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
       return v;
     });
     
-    // Update dataSource to reflect changes in the table
+    // Update dataSource to reflect changes - NO SORT (keep current order)
     this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
-    
-    // 🔥 Re-apply current sort (keep user's sort preference)
-    if (this.sort && this.sort.active && this.sort.direction) {
-      setTimeout(() => {
-        this.dataSource.sort = this.sort;
-      }, 0);
-    }
 
     // Show success message
     this._snackBar.open(`Đã xóa sản phẩm: ${item.title}`, 'Đóng', {
