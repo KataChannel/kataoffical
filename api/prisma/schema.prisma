@@ -317,6 +317,8 @@ model Banggiasanpham {
   banggia   Banggia                 @relation(fields: [banggiaId], references: [id])
   sanpham   Sanpham                 @relation(fields: [sanphamId], references: [id])
   history   BanggiasanphamHistory[]
+
+  @@unique([banggiaId, sanphamId], name: "unique_banggia_sanpham")
 }
 
 model BanggiasanphamHistory {

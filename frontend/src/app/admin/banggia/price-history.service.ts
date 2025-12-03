@@ -3,6 +3,7 @@ import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
 import { firstValueFrom } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { GraphqlService } from '../../shared/services/graphql.service';
 
 export interface PriceChange {
   id: string;
@@ -90,6 +91,7 @@ export interface BulkUpdateRequest {
 export class PriceHistoryService {
   private http = inject(HttpClient);
   private storageService = inject(StorageService);
+  private graphqlService = inject(GraphqlService);
   private baseUrl = environment.APIURL;
 
   private getHeaders(): HttpHeaders {
@@ -169,7 +171,7 @@ export class PriceHistoryService {
       const url = `${this.baseUrl}/banggia/bulk-update-prices`;
       const currentUserId = userId || this.getCurrentUserId() || 'system';
       
-      return await firstValueFrom(
+      const result = await firstValueFrom(
         this.http.post(url, {
           updates: [{
             banggiaId,
@@ -180,6 +182,13 @@ export class PriceHistoryService {
           userId: currentUserId
         }, { headers: this.getHeaders() })
       );
+      
+      // ✅ CRITICAL: Invalidate GraphQL cache để reload lấy giá mới
+      console.log('[PRICE-HISTORY] Invalidating cache for banggia...');
+      this.graphqlService.clearCache('banggia');
+      this.graphqlService.clearCache('banggiasanpham');
+      
+      return result;
     } catch (error) {
       console.error('Error updating single price:', error);
       throw error;
@@ -195,12 +204,19 @@ export class PriceHistoryService {
       const currentUserId = request.userId || this.getCurrentUserId() || 'system';
       
       const url = `${this.baseUrl}/banggia/bulk-update-prices`;
-      return await firstValueFrom(
+      const result = await firstValueFrom(
         this.http.post(url, {
           ...request,
           userId: currentUserId
         }, { headers: this.getHeaders() })
       );
+      
+      // ✅ CRITICAL: Invalidate GraphQL cache để reload lấy giá mới
+      console.log('[PRICE-HISTORY] Invalidating cache for banggia (bulk)...');
+      this.graphqlService.clearCache('banggia');
+      this.graphqlService.clearCache('banggiasanpham');
+      
+      return result;
     } catch (error) {
       console.error('Error bulk updating prices:', error);
       throw error;

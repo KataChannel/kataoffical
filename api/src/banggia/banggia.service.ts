@@ -619,6 +619,54 @@ export class BanggiaService {
         }
       }
       
+      // ✅ Use upsert instead of deleteMany + create to prevent duplicates
+      if (data.sanpham && Array.isArray(data.sanpham)) {
+        const validSanpham = data.sanpham.filter((sp: any) => sp.sanphamId || sp.id);
+        
+        // Get existing products to determine which to delete
+        const existingProductIds = existingBanggia.sanpham.map(sp => sp.sanphamId);
+        const newProductIds = validSanpham.map((sp: any) => sp.sanphamId || sp.id);
+        const toDelete = existingProductIds.filter(spId => !newProductIds.includes(spId));
+        
+        // Delete products that are no longer in the list
+        if (toDelete.length > 0) {
+          await this.prisma.banggiasanpham.deleteMany({
+            where: {
+              banggiaId: id,
+              sanphamId: { in: toDelete }
+            }
+          });
+        }
+        
+        // Upsert products (update if exists, create if not)
+        for (const sp of validSanpham) {
+          const sanphamId = sp.sanphamId || sp.id;
+          const giaban = Number(sp.giaban) || 0;
+          
+          await this.prisma.banggiasanpham.upsert({
+            where: {
+              unique_banggia_sanpham: {
+                banggiaId: id,
+                sanphamId: sanphamId
+              }
+            },
+            update: {
+              giaban: giaban,
+              isActive: sp.isActive ?? true,
+              order: sp.order
+            },
+            create: {
+              banggiaId: id,
+              sanphamId: sanphamId,
+              giaban: giaban,
+              isActive: sp.isActive ?? true,
+              order: sp.order
+            }
+          });
+        }
+      }
+      
+      // Update banggia main fields
       const result = await this.prisma.banggia.update({
         where: { id },
         data: {
@@ -628,18 +676,6 @@ export class BanggiaService {
           status: data.status || 'baogia',
           batdau: data.batdau ? new Date(data.batdau) : null,
           ketthuc: data.ketthuc ? new Date(data.ketthuc) : null,
-          sanpham:
-            data.sanpham && Array.isArray(data.sanpham)
-              ? {
-                  deleteMany: {},
-                  create: data.sanpham
-                    .filter((sp: any) => sp.sanphamId || sp.id)
-                    .map((sp: any) => ({
-                      sanphamId: sp.sanphamId || sp.id,
-                      giaban: Number(sp.giaban) || 0,
-                    })),
-                }
-              : undefined,
         },
         include: { sanpham: true },
       });

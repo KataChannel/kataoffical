@@ -525,6 +525,44 @@ let BanggiaService = class BanggiaService {
                     }
                 }
             }
+            if (data.sanpham && Array.isArray(data.sanpham)) {
+                const validSanpham = data.sanpham.filter((sp) => sp.sanphamId || sp.id);
+                const existingProductIds = existingBanggia.sanpham.map(sp => sp.sanphamId);
+                const newProductIds = validSanpham.map((sp) => sp.sanphamId || sp.id);
+                const toDelete = existingProductIds.filter(spId => !newProductIds.includes(spId));
+                if (toDelete.length > 0) {
+                    await this.prisma.banggiasanpham.deleteMany({
+                        where: {
+                            banggiaId: id,
+                            sanphamId: { in: toDelete }
+                        }
+                    });
+                }
+                for (const sp of validSanpham) {
+                    const sanphamId = sp.sanphamId || sp.id;
+                    const giaban = Number(sp.giaban) || 0;
+                    await this.prisma.banggiasanpham.upsert({
+                        where: {
+                            unique_banggia_sanpham: {
+                                banggiaId: id,
+                                sanphamId: sanphamId
+                            }
+                        },
+                        update: {
+                            giaban: giaban,
+                            isActive: sp.isActive ?? true,
+                            order: sp.order
+                        },
+                        create: {
+                            banggiaId: id,
+                            sanphamId: sanphamId,
+                            giaban: giaban,
+                            isActive: sp.isActive ?? true,
+                            order: sp.order
+                        }
+                    });
+                }
+            }
             const result = await this.prisma.banggia.update({
                 where: { id },
                 data: {
@@ -534,17 +572,6 @@ let BanggiaService = class BanggiaService {
                     status: data.status || 'baogia',
                     batdau: data.batdau ? new Date(data.batdau) : null,
                     ketthuc: data.ketthuc ? new Date(data.ketthuc) : null,
-                    sanpham: data.sanpham && Array.isArray(data.sanpham)
-                        ? {
-                            deleteMany: {},
-                            create: data.sanpham
-                                .filter((sp) => sp.sanphamId || sp.id)
-                                .map((sp) => ({
-                                sanphamId: sp.sanphamId || sp.id,
-                                giaban: Number(sp.giaban) || 0,
-                            })),
-                        }
-                        : undefined,
                 },
                 include: { sanpham: true },
             });
