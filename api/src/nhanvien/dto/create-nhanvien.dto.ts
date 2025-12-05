@@ -5,6 +5,10 @@ export class CreateNhanvienDto {
   @IsString()
   maNV: string;
 
+  @IsOptional()
+  @IsString()
+  maLamViec?: string;
+
   @IsString()
   hoTen: string;
 

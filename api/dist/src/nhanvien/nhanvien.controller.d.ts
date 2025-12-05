@@ -13,6 +13,7 @@ export declare class NhanvienController {
         email: string | null;
         ten: string | null;
         maNV: string;
+        maLamViec: string | null;
         hoTen: string;
         hoTenDem: string | null;
         gioiTinh: import(".prisma/client").$Enums.GioiTinh | null;
@@ -76,6 +77,7 @@ export declare class NhanvienController {
         email: string | null;
         ten: string | null;
         maNV: string;
+        maLamViec: string | null;
         hoTen: string;
         hoTenDem: string | null;
         gioiTinh: import(".prisma/client").$Enums.GioiTinh | null;
@@ -116,6 +118,7 @@ export declare class NhanvienController {
         email: string | null;
         ten: string | null;
         maNV: string;
+        maLamViec: string | null;
         hoTen: string;
         hoTenDem: string | null;
         gioiTinh: import(".prisma/client").$Enums.GioiTinh | null;
@@ -156,6 +159,7 @@ export declare class NhanvienController {
         email: string | null;
         ten: string | null;
         maNV: string;
+        maLamViec: string | null;
         hoTen: string;
         hoTenDem: string | null;
         gioiTinh: import(".prisma/client").$Enums.GioiTinh | null;
@@ -199,6 +203,7 @@ export declare class NhanvienController {
         email: string | null;
         ten: string | null;
         maNV: string;
+        maLamViec: string | null;
         hoTen: string;
         hoTenDem: string | null;
         gioiTinh: import(".prisma/client").$Enums.GioiTinh | null;
@@ -239,6 +244,7 @@ export declare class NhanvienController {
         email: string | null;
         ten: string | null;
         maNV: string;
+        maLamViec: string | null;
         hoTen: string;
         hoTenDem: string | null;
         gioiTinh: import(".prisma/client").$Enums.GioiTinh | null;

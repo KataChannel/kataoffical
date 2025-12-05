@@ -81,6 +81,7 @@ export class ListNhanvienComponent implements OnInit {
   dataSource = new MatTableDataSource<Nhanvien>([]);
   displayedColumns: string[] = [
     'maNV',
+    'maLamViec',
     'hoTen',
     'gioiTinh',
     'soDienThoai',

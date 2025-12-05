@@ -806,6 +806,7 @@ model Phongban {
 model Nhanvien {
   id              String    @id @default(uuid())
   maNV            String    @unique // Mã nhân viên
+  maLamViec       String?   @unique // Mã làm việc
   hoTen           String // Họ và tên
   hoTenDem        String? // Họ và tên đệm (để tách riêng)
   ten             String? // Tên (để tách riêng)

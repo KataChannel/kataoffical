@@ -1,6 +1,7 @@
 export interface Nhanvien {
   id: string;
   maNV: string;
+  maLamViec?: string | null;
   hoTen: string;
   cmnd?: string | null;
   gioiTinh?: GioiTinh | null;

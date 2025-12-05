@@ -88,6 +88,7 @@ export class FormNhanvienComponent implements OnInit {
     this.nhanvienForm = this.fb.group({
       // Thông tin cơ bản
       maNV: ['', [Validators.required, Validators.maxLength(20)]],
+      maLamViec: ['', Validators.maxLength(50)],
       hoTen: ['', [Validators.required, Validators.maxLength(200)]],
       gioiTinh: [GioiTinh.KHAC],
       ngaySinh: [null],
@@ -140,6 +141,7 @@ export class FormNhanvienComponent implements OnInit {
       
       this.nhanvienForm.patchValue({
         maNV: nhanvien.maNV,
+        maLamViec: nhanvien.maLamViec,
         hoTen: nhanvien.hoTen,
         gioiTinh: nhanvien.gioiTinh,
         ngaySinh: nhanvien.ngaySinh ? new Date(nhanvien.ngaySinh) : null,

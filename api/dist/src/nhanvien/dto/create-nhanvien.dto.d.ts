@@ -1,6 +1,7 @@
 import { GioiTinh, TrangThaiNhanvien } from '@prisma/client';
 export declare class CreateNhanvienDto {
     maNV: string;
+    maLamViec?: string;
     hoTen: string;
     cmnd?: string;
     gioiTinh?: GioiTinh;
