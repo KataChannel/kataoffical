@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { SharedSocketService } from '../../shared/services/sharedsocket.service';
 import { DonhangService } from './donhang.service';
+import { NhanvienService } from '../nhanvien/nhanvien.service';
 import moment from 'moment';
 
 @Injectable({
@@ -20,6 +21,7 @@ export class DonhangGraphqlService {
   private _ErrorLogService = inject(ErrorLogService);
   private _sharedSocketService = inject(SharedSocketService);
   private _donhangService = inject(DonhangService);
+  private _NhanvienService = inject(NhanvienService);
   
   private socket: any;
 
@@ -454,6 +456,15 @@ export class DonhangGraphqlService {
         return;
       }
 
+      // Lấy danh sách nhân viên để mapping shipper theo machuyen
+      let nhanvienList: any[] = [];
+      try {
+        const nhanvienResponse = await this._NhanvienService.getAllNhanvien({ limit: 9999 });
+        nhanvienList = nhanvienResponse.data || [];
+      } catch (error) {
+        console.warn('Không thể lấy danh sách nhân viên:', error);
+      }
+
       // Chuẩn bị dữ liệu xuất Excel cho vận đơn - Chỉ các trường cần thiết
       const vandonExcelData = vandonData.map((item: any, index: number) => ({
         'STT': index + 1,
@@ -469,25 +480,40 @@ export class DonhangGraphqlService {
       }));
 
       // Chuẩn bị dữ liệu xuất Excel cho phiếu chuyển
-      const phieuchuyenExcelData = phieuchuyenData.map((item: any, index: number) => ({
-        'STT': index + 1,
-        'Mã Đơn Hàng': item.madonhang || '',
-        'Ngày Giao': item.ngaygiao ? new Date(item.ngaygiao).toLocaleString('vi-VN') : '',
-        'Tên Khách Hàng': item.name || '',
-        'Số Lượng': item.soluongtt || 0,
-        'Mã Chuyến': item.machuyen || '',
-        'Địa Chỉ': item.diachi || '',
-        'Liên Hệ': '',
-        'Số Điện Thoại': item.sdt || '',
-        'Giờ Nhận Hàng': item.gionhanhang || '',
-        'Tổng Số Món': item.tongsomon || 0,
-        'Số Lượng TT': item.loadpoint || 0,
-        'Shipper': item.shipper || '',
-        'Phiếu Về': item.phieuve || '',
-        'Giờ Đi': item.giodi || '',
-        'Giờ Về': item.giove || '',
-        'Ký Nhận': item.kynhan || ''
-      }));
+      const phieuchuyenExcelData = phieuchuyenData.map((item: any, index: number) => {
+        // Xác định shipper: nếu đã có thì giữ nguyên, nếu không thì tìm theo machuyen
+        let shipper = item.shipper || '';
+        
+        // Nếu shipper chưa có và có machuyen, tìm nhân viên có maLamViec trùng với machuyen
+        if (!shipper && item.machuyen && nhanvienList.length > 0) {
+          const matchedNhanvien = nhanvienList.find(
+            (nv: any) => nv.maLamViec && nv.maLamViec.toLowerCase() === item.machuyen.toLowerCase()
+          );
+          if (matchedNhanvien) {
+            shipper = matchedNhanvien.hoTen || '';
+          }
+        }
+
+        return {
+          'STT': index + 1,
+          'Mã Đơn Hàng': item.madonhang || '',
+          'Ngày Giao': item.ngaygiao ? new Date(item.ngaygiao).toLocaleString('vi-VN') : '',
+          'Tên Khách Hàng': item.name || '',
+          'Số Lượng': item.soluongtt || 0,
+          'Mã Chuyến': item.machuyen || '',
+          'Địa Chỉ': item.diachi || '',
+          'Liên Hệ': '',
+          'Số Điện Thoại': item.sdt || '',
+          'Giờ Nhận Hàng': item.gionhanhang || '',
+          'Tổng Số Món': item.tongsomon || 0,
+          'Số Lượng TT': item.loadpoint || 0,
+          'Shipper': shipper,
+          'Phiếu Về': item.phieuve || '',
+          'Giờ Đi': item.giodi || '',
+          'Giờ Về': item.giove || '',
+          'Ký Nhận': item.kynhan || ''
+        };
+      });
 
       // Import dynamic để tránh bundle size
       const { writeExcelFileSheets } = await import('../../shared/utils/exceldrive.utils');

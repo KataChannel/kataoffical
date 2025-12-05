@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+var n={NAM:"Nam",NU:"N\u1EEF",KHAC:"Kh\xE1c"};var i={DANGLAMVIEC:"\u0110ang l\xE0m vi\u1EC7c",NGHIPHEP:"Ngh\u1EC9 ph\xE9p",THUVIEC:"Th\u1EED vi\u1EC7c",DANGHIVIEC:"\u0110\xE3 ngh\u1EC9 vi\u1EC7c",TAMNGHI:"T\u1EA1m ngh\u1EC9",KHAC:"Kh\xE1c"};export{n as a,i as b};
