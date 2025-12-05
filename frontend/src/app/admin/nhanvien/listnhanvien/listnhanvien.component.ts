@@ -39,6 +39,8 @@ import {
   GioiTinhLabels
 } from '../../../models/nhanvien.model';
 import { Phongban } from '../../../models/phongban.model';
+import { ConfirmDialogComponent } from '../../user/listuser/confirm-dialog.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-listnhanvien',
@@ -238,17 +240,25 @@ export class ListNhanvienComponent implements OnInit {
   }
 
   async deleteNhanvien(nhanvien: Nhanvien) {
-    const confirmed = confirm(
-      `Bạn có chắc chắn muốn xóa nhân viên "${nhanvien.hoTen}"?\n\nHành động này không thể hoàn tác!`
-    );
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Xác nhận xóa nhân viên',
+        message: `Bạn có chắc chắn muốn xóa nhân viên "${nhanvien.hoTen}" (${nhanvien.maNV})?\n\nHành động này không thể hoàn tác!`
+      }
+    });
 
+    const confirmed = await firstValueFrom(dialogRef.afterClosed());
+    
     if (confirmed) {
       try {
         await this.nhanvienService.deleteNhanvien(nhanvien.id);
+        this.snackBar.open(`Đã xóa nhân viên "${nhanvien.hoTen}" thành công`, 'Đóng', { duration: 3000 });
         this.loadData();
         this.loadStatistics();
       } catch (error) {
         console.error('Error deleting nhanvien:', error);
+        this.snackBar.open('Có lỗi xảy ra khi xóa nhân viên', 'Đóng', { duration: 3000 });
       }
     }
   }

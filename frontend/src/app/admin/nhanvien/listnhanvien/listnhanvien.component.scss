@@ -226,6 +226,18 @@
   }
 }
 
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  button {
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
 mat-paginator {
   border-top: 1px solid #e0e0e0;
 }
