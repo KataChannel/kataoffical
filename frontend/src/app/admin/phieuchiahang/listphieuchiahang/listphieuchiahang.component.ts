@@ -41,6 +41,8 @@ import moment from 'moment';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
 import { DonhangService } from '../../donhang/donhang.service';
+import { NhanvienService } from '../../nhanvien/nhanvien.service';
+import { Nhanvien, TrangThaiNhanvien } from '../../../models/nhanvien.model';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { environment } from '../../../../environments/environment.development';
 import { SearchService } from '../../../shared/services/search.service';
@@ -112,11 +114,29 @@ export class ListPhieuchiahangComponent {
   editingNhanvienId: string | null = null;
   tempNhanvienValue: string = '';
   
+  // Danh sách nhân viên cho dropdown
+  listNhanvien = signal<Nhanvien[]>([]);
+  selectedNhanvienId: string | null = null;
+  
+  // Search nhân viên
+  searchNhanvienText = signal<string>('');
+  filteredNhanvien = computed(() => {
+    const searchText = this.searchNhanvienText().toLowerCase().trim();
+    const list = this.listNhanvien();
+    if (!searchText) return list;
+    return list.filter(nv => 
+      nv.hoTen.toLowerCase().includes(searchText) ||
+      (nv.maLamViec && nv.maLamViec.toLowerCase().includes(searchText)) ||
+      nv.maNV.toLowerCase().includes(searchText)
+    );
+  });
+  
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
   private _DonhangService: DonhangService = inject(DonhangService);
+  private _NhanvienService: NhanvienService = inject(NhanvienService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _SearchService: SearchService = inject(SearchService);
@@ -237,8 +257,26 @@ export class ListPhieuchiahangComponent {
       this.paginator._intl.lastPageLabel = 'Trang Cuối';
     }
     
+    // 🔥 Load danh sách nhân viên
+    await this.loadNhanvien();
+    
     // 🔥 Load dữ liệu trong ngày khi khởi tạo
     await this.loadData();
+  }
+  
+  /**
+   * Load danh sách nhân viên đang làm việc
+   */
+  async loadNhanvien(): Promise<void> {
+    try {
+      const response = await this._NhanvienService.getAllNhanvien({
+        trangThai: TrangThaiNhanvien.DANGLAMVIEC,
+        limit: 1000
+      });
+      this.listNhanvien.set(response.data);
+    } catch (error) {
+      console.error('Error loading nhanvien:', error);
+    }
   }
   
   async loadData(): Promise<void> {
@@ -1145,8 +1183,32 @@ export class ListPhieuchiahangComponent {
    */
   startEditNhanvien(row: any): void {
     this.editingNhanvienId = row.id;
-    // Store the nhanvienchiahang string value directly
+    // Reset search text
+    this.searchNhanvienText.set('');
+    // Tìm nhân viên theo tên hiện tại để lấy ID
+    const currentNhanvien = this.listNhanvien().find(
+      nv => nv.hoTen === row.nhanvienchiahang || nv.maNV === row.nhanvienchiahang
+    );
+    this.selectedNhanvienId = currentNhanvien?.id || null;
     this.tempNhanvienValue = row.nhanvienchiahang || '';
+  }
+  
+  /**
+   * Khi chọn nhân viên từ dropdown
+   */
+  onNhanvienSelect(nhanvienId: string | null): void {
+    this.selectedNhanvienId = nhanvienId;
+    // Reset search sau khi chọn
+    this.searchNhanvienText.set('');
+    if (nhanvienId) {
+      const nhanvien = this.listNhanvien().find(nv => nv.id === nhanvienId);
+      if (nhanvien) {
+        // Lưu tên nhân viên để hiển thị
+        this.tempNhanvienValue = nhanvien.hoTen;
+      }
+    } else {
+      this.tempNhanvienValue = '';
+    }
   }
   
   /**
@@ -1163,9 +1225,12 @@ export class ListPhieuchiahangComponent {
         throw new Error('Không tìm thấy đơn hàng');
       }
       
-      // ✅ Update the nhanvienchiahang string field directly
-      if (this.tempNhanvienValue) {
-        fullOrder.nhanvienchiahang = this.tempNhanvienValue;
+      // ✅ Lấy tên nhân viên từ danh sách nếu có ID được chọn
+      if (this.selectedNhanvienId) {
+        const selectedNhanvien = this.listNhanvien().find(nv => nv.id === this.selectedNhanvienId);
+        if (selectedNhanvien) {
+          fullOrder.nhanvienchiahang = selectedNhanvien.hoTen;
+        }
       } else {
         fullOrder.nhanvienchiahang = '';
       }
@@ -1174,13 +1239,10 @@ export class ListPhieuchiahangComponent {
       await this._DonhangService.updateDonhang(fullOrder);
       
       // Update local row
-      if (this.tempNhanvienValue) {
-        row.nhanvienchiahang = this.tempNhanvienValue;
-      } else {
-        row.nhanvienchiahang = '';
-      }
+      row.nhanvienchiahang = fullOrder.nhanvienchiahang;
       
       this.editingNhanvienId = null;
+      this.selectedNhanvienId = null;
       this.tempNhanvienValue = '';
       
       this._snackBar.open('✅ Cập nhật nhân viên chia hàng thành công', '', {
@@ -1205,11 +1267,13 @@ export class ListPhieuchiahangComponent {
    */
   cancelEditNhanvien(): void {
     this.editingNhanvienId = null;
+    this.selectedNhanvienId = null;
     this.tempNhanvienValue = '';
+    this.searchNhanvienText.set('');
   }
   
   /**
-   * Get Nhanvien display name (now returns the string value directly)
+   * Get Nhanvien display name
    */
   getNhanvienName(nhanvienName: string): string {
     return nhanvienName || '';

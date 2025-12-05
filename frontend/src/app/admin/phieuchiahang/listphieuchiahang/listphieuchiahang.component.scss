@@ -1,0 +1,36 @@
+// Nhân viên select panel styling
+::ng-deep .nhanvien-select-panel {
+  min-width: 320px !important;
+  max-height: 400px !important;
+  
+  .mat-mdc-option {
+    height: auto !important;
+    min-height: 48px;
+    padding: 8px 16px;
+    
+    &.mdc-list-item--disabled {
+      opacity: 1;
+      
+      &:first-child {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: white;
+        padding: 0;
+        min-height: auto;
+      }
+    }
+  }
+  
+  // Scrollable area
+  .mat-mdc-select-panel {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+}
+
+// Fix search input inside mat-option
+.mat-mdc-option.mdc-list-item--disabled input {
+  pointer-events: all !important;
+  cursor: text !important;
+}
