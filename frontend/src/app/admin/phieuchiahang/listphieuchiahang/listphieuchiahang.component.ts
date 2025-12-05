@@ -1194,6 +1194,21 @@ export class ListPhieuchiahangComponent {
   }
   
   /**
+   * Search nhân viên với debounce để tối ưu hiệu suất
+   */
+  private searchTimeout: any = null;
+  onSearchNhanvien(value: string): void {
+    // Clear timeout cũ
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+    // Debounce 150ms
+    this.searchTimeout = setTimeout(() => {
+      this.searchNhanvienText.set(value);
+    }, 150);
+  }
+  
+  /**
    * Khi chọn nhân viên từ dropdown
    */
   onNhanvienSelect(nhanvienId: string | null): void {
@@ -1216,34 +1231,32 @@ export class ListPhieuchiahangComponent {
    */
   async confirmEditNhanvien(row: any): Promise<void> {
     try {
-      // ✅ Fetch full order data first to avoid sending partial/invalid data
-      const fullOrder = await this._DonhangService.SearchField({
-        madonhang: row.madonhang
-      });
-      
-      if (!fullOrder) {
-        throw new Error('Không tìm thấy đơn hàng');
-      }
-      
-      // ✅ Lấy tên nhân viên từ danh sách nếu có ID được chọn
+      // Lấy tên nhân viên từ danh sách nếu có ID được chọn
+      let nhanvienchiahang = '';
       if (this.selectedNhanvienId) {
         const selectedNhanvien = this.listNhanvien().find(nv => nv.id === this.selectedNhanvienId);
         if (selectedNhanvien) {
-          fullOrder.nhanvienchiahang = selectedNhanvien.hoTen;
+          nhanvienchiahang = selectedNhanvien.hoTen;
         }
-      } else {
-        fullOrder.nhanvienchiahang = '';
       }
       
-      // ✅ Send the complete order object to avoid undefined/invalid fields
-      await this._DonhangService.updateDonhang(fullOrder);
+      // ✅ Chỉ gửi các trường cần thiết để update
+      const updateData = {
+        id: row.id,
+        nhanvienchiahang: nhanvienchiahang
+      };
+      
+      console.log('📝 Updating nhanvienchiahang:', updateData);
+      
+      await this._DonhangService.updateDonhang(updateData);
       
       // Update local row
-      row.nhanvienchiahang = fullOrder.nhanvienchiahang;
+      row.nhanvienchiahang = nhanvienchiahang;
       
       this.editingNhanvienId = null;
       this.selectedNhanvienId = null;
       this.tempNhanvienValue = '';
+      this.searchNhanvienText.set('');
       
       this._snackBar.open('✅ Cập nhật nhân viên chia hàng thành công', '', {
         duration: 2000,

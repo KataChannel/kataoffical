@@ -2252,6 +2252,8 @@ export class DonhangService {
             order: data.order,
             ghichu: data.ghichu,
             status: 'dadat',
+            nhanvienchiahang: data.nhanvienchiahang,
+            shipper: data.shipper,
             printCount: data.printCount !== undefined ? data.printCount : undefined,
             ...(data.sanpham && data.sanpham.length
               ? {
@@ -2347,6 +2349,8 @@ export class DonhangService {
             isActive: data.isActive,
             order: data.order,
             ghichu: data.ghichu,
+            nhanvienchiahang: data.nhanvienchiahang,
+            shipper: data.shipper,
             printCount: data.printCount !== undefined ? data.printCount : undefined,
             ...(data.sanpham && data.sanpham.length
               ? {
@@ -2459,6 +2463,8 @@ export class DonhangService {
           where: { id },
           data: {
             status: 'dagiao',
+            nhanvienchiahang: data.nhanvienchiahang,
+            shipper: data.shipper,
             printCount: data.printCount !== undefined ? data.printCount : undefined,
             sanpham: {
               updateMany: data.sanpham.map((sp: any) => ({
@@ -2935,23 +2941,23 @@ export class DonhangService {
         const updatedDonhang = await prisma.donhang.update({
           where: { id },
           data: {
-            title: data.title,
-            type: data.type,
-            ngaygiao: data.ngaygiao ? new Date(data.ngaygiao) : undefined,
-            khachhangId: data.khachhangId,
-            banggiaId: data.banggiaId,
-            vat: data.vat ? parseFloat(data.vat.toString()) : undefined,
-            isActive: data.isActive,
-            order: data.order,
-            ghichu: data.ghichu,
-            status: data.status,
-            nhanvienchiahang: data.nhanvienchiahang,  // ✅ Now a string field
-            shipper: data.shipper,  // ✅ Now a string field
-            phieuve: data.phieuve,
-            giodi: data.giodi,
-            giove: data.giove,
-            kynhan: data.kynhan,
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
+            ...(data.title !== undefined && { title: data.title }),
+            ...(data.type !== undefined && { type: data.type }),
+            ...(data.ngaygiao !== undefined && { ngaygiao: new Date(data.ngaygiao) }),
+            ...(data.khachhangId !== undefined && { khachhangId: data.khachhangId }),
+            ...(data.banggiaId !== undefined && { banggiaId: data.banggiaId }),
+            ...(data.vat !== undefined && { vat: parseFloat(data.vat.toString()) }),
+            ...(data.isActive !== undefined && { isActive: data.isActive }),
+            ...(data.order !== undefined && { order: data.order }),
+            ...(data.ghichu !== undefined && { ghichu: data.ghichu }),
+            ...(data.status !== undefined && { status: data.status }),
+            ...(data.nhanvienchiahang !== undefined && { nhanvienchiahang: data.nhanvienchiahang }),
+            ...(data.shipper !== undefined && { shipper: data.shipper }),
+            ...(data.phieuve !== undefined && { phieuve: data.phieuve }),
+            ...(data.giodi !== undefined && { giodi: data.giodi }),
+            ...(data.giove !== undefined && { giove: data.giove }),
+            ...(data.kynhan !== undefined && { kynhan: data.kynhan }),
+            ...(data.printCount !== undefined && { printCount: data.printCount }),
           },
           include: {
             sanpham: true,

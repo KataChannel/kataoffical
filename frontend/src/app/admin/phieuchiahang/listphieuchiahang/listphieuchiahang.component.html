@@ -231,7 +231,7 @@
                         </span>
                         }
                         @case ('nhanvienchiahang') {
-                        <div class="min-w-56">
+                        <div class="min-w-44 max-w-56">
                             @if (editingNhanvienId === row.id) {
                                 <!-- Edit mode - Dropdown chọn nhân viên với search -->
                                 <div class="flex items-center gap-1">
@@ -239,7 +239,7 @@
                                         [value]="selectedNhanvienId"
                                         (selectionChange)="onNhanvienSelect($event.value)"
                                         placeholder="Chọn nhân viên"
-                                        class="flex-1 text-sm !min-h-8"
+                                        class="flex-1 text-sm !min-h-8 nhanvien-select-trigger"
                                         panelClass="nhanvien-select-panel">
                                         <!-- Search input -->
                                         <mat-option disabled class="!sticky !top-0 !z-10 !bg-white !p-0">
@@ -247,7 +247,7 @@
                                                 <input 
                                                     type="text" 
                                                     [value]="searchNhanvienText()"
-                                                    (input)="searchNhanvienText.set($any($event.target).value)"
+                                                    (input)="onSearchNhanvien($any($event.target).value)"
                                                     (keydown)="$event.stopPropagation()"
                                                     placeholder="🔍 Tìm nhân viên..."
                                                     class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -259,43 +259,35 @@
                                         </mat-option>
                                         @for (nv of filteredNhanvien(); track nv.id) {
                                             <mat-option [value]="nv.id">
-                                                <div class="flex flex-col py-1">
-                                                    <span class="font-medium">{{ nv.hoTen }}</span>
-                                                    <span class="text-gray-400 text-xs">
-                                                        @if (nv.maLamViec) {
-                                                            MLV: {{ nv.maLamViec }} | 
-                                                        }
-                                                        MNV: {{ nv.maNV }}
-                                                    </span>
-                                                </div>
+                                                <span class="font-medium">{{ nv.hoTen }}</span>
                                             </mat-option>
                                         }
                                         @if (filteredNhanvien().length === 0 && searchNhanvienText()) {
                                             <mat-option disabled>
-                                                <span class="text-gray-400 italic">Không tìm thấy nhân viên</span>
+                                                <span class="text-gray-400 italic">Không tìm thấy</span>
                                             </mat-option>
                                         }
                                     </mat-select>
                                     <button 
                                         mat-icon-button 
                                         (click)="confirmEditNhanvien(row)"
-                                        class="!w-8 !h-8 !text-green-600"
+                                        class="!w-7 !h-7 !min-w-7 !p-0 !flex !items-center !justify-center"
                                         matTooltip="Xác nhận">
-                                        <mat-icon class="!text-lg">check</mat-icon>
+                                        <mat-icon class="!text-base !text-green-600 !w-4 !h-4 !leading-4">check</mat-icon>
                                     </button>
                                     <button 
                                         mat-icon-button 
                                         (click)="cancelEditNhanvien()"
-                                        class="!w-8 !h-8 !text-red-600"
+                                        class="!w-7 !h-7 !min-w-7 !p-0 !flex !items-center !justify-center"
                                         matTooltip="Hủy">
-                                        <mat-icon class="!text-lg">close</mat-icon>
+                                        <mat-icon class="!text-base !text-red-600 !w-4 !h-4 !leading-4">close</mat-icon>
                                     </button>
                                 </div>
                             } @else {
                                 <!-- View mode -->
                                 <span 
                                     (click)="startEditNhanvien(row)"
-                                    class="cursor-pointer hover:bg-blue-50 px-3 py-2 rounded-md block text-sm border border-dashed border-blue-400 hover:border-blue-600 transition-colors"
+                                    class="cursor-pointer hover:bg-blue-50 px-3 py-2 rounded-md block text-sm border border-dashed border-blue-400 hover:border-blue-600 transition-colors truncate"
                                     matTooltip="Click để chọn nhân viên">
                                     @if (row.nhanvienchiahang) {
                                         <span class="text-gray-800">{{ row.nhanvienchiahang }}</span>
