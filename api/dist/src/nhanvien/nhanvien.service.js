@@ -24,7 +24,7 @@ let NhanvienService = class NhanvienService {
             if (existing) {
                 throw new common_1.ConflictException(`Nhân viên với mã ${createNhanvienDto.maNV} đã tồn tại`);
             }
-            if (createNhanvienDto.email) {
+            if (createNhanvienDto.email && createNhanvienDto.email.trim() !== '') {
                 const existingEmail = await this.prisma.nhanvien.findUnique({
                     where: { email: createNhanvienDto.email }
                 });
@@ -32,7 +32,7 @@ let NhanvienService = class NhanvienService {
                     throw new common_1.ConflictException(`Email ${createNhanvienDto.email} đã được sử dụng`);
                 }
             }
-            if (createNhanvienDto.phongbanId) {
+            if (createNhanvienDto.phongbanId && createNhanvienDto.phongbanId.trim() !== '') {
                 const phongban = await this.prisma.phongban.findUnique({
                     where: { id: createNhanvienDto.phongbanId }
                 });
@@ -40,7 +40,7 @@ let NhanvienService = class NhanvienService {
                     throw new common_1.NotFoundException(`Phòng ban với ID ${createNhanvienDto.phongbanId} không tồn tại`);
                 }
             }
-            if (createNhanvienDto.userId) {
+            if (createNhanvienDto.userId && createNhanvienDto.userId.trim() !== '') {
                 const user = await this.prisma.user.findUnique({
                     where: { id: createNhanvienDto.userId }
                 });
@@ -55,6 +55,18 @@ let NhanvienService = class NhanvienService {
                 }
             }
             const data = { ...createNhanvienDto };
+            const uniqueFields = ['email', 'cmnd', 'maLamViec', 'userId', 'phongbanId'];
+            for (const field of uniqueFields) {
+                if (data[field] === '' || data[field] === undefined) {
+                    data[field] = null;
+                }
+            }
+            const optionalFields = ['soDienThoai', 'queQuan', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu'];
+            for (const field of optionalFields) {
+                if (data[field] === '') {
+                    data[field] = null;
+                }
+            }
             if (data.ngaySinh) {
                 data.ngaySinh = new Date(data.ngaySinh);
             }
@@ -202,6 +214,18 @@ let NhanvienService = class NhanvienService {
                 }
             }
             const data = { ...updateNhanvienDto };
+            const uniqueFields = ['email', 'cmnd', 'maLamViec', 'userId', 'phongbanId'];
+            for (const field of uniqueFields) {
+                if (data[field] === '') {
+                    data[field] = null;
+                }
+            }
+            const optionalFields = ['soDienThoai', 'queQuan', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu'];
+            for (const field of optionalFields) {
+                if (data[field] === '') {
+                    data[field] = null;
+                }
+            }
             if (data.ngaySinh) {
                 data.ngaySinh = new Date(data.ngaySinh);
             }

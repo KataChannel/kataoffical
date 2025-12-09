@@ -198,16 +198,25 @@ export class FormNhanvienComponent implements OnInit {
 
       if (this.mode === 'create') {
         await this.nhanvienService.createNhanvien(formValue);
-        this.snackBar.open('Tạo nhân viên thành công!', 'Đóng', { duration: 3000 });
+        this.snackBar.open('Tạo nhân viên thành công!', 'Đóng', 
+          { 
+            panelClass: ['snackbar-success'],
+            duration: 3000 
+          });
       } else if (this.id) {
         await this.nhanvienService.updateNhanvien(this.id, formValue);
-        this.snackBar.open('Cập nhật nhân viên thành công!', 'Đóng', { duration: 3000 });
+        this.snackBar.open('Cập nhật nhân viên thành công!', 'Đóng', { 
+          panelClass: ['snackbar-success'],
+          duration: 3000 });
       }
 
       this.router.navigate(['/admin/nhanvien/list']);
     } catch (error: any) {
       const message = error?.error?.message || 'Có lỗi xảy ra. Vui lòng thử lại.';
-      this.snackBar.open(message, 'Đóng', { duration: 5000 });
+      this.snackBar.open(message, 'Đóng', { 
+        panelClass: ['snackbar-error'],
+        duration: 5000 
+      });
       console.error('Error submitting form:', error);
     } finally {
       this.submitting.set(false);

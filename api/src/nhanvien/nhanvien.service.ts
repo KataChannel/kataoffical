@@ -18,8 +18,8 @@ export class NhanvienService {
         throw new ConflictException(`Nhân viên với mã ${createNhanvienDto.maNV} đã tồn tại`);
       }
 
-      // Kiểm tra email nếu có
-      if (createNhanvienDto.email) {
+      // Kiểm tra email nếu có (và không phải empty string)
+      if (createNhanvienDto.email && createNhanvienDto.email.trim() !== '') {
         const existingEmail = await this.prisma.nhanvien.findUnique({
           where: { email: createNhanvienDto.email }
         });
@@ -29,8 +29,8 @@ export class NhanvienService {
         }
       }
 
-      // Kiểm tra phòng ban nếu có
-      if (createNhanvienDto.phongbanId) {
+      // Kiểm tra phòng ban nếu có (và không phải empty string)
+      if (createNhanvienDto.phongbanId && createNhanvienDto.phongbanId.trim() !== '') {
         const phongban = await this.prisma.phongban.findUnique({
           where: { id: createNhanvienDto.phongbanId }
         });
@@ -40,8 +40,8 @@ export class NhanvienService {
         }
       }
 
-      // Kiểm tra user nếu có
-      if (createNhanvienDto.userId) {
+      // Kiểm tra user nếu có (và không phải empty string)
+      if (createNhanvienDto.userId && createNhanvienDto.userId.trim() !== '') {
         const user = await this.prisma.user.findUnique({
           where: { id: createNhanvienDto.userId }
         });
@@ -60,8 +60,25 @@ export class NhanvienService {
         }
       }
 
-      // Convert date strings to Date objects
+      // Convert date strings to Date objects and handle empty strings for unique fields
       const data: any = { ...createNhanvienDto };
+      
+      // Convert empty strings to null for unique fields to avoid constraint violations
+      const uniqueFields = ['email', 'cmnd', 'maLamViec', 'userId', 'phongbanId'];
+      for (const field of uniqueFields) {
+        if (data[field] === '' || data[field] === undefined) {
+          data[field] = null;
+        }
+      }
+      
+      // Convert other empty strings to null for cleaner data
+      const optionalFields = ['soDienThoai', 'queQuan', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu'];
+      for (const field of optionalFields) {
+        if (data[field] === '') {
+          data[field] = null;
+        }
+      }
+      
       if (data.ngaySinh) {
         data.ngaySinh = new Date(data.ngaySinh);
       }
@@ -238,8 +255,25 @@ export class NhanvienService {
         }
       }
 
-      // Convert date strings to Date objects
+      // Convert date strings to Date objects and handle empty strings for unique fields
       const data: any = { ...updateNhanvienDto };
+      
+      // Convert empty strings to null for unique fields to avoid constraint violations
+      const uniqueFields = ['email', 'cmnd', 'maLamViec', 'userId', 'phongbanId'];
+      for (const field of uniqueFields) {
+        if (data[field] === '') {
+          data[field] = null;
+        }
+      }
+      
+      // Convert other empty strings to null for cleaner data
+      const optionalFields = ['soDienThoai', 'queQuan', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu'];
+      for (const field of optionalFields) {
+        if (data[field] === '') {
+          data[field] = null;
+        }
+      }
+      
       if (data.ngaySinh) {
         data.ngaySinh = new Date(data.ngaySinh);
       }

@@ -69,6 +69,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'thongke',
+        loadChildren: () =>
+          import('./admin/thongke/thongke.route').then(m => m.THONGKE_ROUTES),
+      },
+      {
         path: 'testing',
         loadComponent: () =>
           import('./admin/testing/testing.component').then(
