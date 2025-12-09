@@ -61,17 +61,24 @@ let NhanvienService = class NhanvienService {
                     data[field] = null;
                 }
             }
-            const optionalFields = ['soDienThoai', 'queQuan', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu'];
+            const optionalFields = ['soDienThoai', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu', 'soTaiKhoan', 'nganHang', 'chiNhanh'];
             for (const field of optionalFields) {
                 if (data[field] === '') {
                     data[field] = null;
                 }
             }
-            if (data.ngaySinh) {
+            delete data.queQuan;
+            if (data.ngaySinh && data.ngaySinh !== '' && data.ngaySinh !== null) {
                 data.ngaySinh = new Date(data.ngaySinh);
             }
-            if (data.ngayVaoLam) {
+            else {
+                data.ngaySinh = null;
+            }
+            if (data.ngayVaoLam && data.ngayVaoLam !== '' && data.ngayVaoLam !== null) {
                 data.ngayVaoLam = new Date(data.ngayVaoLam);
+            }
+            else {
+                data.ngayVaoLam = null;
             }
             return await this.prisma.nhanvien.create({
                 data,
@@ -220,17 +227,18 @@ let NhanvienService = class NhanvienService {
                     data[field] = null;
                 }
             }
-            const optionalFields = ['soDienThoai', 'queQuan', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu'];
+            const optionalFields = ['soDienThoai', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu', 'soTaiKhoan', 'nganHang', 'chiNhanh'];
             for (const field of optionalFields) {
                 if (data[field] === '') {
                     data[field] = null;
                 }
             }
-            if (data.ngaySinh) {
-                data.ngaySinh = new Date(data.ngaySinh);
+            delete data.queQuan;
+            if (data.ngaySinh !== undefined) {
+                data.ngaySinh = data.ngaySinh ? new Date(data.ngaySinh) : null;
             }
-            if (data.ngayVaoLam) {
-                data.ngayVaoLam = new Date(data.ngayVaoLam);
+            if (data.ngayVaoLam !== undefined) {
+                data.ngayVaoLam = data.ngayVaoLam ? new Date(data.ngayVaoLam) : null;
             }
             return await this.prisma.nhanvien.update({
                 where: { id },

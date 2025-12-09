@@ -667,7 +667,9 @@ export class KhoiluongKhachhangComponent implements OnInit, AfterViewInit {
 
     if (result) {
       this.dataSource.data = result.chiTietSanpham;
-      this.snackBar.open(`Thống kê thành công: ${result.tongSanpham} sản phẩm, ${result.tongDonhang} đơn hàng`, 'OK', { duration: 3000 });
+      this.snackBar.open(`Thống kê thành công: ${result.tongSanpham} sản phẩm, ${result.tongDonhang} đơn hàng`, 'OK', {
+        panelClass: 'snackbar-success',
+        duration: 3000 });
     }
   }
 
@@ -680,7 +682,9 @@ export class KhoiluongKhachhangComponent implements OnInit, AfterViewInit {
   exportExcel() {
     const result = this.result();
     if (!result || result.chiTietSanpham.length === 0) {
-      this.snackBar.open('Không có dữ liệu để xuất', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Không có dữ liệu để xuất', 'Đóng', { 
+        panelClass: 'snackbar-error',
+        duration: 3000 });
       return;
     }
 

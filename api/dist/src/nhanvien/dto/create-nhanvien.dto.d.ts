@@ -6,7 +6,6 @@ export declare class CreateNhanvienDto {
     cmnd?: string;
     gioiTinh?: GioiTinh;
     ngaySinh?: string;
-    queQuan?: string;
     diaChiHienTai?: string;
     soDienThoai?: string;
     email?: string;

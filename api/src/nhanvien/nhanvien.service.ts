@@ -72,18 +72,27 @@ export class NhanvienService {
       }
       
       // Convert other empty strings to null for cleaner data
-      const optionalFields = ['soDienThoai', 'queQuan', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu'];
+      const optionalFields = ['soDienThoai', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu', 'soTaiKhoan', 'nganHang', 'chiNhanh'];
       for (const field of optionalFields) {
         if (data[field] === '') {
           data[field] = null;
         }
       }
       
-      if (data.ngaySinh) {
+      // Remove fields that don't exist in Prisma schema
+      delete data.queQuan;
+      
+      // Handle date fields - convert to Date only if valid, otherwise set to null
+      if (data.ngaySinh && data.ngaySinh !== '' && data.ngaySinh !== null) {
         data.ngaySinh = new Date(data.ngaySinh);
+      } else {
+        data.ngaySinh = null;
       }
-      if (data.ngayVaoLam) {
+      
+      if (data.ngayVaoLam && data.ngayVaoLam !== '' && data.ngayVaoLam !== null) {
         data.ngayVaoLam = new Date(data.ngayVaoLam);
+      } else {
+        data.ngayVaoLam = null;
       }
 
       return await this.prisma.nhanvien.create({
@@ -267,18 +276,22 @@ export class NhanvienService {
       }
       
       // Convert other empty strings to null for cleaner data
-      const optionalFields = ['soDienThoai', 'queQuan', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu'];
+      const optionalFields = ['soDienThoai', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu', 'soTaiKhoan', 'nganHang', 'chiNhanh'];
       for (const field of optionalFields) {
         if (data[field] === '') {
           data[field] = null;
         }
       }
       
-      if (data.ngaySinh) {
-        data.ngaySinh = new Date(data.ngaySinh);
+      // Remove fields that don't exist in Prisma schema
+      delete data.queQuan;
+      
+      // Handle date fields - convert to Date objects or null
+      if (data.ngaySinh !== undefined) {
+        data.ngaySinh = data.ngaySinh ? new Date(data.ngaySinh) : null;
       }
-      if (data.ngayVaoLam) {
-        data.ngayVaoLam = new Date(data.ngayVaoLam);
+      if (data.ngayVaoLam !== undefined) {
+        data.ngayVaoLam = data.ngayVaoLam ? new Date(data.ngayVaoLam) : null;
       }
 
       return await this.prisma.nhanvien.update({

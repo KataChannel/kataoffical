@@ -26,10 +26,6 @@ export class CreateNhanvienDto {
 
   @IsOptional()
   @IsString()
-  queQuan?: string;
-
-  @IsOptional()
-  @IsString()
   diaChiHienTai?: string;
 
   @IsOptional()
