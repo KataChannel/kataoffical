@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, signal, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -16,9 +16,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 import { ThongkeKhoiluongService, KhoiluongSanpham } from '../thongke-khoiluong.service';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 import { TimezoneService } from '../../../shared/services/timezone.service';
 import moment from 'moment';
 import { writeExcelFile } from '../../../shared/utils/exceldrive.utils';
@@ -72,9 +73,12 @@ import { writeExcelFile } from '../../../shared/utils/exceldrive.utils';
                 <div class="relative">
                   <input
                     type="text"
+                    #khachhangInput
                     [(ngModel)]="searchKhachhang"
                     (input)="filterKhachhang()"
+                    (focus)="onFocusKhachhang()"
                     [matAutocomplete]="autoKhachhang"
+                    #trigger="matAutocompleteTrigger"
                     placeholder="Tìm kiếm khách hàng..."
                     class="w-full h-10 px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white
                            focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent
@@ -92,6 +96,11 @@ import { writeExcelFile } from '../../../shared/utils/exceldrive.utils';
                           <span class="text-sm font-medium text-slate-900">{{ kh.name }}</span>
                           <span class="text-xs text-slate-500">{{ kh.makh }} • {{ kh.loaikh === 'khachsi' ? 'Khách sỉ' : 'Khách lẻ' }}</span>
                         </div>
+                      </mat-option>
+                    }
+                    @empty {
+                      <mat-option disabled class="!py-2 !text-slate-400">
+                        Không tìm thấy khách hàng
                       </mat-option>
                     }
                   </mat-autocomplete>
@@ -348,25 +357,17 @@ import { writeExcelFile } from '../../../shared/utils/exceldrive.utils';
                   <td mat-cell *matCellDef="let row" class="!py-3 !px-4 text-sm text-slate-600">{{ row.dvt }}</td>
                 </ng-container>
 
-                <!-- SL Đặt Column -->
-                <ng-container matColumnDef="tongSoluongDat">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header class="!bg-slate-50 !text-slate-600 !text-xs !font-medium !uppercase tracking-wider !py-3 !px-4 !text-right">SL Đặt</th>
+                <!-- Giá Sản Phẩm Column (Giá từ đơn hàng mới nhất) -->
+                <ng-container matColumnDef="giaSanpham">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header class="!bg-slate-50 !text-slate-600 !text-xs !font-medium !uppercase tracking-wider !py-3 !px-4 !text-right">Giá SP</th>
                   <td mat-cell *matCellDef="let row" class="!py-3 !px-4 text-right">
-                    <span class="text-sm font-semibold text-blue-600">{{ row.tongSoluongDat | number:'1.0-2' }}</span>
+                    <span class="text-sm font-semibold text-amber-600">{{ row.giaSanpham | number:'1.0-0' }}đ</span>
                   </td>
                 </ng-container>
 
-                <!-- SL Giao Column -->
-                <ng-container matColumnDef="tongSoluongGiao">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header class="!bg-slate-50 !text-slate-600 !text-xs !font-medium !uppercase tracking-wider !py-3 !px-4 !text-right">SL Giao</th>
-                  <td mat-cell *matCellDef="let row" class="!py-3 !px-4 text-right">
-                    <span class="text-sm font-semibold text-emerald-600">{{ row.tongSoluongGiao | number:'1.0-2' }}</span>
-                  </td>
-                </ng-container>
-
-                <!-- SL Nhận Column -->
+                <!-- Tổng Khối Lượng Column (SL Nhận cộng dồn) -->
                 <ng-container matColumnDef="tongSoluongNhan">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header class="!bg-slate-50 !text-slate-600 !text-xs !font-medium !uppercase tracking-wider !py-3 !px-4 !text-right">SL Nhận</th>
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header class="!bg-slate-50 !text-slate-600 !text-xs !font-medium !uppercase tracking-wider !py-3 !px-4 !text-right">Tổng Khối Lượng</th>
                   <td mat-cell *matCellDef="let row" class="!py-3 !px-4 text-right">
                     <span class="text-sm font-semibold text-violet-600">{{ row.tongSoluongNhan | number:'1.0-2' }}</span>
                   </td>
@@ -376,7 +377,7 @@ import { writeExcelFile } from '../../../shared/utils/exceldrive.utils';
                 <ng-container matColumnDef="tongGiaTri">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header class="!bg-slate-50 !text-slate-600 !text-xs !font-medium !uppercase tracking-wider !py-3 !px-4 !text-right">Giá trị</th>
                   <td mat-cell *matCellDef="let row" class="!py-3 !px-4 text-right">
-                    <span class="text-sm font-semibold text-amber-600">{{ row.tongGiaTri | number:'1.0-0' }}đ</span>
+                    <span class="text-sm font-semibold text-emerald-600">{{ row.tongGiaTri | number:'1.0-0' }}đ</span>
                   </td>
                 </ng-container>
 
@@ -420,22 +421,14 @@ import { writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 
           <!-- Summary Footer -->
           <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div class="grid grid-cols-4 gap-4 text-center">
-              <div class="p-3 rounded-lg bg-blue-50">
-                <p class="text-xs text-blue-600 mb-1">Tổng SL Đặt</p>
-                <p class="text-lg font-bold text-blue-700">{{ getTotalDat() | number:'1.0-2' }}</p>
-              </div>
-              <div class="p-3 rounded-lg bg-emerald-50">
-                <p class="text-xs text-emerald-600 mb-1">Tổng SL Giao</p>
-                <p class="text-lg font-bold text-emerald-700">{{ getTotalGiao() | number:'1.0-2' }}</p>
-              </div>
+            <div class="grid grid-cols-2 gap-4 text-center">
               <div class="p-3 rounded-lg bg-violet-50">
-                <p class="text-xs text-violet-600 mb-1">Tổng SL Nhận</p>
+                <p class="text-xs text-violet-600 mb-1">Tổng Khối Lượng (SL Nhận)</p>
                 <p class="text-lg font-bold text-violet-700">{{ getTotalNhan() | number:'1.0-2' }}</p>
               </div>
-              <div class="p-3 rounded-lg bg-amber-50">
-                <p class="text-xs text-amber-600 mb-1">Tổng Giá Trị</p>
-                <p class="text-lg font-bold text-amber-700">{{ getTotalGiaTri() | number:'1.0-0' }}đ</p>
+              <div class="p-3 rounded-lg bg-emerald-50">
+                <p class="text-xs text-emerald-600 mb-1">Tổng Giá Trị</p>
+                <p class="text-lg font-bold text-emerald-700">{{ getTotalGiaTri() | number:'1.0-0' }}đ</p>
               </div>
             </div>
           </div>
@@ -550,6 +543,8 @@ import { writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 export class KhoiluongKhachhangComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild('trigger') autocompleteTrigger!: MatAutocompleteTrigger;
+  @ViewChild('khachhangInput') khachhangInput!: ElementRef<HTMLInputElement>;
 
   // Data
   listKhachhang = signal<any[]>([]);
@@ -564,8 +559,8 @@ export class KhoiluongKhachhangComponent implements OnInit, AfterViewInit {
   // Search
   searchText = '';
   
-  // Table
-  displayedColumns = ['stt', 'masp', 'title', 'dvt', 'tongSoluongDat', 'tongSoluongGiao', 'tongSoluongNhan', 'tongGiaTri', 'soLanMua'];
+  // Table - Columns: STT, Mã SP, Tên SP, ĐVT, Giá SP, Tổng Khối Lượng
+  displayedColumns = ['stt', 'masp', 'title', 'dvt', 'giaSanpham', 'tongSoluongNhan'];
   dataSource = new MatTableDataSource<KhoiluongSanpham>([]);
 
   // Service signals
@@ -575,6 +570,7 @@ export class KhoiluongKhachhangComponent implements OnInit, AfterViewInit {
 
   constructor(
     private thongkeService: ThongkeKhoiluongService,
+    private graphqlService: GraphqlService,
     private timezoneService: TimezoneService,
     private snackBar: MatSnackBar
   ) {
@@ -588,10 +584,34 @@ export class KhoiluongKhachhangComponent implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
-    // Load danh sách khách hàng
-    const khachhangList = await this.thongkeService.getAllKhachhang();
-    this.listKhachhang.set(khachhangList.filter(kh => kh.isActive !== false));
-    this.filteredKhachhang.set(this.listKhachhang());
+    // Load danh sách khách hàng bằng GraphQL
+    console.log('🔄 Loading khách hàng...');
+    try {
+      const response = await this.graphqlService.findAll('khachhang', {
+        enableParallelFetch: true,
+        take: 999999,
+        aggressiveCache: true,
+        orderBy: { name: 'asc' },
+        select: {
+          id: true,
+          makh: true,
+          name: true,
+          tenfile: true,
+          loaikh: true,
+          diachi: true,
+          sdt: true,
+          isActive: true,
+        },
+      });
+      console.log('📦 Khách hàng loaded:', response.data?.length, response.data);
+      if (response.data && response.data.length > 0) {
+        this.listKhachhang.set(response.data.filter((kh: any) => kh.isActive !== false));
+        this.filteredKhachhang.set(this.listKhachhang());
+      }
+      console.log('✅ filteredKhachhang:', this.filteredKhachhang().length);
+    } catch (error) {
+      console.error('❌ Error loading khách hàng:', error);
+    }
   }
 
   ngAfterViewInit() {
@@ -613,6 +633,22 @@ export class KhoiluongKhachhangComponent implements OnInit, AfterViewInit {
       (kh.tenfile?.toLowerCase().includes(search))
     );
     this.filteredKhachhang.set(filtered);
+  }
+
+  // Focus khách hàng - hiển thị tất cả options khi focus
+  onFocusKhachhang() {
+    console.log('🔍 Focus vào input khách hàng');
+    console.log('📋 listKhachhang:', this.listKhachhang().length);
+    // Hiển thị tất cả khách hàng khi focus
+    this.filteredKhachhang.set(this.listKhachhang());
+    console.log('📋 filteredKhachhang set:', this.filteredKhachhang().length);
+    // Mở panel autocomplete
+    setTimeout(() => {
+      console.log('⏰ Trigger openPanel, autocompleteTrigger:', !!this.autocompleteTrigger);
+      if (this.autocompleteTrigger) {
+        this.autocompleteTrigger.openPanel();
+      }
+    }, 150);
   }
 
   // Select khách hàng
@@ -694,9 +730,8 @@ export class KhoiluongKhachhangComponent implements OnInit, AfterViewInit {
       'Mã SP': 'Mã SP',
       'Tên sản phẩm': 'Tên sản phẩm',
       'ĐVT': 'ĐVT',
-      'SL Đặt': 'SL Đặt',
-      'SL Giao': 'SL Giao',
-      'SL Nhận': 'SL Nhận',
+      'Giá SP (VNĐ)': 'Giá SP (VNĐ)',
+      'Tổng Khối Lượng': 'Tổng Khối Lượng',
       'Giá trị (VNĐ)': 'Giá trị (VNĐ)',
       'Số lần mua': 'Số lần mua'
     };

@@ -8,12 +8,14 @@ export interface KhoiluongSanpham {
   masp: string;
   title: string;
   dvt: string;
+  giaSanpham: number; // Giá từ đơn hàng mới nhất
   tongSoluongDat: number;
   tongSoluongGiao: number;
   tongSoluongNhan: number;
   tongGiaTri: number;
   soLanMua: number;
   donhangIds: string[];
+  latestOrderDate?: string; // Ngày đơn hàng mới nhất
 }
 
 export interface ThongkeKhachhangResult {
@@ -173,7 +175,12 @@ export class ThongkeKhoiluongService {
       // Tổng hợp dữ liệu theo sản phẩm
       const sanphamMap = new Map<string, KhoiluongSanpham>();
 
-      donhangs.forEach((donhang: any) => {
+      // Sort donhangs by createdAt descending to get latest orders first
+      const sortedDonhangs = donhangs.sort((a: any, b: any) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      sortedDonhangs.forEach((donhang: any) => {
         if (donhang.sanpham && Array.isArray(donhang.sanpham)) {
           donhang.sanpham.forEach((item: any) => {
             const sp = item.sanpham;
@@ -186,7 +193,7 @@ export class ThongkeKhoiluongService {
             const slgiao = Number(item.slgiao) || 0;
             const slnhan = Number(item.slnhan) || 0;
             const giaban = Number(item.giaban) || 0;
-            const giatri = slgiao * giaban;
+            const giatri = slnhan * giaban; // Tính giá trị dựa trên SL Nhận
 
             if (existing) {
               existing.tongSoluongDat += sldat;
@@ -197,18 +204,21 @@ export class ThongkeKhoiluongService {
               if (!existing.donhangIds.includes(donhang.id)) {
                 existing.donhangIds.push(donhang.id);
               }
+              // Giữ nguyên giaSanpham từ đơn hàng mới nhất (đã được xử lý đầu tiên do sort)
             } else {
               sanphamMap.set(key, {
                 sanphamId: sp.id,
                 masp: sp.masp || '',
                 title: sp.title || '',
                 dvt: sp.dvt || '',
+                giaSanpham: giaban, // Giá từ đơn hàng mới nhất
                 tongSoluongDat: sldat,
                 tongSoluongGiao: slgiao,
                 tongSoluongNhan: slnhan,
                 tongGiaTri: giatri,
                 soLanMua: 1,
-                donhangIds: [donhang.id]
+                donhangIds: [donhang.id],
+                latestOrderDate: donhang.createdAt // Lưu ngày đơn hàng mới nhất
               });
             }
           });
@@ -255,9 +265,8 @@ export class ThongkeKhoiluongService {
       'Mã SP': sp.masp,
       'Tên sản phẩm': sp.title,
       'ĐVT': sp.dvt,
-      'SL Đặt': sp.tongSoluongDat,
-      'SL Giao': sp.tongSoluongGiao,
-      'SL Nhận': sp.tongSoluongNhan,
+      'Giá SP (VNĐ)': sp.giaSanpham,
+      'Tổng Khối Lượng': sp.tongSoluongNhan,
       'Giá trị (VNĐ)': sp.tongGiaTri,
       'Số lần mua': sp.soLanMua
     }));
