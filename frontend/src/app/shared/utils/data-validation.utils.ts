@@ -378,6 +378,36 @@ export class DataValidator {
           { field: 'ghichu', type: 'string', required: false, max: 500 }
         ];
 
+      case 'nhanvien':
+        return [
+          { field: 'Mã NV', type: 'string', required: true, min: 1, max: 20 },
+          { field: 'Họ và Tên', type: 'string', required: true, min: 2, max: 200 },
+          { field: 'Mã Làm Việc', type: 'string', required: false, max: 50 },
+          { field: 'Giới Tính', type: 'string', required: false },
+          { field: 'Ngày Sinh', type: 'date', required: false },
+          { field: 'CMND/CCCD', type: 'string', required: false, max: 20 },
+          { field: 'Số Điện Thoại', type: 'string', required: false, max: 20 },
+          { field: 'Email', type: 'email', required: false, max: 100 },
+          { field: 'Địa Chỉ Hiện Tại', type: 'string', required: false, max: 500 },
+          { field: 'Phòng Ban', type: 'string', required: false },
+          { field: 'Chức Vụ', type: 'string', required: false, max: 100 },
+          { field: 'Vị Trí', type: 'string', required: false, max: 100 },
+          { field: 'Ngày Vào Làm', type: 'date', required: false },
+          { field: 'Trạng Thái', type: 'string', required: false },
+          { field: 'Lương Cơ Bản', type: 'number', required: false, min: 0 },
+          { field: 'Hiệu Suất Công Việc', type: 'number', required: false, min: 0 },
+          { field: 'Phụ Cấp Xăng', type: 'number', required: false, min: 0 },
+          { field: 'Phụ Cấp ĐT', type: 'number', required: false, min: 0 },
+          { field: 'Hỗ Trợ Chuyên Cần', type: 'number', required: false, min: 0 },
+          { field: 'Tiền Ăn Giữa Ca', type: 'number', required: false, min: 0 },
+          { field: 'Thưởng Kinh Doanh', type: 'number', required: false, min: 0 },
+          { field: 'Phụ Cấp Khác', type: 'number', required: false, min: 0 },
+          { field: 'Số Tài Khoản', type: 'string', required: false, max: 50 },
+          { field: 'Ngân Hàng', type: 'string', required: false, max: 100 },
+          { field: 'Chi Nhánh', type: 'string', required: false, max: 200 },
+          { field: 'Ghi Chú', type: 'string', required: false, max: 1000 }
+        ];
+
       default:
         return [];
     }

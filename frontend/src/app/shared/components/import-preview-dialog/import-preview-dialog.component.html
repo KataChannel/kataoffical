@@ -1,226 +1,282 @@
 <div class="import-preview-dialog">
-  <!-- Header -->
-  <div class="dialog-header p-4 border-b">
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-xl font-semibold">Preview Import Data</h2>
-        <p class="text-sm text-gray-600 mt-1">File: {{ data.fileName }}</p>
+  <!-- Header - Compact Version -->
+  <div class="dialog-header">
+    <div class="header-row">
+      <div class="header-info">
+        <h2 class="dialog-title">Xem trước dữ liệu Import</h2>
+        <p class="file-name">
+          <mat-icon class="file-icon">description</mat-icon>
+          {{ data.fileName }}
+        </p>
       </div>
-      <button mat-icon-button (click)="onCancel()">
+      
+      <!-- Compact Stats Inline -->
+      <div class="compact-stats">
+        <div class="compact-stat total">
+          <span class="stat-value">{{ totalRows() }}</span>
+          <span class="stat-label">Tổng</span>
+        </div>
+        <div class="compact-stat valid">
+          <mat-icon>check_circle</mat-icon>
+          <span class="stat-value">{{ validRows() }}</span>
+        </div>
+        <div class="compact-stat invalid" *ngIf="invalidRows() > 0">
+          <mat-icon>error</mat-icon>
+          <span class="stat-value">{{ invalidRows() }}</span>
+        </div>
+      </div>
+      
+      <button mat-icon-button class="close-btn" (click)="onCancel()" aria-label="Đóng">
         <mat-icon>close</mat-icon>
       </button>
     </div>
-    
-    <!-- Summary Stats -->
-    <div class="flex gap-4 mt-4">
-      <div class="bg-blue-100 px-3 py-2 rounded-lg">
-        <span class="text-sm font-medium text-blue-800">Tổng: {{ totalRows() }}</span>
-      </div>
-      <div class="bg-green-100 px-3 py-2 rounded-lg">
-        <span class="text-sm font-medium text-green-800">Hợp lệ: {{ validRows() }}</span>
-      </div>
-      <div class="bg-red-100 px-3 py-2 rounded-lg" *ngIf="invalidRows() > 0">
-        <span class="text-sm font-medium text-red-800">Lỗi: {{ invalidRows() }}</span>
-      </div>
-    </div>
   </div>
 
-  <!-- Content -->
-  <div class="dialog-content flex-1 overflow-hidden">
-    <mat-tab-group class="h-full">
+  <!-- Content - Responsive Tab Group -->
+  <div class="dialog-content">
+    <mat-tab-group class="custom-tab-group" animationDuration="200ms">
       
       <!-- Valid Data Tab -->
-      <mat-tab [label]="'Dữ liệu hợp lệ (' + validRows() + ')'">
-        <div class="tab-content p-4">
-          <div class="flex items-center justify-between mb-4">
-            <mat-form-field class="flex-1 max-w-sm">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <div class="tab-label">
+            <mat-icon class="tab-icon success">check_circle</mat-icon>
+            <span class="tab-text">Hợp lệ</span>
+            <span class="tab-badge success">{{ validRows() }}</span>
+          </div>
+        </ng-template>
+        
+        <div class="tab-content">
+          <!-- Mobile-Friendly Toolbar -->
+          <div class="tab-toolbar">
+            <mat-form-field class="search-field" appearance="outline">
               <mat-label>Tìm kiếm</mat-label>
+              <mat-icon matPrefix>search</mat-icon>
               <input matInput (keyup)="applyValidFilter($event)" placeholder="Nhập từ khóa...">
-              <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
             
-            <div class="flex gap-2">
-              <button mat-button color="primary" (click)="exportValidData()">
-                <mat-icon>download</mat-icon>
-                Export
-              </button>
+            <button mat-stroked-button class="export-btn" color="primary" (click)="exportValidData()">
+              <mat-icon>download</mat-icon>
+              <span class="btn-text">Export</span>
+            </button>
+          </div>
+          
+          <!-- Responsive Table Container -->
+          <div class="table-wrapper">
+            <div class="table-scroll">
+              <table mat-table [dataSource]="validDataSource" matSort class="data-table">
+                
+                <!-- Row Number Column -->
+                <ng-container matColumnDef="rowNumber">
+                  <th mat-header-cell *matHeaderCellDef class="col-number sticky-col">#</th>
+                  <td mat-cell *matCellDef="let element; let i = index" class="col-number sticky-col">
+                    {{ i + 1 }}
+                  </td>
+                </ng-container>
+                
+                <!-- Dynamic Columns -->
+                <ng-container *ngFor="let column of getValidColumns()" [matColumnDef]="column">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-data">
+                    {{ getColumnDisplayName(column) }}
+                  </th>
+                  <td mat-cell *matCellDef="let element" [class]="'col-data ' + getCellClass(element, column)">
+                    {{ formatCellValue(element[column], column) }}
+                  </td>
+                </ng-container>
+                
+                <tr mat-header-row *matHeaderRowDef="getValidDisplayedColumns(); sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: getValidDisplayedColumns();" 
+                    class="data-row"></tr>
+                
+                <tr class="mat-row no-data-row" *matNoDataRow>
+                  <td class="mat-cell" [attr.colspan]="getValidDisplayedColumns().length">
+                    <div class="no-data">
+                      <mat-icon>inbox</mat-icon>
+                      <span>Không có dữ liệu hợp lệ</span>
+                    </div>
+                  </td>
+                </tr>
+              </table>
             </div>
           </div>
           
-          <div class="table-container border rounded-lg">
-            <table mat-table [dataSource]="validDataSource" matSort class="w-full">
-              
-              <!-- Row Number Column -->
-              <ng-container matColumnDef="rowNumber">
-                <th mat-header-cell *matHeaderCellDef class="w-16">#</th>
-                <td mat-cell *matCellDef="let element; let i = index" class="text-center">
-                  {{ i + 1 }}
-                </td>
-              </ng-container>
-              
-              <!-- Dynamic Columns -->
-              <ng-container *ngFor="let column of getValidColumns()" [matColumnDef]="column">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="font-medium">
-                  {{ getColumnDisplayName(column) }}
-                </th>
-                <td mat-cell *matCellDef="let element" [class]="getCellClass(element, column)">
-                  {{ formatCellValue(element[column], column) }}
-                </td>
-              </ng-container>
-              
-              <tr mat-header-row *matHeaderRowDef="getValidDisplayedColumns()"></tr>
-              <tr mat-row *matRowDef="let row; columns: getValidDisplayedColumns();" 
-                  class="hover:bg-gray-50"></tr>
-              
-              <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell text-center py-8" [attr.colspan]="getValidDisplayedColumns().length">
-                  Không có dữ liệu hợp lệ
-                </td>
-              </tr>
-            </table>
+          <!-- Responsive Paginator -->
+          <div class="paginator-wrapper">
+            <mat-paginator #validPaginator 
+                           [pageSizeOptions]="[10, 25, 50, 100]" 
+                           [pageSize]="10"
+                           showFirstLastButtons>
+            </mat-paginator>
           </div>
-          
-          <mat-paginator #validPaginator 
-                         [pageSizeOptions]="[10, 25, 50, 100]" 
-                         showFirstLastButtons>
-          </mat-paginator>
         </div>
       </mat-tab>
 
       <!-- Invalid Data Tab -->
-      <mat-tab [label]="'Dữ liệu lỗi (' + invalidRows() + ')'" [disabled]="invalidRows() === 0">
-        <div class="tab-content p-4">
-          <div class="flex items-center justify-between mb-4">
-            <mat-form-field class="flex-1 max-w-sm">
+      <mat-tab [disabled]="invalidRows() === 0">
+        <ng-template mat-tab-label>
+          <div class="tab-label">
+            <mat-icon class="tab-icon error">error</mat-icon>
+            <span class="tab-text">Lỗi</span>
+            <span class="tab-badge error" *ngIf="invalidRows() > 0">{{ invalidRows() }}</span>
+          </div>
+        </ng-template>
+        
+        <div class="tab-content">
+          <!-- Mobile-Friendly Toolbar -->
+          <div class="tab-toolbar">
+            <mat-form-field class="search-field" appearance="outline">
               <mat-label>Tìm kiếm lỗi</mat-label>
+              <mat-icon matPrefix>search</mat-icon>
               <input matInput (keyup)="applyInvalidFilter($event)" placeholder="Nhập từ khóa...">
-              <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
             
-            <div class="flex gap-2">
-              <button mat-button color="warn" (click)="exportInvalidData()">
-                <mat-icon>download</mat-icon>
-                Export Lỗi
-              </button>
+            <button mat-stroked-button class="export-btn" color="warn" (click)="exportInvalidData()">
+              <mat-icon>download</mat-icon>
+              <span class="btn-text">Export</span>
+            </button>
+          </div>
+          
+          <!-- Responsive Table Container -->
+          <div class="table-wrapper">
+            <div class="table-scroll">
+              <table mat-table [dataSource]="invalidDataSource" matSort class="data-table invalid-table">
+                
+                <!-- Row Number Column -->
+                <ng-container matColumnDef="rowNumber">
+                  <th mat-header-cell *matHeaderCellDef class="col-number sticky-col">#</th>
+                  <td mat-cell *matCellDef="let element" class="col-number sticky-col">
+                    {{ element.originalRowIndex + 1 }}
+                  </td>
+                </ng-container>
+                
+                <!-- Error Column -->
+                <ng-container matColumnDef="errors">
+                  <th mat-header-cell *matHeaderCellDef class="col-errors">Lỗi</th>
+                  <td mat-cell *matCellDef="let element" class="col-errors">
+                    <div class="error-chips">
+                      <ng-container *ngFor="let error of getRowErrors(element.originalRowIndex)">
+                        <span class="error-chip">
+                          <strong>{{ error.field }}:</strong> {{ error.error }}
+                        </span>
+                      </ng-container>
+                    </div>
+                  </td>
+                </ng-container>
+                
+                <!-- Dynamic Columns -->
+                <ng-container *ngFor="let column of getInvalidColumns()" [matColumnDef]="column">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-data">
+                    {{ getColumnDisplayName(column) }}
+                  </th>
+                  <td mat-cell *matCellDef="let element" [class]="'col-data ' + getCellClass(element, column, true)">
+                    {{ formatCellValue(element[column], column) }}
+                  </td>
+                </ng-container>
+                
+                <tr mat-header-row *matHeaderRowDef="getInvalidDisplayedColumns(); sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: getInvalidDisplayedColumns();" 
+                    class="data-row invalid-row"></tr>
+                
+                <tr class="mat-row no-data-row" *matNoDataRow>
+                  <td class="mat-cell" [attr.colspan]="getInvalidDisplayedColumns().length">
+                    <div class="no-data">
+                      <mat-icon>check_circle</mat-icon>
+                      <span>Không có dữ liệu lỗi</span>
+                    </div>
+                  </td>
+                </tr>
+              </table>
             </div>
           </div>
           
-          <div class="table-container border rounded-lg">
-            <table mat-table [dataSource]="invalidDataSource" matSort class="w-full">
-              
-              <!-- Row Number Column -->
-              <ng-container matColumnDef="rowNumber">
-                <th mat-header-cell *matHeaderCellDef class="w-16">#</th>
-                <td mat-cell *matCellDef="let element; let i = index" class="text-center">
-                  {{ element.originalRowIndex + 1 }}
-                </td>
-              </ng-container>
-              
-              <!-- Error Column -->
-              <ng-container matColumnDef="errors">
-                <th mat-header-cell *matHeaderCellDef class="w-64">Lỗi</th>
-                <td mat-cell *matCellDef="let element">
-                  <div class="space-y-1">
-                    <mat-chip-listbox *ngIf="getRowErrors(element.originalRowIndex).length > 0">
-                      <mat-chip *ngFor="let error of getRowErrors(element.originalRowIndex)" 
-                               color="warn" 
-                               class="text-xs">
-                        {{ error.field }}: {{ error.error }}
-                      </mat-chip>
-                    </mat-chip-listbox>
-                  </div>
-                </td>
-              </ng-container>
-              
-              <!-- Dynamic Columns -->
-              <ng-container *ngFor="let column of getInvalidColumns()" [matColumnDef]="column">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="font-medium">
-                  {{ getColumnDisplayName(column) }}
-                </th>
-                <td mat-cell *matCellDef="let element" [class]="getCellClass(element, column, true)">
-                  {{ formatCellValue(element[column], column) }}
-                </td>
-              </ng-container>
-              
-              <tr mat-header-row *matHeaderRowDef="getInvalidDisplayedColumns()"></tr>
-              <tr mat-row *matRowDef="let row; columns: getInvalidDisplayedColumns();" 
-                  class="hover:bg-red-50"></tr>
-              
-              <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell text-center py-8" [attr.colspan]="getInvalidDisplayedColumns().length">
-                  Không có dữ liệu lỗi
-                </td>
-              </tr>
-            </table>
+          <!-- Responsive Paginator -->
+          <div class="paginator-wrapper">
+            <mat-paginator #invalidPaginator 
+                           [pageSizeOptions]="[10, 25, 50, 100]"
+                           [pageSize]="10"
+                           showFirstLastButtons>
+            </mat-paginator>
           </div>
-          
-          <mat-paginator #invalidPaginator 
-                         [pageSizeOptions]="[10, 25, 50, 100]" 
-                         showFirstLastButtons>
-          </mat-paginator>
         </div>
       </mat-tab>
 
       <!-- Validation Summary Tab -->
-      <mat-tab label="Tóm tắt validation">
-        <div class="tab-content p-4">
-          <div class="space-y-4">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <div class="tab-label">
+            <mat-icon class="tab-icon info">analytics</mat-icon>
+            <span class="tab-text">Tóm tắt</span>
+          </div>
+        </ng-template>
+        
+        <div class="tab-content summary-tab">
+          <div class="summary-content">
             
-            <!-- Overall Summary -->
-            <mat-card class="p-4">
-              <mat-card-header>
-                <mat-card-title>Tóm tắt chung</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                <div class="grid grid-cols-3 gap-4 mt-4">
-                  <div class="text-center">
-                    <div class="text-2xl font-bold text-blue-600">{{ totalRows() }}</div>
-                    <div class="text-sm text-gray-600">Tổng dòng</div>
-                  </div>
-                  <div class="text-center">
-                    <div class="text-2xl font-bold text-green-600">{{ validRows() }}</div>
-                    <div class="text-sm text-gray-600">Hợp lệ</div>
-                  </div>
-                  <div class="text-center">
-                    <div class="text-2xl font-bold text-red-600">{{ invalidRows() }}</div>
-                    <div class="text-sm text-gray-600">Lỗi</div>
-                  </div>
+            <!-- Overall Summary Cards -->
+            <div class="summary-overview">
+              <div class="overview-card total">
+                <mat-icon>format_list_numbered</mat-icon>
+                <div class="overview-info">
+                  <span class="overview-value">{{ totalRows() }}</span>
+                  <span class="overview-label">Tổng số dòng</span>
                 </div>
-              </mat-card-content>
-            </mat-card>
+              </div>
+              <div class="overview-card valid">
+                <mat-icon>check_circle</mat-icon>
+                <div class="overview-info">
+                  <span class="overview-value">{{ validRows() }}</span>
+                  <span class="overview-label">Dòng hợp lệ</span>
+                </div>
+              </div>
+              <div class="overview-card invalid">
+                <mat-icon>cancel</mat-icon>
+                <div class="overview-info">
+                  <span class="overview-value">{{ invalidRows() }}</span>
+                  <span class="overview-label">Dòng lỗi</span>
+                </div>
+              </div>
+              <div class="overview-card percent">
+                <mat-icon>percent</mat-icon>
+                <div class="overview-info">
+                  <span class="overview-value">{{ totalRows() > 0 ? ((validRows() / totalRows()) * 100).toFixed(1) : 0 }}%</span>
+                  <span class="overview-label">Tỷ lệ hợp lệ</span>
+                </div>
+              </div>
+            </div>
 
             <!-- Error Summary by Field -->
-            <mat-card class="p-4" *ngIf="getErrorSummary().length > 0">
-              <mat-card-header>
-                <mat-card-title>Chi tiết lỗi theo trường</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                <div class="space-y-2 mt-4">
-                  <div *ngFor="let fieldError of getErrorSummary()" 
-                       class="flex items-center justify-between p-2 bg-red-50 rounded">
-                    <div>
-                      <span class="font-medium text-red-800">{{ fieldError.field }}</span>
-                      <span class="text-sm text-red-600 ml-2">{{ fieldError.errorType }}</span>
-                    </div>
-                    <span class="text-red-800 font-bold">{{ fieldError.count }}</span>
+            <div class="error-summary-section" *ngIf="getErrorSummary().length > 0">
+              <h3 class="section-title">
+                <mat-icon>warning</mat-icon>
+                Chi tiết lỗi theo trường
+              </h3>
+              <div class="error-list">
+                <div *ngFor="let fieldError of getErrorSummary()" class="error-item">
+                  <div class="error-info">
+                    <span class="error-field">{{ fieldError.field }}</span>
+                    <span class="error-type">{{ fieldError.errorType }}</span>
                   </div>
+                  <span class="error-count">{{ fieldError.count }}</span>
                 </div>
-              </mat-card-content>
-            </mat-card>
+              </div>
+            </div>
 
-            <!-- Validation Rules -->
-            <mat-expansion-panel>
+            <!-- Validation Rules - Collapsible -->
+            <mat-expansion-panel class="rules-panel">
               <mat-expansion-panel-header>
-                <mat-panel-title>Quy tắc validation</mat-panel-title>
+                <mat-panel-title>
+                  <mat-icon>rule</mat-icon>
+                  Quy tắc validation
+                </mat-panel-title>
               </mat-expansion-panel-header>
-              <div class="space-y-2">
-                <div *ngFor="let rule of getValidationRules()" class="p-2 border rounded">
-                  <div class="font-medium">{{ rule.field }}</div>
-                  <div class="text-sm text-gray-600">
-                    Type: {{ rule.type }}
-                    <span *ngIf="rule.required" class="text-red-600 ml-2">(Required)</span>
-                    <span *ngIf="rule.min !== undefined" class="ml-2">Min: {{ rule.min }}</span>
-                    <span *ngIf="rule.max !== undefined" class="ml-2">Max: {{ rule.max }}</span>
+              <div class="rules-list">
+                <div *ngFor="let rule of getValidationRules()" class="rule-item">
+                  <div class="rule-field">{{ rule.field }}</div>
+                  <div class="rule-details">
+                    <span class="rule-type">{{ rule.type }}</span>
+                    <span *ngIf="rule.required" class="rule-required">Bắt buộc</span>
+                    <span *ngIf="rule.min !== undefined" class="rule-range">Min: {{ rule.min }}</span>
+                    <span *ngIf="rule.max !== undefined" class="rule-range">Max: {{ rule.max }}</span>
                   </div>
                 </div>
               </div>
@@ -231,22 +287,26 @@
     </mat-tab-group>
   </div>
 
-  <!-- Footer Actions -->
-  <div class="dialog-footer p-4 border-t bg-gray-50">
-    <div class="flex items-center justify-between">
-      <div class="text-sm text-gray-600">
-        Sẽ import {{ validRows() }} dòng dữ liệu hợp lệ
-      </div>
-      
-      <div class="flex gap-3">
-        <button mat-button (click)="onCancel()">Hủy</button>
-        <button mat-raised-button 
-                color="primary" 
-                [disabled]="validRows() === 0"
-                (click)="onConfirm()">
-          Import {{ validRows() }} dòng
-        </button>
-      </div>
+  <!-- Footer Actions - Mobile Optimized -->
+  <div class="dialog-footer">
+    <div class="footer-info">
+      <mat-icon>info</mat-icon>
+      <span>Sẽ import <strong>{{ validRows() }}</strong> dòng dữ liệu hợp lệ</span>
+    </div>
+    
+    <div class="footer-actions">
+      <button mat-stroked-button class="btn-cancel" (click)="onCancel()">
+        <mat-icon>close</mat-icon>
+        <span>Hủy</span>
+      </button>
+      <button mat-flat-button 
+              class="btn-confirm"
+              color="primary" 
+              [disabled]="validRows() === 0"
+              (click)="onConfirm()">
+        <mat-icon>cloud_upload</mat-icon>
+        <span>Import ({{ validRows() }})</span>
+      </button>
     </div>
   </div>
 </div>

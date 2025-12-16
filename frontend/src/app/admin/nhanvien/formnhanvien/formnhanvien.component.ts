@@ -107,8 +107,13 @@ export class FormNhanvienComponent implements OnInit {
       
       // Thông tin lương
       luongCoBan: [0, [Validators.min(0)]],
-      phuCap: [0, [Validators.min(0)]],
-      heSoLuong: [1, [Validators.min(0)]],
+      hieuSuatCongViec: [0, [Validators.min(0)]],
+      phuCapXang: [0, [Validators.min(0)]],
+      phuCapDienThoai: [0, [Validators.min(0)]],
+      hoTroChuyenCan: [0, [Validators.min(0)]],
+      tienAnGiuaCa: [0, [Validators.min(0)]],
+      thuongKinhDoanh: [0, [Validators.min(0)]],
+      phuCapKhac: [0, [Validators.min(0)]],
       
       // Thông tin ngân hàng
       soTaiKhoan: ['', Validators.maxLength(50)],
@@ -156,8 +161,13 @@ export class FormNhanvienComponent implements OnInit {
         ngayVaoLam: nhanvien.ngayVaoLam ? new Date(nhanvien.ngayVaoLam) : null,
         trangThai: nhanvien.trangThai,
         luongCoBan: nhanvien.luongCoBan,
-        phuCap: nhanvien.phuCap,
-        heSoLuong: nhanvien.heSoLuong,
+        hieuSuatCongViec: nhanvien.hieuSuatCongViec,
+        phuCapXang: nhanvien.phuCapXang,
+        phuCapDienThoai: nhanvien.phuCapDienThoai,
+        hoTroChuyenCan: nhanvien.hoTroChuyenCan,
+        tienAnGiuaCa: nhanvien.tienAnGiuaCa,
+        thuongKinhDoanh: nhanvien.thuongKinhDoanh,
+        phuCapKhac: nhanvien.phuCapKhac,
         soTaiKhoan: nhanvien.soTaiKhoan,
         nganHang: nhanvien.nganHang,
         chiNhanh: nhanvien.chiNhanh,

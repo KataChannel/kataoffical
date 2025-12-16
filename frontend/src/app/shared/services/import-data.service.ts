@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { readExcelFile } from '../utils/exceldrive.utils';
+import { readExcelFile, readExcelFileNoWorkerArray } from '../utils/exceldrive.utils';
 import { DataValidator, ValidationRule, ValidationResult } from '../utils/data-validation.utils';
 import { ImportPreviewDialogComponent } from '../components/import-preview-dialog/import-preview-dialog.component';
 
@@ -49,8 +49,14 @@ export class ImportDataService {
           }
 
           try {
-            // Đọc file Excel
-            const rawData = await readExcelFile(event);
+            // Đọc file Excel - sử dụng NoWorker để tránh lỗi với Web Worker
+            let rawData: any[] = [];
+            try {
+              rawData = await readExcelFileNoWorkerArray(event);
+            } catch (workerError) {
+              console.warn('readExcelFileNoWorkerArray failed, trying readExcelFile:', workerError);
+              rawData = await readExcelFile(event);
+            }
             
             if (!rawData || rawData.length === 0) {
               this.showError('File rỗng hoặc không đọc được');
@@ -62,18 +68,21 @@ export class ImportDataService {
             const validationRules = config.validationRules || DataValidator.getValidationRules(config.entityType);
             const validationResult = DataValidator.validateData(rawData, validationRules);
 
-            // Mở dialog preview
+            // Mở dialog preview với config responsive
             const dialogRef = this.dialog.open(ImportPreviewDialogComponent, {
-              width: '95vw',
+              width: '100%',
               maxWidth: '1200px',
-              height: '90vh',
+              height: '95vh',
+              maxHeight: '95vh',
+              panelClass: 'import-preview-dialog-panel',
               data: {
                 rawData,
                 validationResult,
                 config,
                 fileName: file.name
               },
-              disableClose: true
+              disableClose: true,
+              autoFocus: false
             });
 
             const result = await dialogRef.afterClosed().toPromise();
@@ -101,7 +110,13 @@ export class ImportDataService {
    */
   async importFromFile(event: any, config: ImportConfig): Promise<ImportResult> {
     try {
-      const rawData = await readExcelFile(event);
+      let rawData: any[] = [];
+      try {
+        rawData = await readExcelFileNoWorkerArray(event);
+      } catch (workerError) {
+        console.warn('readExcelFileNoWorkerArray failed, trying readExcelFile:', workerError);
+        rawData = await readExcelFile(event);
+      }
       
       if (!rawData || rawData.length === 0) {
         return {
@@ -170,6 +185,8 @@ export class ImportDataService {
         return this.transformKhachhangData(data);
       case 'donhang':
         return this.transformDonhangData(data);
+      case 'nhanvien':
+        return this.transformNhanvienData(data);
       default:
         return data;
     }
@@ -223,6 +240,39 @@ export class ImportDataService {
   }
 
   /**
+   * Transform data for nhanvien entity
+   */
+  private transformNhanvienData(data: any[]): any[] {
+    return data.map((item: any) => ({
+      maNV: String(item['Mã NV'] || item.maNV || '').trim(),
+      maLamViec: String(item['Mã Làm Việc'] || item.maLamViec || '').trim() || null,
+      hoTen: String(item['Họ và Tên'] || item.hoTen || '').trim(),
+      gioiTinh: item['Giới Tính'] || item.gioiTinh || null,
+      ngaySinh: item['Ngày Sinh'] || item.ngaySinh || null,
+      cmnd: String(item['CMND/CCCD'] || item.cmnd || '').trim() || null,
+      soDienThoai: String(item['Số Điện Thoại'] || item.soDienThoai || '').trim() || null,
+      email: String(item['Email'] || item.email || '').trim() || null,
+      diaChiHienTai: String(item['Địa Chỉ Hiện Tại'] || item.diaChiHienTai || '').trim() || null,
+      chucVu: String(item['Chức Vụ'] || item.chucVu || '').trim() || null,
+      viTri: String(item['Vị Trí'] || item.viTri || '').trim() || null,
+      ngayVaoLam: item['Ngày Vào Làm'] || item.ngayVaoLam || null,
+      trangThai: item['Trạng Thái'] || item.trangThai || 'THUVIEC',
+      luongCoBan: Number(item['Lương Cơ Bản'] || item.luongCoBan) || 0,
+      hieuSuatCongViec: Number(item['Hiệu Suất Công Việc'] || item.hieuSuatCongViec) || 0,
+      phuCapXang: Number(item['Phụ Cấp Xăng'] || item.phuCapXang) || 0,
+      phuCapDienThoai: Number(item['Phụ Cấp ĐT'] || item.phuCapDienThoai) || 0,
+      hoTroChuyenCan: Number(item['Hỗ Trợ Chuyên Cần'] || item.hoTroChuyenCan) || 0,
+      tienAnGiuaCa: Number(item['Tiền Ăn Giữa Ca'] || item.tienAnGiuaCa) || 0,
+      thuongKinhDoanh: Number(item['Thưởng Kinh Doanh'] || item.thuongKinhDoanh) || 0,
+      phuCapKhac: Number(item['Phụ Cấp Khác'] || item.phuCapKhac) || 0,
+      soTaiKhoan: String(item['Số Tài Khoản'] || item.soTaiKhoan || '').trim() || null,
+      nganHang: String(item['Ngân Hàng'] || item.nganHang || '').trim() || null,
+      chiNhanh: String(item['Chi Nhánh'] || item.chiNhanh || '').trim() || null,
+      ghiChu: String(item['Ghi Chú'] || item.ghiChu || '').trim() || null,
+    }));
+  }
+
+  /**
    * Show error message
    */
   private showError(message: string): void {
@@ -268,6 +318,12 @@ export class ImportDataService {
         maxRows: 2000,
         allowedFileTypes: ['.xlsx', '.xls'],
         requiredFields: ['masp', 'sldat']
+      },
+      nhanvien: {
+        entityType: 'nhanvien',
+        maxRows: 500,
+        allowedFileTypes: ['.xlsx', '.xls'],
+        requiredFields: ['Mã NV', 'Họ và Tên']
       }
     };
 

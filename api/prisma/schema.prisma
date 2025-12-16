@@ -831,9 +831,16 @@ model Nhanvien {
   loaiHopDong  String? // Loại hợp động: Thử việc, Chính thức, Hợp đồng, v.v.
 
   // Thông tin lương
-  luongCoBan Decimal? @default(0) @postgres.Decimal(20, 3) // Lương cơ bản
-  phuCap     Decimal? @default(0) @postgres.Decimal(20, 3) // Phụ cấp
-  heSoLuong  Decimal? @default(1) @postgres.Decimal(10, 2) // Hệ số lương
+  luongCoBan        Decimal? @default(0) @postgres.Decimal(20, 3) // Lương cơ bản
+  hieuSuatCongViec  Decimal? @default(0) @postgres.Decimal(20, 3) // Hiệu suất công việc
+  phuCapXang        Decimal? @default(0) @postgres.Decimal(20, 3) // Phụ cấp xăng
+  phuCapDienThoai   Decimal? @default(0) @postgres.Decimal(20, 3) // Phụ cấp điện thoại
+  hoTroChuyenCan    Decimal? @default(0) @postgres.Decimal(20, 3) // Hỗ trợ chuyên cần
+  tienAnGiuaCa      Decimal? @default(0) @postgres.Decimal(20, 3) // Tiền ăn giữa ca
+  thuongKinhDoanh   Decimal? @default(0) @postgres.Decimal(20, 3) // Thưởng kinh doanh
+  phuCapKhac        Decimal? @default(0) @postgres.Decimal(20, 3) // Phụ cấp khác
+  phuCap            Decimal? @default(0) @postgres.Decimal(20, 3) // Phụ cấp (tổng - deprecated)
+  heSoLuong         Decimal? @default(1) @postgres.Decimal(10, 2) // Hệ số lương
 
   // Thông tin ngân hàng
   soTaiKhoan String? // Số tài khoản

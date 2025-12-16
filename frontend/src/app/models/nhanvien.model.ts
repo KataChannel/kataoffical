@@ -20,6 +20,13 @@ export interface Nhanvien {
   
   // Salary information
   luongCoBan?: number | null;
+  hieuSuatCongViec?: number | null;
+  phuCapXang?: number | null;
+  phuCapDienThoai?: number | null;
+  hoTroChuyenCan?: number | null;
+  tienAnGiuaCa?: number | null;
+  thuongKinhDoanh?: number | null;
+  phuCapKhac?: number | null;
   phuCap?: number | null;
   heSoLuong?: number | null;
   
@@ -81,6 +88,7 @@ export const TrangThaiNhanvienColors: Record<TrangThaiNhanvien, string> = {
 
 export interface CreateNhanvienDto {
   maNV: string;
+  maLamViec?: string;
   hoTen: string;
   cmnd?: string;
   gioiTinh?: GioiTinh;
@@ -95,6 +103,13 @@ export interface CreateNhanvienDto {
   ngayVaoLam?: string;
   trangThai?: TrangThaiNhanvien;
   luongCoBan?: number;
+  hieuSuatCongViec?: number;
+  phuCapXang?: number;
+  phuCapDienThoai?: number;
+  hoTroChuyenCan?: number;
+  tienAnGiuaCa?: number;
+  thuongKinhDoanh?: number;
+  phuCapKhac?: number;
   phuCap?: number;
   heSoLuong?: number;
   soTaiKhoan?: string;

@@ -62,6 +62,34 @@ export class CreateNhanvienDto {
 
   @IsOptional()
   @IsNumber()
+  hieuSuatCongViec?: number;
+
+  @IsOptional()
+  @IsNumber()
+  phuCapXang?: number;
+
+  @IsOptional()
+  @IsNumber()
+  phuCapDienThoai?: number;
+
+  @IsOptional()
+  @IsNumber()
+  hoTroChuyenCan?: number;
+
+  @IsOptional()
+  @IsNumber()
+  tienAnGiuaCa?: number;
+
+  @IsOptional()
+  @IsNumber()
+  thuongKinhDoanh?: number;
+
+  @IsOptional()
+  @IsNumber()
+  phuCapKhac?: number;
+
+  @IsOptional()
+  @IsNumber()
   phuCap?: number;
 
   @IsOptional()

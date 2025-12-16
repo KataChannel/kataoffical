@@ -206,29 +206,77 @@
             <div class="tab-content">
               <div class="section-title">Thông tin lương</div>
               <div class="form-row">
-                <mat-form-field appearance="outline" class="form-field-third">
+                <mat-form-field appearance="outline" class="form-field-quarter">
                   <mat-label>Lương cơ bản</mat-label>
                   <input matInput formControlName="luongCoBan" type="number" placeholder="0">
-                  <span matSuffix>VNĐ</span>
+                  <span matSuffix>VND</span>
                   @if (nhanvienForm.get('luongCoBan')?.hasError('min')) {
                     <mat-error>Lương cơ bản phải >= 0</mat-error>
                   }
                 </mat-form-field>
 
-                <mat-form-field appearance="outline" class="form-field-third">
-                  <mat-label>Phụ cấp</mat-label>
-                  <input matInput formControlName="phuCap" type="number" placeholder="0">
-                  <span matSuffix>VNĐ</span>
-                  @if (nhanvienForm.get('phuCap')?.hasError('min')) {
-                    <mat-error>Phụ cấp phải >= 0</mat-error>
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Hiệu suất công việc</mat-label>
+                  <input matInput formControlName="hieuSuatCongViec" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('hieuSuatCongViec')?.hasError('min')) {
+                    <mat-error>Hiệu suất công việc phải >= 0</mat-error>
                   }
                 </mat-form-field>
 
-                <mat-form-field appearance="outline" class="form-field-third">
-                  <mat-label>Hệ số lương</mat-label>
-                  <input matInput formControlName="heSoLuong" type="number" step="0.1" placeholder="1.0">
-                  @if (nhanvienForm.get('heSoLuong')?.hasError('min')) {
-                    <mat-error>Hệ số lương phải >= 0</mat-error>
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Phụ cấp xăng</mat-label>
+                  <input matInput formControlName="phuCapXang" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('phuCapXang')?.hasError('min')) {
+                    <mat-error>Phụ cấp xăng phải >= 0</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Phụ cấp ĐT</mat-label>
+                  <input matInput formControlName="phuCapDienThoai" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('phuCapDienThoai')?.hasError('min')) {
+                    <mat-error>Phụ cấp điện thoại phải >= 0</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Hỗ trợ chuyên cần</mat-label>
+                  <input matInput formControlName="hoTroChuyenCan" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('hoTroChuyenCan')?.hasError('min')) {
+                    <mat-error>Hỗ trợ chuyên cần phải >= 0</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Tiền ăn giữa ca</mat-label>
+                  <input matInput formControlName="tienAnGiuaCa" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('tienAnGiuaCa')?.hasError('min')) {
+                    <mat-error>Tiền ăn giữa ca phải >= 0</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Thưởng kinh doanh</mat-label>
+                  <input matInput formControlName="thuongKinhDoanh" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('thuongKinhDoanh')?.hasError('min')) {
+                    <mat-error>Thưởng kinh doanh phải >= 0</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Phụ cấp khác</mat-label>
+                  <input matInput formControlName="phuCapKhac" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('phuCapKhac')?.hasError('min')) {
+                    <mat-error>Phụ cấp khác phải >= 0</mat-error>
                   }
                 </mat-form-field>
               </div>
@@ -236,7 +284,16 @@
               <div class="salary-summary">
                 <div class="summary-label">Tổng lương dự kiến</div>
                 <div class="summary-value">
-                  {{ ((nhanvienForm.get('luongCoBan')?.value || 0) + (nhanvienForm.get('phuCap')?.value || 0)) * (nhanvienForm.get('heSoLuong')?.value || 1) | number:'1.0-0' }} VNĐ
+                  {{ (
+                    (nhanvienForm.get('luongCoBan')?.value || 0) + 
+                    (nhanvienForm.get('hieuSuatCongViec')?.value || 0) +
+                    (nhanvienForm.get('phuCapXang')?.value || 0) +
+                    (nhanvienForm.get('phuCapDienThoai')?.value || 0) +
+                    (nhanvienForm.get('hoTroChuyenCan')?.value || 0) +
+                    (nhanvienForm.get('tienAnGiuaCa')?.value || 0) +
+                    (nhanvienForm.get('thuongKinhDoanh')?.value || 0) +
+                    (nhanvienForm.get('phuCapKhac')?.value || 0)
+                  ) | number:'1.0-0' }} VNĐ
                 </div>
               </div>
             </div>

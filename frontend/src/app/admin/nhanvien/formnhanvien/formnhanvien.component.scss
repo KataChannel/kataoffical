@@ -203,6 +203,11 @@
   min-width: calc(33.333% - 0.67rem);
 }
 
+.form-field-quarter {
+  flex: 1;
+  min-width: calc(25% - 0.75rem);
+}
+
 // shadcn-style form fields
 ::ng-deep mat-form-field {
   width: 100%;
@@ -420,7 +425,8 @@
   }
   
   .form-field-half,
-  .form-field-third {
+  .form-field-third,
+  .form-field-quarter {
     min-width: 100%;
   }
   

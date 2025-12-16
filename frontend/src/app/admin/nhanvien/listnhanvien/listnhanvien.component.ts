@@ -1,6 +1,7 @@
 import { 
   Component, 
   OnInit, 
+  AfterViewInit,
   ViewChild, 
   inject, 
   signal, 
@@ -31,6 +32,7 @@ import { MatDividerModule } from '@angular/material/divider';
 // Services & Models
 import { NhanvienService } from '../nhanvien.service';
 import { PhongbanService } from '../../phongban/phongban.service';
+import { ImportDataService } from '../../../shared/services/import-data.service';
 import { 
   Nhanvien, 
   TrangThaiNhanvien, 
@@ -67,9 +69,10 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './listnhanvien.component.html',
   styleUrls: ['./listnhanvien.component.scss']
 })
-export class ListNhanvienComponent implements OnInit {
+export class ListNhanvienComponent implements OnInit, AfterViewInit {
   private nhanvienService = inject(NhanvienService);
   private phongbanService = inject(PhongbanService);
+  private importDataService = inject(ImportDataService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
@@ -88,6 +91,7 @@ export class ListNhanvienComponent implements OnInit {
     'email',
     'phongban',
     'chucVu',
+    'viTri',
     'trangThai',
     'actions'
   ];
@@ -135,6 +139,58 @@ export class ListNhanvienComponent implements OnInit {
     this.loadStatistics();
   }
 
+  ngAfterViewInit() {
+    // Setup sorting data accessor
+    this.dataSource.sortingDataAccessor = (item: Nhanvien, property: string) => {
+      switch (property) {
+        case 'phongban':
+          return item.phongban?.ten?.toLowerCase() || '';
+        case 'hoTen':
+          return item.hoTen?.toLowerCase() || '';
+        case 'maNV':
+          return item.maNV?.toLowerCase() || '';
+        case 'maLamViec':
+          return item.maLamViec?.toLowerCase() || '';
+        case 'chucVu':
+          return item.chucVu?.toLowerCase() || '';
+        case 'viTri':
+          return item.viTri?.toLowerCase() || '';
+        case 'email':
+          return item.email?.toLowerCase() || '';
+        case 'soDienThoai':
+          return item.soDienThoai || '';
+        case 'trangThai':
+          return item.trangThai || '';
+        case 'gioiTinh':
+          return item.gioiTinh || '';
+        default:
+          return (item as any)[property] || '';
+      }
+    };
+
+    // Setup filter predicate
+    this.dataSource.filterPredicate = (data: Nhanvien, filter: string) => {
+      const searchStr = filter.toLowerCase();
+      return (
+        (data.maNV?.toLowerCase().includes(searchStr) || false) ||
+        (data.hoTen?.toLowerCase().includes(searchStr) || false) ||
+        (data.email?.toLowerCase().includes(searchStr) || false) ||
+        (data.soDienThoai?.includes(searchStr) || false) ||
+        (data.chucVu?.toLowerCase().includes(searchStr) || false) ||
+        (data.viTri?.toLowerCase().includes(searchStr) || false) ||
+        (data.phongban?.ten?.toLowerCase().includes(searchStr) || false)
+      );
+    };
+
+    // Connect sort and paginator to dataSource
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+    }
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+  }
+
   async loadData() {
     try {
       this.loading.set(true);
@@ -149,7 +205,12 @@ export class ListNhanvienComponent implements OnInit {
       this.dataSource.data = response.data;
       this.total.set(response.total);
       
+      // Re-assign sort and paginator after data changes
+      if (this.sort) {
+        this.dataSource.sort = this.sort;
+      }
       if (this.paginator) {
+        this.dataSource.paginator = this.paginator;
         this.paginator.length = response.total;
       }
     } catch (error) {
@@ -254,12 +315,12 @@ export class ListNhanvienComponent implements OnInit {
     if (confirmed) {
       try {
         await this.nhanvienService.deleteNhanvien(nhanvien.id);
-        this.snackBar.open(`Đã xóa nhân viên "${nhanvien.hoTen}" thành công`, 'Đóng', { duration: 3000 });
+        this.snackBar.open(`Đã xóa nhân viên "${nhanvien.hoTen}" thành công`, 'Đóng', { duration: 3000, panelClass: 'snackbar-success' });
         this.loadData();
         this.loadStatistics();
       } catch (error) {
         console.error('Error deleting nhanvien:', error);
-        this.snackBar.open('Có lỗi xảy ra khi xóa nhân viên', 'Đóng', { duration: 3000 });
+        this.snackBar.open('Có lỗi xảy ra khi xóa nhân viên', 'Đóng', {  duration: 3000, panelClass: 'snackbar-error' });
       }
     }
   }
@@ -268,11 +329,50 @@ export class ListNhanvienComponent implements OnInit {
     this.router.navigate(['/admin/nhanvien/create']);
   }
 
-  exportExcel() {
-    this.snackBar.open('Chức năng xuất Excel đang phát triển', 'Đóng', { duration: 3000 });
+  async exportExcel() {
+    await this.nhanvienService.exportToExcel();
   }
 
-  importExcel() {
-    this.snackBar.open('Chức năng nhập Excel đang phát triển', 'Đóng', { duration: 3000 });
+  exportTemplate() {
+    this.nhanvienService.exportImportTemplate();
+  }
+
+  async importExcel() {
+    const result = await this.importDataService.openImportDialog({
+      entityType: 'nhanvien',
+      maxRows: 500,
+      allowedFileTypes: ['.xlsx', '.xls'],
+      requiredFields: ['Mã NV', 'Họ và Tên']
+    });
+
+    if (result && result.validData && result.validData.length > 0) {
+      try {
+        this.loading.set(true);
+        const importResult = await this.nhanvienService.importFromExcel(result.validData);
+        
+        let message = `Import thành công: ${importResult.success} nhân viên`;
+        if (importResult.failed > 0) {
+          message += `, thất bại: ${importResult.failed}`;
+        }
+        
+        this.snackBar.open(message, 'Đóng', { 
+          duration: 5000,
+          panelClass: importResult.failed > 0 ? 'snackbar-warning' : 'snackbar-success'
+        });
+
+        if (importResult.errors.length > 0) {
+          console.error('Import errors:', importResult.errors);
+        }
+
+        // Refresh data
+        this.loadData();
+        this.loadStatistics();
+      } catch (error) {
+        console.error('Error importing:', error);
+        this.snackBar.open('Lỗi khi import dữ liệu', 'Đóng', { duration: 3000, panelClass: 'snackbar-error' });
+      } finally {
+        this.loading.set(false);
+      }
+    }
   }
 }
