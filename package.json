@@ -25,5 +25,8 @@
     "db:reset": "cd api && npx bun prisma migrate reset",
     "db:push": "cd api && npx bun prisma db push",
     "db:studio": "cd api && npx bun prisma studio"
+  },
+  "devDependencies": {
+    "xlsx": "^0.18.5"
   }
 }
