@@ -2585,6 +2585,99 @@ export class DonhangService {
         });
       }
 
+      // 5b. 🔥 Chuyển trực tiếp từ 'dadat' sang 'danhan' (skip dagiao - cho phép user thao tác nhanh)
+      if (oldDonhang.status === 'dadat' && data.status === 'danhan') {
+        // Xử lý tồn kho: giảm slchogiao và slton cho số lượng nhận
+        for (const sp of data.sanpham) {
+          const receivedQty = parseFloat((sp.slnhan ?? sp.slgiao ?? sp.sldat ?? 0).toFixed(3));
+          await this.updateTonKhoSafe(prisma, sp.id, {
+            slchogiao: { decrement: receivedQty },
+            slton: { decrement: receivedQty },
+          });
+        }
+
+        // Tạo phiếu kho xuất
+        const maphieuNew = `PX-${data.madonhang}`;
+        const existingPhieu = await prisma.phieuKho.findUnique({
+          where: { maphieu: maphieuNew },
+        });
+
+        if (!existingPhieu) {
+          const uniqueSanpham = data.sanpham.reduce((acc: any[], sp: any) => {
+            const qty = parseFloat((sp.slnhan ?? sp.slgiao ?? sp.sldat ?? 0).toFixed(3));
+            const existing = acc.find((item) => item.sanphamId === sp.id);
+            if (existing) {
+              existing.soluong += qty;
+            } else {
+              acc.push({
+                sanphamId: sp.id,
+                soluong: qty,
+                ghichu: sp.ghichu,
+              });
+            }
+            return acc;
+          }, []);
+
+          await prisma.phieuKho.create({
+            data: {
+              maphieu: maphieuNew,
+              ngay: new Date(data.ngaygiao),
+              type: 'xuat',
+              khoId: DEFAUL_KHO_ID,
+              ghichu: data.ghichu || 'Phiếu xuất hàng (chuyển trực tiếp dadat→danhan)',
+              isActive: data.isActive ?? true,
+              sanpham: {
+                create: uniqueSanpham,
+              },
+            },
+          });
+        }
+
+        // Tính toán tổng tiền
+        let tongchua = 0;
+        
+        for (const item of data.sanpham) {
+          const received = parseFloat((item.slnhan ?? item.slgiao ?? item.sldat ?? 0).toFixed(3));
+          const donhangSanpham = oldDonhang.sanpham.find((sp: any) => sp.idSP === item.id);
+          if (!donhangSanpham) continue;
+          
+          const giaban = parseFloat((donhangSanpham.giaban ?? 0).toFixed(3));
+          const vat = parseFloat((donhangSanpham.vat ?? 0).toFixed(3));
+          
+          const ttnhan = giaban * received;
+          const ttsauvat = ttnhan * (1 + vat);
+          
+          tongchua += ttnhan;
+          
+          await prisma.donhangsanpham.update({
+            where: { id: donhangSanpham.id },
+            data: {
+              ghichu: item.ghichu || '',
+              slgiao: received,
+              slnhan: received,
+              ttgiao: parseFloat(ttnhan.toFixed(3)),
+              ttnhan: parseFloat(ttnhan.toFixed(3)),
+              ttsauvat: parseFloat(ttsauvat.toFixed(3)),
+            },
+          });
+        }
+        
+        const vatRate = parseFloat((oldDonhang.vat ?? 0).toFixed(3));
+        const tongvat = tongchua * vatRate;
+        const tongtien = tongchua + tongvat;
+        
+        return prisma.donhang.update({
+          where: { id },
+          data: {
+            status: 'danhan',
+            printCount: data.printCount !== undefined ? data.printCount : undefined,
+            tongtien: parseFloat(tongtien.toFixed(3)),
+            tongvat: parseFloat(tongvat.toFixed(3)),
+            ghichu: data.ghichu ? `${data.ghichu} | [DIRECT] Chuyển trực tiếp dadat→danhan` : '[DIRECT] Chuyển trực tiếp dadat→danhan',
+          },
+        });
+      }
+
       // 6. Chuyển sang 'hoanthanh'
       if (data.status === 'hoanthanh') {
         return prisma.donhang.update({

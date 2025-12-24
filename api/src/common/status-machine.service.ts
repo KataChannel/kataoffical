@@ -16,14 +16,14 @@ export interface StatusTransition {
 export class StatusMachineService {
   private readonly validTransitions = {
     donhang: {
-      'dadat': ['dagiao', 'huy'],
+      'dadat': ['dagiao', 'danhan', 'huy'], // Cho phép dadat → danhan trực tiếp
       'dagiao': ['danhan', 'huy'],
       'danhan': ['hoanthanh'],
       'huy': [],
       'hoanthanh': []
     },
     dathang: {
-      'dadat': ['dagiao', 'huy'],
+      'dadat': ['dagiao', 'danhan', 'huy'], // Cho phép dadat → danhan trực tiếp
       'dagiao': ['danhan', 'huy'],
       'danhan': ['hoanthanh'],
       'huy': [],
