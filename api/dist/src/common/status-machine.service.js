@@ -12,14 +12,14 @@ let StatusMachineService = class StatusMachineService {
     constructor() {
         this.validTransitions = {
             donhang: {
-                'dadat': ['dagiao', 'huy'],
+                'dadat': ['dagiao', 'danhan', 'huy'],
                 'dagiao': ['danhan', 'huy'],
                 'danhan': ['hoanthanh'],
                 'huy': [],
                 'hoanthanh': []
             },
             dathang: {
-                'dadat': ['dagiao', 'huy'],
+                'dadat': ['dagiao', 'danhan', 'huy'],
                 'dagiao': ['danhan', 'huy'],
                 'danhan': ['hoanthanh'],
                 'huy': [],
