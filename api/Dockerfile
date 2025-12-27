@@ -35,8 +35,8 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package.json ./package.json
 
-# Add non-root user for security
-RUN addgroup --system app && adduser --system --ingroup app app
+# Add non-root user for security (using groupadd/useradd for Debian-based images)
+RUN groupadd -r app && useradd -r -g app app
 RUN chown -R app:app /app
 USER app
 
