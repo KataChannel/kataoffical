@@ -31,6 +31,9 @@ services:
       - MINIO_BUCKET=uploads
       - MINIO_REGION=us-east-1
       - MINIO_PUBLIC_URL=http://storage.rausachtrangia.com:59000
+      - NODE_ENV=production
+    volumes:
+      - ./logs:/app/logs
     networks:
       - rausachv3-network
 

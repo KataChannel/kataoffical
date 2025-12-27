@@ -25,7 +25,7 @@ RUN bun run build
 
 # === PRODUCTION IMAGE ===
 FROM oven/bun:slim AS production
-RUN apt-get update -y && apt-get install -y openssl libssl-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y && apt-get install -y openssl libssl-dev postgresql-client && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -35,9 +35,13 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package.json ./package.json
 
+# Copy sync scripts
+COPY scripts ./scripts
+
 # Add non-root user for security (using groupadd/useradd for Debian-based images)
 RUN groupadd -r app && useradd -r -g app app
 RUN chown -R app:app /app
+RUN chmod +x /app/scripts/*.sh
 USER app
 
 # Expose the application port

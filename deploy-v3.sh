@@ -61,10 +61,10 @@ build_frontend() {
     cd frontend
     
     print_msg "Installing dependencies..." "$YELLOW"
-    npm install
+    npm install --legacy-peer-deps
     
     print_msg "Building frontend..." "$YELLOW"
-    npm run build:ssr
+    npm run build
     
     print_msg "Building Docker image..." "$YELLOW"
     docker build -t $FRONTEND_IMAGE .
