@@ -1,38 +1,46 @@
-# Use the official BunJS image
+# === OPTIMIZED DOCKERFILE FOR PRODUCTION ===
+# Stage 1: Builder
 FROM oven/bun:latest AS builder
 RUN apt-get update -y && apt-get install -y openssl libssl-dev
-# Set the working directory
+
 WORKDIR /app
 
-# Copy package.json and bun.lock to cache dependencies
+# Copy package files first (cache layer optimization)
 COPY package.json bun.lockb ./
 
-# Install dependencies using Bun
-RUN bun install --no-cache
+# Install dependencies (including dev dependencies for build)
+RUN bun install --frozen-lockfile
 
-# Copy the entire source code into the container
-COPY . .
+# Copy source code
+COPY prisma ./prisma
+COPY src ./src
+COPY tsconfig*.json ./
+COPY nest-cli.json ./
 
-# Force Docker cache invalidation - BUST_CACHE_16_AUG_15_33
-# Install Prisma globally and use db push instead of migrate
-RUN bun install -g prisma
-# Force rebuild with accept-data-loss flag - 2025-08-16 15:28
-RUN bun prisma db push --accept-data-loss
+# Generate Prisma client
 RUN bun prisma generate
 
-# Use a smaller runtime image
-FROM oven/bun:latest
-RUN apt-get update -y && apt-get install -y openssl libssl-dev
-# Set the working directory
+# Build the application
+RUN bun run build
+
+# === PRODUCTION IMAGE ===
+FROM oven/bun:slim AS production
+RUN apt-get update -y && apt-get install -y openssl libssl-dev && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Copy the build artifacts from the builder stage
-COPY --from=builder /app /app
+# Copy only production dependencies
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/package.json ./package.json
 
-# Copy only necessary files
-COPY --from=builder /app/dist /app/dist
+# Add non-root user for security
+RUN addgroup --system app && adduser --system --ingroup app app
+RUN chown -R app:app /app
+USER app
 
-# Expose the ports used by the NestJS application (e.g., 3000)
+# Expose the application port
 EXPOSE 3331
 
 # Run the application

@@ -30,7 +30,10 @@ services:
       - redis_data:/data
     command: ["redis-server", "--appendonly", "yes"]      
   berausach:
-    build: ./api
+    # Option 1: Build từ source (development)
+    # build: ./api
+    # Option 2: Sử dụng image đã build sẵn (production - recommended)
+    image: rausach-backend:latest
     container_name: rausach-backend
     restart: always
     ports:
@@ -64,7 +67,10 @@ services:
       - postgres
       - redis      
   ferausach:
-    build: ./frontend
+    # Option 1: Build từ source (development)
+    # build: ./frontend
+    # Option 2: Sử dụng image đã build sẵn (production - recommended)
+    image: rausach-frontend:latest
     container_name: rausach-frontend
     restart: always
     ports:
@@ -98,5 +104,6 @@ volumes:
   pg_data:
   redis_data:
   uploads_data:
+  minio_rausach:
     driver: local
   minio_rausach:
