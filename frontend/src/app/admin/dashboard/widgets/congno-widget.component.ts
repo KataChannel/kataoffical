@@ -281,7 +281,7 @@ export class CongNoWidgetComponent implements OnInit {
   }
 
   createPhieuThu(khachhangId: string): void {
-    this.router.navigate(['/admin/phieuthuci/create'], {
+    this.router.navigate(['/admin/phieuthuchi/create'], {
       queryParams: { 
         loai: 'THU',
         khachhangId: khachhangId

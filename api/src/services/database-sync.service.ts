@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { exec } from 'child_process';
 import * as cron from 'node-cron';
+import * as path from 'path';
 import { promisify } from 'util';
 
 const execAsync = promisify(exec);
@@ -56,12 +57,24 @@ export class DatabaseSyncService {
       this.logger.log('🚀 Đang thực thi script đồng bộ database...');
       
       // Auto-detect script path: Docker hoặc Local
-      const scriptPath = process.env.NODE_ENV === 'production'
+      // Use absolute path to avoid working directory issues
+      const isProduction = process.env.NODE_ENV === 'production';
+      const scriptPath = isProduction
         ? '/app/scripts/sync-database.sh'   // Docker container
-        : './scripts/sync-database.sh';     // Local development
+        : path.resolve(__dirname, '../../scripts/sync-database.sh');  // Local development - absolute path
       
       this.logger.log(`📁 Script path: ${scriptPath}`);
-      const { stdout, stderr } = await execAsync(`bash ${scriptPath}`);
+      
+      // Check if script exists
+      const fs = await import('fs');
+      if (!fs.existsSync(scriptPath)) {
+        throw new Error(`Script không tồn tại: ${scriptPath}`);
+      }
+      
+      const { stdout, stderr } = await execAsync(`bash ${scriptPath}`, {
+        cwd: path.dirname(scriptPath),  // Set working directory to script's folder
+        timeout: 300000  // 5 minutes timeout
+      });
       
       if (stdout) {
         this.logger.log(`📋 Output: ${stdout}`);
@@ -72,7 +85,7 @@ export class DatabaseSyncService {
       }
       
       this.logger.log('✅ Hoàn thành đồng bộ database');
-      return { success: true, timestamp: new Date() };
+      return { success: true, timestamp: new Date(), output: stdout };
     } catch (error) {
       this.logger.error(`❌ Lỗi khi đồng bộ database: ${error.message}`);
       this.logger.error(error.stack);

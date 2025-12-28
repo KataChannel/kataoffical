@@ -41,8 +41,8 @@
     - Báo cáo dòng tiền
 
 ### 5. Documentation & Testing ✅
-- [x] API test file (test-thuci-apis.http)
-- [x] Setup automation script (setup-thuci.sh)
+- [x] API test file (test-thuchi-apis.http)
+- [x] Setup automation script (setup-thuchi.sh)
 - [x] SQL scripts for menu, permissions, sample data
 - [x] Implementation summary document
 
@@ -88,12 +88,12 @@ api/
 │       └── confirmation.module.ts
 │
 ├── sql/
-│   ├── add-thuci-menu-items.sql           ✅ Executed
-│   ├── add-thuci-permissions.sql          ✅ Executed
-│   └── sample-thuci-data-simple.sql       ✅ Executed
+│   ├── add-thuchi-menu-items.sql           ✅ Executed
+│   ├── add-thuchi-permissions.sql          ✅ Executed
+│   └── sample-thuchi-data-simple.sql       ✅ Executed
 │
-├── test-thuci-apis.http
-└── setup-thuci.sh
+├── test-thuchi-apis.http
+└── setup-thuchi.sh
 ```
 
 ### Frontend
@@ -126,7 +126,7 @@ frontend/src/app/
 ### Documentation
 ```
 docs/
-└── 2033-THUCI_HOADON_SUMMARY.md
+└── 2033-thuchi_HOADON_SUMMARY.md
 ```
 
 ---
@@ -232,7 +232,7 @@ POST   /donhang/:id/generate-confirm-token
 - [ ] Test public confirmation page (both confirmations)
 - [ ] Test permissions (non-admin user)
 
-### API Testing (use test-thuci-apis.http)
+### API Testing (use test-thuchi-apis.http)
 - [ ] GET all PhieuThuChi with filters
 - [ ] POST create PhieuThuChi
 - [ ] PATCH update PhieuThuChi
@@ -348,7 +348,7 @@ http://localhost:4200
 ### Test APIs
 ```bash
 # Open in VS Code
-code test-thuci-apis.http
+code test-thuchi-apis.http
 
 # Install REST Client extension
 # Click "Send Request" on each endpoint
@@ -357,7 +357,7 @@ code test-thuci-apis.http
 ### Quick Setup (All-in-one)
 ```bash
 cd /chikiet/kata2025/rausachfinalv2/api
-./setup-thuci.sh
+./setup-thuchi.sh
 ```
 
 ---
@@ -431,4 +431,4 @@ cd /chikiet/kata2025/rausachfinalv2/api
 ---
 
 **Last Updated:** 2025-01-15  
-**Next Action:** Run test-thuci-apis.http to verify all endpoints work correctly
+**Next Action:** Run test-thuchi-apis.http to verify all endpoints work correctly

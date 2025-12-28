@@ -296,6 +296,8 @@ type Query {
   dailyMonthlyReport(batdau: String!, ketthuc: String!, groupBy: String!): [DailyMonthlyReportItem!]!
   topProductsByQuantity(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
   topProductsByValue(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
+  donhangChoXacNhan: JSON!
+  congNoSummary: JSON!
   tickets(status: String, priority: String): [SupportTicket!]!
   ticket(id: String!): SupportTicket
   phongbans(level: Int, loai: String, parentId: String, includeChildren: Boolean): [JSON!]!
@@ -310,6 +312,10 @@ type Query {
   phieuThuChiList(loai: String!, trangThai: String!, doiTuong: String!, tuNgay: String!, denNgay: String!, page: Float!, limit: Float!): JSON!
   phieuThuChi(id: String!): JSON!
   baoCaoThuChi(tuNgay: String!, denNgay: String!): JSON!
+  hoaDonDienTuList(skip: Int, take: Int, where: JSON, orderBy: JSON): JSON!
+  hoaDonDienTu(id: String!): JSON!
+  baoCaoDongTien(tuNgay: String, denNgay: String, groupBy: String = "day"): JSON!
+  thongKeDongTienHomNay: JSON!
 }
 
 input NhomkhachhangFilterInput {
@@ -466,6 +472,12 @@ type Mutation {
   guiDuyetPhieuThuChi(id: String!): JSON!
   duyetPhieuThuChi(id: String!): JSON!
   huyPhieuThuChi(id: String!): JSON!
+  createHoaDonDienTu(input: CreateHoaDonDienTuInput!): JSON!
+  updateHoaDonDienTu(id: String!, input: UpdateHoaDonDienTuInput!): JSON!
+  xuatHoaDon(id: String!): JSON!
+  generateHoaDonPDF(id: String!): JSON!
+  deleteHoaDonDienTu(id: String!): JSON!
+  huyHoaDon(id: String!): JSON!
 }
 
 input CreateNhomkhachhangInput {
@@ -539,4 +551,18 @@ input UpdatePhieuThuChiDto {
   ghichu: String
   lydo: String
   ngay: String
+}
+
+input CreateHoaDonDienTuInput {
+  donhangId: String!
+  mauSo: String
+  kyHieu: String
+  ghichu: String
+}
+
+input UpdateHoaDonDienTuInput {
+  mauSo: String
+  kyHieu: String
+  pdfUrl: String
+  ghichu: String
 }

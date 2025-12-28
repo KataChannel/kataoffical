@@ -2,18 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {
-    BadgeComponent,
-    ButtonComponent,
-    CardComponent,
-    CardContentComponent,
-    CardHeaderComponent,
-    CardTitleComponent,
-    EmptyStateComponent,
-    ErrorStateComponent,
-    InputComponent,
-    SkeletonComponent,
-} from '../../../shared/ui';
 import { PhieuThuChiService } from '../phieuthuchi.service';
 
 @Component({
@@ -22,16 +10,6 @@ import { PhieuThuChiService } from '../phieuthuchi.service';
   imports: [
     CommonModule,
     FormsModule,
-    ButtonComponent,
-    CardComponent,
-    CardHeaderComponent,
-    CardTitleComponent,
-    CardContentComponent,
-    BadgeComponent,
-    InputComponent,
-    SkeletonComponent,
-    EmptyStateComponent,
-    ErrorStateComponent,
   ],
   templateUrl: './list-phieuthuchi.component.html',
   styleUrls: ['./list-phieuthuchi.component.scss']

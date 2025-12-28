@@ -2,7 +2,7 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import GraphQLJSON from 'graphql-type-json';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { BaoCaoDongTienService } from './baocao-dongtien.service';
+import { BaoCaoDongTienService, ThongKeDongTien } from './baocao-dongtien.service';
 
 @Resolver(() => GraphQLJSON)
 @UseGuards(JwtAuthGuard)
@@ -15,7 +15,7 @@ export class BaoCaoDongTienResolver {
     @Args('denNgay', { nullable: true }) denNgay?: string,
     @Args('groupBy', { nullable: true, defaultValue: 'day' })
     groupBy?: 'day' | 'week' | 'month',
-  ) {
+  ): Promise<ThongKeDongTien> {
     return this.baoCaoDongTienService.getBaoCaoDongTien({
       tuNgay: tuNgay ? new Date(tuNgay) : undefined,
       denNgay: denNgay ? new Date(denNgay) : undefined,

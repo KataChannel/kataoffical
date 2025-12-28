@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
@@ -40,7 +40,8 @@ export class MenuService {
       return v.isActive;
     });
     const parentIds = new Set(filteredMenus.map(v => v.parentId).filter(id => id));
-    const parents = menus.filter(v => parentIds.has(v.id));
+    const existingIds = new Set(filteredMenus.map(v => v.id));
+    const parents = menus.filter(v => parentIds.has(v.id) && !existingIds.has(v.id));
     filteredMenus.push(...parents);
     menus.length = 0;
     menus.push(...filteredMenus);    

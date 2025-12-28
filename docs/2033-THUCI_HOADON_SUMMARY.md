@@ -288,13 +288,13 @@ frontend/src/app/
 
 ### Test Files
 
-1. **REST API Tests:** `api/test-thuci-apis.http`
+1. **REST API Tests:** `api/test-thuchi-apis.http`
    - 50+ test cases
    - Covers all CRUD operations
    - Workflow tests
    - Public confirmation tests
 
-2. **Setup Script:** `api/setup-thuci.sh`
+2. **Setup Script:** `api/setup-thuchi.sh`
    - Automated setup
    - Schema push
    - Menu & permissions setup
@@ -328,10 +328,10 @@ api/
 │       ├── donhang.controller.ts            [MODIFIED] +generate-confirm-token
 │       └── donhang.module.ts                [MODIFIED] +ConfirmationModule
 ├── sql/
-│   ├── add-thuci-menu-items.sql             [NEW]
-│   └── add-thuci-permissions.sql            [NEW]
-├── test-thuci-apis.http                     [NEW]
-└── setup-thuci.sh                           [NEW]
+│   ├── add-thuchi-menu-items.sql             [NEW]
+│   └── add-thuchi-permissions.sql            [NEW]
+├── test-thuchi-apis.http                     [NEW]
+└── setup-thuchi.sh                           [NEW]
 ```
 
 ### Frontend
@@ -359,11 +359,11 @@ npx prisma db push --accept-data-loss
 
 # Add menu items
 PGPASSWORD=kata@2025 psql -h 116.118.49.243 -p 55432 -U kata2025 \
-  -d rausachtrangia -f sql/add-thuci-menu-items.sql
+  -d rausachtrangia -f sql/add-thuchi-menu-items.sql
 
 # Add permissions
 PGPASSWORD=kata@2025 psql -h 116.118.49.243 -p 55432 -U kata2025 \
-  -d rausachtrangia -f sql/add-thuci-permissions.sql
+  -d rausachtrangia -f sql/add-thuchi-permissions.sql
 ```
 
 ### 2. Backend Build
@@ -382,7 +382,7 @@ npm run build
 ### 4. Quick Setup (All-in-one)
 ```bash
 cd /chikiet/kata2025/rausachfinalv2/api
-./setup-thuci.sh
+./setup-thuchi.sh
 ```
 
 ---
@@ -444,7 +444,7 @@ cd /chikiet/kata2025/rausachfinalv2/api
 ## 🔮 NEXT STEPS
 
 ### Phase 1: Testing (3 days)
-1. Run all API tests in `test-thuci-apis.http`
+1. Run all API tests in `test-thuchi-apis.http`
 2. Create sample data for each model
 3. UAT testing with real users
 4. Fix bugs if found
@@ -479,7 +479,7 @@ cd /chikiet/kata2025/rausachfinalv2/api
 
 **Developer:** GitHub Copilot  
 **Repository:** /chikiet/kata2025/rausachfinalv2  
-**Documentation:** /docs/2033-THUCI_HOADON_SUMMARY.md
+**Documentation:** /docs/2033-thuchi_HOADON_SUMMARY.md
 
 ---
 

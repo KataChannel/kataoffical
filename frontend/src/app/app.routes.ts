@@ -513,6 +513,15 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'cron-management',
+        canActivate: [PermissionGuard],
+        data: { permission: 'cron-management.view' },
+        loadComponent: () =>
+          import('./admin/cron-management/cron-dashboard/cron-dashboard.component').then(
+            (c) => c.CronDashboardComponent
+          ),
+      },
+      {
         path: 'phieuchuyen',
         canActivate: [PermissionGuard],
         data: { permission: 'phieuchuyen.view' },

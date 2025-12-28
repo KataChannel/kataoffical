@@ -167,9 +167,9 @@
 | 3 | **1** | Prisma migrate + generate | Database updated | ✅ |
 | 4 | **1** | Review schema, fix conflicts | Schema verified | ✅ |
 | | | **📍 Deliverable Ngày 1:** | ✅ Database schema hoàn chỉnh | ✅ |
-| 5 | **2** | phieuthuci.module.ts, phieuthuci.service.ts | CRUD service | ✅ |
-| 6 | **2** | phieuthuci.controller.ts + DTOs | REST endpoints | ✅ |
-| 7 | **2** | phieuthuci.resolver.ts | GraphQL mutations/queries | ✅ |
+| 5 | **2** | phieuthuchi.module.ts, phieuthuchi.service.ts | CRUD service | ✅ |
+| 6 | **2** | phieuthuchi.controller.ts + DTOs | REST endpoints | ✅ |
+| 7 | **2** | phieuthuchi.resolver.ts | GraphQL mutations/queries | ✅ |
 | 8 | **2** | Sinh mã phiếu tự động, validation | Business logic | ✅ |
 | | | **📍 Deliverable Ngày 2:** | ✅ Module PhieuThuChi backend | ✅ |
 | 9 | **3** | thanhtoan.module + service + controller | Module ThanhToan | ✅ |
@@ -182,9 +182,9 @@
 | 15 | **4** | WebSocket gateway cho realtime | Socket events | ⏳ |
 | 16 | **4** | Email notification (optional, Nodemailer) | Email gửi link xác nhận | ⏳ |
 | | | **📍 Deliverable Ngày 4:** | ✅ Hệ thống xác nhận 2 chiều | 🔄 |
-| 17 | **5** | list-phieuthuci.component | Danh sách + filter | ✅ |
-| 18 | **5** | detail-phieuthuci.component | Form tạo/sửa | ✅ |
-| 19 | **5** | phieuthuci.service.ts + GraphQL | API integration | ✅ |
+| 17 | **5** | list-phieuthuchi.component | Danh sách + filter | ✅ |
+| 18 | **5** | detail-phieuthuchi.component | Form tạo/sửa | ✅ |
+| 19 | **5** | phieuthuchi.service.ts + GraphQL | API integration | ✅ |
 | 20 | **5** | Routing, menu integration | Navigation | ⏳ |
 | | | **📍 Deliverable Ngày 5:** | ✅ Module PhieuThuChi frontend | 🔄 |
 | 21 | **6** | list-thanhtoan.component | Danh sách thanh toán | ✅ |

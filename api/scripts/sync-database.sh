@@ -65,6 +65,22 @@ fi
 rm -f "$DUMP_FILE"
 echo "[$TIMESTAMP] Đã xóa file dump tạm." | tee -a $LOG_FILE
 
+# ============================================================
+# KHÔI PHỤC CÁC MENU VÀ PERMISSION MỚI SAU KHI SYNC
+# ============================================================
+echo "[$TIMESTAMP] Đang khôi phục các menu và permission mới..." | tee -a $LOG_FILE
+
+# Xác định đường dẫn SQL file
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SQL_FILE="$SCRIPT_DIR/../sql/create-new-menus.sql"
+
+if [ -f "$SQL_FILE" ]; then
+    psql -h "$TARGET_HOST" -p "$TARGET_PORT" -U "$TARGET_USER" -d "$TARGET_DB" -f "$SQL_FILE" 2>&1 | tee -a $LOG_FILE
+    echo "[$TIMESTAMP] Đã khôi phục menu và permission!" | tee -a $LOG_FILE
+else
+    echo "[$TIMESTAMP] ⚠️ Không tìm thấy file SQL: $SQL_FILE" | tee -a $LOG_FILE
+fi
+
 # Giữ log file trong 7 ngày (chỉ trong /tmp)
 if [ "$LOG_DIR" = "/tmp" ]; then
     find /tmp -name "db-sync-*.log" -mtime +7 -delete 2>/dev/null

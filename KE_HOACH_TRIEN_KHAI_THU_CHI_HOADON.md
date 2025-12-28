@@ -219,7 +219,7 @@ model HoaDonDienTu {
 
 ```bash
 # 1. Cập nhật schema
-cd api && npx prisma migrate dev --name add_thuci_hoadon
+cd api && npx prisma migrate dev --name add_thuchi_hoadon
 
 # 2. Tạo module phieuthuchi
 nest g module phieuthuchi

@@ -43,6 +43,7 @@ import { UserguideModule } from './userguide/userguide.module';
 // import { MinioModule } from './minio/minio.module';
 import { CacheModule } from './cache/cache.module';
 import { ConfirmationModule } from './confirmation/confirmation.module';
+import { CronManagementModule } from './cron-management/cron-management.module';
 import { DatabaseSyncModule } from './database-sync/database-sync.module';
 import { GraphQLUniversalModule } from './graphql/graphql.module';
 import { HoaDonModule } from './hoadon/hoadon.module';
@@ -120,6 +121,7 @@ import { UserPermissionModule } from './user-permission/user-permission.module';
     HoaDonModule,
     ConfirmationModule,
     BaoCaoModule,
+    CronManagementModule,
   ],
   controllers: [AppController],
   providers: [

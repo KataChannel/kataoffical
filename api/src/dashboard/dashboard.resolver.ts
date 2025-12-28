@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Args, Field, Float, Int, ObjectType, Query, Resolver } from '@nestjs/graphql';
+import GraphQLJSON from 'graphql-type-json';
 import { PrismaService } from '../../prisma/prisma.service';
 
 // Define GraphQL types for code-first approach
@@ -320,7 +321,7 @@ export class DashboardResolver {
 
   // ==================== DASHBOARD WIDGETS ====================
   
-  @Query(() => [Object])
+  @Query(() => GraphQLJSON, { name: 'donhangChoXacNhan' })
   async donhangChoXacNhan() {
     // Find orders that need confirmation
     // xacNhanLan1 = false OR xacNhanLan2 = false
@@ -330,21 +331,21 @@ export class DashboardResolver {
           { xacNhanLan1: false },
           { xacNhanLan1: true, xacNhanLan2: false },
         ],
-        trangthai: {
-          notIn: ['HUY', 'HOAN_THANH'],
+        status: {
+          notIn: ['huy', 'hoanthanh'],
         },
       },
       select: {
         id: true,
         madonhang: true,
         createdAt: true,
-        tongTien: true,
+        tongtien: true,
         xacNhanLan1: true,
         xacNhanLan2: true,
         confirmToken: true,
         khachhang: {
           select: {
-            ten: true,
+            name: true,
             sdt: true,
           },
         },
@@ -358,7 +359,7 @@ export class DashboardResolver {
     return donhangs;
   }
 
-  @Query(() => Object)
+  @Query(() => GraphQLJSON, { name: 'congNoSummary' })
   async congNoSummary() {
     // Get all customers with debt
     const congNoData = await this.prisma.$queryRaw<

@@ -14,7 +14,7 @@ interface DongTienItem {
   ton: number;
 }
 
-interface ThongKeDongTien {
+export interface ThongKeDongTien {
   tongThu: number;
   tongChi: number;
   tonDauKy: number;
