@@ -1,17 +1,47 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import {
+    BadgeComponent,
+    ButtonComponent,
+    CardComponent,
+    CardContentComponent,
+    CardHeaderComponent,
+    CardTitleComponent,
+    EmptyStateComponent,
+    ErrorStateComponent,
+    InputComponent,
+    SkeletonComponent,
+} from '../../../shared/ui';
 import { PhieuThuChiService } from '../phieuthuchi.service';
 
 @Component({
   selector: 'app-list-phieuthuchi',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ButtonComponent,
+    CardComponent,
+    CardHeaderComponent,
+    CardTitleComponent,
+    CardContentComponent,
+    BadgeComponent,
+    InputComponent,
+    SkeletonComponent,
+    EmptyStateComponent,
+    ErrorStateComponent,
+  ],
   templateUrl: './list-phieuthuchi.component.html',
   styleUrls: ['./list-phieuthuchi.component.scss']
 })
 export class ListPhieuthuchiComponent implements OnInit {
+  // Signals for state management
+  loading = signal<boolean>(false);
+  error = signal<boolean>(false);
+  errorMessage = signal<string>('');
+  
   filters = signal<any>({
     loai: '',
     trangThai: '',
@@ -19,6 +49,41 @@ export class ListPhieuthuchiComponent implements OnInit {
     denNgay: '',
     page: 1,
     limit: 20
+  });
+
+  // Computed filtered list
+  filteredList = computed(() => {
+    const list = this.phieuThuChiService.listPhieuThuChi();
+    const filters = this.filters();
+    
+    if (!list || list.length === 0) return [];
+
+    return list.filter((item: any) => {
+      const matchLoai = !filters.loai || item.loai === filters.loai;
+      const matchTrangThai = !filters.trangThai || item.trangThai === filters.trangThai;
+      return matchLoai && matchTrangThai;
+    });
+  });
+
+  // Stats computed
+  stats = computed(() => {
+    const list = this.phieuThuChiService.listPhieuThuChi();
+    if (!list || list.length === 0) {
+      return { tongThu: 0, tongChi: 0, choDuyet: 0, daDuyet: 0 };
+    }
+
+    const tongThu = list
+      .filter((p: any) => p.loai === 'THU' && p.trangThai === 'DA_DUYET')
+      .reduce((sum: number, p: any) => sum + Number(p.soTien || 0), 0);
+    
+    const tongChi = list
+      .filter((p: any) => p.loai === 'CHI' && p.trangThai === 'DA_DUYET')
+      .reduce((sum: number, p: any) => sum + Number(p.soTien || 0), 0);
+    
+    const choDuyet = list.filter((p: any) => p.trangThai === 'CHO_DUYET').length;
+    const daDuyet = list.filter((p: any) => p.trangThai === 'DA_DUYET').length;
+
+    return { tongThu, tongChi, choDuyet, daDuyet };
   });
 
   constructor(
@@ -32,15 +97,32 @@ export class ListPhieuthuchiComponent implements OnInit {
 
   async loadData() {
     try {
+      this.loading.set(true);
+      this.error.set(false);
       await this.phieuThuChiService.getList(this.filters());
-    } catch (error) {
-      console.error('Error loading data:', error);
-      alert('Có lỗi khi tải dữ liệu');
+    } catch (err: any) {
+      console.error('Error loading data:', err);
+      this.error.set(true);
+      this.errorMessage.set(err.message || 'Có lỗi khi tải dữ liệu');
+    } finally {
+      this.loading.set(false);
     }
   }
 
   onFilterChange() {
     this.filters.update(f => ({ ...f, page: 1 }));
+    this.loadData();
+  }
+
+  resetFilters() {
+    this.filters.set({
+      loai: '',
+      trangThai: '',
+      tuNgay: '',
+      denNgay: '',
+      page: 1,
+      limit: 20
+    });
     this.loadData();
   }
 
@@ -55,6 +137,36 @@ export class ListPhieuthuchiComponent implements OnInit {
 
   createNew() {
     this.router.navigate(['/admin/phieuthuchi/detail/new']);
+  }
+
+  // Badge variant helper
+  getBadgeVariant(trangThai: string): 'default' | 'destructive' | 'warning' | 'success' {
+    switch (trangThai) {
+      case 'DA_DUYET':
+        return 'success';
+      case 'CHO_DUYET':
+        return 'warning';
+      case 'HUY':
+        return 'destructive';
+      default:
+        return 'default';
+    }
+  }
+
+  // Trạng thái label helper
+  getTrangThaiLabel(trangThai: string): string {
+    switch (trangThai) {
+      case 'NHAP':
+        return 'Đang nhập';
+      case 'CHO_DUYET':
+        return 'Chờ duyệt';
+      case 'DA_DUYET':
+        return 'Đã duyệt';
+      case 'HUY':
+        return 'Hủy';
+      default:
+        return trangThai;
+    }
   }
 
   async guiDuyet(id: string) {

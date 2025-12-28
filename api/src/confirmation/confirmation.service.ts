@@ -1,10 +1,14 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { PrismaService } from 'prisma/prisma.service';
+import { SocketGateway } from '../socket.gateway';
 
 @Injectable()
 export class ConfirmationService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private socketGateway: SocketGateway,
+  ) {}
 
   // Tạo token xác nhận cho đơn hàng
   async generateConfirmToken(donhangId: string): Promise<string> {
@@ -69,7 +73,7 @@ export class ConfirmationService {
       throw new BadRequestException('Đơn hàng đã được xác nhận lần 1');
     }
 
-    return this.prisma.donhang.update({
+    const updated = await this.prisma.donhang.update({
       where: { id: donhang.id },
       data: {
         xacNhanLan1: true,
@@ -85,6 +89,15 @@ export class ConfirmationService {
         },
       },
     });
+
+    // Emit WebSocket event for realtime update
+    this.socketGateway.sendDonhangConfirmed(donhang.id, {
+      type: 'xac_nhan_lan_1',
+      xacNhanLan1At: updated.xacNhanLan1At,
+      ghiChuKH: updated.ghiChuKH,
+    });
+
+    return updated;
   }
 
   // Xác nhận lần 2
@@ -99,7 +112,7 @@ export class ConfirmationService {
       throw new BadRequestException('Đơn hàng đã được xác nhận lần 2');
     }
 
-    return this.prisma.donhang.update({
+    const updated = await this.prisma.donhang.update({
       where: { id: donhang.id },
       data: {
         xacNhanLan2: true,
@@ -115,13 +128,22 @@ export class ConfirmationService {
         },
       },
     });
+
+    // Emit WebSocket event for realtime update
+    this.socketGateway.sendDonhangConfirmed(donhang.id, {
+      type: 'xac_nhan_lan_2',
+      xacNhanLan2At: updated.xacNhanLan2At,
+      ghiChuKH: updated.ghiChuKH,
+    });
+
+    return updated;
   }
 
   // Từ chối đơn hàng
   async tuChoi(token: string, ghiChuKH?: string) {
     const donhang = await this.getDonhangByToken(token);
 
-    return this.prisma.donhang.update({
+    const updated = await this.prisma.donhang.update({
       where: { id: donhang.id },
       data: {
         status: 'huy' as any,
@@ -137,6 +159,14 @@ export class ConfirmationService {
         },
       },
     });
+
+    // Emit WebSocket event for realtime update
+    this.socketGateway.sendDonhangRejected(donhang.id, {
+      ghiChuKH: updated.ghiChuKH,
+      lydohuy: updated.lydohuy,
+    });
+
+    return updated;
   }
 
   // Cập nhật ghi chú từ khách hàng

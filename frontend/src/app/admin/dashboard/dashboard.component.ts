@@ -1,27 +1,31 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatSelectModule } from '@angular/material/select';
-import { MatIconModule } from '@angular/material/icon';
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatTableModule } from '@angular/material/table';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { DashboardService, ComprehensiveDashboardData, DailyMonthlyReport, TopProductsResponse } from './dashboard.service';
 import moment from 'moment';
+import { Subscription } from 'rxjs';
+import { ComprehensiveDashboardData, DailyMonthlyReport, DashboardService, TopProductsResponse } from './dashboard.service';
 
 // Chart.js imports
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { GraphqlService } from '../../shared/services/graphql.service';
 import { writeExcelFile } from '../../shared/utils/exceldrive.utils';
+
+// Dashboard Widgets
+import { CongNoWidgetComponent } from './widgets/congno-widget.component';
+import { DonhangChoXacNhanWidgetComponent } from './widgets/donhang-cho-xacnhan.component';
 
 // Chart.js types
 declare var Chart: any;
@@ -50,7 +54,9 @@ interface TopCustomer {
     MatTableModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    FormsModule
+    FormsModule,
+    DonhangChoXacNhanWidgetComponent,
+    CongNoWidgetComponent
   ],
   templateUrl: './dashboard.component.html'
 })

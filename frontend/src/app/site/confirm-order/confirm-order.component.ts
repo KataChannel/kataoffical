@@ -3,11 +3,24 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
+import {
+    CardComponent,
+    CardContentComponent,
+    ErrorStateComponent,
+    SkeletonComponent,
+} from '../../shared/ui';
 
 @Component({
   selector: 'app-confirm-order',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    CardComponent,
+    CardContentComponent,
+    SkeletonComponent,
+    ErrorStateComponent,
+  ],
   templateUrl: './confirm-order.component.html',
   styleUrls: ['./confirm-order.component.scss']
 })

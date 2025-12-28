@@ -15,6 +15,7 @@ import { AuditLogModule } from './auditlog/auditlog.module';
 import { AuditService } from './auditlog/auditlog.service';
 import { AuthModule } from './auth/auth.module';
 import { BanggiaModule } from './banggia/banggia.module';
+import { BaoCaoModule } from './baocao/baocao.module';
 import { CallbackModule } from './callback/callback.module';
 import { ChotkhoModule } from './chotkho/chotkho.module';
 import { CacheInterceptor } from './common/cache.interceptor';
@@ -118,6 +119,7 @@ import { UserPermissionModule } from './user-permission/user-permission.module';
     ThanhToanModule,
     HoaDonModule,
     ConfirmationModule,
+    BaoCaoModule,
   ],
   controllers: [AppController],
   providers: [

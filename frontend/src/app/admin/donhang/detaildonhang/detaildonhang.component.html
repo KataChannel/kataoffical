@@ -8,6 +8,12 @@
     <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>
     </button>
+    <!-- Xuất Hóa Đơn Button -->
+    <button mat-icon-button color="accent" *ngIf="!isEdit() && DetailDonhang()?.id" 
+            (click)="xuatHoaDon()" 
+            matTooltip="Xuất hóa đơn điện tử">
+      <mat-icon>receipt_long</mat-icon>
+    </button>
     <!-- <button mat-icon-button color="primary" (click)="printContent()">
       <mat-icon>print</mat-icon>
     </button> -->

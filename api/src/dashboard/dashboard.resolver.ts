@@ -1,7 +1,6 @@
-import { Resolver, Query, Args } from '@nestjs/graphql';
-import { PrismaService } from '../../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
+import { Args, Field, Float, Int, ObjectType, Query, Resolver } from '@nestjs/graphql';
+import { PrismaService } from '../../prisma/prisma.service';
 
 // Define GraphQL types for code-first approach
 @ObjectType()
@@ -317,5 +316,111 @@ export class DashboardResolver {
       totalQuantity: Number(item.totalquantity) || 0,
       totalValue: Number(item.totalvalue) || 0,
     }));
+  }
+
+  // ==================== DASHBOARD WIDGETS ====================
+  
+  @Query(() => [Object])
+  async donhangChoXacNhan() {
+    // Find orders that need confirmation
+    // xacNhanLan1 = false OR xacNhanLan2 = false
+    const donhangs = await this.prisma.donhang.findMany({
+      where: {
+        OR: [
+          { xacNhanLan1: false },
+          { xacNhanLan1: true, xacNhanLan2: false },
+        ],
+        trangthai: {
+          notIn: ['HUY', 'HOAN_THANH'],
+        },
+      },
+      select: {
+        id: true,
+        madonhang: true,
+        createdAt: true,
+        tongTien: true,
+        xacNhanLan1: true,
+        xacNhanLan2: true,
+        confirmToken: true,
+        khachhang: {
+          select: {
+            ten: true,
+            sdt: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 20,
+    });
+
+    return donhangs;
+  }
+
+  @Query(() => Object)
+  async congNoSummary() {
+    // Get all customers with debt
+    const congNoData = await this.prisma.$queryRaw<
+      Array<{
+        khachhangId: string;
+        ten: string;
+        sdt: string | null;
+        email: string | null;
+        tongNo: number;
+        soDonNo: bigint;
+        ngayMuaGanNhat: Date | null;
+      }>
+    >`
+      SELECT 
+        k.id as "khachhangId",
+        k.ten,
+        k.sdt,
+        k.email,
+        COALESCE(SUM(d."congNo"), 0) as "tongNo",
+        COUNT(d.id) as "soDonNo",
+        MAX(d."createdAt") as "ngayMuaGanNhat"
+      FROM "Khachhang" k
+      INNER JOIN "Donhang" d ON d."khachhangId" = k.id
+      WHERE d."congNo" > 0
+        AND d.trangthai NOT IN ('HUY')
+      GROUP BY k.id, k.ten, k.sdt, k.email
+      HAVING SUM(d."congNo") > 0
+      ORDER BY SUM(d."congNo") DESC
+      LIMIT 10
+    `;
+
+    // Calculate stats
+    const tongCongNo = congNoData.reduce(
+      (sum, item) => sum + Number(item.tongNo),
+      0,
+    );
+    const soKhachNo = congNoData.length;
+
+    // Calculate how many customers are overdue (example: > 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const soKhachQuaHan = congNoData.filter(
+      (item) =>
+        item.ngayMuaGanNhat && item.ngayMuaGanNhat < thirtyDaysAgo,
+    ).length;
+
+    const trungBinhNo = soKhachNo > 0 ? tongCongNo / soKhachNo : 0;
+
+    // Convert bigint to number for soDonNo
+    const topKhachNo = congNoData.map((item) => ({
+      ...item,
+      tongNo: Number(item.tongNo),
+      soDonNo: Number(item.soDonNo),
+    }));
+
+    return {
+      tongCongNo,
+      soKhachNo,
+      soKhachQuaHan,
+      trungBinhNo,
+      topKhachNo,
+    };
   }
 }

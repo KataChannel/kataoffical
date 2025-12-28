@@ -1,4 +1,4 @@
-import { WebSocketGateway, WebSocketServer, SubscribeMessage } from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 
 @WebSocketGateway({
@@ -28,6 +28,24 @@ export class SocketGateway {
   sendBanggiaUpdate() {
     console.log('📢 Emitting: banggia-updated');
     this.server.emit('banggia-updated');
+  }
+
+  /**
+   * Emit confirmation events for realtime order updates
+   */
+  sendDonhangConfirmed(donhangId: string, data: any) {
+    console.log('📢 Emitting: donhang-confirmed', { donhangId, data });
+    this.server.emit('donhang-confirmed', { donhangId, ...data });
+  }
+
+  sendDonhangRejected(donhangId: string, data: any) {
+    console.log('📢 Emitting: donhang-rejected', { donhangId, data });
+    this.server.emit('donhang-rejected', { donhangId, ...data });
+  }
+
+  sendDonhangUpdated(donhangId: string) {
+    console.log('📢 Emitting: donhang-updated', { donhangId });
+    this.server.emit('donhang-updated', { donhangId });
   }
 
   sendKhachangUpdate() {

@@ -1,62 +1,57 @@
+import { CommonModule } from '@angular/common';
 import {
-  Component,
-  computed,
-  effect,
-  ElementRef,
-  inject,
-  QueryList,
-  signal,
-  TemplateRef,
-  ViewChild,
-  ViewChildren,
+    Component,
+    computed,
+    effect,
+    inject,
+    signal,
+    TemplateRef,
+    ViewChild
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { ActivatedRoute, Route, Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
-import { ListDonhangComponent } from '../listdonhang/listdonhang.component';
-import { DonhangService } from '../donhang.service';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import {
-  ConvertDriveData,
-  GenId,
-  convertToSlug,
-} from '../../../shared/utils/shared.utils';
 import { MatMenuModule } from '@angular/material/menu';
-import { KhachhangService } from '../../khachhang/khachhang.service';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { BanggiaService } from '../../banggia/banggia.service';
-import moment from 'moment';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { SanphamService } from '../../sanpham/sanpham.service';
-import html2canvas from 'html2canvas';
-import {
-  readExcelFile,
-  writeExcelFile,
-} from '../../../shared/utils/exceldrive.utils';
-import { SearchService } from '../../../shared/services/search.service';
-import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
-import { UserService } from '../../user/user.service';
-import { Debounce } from '../../../shared/utils/decorators';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SharedInputService } from '../../../shared/services/shared-input.service';
-import { GraphqlService } from '../../../shared/services/graphql.service';
-import {
-  DonhangcodeToNumber,
-  DonhangnumberToCode,
-} from '../../../shared/utils/madonhang.utils';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Title } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Apollo, gql } from 'apollo-angular';
+import moment from 'moment';
+import { firstValueFrom, Subject } from 'rxjs';
+import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { GraphqlService } from '../../../shared/services/graphql.service';
+import { SearchService } from '../../../shared/services/search.service';
+import { SharedInputService } from '../../../shared/services/shared-input.service';
+import { Debounce } from '../../../shared/utils/decorators';
+import {
+    readExcelFile,
+    writeExcelFile,
+} from '../../../shared/utils/exceldrive.utils';
+import {
+    DonhangnumberToCode
+} from '../../../shared/utils/madonhang.utils';
+import {
+    ConvertDriveData,
+    convertToSlug,
+    GenId,
+} from '../../../shared/utils/shared.utils';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { BanggiaService } from '../../banggia/banggia.service';
+import { KhachhangService } from '../../khachhang/khachhang.service';
+import { SanphamService } from '../../sanpham/sanpham.service';
+import { UserService } from '../../user/user.service';
+import { DonhangService } from '../donhang.service';
+import { ListDonhangComponent } from '../listdonhang/listdonhang.component';
 @Component({
   selector: 'app-detaildonhang',
   imports: [
@@ -90,6 +85,7 @@ export class DetailDonhangComponent {
   _UserService: UserService = inject(UserService);
   _SharedInputService: SharedInputService = inject(SharedInputService);
   _GraphqlService = inject(GraphqlService);
+  private apollo = inject(Apollo);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -1089,6 +1085,73 @@ export class DetailDonhangComponent {
   toggleDelete() {
     this.isDelete.update((value) => !value);
   }
+
+  /**
+   * Xuất hóa đơn điện tử cho đơn hàng
+   */
+  async xuatHoaDon() {
+    const donhangId = this.DetailDonhang()?.id;
+    if (!donhangId) {
+      this._snackBar.open('Không tìm thấy đơn hàng', 'Đóng', { duration: 3000 });
+      return;
+    }
+
+    try {
+      const confirmed = confirm(
+        `Bạn có chắc muốn xuất hóa đơn cho đơn hàng ${this.DetailDonhang()?.madonhang}?`
+      );
+      
+      if (!confirmed) return;
+
+      this._snackBar.open('Đang xuất hóa đơn...', '', { duration: 2000 });
+
+      // Call GraphQL mutation to create invoice
+      const mutation = `
+        mutation CreateHoaDon($donhangId: String!) {
+          createHoaDonDienTu(input: { donhangId: $donhangId }) {
+            id
+            soHoaDon
+            trangThai
+            tongThanhToan
+            pdfUrl
+          }
+        }
+      `;
+
+      const result: any = await firstValueFrom(
+        this.apollo.mutate({
+          mutation: gql`${mutation}`,
+          variables: { donhangId }
+        })
+      );
+      
+      if (result?.data?.createHoaDonDienTu) {
+        const hoaDon = result.data.createHoaDonDienTu;
+        this._snackBar.open(
+          `✅ Xuất hóa đơn thành công: ${hoaDon.soHoaDon}`, 
+          'Xem', 
+          { duration: 5000 }
+        ).onAction().subscribe(() => {
+          // Navigate to invoice detail or download PDF
+          if (hoaDon.pdfUrl) {
+            window.open(hoaDon.pdfUrl, '_blank');
+          } else {
+            this._router.navigate(['/admin/hoadon', hoaDon.id]);
+          }
+        });
+      } else {
+        throw new Error('Không nhận được thông tin hóa đơn');
+      }
+    } catch (error: any) {
+      console.error('Error creating invoice:', error);
+      this._snackBar.open(
+        `❌ Lỗi khi xuất hóa đơn: ${error.message || 'Unknown error'}`,
+        'Đóng',
+        { duration: 5000 }
+      );
+    }
+  }
+
   FillSlug() {
     this.DetailDonhang.update((v: any) => {
       v.slug = convertToSlug(v.title);
