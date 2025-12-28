@@ -8,12 +8,14 @@ import { DonhangCronService } from './donhang-cron.service';
 import { Cache, CacheInvalidate } from '../common/cache.interceptor';
 import { SmartCache } from '../common/smart-cache.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ConfirmationService } from 'src/confirmation/confirmation.service';
 
 @Controller('donhang')
 export class DonhangController {
   constructor(
     private readonly donhangService: DonhangService,
     private readonly donhangCronService: DonhangCronService,
+    private readonly confirmationService: ConfirmationService,
   ) {}
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -252,5 +254,21 @@ export class DonhangController {
     @Query('date') date: string
   ) {
     return this.donhangService.getPriceAtDate(banggiaId, sanphamId, new Date(date));
+  }
+
+  @Post(':id/generate-confirm-token')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Generate confirmation token for order' })
+  @ApiResponse({ status: 200, description: 'Token generated successfully' })
+  async generateConfirmToken(@Param('id') id: string) {
+    const token = await this.confirmationService.generateConfirmToken(id);
+    const link = this.confirmationService.getConfirmationLink(token);
+    return {
+      success: true,
+      token,
+      confirmationLink: link,
+      message: 'Token đã được tạo. Gửi link này cho khách hàng để xác nhận đơn hàng.'
+    };
   }
 }

@@ -1,0 +1,206 @@
+### Test Thu Chi & Hóa Đơn APIs
+### Thay YOUR_TOKEN bằng JWT token thực tế
+
+@baseUrl = http://localhost:3000
+@token = YOUR_TOKEN
+
+###############################################
+# PHIẾU THU CHI
+###############################################
+
+### 1. Tạo phiếu thu
+POST {{baseUrl}}/phieuthuchi
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "loai": "THU",
+  "soTien": 5000000,
+  "doiTuong": "KHACHHANG",
+  "doiTuongId": "some-customer-id",
+  "phuongThuc": "CHUYEN_KHOAN",
+  "coHoaDon": true,
+  "lydo": "Thanh toán đơn hàng DH001",
+  "ghichu": "Khách hàng chuyển khoản đúng hạn"
+}
+
+### 2. Tạo phiếu chi
+POST {{baseUrl}}/phieuthuchi
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "loai": "CHI",
+  "soTien": 3000000,
+  "doiTuong": "NHACUNGCAP",
+  "tenDoiTuong": "Công ty TNHH ABC",
+  "phuongThuc": "TIEN_MAT",
+  "coHoaDon": false,
+  "lydo": "Mua hàng nhập kho",
+  "ghichu": "Thanh toán tiền mặt"
+}
+
+### 3. Lấy danh sách phiếu thu chi
+GET {{baseUrl}}/phieuthuchi?page=1&limit=20
+Authorization: Bearer {{token}}
+
+### 4. Lấy danh sách phiếu thu
+GET {{baseUrl}}/phieuthuchi?loai=THU&page=1&limit=20
+Authorization: Bearer {{token}}
+
+### 5. Lấy danh sách phiếu chờ duyệt
+GET {{baseUrl}}/phieuthuchi?trangThai=CHO_DUYET
+Authorization: Bearer {{token}}
+
+### 6. Lấy chi tiết phiếu
+GET {{baseUrl}}/phieuthuchi/PHIEU_ID
+Authorization: Bearer {{token}}
+
+### 7. Cập nhật phiếu
+PUT {{baseUrl}}/phieuthuchi/PHIEU_ID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "soTien": 5500000,
+  "ghichu": "Cập nhật số tiền"
+}
+
+### 8. Gửi duyệt phiếu
+POST {{baseUrl}}/phieuthuchi/PHIEU_ID/gui-duyet
+Authorization: Bearer {{token}}
+
+### 9. Duyệt phiếu
+POST {{baseUrl}}/phieuthuchi/PHIEU_ID/duyet
+Authorization: Bearer {{token}}
+
+### 10. Hủy phiếu
+POST {{baseUrl}}/phieuthuchi/PHIEU_ID/huy
+Authorization: Bearer {{token}}
+
+### 11. Xóa phiếu
+DELETE {{baseUrl}}/phieuthuchi/PHIEU_ID
+Authorization: Bearer {{token}}
+
+### 12. Báo cáo thu chi
+GET {{baseUrl}}/phieuthuchi/bao-cao?tuNgay=2025-01-01&denNgay=2025-12-31
+Authorization: Bearer {{token}}
+
+###############################################
+# THANH TOÁN
+###############################################
+
+### 1. Tạo thanh toán
+POST {{baseUrl}}/thanhtoan
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "donhangId": "DONHANG_ID",
+  "soTien": 10000000,
+  "loai": "CO_HOA_DON",
+  "phuongThuc": "CHUYEN_KHOAN",
+  "ghichu": "Thanh toán đơn hàng"
+}
+
+### 2. Lấy danh sách thanh toán
+GET {{baseUrl}}/thanhtoan?page=1&limit=20
+Authorization: Bearer {{token}}
+
+### 3. Lấy thanh toán theo đơn hàng
+GET {{baseUrl}}/thanhtoan?donhangId=DONHANG_ID
+Authorization: Bearer {{token}}
+
+### 4. Lấy tổng thanh toán của đơn hàng
+GET {{baseUrl}}/thanhtoan/donhang/DONHANG_ID/tong
+Authorization: Bearer {{token}}
+
+### 5. Lấy chi tiết thanh toán
+GET {{baseUrl}}/thanhtoan/THANHTOAN_ID
+Authorization: Bearer {{token}}
+
+### 6. Báo cáo thanh toán
+GET {{baseUrl}}/thanhtoan/bao-cao?tuNgay=2025-01-01&denNgay=2025-12-31
+Authorization: Bearer {{token}}
+
+###############################################
+# HÓA ĐƠN ĐIỆN TỬ
+###############################################
+
+### 1. Tạo hóa đơn
+POST {{baseUrl}}/hoadon
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "donhangId": "DONHANG_ID",
+  "mauSo": "01GTKT",
+  "kyHieu": "AA/25E",
+  "ghichu": "Xuất hóa đơn GTGT"
+}
+
+### 2. Lấy danh sách hóa đơn
+GET {{baseUrl}}/hoadon?page=1&limit=20
+Authorization: Bearer {{token}}
+
+### 3. Lấy hóa đơn theo đơn hàng
+GET {{baseUrl}}/hoadon?donhangId=DONHANG_ID
+Authorization: Bearer {{token}}
+
+### 4. Lấy chi tiết hóa đơn
+GET {{baseUrl}}/hoadon/HOADON_ID
+Authorization: Bearer {{token}}
+
+### 5. Duyệt hóa đơn (xuất)
+POST {{baseUrl}}/hoadon/HOADON_ID/duyet
+Authorization: Bearer {{token}}
+
+### 6. Hủy hóa đơn
+POST {{baseUrl}}/hoadon/HOADON_ID/huy
+Authorization: Bearer {{token}}
+
+###############################################
+# CONFIRMATION (PUBLIC - NO AUTH)
+###############################################
+
+### 1. Lấy thông tin đơn hàng từ token
+GET {{baseUrl}}/confirm/TOKEN_HERE
+
+### 2. Xác nhận lần 1
+POST {{baseUrl}}/confirm/TOKEN_HERE/xac-nhan-lan-1
+Content-Type: application/json
+
+{
+  "ghiChuKH": "Đơn hàng OK, xác nhận nhận hàng"
+}
+
+### 3. Xác nhận lần 2
+POST {{baseUrl}}/confirm/TOKEN_HERE/xac-nhan-lan-2
+Content-Type: application/json
+
+{
+  "ghiChuKH": "Xác nhận lần 2"
+}
+
+### 4. Từ chối đơn hàng
+POST {{baseUrl}}/confirm/TOKEN_HERE/tu-choi
+Content-Type: application/json
+
+{
+  "ghiChuKH": "Không muốn mua nữa"
+}
+
+### 5. Cập nhật ghi chú
+POST {{baseUrl}}/confirm/TOKEN_HERE/ghi-chu
+Content-Type: application/json
+
+{
+  "ghiChuKH": "Ghi chú mới từ khách hàng"
+}
+
+###############################################
+# HELPER: Tạo token xác nhận cho đơn hàng
+###############################################
+### (Cần thêm endpoint này vào DonhangController)
+# POST {{baseUrl}}/donhang/DONHANG_ID/generate-confirm-token
+# Authorization: Bearer {{token}}

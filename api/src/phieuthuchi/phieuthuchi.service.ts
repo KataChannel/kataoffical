@@ -1,0 +1,296 @@
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { LoaiPhieuThuChi, TrangThaiPhieu } from '@prisma/client';
+import { PrismaService } from 'prisma/prisma.service';
+import { CreatePhieuThuChiDto, UpdatePhieuThuChiDto } from './dto/phieuthuchi.dto';
+
+@Injectable()
+export class PhieuThuChiService {
+  constructor(private prisma: PrismaService) {}
+
+  // Sinh mã phiếu tự động
+  async generateMaPhieu(loai: LoaiPhieuThuChi): Promise<string> {
+    const prefix = loai === LoaiPhieuThuChi.THU ? 'PTH' : 'PTC';
+    const year = new Date().getFullYear().toString().slice(-2);
+    const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
+    
+    // Tìm số thứ tự lớn nhất trong tháng
+    const lastPhieu = await this.prisma.phieuThuChi.findFirst({
+      where: {
+        maPhieu: {
+          startsWith: `${prefix}${year}${month}`,
+        },
+      },
+      orderBy: {
+        maPhieu: 'desc',
+      },
+    });
+
+    let sequence = 1;
+    if (lastPhieu) {
+      const lastSequence = parseInt(lastPhieu.maPhieu.slice(-4));
+      sequence = lastSequence + 1;
+    }
+
+    return `${prefix}${year}${month}${sequence.toString().padStart(4, '0')}`;
+  }
+
+  // Tạo phiếu thu chi
+  async create(createDto: CreatePhieuThuChiDto, nguoiTaoId?: string) {
+    const maPhieu = await this.generateMaPhieu(createDto.loai);
+
+    const data: any = {
+      maPhieu,
+      loai: createDto.loai,
+      soTien: createDto.soTien,
+      doiTuong: createDto.doiTuong,
+      phuongThuc: createDto.phuongThuc || 'TIEN_MAT',
+      coHoaDon: createDto.coHoaDon || false,
+      trangThai: TrangThaiPhieu.NHAP,
+      ghichu: createDto.ghichu,
+      lydo: createDto.lydo,
+      nguoiTaoId,
+    };
+
+    if (createDto.ngay) {
+      data.ngay = new Date(createDto.ngay);
+    }
+
+    if (createDto.donhangId) {
+      data.donhangId = createDto.donhangId;
+    }
+
+    if (createDto.dathangId) {
+      data.dathangId = createDto.dathangId;
+    }
+
+    if (createDto.doiTuongId) {
+      data.doiTuongId = createDto.doiTuongId;
+    }
+
+    if (createDto.tenDoiTuong) {
+      data.tenDoiTuong = createDto.tenDoiTuong;
+    }
+
+    return this.prisma.phieuThuChi.create({
+      data,
+      include: {
+        donhang: {
+          include: {
+            khachhang: true,
+          },
+        },
+      },
+    });
+  }
+
+  // Lấy danh sách phiếu thu chi
+  async findAll(filters?: {
+    loai?: LoaiPhieuThuChi;
+    trangThai?: TrangThaiPhieu;
+    doiTuong?: string;
+    tuNgay?: Date;
+    denNgay?: Date;
+    page?: number;
+    limit?: number;
+  }) {
+    const { page = 1, limit = 20, ...where } = filters || {};
+    const skip = (page - 1) * limit;
+
+    const whereClause: any = {};
+
+    if (where.loai) {
+      whereClause.loai = where.loai;
+    }
+
+    if (where.trangThai) {
+      whereClause.trangThai = where.trangThai;
+    }
+
+    if (where.doiTuong) {
+      whereClause.doiTuong = where.doiTuong;
+    }
+
+    if (where.tuNgay || where.denNgay) {
+      whereClause.ngay = {};
+      if (where.tuNgay) {
+        whereClause.ngay.gte = where.tuNgay;
+      }
+      if (where.denNgay) {
+        whereClause.ngay.lte = where.denNgay;
+      }
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.phieuThuChi.findMany({
+        where: whereClause,
+        include: {
+          donhang: {
+            include: {
+              khachhang: true,
+            },
+          },
+        },
+        orderBy: {
+          ngay: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.phieuThuChi.count({ where: whereClause }),
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  // Lấy chi tiết phiếu thu chi
+  async findOne(id: string) {
+    const phieu = await this.prisma.phieuThuChi.findUnique({
+      where: { id },
+      include: {
+        donhang: {
+          include: {
+            khachhang: true,
+            sanpham: {
+              include: {
+                sanpham: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!phieu) {
+      throw new NotFoundException(`Không tìm thấy phiếu thu chi với ID: ${id}`);
+    }
+
+    return phieu;
+  }
+
+  // Cập nhật phiếu thu chi
+  async update(id: string, updateDto: UpdatePhieuThuChiDto) {
+    const phieu = await this.findOne(id);
+
+    // Chỉ cho phép cập nhật phiếu ở trạng thái NHAP
+    if (phieu.trangThai !== TrangThaiPhieu.NHAP) {
+      throw new BadRequestException('Chỉ có thể cập nhật phiếu ở trạng thái NHAP');
+    }
+
+    return this.prisma.phieuThuChi.update({
+      where: { id },
+      data: updateDto,
+      include: {
+        donhang: {
+          include: {
+            khachhang: true,
+          },
+        },
+      },
+    });
+  }
+
+  // Xóa phiếu thu chi
+  async remove(id: string) {
+    const phieu = await this.findOne(id);
+
+    // Chỉ cho phép xóa phiếu ở trạng thái NHAP hoặc HUY
+    if (phieu.trangThai !== TrangThaiPhieu.NHAP && phieu.trangThai !== TrangThaiPhieu.HUY) {
+      throw new BadRequestException('Chỉ có thể xóa phiếu ở trạng thái NHAP hoặc HUY');
+    }
+
+    await this.prisma.phieuThuChi.delete({
+      where: { id },
+    });
+
+    return { success: true, message: 'Đã xóa phiếu thu chi' };
+  }
+
+  // Gửi duyệt phiếu
+  async guiDuyet(id: string) {
+    const phieu = await this.findOne(id);
+
+    if (phieu.trangThai !== TrangThaiPhieu.NHAP) {
+      throw new BadRequestException('Chỉ có thể gửi duyệt phiếu ở trạng thái NHAP');
+    }
+
+    return this.prisma.phieuThuChi.update({
+      where: { id },
+      data: {
+        trangThai: TrangThaiPhieu.CHO_DUYET,
+      },
+    });
+  }
+
+  // Duyệt phiếu
+  async duyet(id: string, nguoiDuyetId?: string) {
+    const phieu = await this.findOne(id);
+
+    if (phieu.trangThai !== TrangThaiPhieu.CHO_DUYET) {
+      throw new BadRequestException('Chỉ có thể duyệt phiếu ở trạng thái CHO_DUYET');
+    }
+
+    return this.prisma.phieuThuChi.update({
+      where: { id },
+      data: {
+        trangThai: TrangThaiPhieu.DA_DUYET,
+        nguoiDuyetId,
+        ngayDuyet: new Date(),
+      },
+    });
+  }
+
+  // Hủy phiếu
+  async huy(id: string) {
+    const phieu = await this.findOne(id);
+
+    if (phieu.trangThai === TrangThaiPhieu.DA_DUYET) {
+      throw new BadRequestException('Không thể hủy phiếu đã duyệt');
+    }
+
+    return this.prisma.phieuThuChi.update({
+      where: { id },
+      data: {
+        trangThai: TrangThaiPhieu.HUY,
+      },
+    });
+  }
+
+  // Báo cáo thu chi theo thời gian
+  async baoCaoThuChi(tuNgay: Date, denNgay: Date) {
+    const phieuList = await this.prisma.phieuThuChi.findMany({
+      where: {
+        ngay: {
+          gte: tuNgay,
+          lte: denNgay,
+        },
+        trangThai: TrangThaiPhieu.DA_DUYET,
+      },
+    });
+
+    const tongThu = phieuList
+      .filter((p) => p.loai === LoaiPhieuThuChi.THU)
+      .reduce((sum, p) => sum + Number(p.soTien), 0);
+
+    const tongChi = phieuList
+      .filter((p) => p.loai === LoaiPhieuThuChi.CHI)
+      .reduce((sum, p) => sum + Number(p.soTien), 0);
+
+    const tonQuy = tongThu - tongChi;
+
+    return {
+      tuNgay,
+      denNgay,
+      tongThu,
+      tongChi,
+      tonQuy,
+      soPhieuThu: phieuList.filter((p) => p.loai === LoaiPhieuThuChi.THU).length,
+      soPhieuChi: phieuList.filter((p) => p.loai === LoaiPhieuThuChi.CHI).length,
+    };
+  }
+}

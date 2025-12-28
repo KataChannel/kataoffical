@@ -1,4 +1,4 @@
-import { Routes, Router } from '@angular/router';
+import { Routes } from '@angular/router';
 import { DynamicComponentResolver } from './dynamic-component.resolver';
 import { AuthGuard } from './shared/common/users/guards/auth.guard';
 import { GuestGuard } from './shared/common/users/guards/guest.guard';
@@ -474,6 +474,45 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'phieuthuchi',
+        canActivate: [PermissionGuard],
+        data: { permission: 'phieuthuchi.view' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./admin/phieuthuchi/list-phieuthuchi/list-phieuthuchi.component').then(
+                (c) => c.ListPhieuthuchiComponent
+              ),
+          },
+          {
+            path: 'detail/:id',
+            loadComponent: () =>
+              import('./admin/phieuthuchi/detail-phieuthuchi/detail-phieuthuchi.component').then(
+                (c) => c.DetailPhieuthuchiComponent
+              ),
+          },
+        ],
+      },
+      {
+        path: 'thanhtoan',
+        canActivate: [PermissionGuard],
+        data: { permission: 'thanhtoan.view' },
+        loadComponent: () =>
+          import('./admin/thanhtoan/list-thanhtoan/list-thanhtoan.component').then(
+            (c) => c.ListThanhtoanComponent
+          ),
+      },
+      {
+        path: 'hoadon',
+        canActivate: [PermissionGuard],
+        data: { permission: 'hoadon.view' },
+        loadComponent: () =>
+          import('./admin/hoadon/list-hoadon/list-hoadon.component').then(
+            (c) => c.ListHoadonComponent
+          ),
+      },
+      {
         path: 'phieuchuyen',
         canActivate: [PermissionGuard],
         data: { permission: 'phieuchuyen.view' },
@@ -778,6 +817,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./shared/common/users/login/login.component').then(
         (c) => c.LoginComponent
+      ),
+  },
+  {
+    path: 'confirm/:token',
+    loadComponent: () =>
+      import('./site/confirm-order/confirm-order.component').then(
+        (c) => c.ConfirmOrderComponent
       ),
   },
   {

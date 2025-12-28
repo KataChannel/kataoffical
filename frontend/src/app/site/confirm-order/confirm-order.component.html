@@ -1,0 +1,209 @@
+<div class="confirm-container">
+  <div class="container py-5">
+    <!-- Loading -->
+    @if (loading()) {
+      <div class="text-center">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Đang tải...</span>
+        </div>
+        <p class="mt-3">Đang tải thông tin đơn hàng...</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @if (error()) {
+      <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle"></i>
+        {{ error() }}
+      </div>
+    }
+
+    <!-- Success Message -->
+    @if (successMessage()) {
+      <div class="alert alert-success">
+        {{ successMessage() }}
+      </div>
+    }
+
+    <!-- Order Details -->
+    @if (donhang() && !loading()) {
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">🛒 Xác nhận đơn hàng</h3>
+        </div>
+
+        <div class="card-body">
+          <!-- Order Info -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5>Thông tin đơn hàng</h5>
+              <table class="table table-sm">
+                <tr>
+                  <th width="150">Mã đơn hàng:</th>
+                  <td><strong class="text-primary">{{ donhang().madonhang }}</strong></td>
+                </tr>
+                <tr>
+                  <th>Ngày giao:</th>
+                  <td>{{ formatDate(donhang().ngaygiao) }}</td>
+                </tr>
+                <tr>
+                  <th>Trạng thái:</th>
+                  <td>
+                    <span class="badge bg-info">{{ donhang().status }}</span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="col-md-6">
+              <h5>Thông tin khách hàng</h5>
+              @if (donhang().khachhang) {
+                <table class="table table-sm">
+                  <tr>
+                    <th width="150">Tên:</th>
+                    <td>{{ donhang().khachhang.ten }}</td>
+                  </tr>
+                  <tr>
+                    <th>Địa chỉ:</th>
+                    <td>{{ donhang().khachhang.diachi }}</td>
+                  </tr>
+                  <tr>
+                    <th>SĐT:</th>
+                    <td>{{ donhang().khachhang.sdt }}</td>
+                  </tr>
+                </table>
+              }
+            </div>
+          </div>
+
+          <!-- Product List -->
+          <h5 class="mb-3">Danh sách sản phẩm</h5>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>Sản phẩm</th>
+                  <th class="text-center">SL Đặt</th>
+                  <th class="text-end">Giá bán</th>
+                  <th class="text-end">Thành tiền</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (sp of donhang().sanpham; track sp.id) {
+                  <tr>
+                    <td>
+                      <strong>{{ sp.sanpham?.ten || 'N/A' }}</strong>
+                      <br>
+                      <small class="text-muted">{{ sp.sanpham?.masp }}</small>
+                    </td>
+                    <td class="text-center">{{ sp.sldat }}</td>
+                    <td class="text-end">{{ formatCurrency(sp.giaban) }}</td>
+                    <td class="text-end">{{ formatCurrency(sp.ttdat) }}</td>
+                  </tr>
+                }
+              </tbody>
+              <tfoot class="table-light">
+                <tr>
+                  <td colspan="3" class="text-end"><strong>Tổng tiền:</strong></td>
+                  <td class="text-end">
+                    <strong class="text-primary">{{ formatCurrency(donhang().tongtien) }}</strong>
+                  </td>
+                </tr>
+                @if (donhang().tongvat > 0) {
+                  <tr>
+                    <td colspan="3" class="text-end"><strong>VAT:</strong></td>
+                    <td class="text-end">{{ formatCurrency(donhang().tongvat) }}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+                    <td class="text-end">
+                      <strong class="text-success">
+                        {{ formatCurrency(donhang().tongtien + donhang().tongvat) }}
+                      </strong>
+                    </td>
+                  </tr>
+                }
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- Confirmation Status -->
+          <div class="alert alert-info mt-4">
+            <h6>Trạng thái xác nhận:</h6>
+            <div class="row">
+              <div class="col-md-6">
+                Xác nhận lần 1: 
+                @if (donhang().xacNhanLan1) {
+                  <span class="badge bg-success ms-2">✓ Đã xác nhận</span>
+                  <small class="d-block text-muted">{{ formatDate(donhang().xacNhanLan1At) }}</small>
+                } @else {
+                  <span class="badge bg-secondary ms-2">Chưa xác nhận</span>
+                }
+              </div>
+              <div class="col-md-6">
+                Xác nhận lần 2: 
+                @if (donhang().xacNhanLan2) {
+                  <span class="badge bg-success ms-2">✓ Đã xác nhận</span>
+                  <small class="d-block text-muted">{{ formatDate(donhang().xacNhanLan2At) }}</small>
+                } @else {
+                  <span class="badge bg-secondary ms-2">Chưa xác nhận</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Note Input -->
+          <div class="mb-3">
+            <label class="form-label">Ghi chú của bạn:</label>
+            <textarea 
+              class="form-control" 
+              rows="3"
+              [(ngModel)]="ghiChuKH"
+              placeholder="Nhập ghi chú nếu có..."></textarea>
+            @if (donhang().ghiChuKH) {
+              <small class="text-muted">Ghi chú hiện tại: {{ donhang().ghiChuKH }}</small>
+            }
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-flex gap-2 justify-content-end">
+            @if (!donhang().xacNhanLan1) {
+              <button 
+                class="btn btn-success btn-lg" 
+                (click)="xacNhanLan1()"
+                [disabled]="loading()">
+                <i class="bi bi-check-circle"></i> Xác nhận lần 1
+              </button>
+            }
+
+            @if (donhang().xacNhanLan1 && !donhang().xacNhanLan2) {
+              <button 
+                class="btn btn-primary btn-lg" 
+                (click)="xacNhanLan2()"
+                [disabled]="loading()">
+                <i class="bi bi-check-circle-fill"></i> Xác nhận lần 2
+              </button>
+            }
+
+            @if (donhang().status !== 'huy') {
+              <button 
+                class="btn btn-danger btn-lg" 
+                (click)="tuChoi()"
+                [disabled]="loading()">
+                <i class="bi bi-x-circle"></i> Từ chối đơn hàng
+              </button>
+            }
+          </div>
+
+          @if (donhang().xacNhanLan2) {
+            <div class="alert alert-success mt-3">
+              <i class="bi bi-check-circle-fill"></i>
+              <strong>Đơn hàng đã được xác nhận đầy đủ!</strong>
+              Cảm ơn bạn đã xác nhận. Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất.
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

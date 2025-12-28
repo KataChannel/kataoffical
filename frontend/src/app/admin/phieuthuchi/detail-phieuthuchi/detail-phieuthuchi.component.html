@@ -1,0 +1,219 @@
+<div class="phieuthuchi-detail-container">
+  <div class="detail-card">
+    <!-- Header -->
+    <div class="detail-header">
+      <div class="header-content">
+        <button class="btn-back" (click)="goBack()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+          </svg>
+        </button>
+        <h1 class="header-title">
+          {{ isNew() ? 'Tạo phiếu thu chi mới' : 'Chỉnh sửa phiếu thu chi' }}
+        </h1>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="detail-form">
+      <div class="form-grid">
+        <!-- Loại phiếu -->
+        <div class="form-field">
+          <label class="field-label">
+            Loại phiếu <span class="required">*</span>
+          </label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input 
+                type="radio" 
+                name="loai" 
+                value="THU"
+                [checked]="formData().loai === 'THU'"
+                (change)="updateField('loai', 'THU')"
+                class="radio-input">
+              <span class="radio-custom">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="radio-icon">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span class="radio-text">Phiếu thu</span>
+              </span>
+            </label>
+            <label class="radio-label">
+              <input 
+                type="radio" 
+                name="loai" 
+                value="CHI"
+                [checked]="formData().loai === 'CHI'"
+                (change)="updateField('loai', 'CHI')"
+                class="radio-input">
+              <span class="radio-custom">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="radio-icon">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <span class="radio-text">Phiếu chi</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Số tiền -->
+        <div class="form-field">
+          <label class="field-label">
+            Số tiền <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <input 
+              type="number" 
+              class="field-input" 
+              [value]="formData().soTien"
+              (input)="updateField('soTien', +$any($event.target).value)"
+              required
+              min="0"
+              step="1000"
+              placeholder="Nhập số tiền">
+            <span class="input-suffix">VNĐ</span>
+          </div>
+        </div>
+
+        <!-- Đối tượng -->
+        <div class="form-field">
+          <label class="field-label">
+            Đối tượng <span class="required">*</span>
+          </label>
+          <select 
+            class="field-select" 
+            [value]="formData().doiTuong"
+            (change)="updateField('doiTuong', $any($event.target).value)"
+            required>
+            <option value="KHACHHANG">Khách hàng</option>
+            <option value="NHACUNGCAP">Nhà cung cấp</option>
+            <option value="NHANVIEN">Nhân viên</option>
+            <option value="KHAC">Khác</option>
+          </select>
+        </div>
+
+        <!-- Tên đối tượng (nếu chọn KHAC) -->
+        @if (formData().doiTuong === 'KHAC') {
+          <div class="form-field">
+            <label class="field-label">Tên đối tượng</label>
+            <input 
+              type="text" 
+              class="field-input" 
+              [value]="formData().tenDoiTuong || ''"
+              (input)="updateField('tenDoiTuong', $any($event.target).value)"
+              placeholder="Nhập tên đối tượng">
+          </div>
+        }
+
+        <!-- Phương thức thanh toán -->
+        <div class="form-field">
+          <label class="field-label">Phương thức thanh toán</label>
+          <select 
+            class="field-select" 
+            [value]="formData().phuongThuc"
+            (change)="updateField('phuongThuc', $any($event.target).value)">
+            <option value="TIEN_MAT">Tiền mặt</option>
+            <option value="CHUYEN_KHOAN">Chuyển khoản</option>
+            <option value="THE">Thẻ</option>
+            <option value="VI_DIEN_TU">Ví điện tử</option>
+          </select>
+        </div>
+
+        <!-- Có hóa đơn -->
+        <div class="form-field">
+          <label class="field-label">Hóa đơn</label>
+          <label class="checkbox-label">
+            <input 
+              class="checkbox-input" 
+              type="checkbox" 
+              [checked]="formData().coHoaDon"
+              (change)="updateField('coHoaDon', $any($event.target).checked)">
+            <span class="checkbox-custom">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="checkbox-icon">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </span>
+            <span class="checkbox-text">Có hóa đơn</span>
+          </label>
+        </div>
+
+        <!-- Lý do -->
+        <div class="form-field form-field-full">
+          <label class="field-label">Lý do</label>
+          <input 
+            type="text" 
+            class="field-input" 
+            [value]="formData().lydo || ''"
+            (input)="updateField('lydo', $any($event.target).value)"
+            placeholder="Lý do thu/chi">
+        </div>
+
+        <!-- Ghi chú -->
+        <div class="form-field form-field-full">
+          <label class="field-label">Ghi chú</label>
+          <textarea 
+            class="field-textarea" 
+            rows="3"
+            [value]="formData().ghichu || ''"
+            (input)="updateField('ghichu', $any($event.target).value)"
+            placeholder="Ghi chú thêm..."></textarea>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="goBack()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          <span>Hủy</span>
+        </button>
+        <button type="submit" class="btn-primary" [disabled]="phieuThuChiService.loading()">
+          @if (phieuThuChiService.loading()) {
+            <div class="spinner-sm"></div>
+          } @else {
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+            </svg>
+          }
+          <span>{{ isNew() ? 'Tạo mới' : 'Cập nhật' }}</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Detail info (if not new) -->
+    @if (!isNew() && phieuThuChiService.detailPhieuThuChi()) {
+      <div class="detail-info">
+        <h2 class="info-title">Thông tin phiếu</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Mã phiếu:</span>
+            <span class="info-value font-mono font-semibold">{{ phieuThuChiService.detailPhieuThuChi()?.maPhieu }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Trạng thái:</span>
+            <span class="info-value">
+              <span class="badge" 
+                [class.badge-secondary]="phieuThuChiService.detailPhieuThuChi()?.trangThai === 'NHAP'"
+                [class.badge-warning]="phieuThuChiService.detailPhieuThuChi()?.trangThai === 'CHO_DUYET'"
+                [class.badge-success]="phieuThuChiService.detailPhieuThuChi()?.trangThai === 'DA_DUYET'"
+                [class.badge-danger]="phieuThuChiService.detailPhieuThuChi()?.trangThai === 'HUY'">
+                {{ phieuThuChiService.detailPhieuThuChi()?.trangThai }}
+              </span>
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Ngày tạo:</span>
+            <span class="info-value">{{ phieuThuChiService.detailPhieuThuChi()?.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          @if (phieuThuChiService.detailPhieuThuChi()?.ngayDuyet) {
+            <div class="info-item">
+              <span class="info-label">Ngày duyệt:</span>
+              <span class="info-value">{{ phieuThuChiService.detailPhieuThuChi()?.ngayDuyet | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

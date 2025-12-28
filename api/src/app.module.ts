@@ -41,13 +41,17 @@ import { UserguideModule } from './userguide/userguide.module';
 // import { UploadModule } from './upload/upload.module';
 // import { MinioModule } from './minio/minio.module';
 import { CacheModule } from './cache/cache.module';
+import { ConfirmationModule } from './confirmation/confirmation.module';
 import { DatabaseSyncModule } from './database-sync/database-sync.module';
 import { GraphQLUniversalModule } from './graphql/graphql.module';
+import { HoaDonModule } from './hoadon/hoadon.module';
 import { NhanvienModule } from './nhanvien/nhanvien.module';
+import { PhieuThuChiModule } from './phieuthuchi/phieuthuchi.module';
 import { PhongbanModule } from './phongban/phongban.module';
 import { RedisModule } from './redis/redis.module';
 import { DatabaseSyncService } from './services/database-sync.service';
 import { SupportModule } from './support/support.module';
+import { ThanhToanModule } from './thanhtoan/thanhtoan.module';
 import { UserPermissionModule } from './user-permission/user-permission.module';
 @Module({
   imports: [
@@ -110,6 +114,10 @@ import { UserPermissionModule } from './user-permission/user-permission.module';
     PhongbanModule,
     NhanvienModule,
     DatabaseSyncModule,
+    PhieuThuChiModule,
+    ThanhToanModule,
+    HoaDonModule,
+    ConfirmationModule,
   ],
   controllers: [AppController],
   providers: [

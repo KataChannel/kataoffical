@@ -2,11 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type TestItem {
-  name: String!
-  value: Float!
-}
-
 """Nhóm khách hàng entity"""
 type Nhomkhachhang {
   """ID của nhóm khách hàng"""
@@ -91,6 +86,11 @@ type NhomkhachhangMutationResponse {
 
   """Dữ liệu nhóm khách hàng"""
   data: Nhomkhachhang
+}
+
+type TestItem {
+  name: String!
+  value: Float!
 }
 
 type AggregateCount {
@@ -307,6 +307,9 @@ type Query {
   nhanvienStatistics: JSON!
   nhanvien(id: String!): JSON!
   nhanvienByMaNV(maNV: String!): JSON!
+  phieuThuChiList(loai: String!, trangThai: String!, doiTuong: String!, tuNgay: String!, denNgay: String!, page: Float!, limit: Float!): JSON!
+  phieuThuChi(id: String!): JSON!
+  baoCaoThuChi(tuNgay: String!, denNgay: String!): JSON!
 }
 
 input NhomkhachhangFilterInput {
@@ -457,6 +460,12 @@ type Mutation {
   deleteNhanvien(id: String!): JSON!
   linkNhanvienToUser(nhanvienId: String!, userId: String!): JSON!
   unlinkNhanvienFromUser(nhanvienId: String!): JSON!
+  createPhieuThuChi(input: CreatePhieuThuChiDto!): JSON!
+  updatePhieuThuChi(id: String!, input: UpdatePhieuThuChiDto!): JSON!
+  deletePhieuThuChi(id: String!): JSON!
+  guiDuyetPhieuThuChi(id: String!): JSON!
+  duyetPhieuThuChi(id: String!): JSON!
+  huyPhieuThuChi(id: String!): JSON!
 }
 
 input CreateNhomkhachhangInput {
@@ -500,4 +509,34 @@ input UpdateTicketInput {
 input CreateResponseInput {
   content: String!
   attachmentUrls: [String!]
+}
+
+input CreatePhieuThuChiDto {
+  loai: String!
+  soTien: Float!
+  donhangId: String
+  dathangId: String
+  doiTuong: String!
+  doiTuongId: String
+  tenDoiTuong: String
+  phuongThuc: String
+  coHoaDon: Boolean
+  ghichu: String
+  lydo: String
+  ngay: String
+}
+
+input UpdatePhieuThuChiDto {
+  loai: String
+  soTien: Float
+  donhangId: String
+  dathangId: String
+  doiTuong: String
+  doiTuongId: String
+  tenDoiTuong: String
+  phuongThuc: String
+  coHoaDon: Boolean
+  ghichu: String
+  lydo: String
+  ngay: String
 }

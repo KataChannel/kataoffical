@@ -1,0 +1,307 @@
+<div class="phieuthuchi-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/>
+        </svg>
+        <h1>Phiếu Thu Chi</h1>
+      </div>
+      <button class="btn-primary" (click)="createNew()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        <span class="btn-text">Tạo mới</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Card -->
+  <div class="filters-card">
+    <div class="filters-grid">
+      <div class="filter-item">
+        <label class="filter-label">Loại phiếu</label>
+        <select 
+          class="filter-select" 
+          [(ngModel)]="filters().loai"
+          (change)="onFilterChange()">
+          <option value="">Tất cả</option>
+          <option value="THU">Phiếu thu</option>
+          <option value="CHI">Phiếu chi</option>
+        </select>
+      </div>
+      
+      <div class="filter-item">
+        <label class="filter-label">Trạng thái</label>
+        <select 
+          class="filter-select" 
+          [(ngModel)]="filters().trangThai"
+          (change)="onFilterChange()">
+          <option value="">Tất cả</option>
+          <option value="NHAP">Đang nhập</option>
+          <option value="CHO_DUYET">Chờ duyệt</option>
+          <option value="DA_DUYET">Đã duyệt</option>
+          <option value="HUY">Hủy</option>
+        </select>
+      </div>
+      
+      <div class="filter-item">
+        <label class="filter-label">Từ ngày</label>
+        <input 
+          type="date" 
+          class="filter-input"
+          [(ngModel)]="filters().tuNgay"
+          (change)="onFilterChange()">
+      </div>
+      
+      <div class="filter-item">
+        <label class="filter-label">Đến ngày</label>
+        <input 
+          type="date" 
+          class="filter-input"
+          [(ngModel)]="filters().denNgay"
+          (change)="onFilterChange()">
+      </div>
+      
+      <div class="filter-item filter-actions">
+        <button class="btn-secondary" (click)="loadData()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          <span>Tải lại</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (phieuThuChiService.loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Đang tải dữ liệu...</p>
+    </div>
+  }
+
+  <!-- Data Table/Cards -->
+  @if (!phieuThuChiService.loading()) {
+    <!-- Desktop Table View -->
+    <div class="data-table desktop-only">
+      <table>
+        <thead>
+          <tr>
+            <th>Mã phiếu</th>
+            <th>Loại</th>
+            <th>Ngày</th>
+            <th>Đối tượng</th>
+            <th class="text-right">Số tiền</th>
+            <th>Phương thức</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (phieu of phieuThuChiService.listPhieuThuChi(); track phieu.id) {
+            <tr>
+              <td>
+                <span class="font-mono font-semibold">{{ phieu.maPhieu }}</span>
+              </td>
+              <td>
+                <span class="badge" [class.badge-success]="phieu.loai === 'THU'" [class.badge-danger]="phieu.loai === 'CHI'">
+                  {{ phieu.loai === 'THU' ? 'Thu' : 'Chi' }}
+                </span>
+              </td>
+              <td class="text-muted">{{ formatDate(phieu.ngay) }}</td>
+              <td>
+                <div class="cell-doituong">
+                  <span class="font-medium">{{ phieu.doiTuong }}</span>
+                  @if (phieu.tenDoiTuong) {
+                    <span class="text-sm text-muted">{{ phieu.tenDoiTuong }}</span>
+                  }
+                </div>
+              </td>
+              <td class="text-right">
+                <span class="font-semibold" [class.text-success]="phieu.loai === 'THU'" [class.text-danger]="phieu.loai === 'CHI'">
+                  {{ formatCurrency(phieu.soTien) }}
+                </span>
+              </td>
+              <td>
+                <span class="text-sm">{{ phieu.phuongThuc }}</span>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="getTrangThaiClass(phieu.trangThai)">
+                  {{ getTrangThaiText(phieu.trangThai) }}
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" (click)="viewDetail(phieu.id)" title="Xem chi tiết">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                  @if (phieu.trangThai === 'NHAP') {
+                    <button class="btn-icon" (click)="guiDuyet(phieu.id)" title="Gửi duyệt">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                      </svg>
+                    </button>
+                  }
+                  @if (phieu.trangThai === 'CHO_DUYET') {
+                    <button class="btn-icon btn-success" (click)="duyet(phieu.id)" title="Duyệt">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </button>
+                  }
+                  @if (phieu.trangThai === 'NHAP' || phieu.trangThai === 'CHO_DUYET') {
+                    <button class="btn-icon" (click)="huy(phieu.id)" title="Hủy">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
+                    </button>
+                  }
+                  @if (phieu.trangThai === 'NHAP' || phieu.trangThai === 'HUY') {
+                    <button class="btn-icon btn-destructive" (click)="deletePhieu(phieu.id)" title="Xóa">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      </svg>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="empty-state">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                </svg>
+                <p>Không có dữ liệu</p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="mobile-cards mobile-only">
+      @for (phieu of phieuThuChiService.listPhieuThuChi(); track phieu.id) {
+        <div class="phieu-card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <span class="badge" [class.badge-success]="phieu.loai === 'THU'" [class.badge-danger]="phieu.loai === 'CHI'">
+                {{ phieu.loai === 'THU' ? 'Thu' : 'Chi' }}
+              </span>
+              <span class="font-mono font-semibold">{{ phieu.maPhieu }}</span>
+            </div>
+            <span class="badge" [ngClass]="getTrangThaiClass(phieu.trangThai)">
+              {{ getTrangThaiText(phieu.trangThai) }}
+            </span>
+          </div>
+          
+          <div class="card-body">
+            <div class="card-row">
+              <span class="label">Đối tượng:</span>
+              <span class="value">
+                {{ phieu.doiTuong }}
+                @if (phieu.tenDoiTuong) {
+                  <span class="text-muted">{{ phieu.tenDoiTuong }}</span>
+                }
+              </span>
+            </div>
+            <div class="card-row">
+              <span class="label">Số tiền:</span>
+              <span class="value font-semibold" [class.text-success]="phieu.loai === 'THU'" [class.text-danger]="phieu.loai === 'CHI'">
+                {{ formatCurrency(phieu.soTien) }}
+              </span>
+            </div>
+            <div class="card-row">
+              <span class="label">Ngày:</span>
+              <span class="value text-muted">{{ formatDate(phieu.ngay) }}</span>
+            </div>
+            <div class="card-row">
+              <span class="label">Phương thức:</span>
+              <span class="value">{{ phieu.phuongThuc }}</span>
+            </div>
+          </div>
+          
+          <div class="card-actions">
+            <button class="btn-mobile" (click)="viewDetail(phieu.id)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <span>Chi tiết</span>
+            </button>
+            @if (phieu.trangThai === 'NHAP') {
+              <button class="btn-mobile btn-primary" (click)="guiDuyet(phieu.id)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+                <span>Gửi duyệt</span>
+              </button>
+            }
+            @if (phieu.trangThai === 'CHO_DUYET') {
+              <button class="btn-mobile btn-success" (click)="duyet(phieu.id)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>Duyệt</span>
+              </button>
+            }
+            @if (phieu.trangThai === 'NHAP' || phieu.trangThai === 'CHO_DUYET') {
+              <button class="btn-mobile btn-secondary" (click)="huy(phieu.id)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                <span>Hủy</span>
+              </button>
+            }
+            @if (phieu.trangThai === 'NHAP' || phieu.trangThai === 'HUY') {
+              <button class="btn-mobile btn-destructive" (click)="deletePhieu(phieu.id)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                <span>Xóa</span>
+              </button>
+            }
+          </div>
+        </div>
+      } @empty {
+        <div class="empty-state-mobile">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+          </svg>
+          <p>Không có dữ liệu</p>
+        </div>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (phieuThuChiService.total() > 0) {
+      <div class="pagination-container">
+        <div class="pagination-info">
+          Hiển thị {{ phieuThuChiService.listPhieuThuChi().length }} / {{ phieuThuChiService.total() }} bản ghi
+        </div>
+        <nav class="pagination">
+          <button class="pagination-btn" [disabled]="phieuThuChiService.page() === 1" (click)="onPageChange(phieuThuChiService.page() - 1)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+          @for (p of [].constructor(phieuThuChiService.pageCount()); track p; let i = $index) {
+            <button class="pagination-btn" [class.active]="i + 1 === phieuThuChiService.page()" (click)="onPageChange(i + 1)">
+              {{ i + 1 }}
+            </button>
+          }
+          <button class="pagination-btn" [disabled]="phieuThuChiService.page() === phieuThuChiService.pageCount()" (click)="onPageChange(phieuThuChiService.page() + 1)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </nav>
+      </div>
+    }
+  }
+</div>
