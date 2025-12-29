@@ -9,7 +9,7 @@ datasource postgres {
 }
 
 model AuditLog {
-  id            String      @id
+  id            String      @id @default(uuid())
   entityName    String?
   entityId      String?
   action        AuditAction
@@ -23,398 +23,146 @@ model AuditLog {
   sessionId     String?
   metadata      Json?
   createdAt     DateTime    @default(now())
-  updatedAt     DateTime
+  updatedAt     DateTime    @updatedAt
   status        String      @default("SUCCESS")
-  error_details Json?
-  User          User?       @relation(fields: [userId], references: [id])
+  errorDetails  Json?       @map("error_details")
+  user          User?       @relation(fields: [userId], references: [id])
 
-  @@index([action])
-  @@index([createdAt])
   @@index([entityName, entityId])
-  @@index([status])
   @@index([userId])
+  @@index([createdAt])
+  @@index([action])
+  @@index([status])
+}
+
+model User {
+  id               String            @id @default(uuid())
+  email            String?           @unique
+  SDT              String?           @unique
+  password         String
+  provider         String?
+  providerId       String?           @unique
+  isActive         Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  name             String?
+  AuditLog         AuditLog[]
+  Chotkho          Chotkho[]
+  Chotkhodetail    Chotkhodetail[]   @relation("ChotkhodetailUser")
+  profile          Profile?
+  userPermissions  UserPermission[]
+  roles            UserRole[]
+  supportResponses SupportResponse[] @relation("UserResponses")
+  createdTickets   SupportTicket[]   @relation("UserTickets")
+  assignedTickets  SupportTicket[]   @relation("TechnicianTickets")
+  nhanvien         Nhanvien?         @relation("UserNhanvien")
+}
+
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  permissions RolePermission[]
+  users       UserRole[]
+}
+
+model UserRole {
+  id     String @id @default(uuid())
+  userId String
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Permission {
+  id              String           @id @default(uuid())
+  codeId          String?
+  name            String           @unique
+  group           String?
+  description     String?
+  order           Int?             @default(1)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  roles           RolePermission[]
+  userPermissions UserPermission[]
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+}
+
+model UserPermission {
+  id           String     @id @default(uuid())
+  userId       String
+  permissionId String
+  isGranted    Boolean    @default(true)
+  grantedBy    String?
+  grantedAt    DateTime   @default(now())
+  expiresAt    DateTime?
+  reason       String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionId])
+  @@index([userId])
+  @@index([permissionId])
+}
+
+model Menu {
+  id        String   @id @default(uuid())
+  title     String
+  icon      String?
+  slug      String?
+  parentId  String?
+  order     Int?
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  parent    Menu?    @relation("MenuChildren", fields: [parentId], references: [id])
+  children  Menu[]   @relation("MenuChildren")
+}
+
+model Profile {
+  id     String  @id @default(uuid())
+  userId String  @unique
+  name   String
+  avatar String?
+  bio    String?
+  user   User    @relation(fields: [userId], references: [id])
 }
 
 model Banggia {
-  id             String           @id
-  title          String?
-  mabanggia      String?
-  type           String?
-  batdau         DateTime?
-  ketthuc        DateTime?
-  order          Int?             @default(1)
-  ghichu         String?
-  status         String?
-  isActive       Boolean          @default(true)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime
-  isDefault      Boolean          @default(false)
-  Banggiasanpham Banggiasanpham[]
-  Donhang        Donhang[]
-  Khachhang      Khachhang[]
+  id        String           @id @default(uuid())
+  title     String?
+  mabanggia String?
+  type      String?
+  batdau    DateTime?
+  ketthuc   DateTime?
+  order     Int?             @default(1)
+  ghichu    String?
+  status    String?
+  isActive  Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  isDefault Boolean          @default(false)
+  sanpham   Banggiasanpham[]
+  Donhang   Donhang[]
+  khachhang Khachhang[]      @relation("Banggiakhachhang")
 
-  @@unique([mabanggia, batdau, ketthuc])
-  @@index([batdau, ketthuc])
+  @@unique([mabanggia, batdau, ketthuc], name: "unique_banggia_time_range")
   @@index([mabanggia])
-}
-
-model Banggiasanpham {
-  id                    String                  @id
-  giaban                Decimal                 @default(0) @postgres.Decimal(20, 3)
-  sanphamId             String
-  banggiaId             String
-  order                 Int?
-  isActive              Boolean                 @default(false)
-  Banggia               Banggia                 @relation(fields: [banggiaId], references: [id])
-  Sanpham               Sanpham                 @relation(fields: [sanphamId], references: [id])
-  BanggiasanphamHistory BanggiasanphamHistory[]
-
-  @@unique([banggiaId, sanphamId])
-}
-
-model BanggiasanphamHistory {
-  id               String         @id
-  banggiasanphamId String
-  banggiaId        String
-  sanphamId        String
-  oldPrice         Decimal        @postgres.Decimal(20, 3)
-  newPrice         Decimal        @postgres.Decimal(20, 3)
-  changePercent    Decimal?       @postgres.Decimal(10, 2)
-  changeReason     String?
-  changedBy        String?
-  changedAt        DateTime       @default(now())
-  sourceType       String?
-  batchId          String?
-  metadata         Json?
-  Banggiasanpham   Banggiasanpham @relation(fields: [banggiasanphamId], references: [id], onDelete: Cascade)
-
-  @@index([banggiaId])
-  @@index([banggiasanphamId])
-  @@index([changedAt])
-  @@index([sanphamId])
-}
-
-model ChatAIHistory {
-  id        String   @id
-  userId    String
-  message   String
-  sender    String
-  createdAt DateTime @default(now())
-}
-
-model ChatAIMessage {
-  id        String   @id
-  userId    String
-  message   String
-  reply     String
-  createdAt DateTime @default(now())
-}
-
-model Chotkho {
-  id            String          @id
-  khoId         String?
-  ghichu        String?
-  isActive      Boolean         @default(true)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime
-  codeId        String?         @unique
-  title         String?
-  order         Int?            @default(1)
-  userId        String?
-  ngaychot      DateTime        @default(now())
-  Kho           Kho?            @relation(fields: [khoId], references: [id])
-  User          User?           @relation(fields: [userId], references: [id])
-  Chotkhodetail Chotkhodetail[]
-
-  @@index([codeId])
-  @@index([khoId])
-  @@index([ngaychot])
-}
-
-model Chotkhodetail {
-  id           String   @id
-  title        String?
-  ngaychot     DateTime @default(now())
-  sltonhethong Decimal  @default(0) @postgres.Decimal(20, 3)
-  sltonthucte  Decimal  @default(0) @postgres.Decimal(20, 3)
-  slhuy        Decimal  @default(0) @postgres.Decimal(20, 3)
-  chenhlech    Decimal  @default(0) @postgres.Decimal(20, 3)
-  ghichu       String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime
-  order        Int?     @default(1)
-  sanphamId    String?
-  chotkhoId    String?
-  userId       String?
-  Chotkho      Chotkho? @relation(fields: [chotkhoId], references: [id])
-  Sanpham      Sanpham? @relation(fields: [sanphamId], references: [id])
-  User         User?    @relation(fields: [userId], references: [id])
-
-  @@index([ngaychot])
-  @@index([sanphamId])
-}
-
-model Congty {
-  id        String   @id
-  name      String
-  diachi    String?
-  email     String?
-  sdt       String?
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime
-  Kho       Kho[]
-}
-
-// ============================================
-// CRON JOB EXECUTION LOG
-// ============================================
-model CronExecutionLog {
-  id            String        @id @default(uuid())
-  jobId         String // ID của cron job (database-sync, auto-complete-orders, etc.)
-  jobName       String // Tên hiển thị của job
-  category      String? // Phân loại: Database, Đơn hàng, System
-  startTime     DateTime      @default(now())
-  endTime       DateTime?
-  status        CronJobStatus @default(running)
-  message       String? // Thông báo kết quả
-  error         String? // Chi tiết lỗi nếu có
-  details       Json? // Chi tiết bổ sung (databaseSize, tableStats, etc.)
-  executionTime Int? // Thời gian thực thi (ms)
-  triggeredBy   String? // Ai kích hoạt: system, manual, userId
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
-  @@index([jobId])
-  @@index([status])
-  @@index([startTime])
-  @@index([createdAt])
-}
-
-model Dathang {
-  id             String           @id
-  title          String?
-  type           String?
-  madncc         String?          @unique
-  ngaynhan       DateTime?
-  ghichu         String?
-  nhacungcapId   String?
-  order          Int?
-  isActive       Boolean          @default(false)
-  status         StatusDonhang    @default(dadat)
-  printCount     Int?             @default(0)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime?
-  subtitle       String?
-  khoId          String?
-  lydohuy        String?
-  Kho            Kho?             @relation(fields: [khoId], references: [id])
-  Nhacungcap     Nhacungcap?      @relation(fields: [nhacungcapId], references: [id])
-  Dathangsanpham Dathangsanpham[]
-  PhieuKho       PhieuKho[]
-
-  @@index([createdAt])
-  @@index([ngaynhan])
-  @@index([ngaynhan, status])
-  @@index([nhacungcapId])
-  @@index([nhacungcapId, ngaynhan])
-  @@index([status])
-}
-
-model Dathangsanpham {
-  id        String  @id
-  idSP      String
-  sldat     Decimal @default(0) @postgres.Decimal(20, 3)
-  slgiao    Decimal @default(0) @postgres.Decimal(20, 3)
-  slnhan    Decimal @default(0) @postgres.Decimal(20, 3)
-  slhuy     Decimal @default(0) @postgres.Decimal(20, 3)
-  ttdat     Decimal @default(0) @postgres.Decimal(20, 3)
-  ttgiao    Decimal @default(0) @postgres.Decimal(20, 3)
-  ttnhan    Decimal @default(0) @postgres.Decimal(20, 3)
-  ghichu    String?
-  dathangId String
-  order     Int?
-  isActive  Boolean @default(false)
-  gianhap   Decimal @default(0) @postgres.Decimal(20, 3)
-  Dathang   Dathang @relation(fields: [dathangId], references: [id], onDelete: Cascade)
-  Sanpham   Sanpham @relation(fields: [idSP], references: [id])
-
-  @@index([dathangId])
-  @@index([idSP])
-}
-
-model Donhang {
-  id               String           @id
-  title            String?
-  type             String?
-  madonhang        String           @unique
-  ngaygiao         DateTime?
-  ghichu           String?
-  status           StatusDonhang    @default(dadat)
-  khachhangId      String?
-  printCount       Int?             @default(0)
-  order            Int?
-  isActive         Boolean          @default(false)
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime
-  isshowvat        Boolean          @default(false)
-  tongtien         Decimal          @default(0) @postgres.Decimal(20, 3)
-  tongvat          Decimal          @default(0) @postgres.Decimal(20, 3)
-  banggiaId        String?
-  vat              Decimal          @default(0.5) @postgres.Decimal(20, 3)
-  lydohuy          String?
-  giodi            String?
-  giove            String?
-  kynhan           String?
-  phieuve          String?
-  nhanvienchiahang String?
-  shipper          String?
-  confirmToken     String?          @unique
-  ghiChuKH         String?
-  tokenExpiredAt   DateTime?
-  xacNhanLan1      Boolean?         @default(false)
-  xacNhanLan1At    DateTime?
-  xacNhanLan2      Boolean?         @default(false)
-  xacNhanLan2At    DateTime?
-  xuatHoaDon       Boolean?         @default(false)
-  Banggia          Banggia?         @relation(fields: [banggiaId], references: [id])
-  Khachhang        Khachhang?       @relation(fields: [khachhangId], references: [id])
-  Donhangsanpham   Donhangsanpham[]
-  HoaDonDienTu     HoaDonDienTu[]
-  PhieuKho         PhieuKho[]
-  PhieuThuChi      PhieuThuChi[]
-  ThanhToan        ThanhToan[]
-
-  @@index([confirmToken])
-  @@index([createdAt])
-  @@index([khachhangId])
-  @@index([khachhangId, ngaygiao])
-  @@index([ngaygiao])
-  @@index([ngaygiao, status])
-  @@index([status])
-}
-
-model DonhangPriceAudit {
-  id               String   @id
-  donhangId        String
-  donhangsanphamId String
-  sanphamId        String
-  oldPrice         Decimal  @postgres.Decimal(20, 3)
-  newPrice         Decimal  @postgres.Decimal(20, 3)
-  changePercent    Decimal? @postgres.Decimal(10, 2)
-  changeReason     String
-  changedBy        String?
-  changedByEmail   String?
-  ipAddress        String?
-  userAgent        String?
-  createdAt        DateTime @default(now())
-  metadata         Json?
-
-  @@index([createdAt])
-  @@index([donhangId])
-  @@index([donhangsanphamId])
-  @@index([sanphamId])
-}
-
-model Donhangsanpham {
-  id        String   @id
-  idSP      String
-  sldat     Decimal  @default(0) @postgres.Decimal(20, 3)
-  slgiao    Decimal  @default(0) @postgres.Decimal(20, 3)
-  slnhan    Decimal  @default(0) @postgres.Decimal(20, 3)
-  slhuy     Decimal  @default(0) @postgres.Decimal(20, 3)
-  ttdat     Decimal  @default(0) @postgres.Decimal(20, 3)
-  ttgiao    Decimal  @default(0) @postgres.Decimal(20, 3)
-  ttnhan    Decimal  @default(0) @postgres.Decimal(20, 3)
-  ghichu    String?
-  donhangId String
-  order     Int?
-  isActive  Boolean? @default(false)
-  giaban    Decimal  @default(0) @postgres.Decimal(20, 3)
-  ttsauvat  Decimal  @default(0) @postgres.Decimal(20, 3)
-  vat       Decimal  @default(0) @postgres.Decimal(20, 3)
-  Donhang   Donhang  @relation(fields: [donhangId], references: [id], onDelete: Cascade)
-  Sanpham   Sanpham  @relation(fields: [idSP], references: [id])
-
-  @@index([donhangId])
-  @@index([idSP])
-}
-
-model ErrorLog {
-  id        String   @id
-  timestamp DateTime
-  message   String
-  details   Json?
-  source    String
-  createdAt DateTime @default(now())
-}
-
-model File {
-  id        String   @id
-  fileName  String?
-  fileUrl   String?
-  jsonData  Json?
-  createdAt DateTime @default(now())
-}
-
-model FileManager {
-  id          String   @id
-  codeId      String?  @unique
-  title       String?
-  url         String?
-  description String?
-  fileType    String?
-  fileSize    Int?
-  metaData    Json?
-  category    String?
-  group       String?
-  order       Int?     @default(1)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime
-}
-
-model HoaDonDienTu {
-  id            String          @id
-  donhangId     String
-  soHoaDon      String          @unique
-  mauSo         String?
-  kyHieu        String?
-  ngayLap       DateTime        @default(now())
-  tongTien      Decimal         @postgres.Decimal(20, 3)
-  tongVAT       Decimal         @default(0) @postgres.Decimal(20, 3)
-  tongThanhToan Decimal         @postgres.Decimal(20, 3)
-  trangThai     TrangThaiHoaDon @default(NHAP)
-  pdfUrl        String?
-  nguoiTaoId    String?
-  nguoiDuyetId  String?
-  ngayDuyet     DateTime?
-  ghichu        String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime
-  Donhang       Donhang         @relation(fields: [donhangId], references: [id], onDelete: Cascade)
-
-  @@index([donhangId])
-  @@index([ngayLap])
-  @@index([soHoaDon])
-  @@index([trangThai])
-}
-
-model ImportHistory {
-  id         String   @id
-  caseDetail Json?
-  importTime DateTime @default(now())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime
-  codeId     String?  @unique
-  order      Int?     @default(1)
-  createdBy  String?  @default("system")
-  status     String?
-  title      String?
-  type       String?
+  @@index([batdau, ketthuc])
 }
 
 model Khachhang {
-  id            String          @id
+  id            String          @id @default(uuid())
   name          String?
   namenn        String?
   subtitle      String?
@@ -434,281 +182,39 @@ model Khachhang {
   isActive      Boolean         @default(false)
   istitle2      Boolean         @default(false)
   createdAt     DateTime        @default(now())
-  updatedAt     DateTime
+  updatedAt     DateTime        @updatedAt
   tenfile       String?
   tenkh         String?
   banggiaId     String?
   isshowvat     Boolean         @default(true)
   machuyen      String?
-  Donhang       Donhang[]
-  Banggia       Banggia?        @relation(fields: [banggiaId], references: [id])
-  Nhomkhachhang Nhomkhachhang[] @relation("KhachhangNhom")
+  donhang       Donhang[]
+  banggia       Banggia?        @relation("Banggiakhachhang", fields: [banggiaId], references: [id])
+  nhomkhachhang Nhomkhachhang[] @relation("KhachhangNhom")
 
   @@index([name])
 }
 
-model Kho {
-  id         String       @id
-  name       String
-  makho      String?
-  diachi     String?
-  sdt        String?
-  ghichu     String?
-  congtyId   String?
-  isActive   Boolean      @default(true)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime
-  Chotkho    Chotkho[]
-  Dathang    Dathang[]
-  Congty     Congty?      @relation(fields: [congtyId], references: [id])
-  PhieuKho   PhieuKho[]
-  SanphamKho SanphamKho[]
-}
-
-model Menu {
-  id         String   @id
-  title      String
-  icon       String?
-  slug       String?
-  parentId   String?
-  order      Int?
-  isActive   Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime
-  Menu       Menu?    @relation("MenuToMenu", fields: [parentId], references: [id])
-  other_Menu Menu[]   @relation("MenuToMenu")
-}
-
-model Nhacungcap {
-  id        String    @id
-  name      String?
-  mancc     String    @unique
-  manccold  String?
-  diachi    String?
-  email     String?
-  sdt       String?
-  ghichu    String?
-  isActive  Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime
-  isshowvat Boolean   @default(true)
-  tenfile   String?
-  Dathang   Dathang[]
-  NhomNcc   NhomNcc[] @relation("NhacungcapNhom")
-  Sanpham   Sanpham[]
-}
-
-model Nhanvien {
-  id                                        String            @id
-  isActive                                  Boolean           @default(true)
-  createdAt                                 DateTime          @default(now())
-  updatedAt                                 DateTime
-  avatar                                    String?
-  chiNhanh                                  String?
-  chucVu                                    String?
-  cmnd                                      String?           @unique
-  diaChiHienTai                             String?
-  diaChiTamTru                              String?
-  diaChiThuongTru                           String?
-  email                                     String?           @unique
-  ghiChu                                    String?
-  gioiTinh                                  GioiTinh?         @default(KHAC)
-  heSoLuong                                 Decimal?          @default(1) @postgres.Decimal(10, 2)
-  hoTen                                     String
-  hoTenDem                                  String?
-  loaiHopDong                               String?
-  luongCoBan                                Decimal?          @default(0) @postgres.Decimal(20, 3)
-  maNV                                      String            @unique
-  nganHang                                  String?
-  ngayCapCmnd                               DateTime?
-  ngayNghiViec                              DateTime?
-  ngaySinh                                  DateTime?
-  ngayVaoLam                                DateTime?
-  nguoiLienHeKhanCap                        String?
-  noiCapCmnd                                String?
-  order                                     Int?              @default(1)
-  phongbanId                                String?
-  phuCap                                    Decimal?          @default(0) @postgres.Decimal(20, 3)
-  quanHeKhanCap                             String?
-  sdtKhanCap                                String?
-  soDienThoai                               String?
-  soTaiKhoan                                String?
-  ten                                       String?
-  trangThai                                 TrangThaiNhanvien @default(DANGLAMVIEC)
-  userId                                    String?           @unique
-  viTri                                     String?
-  maLamViec                                 String?           @unique
-  hieuSuatCongViec                          Decimal?          @default(0) @postgres.Decimal(20, 3)
-  hoTroChuyenCan                            Decimal?          @default(0) @postgres.Decimal(20, 3)
-  phuCapDienThoai                           Decimal?          @default(0) @postgres.Decimal(20, 3)
-  phuCapKhac                                Decimal?          @default(0) @postgres.Decimal(20, 3)
-  phuCapXang                                Decimal?          @default(0) @postgres.Decimal(20, 3)
-  thuongKinhDoanh                           Decimal?          @default(0) @postgres.Decimal(20, 3)
-  tienAnGiuaCa                              Decimal?          @default(0) @postgres.Decimal(20, 3)
-  Phongban_Nhanvien_phongbanIdToPhongban    Phongban?         @relation("Nhanvien_phongbanIdToPhongban", fields: [phongbanId], references: [id])
-  User                                      User?             @relation(fields: [userId], references: [id])
-  Phongban_Phongban_truongPhongIdToNhanvien Phongban[]        @relation("Phongban_truongPhongIdToNhanvien")
-
-  @@index([email])
-  @@index([hoTen])
-  @@index([maNV])
-  @@index([phongbanId])
-  @@index([trangThai])
-  @@index([userId])
-}
-
-model NhomNcc {
-  id          String       @id
-  name        String       @unique
-  description String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime
-  Nhacungcap  Nhacungcap[] @relation("NhacungcapNhom")
-}
-
 model Nhomkhachhang {
-  id          String      @id
+  id          String      @id @default(uuid())
   name        String      @unique
   description String?
   createdAt   DateTime    @default(now())
-  updatedAt   DateTime
-  Khachhang   Khachhang[] @relation("KhachhangNhom")
+  updatedAt   DateTime    @updatedAt
+  khachhang   Khachhang[] @relation("KhachhangNhom")
 }
 
-model Permission {
-  id             String           @id
-  codeId         String?
-  name           String           @unique
-  group          String?
-  description    String?
-  order          Int?             @default(1)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime
-  RolePermission RolePermission[]
-  UserPermission UserPermission[]
-}
-
-model PhieuKho {
-  id              String            @id
-  title           String?
-  maphieu         String?           @unique
-  madonhang       String?
-  madncc          String?
-  madathang       String?
-  ngay            DateTime?
-  type            String?
-  khoId           String?
-  ghichu          String?
-  isActive        Boolean           @default(true)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime
-  isChotkho       Boolean           @default(false)
-  Kho             Kho?              @relation(fields: [khoId], references: [id])
-  Dathang         Dathang?          @relation(fields: [madncc], references: [madncc])
-  Donhang         Donhang?          @relation(fields: [madonhang], references: [madonhang])
-  PhieuKhoSanpham PhieuKhoSanpham[]
-}
-
-model PhieuKhoSanpham {
-  id         String   @id
-  phieuKhoId String
-  sanphamId  String
-  soluong    Decimal  @default(0) @postgres.Decimal(20, 3)
-  ghichu     String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime
-  PhieuKho   PhieuKho @relation(fields: [phieuKhoId], references: [id])
-  Sanpham    Sanpham  @relation(fields: [sanphamId], references: [id])
-
-  @@unique([phieuKhoId, sanphamId])
-}
-
-model PhieuThuChi {
-  id           String              @id
-  maPhieu      String              @unique
-  loai         LoaiPhieuThuChi
-  ngay         DateTime            @default(now())
-  soTien       Decimal             @postgres.Decimal(20, 3)
-  donhangId    String?
-  dathangId    String?
-  doiTuong     DoiTuongThuChi
-  doiTuongId   String?
-  tenDoiTuong  String?
-  phuongThuc   PhuongThucThanhToan @default(TIEN_MAT)
-  coHoaDon     Boolean             @default(false)
-  trangThai    TrangThaiPhieu      @default(NHAP)
-  nguoiTaoId   String?
-  nguoiDuyetId String?
-  ngayDuyet    DateTime?
-  ghichu       String?
-  lydo         String?
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime
-  Donhang      Donhang?            @relation(fields: [donhangId], references: [id])
-
-  @@index([doiTuong, doiTuongId])
-  @@index([donhangId])
-  @@index([loai])
-  @@index([maPhieu])
-  @@index([ngay])
-  @@index([trangThai])
-}
-
-model Phongban {
-  id                                        String       @id
-  ma                                        String       @unique
-  ten                                       String
-  loai                                      LoaiPhongban @default(PHONGBAN)
-  level                                     Int          @default(1)
-  moTa                                      String?
-  dienThoai                                 String?
-  email                                     String?
-  diaChi                                    String?
-  truongPhongId                             String?
-  parentId                                  String?
-  order                                     Int?         @default(1)
-  isActive                                  Boolean      @default(true)
-  createdAt                                 DateTime     @default(now())
-  updatedAt                                 DateTime
-  Nhanvien_Nhanvien_phongbanIdToPhongban    Nhanvien[]   @relation("Nhanvien_phongbanIdToPhongban")
-  Phongban                                  Phongban?    @relation("PhongbanToPhongban", fields: [parentId], references: [id])
-  other_Phongban                            Phongban[]   @relation("PhongbanToPhongban")
-  Nhanvien_Phongban_truongPhongIdToNhanvien Nhanvien?    @relation("Phongban_truongPhongIdToNhanvien", fields: [truongPhongId], references: [id])
-
-  @@index([level])
-  @@index([ma])
-  @@index([parentId])
-  @@index([truongPhongId])
-}
-
-model Profile {
-  id     String  @id
-  userId String  @unique
-  name   String
-  avatar String?
-  bio    String?
-  User   User    @relation(fields: [userId], references: [id])
-}
-
-model Role {
-  id             String           @id
-  name           String           @unique
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime
-  RolePermission RolePermission[]
-  UserRole       UserRole[]
-}
-
-model RolePermission {
-  id           String     @id
-  roleId       String
-  permissionId String
-  Permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  Role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+model NhomNcc {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  nhacungcap  Nhacungcap[] @relation("NhacungcapNhom")
 }
 
 model Sanpham {
-  id              String            @id
+  id              String            @id @default(uuid())
   title           String
   title2          String?
   slug            String?           @unique
@@ -725,147 +231,457 @@ model Sanpham {
   order           Int?              @default(1)
   isActive        Boolean           @default(false)
   createdAt       DateTime          @default(now())
-  updatedAt       DateTime
+  updatedAt       DateTime          @updatedAt
   giaban          Decimal           @default(0) @postgres.Decimal(20, 3)
   vat             Decimal?          @default(0) @postgres.Decimal(20, 3)
-  Banggiasanpham  Banggiasanpham[]
-  Chotkhodetail   Chotkhodetail[]
+  banggia         Banggiasanpham[]
+  chotkhodetail   Chotkhodetail[]   @relation("ChotkhodetailSanpham")
   Dathangsanpham  Dathangsanpham[]
   Donhangsanpham  Donhangsanpham[]
   PhieuKhoSanpham PhieuKhoSanpham[]
   SanphamKho      SanphamKho[]
   TonKho          TonKho?
-  Nhacungcap      Nhacungcap[]
+  Nhacungcap      Nhacungcap[]      @relation("NhacungcapToSanpham")
+}
+
+model Donhang {
+  id               String        @id @default(uuid())
+  title            String?
+  type             String?
+  madonhang        String        @unique
+  ngaygiao         DateTime?
+  ghichu           String?
+  status           StatusDonhang @default(dadat)
+  khachhangId      String?
+  printCount       Int?          @default(0)
+  order            Int?
+  isActive         Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  isshowvat        Boolean       @default(false)
+  tongtien         Decimal       @default(0) @postgres.Decimal(20, 3)
+  tongvat          Decimal       @default(0) @postgres.Decimal(20, 3)
+  banggiaId        String?
+  vat              Decimal       @default(0.5) @postgres.Decimal(20, 3)
+  lydohuy          String?
+  phieuve          String?
+  giodi            String?
+  giove            String?
+  kynhan           String?
+  nhanvienchiahang String?
+  shipper          String?
+
+  // Xác nhận đơn hàng 2 chiều
+  confirmToken   String?   @unique
+  tokenExpiredAt DateTime?
+  xacNhanLan1    Boolean?  @default(false)
+  xacNhanLan1At  DateTime?
+  xacNhanLan2    Boolean?  @default(false)
+  xacNhanLan2At  DateTime?
+  ghiChuKH       String? // Ghi chú từ khách hàng khi xác nhận
+
+  // Hóa đơn điện tử
+  xuatHoaDon Boolean? @default(false)
+
+  banggia      Banggia?         @relation(fields: [banggiaId], references: [id])
+  khachhang    Khachhang?       @relation(fields: [khachhangId], references: [id])
+  sanpham      Donhangsanpham[]
+  PhieuKho     PhieuKho[]
+  ThanhToan    ThanhToan[]
+  HoaDonDienTu HoaDonDienTu[]
+  PhieuThuChi  PhieuThuChi[]
+
+  @@index([ngaygiao])
+  @@index([status])
+  @@index([khachhangId])
+  @@index([ngaygiao, status])
+  @@index([khachhangId, ngaygiao])
+  @@index([createdAt])
+  @@index([confirmToken])
+}
+
+model Donhangsanpham {
+  id        String   @id @default(uuid())
+  idSP      String
+  sldat     Decimal  @default(0) @postgres.Decimal(20, 3)
+  slgiao    Decimal  @default(0) @postgres.Decimal(20, 3)
+  slnhan    Decimal  @default(0) @postgres.Decimal(20, 3)
+  slhuy     Decimal  @default(0) @postgres.Decimal(20, 3)
+  ttdat     Decimal  @default(0) @postgres.Decimal(20, 3)
+  ttgiao    Decimal  @default(0) @postgres.Decimal(20, 3)
+  ttnhan    Decimal  @default(0) @postgres.Decimal(20, 3)
+  ghichu    String?
+  donhangId String
+  order     Int?
+  isActive  Boolean? @default(false)
+  giaban    Decimal  @default(0) @postgres.Decimal(20, 3)
+  ttsauvat  Decimal  @default(0) @postgres.Decimal(20, 3)
+  vat       Decimal  @default(0) @postgres.Decimal(20, 3)
+  donhang   Donhang  @relation(fields: [donhangId], references: [id], onDelete: Cascade)
+  sanpham   Sanpham  @relation(fields: [idSP], references: [id])
+
+  @@index([donhangId])
+  @@index([idSP])
+}
+
+model Banggiasanpham {
+  id        String                  @id @default(uuid())
+  giaban    Decimal                 @default(0) @postgres.Decimal(20, 3)
+  sanphamId String
+  banggiaId String
+  order     Int?
+  isActive  Boolean                 @default(false)
+  banggia   Banggia                 @relation(fields: [banggiaId], references: [id])
+  sanpham   Sanpham                 @relation(fields: [sanphamId], references: [id])
+  history   BanggiasanphamHistory[]
+
+  @@unique([banggiaId, sanphamId], name: "unique_banggia_sanpham")
+}
+
+model BanggiasanphamHistory {
+  id               String         @id @default(uuid())
+  banggiasanphamId String
+  banggiaId        String
+  sanphamId        String
+  oldPrice         Decimal        @postgres.Decimal(20, 3)
+  newPrice         Decimal        @postgres.Decimal(20, 3)
+  changePercent    Decimal?       @postgres.Decimal(10, 2)
+  changeReason     String?
+  changedBy        String?
+  changedAt        DateTime       @default(now())
+  sourceType       String? // MANUAL, IMPORT, SYNC, BULK_UPDATE
+  batchId          String? // For bulk operations
+  metadata         Json?
+  banggiasanpham   Banggiasanpham @relation(fields: [banggiasanphamId], references: [id], onDelete: Cascade)
+
+  @@index([banggiasanphamId])
+  @@index([banggiaId])
+  @@index([sanphamId])
+  @@index([changedAt])
+}
+
+model DonhangPriceAudit {
+  id               String   @id @default(uuid())
+  donhangId        String
+  donhangsanphamId String
+  sanphamId        String
+  oldPrice         Decimal  @postgres.Decimal(20, 3)
+  newPrice         Decimal  @postgres.Decimal(20, 3)
+  changePercent    Decimal? @postgres.Decimal(10, 2)
+  changeReason     String
+  changedBy        String?
+  changedByEmail   String?
+  ipAddress        String?
+  userAgent        String?
+  createdAt        DateTime @default(now())
+  metadata         Json?
+
+  @@index([donhangId])
+  @@index([donhangsanphamId])
+  @@index([sanphamId])
+  @@index([createdAt])
+}
+
+model Nhacungcap {
+  id        String    @id @default(uuid())
+  name      String?
+  mancc     String    @unique
+  manccold  String?
+  diachi    String?
+  email     String?
+  sdt       String?
+  ghichu    String?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isshowvat Boolean   @default(true)
+  tenfile   String?
+  dathang   Dathang[]
+  NhomNcc   NhomNcc[] @relation("NhacungcapNhom")
+  Sanpham   Sanpham[] @relation("NhacungcapToSanpham")
+}
+
+model Dathang {
+  id           String           @id @default(uuid())
+  title        String?
+  type         String?
+  madncc       String?          @unique
+  ngaynhan     DateTime?
+  ghichu       String?
+  nhacungcapId String?
+  order        Int?
+  isActive     Boolean          @default(false)
+  status       StatusDonhang    @default(dadat)
+  printCount   Int?             @default(0)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime?        @updatedAt
+  subtitle     String?
+  khoId        String?
+  lydohuy      String?
+  kho          Kho?             @relation(fields: [khoId], references: [id])
+  nhacungcap   Nhacungcap?      @relation(fields: [nhacungcapId], references: [id])
+  sanpham      Dathangsanpham[]
+  PhieuKho     PhieuKho[]
+
+  @@index([ngaynhan])
+  @@index([status])
+  @@index([nhacungcapId])
+  @@index([ngaynhan, status])
+  @@index([nhacungcapId, ngaynhan])
+  @@index([createdAt])
+}
+
+model Dathangsanpham {
+  id        String  @id @default(uuid())
+  idSP      String
+  sldat     Decimal @default(0) @postgres.Decimal(20, 3)
+  slgiao    Decimal @default(0) @postgres.Decimal(20, 3)
+  slnhan    Decimal @default(0) @postgres.Decimal(20, 3)
+  slhuy     Decimal @default(0) @postgres.Decimal(20, 3)
+  ttdat     Decimal @default(0) @postgres.Decimal(20, 3)
+  ttgiao    Decimal @default(0) @postgres.Decimal(20, 3)
+  ttnhan    Decimal @default(0) @postgres.Decimal(20, 3)
+  ghichu    String?
+  dathangId String
+  order     Int?
+  isActive  Boolean @default(false)
+  gianhap   Decimal @default(0) @postgres.Decimal(20, 3)
+  dathang   Dathang @relation(fields: [dathangId], references: [id], onDelete: Cascade)
+  sanpham   Sanpham @relation(fields: [idSP], references: [id])
+
+  @@index([dathangId])
+  @@index([idSP])
+}
+
+model Congty {
+  id        String   @id @default(uuid())
+  name      String
+  diachi    String?
+  email     String?
+  sdt       String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  kho       Kho[]
+}
+
+model Kho {
+  id         String       @id @default(uuid())
+  name       String
+  makho      String?
+  diachi     String?
+  sdt        String?
+  ghichu     String?
+  congtyId   String?
+  isActive   Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Chotkho    Chotkho[]
+  Dathang    Dathang[]
+  congty     Congty?      @relation(fields: [congtyId], references: [id])
+  phieukho   PhieuKho[]
+  sanphamKho SanphamKho[]
 }
 
 model SanphamKho {
-  id        String   @id
+  id        String   @id @default(uuid())
   khoId     String
   sanphamId String
   soluong   Decimal  @default(0) @postgres.Decimal(20, 3)
   ghichu    String?
   createdAt DateTime @default(now())
-  updatedAt DateTime
-  Kho       Kho      @relation(fields: [khoId], references: [id])
-  Sanpham   Sanpham  @relation(fields: [sanphamId], references: [id])
+  updatedAt DateTime @updatedAt
+  kho       Kho      @relation(fields: [khoId], references: [id])
+  sanpham   Sanpham  @relation(fields: [sanphamId], references: [id])
 }
 
-model ThanhToan {
-  id            String              @id
-  maThanhToan   String              @unique
-  donhangId     String
-  soTien        Decimal             @postgres.Decimal(20, 3)
-  loai          LoaiThanhToan       @default(KHONG_HOA_DON)
-  phuongThuc    PhuongThucThanhToan @default(TIEN_MAT)
-  ngayThanhToan DateTime            @default(now())
-  trangThai     TrangThaiThanhToan  @default(DA_THANH_TOAN)
-  nguoiTaoId    String?
-  ghichu        String?
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime
-  Donhang       Donhang             @relation(fields: [donhangId], references: [id], onDelete: Cascade)
+model PhieuKho {
+  id        String            @id @default(uuid())
+  title     String?
+  maphieu   String?           @unique
+  madonhang String?
+  madncc    String?
+  madathang String?
+  ngay      DateTime?
+  type      String?
+  khoId     String?
+  ghichu    String?
+  isActive  Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  isChotkho Boolean           @default(false)
+  kho       Kho?              @relation(fields: [khoId], references: [id])
+  dathang   Dathang?          @relation(fields: [madncc], references: [madncc])
+  donhang   Donhang?          @relation(fields: [madonhang], references: [madonhang])
+  sanpham   PhieuKhoSanpham[]
+}
 
-  @@index([donhangId])
-  @@index([maThanhToan])
-  @@index([ngayThanhToan])
-  @@index([trangThai])
+model PhieuKhoSanpham {
+  id         String   @id @default(uuid())
+  phieuKhoId String
+  sanphamId  String
+  soluong    Decimal  @default(0) @postgres.Decimal(20, 3)
+  ghichu     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  phieuKho   PhieuKho @relation(fields: [phieuKhoId], references: [id])
+  sanpham    Sanpham  @relation(fields: [sanphamId], references: [id])
+
+  @@unique([phieuKhoId, sanphamId])
 }
 
 model TonKho {
-  id        String  @id
+  id        String  @id @default(uuid())
   sanphamId String  @unique
   slton     Decimal @default(0) @postgres.Decimal(20, 3)
   slchogiao Decimal @default(0) @postgres.Decimal(20, 3)
   slchonhap Decimal @default(0) @postgres.Decimal(20, 3)
   sltontt   Decimal @default(0) @postgres.Decimal(20, 3)
-  Sanpham   Sanpham @relation(fields: [sanphamId], references: [id])
+  sanpham   Sanpham @relation(fields: [sanphamId], references: [id])
 }
 
-model User {
-  id                                                 String              @id
-  email                                              String?             @unique
-  SDT                                                String?             @unique
-  password                                           String
-  provider                                           String?
-  providerId                                         String?             @unique
-  isActive                                           Boolean             @default(false)
-  createdAt                                          DateTime            @default(now())
-  updatedAt                                          DateTime
-  name                                               String?
-  AuditLog                                           AuditLog[]
-  Chotkho                                            Chotkho[]
-  Chotkhodetail                                      Chotkhodetail[]
-  Nhanvien                                           Nhanvien?
-  Profile                                            Profile?
-  UserPermission                                     UserPermission[]
-  UserRole                                           UserRole[]
-  support_responses                                  support_responses[]
-  support_tickets_support_tickets_createdByToUser    support_tickets[]   @relation("support_tickets_createdByToUser")
-  support_tickets_support_tickets_technicianIdToUser support_tickets[]   @relation("support_tickets_technicianIdToUser")
+model Chotkho {
+  id        String          @id @default(uuid())
+  khoId     String?
+  ghichu    String?
+  isActive  Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  codeId    String?         @unique
+  title     String?
+  order     Int?            @default(1)
+  userId    String?
+  ngaychot  DateTime        @default(now())
+  kho       Kho?            @relation(fields: [khoId], references: [id])
+  user      User?           @relation(fields: [userId], references: [id])
+  details   Chotkhodetail[] @relation("ChotkhoDetails")
+
+  @@index([codeId])
+  @@index([ngaychot])
+  @@index([khoId])
 }
 
-model UserPermission {
-  id           String     @id
-  userId       String
-  permissionId String
-  isGranted    Boolean    @default(true)
-  grantedBy    String?
-  grantedAt    DateTime   @default(now())
-  expiresAt    DateTime?
-  reason       String?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime
-  Permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  User         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Chotkhodetail {
+  id           String   @id @default(uuid())
+  title        String?
+  ngaychot     DateTime @default(now())
+  sltonhethong Decimal  @default(0) @postgres.Decimal(20, 3)
+  sltonthucte  Decimal  @default(0) @postgres.Decimal(20, 3)
+  slhuy        Decimal  @default(0) @postgres.Decimal(20, 3)
+  chenhlech    Decimal  @default(0) @postgres.Decimal(20, 3)
+  ghichu       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  order        Int?     @default(1)
+  sanphamId    String?
+  chotkhoId    String?
+  userId       String?
+  chotkho      Chotkho? @relation("ChotkhoDetails", fields: [chotkhoId], references: [id])
+  sanpham      Sanpham? @relation("ChotkhodetailSanpham", fields: [sanphamId], references: [id])
+  user         User?    @relation("ChotkhodetailUser", fields: [userId], references: [id])
 
-  @@unique([userId, permissionId])
-  @@index([permissionId])
-  @@index([userId])
+  @@index([sanphamId])
+  @@index([ngaychot])
 }
 
-model UserRole {
-  id     String @id
-  userId String
-  roleId String
-  Role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+model FileManager {
+  id          String   @id @default(uuid())
+  codeId      String?  @unique
+  title       String?
+  url         String?
+  description String?
+  fileType    String?
+  fileSize    Int?
+  metaData    Json?
+  category    String?
+  group       String?
+  order       Int?     @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ChatAIMessage {
+  id        String   @id @default(uuid())
+  userId    String
+  message   String
+  reply     String
+  createdAt DateTime @default(now())
+}
+
+model ChatAIHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  message   String
+  sender    String
+  createdAt DateTime @default(now())
+}
+
+model File {
+  id        String   @id @default(uuid())
+  fileName  String?
+  fileUrl   String?
+  jsonData  Json?
+  createdAt DateTime @default(now())
+}
+
+model ErrorLog {
+  id        String   @id @default(uuid())
+  timestamp DateTime
+  message   String
+  details   Json?
+  source    String
+  createdAt DateTime @default(now())
 }
 
 model UserguidBlock {
-  id           String        @id
-  codeId       String?       @unique
-  type         String
-  title        String?
-  description  String?
-  listItems    String?
-  imageUrl     String?
-  imageAlt     String?
-  videoUrl     String?
-  videoType    String?
-  stepId       String?
-  order        Int?          @default(1)
-  isActive     Boolean       @default(true)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime
-  UserguidStep UserguidStep? @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  id          String        @id @default(uuid())
+  codeId      String?       @unique
+  type        String
+  title       String?
+  description String?
+  listItems   String?
+  imageUrl    String?
+  imageAlt    String?
+  videoUrl    String?
+  videoType   String?
+  stepId      String?
+  order       Int?          @default(1)
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  step        UserguidStep? @relation(fields: [stepId], references: [id], onDelete: Cascade)
 }
 
 model UserguidStep {
-  id            String          @id
-  codeId        String?         @unique
-  time          String?
-  title         String?
-  description   String?
-  order         Int?            @default(1)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime
-  UserguidBlock UserguidBlock[]
+  id             String          @id @default(uuid())
+  codeId         String?         @unique
+  time           String?
+  title          String?
+  description    String?
+  order          Int?            @default(1)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  UserguidBlocks UserguidBlock[]
 
   @@index([id])
 }
 
-model performance_logs {
-  id          String   @id
+model ImportHistory {
+  id         String   @id @default(uuid())
+  caseDetail Json?
+  importTime DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  codeId     String?  @unique
+  order      Int?     @default(1)
+  createdBy  String?  @default("system")
+  status     String?
+  title      String?
+  type       String?
+}
+
+model PerformanceLog {
+  id          String   @id @default(cuid())
   name        String
   duration    Float
   timestamp   DateTime @default(now())
@@ -877,61 +693,65 @@ model performance_logs {
   statusCode  Int?
   memoryUsage Float?
 
-  @@index([duration])
+  @@index([timestamp])
   @@index([name])
   @@index([success])
-  @@index([timestamp])
+  @@index([duration])
+  @@map("performance_logs")
 }
 
-model support_attachments {
-  id                String             @id
-  fileUrl           String
-  fileName          String
-  fileType          String
-  fileSize          Int                @default(0)
-  createdAt         DateTime           @default(now())
-  ticketId          String?
-  responseId        String?
-  support_responses support_responses? @relation(fields: [responseId], references: [id], onDelete: Cascade)
-  support_tickets   support_tickets?   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-
-  @@index([responseId])
-  @@index([ticketId])
-}
-
-model support_responses {
-  id                  String                @id
-  content             String
-  createdAt           DateTime              @default(now())
-  createdBy           String
-  ticketId            String
-  support_attachments support_attachments[]
-  User                User                  @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  support_tickets     support_tickets       @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+model SupportTicket {
+  id           String              @id @default(cuid())
+  title        String
+  description  String
+  status       TicketStatus        @default(open)
+  priority     TicketPriority      @default(medium)
+  category     String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  createdBy    String
+  technicianId String?
+  attachments  SupportAttachment[]
+  responses    SupportResponse[]
+  user         User                @relation("UserTickets", fields: [createdBy], references: [id], onDelete: Cascade)
+  technician   User?               @relation("TechnicianTickets", fields: [technicianId], references: [id])
 
   @@index([createdBy])
-  @@index([ticketId])
-}
-
-model support_tickets {
-  id                                      String                @id
-  title                                   String
-  description                             String
-  status                                  TicketStatus          @default(open)
-  priority                                TicketPriority        @default(medium)
-  category                                String?
-  createdAt                               DateTime              @default(now())
-  updatedAt                               DateTime
-  createdBy                               String
-  technicianId                            String?
-  support_attachments                     support_attachments[]
-  support_responses                       support_responses[]
-  User_support_tickets_createdByToUser    User                  @relation("support_tickets_createdByToUser", fields: [createdBy], references: [id], onDelete: Cascade)
-  User_support_tickets_technicianIdToUser User?                 @relation("support_tickets_technicianIdToUser", fields: [technicianId], references: [id])
-
-  @@index([createdBy])
-  @@index([status])
   @@index([technicianId])
+  @@index([status])
+  @@map("support_tickets")
+}
+
+model SupportResponse {
+  id          String              @id @default(cuid())
+  content     String
+  createdAt   DateTime            @default(now())
+  createdBy   String
+  ticketId    String
+  attachments SupportAttachment[]
+  user        User                @relation("UserResponses", fields: [createdBy], references: [id], onDelete: Cascade)
+  ticket      SupportTicket       @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([createdBy])
+  @@map("support_responses")
+}
+
+model SupportAttachment {
+  id         String           @id @default(cuid())
+  fileUrl    String
+  fileName   String
+  fileType   String
+  fileSize   Int              @default(0)
+  createdAt  DateTime         @default(now())
+  ticketId   String?
+  responseId String?
+  response   SupportResponse? @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  ticket     SupportTicket?   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([responseId])
+  @@map("support_attachments")
 }
 
 enum AuditAction {
@@ -945,66 +765,12 @@ enum AuditAction {
   IMPORT
 }
 
-enum CronJobStatus {
-  running
-  success
-  failed
-}
-
-enum DoiTuongThuChi {
-  KHACHHANG
-  NHACUNGCAP
-  NHANVIEN
-  KHAC
-}
-
-enum GioiTinh {
-  NAM
-  NU
-  KHAC
-}
-
-enum LoaiPhieuThuChi {
-  THU
-  CHI
-}
-
-enum LoaiPhongban {
-  PHONGBAN
-  BOPHAN
-  PHONG
-  BAN
-  TO
-  NHOM
-  KHAC
-}
-
-enum LoaiThanhToan {
-  CO_HOA_DON
-  KHONG_HOA_DON
-  TONG_HOP
-}
-
-enum PhuongThucThanhToan {
-  TIEN_MAT
-  CHUYEN_KHOAN
-  THE
-  VI_DIEN_TU
-}
-
 enum StatusDonhang {
   dadat
   dagiao
   danhan
   huy
   hoanthanh
-}
-
-enum TicketPriority {
-  low
-  medium
-  high
-  urgent
 }
 
 enum TicketStatus {
@@ -1014,30 +780,359 @@ enum TicketStatus {
   closed
 }
 
-enum TrangThaiHoaDon {
-  NHAP
-  DA_XUAT
-  HUY
+enum TicketPriority {
+  low
+  medium
+  high
+  urgent
 }
 
-enum TrangThaiNhanvien {
-  DANGLAMVIEC
-  NGHIPHEP
-  THUVIEC
-  DANGHIVIEC
-  TAMNGHI
+// ===========================
+// MODELS: NHÂN VIÊN & PHÒNG BAN
+// ===========================
+
+model Phongban {
+  id            String       @id @default(uuid())
+  ma            String       @unique // Mã phòng ban (ví dụ: PB001, BP002)
+  ten           String // Tên phòng ban
+  loai          LoaiPhongban @default(PHONGBAN) // Loại: Phòng ban, Bộ phận, Phòng, Ban, Tổ, v.v.
+  level         Int          @default(1) // Cấp bậc: 1 = cao nhất, 2 = thuộc cấp 1, v.v.
+  moTa          String? // Mô tả phòng ban
+  dienThoai     String? // Số điện thoại phòng ban
+  email         String? // Email phòng ban
+  diaChi        String? // Địa chỉ phòng ban
+  truongPhongId String? // ID nhân viên làm trưởng phòng
+  parentId      String? // ID phòng ban cha (để tạo cấu trúc phân cấp)
+  order         Int?         @default(1) // Thứ tự sắp xếp
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // Relations
+  parent      Phongban?  @relation("PhongbanChildren", fields: [parentId], references: [id])
+  children    Phongban[] @relation("PhongbanChildren")
+  truongPhong Nhanvien?  @relation("TruongPhong", fields: [truongPhongId], references: [id])
+  nhanviens   Nhanvien[] @relation("PhongbanNhanvien")
+
+  @@index([ma])
+  @@index([parentId])
+  @@index([level])
+  @@index([truongPhongId])
+}
+
+model Nhanvien {
+  id              String    @id @default(uuid())
+  maNV            String    @unique // Mã nhân viên
+  maLamViec       String?   @unique // Mã làm việc
+  hoTen           String // Họ và tên
+  hoTenDem        String? // Họ và tên đệm (để tách riêng)
+  ten             String? // Tên (để tách riêng)
+  gioiTinh        GioiTinh? @default(KHAC) // Giới tính
+  ngaySinh        DateTime? // Ngày sinh
+  soDienThoai     String? // Số điện thoại
+  email           String?   @unique // Email
+  cmnd            String?   @unique // CMND/CCCD
+  ngayCapCmnd     DateTime? // Ngày cấp CMND
+  noiCapCmnd      String? // Nơi cấp CMND
+  diaChiThuongTru String? // Địa chỉ thường trú
+  diaChiTamTru    String? // Địa chỉ tạm trú
+  diaChiHienTai   String? // Địa chỉ hiện tại
+
+  // Thông tin công việc
+  phongbanId   String? // ID phòng ban
+  chucVu       String? // Chức vụ
+  viTri        String? // Vị trí công việc
+  ngayVaoLam   DateTime? // Ngày vào làm
+  ngayNghiViec DateTime? // Ngày nghỉ việc (nếu có)
+  trangThai    TrangThaiNhanvien @default(DANGLAMVIEC) // Trạng thái nhân viên
+  loaiHopDong  String? // Loại hợp động: Thử việc, Chính thức, Hợp đồng, v.v.
+
+  // Thông tin lương
+  luongCoBan       Decimal? @default(0) @postgres.Decimal(20, 3) // Lương cơ bản
+  hieuSuatCongViec Decimal? @default(0) @postgres.Decimal(20, 3) // Hiệu suất công việc
+  phuCapXang       Decimal? @default(0) @postgres.Decimal(20, 3) // Phụ cấp xăng
+  phuCapDienThoai  Decimal? @default(0) @postgres.Decimal(20, 3) // Phụ cấp điện thoại
+  hoTroChuyenCan   Decimal? @default(0) @postgres.Decimal(20, 3) // Hỗ trợ chuyên cần
+  tienAnGiuaCa     Decimal? @default(0) @postgres.Decimal(20, 3) // Tiền ăn giữa ca
+  thuongKinhDoanh  Decimal? @default(0) @postgres.Decimal(20, 3) // Thưởng kinh doanh
+  phuCapKhac       Decimal? @default(0) @postgres.Decimal(20, 3) // Phụ cấp khác
+  phuCap           Decimal? @default(0) @postgres.Decimal(20, 3) // Phụ cấp (tổng - deprecated)
+  heSoLuong        Decimal? @default(1) @postgres.Decimal(10, 2) // Hệ số lương
+
+  // Thông tin ngân hàng
+  soTaiKhoan String? // Số tài khoản
+  nganHang   String? // Tên ngân hàng
+  chiNhanh   String? // Chi nhánh
+
+  // Thông tin liên hệ khẩn cấp
+  nguoiLienHeKhanCap String? // Người liên hệ khẩn cấp
+  sdtKhanCap         String? // SĐT khẩn cấp
+  quanHeKhanCap      String? // Quan hệ với người liên hệ
+
+  // Metadata
+  ghiChu    String? // Ghi chú
+  avatar    String? // Ảnh đại diện
+  order     Int?     @default(1)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Tích hợp với User
+  userId String? @unique // ID của User nếu nhân viên có tài khoản
+
+  // Relations
+  phongban      Phongban?  @relation("PhongbanNhanvien", fields: [phongbanId], references: [id])
+  user          User?      @relation("UserNhanvien", fields: [userId], references: [id])
+  truongPhongOf Phongban[] @relation("TruongPhong")
+
+  @@index([maNV])
+  @@index([hoTen])
+  @@index([phongbanId])
+  @@index([userId])
+  @@index([email])
+  @@index([trangThai])
+}
+
+// ===========================
+// ENUMS: NHÂN VIÊN & PHÒNG BAN
+// ===========================
+
+enum LoaiPhongban {
+  PHONGBAN // Phòng ban
+  BOPHAN // Bộ phận
+  PHONG // Phòng
+  BAN // Ban
+  TO // Tổ
+  NHOM // Nhóm
+  KHAC // Khác
+}
+
+enum GioiTinh {
+  NAM
+  NU
   KHAC
 }
 
+enum TrangThaiNhanvien {
+  DANGLAMVIEC // Đang làm việc
+  NGHIPHEP // Nghỉ phép
+  THUVIEC // Thử việc
+  DANGHIVIEC // Đã nghỉ việc
+  TAMNGHI // Tạm nghỉ
+  KHAC // Khác
+}
+
+// ===========================
+// THU CHI & HÓA ĐƠN ĐIỆN TỬ
+// ===========================
+
+// 1. Phiếu Thu Chi
+model PhieuThuChi {
+  id      String          @id @default(uuid())
+  maPhieu String          @unique // Mã phiếu tự động: PTH001, PTC001
+  loai    LoaiPhieuThuChi // THU hoặc CHI
+  ngay    DateTime        @default(now())
+  soTien  Decimal         @postgres.Decimal(20, 3)
+
+  // Liên kết với đơn hàng/đặt hàng (optional)
+  donhangId String?
+  dathangId String?
+
+  // Đối tượng thu/chi
+  doiTuong    DoiTuongThuChi // KHACHHANG, NHACUNGCAP, NHANVIEN, KHAC
+  doiTuongId  String? // ID của khách hàng, nhà cung cấp, nhân viên
+  tenDoiTuong String? // Tên đối tượng (nếu KHAC)
+
+  // Phương thức thanh toán
+  phuongThuc PhuongThucThanhToan @default(TIEN_MAT)
+
+  // Hóa đơn
+  coHoaDon Boolean @default(false)
+
+  // Trạng thái phiếu
+  trangThai TrangThaiPhieu @default(NHAP)
+
+  // Người tạo, người duyệt
+  nguoiTaoId   String?
+  nguoiDuyetId String?
+  ngayDuyet    DateTime?
+
+  // Ghi chú
+  ghichu String?
+  lydo   String? // Lý do thu/chi
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  donhang Donhang? @relation(fields: [donhangId], references: [id])
+
+  @@index([maPhieu])
+  @@index([loai])
+  @@index([ngay])
+  @@index([trangThai])
+  @@index([donhangId])
+  @@index([doiTuong, doiTuongId])
+}
+
+// 2. Thanh toán đơn hàng
+model ThanhToan {
+  id          String  @id @default(uuid())
+  maThanhToan String  @unique // Mã thanh toán tự động: TT001
+  donhangId   String
+  soTien      Decimal @postgres.Decimal(20, 3)
+
+  // Loại thanh toán
+  loai LoaiThanhToan @default(KHONG_HOA_DON)
+
+  // Phương thức thanh toán
+  phuongThuc PhuongThucThanhToan @default(TIEN_MAT)
+
+  // Thông tin thanh toán
+  ngayThanhToan DateTime           @default(now())
+  trangThai     TrangThaiThanhToan @default(DA_THANH_TOAN)
+
+  // Người tạo
+  nguoiTaoId String?
+
+  // Ghi chú
+  ghichu String?
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  donhang Donhang @relation(fields: [donhangId], references: [id], onDelete: Cascade)
+
+  @@index([maThanhToan])
+  @@index([donhangId])
+  @@index([ngayThanhToan])
+  @@index([trangThai])
+}
+
+// 3. Hóa đơn điện tử (Tự quản lý - không MISA)
+model HoaDonDienTu {
+  id        String @id @default(uuid())
+  donhangId String
+
+  // Thông tin hóa đơn
+  soHoaDon String  @unique // Số hóa đơn
+  mauSo    String? // Mẫu số hóa đơn
+  kyHieu   String? // Ký hiệu hóa đơn
+
+  // Ngày lập
+  ngayLap DateTime @default(now())
+
+  // Thông tin số tiền
+  tongTien      Decimal @postgres.Decimal(20, 3)
+  tongVAT       Decimal @default(0) @postgres.Decimal(20, 3)
+  tongThanhToan Decimal @postgres.Decimal(20, 3)
+
+  // Trạng thái
+  trangThai TrangThaiHoaDon @default(NHAP)
+
+  // File PDF
+  pdfUrl String? // Link file PDF hóa đơn
+
+  // Người tạo, người duyệt
+  nguoiTaoId   String?
+  nguoiDuyetId String?
+  ngayDuyet    DateTime?
+
+  // Ghi chú
+  ghichu String?
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  donhang Donhang @relation(fields: [donhangId], references: [id], onDelete: Cascade)
+
+  @@index([soHoaDon])
+  @@index([donhangId])
+  @@index([ngayLap])
+  @@index([trangThai])
+}
+
+// ===========================
+// ENUMS: THU CHI & HÓA ĐƠN
+// ===========================
+
+enum LoaiPhieuThuChi {
+  THU // Phiếu thu
+  CHI // Phiếu chi
+}
+
+enum DoiTuongThuChi {
+  KHACHHANG // Khách hàng
+  NHACUNGCAP // Nhà cung cấp
+  NHANVIEN // Nhân viên
+  KHAC // Đối tượng khác
+}
+
+enum PhuongThucThanhToan {
+  TIEN_MAT // Tiền mặt
+  CHUYEN_KHOAN // Chuyển khoản
+  THE // Thẻ
+  VI_DIEN_TU // Ví điện tử
+}
+
 enum TrangThaiPhieu {
-  NHAP
-  CHO_DUYET
-  DA_DUYET
-  HUY
+  NHAP // Đang nhập
+  CHO_DUYET // Chờ duyệt
+  DA_DUYET // Đã duyệt
+  HUY // Hủy
+}
+
+enum LoaiThanhToan {
+  CO_HOA_DON // Có hóa đơn
+  KHONG_HOA_DON // Không hóa đơn
+  TONG_HOP // Tổng hợp
 }
 
 enum TrangThaiThanhToan {
-  CHO_THANH_TOAN
-  DA_THANH_TOAN
-  HUY
+  CHO_THANH_TOAN // Chờ thanh toán
+  DA_THANH_TOAN // Đã thanh toán
+  HUY // Hủy
+}
+
+enum TrangThaiHoaDon {
+  NHAP // Đang nhập
+  DA_XUAT // Đã xuất
+  HUY // Hủy
+}
+
+// ===========================
+// CRON EXECUTION LOG
+// ===========================
+
+enum CronJobStatus {
+  running
+  success
+  failed
+}
+
+model CronExecutionLog {
+  id            String        @id @default(uuid())
+  jobId         String
+  jobName       String
+  category      String?
+  triggeredBy   String?       @default("system")
+  startTime     DateTime      @default(now())
+  endTime       DateTime?
+  status        CronJobStatus @default(running)
+  executionTime Int?
+  message       String?
+  error         String?
+  details       Json?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([jobId])
+  @@index([status])
+  @@index([startTime])
+  @@index([createdAt])
 }

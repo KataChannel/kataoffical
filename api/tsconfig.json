@@ -17,5 +17,12 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "include": ["src/**/*", "prisma/prisma.module.ts", "prisma/prisma.service.ts", "prisma/seed.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "scripts",
+    "test"
+  ]
 }
