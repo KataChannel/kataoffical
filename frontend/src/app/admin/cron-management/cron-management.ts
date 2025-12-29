@@ -17,6 +17,7 @@ export interface CronJobResult {
   jobId: string;
   jobName: string;
   message: string;
+  details?: string | string[];
   executionTime?: number;
   result?: any;
   error?: string;
@@ -38,10 +39,27 @@ export interface CronExecutionLog {
   id: string;
   jobId: string;
   jobName: string;
+  category?: string;
   startTime: Date;
   endTime?: Date;
-  status: 'running' | 'success' | 'failed';
+  status: 'running' | 'success' | 'failed' | 'pending';
   message?: string;
   error?: string;
+  executionTime?: number;
+  triggeredBy?: string;
   progress?: CronJobProgress;
+}
+
+export interface CronLogStats {
+  totalLogs: number;
+  successCount: number;
+  failedCount: number;
+  runningCount: number;
+  avgExecutionTime: number;
+  lastExecution?: Date;
+  byJob: {
+    jobId: string;
+    count: number;
+    successRate: number;
+  }[];
 }

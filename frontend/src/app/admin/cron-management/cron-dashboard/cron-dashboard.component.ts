@@ -20,6 +20,13 @@ export class CronDashboardComponent implements OnInit {
   showLogs = signal<boolean>(false);
   selectedDate = signal<string>(new Date().toISOString().split('T')[0]);
   toastMessage = signal<{ type: 'success' | 'error'; message: string } | null>(null);
+  
+  // Log search filters
+  logSearchJobId = signal<string>('');
+  logSearchStatus = signal<string>('');
+  logSearchStartDate = signal<string>('');
+  logSearchEndDate = signal<string>('');
+  logLimit = signal<number>(10);
 
   // Group jobs by category
   groupedJobs = computed(() => {
@@ -106,6 +113,31 @@ export class CronDashboardComponent implements OnInit {
 
   clearLogs() {
     this.cronService.clearLogs();
+  }
+
+  // Search/Filter logs
+  async searchLogs() {
+    await this.cronService.loadLogsFromDatabase({
+      jobId: this.logSearchJobId() || undefined,
+      status: this.logSearchStatus() || undefined,
+      startDate: this.logSearchStartDate() ? new Date(this.logSearchStartDate()) : undefined,
+      endDate: this.logSearchEndDate() ? new Date(this.logSearchEndDate() + 'T23:59:59') : undefined,
+      limit: this.logLimit(),
+    });
+  }
+
+  resetLogSearch() {
+    this.logSearchJobId.set('');
+    this.logSearchStatus.set('');
+    this.logSearchStartDate.set('');
+    this.logSearchEndDate.set('');
+    this.logLimit.set(10);
+    this.cronService.loadLogsFromDatabase({ limit: 10 });
+  }
+
+  loadMoreLogs() {
+    this.logLimit.update(l => l + 10);
+    this.searchLogs();
   }
 
   formatTime(date: Date | string | undefined): string {

@@ -4,6 +4,7 @@ import { PrismaModule } from 'prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
 import { DonhangModule } from '../donhang/donhang.module';
 import { DatabaseSyncService } from '../services/database-sync.service';
+import { CronLogService } from './cron-log.service';
 import { CronManagementController } from './cron-management.controller';
 
 @Module({
@@ -14,6 +15,7 @@ import { CronManagementController } from './cron-management.controller';
     DonhangModule,
   ],
   controllers: [CronManagementController],
-  providers: [DatabaseSyncService],
+  providers: [DatabaseSyncService, CronLogService],
+  exports: [CronLogService],
 })
 export class CronManagementModule {}

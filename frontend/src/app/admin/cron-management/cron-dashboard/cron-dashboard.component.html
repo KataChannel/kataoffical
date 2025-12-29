@@ -216,6 +216,53 @@
         </button>
       </div>
       
+      <!-- Search/Filter Logs -->
+      <div class="logs-search">
+        <div class="search-row">
+          <div class="search-field">
+            <label>Job</label>
+            <select [ngModel]="logSearchJobId()" (ngModelChange)="logSearchJobId.set($event)">
+              <option value="">Tất cả jobs</option>
+              @for (job of cronService.jobs(); track job.id) {
+                <option [value]="job.id">{{ job.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="search-field">
+            <label>Trạng thái</label>
+            <select [ngModel]="logSearchStatus()" (ngModelChange)="logSearchStatus.set($event)">
+              <option value="">Tất cả</option>
+              <option value="success">Thành công</option>
+              <option value="failed">Thất bại</option>
+              <option value="running">Đang chạy</option>
+            </select>
+          </div>
+          <div class="search-field">
+            <label>Từ ngày</label>
+            <input type="date" [ngModel]="logSearchStartDate()" (ngModelChange)="logSearchStartDate.set($event)">
+          </div>
+          <div class="search-field">
+            <label>Đến ngày</label>
+            <input type="date" [ngModel]="logSearchEndDate()" (ngModelChange)="logSearchEndDate.set($event)">
+          </div>
+          <div class="search-actions">
+            <button class="btn-primary btn-sm" (click)="searchLogs()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              Tìm kiếm
+            </button>
+            <button class="btn-ghost btn-sm" (click)="resetLogSearch()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+      
       <div class="logs-list">
         @if (cronService.executionLogs().length === 0) {
           <div class="logs-empty">
@@ -249,6 +296,13 @@
                   @if (log.message) {
                     <span class="log-message">{{ log.message }}</span>
                   }
+                  @if (log.progress?.details?.length) {
+                    <div class="log-stats">
+                      @for (detail of log.progress?.details || []; track $index) {
+                        <span class="log-stat-item">{{ detail }}</span>
+                      }
+                    </div>
+                  }
                   @if (log.error) {
                     <span class="log-error">{{ log.error }}</span>
                   }
@@ -257,6 +311,18 @@
                   }
                 </div>
               </div>
+            </div>
+          }
+          
+          <!-- Load More Button -->
+          @if (cronService.executionLogs().length >= logLimit()) {
+            <div class="logs-load-more">
+              <button class="btn-outline btn-sm" (click)="loadMoreLogs()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Xem thêm (đang hiển thị {{ cronService.executionLogs().length }} logs)
+              </button>
             </div>
           }
         }
