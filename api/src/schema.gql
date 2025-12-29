@@ -312,6 +312,7 @@ type Query {
   phieuThuChiList(loai: String!, trangThai: String!, doiTuong: String!, tuNgay: String!, denNgay: String!, page: Float!, limit: Float!): JSON!
   phieuThuChi(id: String!): JSON!
   baoCaoThuChi(tuNgay: String!, denNgay: String!): JSON!
+  thuChiSummary: JSON!
   hoaDonDienTuList(skip: Int, take: Int, where: JSON, orderBy: JSON): JSON!
   hoaDonDienTu(id: String!): JSON!
   baoCaoDongTien(tuNgay: String, denNgay: String, groupBy: String = "day"): JSON!

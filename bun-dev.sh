@@ -50,12 +50,13 @@ show_menu() {
     echo -e "  ${GREEN}6)${NC} 🔄 Fresh Install (xóa node_modules & cài lại)"
     echo -e "  ${GREEN}7)${NC} 📊 Mở Prisma Studio"
     echo -e "  ${GREEN}8)${NC} 🗄️  Push Database Schema"
+    echo -e "  ${GREEN}9)${NC} 🚀 Deploy V3 (Build + Upload + Deploy)"
     echo ""
     echo -e "  ${RED}0)${NC} ❌ Thoát"
     echo ""
     echo -e "${MAGENTA}═══════════════════════════════════════════════════════${NC}"
     echo ""
-    read -p "👉 Chọn option [0-8]: " choice
+    read -p "👉 Chọn option [0-9]: " choice
 }
 
 # ============================================
@@ -237,6 +238,24 @@ db_push() {
 }
 
 # ============================================
+# DEPLOY V3
+# ============================================
+deploy_v3() {
+    log_info "🚀 Bắt đầu Deploy V3..."
+    echo ""
+    
+    if [[ ! -f "./deploy-v3.sh" ]]; then
+        log_error "Không tìm thấy file deploy-v3.sh!"
+        return 1
+    fi
+    
+    chmod +x ./deploy-v3.sh
+    ./deploy-v3.sh all
+    
+    log_success "Deploy V3 hoàn thành!"
+}
+
+# ============================================
 # MAIN LOGIC
 # ============================================
 
@@ -312,6 +331,11 @@ while true; do
             ;;
         8)
             db_push
+            echo ""
+            read -p "Nhấn Enter để tiếp tục..."
+            ;;
+        9)
+            deploy_v3
             echo ""
             read -p "Nhấn Enter để tiếp tục..."
             ;;
