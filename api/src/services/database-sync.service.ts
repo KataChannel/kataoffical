@@ -3,12 +3,24 @@ import { exec } from 'child_process';
 import * as cron from 'node-cron';
 import * as path from 'path';
 import { promisify } from 'util';
+import { PrismaService } from '../../prisma/prisma.service';
 
 const execAsync = promisify(exec);
+
+export interface SyncStats {
+  success: boolean;
+  timestamp: Date;
+  duration?: number;
+  databaseSize?: string;
+  tableStats?: { name: string; count: number }[];
+  error?: string;
+}
 
 @Injectable()
 export class DatabaseSyncService {
   private readonly logger = new Logger(DatabaseSyncService.name);
+
+  constructor(private readonly prisma: PrismaService) {}
 
   onModuleInit() {
     this.setupScheduledSync();
@@ -52,18 +64,27 @@ export class DatabaseSyncService {
     this.logger.log('🧪 Test cron đã được thiết lập (chạy mỗi phút để test)');
   }
 
-  async syncDatabase() {
+  async syncDatabase(): Promise<SyncStats> {
+    const startTime = Date.now();
+    
     try {
       this.logger.log('🚀 Đang thực thi script đồng bộ database...');
       
       // Auto-detect script path: Docker hoặc Local
       // Use absolute path to avoid working directory issues
+      // Sử dụng script tối ưu: sync-database-optimized.sh
       const isProduction = process.env.NODE_ENV === 'production';
+      
+      // Get the project root (api folder), not dist folder
+      const projectRoot = path.resolve(__dirname, '..', '..');
+      const apiRoot = projectRoot.replace('/dist', '');  // Remove /dist if running from compiled code
+      
       const scriptPath = isProduction
-        ? '/app/scripts/sync-database.sh'   // Docker container
-        : path.resolve(__dirname, '../../scripts/sync-database.sh');  // Local development - absolute path
+        ? '/app/scripts/sync-database-optimized.sh'   // Docker container
+        : path.join(apiRoot, 'scripts', 'sync-database-optimized.sh');  // Local development
       
       this.logger.log(`📁 Script path: ${scriptPath}`);
+      this.logger.log(`📁 Project root: ${apiRoot}`);
       
       // Check if script exists
       const fs = await import('fs');
@@ -73,29 +94,177 @@ export class DatabaseSyncService {
       
       const { stdout, stderr } = await execAsync(`bash ${scriptPath}`, {
         cwd: path.dirname(scriptPath),  // Set working directory to script's folder
-        timeout: 300000  // 5 minutes timeout
+        timeout: 300000,  // 5 minutes timeout
+        maxBuffer: 50 * 1024 * 1024  // 50MB buffer để tránh lỗi buffer overflow
       });
       
       if (stdout) {
-        this.logger.log(`📋 Output: ${stdout}`);
+        // Chỉ log những dòng quan trọng, bỏ qua các dòng COPY/SET/ALTER
+        const importantLines = stdout
+          .split('\n')
+          .filter(line => !line.match(/^(COPY \d+|SET|ALTER TABLE|CREATE|DROP|TRUNCATE|DO|\s*)$/))
+          .join('\n');
+        if (importantLines.trim()) {
+          this.logger.log(`📋 Output: ${importantLines}`);
+        }
       }
       
+      // stderr từ psql có thể chứa warnings không quan trọng
       if (stderr) {
-        this.logger.warn(`⚠️  Warnings: ${stderr}`);
+        const criticalErrors = stderr
+          .split('\n')
+          .filter(line => line.includes('ERROR') && !line.includes('transaction_timeout'))
+          .join('\n');
+        if (criticalErrors) {
+          this.logger.warn(`⚠️  Warnings: ${criticalErrors}`);
+        }
       }
+
+      const duration = Date.now() - startTime;
       
-      this.logger.log('✅ Hoàn thành đồng bộ database');
-      return { success: true, timestamp: new Date(), output: stdout };
+      // Lấy thống kê chi tiết sau khi sync
+      const stats = await this.getDatabaseStats();
+      
+      // Log chi tiết kết quả
+      this.logSyncSuccess(duration, stats);
+      
+      return { 
+        success: true, 
+        timestamp: new Date(), 
+        duration,
+        ...stats
+      };
     } catch (error) {
+      const duration = Date.now() - startTime;
       this.logger.error(`❌ Lỗi khi đồng bộ database: ${error.message}`);
       this.logger.error(error.stack);
-      return { success: false, error: error.message };
+      this.logger.error(`⏱️ Thời gian thực thi trước khi lỗi: ${this.formatDuration(duration)}`);
+      return { success: false, timestamp: new Date(), duration, error: error.message };
     }
   }
 
+  /**
+   * Lấy thống kê chi tiết về database
+   */
+  private async getDatabaseStats(): Promise<{ databaseSize: string; tableStats: { name: string; count: number }[] }> {
+    try {
+      // Lấy dung lượng database
+      const sizeResult = await this.prisma.$queryRaw<{ size: string }[]>`
+        SELECT pg_size_pretty(pg_database_size(current_database())) as size
+      `;
+      const databaseSize = sizeResult[0]?.size || 'N/A';
+
+      // Lấy số lượng records của các bảng quan trọng
+      const tableStats: { name: string; count: number }[] = [];
+      
+      const tables = [
+        { name: 'Khachhang', model: () => this.prisma.khachhang.count() },
+        { name: 'Sanpham', model: () => this.prisma.sanpham.count() },
+        { name: 'Donhang', model: () => this.prisma.donhang.count() },
+        { name: 'Donhangsanpham', model: () => this.prisma.donhangsanpham.count() },
+        { name: 'Banggia', model: () => this.prisma.banggia.count() },
+        { name: 'Banggiasanpham', model: () => this.prisma.banggiasanpham.count() },
+        { name: 'Nhacungcap', model: () => this.prisma.nhacungcap.count() },
+        { name: 'Dathang', model: () => this.prisma.dathang.count() },
+        { name: 'User', model: () => this.prisma.user.count() },
+        { name: 'Kho', model: () => this.prisma.kho.count() },
+        { name: 'Nhanvien', model: () => this.prisma.nhanvien.count() },
+        { name: 'Menu', model: () => this.prisma.menu.count() },
+        { name: 'Permission', model: () => this.prisma.permission.count() },
+        { name: 'Role', model: () => this.prisma.role.count() },
+      ];
+
+      for (const table of tables) {
+        try {
+          const count = await table.model();
+          tableStats.push({ name: table.name, count });
+        } catch {
+          tableStats.push({ name: table.name, count: -1 });
+        }
+      }
+
+      return { databaseSize, tableStats };
+    } catch (error) {
+      this.logger.warn(`⚠️ Không thể lấy thống kê database: ${error.message}`);
+      return { databaseSize: 'N/A', tableStats: [] };
+    }
+  }
+
+  /**
+   * Log kết quả sync thành công với chi tiết
+   */
+  private logSyncSuccess(duration: number, stats: { databaseSize: string; tableStats: { name: string; count: number }[] }) {
+    const divider = '═'.repeat(50);
+    
+    this.logger.log(`\n${divider}`);
+    this.logger.log(`✅ ĐỒNG BỘ DATABASE THÀNH CÔNG`);
+    this.logger.log(`${divider}`);
+    this.logger.log(`⏱️  Thời gian thực thi: ${this.formatDuration(duration)}`);
+    this.logger.log(`💾 Dung lượng database: ${stats.databaseSize}`);
+    this.logger.log(`📅 Thời điểm hoàn thành: ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`);
+    
+    if (stats.tableStats.length > 0) {
+      this.logger.log(`\n📊 THỐNG KÊ DỮ LIỆU:`);
+      this.logger.log(`${'─'.repeat(35)}`);
+      
+      // Tính tổng records
+      const totalRecords = stats.tableStats
+        .filter(t => t.count >= 0)
+        .reduce((sum, t) => sum + t.count, 0);
+      
+      // Hiển thị theo nhóm
+      const businessTables = stats.tableStats.filter(t => 
+        ['Khachhang', 'Sanpham', 'Donhang', 'Donhangsanpham', 'Nhacungcap', 'Dathang'].includes(t.name)
+      );
+      const priceTables = stats.tableStats.filter(t => 
+        ['Banggia', 'Banggiasanpham'].includes(t.name)
+      );
+      const systemTables = stats.tableStats.filter(t => 
+        ['User', 'Kho', 'Nhanvien', 'Menu', 'Permission', 'Role'].includes(t.name)
+      );
+
+      this.logger.log(`\n🏢 Dữ liệu kinh doanh:`);
+      businessTables.forEach(t => {
+        this.logger.log(`   ${t.name.padEnd(18)} : ${t.count >= 0 ? t.count.toLocaleString('vi-VN').padStart(10) : 'N/A'.padStart(10)} records`);
+      });
+
+      this.logger.log(`\n💰 Bảng giá:`);
+      priceTables.forEach(t => {
+        this.logger.log(`   ${t.name.padEnd(18)} : ${t.count >= 0 ? t.count.toLocaleString('vi-VN').padStart(10) : 'N/A'.padStart(10)} records`);
+      });
+
+      this.logger.log(`\n⚙️ Hệ thống:`);
+      systemTables.forEach(t => {
+        this.logger.log(`   ${t.name.padEnd(18)} : ${t.count >= 0 ? t.count.toLocaleString('vi-VN').padStart(10) : 'N/A'.padStart(10)} records`);
+      });
+
+      this.logger.log(`\n📈 TỔNG CỘNG: ${totalRecords.toLocaleString('vi-VN')} records`);
+    }
+    
+    this.logger.log(`${divider}\n`);
+  }
+
+  /**
+   * Format duration sang string dễ đọc
+   */
+  private formatDuration(ms: number): string {
+    if (ms < 1000) return `${ms}ms`;
+    if (ms < 60000) return `${(ms / 1000).toFixed(2)}s`;
+    const minutes = Math.floor(ms / 60000);
+    const seconds = ((ms % 60000) / 1000).toFixed(1);
+    return `${minutes}m ${seconds}s`;
+  }
+
   // Manual trigger endpoint (optional)
-  async manualSync() {
+  async manualSync(): Promise<SyncStats> {
     this.logger.log('🔧 Đồng bộ thủ công được kích hoạt');
     return await this.syncDatabase();
+  }
+
+  /**
+   * Lấy thông tin tổng quan database mà không sync
+   */
+  async getDatabaseInfo(): Promise<{ databaseSize: string; tableStats: { name: string; count: number }[] }> {
+    return await this.getDatabaseStats();
   }
 }
