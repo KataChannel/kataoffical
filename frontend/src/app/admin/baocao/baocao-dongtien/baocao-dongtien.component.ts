@@ -8,8 +8,6 @@ import {
     CardContentComponent,
     CardHeaderComponent,
     CardTitleComponent,
-    ErrorStateComponent,
-    SkeletonComponent,
 } from '../../../shared/ui';
 
 interface DongTienData {
@@ -17,6 +15,7 @@ interface DongTienData {
   thu: number;
   chi: number;
   ton: number;
+  chenhLech?: number;
 }
 
 interface BaoCaoResponse {
@@ -55,8 +54,6 @@ const GET_BAO_CAO_DONG_TIEN = gql`
     CardTitleComponent,
     CardContentComponent,
     ButtonComponent,
-    SkeletonComponent,
-    ErrorStateComponent,
   ],
   template: `
     <!-- Mobile-First Báo cáo dòng tiền -->
@@ -213,9 +210,9 @@ const GET_BAO_CAO_DONG_TIEN = gql`
               <div class="mt-2 pt-2 border-t">
                 <span class="text-muted-foreground text-sm">Chênh lệch:</span>
                 <span class="font-bold ml-2"
-                      [class.text-success]="item.chenhLech >= 0"
-                      [class.text-destructive]="item.chenhLech < 0">
-                  {{ formatCurrency(item.chenhLech) }}
+                      [class.text-success]="getChenhLech(item) >= 0"
+                      [class.text-destructive]="getChenhLech(item) < 0">
+                  {{ formatCurrency(getChenhLech(item)) }}
                 </span>
               </div>
             </div>
@@ -243,19 +240,14 @@ const GET_BAO_CAO_DONG_TIEN = gql`
                     {{ formatCurrency(item.chi) }}
                   </td>
                   <td class="px-4 py-3 text-sm text-right font-bold"
-                      [class.text-success]="item.chenhLech >= 0"
-                      [class.text-destructive]="item.chenhLech < 0">
-                    {{ formatCurrency(item.chenhLech) }}
+                      [class.text-success]="getChenhLech(item) >= 0"
+                      [class.text-destructive]="getChenhLech(item) < 0">
+                    {{ formatCurrency(getChenhLech(item)) }}
                   </td>
                   <td class="px-4 py-3 text-sm text-center">
                     <span class="inline-block px-2 py-1 rounded-full text-xs"
-                          [class.bg-success/10]="item.chi > 0 && item.thu / item.chi > 1.2"
-                          [class.text-success]="item.chi > 0 && item.thu / item.chi > 1.2"
-                          [class.bg-warning/10]="item.chi > 0 && item.thu / item.chi <= 1.2 && item.thu / item.chi >= 0.8"
-                          [class.text-warning]="item.chi > 0 && item.thu / item.chi <= 1.2 && item.thu / item.chi >= 0.8"
-                          [class.bg-destructive/10]="item.chi > 0 && item.thu / item.chi < 0.8"
-                          [class.text-destructive]="item.chi > 0 && item.thu / item.chi < 0.8">
-                      {{ item.chi > 0 ? ((item.thu / item.chi) * 100).toFixed(0) + '%' : 'N/A' }}
+                          [ngClass]="getRatioClass(item)">
+                      {{ getRatioText(item) }}
                     </span>
                   </td>
                 </tr>
@@ -295,7 +287,13 @@ export class BaocaoDongtienComponent implements OnInit {
   
   baoCao = signal<BaoCaoResponse | null>(null);
   
-  data = computed(() => this.baoCao()?.data || []);
+  data = computed(() => {
+    const d = this.baoCao()?.data || [];
+    return d.map(item => ({
+      ...item,
+      chenhLech: item.thu - item.chi
+    }));
+  });
   
   summary = computed(() => {
     const bc = this.baoCao();
@@ -314,7 +312,6 @@ export class BaocaoDongtienComponent implements OnInit {
   constructor(private apollo: Apollo) {}
 
   ngOnInit(): void {
-    // Set default date range (last 30 days)
     const today = new Date();
     const last30Days = new Date(today);
     last30Days.setDate(today.getDate() - 30);
@@ -361,8 +358,25 @@ export class BaocaoDongtienComponent implements OnInit {
     }).format(amount);
   }
 
-  formatDate(date: Date): string {
+  formatDate(date: string | Date): string {
     return new Date(date).toLocaleDateString('vi-VN');
+  }
+
+  getChenhLech(item: DongTienData): number {
+    return item.thu - item.chi;
+  }
+
+  getRatioClass(item: DongTienData): string {
+    if (item.chi <= 0) return 'bg-slate-100 text-slate-600';
+    const ratio = item.thu / item.chi;
+    if (ratio > 1.2) return 'bg-green-100 text-green-700';
+    if (ratio >= 0.8) return 'bg-yellow-100 text-yellow-700';
+    return 'bg-red-100 text-red-700';
+  }
+
+  getRatioText(item: DongTienData): string {
+    if (item.chi <= 0) return 'N/A';
+    return ((item.thu / item.chi) * 100).toFixed(0) + '%';
   }
 
   getBarHeight(value: number): number {

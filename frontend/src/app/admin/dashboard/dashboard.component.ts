@@ -26,6 +26,7 @@ import { writeExcelFile } from '../../shared/utils/exceldrive.utils';
 // Dashboard Widgets
 import { CongNoWidgetComponent } from './widgets/congno-widget.component';
 import { DonhangChoXacNhanWidgetComponent } from './widgets/donhang-cho-xacnhan.component';
+import { ThuchiWidgetComponent } from './widgets/thuchi-widget.component';
 
 // Chart.js types
 declare var Chart: any;
@@ -56,7 +57,8 @@ interface TopCustomer {
     MatTooltipModule,
     FormsModule,
     DonhangChoXacNhanWidgetComponent,
-    CongNoWidgetComponent
+    CongNoWidgetComponent,
+    ThuchiWidgetComponent
   ],
   templateUrl: './dashboard.component.html'
 })

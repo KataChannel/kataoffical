@@ -513,6 +513,15 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'cashflow',
+        canActivate: [PermissionGuard],
+        data: { permission: 'cashflow.view' },
+        loadComponent: () =>
+          import('./admin/baocao/baocao-dongtien/baocao-dongtien.component').then(
+            (c) => c.BaocaoDongtienComponent
+          ),
+      },
+      {
         path: 'cron-management',
         canActivate: [PermissionGuard],
         data: { permission: 'cron-management.view' },

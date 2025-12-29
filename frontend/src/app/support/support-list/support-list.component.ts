@@ -1,12 +1,12 @@
-import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { RouterModule } from '@angular/router';
 import { SupportService } from '../support.service';
 
 @Component({
@@ -17,69 +17,139 @@ import { SupportService } from '../support.service';
     FormsModule,
     RouterModule,
     MatButtonModule,
-    MatCardModule,
-    MatChipsModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
+    MatFormFieldModule,
   ],
   template: `
-    <div class="container mx-auto p-4">
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Hỗ trợ kỹ thuật</h1>
-        <button mat-raised-button color="primary" [routerLink]="['/admin/support/new']">
-          <mat-icon>add</mat-icon>
-          Tạo vấn đề mới
-        </button>
-      </div>
-
-      @if (loading()) {
-        <div class="flex justify-center p-8">
-          <mat-spinner></mat-spinner>
-        </div>
-      } @else {
-        <div class="grid gap-4">
-          @for (ticket of tickets(); track ticket.id) {
-            <mat-card class="cursor-pointer hover:shadow-lg transition-shadow" 
-                      [routerLink]="['/admin/support', ticket.id]">
-              <mat-card-header>
-                <mat-card-title>
-                  <div class="flex items-center justify-between">
-                    <span>{{ticket.title}}</span>
-                    <mat-chip [class]="getStatusClass(ticket.status)">
-                      {{getStatusLabel(ticket.status)}}
-                    </mat-chip>
-                  </div>
-                </mat-card-title>
-                <mat-card-subtitle>
-                  <div class="flex items-center gap-2 mt-2">
-                    <mat-chip [class]="getPriorityClass(ticket.priority)">
-                      {{getPriorityLabel(ticket.priority)}}
-                    </mat-chip>
-                    <span>•</span>
-                    <span>{{ticket.createdAt | date:'dd/MM/yyyy HH:mm'}}</span>
-                  </div>
-                </mat-card-subtitle>
-              </mat-card-header>
-              <mat-card-content>
-                <p class="text-gray-600 line-clamp-2">{{ticket.description}}</p>
-                @if (ticket.responses?.length) {
-                  <div class="flex items-center gap-2 mt-2 text-sm text-gray-500">
-                    <mat-icon class="text-sm">comment</mat-icon>
-                    <span>{{ticket.responses.length}} phản hồi</span>
-                  </div>
-                }
-              </mat-card-content>
-            </mat-card>
-          }
-        </div>
-
-        @if (tickets().length === 0) {
-          <div class="text-center p-12 text-gray-500">
-            <mat-icon class="text-6xl mb-4">inbox</mat-icon>
-            <p>Chưa có vấn đề nào được tạo</p>
+    <!-- Mobile-First Header -->
+    <div class="min-h-screen bg-slate-50">
+      <!-- Sticky Header -->
+      <header class="sticky top-0 z-10 bg-white border-b border-slate-200 shadow-sm">
+        <div class="px-4 py-3 sm:px-6">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h1 class="text-xl font-semibold text-slate-900 sm:text-2xl">Hỗ trợ kỹ thuật</h1>
+            <button 
+              [routerLink]="['/admin/support/new']"
+              class="inline-flex items-center justify-center gap-2 px-4 py-2.5 
+                     bg-primary text-white rounded-lg font-medium
+                     hover:bg-primary/90 active:scale-[0.98] transition-all
+                     shadow-sm hover:shadow w-full sm:w-auto">
+              <mat-icon class="text-[20px]">add</mat-icon>
+              <span>Tạo vấn đề mới</span>
+            </button>
           </div>
+
+          <!-- Filter Tabs - Mobile Scrollable -->
+          <div class="flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide">
+            @for (filter of statusFilters; track filter.value) {
+              <button 
+                (click)="filterByStatus(filter.value)"
+                [class]="selectedStatus() === filter.value 
+                  ? 'bg-primary text-white' 
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                class="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap 
+                       transition-colors flex items-center gap-1.5 shrink-0">
+                <span>{{filter.label}}</span>
+                @if (filter.value === '') {
+                  <span class="bg-white/20 text-xs px-1.5 py-0.5 rounded-full">
+                    {{tickets().length}}
+                  </span>
+                }
+              </button>
+            }
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <main class="px-4 py-4 sm:px-6 sm:py-6 max-w-4xl mx-auto">
+        @if (loading()) {
+          <div class="flex flex-col items-center justify-center py-12 gap-3">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="text-sm text-slate-500">Đang tải...</span>
+          </div>
+        } @else {
+          <!-- Ticket List -->
+          <div class="space-y-3">
+            @for (ticket of filteredTickets(); track ticket.id) {
+              <article 
+                [routerLink]="['/admin/support', ticket.id]"
+                class="bg-white rounded-xl border border-slate-200 p-4 
+                       hover:border-primary/30 hover:shadow-md
+                       active:scale-[0.99] transition-all cursor-pointer">
+                <!-- Top Row: Status + Priority -->
+                <div class="flex items-center gap-2 mb-2">
+                  <span [class]="getStatusBadgeClass(ticket.status)"
+                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium">
+                    <span class="w-1.5 h-1.5 rounded-full mr-1.5" 
+                          [class]="getStatusDotClass(ticket.status)"></span>
+                    {{getStatusLabel(ticket.status)}}
+                  </span>
+                  <span [class]="getPriorityBadgeClass(ticket.priority)"
+                        class="inline-flex items-center px-2 py-1 rounded text-xs font-medium">
+                    {{getPriorityLabel(ticket.priority)}}
+                  </span>
+                </div>
+
+                <!-- Title -->
+                <h3 class="font-medium text-slate-900 text-base leading-snug mb-1.5 line-clamp-2">
+                  {{ticket.title}}
+                </h3>
+
+                <!-- Description Preview -->
+                <p class="text-sm text-slate-500 line-clamp-2 mb-3">
+                  {{ticket.description}}
+                </p>
+
+                <!-- Footer: Meta Info -->
+                <div class="flex items-center justify-between text-xs text-slate-400">
+                  <div class="flex items-center gap-1">
+                    <mat-icon class="text-[14px]">person</mat-icon>
+                    <span>{{ticket.user?.name || 'N/A'}}</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    @if (ticket.responses?.length) {
+                      <div class="flex items-center gap-1">
+                        <mat-icon class="text-[14px]">chat_bubble_outline</mat-icon>
+                        <span>{{ticket.responses.length}}</span>
+                      </div>
+                    }
+                    @if (ticket.attachments?.length) {
+                      <div class="flex items-center gap-1">
+                        <mat-icon class="text-[14px]">attach_file</mat-icon>
+                        <span>{{ticket.attachments.length}}</span>
+                      </div>
+                    }
+                    <span>{{ticket.createdAt | date:'dd/MM'}}</span>
+                  </div>
+                </div>
+              </article>
+            }
+          </div>
+
+          <!-- Empty State -->
+          @if (filteredTickets().length === 0) {
+            <div class="flex flex-col items-center justify-center py-16 text-center">
+              <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                <mat-icon class="text-4xl text-slate-400">support_agent</mat-icon>
+              </div>
+              <h3 class="text-lg font-medium text-slate-900 mb-1">Chưa có vấn đề nào</h3>
+              <p class="text-sm text-slate-500 mb-4 max-w-xs">
+                Tạo yêu cầu hỗ trợ để được phòng Kỹ thuật giải đáp
+              </p>
+              <button 
+                [routerLink]="['/admin/support/new']"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white 
+                       rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                <mat-icon>add</mat-icon>
+                Tạo vấn đề mới
+              </button>
+            </div>
+          }
         }
-      }
+      </main>
     </div>
   `,
   styles: [`
@@ -89,11 +159,40 @@ import { SupportService } from '../support.service';
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .bg-primary {
+      background-color: #3b82f6;
+    }
+    .text-primary {
+      color: #3b82f6;
+    }
+    .border-primary\\/30 {
+      border-color: rgb(59 130 246 / 0.3);
+    }
+    .hover\\:bg-primary\\/90:hover {
+      background-color: rgb(59 130 246 / 0.9);
+    }
   `],
 })
 export class SupportListComponent implements OnInit {
   tickets = signal<any[]>([]);
+  filteredTickets = signal<any[]>([]);
   loading = signal(true);
+  selectedStatus = signal<string>('');
+
+  statusFilters = [
+    { label: 'Tất cả', value: '' },
+    { label: 'Mới', value: 'open' },
+    { label: 'Đang xử lý', value: 'inProgress' },
+    { label: 'Đã giải quyết', value: 'resolved' },
+    { label: 'Đã đóng', value: 'closed' },
+  ];
 
   constructor(private supportService: SupportService) {}
 
@@ -105,7 +204,9 @@ export class SupportListComponent implements OnInit {
     this.loading.set(true);
     this.supportService.tickets().subscribe({
       next: (res: any) => {
-        this.tickets.set(res.data.tickets || []);
+        const data = res.data?.tickets || [];
+        this.tickets.set(data);
+        this.filteredTickets.set(data);
         this.loading.set(false);
       },
       error: () => {
@@ -114,14 +215,35 @@ export class SupportListComponent implements OnInit {
     });
   }
 
-  getStatusClass(status: string): string {
+  filterByStatus(status: string) {
+    this.selectedStatus.set(status);
+    if (!status) {
+      this.filteredTickets.set(this.tickets());
+    } else {
+      this.filteredTickets.set(
+        this.tickets().filter(t => t.status === status)
+      );
+    }
+  }
+
+  getStatusBadgeClass(status: string): string {
     const classes: any = {
-      open: 'bg-blue-100 text-blue-800',
-      inProgress: 'bg-yellow-100 text-yellow-800',
-      resolved: 'bg-green-100 text-green-800',
-      closed: 'bg-gray-100 text-gray-800',
+      open: 'bg-blue-50 text-blue-700',
+      inProgress: 'bg-amber-50 text-amber-700',
+      resolved: 'bg-emerald-50 text-emerald-700',
+      closed: 'bg-slate-100 text-slate-600',
     };
-    return classes[status] || 'bg-gray-100';
+    return classes[status] || 'bg-slate-100 text-slate-600';
+  }
+
+  getStatusDotClass(status: string): string {
+    const classes: any = {
+      open: 'bg-blue-500',
+      inProgress: 'bg-amber-500',
+      resolved: 'bg-emerald-500',
+      closed: 'bg-slate-400',
+    };
+    return classes[status] || 'bg-slate-400';
   }
 
   getStatusLabel(status: string): string {
@@ -134,14 +256,14 @@ export class SupportListComponent implements OnInit {
     return labels[status] || status;
   }
 
-  getPriorityClass(priority: string): string {
+  getPriorityBadgeClass(priority: string): string {
     const classes: any = {
-      low: 'bg-gray-100 text-gray-800',
-      medium: 'bg-blue-100 text-blue-800',
-      high: 'bg-orange-100 text-orange-800',
-      urgent: 'bg-red-100 text-red-800',
+      low: 'bg-slate-100 text-slate-600',
+      medium: 'bg-blue-100 text-blue-700',
+      high: 'bg-orange-100 text-orange-700',
+      urgent: 'bg-red-100 text-red-700',
     };
-    return classes[priority] || 'bg-gray-100';
+    return classes[priority] || 'bg-slate-100';
   }
 
   getPriorityLabel(priority: string): string {

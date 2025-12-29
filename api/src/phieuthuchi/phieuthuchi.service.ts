@@ -293,4 +293,82 @@ export class PhieuThuChiService {
       soPhieuChi: phieuList.filter((p) => p.loai === LoaiPhieuThuChi.CHI).length,
     };
   }
+
+  // Summary cho dashboard widget
+  async getSummary() {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    // Tính tổng thu trong tháng (đã duyệt)
+    const thuResult = await this.prisma.phieuThuChi.aggregate({
+      where: {
+        loai: LoaiPhieuThuChi.THU,
+        trangThai: TrangThaiPhieu.DA_DUYET,
+        ngay: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+      },
+      _sum: {
+        soTien: true,
+      },
+    });
+
+    // Tính tổng chi trong tháng (đã duyệt)
+    const chiResult = await this.prisma.phieuThuChi.aggregate({
+      where: {
+        loai: LoaiPhieuThuChi.CHI,
+        trangThai: TrangThaiPhieu.DA_DUYET,
+        ngay: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+      },
+      _sum: {
+        soTien: true,
+      },
+    });
+
+    // Đếm số phiếu chờ duyệt
+    const choDuyet = await this.prisma.phieuThuChi.count({
+      where: {
+        trangThai: TrangThaiPhieu.CHO_DUYET,
+      },
+    });
+
+    // Lấy phiếu gần đây
+    const phieuGanDay = await this.prisma.phieuThuChi.findMany({
+      where: {
+        ngay: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 5,
+      select: {
+        id: true,
+        maPhieu: true,
+        loai: true,
+        soTien: true,
+        trangThai: true,
+        ngay: true,
+        doiTuong: true,
+        tenDoiTuong: true,
+      },
+    });
+
+    const tongThu = Number(thuResult._sum.soTien || 0);
+    const tongChi = Number(chiResult._sum.soTien || 0);
+
+    return {
+      tongThu,
+      tongChi,
+      choDuyet,
+      phieuGanDay,
+    };
+  }
 }

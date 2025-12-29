@@ -99,13 +99,27 @@
 
 ---
 
-## 📊 HIỆN TRẠNG
+## 📊 HIỆN TRẠNG (Cập nhật: Jan 2025)
 
 | Nhóm tính năng | % Hoàn thành | Còn thiếu |
 |----------------|:------------:|-----------|
-| Đơn hàng/Đặt hàng | 85% | Thanh toán, Xuất HĐ, Xác nhận 2 chiều |
-| Thu chi/Dòng tiền | 10% | PhieuThuChi, Sổ quỹ, BC dòng tiền |
-| Hóa đơn/Công nợ | 40% | HĐ điện tử, Tách bạch HĐ |
+| Đơn hàng/Đặt hàng | 95% | Xuất HĐ trực tiếp |
+| Thu chi/Dòng tiền | 90% | Email notification |
+| Hóa đơn/Công nợ | 85% | PDF export, Email notification |
+
+### ✅ Đã hoàn thành (34/43 tasks = ~80%)
+- Schema/Migration hoàn chỉnh
+- Backend: PhieuThuChi, ThanhToan, HoaDon, Confirmation modules
+- Frontend: Tất cả list/detail components
+- Dashboard: 3 Widgets (Đơn chờ xác nhận, Công nợ, Thu Chi)
+- Báo cáo dòng tiền
+- WebSocket realtime
+- Trang xác nhận public
+
+### ⏳ Còn lại (3 tasks)
+- Button "Xuất HĐ" trên đơn hàng  
+- Email notification (Nodemailer)
+- PDF generation cho hóa đơn
 
 ---
 
@@ -146,27 +160,29 @@ model HoaDonDienTu {
 ## ✅ CHECKLIST TRIỂN KHAI
 
 ### Backend
-- [ ] Migrate schema (PhieuThuChi, ThanhToan, HoaDonDienTu)
-- [ ] Module phieuthuchi (CRUD + duyệt)
-- [ ] Module thanhtoan (CRUD + tách bạch)
-- [ ] Module hoadon (tự quản lý, xuất PDF)
-- [ ] Module confirmation (xác nhận 2 chiều qua link)
-- [ ] Service báo cáo dòng tiền
-- [ ] WebSocket realtime cho xác nhận
+- [x] Migrate schema (PhieuThuChi, ThanhToan, HoaDonDienTu)
+- [x] Module phieuthuchi (CRUD + duyệt)
+- [x] Module thanhtoan (CRUD + tách bạch)
+- [x] Module hoadon (tự quản lý, xuất PDF)
+- [x] Module confirmation (xác nhận 2 chiều qua link)
+- [x] Service báo cáo dòng tiền
+- [x] WebSocket realtime cho xác nhận
 
 ### Frontend
-- [ ] /admin/phieuthuchi
-- [ ] /admin/thanhtoan
-- [ ] /admin/hoadon
-- [ ] /admin/baocao/dongtien
+- [x] /admin/phieuthuchi
+- [x] /admin/thanhtoan
+- [x] /admin/hoadon
+- [x] /admin/baocao/dongtien
 - [ ] Button "Xuất HĐ" trên đơn hàng
-- [ ] Cập nhật congnokhachhang
-- [ ] Trang /confirm/:token (public - xác nhận đơn)
-- [ ] Widget đơn chờ xác nhận trên Dashboard
+- [x] Cập nhật congnokhachhang
+- [x] Trang /confirm/:token (public - xác nhận đơn)
+- [x] Widget đơn chờ xác nhận trên Dashboard
+- [x] Widget Thu Chi trên Dashboard
+- [x] Widget Công nợ trên Dashboard
 
 ### Integration (Đơn giản hóa)
 - [ ] Email service (Nodemailer - optional)
-- [ ] WebSocket realtime cho xác nhận
+- [x] WebSocket realtime cho xác nhận
 - [ ] PDF generation cho hóa đơn
 
 ---

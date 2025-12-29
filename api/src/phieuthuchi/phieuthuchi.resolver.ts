@@ -86,4 +86,9 @@ export class PhieuThuChiResolver {
       new Date(denNgay),
     );
   }
+
+  @Query(() => GraphQLJSON, { name: 'thuChiSummary' })
+  async thuChiSummary() {
+    return this.phieuThuChiService.getSummary();
+  }
 }
