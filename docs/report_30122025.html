@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Tiến Độ - 30/12/2025 | Rau Sạch Trần Gia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --primary: 222.2 47.4% 11.2%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96.1%;
+            --secondary-foreground: 222.2 47.4% 11.2%;
+            --muted: 210 40% 96.1%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96.1%;
+            --accent-foreground: 222.2 47.4% 11.2%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --ring: 222.2 84% 4.9%;
+            --radius: 0.5rem;
+            --success: 142.1 76.2% 36.3%;
+            --success-foreground: 355.7 100% 97.3%;
+            --warning: 45.4 93.4% 47.5%;
+            --warning-foreground: 26 83.3% 14.1%;
+            --info: 221.2 83.2% 53.3%;
+            --info-foreground: 210 40% 98%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            border-color: hsl(var(--border));
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: hsl(var(--muted));
+            color: hsl(var(--foreground));
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Layout with sidebar */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: hsl(var(--card));
+            border-right: 1px solid hsl(var(--border));
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid hsl(var(--border));
+            background: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+        }
+
+        .sidebar-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .sidebar-header p {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 0.25rem;
+        }
+
+        .nav-section {
+            padding: 1rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: hsl(var(--muted-foreground));
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.875rem;
+            border-radius: var(--radius);
+            color: hsl(var(--foreground));
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.15s ease;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link:hover {
+            background: hsl(var(--muted));
+        }
+
+        .nav-link.active {
+            background: hsl(var(--info) / 0.1);
+            color: hsl(var(--info));
+            font-weight: 500;
+        }
+
+        .nav-link .icon {
+            font-size: 1rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, hsl(var(--info)) 0%, hsl(222.2 47.4% 20%) 100%);
+            border-radius: var(--radius);
+            color: white;
+        }
+
+        header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        header p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        header p strong {
+            font-weight: 600;
+        }
+
+        /* Cards */
+        .card {
+            background: hsl(var(--card));
+            border-radius: var(--radius);
+            border: 1px solid hsl(var(--border));
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid hsl(var(--border));
+            background: hsl(var(--muted) / 0.5);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title .icon {
+            font-size: 1.125rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Tables */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        thead {
+            background: hsl(var(--muted) / 0.5);
+        }
+
+        th {
+            font-weight: 500;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            color: hsl(var(--muted-foreground));
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid hsl(var(--border));
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid hsl(var(--border));
+            vertical-align: middle;
+            color: hsl(var(--foreground));
+        }
+
+        tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        tbody tr:hover {
+            background: hsl(var(--muted) / 0.3);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.125rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            line-height: 1.25rem;
+            white-space: nowrap;
+        }
+
+        .badge-success {
+            background: hsl(142.1 76.2% 36.3% / 0.1);
+            color: hsl(var(--success));
+            border: 1px solid hsl(var(--success) / 0.2);
+        }
+
+        .badge-warning {
+            background: hsl(45.4 93.4% 47.5% / 0.1);
+            color: hsl(38 92% 40%);
+            border: 1px solid hsl(var(--warning) / 0.2);
+        }
+
+        .badge-info {
+            background: hsl(var(--info) / 0.1);
+            color: hsl(var(--info));
+            border: 1px solid hsl(var(--info) / 0.2);
+        }
+
+        .badge-destructive {
+            background: hsl(var(--destructive) / 0.1);
+            color: hsl(var(--destructive));
+            border: 1px solid hsl(var(--destructive) / 0.2);
+        }
+
+        .badge-outline {
+            background: transparent;
+            border: 1px solid hsl(var(--border));
+            color: hsl(var(--foreground));
+        }
+
+        /* Progress Bar */
+        .progress {
+            height: 0.75rem;
+            background: hsl(var(--muted));
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-bar.success {
+            background: hsl(var(--success));
+        }
+
+        .progress-bar.warning {
+            background: hsl(var(--warning));
+        }
+
+        .progress-bar.info {
+            background: hsl(var(--info));
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.375rem;
+        }
+
+        .progress-label span {
+            font-size: 0.75rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .progress-label strong {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            border-color: hsl(var(--primary) / 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: hsl(var(--muted-foreground));
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-card.success .stat-value {
+            color: hsl(var(--success));
+        }
+
+        .stat-card.info .stat-value {
+            color: hsl(var(--info));
+        }
+
+        .stat-card.warning .stat-value {
+            color: hsl(38 92% 40%);
+        }
+
+        /* Feature List */
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid hsl(var(--border));
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-list .check {
+            color: hsl(var(--success));
+            font-size: 1rem;
+            flex-shrink: 0;
+            margin-top: 0.125rem;
+        }
+
+        .feature-list .feature-text {
+            flex: 1;
+        }
+
+        .feature-list .feature-text strong {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-list .feature-text small {
+            color: hsl(var(--muted-foreground));
+            font-size: 0.8125rem;
+        }
+
+        /* Two Column Grid */
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tech-badge {
+            background: hsl(var(--info) / 0.1);
+            color: hsl(var(--info));
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: hsl(var(--muted-foreground));
+            font-size: 0.875rem;
+            border-top: 1px solid hsl(var(--border));
+            margin-top: 2rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .two-col-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            border: none;
+            cursor: pointer;
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgb(0 0 0 / 0.2);
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+        }
+
+        /* Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Print styles */
+        @media print {
+            .sidebar, .mobile-menu-btn {
+                display: none !important;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>🥬 Rau Sạch Trần Gia</h2>
+                <p>Documentation Portal</p>
+            </div>
+            
+            <nav class="nav-section">
+                <div class="nav-section-title">Reports</div>
+                <a href="report_30122025.html" class="nav-link active">
+                    <span class="icon">📊</span>
+                    Report 30/12/2025
+                </a>
+                <a href="index.html" class="nav-link">
+                    <span class="icon">📋</span>
+                    Kế Hoạch Thu Chi & HĐ
+                </a>
+            </nav>
+
+            <nav class="nav-section">
+                <div class="nav-section-title">Backend Docs</div>
+                <a href="API.md" class="nav-link">
+                    <span class="icon">🔌</span>
+                    API Documentation
+                </a>
+                <a href="DEPLOYMENT_GUIDE.md" class="nav-link">
+                    <span class="icon">🚀</span>
+                    Deployment Guide
+                </a>
+                <a href="TROUBLESHOOTING.md" class="nav-link">
+                    <span class="icon">🔧</span>
+                    Troubleshooting
+                </a>
+            </nav>
+
+            <nav class="nav-section">
+                <div class="nav-section-title">Quick Links</div>
+                <a href="2153-IMPLEMENTATION_PLAN.md" class="nav-link">
+                    <span class="icon">📝</span>
+                    Implementation Plan
+                </a>
+                <a href="CHANGELOG.md" class="nav-link">
+                    <span class="icon">📖</span>
+                    Changelog
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <header>
+                    <h1>📊 Báo Cáo Tiến Độ Dự Án</h1>
+                    <p>Ngày cập nhật: <strong>30/12/2025</strong> • Hệ thống quản lý Rau Sạch Trần Gia</p>
+                </header>
+
+                <!-- Overview Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card success">
+                        <div class="stat-value">87%</div>
+                        <div class="stat-label">Tổng Tiến Độ</div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-value">44</div>
+                        <div class="stat-label">Prisma Models</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value">200+</div>
+                        <div class="stat-label">API Endpoints</div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-value">150+</div>
+                        <div class="stat-label">Doc Pages</div>
+                    </div>
+                </div>
+
+                <!-- Project Overview -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="icon">🎯</span>
+                            Tổng Quan Dự Án
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Tên dự án</strong></td>
+                                        <td>Hệ thống quản lý Rau Sạch Trần Gia</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Loại hình</strong></td>
+                                        <td>ERP/CRM cho doanh nghiệp SME</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Database</strong></td>
+                                        <td>44 Prisma models, ~976 MB data</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Codebase</strong></td>
+                                        <td>~27,000 LOC Backend + ~30,000 LOC Frontend</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Tiến độ</strong></td>
+                                        <td><span class="badge badge-success">~87% Hoàn thành</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tech-stack">
+                            <span class="tech-badge">NestJS</span>
+                            <span class="tech-badge">Angular 19</span>
+                            <span class="tech-badge">PostgreSQL</span>
+                            <span class="tech-badge">Redis</span>
+                            <span class="tech-badge">MinIO</span>
+                            <span class="tech-badge">GraphQL</span>
+                            <span class="tech-badge">Prisma</span>
+                            <span class="tech-badge">Docker</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress by Module -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="icon">📈</span>
+                            Tiến Độ Theo Module
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Module</th>
+                                        <th style="width: 300px;">Tiến độ</th>
+                                        <th class="text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Database Schema</strong></td>
+                                        <td>
+                                            <div class="progress-label">
+                                                <span>44 models</span>
+                                                <strong>100%</strong>
+                                            </div>
+                                            <div class="progress">
+                                                <div class="progress-bar success" style="width: 100%;"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Done</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Backend Modules</strong></td>
+                                        <td>
+                                            <div class="progress-label">
+                                                <span>All modules</span>
+                                                <strong>100%</strong>
+                                            </div>
+                                            <div class="progress">
+                                                <div class="progress-bar success" style="width: 100%;"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Done</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Frontend UI Components</strong></td>
+                                        <td>
+                                            <div class="progress-label">
+                                                <span>9 Shadcn components</span>
+                                                <strong>100%</strong>
+                                            </div>
+                                            <div class="progress">
+                                                <div class="progress-bar success" style="width: 100%;"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Done</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Admin Modules</strong></td>
+                                        <td>
+                                            <div class="progress-label">
+                                                <span>Dashboard + List + Detail</span>
+                                                <strong>100%</strong>
+                                            </div>
+                                            <div class="progress">
+                                                <div class="progress-bar success" style="width: 100%;"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Done</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Performance Optimizations</strong></td>
+                                        <td>
+                                            <div class="progress-label">
+                                                <span>Redis + Batch processing</span>
+                                                <strong>100%</strong>
+                                            </div>
+                                            <div class="progress">
+                                                <div class="progress-bar success" style="width: 100%;"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Done</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Unit Tests</strong></td>
+                                        <td>
+                                            <div class="progress-label">
+                                                <span>Target: 70%</span>
+                                                <strong>40%</strong>
+                                            </div>
+                                            <div class="progress">
+                                                <div class="progress-bar warning" style="width: 40%;"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center"><span class="badge badge-warning">🔄 In Progress</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two Column Layout -->
+                <div class="two-col-grid">
+                    <!-- Backend Completed -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <span class="icon">⚙️</span>
+                                Backend Hoàn Thành
+                            </h2>
+                        </div>
+                        <div class="card-body">
+                            <ul class="feature-list">
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>PhieuThuChi Module</strong>
+                                        <small>CRUD + Duyệt phiếu + Auto mã phiếu</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>ThanhToan Module</strong>
+                                        <small>Quản lý thanh toán, tách bạch có/không HĐ</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>HoaDon Module</strong>
+                                        <small>Hóa đơn điện tử nội bộ</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>Confirmation Service</strong>
+                                        <small>Xác nhận 2 chiều qua link (7 ngày expire)</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>Cancel Order</strong>
+                                        <small>Hủy đơn + phục hồi tồn kho tự động</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>Price History</strong>
+                                        <small>Lịch sử giá, tracking thay đổi</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>UserPermission System</strong>
+                                        <small>Hybrid RBAC + ABAC permission</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>Cron Jobs</strong>
+                                        <small>Auto-complete orders daily (14:00 VN)</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>GraphQL Enhancements</strong>
+                                        <small>findFirst, Universal Resolver, Cache</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>Redis Cache</strong>
+                                        <small>80-95% faster queries</small>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frontend Completed -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <span class="icon">🎨</span>
+                                Frontend Hoàn Thành
+                            </h2>
+                        </div>
+                        <div class="card-body">
+                            <ul class="feature-list">
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>Shadcn UI Library</strong>
+                                        <small>9 components: Button, Card, Input, Badge, Dialog, Skeleton, Toast, EmptyState, ErrorState</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>PhieuThuChi Module</strong>
+                                        <small>List + Detail form, filters</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>ThanhToan Module</strong>
+                                        <small>Mobile cards, stats dashboard</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>HoaDon Module</strong>
+                                        <small>List + Create, PDF download</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>BaoCao DongTien</strong>
+                                        <small>Chart + Table, Excel export</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>Confirm Order Page</strong>
+                                        <small>Public page, 2-way confirmation</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>Dashboard Widgets</strong>
+                                        <small>Đơn chờ xác nhận, Công nợ, Thu chi</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>Mobile-First Design</strong>
+                                        <small>Responsive 320px → 2560px</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>Component Optimizations</strong>
+                                        <small>OnPush, Lazy loading, Memoization</small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="check">✅</span>
+                                    <div class="feature-text">
+                                        <strong>Testing Component</strong>
+                                        <small>61 test cases, 11 modules coverage</small>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bug Fixes -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="icon">🐛</span>
+                            Bug Fixes Đã Hoàn Thành
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Bug</th>
+                                        <th>Mô tả</th>
+                                        <th class="text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Date Timezone Bug</strong></td>
+                                        <td>UTC fix cho Banggia dates (batdau/ketthuc)</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Fixed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>AuditLog UserId</strong></td>
+                                        <td>Thêm @UseGuards(JwtAuthGuard) cho 17+ controllers</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Fixed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Redis Cache Invalidation</strong></td>
+                                        <td>Immediate invalidation sau mutations</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Fixed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Infinite Loop Fix</strong></td>
+                                        <td>Banggia navigation bugs</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Fixed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>GraphQL Update Fix</strong></td>
+                                        <td>Relations handling</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Fixed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Foreign Key Constraint</strong></td>
+                                        <td>Disable FK validation during restore</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Fixed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Price Validation</strong></td>
+                                        <td>50% change threshold warning</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Fixed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Cancel Order + Inventory</strong></td>
+                                        <td>Tự động phục hồi tồn kho khi hủy đơn</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Fixed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Product Merging</strong></td>
+                                        <td>Import Excel gộp sản phẩm trùng masp</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Fixed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Filter Error sau Print</strong></td>
+                                        <td>UI stability fix</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Fixed</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Optimizations -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="icon">⚡</span>
+                            Performance Optimizations
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Area</th>
+                                        <th class="text-center">Before</th>
+                                        <th class="text-center">After</th>
+                                        <th class="text-center">Improvement</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>DB Restore</strong></td>
+                                        <td class="text-center">15-20 min</td>
+                                        <td class="text-center">1m 51s</td>
+                                        <td class="text-center"><span class="badge badge-success">10x faster</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>AuditLog Insert</strong></td>
+                                        <td class="text-center">100 rec/s</td>
+                                        <td class="text-center">2,315 rec/s</td>
+                                        <td class="text-center"><span class="badge badge-success">23x faster</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Redis Cache Hit</strong></td>
+                                        <td class="text-center">N/A</td>
+                                        <td class="text-center">60-80%</td>
+                                        <td class="text-center"><span class="badge badge-info">New feature</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Vandon Load</strong></td>
+                                        <td class="text-center">2-3s blocking</td>
+                                        <td class="text-center">&lt;1s non-blocking</td>
+                                        <td class="text-center"><span class="badge badge-success">3x faster</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Vandon Memory</strong></td>
+                                        <td class="text-center">22 columns</td>
+                                        <td class="text-center">9 columns</td>
+                                        <td class="text-center"><span class="badge badge-success">60% reduction</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deployment Status -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="icon">🚀</span>
+                            Deployment & Infrastructure
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Service</th>
+                                        <th>Configuration</th>
+                                        <th class="text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Frontend</strong></td>
+                                        <td>Port 12100 | Angular 19</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Ready</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Backend</strong></td>
+                                        <td>Port 12101 | NestJS</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Ready</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>PostgreSQL</strong></td>
+                                        <td>Port 55432 | Database: rausachv3</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Ready</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Redis</strong></td>
+                                        <td>Port 56379 | TTL-based caching</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Ready</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>MinIO</strong></td>
+                                        <td>storage.rausachtrangia.com</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Ready</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Docker Compose V3</strong></td>
+                                        <td>Production ready</td>
+                                        <td class="text-center"><span class="badge badge-success">✅ Ready</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Remaining Tasks -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <span class="icon">📋</span>
+                            Công Việc Còn Lại (~13%)
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Priority</th>
+                                        <th>Task</th>
+                                        <th class="text-center">Est. Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="badge badge-destructive">High</span></td>
+                                        <td>Button "Xuất HĐ" trên đơn hàng detail</td>
+                                        <td class="text-center">0.5 ngày</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge badge-destructive">High</span></td>
+                                        <td>Routes & Navigation updates</td>
+                                        <td class="text-center">0.5 ngày</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge badge-destructive">High</span></td>
+                                        <td>Unit tests (&gt;70% coverage target)</td>
+                                        <td class="text-center">1-2 ngày</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge badge-warning">Medium</span></td>
+                                        <td>Email notifications (Nodemailer)</td>
+                                        <td class="text-center">1 ngày</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge badge-warning">Medium</span></td>
+                                        <td>PDF generation cho hóa đơn</td>
+                                        <td class="text-center">1 ngày</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge badge-warning">Medium</span></td>
+                                        <td>E2E tests (Cypress/Playwright)</td>
+                                        <td class="text-center">1-2 ngày</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge badge-outline">Low</span></td>
+                                        <td>WebSocket realtime subscriptions</td>
+                                        <td class="text-center">1 ngày</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge badge-outline">Low</span></td>
+                                        <td>Mobile device UAT testing</td>
+                                        <td class="text-center">0.5 ngày</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <footer>
+                    <p>📊 Báo Cáo Tiến Độ Dự Án - 30/12/2025</p>
+                    <p>Rau Sạch Trần Gia • Generated by GitHub Copilot</p>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
