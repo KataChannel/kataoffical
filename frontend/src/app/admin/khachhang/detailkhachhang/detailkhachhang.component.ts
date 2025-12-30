@@ -78,9 +78,12 @@ export class DetailKhachhangComponent {
   
   // Nhomkhachhang properties
   ListNhomkhachhang = signal<any[]>([]);
+  filteredNhomkhachhang = signal<any[]>([]);
   selectedNhomkhachhangIds = signal<string[]>([]);
   isShowCreateNhomkhachhang = signal(false);
   isCreatingNhomkhachhang = signal(false);
+  isNhomDropdownOpen = signal(false);
+  nhomSearchQuery = signal('');
   newNhomkhachhang = { name: '', description: '' };
   private dialogRef: any = null;
   constructor() {
@@ -142,9 +145,94 @@ export class DetailKhachhangComponent {
         orderBy: { name: 'asc' }
       });
       this.ListNhomkhachhang.set(result || []);
+      this.filteredNhomkhachhang.set(result || []);
     } catch (error) {
       console.error('Error loading nhomkhachhang:', error);
     }
+  }
+  
+  // =============== NHOM DROPDOWN METHODS (shadcn style) ===============
+  
+  // Toggle dropdown open/close
+  toggleNhomkhachhangDropdown() {
+    if (!this.isEdit()) return;
+    this.isNhomDropdownOpen.update(v => !v);
+    if (this.isNhomDropdownOpen()) {
+      this.nhomSearchQuery.set('');
+      this.filteredNhomkhachhang.set(this.ListNhomkhachhang());
+    }
+  }
+  
+  // Close dropdown
+  closeNhomkhachhangDropdown() {
+    this.isNhomDropdownOpen.set(false);
+    this.nhomSearchQuery.set('');
+  }
+  
+  // Handle search input
+  @Debounce(150)
+  onNhomSearchInput(event: any) {
+    const query = event.target.value?.toLowerCase().trim() || '';
+    this.nhomSearchQuery.set(query);
+    
+    if (!query) {
+      this.filteredNhomkhachhang.set(this.ListNhomkhachhang());
+      return;
+    }
+    
+    const filtered = this.ListNhomkhachhang().filter(nhom => 
+      nhom.name?.toLowerCase().includes(query) ||
+      nhom.description?.toLowerCase().includes(query)
+    );
+    this.filteredNhomkhachhang.set(filtered);
+  }
+  
+  // Clear search
+  clearNhomSearch() {
+    this.nhomSearchQuery.set('');
+    this.filteredNhomkhachhang.set(this.ListNhomkhachhang());
+  }
+  
+  // Check if nhom is selected
+  isNhomSelected(nhomId: string): boolean {
+    return this.selectedNhomkhachhangIds().includes(nhomId);
+  }
+  
+  // Toggle nhom selection
+  toggleNhomSelection(nhomId: string) {
+    const currentIds = this.selectedNhomkhachhangIds();
+    let newIds: string[];
+    
+    if (currentIds.includes(nhomId)) {
+      newIds = currentIds.filter(id => id !== nhomId);
+    } else {
+      newIds = [...currentIds, nhomId];
+    }
+    
+    this.selectedNhomkhachhangIds.set(newIds);
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      nhomkhachhangIds: newIds
+    }));
+  }
+  
+  // Create nhom from search query
+  createNhomFromSearch() {
+    this.newNhomkhachhang = { 
+      name: this.nhomSearchQuery(), 
+      description: '' 
+    };
+    this.closeNhomkhachhangDropdown();
+    this.openCreateNhomkhachhangDialog();
+  }
+  
+  // Track by functions for ngFor
+  trackByNhom(index: number, nhom: any): string {
+    return nhom.id;
+  }
+  
+  trackByNhomId(index: number, nhomId: string): string {
+    return nhomId;
   }
   async handleKhachhangAction() {
     if (this.khachhangId() === 'new') {
@@ -410,18 +498,6 @@ export class DetailKhachhangComponent {
   }
 
   // =============== NHOMKHACHHANG METHODS ===============
-  
-  // Handle nhomkhachhang selection change
-  onNhomkhachhangChange(event: any) {
-    const values = event.value.filter((v: string) => v !== '__CREATE_NEW__');
-    this.selectedNhomkhachhangIds.set(values);
-    
-    // Update DetailKhachhang with nhomkhachhang data for save
-    this.DetailKhachhang.update((v: any) => ({
-      ...v,
-      nhomkhachhangIds: values
-    }));
-  }
   
   // Remove a nhomkhachhang from selection
   removeNhomkhachhang(nhomId: string) {

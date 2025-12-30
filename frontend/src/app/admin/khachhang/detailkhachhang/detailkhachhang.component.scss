@@ -170,3 +170,232 @@
     grid-column: span 1 / span 1;
   }
 }
+
+// =============== SEARCHABLE NHOM DROPDOWN (shadcn style) ===============
+
+// Primary color extensions
+.bg-primary-500 {
+  background-color: rgb(59 130 246) !important;
+}
+
+.bg-primary-600 {
+  background-color: rgb(37 99 235) !important;
+}
+
+.bg-primary-700 {
+  background-color: rgb(29 78 216) !important;
+}
+
+.bg-primary-800 {
+  background-color: rgb(30 64 175) !important;
+}
+
+.border-primary-500 {
+  border-color: rgb(59 130 246) !important;
+}
+
+.ring-primary-500 {
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+}
+
+.text-primary-500 {
+  color: rgb(59 130 246) !important;
+}
+
+// Dropdown trigger button
+.nhom-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  background-color: white;
+  border: 1px solid rgb(229 231 235);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition: all 0.2s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  
+  &:hover {
+    border-color: rgb(209 213 219);
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    border-color: rgb(59 130 246);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: rgb(249 250 251);
+  }
+  
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+// Touch-friendly button
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+// Rotation animation
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+// Dropdown panel animations
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mobileSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Dropdown panel styles
+:host {
+  // Desktop dropdown
+  @media (min-width: 768px) {
+    .nhom-dropdown-panel {
+      animation: dropdownFadeIn 0.15s ease-out;
+    }
+  }
+  
+  // Mobile fullscreen
+  @media (max-width: 767px) {
+    .nhom-dropdown-panel {
+      animation: mobileSlideUp 0.25s ease-out;
+    }
+  }
+}
+
+// Overscroll behavior for smooth scrolling
+.overscroll-contain {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+// Scrollbar styling (shadcn-like)
+.overflow-y-auto {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(209 213 219);
+    border-radius: 3px;
+    
+    &:hover {
+      background-color: rgb(156 163 175);
+    }
+  }
+}
+
+// Search input focus ring
+.focus\:ring-2:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.focus\:ring-offset-1:focus {
+  box-shadow: 0 0 0 1px white, 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+// Checkbox styles (shadcn-like)
+.nhom-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.25rem;
+  border: 2px solid rgb(209 213 219);
+  transition: all 0.2s;
+  
+  &.checked {
+    border-color: rgb(59 130 246);
+    background-color: rgb(59 130 246);
+  }
+}
+
+// Selected chip styles (shadcn badge style)
+.nhom-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  background-color: rgb(243 244 246);
+  color: rgb(55 65 81);
+  border: 1px solid rgb(229 231 235);
+  transition: all 0.2s;
+  
+  &:hover {
+    background-color: rgb(229 231 235);
+  }
+  
+  &:focus-within {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  }
+}
+
+// Empty state styling
+.nhom-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  text-align: center;
+  
+  mat-icon {
+    color: rgb(209 213 219);
+    font-size: 48px !important;
+    width: 48px !important;
+    height: 48px !important;
+  }
+}
+
+// Backdrop overlay
+.nhom-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 40;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+// Mobile footer safe area
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .nhom-mobile-footer {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  }
+}

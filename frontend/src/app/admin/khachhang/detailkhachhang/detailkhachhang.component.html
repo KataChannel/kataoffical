@@ -57,50 +57,163 @@
       </mat-select>
     </mat-form-field>
 
-    <!-- Nhóm Khách Hàng - Multi-select with create capability -->
-    <div class="col-span-2 md:col-span-1">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
-        <mat-label>Nhóm Khách Hàng *</mat-label>
-        <mat-select 
-          [value]="selectedNhomkhachhangIds()"
-          (selectionChange)="onNhomkhachhangChange($event)"
+    <!-- Nhóm Khách Hàng - Searchable Multi-select with shadcn-style Mobile First UI -->
+    <div>
+      <!-- Custom Searchable Select Container -->
+      <div class="relative w-full">
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nhóm Khách Hàng *</label>
+        
+        <!-- Trigger Button (shadcn style) -->
+        <button 
+          type="button"
           [disabled]="!isEdit()"
-          multiple
-          panelClass="nhomkh-panel">
-          <!-- Quick create option at top -->
-          <mat-option 
-            class="!bg-primary-50 !text-primary-700 !font-medium border-b border-gray-200"
-            [value]="'__CREATE_NEW__'"
-            (click)="$event.stopPropagation(); openCreateNhomkhachhangDialog()">
-            <div class="flex items-center gap-2">
-              <mat-icon class="text-primary-600 !text-lg !w-5 !h-5">add_circle</mat-icon>
-              <span>Tạo nhóm mới...</span>
-            </div>
-          </mat-option>
-          <mat-option *ngFor="let nhom of ListNhomkhachhang()" [value]="nhom.id">
-            <div class="flex items-center justify-between w-full">
-              <span>{{ nhom.name }}</span>
-              <span class="text-xs text-gray-400" *ngIf="nhom.description">{{ nhom.description | slice:0:20 }}...</span>
-            </div>
-          </mat-option>
-        </mat-select>
-        <mat-hint *ngIf="selectedNhomkhachhangIds().length === 0 && isEdit()" class="text-orange-600">
-          Vui lòng chọn ít nhất một nhóm khách hàng
-        </mat-hint>
-      </mat-form-field>
-      
-      <!-- Selected chips display -->
-      <div class="flex flex-wrap gap-1.5 mt-1" *ngIf="selectedNhomkhachhangIds().length > 0">
+          (click)="toggleNhomkhachhangDropdown()"
+          class="flex items-center justify-between w-full min-h-[44px] px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-200
+                 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1 focus:border-primary-500
+                 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50
+                 active:scale-[0.99] touch-manipulation">
+          <span class="flex-1 text-left truncate" [class.text-gray-400]="selectedNhomkhachhangIds().length === 0">
+            {{ selectedNhomkhachhangIds().length > 0 ? selectedNhomkhachhangIds().length + ' nhóm đã chọn' : 'Chọn nhóm khách hàng...' }}
+          </span>
+          <mat-icon class="!text-lg !w-5 !h-5 text-gray-400 ml-2 transition-transform duration-200" [class.rotate-180]="isNhomDropdownOpen()">expand_more</mat-icon>
+        </button>
+
+        <!-- Dropdown Panel (Mobile First - Full screen on mobile, dropdown on desktop) -->
         <div 
-          *ngFor="let nhomId of selectedNhomkhachhangIds()" 
-          class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-800 border border-primary-200 transition-all hover:bg-primary-200">
-          {{ getNhomkhachhangName(nhomId) }}
+          *ngIf="isNhomDropdownOpen()"
+          class="fixed md:absolute inset-0 md:inset-auto md:top-full md:left-0 md:right-0 z-50 
+                 bg-white md:mt-1 md:rounded-lg md:border md:border-gray-200 md:shadow-lg md:max-h-80
+                 flex flex-col md:overflow-hidden">
+          
+          <!-- Mobile Header -->
+          <div class="flex md:hidden items-center justify-between px-4 py-3 border-b border-gray-100 bg-white sticky top-0">
+            <h3 class="text-base font-semibold text-gray-900">Chọn Nhóm Khách Hàng</h3>
+            <button 
+              type="button" 
+              (click)="closeNhomkhachhangDropdown()"
+              class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors">
+              <mat-icon class="!text-xl text-gray-500">close</mat-icon>
+            </button>
+          </div>
+
+          <!-- Search Input -->
+          <div class="sticky top-0 md:top-0 p-3 bg-white border-b border-gray-100 z-10">
+            <div class="relative">
+              <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-lg !w-5 !h-5 text-gray-400">search</mat-icon>
+              <input 
+                type="text"
+                [value]="nhomSearchQuery()"
+                (input)="onNhomSearchInput($event)"
+                placeholder="Tìm kiếm nhóm..."
+                class="w-full h-11 md:h-10 pl-10 pr-4 text-sm bg-gray-50 border border-gray-200 rounded-lg
+                       placeholder:text-gray-400 transition-all duration-200
+                       focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:bg-white"
+                #nhomSearchInput />
+              <button 
+                *ngIf="nhomSearchQuery()"
+                type="button"
+                (click)="clearNhomSearch()"
+                class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6 rounded-full hover:bg-gray-200 transition-colors">
+                <mat-icon class="!text-sm !w-4 !h-4 text-gray-400">close</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Options List -->
+          <div class="flex-1 overflow-y-auto overscroll-contain">
+            <!-- Quick Create Option -->
+            <button 
+              type="button"
+              (click)="openCreateNhomkhachhangDialog()"
+              class="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-primary-600 bg-primary-50/50
+                     hover:bg-primary-100 active:bg-primary-200 transition-colors border-b border-gray-100">
+              <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100">
+                <mat-icon class="!text-lg text-primary-600">add</mat-icon>
+              </div>
+              <span>Tạo nhóm mới...</span>
+            </button>
+
+            <!-- Filtered Nhomkhachhang Options -->
+            <div *ngIf="filteredNhomkhachhang().length > 0; else noResults">
+              <button 
+                *ngFor="let nhom of filteredNhomkhachhang(); trackBy: trackByNhom"
+                type="button"
+                (click)="toggleNhomSelection(nhom.id)"
+                class="flex items-center gap-3 w-full px-4 py-3 text-sm transition-colors
+                       hover:bg-gray-50 active:bg-gray-100"
+                [class.bg-primary-50]="isNhomSelected(nhom.id)">
+                <!-- Checkbox -->
+                <div class="flex items-center justify-center w-5 h-5 rounded border-2 transition-all duration-200"
+                     [class.border-primary-500]="isNhomSelected(nhom.id)"
+                     [class.bg-primary-500]="isNhomSelected(nhom.id)"
+                     [class.border-gray-300]="!isNhomSelected(nhom.id)">
+                  <mat-icon *ngIf="isNhomSelected(nhom.id)" class="!text-xs !w-3 !h-3 text-white">check</mat-icon>
+                </div>
+                <!-- Content -->
+                <div class="flex-1 min-w-0 text-left">
+                  <div class="font-medium text-gray-900 truncate">{{ nhom.name }}</div>
+                  <div *ngIf="nhom.description" class="text-xs text-gray-500 truncate mt-0.5">{{ nhom.description }}</div>
+                </div>
+              </button>
+            </div>
+
+            <!-- No Results -->
+            <ng-template #noResults>
+              <div class="flex flex-col items-center justify-center py-8 px-4 text-center">
+                <mat-icon class="!text-4xl !w-12 !h-12 text-gray-300 mb-3">search_off</mat-icon>
+                <p class="text-sm text-gray-500">Không tìm thấy nhóm "{{ nhomSearchQuery() }}"</p>
+                <button 
+                  type="button"
+                  (click)="createNhomFromSearch()"
+                  class="mt-3 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg
+                         hover:bg-primary-100 active:bg-primary-200 transition-colors">
+                  <mat-icon class="!text-lg !w-5 !h-5">add</mat-icon>
+                  Tạo nhóm "{{ nhomSearchQuery() }}"
+                </button>
+              </div>
+            </ng-template>
+          </div>
+
+          <!-- Mobile Footer with Done Button -->
+          <div class="flex md:hidden items-center justify-between px-4 py-3 border-t border-gray-100 bg-gray-50 sticky bottom-0">
+            <span class="text-sm text-gray-600">{{ selectedNhomkhachhangIds().length }} nhóm đã chọn</span>
+            <button 
+              type="button"
+              (click)="closeNhomkhachhangDropdown()"
+              class="px-6 py-2.5 text-sm font-medium text-white bg-primary-600 rounded-lg
+                     hover:bg-primary-700 active:bg-primary-800 transition-colors shadow-sm">
+              Xong
+            </button>
+          </div>
+        </div>
+
+        <!-- Backdrop for mobile -->
+        <div 
+          *ngIf="isNhomDropdownOpen()"
+          (click)="closeNhomkhachhangDropdown()"
+          class="fixed inset-0 bg-black/20 z-40 md:hidden"></div>
+      </div>
+      
+      <!-- Validation Hint -->
+      <p *ngIf="selectedNhomkhachhangIds().length === 0 && isEdit()" class="mt-1.5 text-xs text-orange-500 flex items-center gap-1">
+        <mat-icon class="!text-sm !w-4 !h-4">warning</mat-icon>
+        Vui lòng chọn ít nhất một nhóm khách hàng
+      </p>
+      
+      <!-- Selected chips display (shadcn style) -->
+      <div class="flex flex-wrap gap-1.5 mt-2" *ngIf="selectedNhomkhachhangIds().length > 0">
+        <div 
+          *ngFor="let nhomId of selectedNhomkhachhangIds(); trackBy: trackByNhomId" 
+          class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md 
+                 bg-gray-100 text-gray-700 border border-gray-200
+                 transition-all duration-200 hover:bg-gray-200">
+          <span class="truncate max-w-[120px]">{{ getNhomkhachhangName(nhomId) }}</span>
           <button 
             *ngIf="isEdit()"
             type="button"
-            class="flex items-center justify-center w-4 h-4 rounded-full hover:bg-primary-300 transition-colors"
-            (click)="removeNhomkhachhang(nhomId)">
-            <mat-icon class="!text-sm !w-3.5 !h-3.5 text-primary-600">close</mat-icon>
+            class="flex items-center justify-center w-4 h-4 rounded hover:bg-gray-300 transition-colors -mr-0.5"
+            (click)="removeNhomkhachhang(nhomId); $event.stopPropagation()">
+            <mat-icon class="!text-xs !w-3 !h-3 text-gray-500">close</mat-icon>
           </button>
         </div>
       </div>
