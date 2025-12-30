@@ -86,6 +86,13 @@ export class DetailKhachhangComponent {
   nhomSearchQuery = signal('');
   newNhomkhachhang = { name: '', description: '' };
   private dialogRef: any = null;
+  
+  // Loại Khách Hàng properties
+  isLoaikhDropdownOpen = signal(false);
+  loaikhOptions = [
+    { value: 'khachsi', title: 'Khách Sỉ', description: 'Khách hàng mua số lượng lớn' },
+    { value: 'khachle', title: 'Khách Lẻ', description: 'Khách hàng mua lẻ' }
+  ];
   constructor() {
     this._route.paramMap.subscribe((params) => {
       const id = params.get('id');
@@ -432,6 +439,35 @@ export class DetailKhachhangComponent {
       ...v,
       tenfile: event.target.value
     }));
+  }
+
+  // =============== LOẠI KHÁCH HÀNG DROPDOWN METHODS ===============
+  
+  // Toggle dropdown
+  toggleLoaikhDropdown() {
+    if (!this.isEdit()) return;
+    this.isLoaikhDropdownOpen.update(v => !v);
+  }
+  
+  // Close dropdown
+  closeLoaikhDropdown() {
+    this.isLoaikhDropdownOpen.set(false);
+  }
+  
+  // Select loaikh option
+  selectLoaikh(value: string) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      loaikh: value
+    }));
+    this.closeLoaikhDropdown();
+  }
+  
+  // Get loaikh title
+  getLoaikhTitle(): string {
+    const loaikh = this.DetailKhachhang()?.loaikh;
+    const option = this.loaikhOptions.find(o => o.value === loaikh);
+    return option?.title || '';
   }
 
   updateLoaikh(event: any) {

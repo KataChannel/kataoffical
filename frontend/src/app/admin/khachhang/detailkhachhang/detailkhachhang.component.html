@@ -48,14 +48,99 @@
         <mat-label>Tên File</mat-label>
         <input matInput [value]="DetailKhachhang()?.tenfile || ''" (input)="updateTenfile($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên File"/>
       </mat-form-field>
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Loại Khách Hàng</mat-label>
-      <mat-select [value]="DetailKhachhang()?.loaikh" (selectionChange)="updateLoaikh($event)" [disabled]="!isEdit()">
-        <mat-option *ngFor="let item of [{value:'khachsi',title:'Khách Sỉ'},{value:'khachle',title:'Khách Lẻ'}]" [value]="item.value">
-          {{item.title}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+
+    <!-- Loại Khách Hàng - shadcn-style Single Select -->
+    <div>
+      <div class="relative w-full">
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Loại Khách Hàng</label>
+        
+        <!-- Trigger Button (shadcn style) -->
+        <button 
+          type="button"
+          [disabled]="!isEdit()"
+          (click)="toggleLoaikhDropdown()"
+          class="flex items-center justify-between w-full min-h-[44px] px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-200
+                 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1 focus:border-primary-500
+                 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50
+                 active:scale-[0.99] touch-manipulation">
+          <span class="flex-1 text-left truncate" [class.text-gray-400]="!DetailKhachhang()?.loaikh">
+            {{ getLoaikhTitle() || 'Chọn loại khách hàng...' }}
+          </span>
+          <mat-icon class="!text-lg !w-5 !h-5 text-gray-400 ml-2 transition-transform duration-200" [class.rotate-180]="isLoaikhDropdownOpen()">expand_more</mat-icon>
+        </button>
+
+        <!-- Dropdown Panel (Mobile First) -->
+        <div 
+          *ngIf="isLoaikhDropdownOpen()"
+          class="fixed md:absolute inset-0 md:inset-auto md:top-full md:left-0 md:right-0 z-50 
+                 bg-white md:mt-1 md:rounded-lg md:border md:border-gray-200 md:shadow-lg
+                 flex flex-col md:overflow-hidden">
+          
+          <!-- Mobile Header -->
+          <div class="flex md:hidden items-center justify-between px-4 py-3 border-b border-gray-100 bg-white sticky top-0">
+            <h3 class="text-base font-semibold text-gray-900">Chọn Loại Khách Hàng</h3>
+            <button 
+              type="button" 
+              (click)="closeLoaikhDropdown()"
+              class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors">
+              <mat-icon class="!text-xl text-gray-500">close</mat-icon>
+            </button>
+          </div>
+
+          <!-- Options List -->
+          <div class="flex-1 overflow-y-auto overscroll-contain">
+            <button 
+              *ngFor="let item of loaikhOptions"
+              type="button"
+              (click)="selectLoaikh(item.value)"
+              class="flex items-center gap-3 w-full px-4 py-3.5 text-sm transition-colors
+                     hover:bg-gray-50 active:bg-gray-100"
+              [class.bg-primary-50]="DetailKhachhang()?.loaikh === item.value">
+              <!-- Radio indicator -->
+              <div class="flex items-center justify-center w-5 h-5 rounded-full border-2 transition-all duration-200"
+                   [class.border-primary-500]="DetailKhachhang()?.loaikh === item.value"
+                   [class.border-gray-300]="DetailKhachhang()?.loaikh !== item.value">
+                <div *ngIf="DetailKhachhang()?.loaikh === item.value" 
+                     class="w-2.5 h-2.5 rounded-full bg-primary-500"></div>
+              </div>
+              <!-- Content -->
+              <div class="flex-1 min-w-0 text-left">
+                <div class="font-medium text-gray-900">{{ item.title }}</div>
+                <div class="text-xs text-gray-500 mt-0.5">{{ item.description }}</div>
+              </div>
+              <!-- Check icon -->
+              <mat-icon *ngIf="DetailKhachhang()?.loaikh === item.value" class="!text-lg !w-5 !h-5 text-primary-500">check</mat-icon>
+            </button>
+          </div>
+
+          <!-- Mobile Footer -->
+          <div class="flex md:hidden items-center justify-end px-4 py-3 border-t border-gray-100 bg-gray-50 sticky bottom-0">
+            <button 
+              type="button"
+              (click)="closeLoaikhDropdown()"
+              class="px-6 py-2.5 text-sm font-medium text-white bg-primary-600 rounded-lg
+                     hover:bg-primary-700 active:bg-primary-800 transition-colors shadow-sm">
+              Xong
+            </button>
+          </div>
+        </div>
+
+        <!-- Backdrop for mobile -->
+        <div 
+          *ngIf="isLoaikhDropdownOpen()"
+          (click)="closeLoaikhDropdown()"
+          class="fixed inset-0 bg-black/20 z-40 md:hidden"></div>
+      </div>
+      
+      <!-- Selected chip display -->
+      <div class="mt-2" *ngIf="DetailKhachhang()?.loaikh">
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md 
+                    bg-gray-100 text-gray-700 border border-gray-200">
+          <mat-icon class="!text-sm !w-4 !h-4 text-gray-500">{{ DetailKhachhang()?.loaikh === 'khachsi' ? 'store' : 'person' }}</mat-icon>
+          <span>{{ getLoaikhTitle() }}</span>
+        </div>
+      </div>
+    </div>
 
     <!-- Nhóm Khách Hàng - Searchable Multi-select with shadcn-style Mobile First UI -->
     <div>
