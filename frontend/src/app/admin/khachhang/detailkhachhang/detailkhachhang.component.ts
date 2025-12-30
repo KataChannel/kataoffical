@@ -4,6 +4,8 @@ import {
   effect,
   inject,
   signal,
+  ViewChild,
+  TemplateRef,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { ListKhachhangComponent } from '../listkhachhang/listkhachhang.component';
 import { KhachhangGraphqlService } from '../khachhang-graphql.service';
@@ -25,6 +27,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
 import { Debounce } from '../../../shared/utils/decorators';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 @Component({
   selector: 'app-detailkhachhang',
   imports: [
@@ -45,14 +48,18 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
   styleUrls: ['./detailkhachhang.component.scss'],
 })
 export class DetailKhachhangComponent {
+  @ViewChild('createNhomkhachhangDialog') createNhomkhachhangDialogRef!: TemplateRef<any>;
+  
   _ListkhachhangComponent: ListKhachhangComponent = inject(
     ListKhachhangComponent
   );
   _KhachhangService: KhachhangGraphqlService = inject(KhachhangGraphqlService);
   _BanggiaService: BanggiaService = inject(BanggiaService);
+  _GraphqlService: GraphqlService = inject(GraphqlService);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
+  _dialog: MatDialog = inject(MatDialog);
 
   // GraphQL reactive signals
   DetailKhachhang: any = this._KhachhangService.DetailKhachhang;
@@ -68,6 +75,14 @@ export class DetailKhachhangComponent {
   // Autocomplete properties
   filteredBanggia = signal<any[]>([]);
   selectedBanggia = signal<any>(null);
+  
+  // Nhomkhachhang properties
+  ListNhomkhachhang = signal<any[]>([]);
+  selectedNhomkhachhangIds = signal<string[]>([]);
+  isShowCreateNhomkhachhang = signal(false);
+  isCreatingNhomkhachhang = signal(false);
+  newNhomkhachhang = { name: '', description: '' };
+  private dialogRef: any = null;
   constructor() {
     this._route.paramMap.subscribe((params) => {
       const id = params.get('id');
@@ -81,6 +96,7 @@ export class DetailKhachhangComponent {
       }
       if (id === 'new') {
         this.DetailKhachhang.set({ loaikh: 'khachsi' });
+        this.selectedNhomkhachhangIds.set([]);
         this._ListkhachhangComponent.drawer.open();
         this.isEdit.update((value) => !value);
         this._router.navigate(['/admin/khachhang', 'new']);
@@ -89,6 +105,9 @@ export class DetailKhachhangComponent {
         if (id) {
           await this._KhachhangService.getKhachhangById(id);
           this.ListFilter = this._KhachhangService.DetailKhachhang().banggia;
+          // Load nhomkhachhang IDs from detail
+          const nhomIds = this.DetailKhachhang()?.nhomkhachhang?.map((n: any) => n.id) || [];
+          this.selectedNhomkhachhangIds.set(nhomIds);
         }
         this._ListkhachhangComponent.drawer.open();
         this._router.navigate(['/admin/khachhang', id]);
@@ -98,6 +117,7 @@ export class DetailKhachhangComponent {
   async ngOnInit() {
     //  await this._KhachhangService.getKhachhangBy({id: this._KhachhangService.khachhangId(),isOne: true});
     await this._BanggiaService.getAllBanggia();
+    await this.loadNhomkhachhang();
     this.filterItem = this._BanggiaService.ListBanggia();
     this.filteredBanggia.set(this._BanggiaService.ListBanggia());
     
@@ -108,6 +128,23 @@ export class DetailKhachhangComponent {
     }
     
     console.log('DetailKhachhang:', this.DetailKhachhang());
+  }
+  
+  // Load all Nhomkhachhang
+  async loadNhomkhachhang() {
+    try {
+      const result = await this._GraphqlService.findMany('nhomkhachhang', {
+        select: {
+          id: true,
+          name: true,
+          description: true
+        },
+        orderBy: { name: 'asc' }
+      });
+      this.ListNhomkhachhang.set(result || []);
+    } catch (error) {
+      console.error('Error loading nhomkhachhang:', error);
+    }
   }
   async handleKhachhangAction() {
     if (this.khachhangId() === 'new') {
@@ -370,5 +407,125 @@ export class DetailKhachhangComponent {
       ...v,
       ghichu: event.target.value
     }));
+  }
+
+  // =============== NHOMKHACHHANG METHODS ===============
+  
+  // Handle nhomkhachhang selection change
+  onNhomkhachhangChange(event: any) {
+    const values = event.value.filter((v: string) => v !== '__CREATE_NEW__');
+    this.selectedNhomkhachhangIds.set(values);
+    
+    // Update DetailKhachhang with nhomkhachhang data for save
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      nhomkhachhangIds: values
+    }));
+  }
+  
+  // Remove a nhomkhachhang from selection
+  removeNhomkhachhang(nhomId: string) {
+    const currentIds = this.selectedNhomkhachhangIds();
+    const newIds = currentIds.filter(id => id !== nhomId);
+    this.selectedNhomkhachhangIds.set(newIds);
+    
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      nhomkhachhangIds: newIds
+    }));
+  }
+  
+  // Get nhomkhachhang name by ID
+  getNhomkhachhangName(nhomId: string): string {
+    const nhom = this.ListNhomkhachhang().find(n => n.id === nhomId);
+    return nhom?.name || 'Unknown';
+  }
+  
+  // Open create dialog using template
+  openCreateNhomkhachhangDialog() {
+    this.newNhomkhachhang = { name: '', description: '' };
+    this.isShowCreateNhomkhachhang.set(true);
+    
+    // Detect mobile viewport
+    const isMobile = window.innerWidth < 768;
+    
+    // Use dialog service for mobile-friendly overlay
+    this.dialogRef = this._dialog.open(this.createNhomkhachhangDialogRef, {
+      panelClass: ['nhomkh-create-dialog'],
+      width: isMobile ? '100vw' : '450px',
+      maxWidth: isMobile ? '100vw' : '450px',
+      position: isMobile ? { bottom: '0' } : undefined,
+      hasBackdrop: true,
+      autoFocus: true,
+      disableClose: false
+    });
+  }
+  
+  // Close create dialog
+  closeCreateNhomkhachhangDialog() {
+    this.isShowCreateNhomkhachhang.set(false);
+    this.newNhomkhachhang = { name: '', description: '' };
+    if (this.dialogRef) {
+      this.dialogRef.close();
+      this.dialogRef = null;
+    }
+  }
+  
+  // Create new nhomkhachhang
+  async createNewNhomkhachhang() {
+    if (!this.newNhomkhachhang.name?.trim()) {
+      this._snackBar.open('Vui lòng nhập tên nhóm', '', {
+        duration: 2000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+      return;
+    }
+    
+    this.isCreatingNhomkhachhang.set(true);
+    
+    try {
+      const newNhom = await this._GraphqlService.createOne('nhomkhachhang', {
+        name: this.newNhomkhachhang.name.trim(),
+        description: this.newNhomkhachhang.description?.trim() || ''
+      });
+      
+      // Add to list
+      this.ListNhomkhachhang.update(list => [...list, newNhom]);
+      
+      // Auto-select the new nhomkhachhang
+      const currentIds = this.selectedNhomkhachhangIds();
+      this.selectedNhomkhachhangIds.set([...currentIds, newNhom.id]);
+      
+      this.DetailKhachhang.update((v: any) => ({
+        ...v,
+        nhomkhachhangIds: [...currentIds, newNhom.id]
+      }));
+      
+      this._snackBar.open('Tạo nhóm khách hàng thành công!', '', {
+        duration: 2000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      
+      this.closeCreateNhomkhachhangDialog();
+    } catch (error: any) {
+      console.error('Error creating nhomkhachhang:', error);
+      
+      const errorMessage = error?.message?.includes('Unique constraint') 
+        ? 'Tên nhóm đã tồn tại!' 
+        : 'Lỗi khi tạo nhóm khách hàng';
+        
+      this._snackBar.open(errorMessage, '', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isCreatingNhomkhachhang.set(false);
+    }
   }
 }

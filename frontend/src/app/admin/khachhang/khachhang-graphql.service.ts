@@ -155,6 +155,13 @@ export class KhachhangGraphqlService {
             type: true,
             status: true
           }
+        },
+        nhomkhachhang: {
+          select: {
+            id: true,
+            name: true,
+            description: true
+          }
         }
       };
       const khachhang = await this._GraphqlService.findUnique('khachhang', 
@@ -189,7 +196,7 @@ export class KhachhangGraphqlService {
       this.loading.set(true);
       this.error.set(null);
 
-      const createData = {
+      const createData: any = {
         makh: dulieu.makh || await this.generateMaKhachHang(dulieu.loaikh),
         subtitle: dulieu.subtitle || '',
         tenfile: dulieu.tenfile || '',
@@ -210,12 +217,25 @@ export class KhachhangGraphqlService {
         banggiaId: dulieu.banggiaId || null
       };
 
+      // Handle nhomkhachhang many-to-many relation
+      if (dulieu.nhomkhachhangIds?.length > 0) {
+        createData.nhomkhachhang = {
+          connect: dulieu.nhomkhachhangIds.map((id: string) => ({ id }))
+        };
+      }
+
       const include = {
         banggia: {
           select: {
             id: true,
             title: true,
             mabanggia: true
+          }
+        },
+        nhomkhachhang: {
+          select: {
+            id: true,
+            name: true
           }
         }
       };
@@ -258,7 +278,7 @@ export class KhachhangGraphqlService {
       this.loading.set(true);
       this.error.set(null);
 
-      const updateData = {
+      const updateData: any = {
         name: dulieu.name,
         subtitle: dulieu.subtitle,
         tenfile: dulieu.tenfile,
@@ -278,12 +298,26 @@ export class KhachhangGraphqlService {
         banggiaId: dulieu.banggiaId
       };
 
+      // Handle nhomkhachhang many-to-many relation update
+      // Use set to replace all existing connections
+      if (dulieu.nhomkhachhangIds !== undefined) {
+        updateData.nhomkhachhang = {
+          set: (dulieu.nhomkhachhangIds || []).map((nhomId: string) => ({ id: nhomId }))
+        };
+      }
+
       const include = {
         banggia: {
           select: {
             id: true,
             title: true,
             mabanggia: true
+          }
+        },
+        nhomkhachhang: {
+          select: {
+            id: true,
+            name: true
           }
         }
       };

@@ -56,6 +56,56 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
+
+    <!-- Nhóm Khách Hàng - Multi-select with create capability -->
+    <div class="col-span-2 md:col-span-1">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
+        <mat-label>Nhóm Khách Hàng *</mat-label>
+        <mat-select 
+          [value]="selectedNhomkhachhangIds()"
+          (selectionChange)="onNhomkhachhangChange($event)"
+          [disabled]="!isEdit()"
+          multiple
+          panelClass="nhomkh-panel">
+          <!-- Quick create option at top -->
+          <mat-option 
+            class="!bg-primary-50 !text-primary-700 !font-medium border-b border-gray-200"
+            [value]="'__CREATE_NEW__'"
+            (click)="$event.stopPropagation(); openCreateNhomkhachhangDialog()">
+            <div class="flex items-center gap-2">
+              <mat-icon class="text-primary-600 !text-lg !w-5 !h-5">add_circle</mat-icon>
+              <span>Tạo nhóm mới...</span>
+            </div>
+          </mat-option>
+          <mat-option *ngFor="let nhom of ListNhomkhachhang()" [value]="nhom.id">
+            <div class="flex items-center justify-between w-full">
+              <span>{{ nhom.name }}</span>
+              <span class="text-xs text-gray-400" *ngIf="nhom.description">{{ nhom.description | slice:0:20 }}...</span>
+            </div>
+          </mat-option>
+        </mat-select>
+        <mat-hint *ngIf="selectedNhomkhachhangIds().length === 0 && isEdit()" class="text-orange-600">
+          Vui lòng chọn ít nhất một nhóm khách hàng
+        </mat-hint>
+      </mat-form-field>
+      
+      <!-- Selected chips display -->
+      <div class="flex flex-wrap gap-1.5 mt-1" *ngIf="selectedNhomkhachhangIds().length > 0">
+        <div 
+          *ngFor="let nhomId of selectedNhomkhachhangIds()" 
+          class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-800 border border-primary-200 transition-all hover:bg-primary-200">
+          {{ getNhomkhachhangName(nhomId) }}
+          <button 
+            *ngIf="isEdit()"
+            type="button"
+            class="flex items-center justify-center w-4 h-4 rounded-full hover:bg-primary-300 transition-colors"
+            (click)="removeNhomkhachhang(nhomId)">
+            <mat-icon class="!text-sm !w-3.5 !h-3.5 text-primary-600">close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Email</mat-label>
       <input matInput [value]="DetailKhachhang()?.email || ''" (input)="updateEmail($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Email"/>
@@ -124,3 +174,64 @@
     </div>
   </ng-container>
 </div>
+
+<!-- Inline Create Nhomkhachhang Dialog (Mobile-First Overlay) -->
+<ng-template #createNhomkhachhangDialog>
+  <div class="flex flex-col w-full max-w-md bg-white rounded-2xl overflow-hidden">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-white">
+      <h3 class="text-lg font-semibold text-gray-900">Tạo Nhóm Khách Hàng Mới</h3>
+      <button 
+        mat-icon-button 
+        class="!-mr-2"
+        (click)="closeCreateNhomkhachhangDialog()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <!-- Content -->
+    <mat-dialog-content class="!p-4 !max-h-[60vh]">
+      <div class="space-y-4">
+        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+          <mat-label>Tên Nhóm *</mat-label>
+          <input 
+            matInput 
+            [(ngModel)]="newNhomkhachhang.name"
+            placeholder="Nhập tên nhóm khách hàng"
+            required
+            #nhomNameInput />
+          <mat-hint class="text-gray-500">Ví dụ: Khách VIP, Khách Mới, ...</mat-hint>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+          <mat-label>Mô Tả</mat-label>
+          <textarea 
+            matInput 
+            [(ngModel)]="newNhomkhachhang.description"
+            placeholder="Nhập mô tả cho nhóm (không bắt buộc)"
+            rows="3"></textarea>
+        </mat-form-field>
+      </div>
+    </mat-dialog-content>
+    
+    <!-- Footer -->
+    <mat-dialog-actions class="!px-4 !py-3 border-t border-gray-100 bg-gray-50 !justify-end gap-2">
+      <button 
+        mat-stroked-button 
+        class="!min-w-[80px]"
+        (click)="closeCreateNhomkhachhangDialog()">
+        Hủy
+      </button>
+      <button 
+        mat-flat-button 
+        color="primary" 
+        class="!min-w-[100px]"
+        [disabled]="!newNhomkhachhang.name || isCreatingNhomkhachhang()"
+        (click)="createNewNhomkhachhang()">
+        <mat-icon *ngIf="isCreatingNhomkhachhang()" class="animate-spin !mr-1">autorenew</mat-icon>
+        <span *ngIf="!isCreatingNhomkhachhang()">Tạo Nhóm</span>
+        <span *ngIf="isCreatingNhomkhachhang()">Đang tạo...</span>
+      </button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>
