@@ -4,8 +4,8 @@ import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ScheduleModule } from '@nestjs/schedule';
 import { join } from 'path';
-import { PrismaModule } from '../prisma/prisma.module';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaModule } from 'prisma/prisma.module';
+import { PrismaService } from 'prisma/prisma.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuditUserValidationMiddleware } from './auditlog/audit-user-validation.middleware';
@@ -61,7 +61,7 @@ import { UserPermissionModule } from './user-permission/user-permission.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       // typePaths: ['./**/*.graphql'], // Comment out to use code-first approach
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile: process.env.NODE_ENV === 'production' ? '/tmp/schema.gql' : join(process.cwd(), 'src/schema.gql'),
       // definitions: {
       //   path: join(process.cwd(), 'src/graphql.ts'),
       //   outputAs: 'class',

@@ -51,12 +51,14 @@ show_menu() {
     echo -e "  ${GREEN}7)${NC} 📊 Mở Prisma Studio"
     echo -e "  ${GREEN}8)${NC} 🗄️  Push Database Schema"
     echo -e "  ${GREEN}9)${NC} 🚀 Deploy V3 (Build + Upload + Deploy)"
+    echo -e "  ${GREEN}10)${NC} 📋 Mở Menu chính (menu.sh)"
+    echo -e "  ${GREEN}11)${NC} 🔍 Check TypeScript Errors (toàn dự án)"
     echo ""
     echo -e "  ${RED}0)${NC} ❌ Thoát"
     echo ""
     echo -e "${MAGENTA}═══════════════════════════════════════════════════════${NC}"
     echo ""
-    read -p "👉 Chọn option [0-9]: " choice
+    read -p "👉 Chọn option [0-11]: " choice
 }
 
 # ============================================
@@ -256,6 +258,71 @@ deploy_v3() {
 }
 
 # ============================================
+# OPEN MAIN MENU
+# ============================================
+open_main_menu() {
+    log_info "📋 Mở Menu chính..."
+    echo ""
+    
+    if [[ ! -f "./menu.sh" ]]; then
+        log_error "Không tìm thấy file menu.sh!"
+        return 1
+    fi
+    
+    chmod +x ./menu.sh
+    ./menu.sh
+}
+
+# ============================================
+# CHECK TYPESCRIPT ERRORS
+# ============================================
+check_typescript_errors() {
+    log_info "🔍 Kiểm tra TypeScript Errors toàn dự án..."
+    echo ""
+    
+    local has_errors=0
+    
+    # Check API
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${YELLOW}📦 Kiểm tra Backend (api/)...${NC}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    cd api
+    if bun tsc --noEmit 2>&1; then
+        log_success "Backend: Không có lỗi TypeScript!"
+    else
+        log_error "Backend: Có lỗi TypeScript!"
+        has_errors=1
+    fi
+    cd ..
+    
+    echo ""
+    
+    # Check Frontend
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${YELLOW}🌐 Kiểm tra Frontend (frontend/)...${NC}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    cd frontend
+    if npx tsc --noEmit 2>&1; then
+        log_success "Frontend: Không có lỗi TypeScript!"
+    else
+        log_error "Frontend: Có lỗi TypeScript!"
+        has_errors=1
+    fi
+    cd ..
+    
+    echo ""
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    if [[ $has_errors -eq 0 ]]; then
+        log_success "✅ Toàn bộ dự án không có lỗi TypeScript!"
+    else
+        log_warning "⚠️  Có lỗi TypeScript cần fix trước khi build!"
+    fi
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    
+    return $has_errors
+}
+
+# ============================================
 # MAIN LOGIC
 # ============================================
 
@@ -336,6 +403,14 @@ while true; do
             ;;
         9)
             deploy_v3
+            echo ""
+            read -p "Nhấn Enter để tiếp tục..."
+            ;;
+        10)
+            open_main_menu
+            ;;
+        11)
+            check_typescript_errors
             echo ""
             read -p "Nhấn Enter để tiếp tục..."
             ;;

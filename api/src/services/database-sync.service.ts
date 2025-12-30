@@ -3,7 +3,7 @@ import { exec } from 'child_process';
 import * as cron from 'node-cron';
 import * as path from 'path';
 import { promisify } from 'util';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from 'prisma/prisma.service';
 
 const execAsync = promisify(exec);
 

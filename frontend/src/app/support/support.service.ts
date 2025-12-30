@@ -1,9 +1,9 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
-import { StorageService } from '../shared/utils/storage.service';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.development';
+import { StorageService } from '../shared/utils/storage.service';
 
 const TICKETS_QUERY = gql`
   query Tickets($status: String, $priority: String) {
@@ -152,7 +152,6 @@ export class SupportService {
       Authorization: `Bearer ${token}`,
     });
 
-    // return this.http.post<any[]>(`${environment.APIURL}/support/upload`, formData, { headers });
-    return this.http.post<any[]>(`https://apitg.rausachtrangia.com/support/upload`, formData, { headers });
+    return this.http.post<any[]>(`${environment.APIURL}/support/upload`, formData, { headers });
   }
 }

@@ -107,6 +107,14 @@ export class DynamictableComponent {
     return uniqueList
   }
   doFilterHederColumn(event: any, column: any): void {
+    const removeVietnameseAccents = (str: string): string => {
+      if (!str) return '';
+      return str.normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D')
+        .toLowerCase();
+    };
     this.dataSource.filteredData = this.ListItem.filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();
     console.log(query,column);

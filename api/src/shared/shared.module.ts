@@ -1,8 +1,8 @@
 import { Module, OnModuleInit } from '@nestjs/common';
+import { PrismaModule } from 'prisma/prisma.module';
 import { PerformanceController } from './controllers/performance.controller';
-import { PerformanceLogService } from './services/performance-log.service';
 import { PerformanceLogger } from './performance-logger';
-import { PrismaModule } from '../../prisma/prisma.module';
+import { PerformanceLogService } from './services/performance-log.service';
 
 @Module({
   imports: [PrismaModule],

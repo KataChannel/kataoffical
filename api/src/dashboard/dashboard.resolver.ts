@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Args, Field, Float, Int, ObjectType, Query, Resolver } from '@nestjs/graphql';
 import GraphQLJSON from 'graphql-type-json';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from 'prisma/prisma.service';
 
 // Define GraphQL types for code-first approach
 @ObjectType()

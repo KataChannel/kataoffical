@@ -1,5 +1,5 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { DateHelpers } from '../shared/utils/date-helpers';
+import { DateHelpers } from '../utils/date-helpers';
 
 export function initializeDateHelpers(): () => Promise<void> {
   return () => {

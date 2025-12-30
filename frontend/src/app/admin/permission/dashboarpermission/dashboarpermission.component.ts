@@ -1,13 +1,17 @@
 import { Component } from '@angular/core';
-import { DashboardblockComponent } from '../../../shared/common/chart/dashboardblock/dashboardblock.component';
-import { ChartOptions, RevenuechartComponent } from '../../../shared/common/chart/revenuechart/revenuechart.component';
+
+export interface ChartOptions {
+  series: any[];
+  chart: any;
+  xaxis?: any;
+  yaxis?: any;
+  colors?: string[];
+  [key: string]: any;
+}
 
 @Component({
   selector: 'app-dashboarpermission',
-  imports: [
-    DashboardblockComponent,
-    RevenuechartComponent
-  ],
+  imports: [],
   templateUrl: './dashboarpermission.component.html',
   styleUrl: './dashboarpermission.component.scss'
 })

@@ -8,11 +8,17 @@ services:
     ports:
       - "12101:3331"
     environment:
+      - NODE_ENV=production
       - DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/rausachv3?schema=public&connection_limit=25&pool_timeout=60&connect_timeout=20
       - GOOGLE_CLIENT_ID=897974685698-efprsqffgop935h5d5l2lidle1go9i17.apps.googleusercontent.com
       - GOOGLE_CLIENT_SECRET=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
-      - BASE_URL=https://v3.rausachtrangia.com
-      - SERVER_URL=https://apiv3.rausachtrangia.com 
+      - GOOGLE_API_KEY=AIzaSyAcLy3dOt27BgxkDSAY7fRm0jbwlzPo-80
+      - FACEBOOK_CLIENT_ID=placeholder-facebook-client-id
+      - FACEBOOK_CLIENT_SECRET=placeholder-facebook-client-secret
+      - ZALO_APP_ID=placeholder-zalo-app-id
+      - ZALO_APP_SECRET=placeholder-zalo-app-secret
+      - BASE_URL=https://demo.rausachtrangia.com
+      - SERVER_URL=https://apidemo.rausachtrangia.com
       - PORT=3331
       - JWT_SECRET=supersecret
       - REDIS_HOST=116.118.49.243
@@ -31,7 +37,6 @@ services:
       - MINIO_BUCKET=uploads
       - MINIO_REGION=us-east-1
       - MINIO_PUBLIC_URL=http://storage.rausachtrangia.com:59000
-      - NODE_ENV=production
     volumes:
       - ./logs:/app/logs
     networks:

@@ -6,7 +6,8 @@ import {
     CardComponent,
     CardContentComponent,
     CardHeaderComponent,
-    CardTitleComponent
+    CardTitleComponent,
+    SkeletonComponent
 } from '../../ui';
 
 interface DashboardStats {
