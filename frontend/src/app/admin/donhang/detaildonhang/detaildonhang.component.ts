@@ -96,6 +96,7 @@ export class DetailDonhangComponent {
   private titleService: Title = inject(Title);
   @ViewChild('BgHethanDialog') BgHethanDialog!: TemplateRef<any>;
   @ViewChild('confirmRemoveDialog') confirmRemoveDialog!: TemplateRef<any>;
+  @ViewChild('confirmPastDateDialog') confirmPastDateDialog!: TemplateRef<any>;
   ListFilter: any[] = [];
   filterSanpham: any[] = [];
   private searchTerm: string = '';
@@ -301,9 +302,41 @@ export class DetailDonhangComponent {
 
   async handleDonhangAction() {
     // Validate dữ liệu trước khi xử lý
-    const validationError = this.validateDonhang();
+    const validationError: any = this.validateDonhang();
     if (validationError) {
-      this._snackBar.open(validationError, '', {
+      if (typeof validationError === 'object' && validationError.type === 'PAST_DATE') {
+        const profile = this._UserService.profile();
+        
+        const isAdmin = this.permissions.includes('admin') ||
+          (profile.roles && profile.roles.some((r: any) => {
+            const roleName = typeof r === 'string' ? r : (r.role?.name || r.name || '');
+            return roleName.toLowerCase().includes('admin');
+          }));
+                      
+        if (isAdmin) {
+          const dialogRef = this._dialog.open(this.confirmPastDateDialog, {
+            width: '400px',
+            disableClose: true
+          });
+
+          dialogRef.afterClosed().subscribe(async (result) => {
+            if (result === 'confirm') {
+              this.proceedWithSave();
+            }
+          });
+          return;
+        } else {
+          this._snackBar.open(validationError.message, '', {
+            duration: 2000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+          return;
+        }
+      }
+
+      this._snackBar.open(validationError as string, '', {
         duration: 2000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
@@ -312,6 +345,10 @@ export class DetailDonhangComponent {
       return;
     }
 
+    this.proceedWithSave();
+  }
+
+  private async proceedWithSave() {
     // ✅ FIX: Ensure DetailDonhang.sanpham is properly synchronized with ListFilter
     this.synchronizeProductData();
 
@@ -362,7 +399,7 @@ export class DetailDonhangComponent {
     return uniqueProducts;
   }
 
-  private validateDonhang(): string | null {
+  private validateDonhang(): any {
     const donhang = this.DetailDonhang();
 
     // Validate thông tin cơ bản
@@ -410,13 +447,14 @@ export class DetailDonhangComponent {
       // }
     }
 
-    // Validate ngày giao không được trong quá khứ cho đơn hàng mới
-    if (this.donhangId() === 'new') {
-      const ngayGiao = moment(donhang.ngaygiao);
-      const today = moment().startOf('day');
-      if (ngayGiao.isBefore(today)) {
-        return 'Ngày giao không được trong quá khứ';
-      }
+    // Validate ngày giao không được trong quá khứ
+    const ngayGiao = moment(donhang.ngaygiao);
+    const today = moment().startOf('day');
+    if (ngayGiao.isBefore(today)) {
+      return {
+        type: 'PAST_DATE',
+        message: 'Ngày giao không được trong quá khứ',
+      };
     }
 
     return null; // Không có lỗi

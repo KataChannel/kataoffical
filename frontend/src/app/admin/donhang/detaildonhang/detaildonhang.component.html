@@ -352,3 +352,37 @@
     </div>
   </mat-dialog-content>
 </ng-template>
+
+<ng-template #confirmPastDateDialog>
+  <mat-dialog-content class="!relative !flex flex-col space-y-6 items-center justify-center p-6">
+    <div class="flex flex-row space-x-3 items-center">
+      <mat-icon class="text-amber-500 text-3xl">warning</mat-icon>
+      <div class="text-lg font-medium">Xác nhận ngày giao hàng</div>
+    </div>
+    
+    <div class="text-center">
+      <div class="text-gray-700">Ngày giao hàng đang ở trong quá khứ.</div>
+      <div class="font-bold text-red-600 mt-2">
+        Bạn có chắc chắn muốn tiếp tục lưu đơn hàng này không?
+      </div>
+    </div>
+    
+    <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+      <div class="text-sm text-blue-800">
+        <mat-icon class="text-blue-600 text-sm mr-1">info</mat-icon>
+        Lưu ý: Bạn có quyền admin nên có thể thực hiện thao tác này.
+      </div>
+    </div>
+    
+    <div class="flex flex-row space-x-3 items-center justify-center">
+      <button mat-flat-button color="primary" mat-dialog-close="confirm">
+        <mat-icon>check</mat-icon>
+        Đồng Ý
+      </button>
+      <button mat-flat-button mat-dialog-close="cancel">
+        <mat-icon>cancel</mat-icon>
+        Hủy bỏ
+      </button>
+    </div>
+  </mat-dialog-content>
+</ng-template>
