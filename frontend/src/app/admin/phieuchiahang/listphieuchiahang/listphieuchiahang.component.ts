@@ -713,67 +713,35 @@ export class ListPhieuchiahangComponent {
         
         try {
           for (const order of this.editDonhang) {
-            const oldPrintCount = order.printCount || 0;
-            const oldStatus = order.status;
             // Tăng printCount
-            order.printCount = oldPrintCount + 1;
+            order.printCount = (order.printCount || 0) + 1;
             
-            console.log(`📝 [printContent] Đơn ${order.madonhang}: printCount ${oldPrintCount} → ${order.printCount}, status: ${oldStatus}`);
+            console.log(`📝 [printContent] Đơn ${order.madonhang}: printCount → ${order.printCount}`);
             
-            // 🔥 Nếu đơn hàng đang ở trạng thái 'dadat', chuyển sang 'dagiao'
-            if (oldStatus === 'dadat') {
-              console.log(`🚚 [printContent] Chuyển đơn ${order.madonhang} từ dadat → dagiao`);
-              
-              // Chuẩn bị dữ liệu cho API dagiao
-              const dagiaoData = {
-                id: order.id,
-                madonhang: order.madonhang,
-                ngaygiao: order.ngaygiao,
-                ghichu: order.ghichu,
-                isActive: order.isActive,
-                nhanvienchiahang: order.nhanvienchiahang,
-                shipper: order.shipper,
-                printCount: order.printCount,
-                sanpham: order.sanpham?.map((sp: any) => ({
-                  id: sp.idSP || sp.id,
-                  sldat: sp.sldat,
-                  slgiao: sp.slgiao || sp.sldat, // Mặc định slgiao = sldat nếu chưa có
-                  slnhan: sp.slnhan || 0,
-                  ghichu: sp.ghichu,
-                })) || []
-              };
-              
-              const result = await this._DonhangService.DagiaoDonhang(dagiaoData);
-              console.log('✅ [printContent] Dagiao response:', result);
-              
-              // Cập nhật status local
-              order.status = 'dagiao';
-            } else {
-              // Chỉ update printCount nếu không phải dadat
-              const updateData = {
-                id: order.id,
-                printCount: order.printCount
-              };
-              console.log('🚀 [printContent] Gửi update printCount lên server:', updateData);
-              
-              const result = await this._DonhangService.updateDonhang(updateData);
-              console.log('✅ [printContent] Server response:', result);
-            }
+            // 🔥 CHỈ cập nhật printCount lên server, không thay đổi status
+            const updateData = {
+              id: order.id,
+              printCount: order.printCount
+            };
+            
+            console.log('🚀 [printContent] Gửi update printCount lên server:', updateData);
+            const result = await this._DonhangService.updateDonhang(updateData);
+            console.log('✅ [printContent] Server response:', result);
           }
           
-          // Refresh dataSource để update màu nền và status
+          // Refresh dataSource để update hiển thị printCount
           console.log('🔄 [printContent] Refresh dataSource');
           this.dataSource.data = [...this.dataSource.data];
           
-          this._snackBar.open(`✅ Đã cập nhật trạng thái in cho ${this.editDonhang.length} đơn hàng`, '', {
+          this._snackBar.open(`✅ Đã cập nhật số lần in cho ${this.editDonhang.length} đơn hàng`, '', {
             duration: 2000,
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-success'],
           });
         } catch (error) {
-          console.error('❌ [printContent] Error updating printCount/dagiao:', error);
-          this._snackBar.open('⚠️ Lỗi khi cập nhật trạng thái in', '', {
+          console.error('❌ [printContent] Error updating printCount:', error);
+          this._snackBar.open('⚠️ Lỗi khi cập nhật số lần in', '', {
             duration: 3000,
             horizontalPosition: 'end',
             verticalPosition: 'top',
