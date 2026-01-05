@@ -46,6 +46,7 @@ let OptimizedCongnoService = class OptimizedCongnoService {
                 ngaygiao: true,
                 tongtien: true,
                 tongvat: true,
+                isshowvat: true,
                 khachhang: {
                     select: {
                         name: true,
@@ -76,8 +77,8 @@ let OptimizedCongnoService = class OptimizedCongnoService {
                 ngaygiao: donhang.ngaygiao,
                 tong: tong.toFixed(3),
                 soluong: soluong.toFixed(3),
-                tongtien: donhang.tongtien,
-                tongvat: donhang.tongvat,
+                tongtien: donhang.isshowvat ? donhang.tongtien : tong.toFixed(3),
+                tongvat: donhang.isshowvat ? donhang.tongvat : 0,
                 name: donhang.khachhang?.name,
                 makh: donhang.khachhang?.makh,
             };
@@ -111,6 +112,7 @@ let OptimizedCongnoService = class OptimizedCongnoService {
         d.ngaygiao,
         d.tongtien,
         d.tongvat,
+        d.isshowvat,
         k.name,
         k.makh,
         COALESCE(SUM(ds.slnhan * ds.giaban), 0) as tong,
@@ -119,7 +121,7 @@ let OptimizedCongnoService = class OptimizedCongnoService {
       LEFT JOIN "Khachhang" k ON d."khachhangId" = k.id
       LEFT JOIN "Donhangsanpham" ds ON d.id = ds."donhangId"
       ${whereClause}
-      GROUP BY d.id, d.madonhang, d.ngaygiao, d.tongtien, d.tongvat, k.name, k.makh, d."createdAt"
+      GROUP BY d.id, d.madonhang, d.ngaygiao, d.tongtien, d.tongvat, d.isshowvat, k.name, k.makh, d."createdAt"
       ORDER BY d."createdAt" DESC
     `;
         const result = await this.prisma.$queryRawUnsafe(sql, ...queryParams);
@@ -129,8 +131,8 @@ let OptimizedCongnoService = class OptimizedCongnoService {
             ngaygiao: row.ngaygiao,
             tong: Number(row.tong).toFixed(3),
             soluong: Number(row.soluong).toFixed(3),
-            tongtien: row.tongtien,
-            tongvat: row.tongvat,
+            tongtien: row.isshowvat ? row.tongtien : Number(row.tong).toFixed(3),
+            tongvat: row.isshowvat ? row.tongvat : 0,
             name: row.name,
             makh: row.makh,
         }));

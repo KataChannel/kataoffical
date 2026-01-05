@@ -139,7 +139,7 @@ async dongbogiaEnhanced(listdonhang: any[]) {
                   const sldat = Number(donhangSanpham.sldat) || 0;
                   const slgiao = Number(donhangSanpham.slgiao) || 0;
                   const slnhan = Number(donhangSanpham.slnhan) || 0;
-                  const vat = Number(donhangSanpham.vat) || 0;
+                  const vat = donhang.isshowvat ? (Number(donhangSanpham.vat) || 0) : 0;
 
                   const ttdat = giaban * sldat;
                   const ttgiao = giaban * slgiao;
@@ -186,7 +186,7 @@ async dongbogiaEnhanced(listdonhang: any[]) {
                 }
 
                 // Update order totals
-                const vatRate = Number(donhang.vat) || 0;
+                const vatRate = donhang.isshowvat ? (Number(donhang.vat) || 0) : 0;
                 const tongvat = tongchua * vatRate;
                 const tongtien = tongchua + tongvat;
 

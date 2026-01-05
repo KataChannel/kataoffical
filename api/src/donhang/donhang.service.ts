@@ -296,6 +296,7 @@ export class DonhangService {
         tongtien: true,
         tongvat: true,
         vat: true, // 🔥 Thêm vat để tính lại tongtien từ tong
+        isshowvat: true, // Thêm isshowvat để kiểm tra
         khachhang: {
           select: {
             name: true,
@@ -332,7 +333,7 @@ export class DonhangService {
 
       // 🔥 BUGFIX: Tính lại tongvat và tongtien từ tong (đã tính từ slnhan)
       // Thay vì lấy trực tiếp từ DB (có thể cũ)
-      const vatRate = Number(donhang.vat) || 0;
+      const vatRate = donhang.isshowvat ? (Number(donhang.vat) || 0) : 0;
       const tongvat = tong * vatRate;
       const tongtien = tong + tongvat;
 
@@ -405,7 +406,7 @@ export class DonhangService {
         .map((v1: any) => {
           const product = Sanphams.find((sp: any) => sp.id === v1.idSP);
           const giaban = v1.giaban || 0;
-          const vat: any = Number(product?.vat) || 0;
+          const vat: any = v.isshowvat ? (Number(product?.vat) || 0) : 0;
           const thanhtiensauvat = v1.slnhan * giaban * (1 + vat);
           
           // Chuẩn hóa ngày giao để đảm bảo grouping chính xác
@@ -1123,7 +1124,7 @@ export class DonhangService {
                   const sldat = Number(donhangSanpham.sldat) || 0;
                   const slgiao = Number(donhangSanpham.slgiao) || 0;
                   const slnhan = Number(donhangSanpham.slnhan) || 0;
-                  const vat = Number(donhangSanpham.vat) || 0;
+                  const vat = donhang.isshowvat ? (Number(donhangSanpham.vat) || 0) : 0;
 
                   // Lưu giá trị cũ để ghi log
                   const oldGiaban = Number(donhangSanpham.giaban) || 0;
@@ -1218,7 +1219,7 @@ export class DonhangService {
               const oldTongvat = Number(donhang.tongvat) || 0;
               const oldTongtien = Number(donhang.tongtien) || 0;
 
-              const vatRate = Number(donhang.vat) || 0;
+              const vatRate = donhang.isshowvat ? (Number(donhang.vat) || 0) : 0;
               const tongvat = tongchua * (vatRate);
               const tongtien = tongchua + tongvat;
 
@@ -1396,8 +1397,8 @@ export class DonhangService {
           ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
           ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
           ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
-          vat: parseFloat((item.vat ?? 0).toFixed(3)),
-          ttsauvat: parseFloat((item.ttnhan * (1 + (item.vat || 0))).toFixed(3)),
+          vat: result.isshowvat ? parseFloat((item.vat ?? 0).toFixed(3)) : 0,
+          ttsauvat: result.isshowvat ? parseFloat((item.ttnhan * (1 + (item.vat || 0))).toFixed(3)) : parseFloat(item.ttnhan.toFixed(3)),
           ghichu: item.ghichu,
         };
       })
@@ -2002,7 +2003,7 @@ export class DonhangService {
           ngaygiao: new Date(dto.ngaygiao),
           khachhangId: dto.khachhangId,
           banggiaId: dto.banggiaId||khachhang.banggiaId ||DEFAUL_BANGGIA_ID,
-          vat: parseFloat((dto.vat || 0.05).toString()), // Default 5% VAT
+          vat: khachhang.loaikh === 'khachsi' ? 0 : parseFloat((dto.vat || 0.05).toString()), // Default 5% VAT if not khachsi
           isActive: dto.isActive,
           order: maxOrder + 1,
           ghichu: dto.ghichu,
@@ -2045,8 +2046,8 @@ export class DonhangService {
         },
       });
 
-      // Calculate totals using new formula and helper method
-      const vatRate = parseFloat((dto.vat || 0.05).toString());
+      // Calculate totals using correct VAT rate
+      const vatRate = khachhang.isshowvat ? parseFloat((dto.vat || 0.05).toString()) : 0;
       
       // Get banggia to update product prices
       const banggia = await prisma.banggia.findUnique({
@@ -2079,7 +2080,7 @@ export class DonhangService {
         }
         
         const slnhan = parseFloat((sp.slnhan ?? 0).toString());
-        const vat = parseFloat((sp.vat ?? 0).toString());
+        const vat = khachhang.isshowvat ? parseFloat((sp.vat ?? 0).toString()) : 0;
         
         return {
           ...sp,
@@ -2535,15 +2536,14 @@ export class DonhangService {
         
         // Update từng sản phẩm với tính toán lại giá trị
         for (const item of data.sanpham) {
-          const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
           const received = parseFloat((item.slnhan ?? 0).toFixed(3));
-          
+          const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
           // Tìm sản phẩm trong DB để lấy giaban và vat
           const donhangSanpham = oldDonhang.sanpham.find((sp: any) => sp.idSP === item.id);
           if (!donhangSanpham) continue;
           
           const giaban = parseFloat((donhangSanpham.giaban ?? 0).toFixed(3));
-          const vat = parseFloat((donhangSanpham.vat ?? 0).toFixed(3));
+          const vat = oldDonhang.isshowvat ? (Number(donhangSanpham.vat) || 0) : 0;
           
           // 🔥 Tính lại ttnhan và ttsauvat dựa trên slnhan
           const ttnhan = giaban * received;
@@ -2570,7 +2570,7 @@ export class DonhangService {
         }
         
         // 🔥 Tính lại tổng tiền cho đơn hàng
-        const vatRate = parseFloat((oldDonhang.vat ?? 0).toFixed(3));
+        const vatRate = oldDonhang.isshowvat ? parseFloat((oldDonhang.vat ?? 0).toFixed(3)) : 0;
         const tongvat = tongchua * vatRate;
         const tongtien = tongchua + tongvat;
         

@@ -103,7 +103,6 @@ export declare class CancelOrderService {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
-        khachhangId: string | null;
         printCount: number | null;
         tongtien: Prisma.Decimal;
         tongvat: Prisma.Decimal;
@@ -114,6 +113,7 @@ export declare class CancelOrderService {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
+        khachhangId: string | null;
     })[] | ({
         sanpham: ({
             sanpham: {

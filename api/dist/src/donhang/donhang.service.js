@@ -235,6 +235,7 @@ let DonhangService = class DonhangService {
                     tongtien: true,
                     tongvat: true,
                     vat: true,
+                    isshowvat: true,
                     khachhang: {
                         select: {
                             name: true,
@@ -261,7 +262,7 @@ let DonhangService = class DonhangService {
                     tong += slnhan * giaban;
                     soluong += slnhan;
                 }
-                const vatRate = Number(donhang.vat) || 0;
+                const vatRate = donhang.isshowvat ? (Number(donhang.vat) || 0) : 0;
                 const tongvat = tong * vatRate;
                 const tongtien = tong + tongvat;
                 return {
@@ -323,7 +324,7 @@ let DonhangService = class DonhangService {
                 .map((v1) => {
                 const product = Sanphams.find((sp) => sp.id === v1.idSP);
                 const giaban = v1.giaban || 0;
-                const vat = Number(product?.vat) || 0;
+                const vat = v.isshowvat ? (Number(product?.vat) || 0) : 0;
                 const thanhtiensauvat = v1.slnhan * giaban * (1 + vat);
                 const normalizedDate = v.ngaygiao ?
                     moment(v.ngaygiao).tz('Asia/Ho_Chi_Minh').startOf('day').format('YYYY-MM-DD') :
@@ -857,7 +858,7 @@ let DonhangService = class DonhangService {
                                     const sldat = Number(donhangSanpham.sldat) || 0;
                                     const slgiao = Number(donhangSanpham.slgiao) || 0;
                                     const slnhan = Number(donhangSanpham.slnhan) || 0;
-                                    const vat = Number(donhangSanpham.vat) || 0;
+                                    const vat = donhang.isshowvat ? (Number(donhangSanpham.vat) || 0) : 0;
                                     const oldGiaban = Number(donhangSanpham.giaban) || 0;
                                     const oldTtdat = Number(donhangSanpham.ttdat) || 0;
                                     const oldTtgiao = Number(donhangSanpham.ttgiao) || 0;
@@ -933,7 +934,7 @@ let DonhangService = class DonhangService {
                             }
                             const oldTongvat = Number(donhang.tongvat) || 0;
                             const oldTongtien = Number(donhang.tongtien) || 0;
-                            const vatRate = Number(donhang.vat) || 0;
+                            const vatRate = donhang.isshowvat ? (Number(donhang.vat) || 0) : 0;
                             const tongvat = tongchua * (vatRate);
                             const tongtien = tongchua + tongvat;
                             const hasTotalChange = Math.abs(tongtien - oldTongtien) > 0.01;
@@ -1087,8 +1088,8 @@ let DonhangService = class DonhangService {
                     ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
                     ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
                     ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
-                    vat: parseFloat((item.vat ?? 0).toFixed(3)),
-                    ttsauvat: parseFloat((item.ttnhan * (1 + (item.vat || 0))).toFixed(3)),
+                    vat: result.isshowvat ? parseFloat((item.vat ?? 0).toFixed(3)) : 0,
+                    ttsauvat: result.isshowvat ? parseFloat((item.ttnhan * (1 + (item.vat || 0))).toFixed(3)) : parseFloat(item.ttnhan.toFixed(3)),
                     ghichu: item.ghichu,
                 };
             })
@@ -1575,7 +1576,7 @@ let DonhangService = class DonhangService {
                     ngaygiao: new Date(dto.ngaygiao),
                     khachhangId: dto.khachhangId,
                     banggiaId: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID,
-                    vat: parseFloat((dto.vat || 0.05).toString()),
+                    vat: khachhang.loaikh === 'khachsi' ? 0 : parseFloat((dto.vat || 0.05).toString()),
                     isActive: dto.isActive,
                     order: maxOrder + 1,
                     ghichu: dto.ghichu,
@@ -1617,7 +1618,7 @@ let DonhangService = class DonhangService {
                     sanpham: true,
                 },
             });
-            const vatRate = parseFloat((dto.vat || 0.05).toString());
+            const vatRate = khachhang.isshowvat ? parseFloat((dto.vat || 0.05).toString()) : 0;
             const banggia = await prisma.banggia.findUnique({
                 where: { id: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID },
                 include: { sanpham: true },
@@ -1643,7 +1644,7 @@ let DonhangService = class DonhangService {
                     giaban = parseFloat(giaSanphamDefault.giaban.toString());
                 }
                 const slnhan = parseFloat((sp.slnhan ?? 0).toString());
-                const vat = parseFloat((sp.vat ?? 0).toString());
+                const vat = khachhang.isshowvat ? parseFloat((sp.vat ?? 0).toString()) : 0;
                 return {
                     ...sp,
                     giaban: giaban,
@@ -2033,13 +2034,13 @@ let DonhangService = class DonhangService {
                 }
                 let tongchua = 0;
                 for (const item of data.sanpham) {
-                    const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
                     const received = parseFloat((item.slnhan ?? 0).toFixed(3));
+                    const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
                     const donhangSanpham = oldDonhang.sanpham.find((sp) => sp.idSP === item.id);
                     if (!donhangSanpham)
                         continue;
                     const giaban = parseFloat((donhangSanpham.giaban ?? 0).toFixed(3));
-                    const vat = parseFloat((donhangSanpham.vat ?? 0).toFixed(3));
+                    const vat = oldDonhang.isshowvat ? (Number(donhangSanpham.vat) || 0) : 0;
                     const ttnhan = giaban * received;
                     const ttsauvat = ttnhan * (1 + vat);
                     tongchua += ttnhan;
@@ -2058,7 +2059,7 @@ let DonhangService = class DonhangService {
                         },
                     });
                 }
-                const vatRate = parseFloat((oldDonhang.vat ?? 0).toFixed(3));
+                const vatRate = oldDonhang.isshowvat ? parseFloat((oldDonhang.vat ?? 0).toFixed(3)) : 0;
                 const tongvat = tongchua * vatRate;
                 const tongtien = tongchua + tongvat;
                 return prisma.donhang.update({

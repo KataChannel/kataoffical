@@ -90,7 +90,6 @@ export declare class PhieuGiaoHangOptimizedService {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
-        khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -101,6 +100,7 @@ export declare class PhieuGiaoHangOptimizedService {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
+        khachhangId: string | null;
     }>;
     updateBulkOptimized(ids: string[], status: string): Promise<{
         success: number;

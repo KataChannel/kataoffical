@@ -9,8 +9,8 @@ export declare class OptimizedCongnoService {
         ngaygiao: Date | null;
         tong: string;
         soluong: string;
-        tongtien: Prisma.Decimal;
-        tongvat: Prisma.Decimal;
+        tongtien: string | Prisma.Decimal;
+        tongvat: number | Prisma.Decimal;
         name: string | null | undefined;
         makh: string | undefined;
     }[]>;

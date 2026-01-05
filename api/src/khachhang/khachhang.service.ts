@@ -82,6 +82,11 @@ export class KhachhangService {
         include: { banggia: true },
       });
     }
+    // Force isshowvat false for khachsi
+    if (data.loaikh === 'khachsi') {
+      data.isshowvat = false;
+    }
+
     return this.prisma.khachhang.create({data});
   }
 
@@ -335,6 +340,12 @@ export class KhachhangService {
       }
     }
     const { banggiaId,mabanggia, ...rest } = data;
+    
+    // Force isshowvat false for khachsi
+    if (rest.loaikh === 'khachsi') {
+      rest.isshowvat = false;
+    }
+
     return this.prisma.khachhang.update({
       where: { id },
       data: {

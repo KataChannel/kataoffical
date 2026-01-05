@@ -89,7 +89,6 @@ export declare class CancelOrderController {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
-        khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -100,6 +99,7 @@ export declare class CancelOrderController {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
+        khachhangId: string | null;
     })[] | ({
         sanpham: ({
             sanpham: {
@@ -258,7 +258,6 @@ export declare class CancelOrderController {
         isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
-        khachhangId: string | null;
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -269,6 +268,7 @@ export declare class CancelOrderController {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
+        khachhangId: string | null;
     })[] | ({
         sanpham: ({
             sanpham: {

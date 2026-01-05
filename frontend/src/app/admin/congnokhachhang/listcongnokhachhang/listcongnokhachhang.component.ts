@@ -1594,22 +1594,28 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
         try {
           // Tìm đơn hàng đã được cập nhật giá
           const updatedOrder: any = this.dataSource.data.find((o: any) => o.id === order.id);
-          const tongtien = Number(updatedOrder?.tongtien || order.tongtien) || 0;
-          const vatRate = Number(updatedOrder?.vat || order.vat) || 0.05; // Mặc định 5% nếu không có
-          const tongvat = tongtien * vatRate;
+          const isshowvat = updatedOrder?.isshowvat ?? order.isshowvat;
+          const tong = Number(updatedOrder?.tong || order.tong) || 0;
+          const vatRate = isshowvat ? (Number(updatedOrder?.vat ?? order.vat) ?? 0.05) : 0;
+          const tongvat = tong * vatRate;
+          const tongtien = tong + tongvat;
 
           // Cập nhật VAT qua GraphQL
           await this._GraphqlService.updateOne('donhang', 
             { id: order.id }, 
             { 
               tongvat: Math.round(tongvat * 100) / 100, // Làm tròn 2 chữ số thập phân
+              tongtien: Math.round(tongtien * 100) / 100,
               vat: vatRate 
             }
           );
 
           // Cập nhật trong danh sách local
           order.tongvat = Math.round(tongvat * 100) / 100;
-          order.tongtien = tongtien;
+          order.tongtien = Math.round(tongtien * 100) / 100;
+          order.tong = tong;
+          order.vat = vatRate;
+          order.isshowvat = isshowvat;
           vatUpdatedCount++;
 
         } catch (error: any) {
