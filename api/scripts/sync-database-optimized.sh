@@ -31,6 +31,9 @@ fi
 
 LOG_FILE="${LOG_DIR}/db-sync-optimized-$(date +"%Y%m%d-%H%M%S").log"
 
+# Check and create logs directory if it doesn't exist
+mkdir -p "$(dirname "$LOG_FILE")"
+
 echo "[$TIMESTAMP] 🚀 Bắt đầu đồng bộ dữ liệu (TỐI ƯU) từ $SOURCE_DB sang $TARGET_DB" | tee -a $LOG_FILE
 
 # Kiểm tra dung lượng trống trước khi bắt đầu
@@ -43,6 +46,36 @@ if [ $AVAILABLE_MB -lt $REQUIRED_MB ]; then
 fi
 
 echo "[$TIMESTAMP] ✅ Kiểm tra dung lượng: ${AVAILABLE_MB}MB available" | tee -a $LOG_FILE
+
+# ============================================================
+# BACKUP CÁC BẢNG CHỈ CÓ Ở V3 (TARGET-ONLY) TRƯỚC KHI SYNC
+# ============================================================
+TARGET_ONLY_F_DUMP="/tmp/rausachv3-target-only-$(date +"%Y%m%d-%H%M%S").sql"
+TARGET_ONLY_TABLES=(
+    "PhieuThuChi"
+    "ThanhToan"
+    "HoaDonDienTu"
+    "CronExecutionLog"
+)
+
+echo "[$TIMESTAMP] 🚜 Đang backup các bảng chỉ có ở V3..." | tee -a $LOG_FILE
+export PGPASSWORD="$TARGET_PASSWORD"
+TABLES_STR=""
+for t in "${TARGET_ONLY_TABLES[@]}"; do
+    TABLES_STR="$TABLES_STR -t \"$t\""
+done
+
+# Backup data-only, dùng --no-owner và --no-privileges để dễ restore
+pg_dump -h "$TARGET_HOST" -p "$TARGET_PORT" -U "$TARGET_USER" -d "$TARGET_DB" \
+    --data-only --column-inserts --no-owner --no-privileges $TABLES_STR > "$TARGET_ONLY_F_DUMP" 2>/dev/null || true
+
+if [ -s "$TARGET_ONLY_F_DUMP" ]; then
+    echo "[$TIMESTAMP] ✅ Đã backup xong dữ liệu V3 hiện tại vào: $TARGET_ONLY_F_DUMP" | tee -a $LOG_FILE
+else
+    echo "[$TIMESTAMP] ⚠️ Không có dữ liệu V3 cũ hoặc lỗi backup (thường do bảng chưa có dữ liệu)." | tee -a $LOG_FILE
+    rm -f "$TARGET_ONLY_F_DUMP"
+fi
+
 
 # Export PGPASSWORD để không cần nhập password
 export PGPASSWORD="$SOURCE_PASSWORD"
@@ -99,7 +132,7 @@ DECLARE
         'TonKho', 'Tonkho',
         'User', 'UserPermission', 'UserRole', 'UserguidBlock', 'UserguidStep',
         'Xuatkho', 'Xuatkhosanpham',
-        '_KhachhangNhom', '_NhacungcapNhom', '_NhacungcapToSanpham', '_prisma_migrations',
+        '_KhachhangNhom', '_NhacungcapNhom', '_NhacungcapToSanpham',
         'performance_logs', 'support_attachments', 'support_responses', 'support_tickets'
     ];
     t TEXT;
@@ -151,6 +184,23 @@ if [ -f "$SQL_FILE" ]; then
     echo "[$TIMESTAMP] ✅ Đã khôi phục menu và permission!" | tee -a $LOG_FILE
 else
     echo "[$TIMESTAMP] ⚠️ Không tìm thấy file SQL: $SQL_FILE" | tee -a $LOG_FILE
+fi
+
+# ============================================================
+# KHÔI PHỤC DỮ LIỆU V3 ĐÃ BACKUP (TARGET-ONLY)
+# ============================================================
+if [ -f "$TARGET_ONLY_F_DUMP" ]; then
+    echo "[$TIMESTAMP] 📥 Đang khôi phục lại dữ liệu V3..." | tee -a $LOG_FILE
+    export PGPASSWORD="$TARGET_PASSWORD"
+    
+    # Tắt triggers để tránh lỗi FK trong quá trình restore
+    psql -h "$TARGET_HOST" -p "$TARGET_PORT" -U "$TARGET_USER" -d "$TARGET_DB" \
+        -c "SET session_replication_role = replica;" \
+        -f "$TARGET_ONLY_F_DUMP" \
+        -c "SET session_replication_role = DEFAULT;" 2>&1 | tee -a $LOG_FILE
+        
+    echo "[$TIMESTAMP] ✅ Đã khôi phục xong dữ liệu V3!" | tee -a $LOG_FILE
+    rm -f "$TARGET_ONLY_F_DUMP"
 fi
 
 # Giữ log file trong 7 ngày

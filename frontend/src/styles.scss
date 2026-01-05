@@ -674,3 +674,32 @@ div[contenteditable] {
     height: calc(100vh - 48px) !important;
   }
 }
+// ===== Responsive Dialog for ThanhToan & General Use =====
+.responsive-dialog {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    border-radius: 8px; /* Slightly rounded on mobile default */
+    overflow: hidden !important;
+  }
+
+  /* Force full screen on very small devices if needed, or stick to margins */
+  @media (max-width: 600px) {
+    .mat-mdc-dialog-container {
+      border-radius: 0 !important;
+    }
+    max-width: 100vw !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    margin: 0 !important;
+  }
+
+  @media (min-width: 601px) {
+     .mat-mdc-dialog-container {
+        border-radius: 12px !important; /* Larger radius on desktop */
+     }
+     width: 90vw;
+     max-width: 1000px;
+     max-height: 90vh;
+  }
+}

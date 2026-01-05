@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { CronJobStatus } from '@prisma/client';
 import { exec } from 'child_process';
 import * as cron from 'node-cron';
 import * as path from 'path';
-import { promisify } from 'util';
 import { PrismaService } from 'prisma/prisma.service';
+import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
@@ -66,67 +67,74 @@ export class DatabaseSyncService {
 
   async syncDatabase(): Promise<SyncStats> {
     const startTime = Date.now();
+    const jobId = 'DATABASE_SYNC_DAILY';
+    const jobName = 'Đồng bộ Database định kỳ';
+    
+    // Khởi tạo log trong database
+    const log = await this.prisma.cronExecutionLog.create({
+      data: {
+        jobId,
+        jobName,
+        category: 'Sync',
+        status: CronJobStatus.running,
+        startTime: new Date(),
+        triggeredBy: 'system',
+        message: 'Bắt đầu quá trình đồng bộ database...',
+      },
+    });
     
     try {
       this.logger.log('🚀 Đang thực thi script đồng bộ database...');
       
-      // Auto-detect script path: Docker hoặc Local
-      // Use absolute path to avoid working directory issues
-      // Sử dụng script tối ưu: sync-database-optimized.sh
       const isProduction = process.env.NODE_ENV === 'production';
-      
-      // Get the project root (api folder), not dist folder
       const projectRoot = path.resolve(__dirname, '..', '..');
-      const apiRoot = projectRoot.replace('/dist', '');  // Remove /dist if running from compiled code
+      const apiRoot = projectRoot.replace('/dist', '');
       
       const scriptPath = isProduction
-        ? '/app/scripts/sync-database-optimized.sh'   // Docker container
-        : path.join(apiRoot, 'scripts', 'sync-database-optimized.sh');  // Local development
+        ? '/app/scripts/sync-database-optimized.sh'
+        : path.join(apiRoot, 'scripts', 'sync-database-optimized.sh');
       
       this.logger.log(`📁 Script path: ${scriptPath}`);
-      this.logger.log(`📁 Project root: ${apiRoot}`);
       
-      // Check if script exists
       const fs = await import('fs');
       if (!fs.existsSync(scriptPath)) {
         throw new Error(`Script không tồn tại: ${scriptPath}`);
       }
       
       const { stdout, stderr } = await execAsync(`bash ${scriptPath}`, {
-        cwd: path.dirname(scriptPath),  // Set working directory to script's folder
-        timeout: 300000,  // 5 minutes timeout
-        maxBuffer: 50 * 1024 * 1024  // 50MB buffer để tránh lỗi buffer overflow
+        cwd: path.dirname(scriptPath),
+        timeout: 300000,
+        maxBuffer: 50 * 1024 * 1024
       });
       
+      let importantOutput = '';
       if (stdout) {
-        // Chỉ log những dòng quan trọng, bỏ qua các dòng COPY/SET/ALTER
-        const importantLines = stdout
+        importantOutput = stdout
           .split('\n')
           .filter(line => !line.match(/^(COPY \d+|SET|ALTER TABLE|CREATE|DROP|TRUNCATE|DO|\s*)$/))
           .join('\n');
-        if (importantLines.trim()) {
-          this.logger.log(`📋 Output: ${importantLines}`);
-        }
       }
       
-      // stderr từ psql có thể chứa warnings không quan trọng
-      if (stderr) {
-        const criticalErrors = stderr
-          .split('\n')
-          .filter(line => line.includes('ERROR') && !line.includes('transaction_timeout'))
-          .join('\n');
-        if (criticalErrors) {
-          this.logger.warn(`⚠️  Warnings: ${criticalErrors}`);
-        }
-      }
-
       const duration = Date.now() - startTime;
-      
-      // Lấy thống kê chi tiết sau khi sync
       const stats = await this.getDatabaseStats();
-      
-      // Log chi tiết kết quả
       this.logSyncSuccess(duration, stats);
+
+      // Cập nhật log thành công
+      await this.prisma.cronExecutionLog.update({
+        where: { id: log.id },
+        data: {
+          status: CronJobStatus.success,
+          endTime: new Date(),
+          executionTime: Math.round(duration / 1000),
+          message: `Đồng bộ thành công (${stats.databaseSize})`,
+          details: {
+            duration: this.formatDuration(duration),
+            databaseSize: stats.databaseSize,
+            tableStats: stats.tableStats,
+            output: importantOutput.substring(0, 2000), // Giới hạn kích thước output
+          } as any,
+        },
+      });
       
       return { 
         success: true, 
@@ -137,8 +145,23 @@ export class DatabaseSyncService {
     } catch (error) {
       const duration = Date.now() - startTime;
       this.logger.error(`❌ Lỗi khi đồng bộ database: ${error.message}`);
-      this.logger.error(error.stack);
-      this.logger.error(`⏱️ Thời gian thực thi trước khi lỗi: ${this.formatDuration(duration)}`);
+      
+      // Cập nhật log thất bại
+      await this.prisma.cronExecutionLog.update({
+        where: { id: log.id },
+        data: {
+          status: CronJobStatus.failed,
+          endTime: new Date(),
+          executionTime: Math.round(duration / 1000),
+          error: error.message,
+          message: 'Đồng bộ thất bại',
+          details: {
+            stack: error.stack,
+            duration: this.formatDuration(duration),
+          } as any,
+        },
+      });
+
       return { success: false, timestamp: new Date(), duration, error: error.message };
     }
   }

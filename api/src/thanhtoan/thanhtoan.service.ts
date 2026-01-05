@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LoaiThanhToan, TrangThaiThanhToan } from '@prisma/client';
+import { LoaiThanhToan, StatusDonhang, TrangThaiThanhToan } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
-import { CreateThanhToanDto, UpdateThanhToanDto } from './dto/thanhtoan.dto';
+import { CreateBulkThanhToanDto, CreateThanhToanDto, UpdateThanhToanDto } from './dto/thanhtoan.dto';
 
 @Injectable()
 export class ThanhToanService {
@@ -61,7 +61,7 @@ export class ThanhToanService {
       data.ngayThanhToan = new Date(createDto.ngayThanhToan);
     }
 
-    return this.prisma.thanhToan.create({
+    const result = await this.prisma.thanhToan.create({
       data,
       include: {
         donhang: {
@@ -71,6 +71,91 @@ export class ThanhToanService {
         },
       },
     });
+
+    // Tự động kiểm tra và cập nhật trạng thái đơn hàng
+    await this.checkAndUpdateOrderStatus(createDto.donhangId);
+
+    return result;
+  }
+
+  // Thanh toán hàng loạt cho nhiều đơn hàng
+  async createBulk(createBulkDto: CreateBulkThanhToanDto, nguoiTaoId?: string) {
+    const results: any[] = [];
+    
+    // Sử dụng transaction để đảm bảo dữ liệu nhất quán
+    return await this.prisma.$transaction(async (prisma) => {
+      for (const item of createBulkDto.items) {
+        const maThanhToan = await this.generateMaThanhToan(); // Note: This might need careful handling in transaction for unique codes
+        
+        const data: any = {
+          maThanhToan,
+          donhangId: item.donhangId,
+          soTien: item.soTien,
+          loai: createBulkDto.loai || LoaiThanhToan.KHONG_HOA_DON,
+          phuongThuc: createBulkDto.phuongThuc || 'TIEN_MAT',
+          trangThai: TrangThaiThanhToan.DA_THANH_TOAN,
+          ghichu: item.ghichu || createBulkDto.ghichu,
+          nguoiTaoId,
+          ngayThanhToan: createBulkDto.ngayThanhToan ? new Date(createBulkDto.ngayThanhToan) : new Date(),
+        };
+
+        const tt = await prisma.thanhToan.create({
+          data,
+        });
+        
+        results.push(tt);
+        
+        // Cập nhật trạng thái đơn hàng (phiên bản dùng prisma nội bộ transaction)
+        await this.checkAndUpdateOrderStatusInternal(item.donhangId, prisma);
+      }
+      
+      return {
+        success: true,
+        count: results.length,
+        items: results
+      };
+    });
+  }
+
+  // Tự động cập nhật trạng thái đơn hàng thành 'hoanthanh' nếu đã thanh toán đủ
+  private async checkAndUpdateOrderStatus(donhangId: string) {
+    return this.checkAndUpdateOrderStatusInternal(donhangId, this.prisma);
+  }
+
+  private async checkAndUpdateOrderStatusInternal(donhangId: string, prisma: any) {
+    // 1. Lấy thông tin đơn hàng và tổng tiền
+    const donhang = await prisma.donhang.findUnique({
+      where: { id: donhangId },
+      select: { tongtien: true, status: true }
+    });
+
+    if (!donhang) return;
+
+    // 2. Tính tổng tiền đã thanh toán
+    const aggregate = await prisma.thanhToan.aggregate({
+      where: {
+        donhangId,
+        trangThai: TrangThaiThanhToan.DA_THANH_TOAN
+      },
+      _sum: {
+        soTien: true
+      }
+    });
+
+    const tongDaThanhToan = Number(aggregate._sum.soTien || 0);
+    const tongPhaiThanhToan = Number(donhang.tongtien);
+
+    // 3. Nếu đã thanh toán đủ hoặc thừa, chuyển trạng thái sang hoanthanh
+    // (Chỉ cập nhật nếu đơn chưa hoàn thành và không bị hủy)
+    if (tongDaThanhToan >= tongPhaiThanhToan && 
+        donhang.status !== StatusDonhang.hoanthanh && 
+        donhang.status !== StatusDonhang.huy) {
+      
+      await prisma.donhang.update({
+        where: { id: donhangId },
+        data: { status: StatusDonhang.hoanthanh }
+      });
+    }
   }
 
   // Lấy danh sách thanh toán
@@ -167,7 +252,7 @@ export class ThanhToanService {
   async update(id: string, updateDto: UpdateThanhToanDto) {
     await this.findOne(id);
 
-    return this.prisma.thanhToan.update({
+    const result = await this.prisma.thanhToan.update({
       where: { id },
       data: updateDto,
       include: {
@@ -178,6 +263,13 @@ export class ThanhToanService {
         },
       },
     });
+
+    // Kiểm tra lại trạng thái đơn hàng sau khi cập nhật số tiền
+    if (result.donhangId) {
+      await this.checkAndUpdateOrderStatus(result.donhangId);
+    }
+
+    return result;
   }
 
   // Xóa thanh toán

@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { LoaiThanhToan, TrangThaiThanhToan } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateThanhToanDto, UpdateThanhToanDto } from './dto/thanhtoan.dto';
+import { CreateBulkThanhToanDto, CreateThanhToanDto, UpdateThanhToanDto } from './dto/thanhtoan.dto';
 import { ThanhToanService } from './thanhtoan.service';
 
 @Controller('thanhtoan')
@@ -24,6 +24,12 @@ export class ThanhToanController {
   async create(@Body() createDto: CreateThanhToanDto, @Request() req: any) {
     const nguoiTaoId = req.user?.sub || req.user?.id;
     return this.thanhToanService.create(createDto, nguoiTaoId);
+  }
+
+  @Post('bulk')
+  async createBulk(@Body() createBulkDto: CreateBulkThanhToanDto, @Request() req: any) {
+    const nguoiTaoId = req.user?.sub || req.user?.id;
+    return this.thanhToanService.createBulk(createBulkDto, nguoiTaoId);
   }
 
   @Get()

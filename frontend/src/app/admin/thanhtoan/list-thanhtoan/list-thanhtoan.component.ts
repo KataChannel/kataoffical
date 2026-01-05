@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import {
     BadgeComponent,
     ButtonComponent,
@@ -11,6 +13,7 @@ import {
     ErrorStateComponent,
     SkeletonComponent
 } from '../../../shared/ui';
+import { CreateThanhToanDialogComponent } from '../create-thanhtoan-dialog/create-thanhtoan-dialog.component';
 import { ThanhToan, ThanhtoanService } from '../thanhtoan.service';
 
 @Component({
@@ -25,7 +28,9 @@ import { ThanhToan, ThanhtoanService } from '../thanhtoan.service';
     BadgeComponent,
     SkeletonComponent,
     EmptyStateComponent,
-    ErrorStateComponent
+    EmptyStateComponent,
+    ErrorStateComponent,
+    MatDialogModule
   ],
   template: `
     <!-- Mobile-First ThanhToan List -->
@@ -36,8 +41,8 @@ import { ThanhToan, ThanhtoanService } from '../thanhtoan.service';
           <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Thanh Toán</h1>
           <p class="text-sm text-muted-foreground mt-1">Quản lý thanh toán đơn hàng</p>
         </div>
-        <ui-button class="w-full sm:w-auto">
-          <span class="mr-2">+</span> Tạo thanh toán
+        <ui-button class="w-full sm:w-auto" (click)="openCreateDialog()">
+          <span class="mr-2">+</span> Tạo thanh toán công nợ
         </ui-button>
       </div>
 
@@ -326,50 +331,50 @@ export class ListThanhtoanComponent implements OnInit {
 
   constructor(
     private thanhtoanService: ThanhtoanService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.loadData();
   }
 
-  loadData(): void {
+  async loadData() {
     this.loading.set(true);
     this.error.set(false);
     
-    // Mock data for now - replace with actual service call
-    setTimeout(() => {
-      try {
-        // Simulate API call
-        const mockData: ThanhToan[] = [
-          {
-            id: '1',
-            maThanhToan: 'TT001',
-            donhangId: 'DH001',
-            loai: 'CO_HOA_DON',
-            soTien: 5000000,
-            ngayThanhToan: new Date(),
-            phuongThuc: 'CHUYEN_KHOAN',
-            trangThai: 'CHO_THANH_TOAN',
-            ghichu: '',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            donhang: {
-              madonhang: 'DH001',
-              khachhang: { name: 'Nguyễn Văn A' }
-            }
-          }
-        ];
-        
-        this.list.set(mockData);
-        this.total.set(mockData.length);
-        this.loading.set(false);
-      } catch (err: any) {
-        this.error.set(true);
-        this.errorMessage.set(err.message || 'Không thể tải dữ liệu');
-        this.loading.set(false);
+    try {
+      // Use service to fetch data
+      const response = await firstValueFrom(this.thanhtoanService.getList({
+        take: 100, // Fetch recent 100 payments
+        orderBy: { createdAt: 'desc' }
+      }));
+      
+      this.list.set(response.items);
+      // Recalculate stats based on fetched data if needed or fetch separate stats
+      this.loading.set(false);
+    } catch (err: any) {
+      console.error('Error loading payments', err);
+      this.error.set(true);
+      this.errorMessage.set(err.message || 'Không thể tải dữ liệu');
+      this.loading.set(false);
+    }
+  }
+
+  openCreateDialog() {
+    const dialogRef = this.dialog.open(CreateThanhToanDialogComponent, {
+      maxWidth: '100vw',
+      width: 'auto',
+      panelClass: 'responsive-dialog',
+      disableClose: true,
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadData();
       }
-    }, 1000);
+    });
   }
 
   formatCurrency(amount: number): string {

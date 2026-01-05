@@ -18,11 +18,12 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-echo "1️⃣  Build Docker image mới..."
+# 1. Build Docker image mới...
 read -p "Tiếp tục build image? (y/n): " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    cd /chikiet/kata2025/rausachfinalv2/api
+    SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    cd "$SCRIPT_PATH/api"
     docker build -t rausach-backend:latest .
     if [ $? -eq 0 ]; then
         echo "✅ Build image thành công"
@@ -36,7 +37,7 @@ fi
 
 echo ""
 echo "2️⃣  Tạo thư mục logs..."
-cd /chikiet/kata2025/rausachfinalv2
+cd "$SCRIPT_PATH"
 mkdir -p logs
 chmod 777 logs
 echo "✅ Đã tạo thư mục logs"

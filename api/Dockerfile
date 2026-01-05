@@ -53,9 +53,13 @@ RUN mv /app/node_modules/prisma /app/node_modules/prisma-cli && \
 # Create symlink for 'src/' path resolution (compiled code uses 'src/xxx' imports)
 RUN ln -s /app/dist/src /app/node_modules/src
 
-# Copy sync scripts
+# Copy sync scripts and sql files
 COPY --chown=app:app scripts ./scripts
+COPY --chown=app:app sql ./sql
 RUN chmod +x /app/scripts/*.sh
+
+# Ensure logs directory exists and is writable by app user
+RUN mkdir -p /app/logs && chown app:app /app/logs && chmod 777 /app/logs
 
 USER app
 

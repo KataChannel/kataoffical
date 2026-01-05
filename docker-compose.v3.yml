@@ -12,6 +12,7 @@ services:
       - DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/rausachv3?schema=public&connection_limit=25&pool_timeout=60&connect_timeout=20
       - GOOGLE_CLIENT_ID=897974685698-efprsqffgop935h5d5l2lidle1go9i17.apps.googleusercontent.com
       - GOOGLE_CLIENT_SECRET=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
+      - GOOGLE_CALLBACK_URL=https://apidemo.rausachtrangia.com/auth/google/callback
       - GOOGLE_API_KEY=AIzaSyAcLy3dOt27BgxkDSAY7fRm0jbwlzPo-80
       - FACEBOOK_CLIENT_ID=placeholder-facebook-client-id
       - FACEBOOK_CLIENT_SECRET=placeholder-facebook-client-secret
