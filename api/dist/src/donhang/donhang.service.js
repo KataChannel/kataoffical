@@ -1576,7 +1576,7 @@ let DonhangService = class DonhangService {
                     ngaygiao: new Date(dto.ngaygiao),
                     khachhangId: dto.khachhangId,
                     banggiaId: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID,
-                    vat: khachhang.loaikh === 'khachsi' ? 0 : parseFloat((dto.vat || 0.05).toString()),
+                    vat: dto.vat !== undefined ? parseFloat(dto.vat.toString()) : (khachhang.loaikh === 'khachsi' && !khachhang.isshowvat ? 0 : 0.05),
                     isActive: dto.isActive,
                     order: maxOrder + 1,
                     ghichu: dto.ghichu,

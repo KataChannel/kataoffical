@@ -82,8 +82,8 @@ export class KhachhangService {
         include: { banggia: true },
       });
     }
-    // Force isshowvat false for khachsi
-    if (data.loaikh === 'khachsi') {
+    // Default isshowvat to false for khachsi if not provided
+    if (data.loaikh === 'khachsi' && data.isshowvat === undefined) {
       data.isshowvat = false;
     }
 
@@ -341,10 +341,7 @@ export class KhachhangService {
     }
     const { banggiaId,mabanggia, ...rest } = data;
     
-    // Force isshowvat false for khachsi
-    if (rest.loaikh === 'khachsi') {
-      rest.isshowvat = false;
-    }
+    // Allow manual isshowvat for khachsi, no longer forcing it to false here
 
     return this.prisma.khachhang.update({
       where: { id },

@@ -78,7 +78,7 @@ let KhachhangService = class KhachhangService {
                 include: { banggia: true },
             });
         }
-        if (data.loaikh === 'khachsi') {
+        if (data.loaikh === 'khachsi' && data.isshowvat === undefined) {
             data.isshowvat = false;
         }
         return this.prisma.khachhang.create({ data });
@@ -316,9 +316,6 @@ let KhachhangService = class KhachhangService {
             }
         }
         const { banggiaId, mabanggia, ...rest } = data;
-        if (rest.loaikh === 'khachsi') {
-            rest.isshowvat = false;
-        }
         return this.prisma.khachhang.update({
             where: { id },
             data: {
