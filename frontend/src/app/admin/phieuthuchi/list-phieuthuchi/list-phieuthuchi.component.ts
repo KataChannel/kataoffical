@@ -110,11 +110,11 @@ export class ListPhieuthuchiComponent implements OnInit {
   }
 
   viewDetail(id: string) {
-    this.router.navigate(['/admin/phieuthuchi/detail', id]);
+    this.router.navigate(['/admin/phieuthuchi', id]);
   }
 
   createNew() {
-    this.router.navigate(['/admin/phieuthuchi/detail/new']);
+    this.router.navigate(['/admin/phieuthuchi/new']);
   }
 
   // Badge variant helper

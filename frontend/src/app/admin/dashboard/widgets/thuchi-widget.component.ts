@@ -305,7 +305,7 @@ export class ThuchiWidgetComponent implements OnInit {
   }
 
   viewDetail(id: string): void {
-    this.router.navigate(['/admin/phieuthuchi/detail', id]);
+    this.router.navigate(['/admin/phieuthuchi', id]);
   }
 
   viewAll(): void {

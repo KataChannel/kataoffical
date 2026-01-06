@@ -486,7 +486,7 @@ export const routes: Routes = [
               ),
           },
           {
-            path: 'detail/:id',
+            path: ':id',
             loadComponent: () =>
               import('./admin/phieuthuchi/detail-phieuthuchi/detail-phieuthuchi.component').then(
                 (c) => c.DetailPhieuthuchiComponent

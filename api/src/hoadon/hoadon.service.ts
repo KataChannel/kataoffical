@@ -41,7 +41,11 @@ export class HoaDonService {
     const donhang = await this.prisma.donhang.findUnique({
       where: { id: createDto.donhangId },
       include: {
-        sanpham: true,
+        sanpham: {
+          include: {
+            sanpham: true,
+          }
+        },
       },
     });
 
@@ -49,9 +53,45 @@ export class HoaDonService {
       throw new NotFoundException('Không tìm thấy đơn hàng');
     }
 
-    // Tính tổng tiền
-    const tongTien = Number(donhang.tongtien);
-    const tongVAT = Number(donhang.tongvat);
+    let detailsToCreate: any[] = [];
+    let tongTien = 0;
+    let tongVAT = 0;
+
+    // Nếu có truyền chi tiết hóa đơn tùy chỉnh
+    if (createDto.details && createDto.details.length > 0) {
+      detailsToCreate = createDto.details.map(d => ({
+        sanphamId: d.sanphamId,
+        tenSanPham: d.tenSanPham,
+        maSanPham: d.maSanPham,
+        dvt: d.dvt,
+        soluong: d.soluong,
+        dongia: d.dongia,
+        vat: d.vat || 0,
+        thanhtien: d.thanhtien,
+        ghichu: d.ghichu,
+      }));
+
+      // Tính lại tổng tiền dựa trên chi tiết hóa đơn (Tách biệt khỏi công nợ thực tế)
+      tongTien = detailsToCreate.reduce((sum, item) => sum + Number(item.thanhtien), 0);
+      tongVAT = detailsToCreate.reduce((sum, item) => sum + (Number(item.thanhtien) * Number(item.vat)), 0);
+    } else {
+      // Fallback: Tự động lấy từ đơn hàng (Cổ điển)
+      detailsToCreate = donhang.sanpham.map(sp => ({
+        sanphamId: sp.idSP,
+        tenSanPham: sp.sanpham.title,
+        maSanPham: sp.sanpham.masp,
+        dvt: sp.sanpham.dvt,
+        soluong: Number(sp.slnhan) || Number(sp.slgiao) || Number(sp.sldat),
+        dongia: Number(sp.giaban),
+        vat: Number(sp.vat) || 0,
+        thanhtien: (Number(sp.slnhan) || Number(sp.slgiao) || Number(sp.sldat)) * Number(sp.giaban),
+        ghichu: sp.ghichu,
+      }));
+
+      tongTien = Number(donhang.tongtien);
+      tongVAT = Number(donhang.tongvat);
+    }
+
     const tongThanhToan = tongTien + tongVAT;
 
     const data: any = {
@@ -65,6 +105,10 @@ export class HoaDonService {
       trangThai: TrangThaiHoaDon.NHAP,
       ghichu: createDto.ghichu,
       nguoiTaoId,
+      // Tạo quan hệ details
+      details: {
+        create: detailsToCreate
+      }
     };
 
     // Cập nhật đơn hàng đánh dấu đã xuất hóa đơn
@@ -76,14 +120,14 @@ export class HoaDonService {
     return this.prisma.hoaDonDienTu.create({
       data,
       include: {
+        details: {
+          include: {
+            sanpham: true
+          }
+        },
         donhang: {
           include: {
             khachhang: true,
-            sanpham: {
-              include: {
-                sanpham: true,
-              },
-            },
           },
         },
       },
@@ -126,6 +170,7 @@ export class HoaDonService {
       this.prisma.hoaDonDienTu.findMany({
         where: whereClause,
         include: {
+          details: true,
           donhang: {
             include: {
               khachhang: true,
@@ -155,6 +200,11 @@ export class HoaDonService {
     const hoaDon = await this.prisma.hoaDonDienTu.findUnique({
       where: { id },
       include: {
+        details: {
+          include: {
+            sanpham: true,
+          },
+        },
         donhang: {
           include: {
             khachhang: true,

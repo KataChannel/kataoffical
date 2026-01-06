@@ -20,6 +20,7 @@ export interface PhieuThuChi {
   createdAt: Date;
   updatedAt: Date;
   donhang?: any;
+  dathang?: any;
 }
 
 export interface CreatePhieuThuChiDto {
@@ -35,6 +36,7 @@ export interface CreatePhieuThuChiDto {
   ghichu?: string;
   lydo?: string;
   ngay?: string;
+  maDathang?: string;
 }
 
 export interface PhieuThuChiFilter {

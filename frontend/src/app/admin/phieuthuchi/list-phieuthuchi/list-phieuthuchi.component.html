@@ -96,6 +96,7 @@
             <th>Đối tượng</th>
             <th class="text-right">Số tiền</th>
             <th>Phương thức</th>
+            <th>Đơn hàng</th>
             <th>Trạng thái</th>
             <th>Thao tác</th>
           </tr>
@@ -127,6 +128,9 @@
               </td>
               <td>
                 <span class="text-sm">{{ phieu.phuongThuc }}</span>
+              </td>
+              <td>
+                <span class="text-sm font-medium text-blue-600">{{ phieu.donhang?.madonhang || phieu.dathang?.madncc || '-' }}</span>
               </td>
               <td>
                 <span class="badge" [ngClass]="getTrangThaiClass(phieu.trangThai)">
@@ -224,6 +228,10 @@
             <div class="card-row">
               <span class="label">Phương thức:</span>
               <span class="value">{{ phieu.phuongThuc }}</span>
+            </div>
+            <div class="card-row">
+              <span class="label">Đơn hàng:</span>
+              <span class="value text-blue-600">{{ phieu.donhang?.madonhang || phieu.dathang?.madncc || '-' }}</span>
             </div>
           </div>
           

@@ -11,6 +11,10 @@
     <button mat-icon-button color="primary" (click)="printContent()">
       <mat-icon>print</mat-icon>
     </button>
+    <button *ngIf="dathangId() !== 'new'" mat-flat-button color="accent" (click)="goThanhToan()">
+      <mat-icon class="mr-1">payments</mat-icon>
+      Thanh toán
+    </button>
     @if(DetailDathang().status!=='danhan') {
     <!-- <mat-slide-toggle [(ngModel)]="DetailDathang().isActive" [disabled]="!isEdit()">{{DetailDathang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle> -->
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleDathangAction()">

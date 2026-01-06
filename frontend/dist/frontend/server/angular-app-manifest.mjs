@@ -1025,7 +1025,7 @@ export default {
       "chunk-V7AISDFT.js",
       "chunk-K7VAKZGX.js"
     ],
-    "route": "/admin/phieuthuchi/detail/*"
+    "route": "/admin/phieuthuchi/*"
   },
   {
     "renderMode": 1,
@@ -1575,8 +1575,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72880, hash: '5ad86ae164589eab26a7c30fd67c2007071f73da28c484f45ad92ec00bd7ebc9', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24171, hash: 'd1074b2815c453d70bd6e13a525349dd10fb7efb91b8c576451a86ab7e7edf34', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
-    'styles-3YKPACMO.css': {size: 188380, hash: 'pBjPRlxJvXQ', text: () => import('./assets-chunks/styles-3YKPACMO_css.mjs').then(m => m.default)}
+    'index.csr.html': {size: 72880, hash: '32e813bc67ac02ea3f0211fd20dc32075cc0e345f750a2dd0daff57b102f2965', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24171, hash: '1d9162246bd85fee551b3b9717e1d89ebfdd2cd19558d5fbfc43add00fa6111e', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'styles-USTGCZ7I.css': {size: 190617, hash: 'Vm+Qz/GlI8I', text: () => import('./assets-chunks/styles-USTGCZ7I_css.mjs').then(m => m.default)}
   },
 };

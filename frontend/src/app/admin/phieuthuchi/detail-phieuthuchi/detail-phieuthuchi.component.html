@@ -83,7 +83,7 @@
           <select 
             class="field-select" 
             [value]="formData().doiTuong"
-            (change)="updateField('doiTuong', $any($event.target).value)"
+            (change)="onDoiTuongChange($any($event.target).value)"
             required>
             <option value="KHACHHANG">Khách hàng</option>
             <option value="NHACUNGCAP">Nhà cung cấp</option>
@@ -92,10 +92,82 @@
           </select>
         </div>
 
-        <!-- Tên đối tượng (nếu chọn KHAC) -->
-        @if (formData().doiTuong === 'KHAC') {
+        <!-- Chọn Khách hàng -->
+        @if (formData().doiTuong === 'KHACHHANG') {
           <div class="form-field">
-            <label class="field-label">Tên đối tượng</label>
+            <label class="field-label">Tìm khách hàng</label>
+            <input 
+              type="text" 
+              class="field-input" 
+              [value]="formData().tenDoiTuong || ''"
+              (input)="doFilter('KH', $event)"
+              [matAutocomplete]="autoKH"
+              placeholder="Nhập tên hoặc mã khách hàng">
+            <mat-autocomplete #autoKH="matAutocomplete">
+              @for (kh of filterKhachhang(); track kh.id) {
+                <mat-option [value]="kh.name" (onSelectionChange)="onSelectEntity('KH', kh)">
+                  <div class="flex flex-col">
+                    <span class="font-semibold">{{ kh.name }}</span>
+                    <small class="text-gray-500">{{ kh.makh }} - {{ kh.phone }}</small>
+                  </div>
+                </mat-option>
+              }
+            </mat-autocomplete>
+          </div>
+        }
+
+        <!-- Chọn Nhà cung cấp -->
+        @if (formData().doiTuong === 'NHACUNGCAP') {
+          <div class="form-field">
+            <label class="field-label">Tìm nhà cung cấp</label>
+            <input 
+              type="text" 
+              class="field-input" 
+              [value]="formData().tenDoiTuong || ''"
+              (input)="doFilter('NCC', $event)"
+              [matAutocomplete]="autoNCC"
+              placeholder="Nhập tên hoặc mã NCC">
+            <mat-autocomplete #autoNCC="matAutocomplete">
+              @for (ncc of filterNhacungcap(); track ncc.id) {
+                <mat-option [value]="ncc.name" (onSelectionChange)="onSelectEntity('NCC', ncc)">
+                  <div class="flex flex-col">
+                    <span class="font-semibold">{{ ncc.name }}</span>
+                    <small class="text-gray-500">{{ ncc.mancc }}</small>
+                  </div>
+                </mat-option>
+              }
+            </mat-autocomplete>
+          </div>
+
+          <!-- Chọn Đơn hàng (nếu là Phiếu Chi) -->
+          @if (formData().loai === 'CHI') {
+            <div class="form-field">
+              <label class="field-label">Đơn đặt hàng (Công nợ)</label>
+              <input 
+                type="text" 
+                class="field-input" 
+                [value]="formData().maDathang ? 'Đã chọn: ' + formData().maDathang : ''"
+                (input)="doFilter('DH', $event)"
+                [matAutocomplete]="autoDH"
+                placeholder="Tìm mã đơn hàng...">
+              <mat-autocomplete #autoDH="matAutocomplete">
+                @for (dh of filterDathang(); track dh.id) {
+                  <mat-option [value]="dh.madncc" (onSelectionChange)="onSelectDathang(dh)">
+                    <div class="flex flex-row justify-between w-full">
+                      <span>{{ dh.madncc }}</span>
+                      <span class="font-semibold text-blue-600">{{ dh.tongtien | number }} đ</span>
+                    </div>
+                  </mat-option>
+                }
+              </mat-autocomplete>
+            </div>
+          }
+        }
+
+        <!-- Tên đối tượng (nếu chọn KHAC hoặc NHANVIEN) -->
+        @if (formData().doiTuong === 'KHAC' || formData().doiTuong === 'NHANVIEN') {
+          <div class="form-field">
+            <label class="field-label">Tên đối tượng / Nhân viên</label>
             <input 
               type="text" 
               class="field-input" 

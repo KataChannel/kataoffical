@@ -71,16 +71,22 @@ export class PhieuThuChiService {
       data.tenDoiTuong = createDto.tenDoiTuong;
     }
 
-    return this.prisma.phieuThuChi.create({
-      data,
-      include: {
-        donhang: {
-          include: {
-            khachhang: true,
+    try {
+      return await this.prisma.phieuThuChi.create({
+        data,
+        include: {
+          donhang: {
+            include: {
+              khachhang: true,
+            },
           },
+          dathang: true,
         },
-      },
-    });
+      });
+    } catch (error) {
+      console.error('Error creating PhieuThuChi:', error);
+      throw error;
+    }
   }
 
   // Lấy danh sách phiếu thu chi
@@ -129,6 +135,7 @@ export class PhieuThuChiService {
               khachhang: true,
             },
           },
+          dathang: true,
         },
         orderBy: {
           ngay: 'desc',
@@ -163,6 +170,7 @@ export class PhieuThuChiService {
             },
           },
         },
+        dathang: true,
       },
     });
 
@@ -191,6 +199,7 @@ export class PhieuThuChiService {
             khachhang: true,
           },
         },
+        dathang: true,
       },
     });
   }

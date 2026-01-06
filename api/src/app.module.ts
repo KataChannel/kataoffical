@@ -55,6 +55,7 @@ import { DatabaseSyncService } from './services/database-sync.service';
 import { SupportModule } from './support/support.module';
 import { ThanhToanModule } from './thanhtoan/thanhtoan.module';
 import { UserPermissionModule } from './user-permission/user-permission.module';
+import { PaymentProposalModule } from './payment-proposal/payment-proposal.module';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -122,6 +123,7 @@ import { UserPermissionModule } from './user-permission/user-permission.module';
     ConfirmationModule,
     BaoCaoModule,
     CronManagementModule,
+    PaymentProposalModule,
   ],
   controllers: [AppController],
   providers: [

@@ -242,6 +242,7 @@ model Sanpham {
   SanphamKho      SanphamKho[]
   TonKho          TonKho?
   Nhacungcap      Nhacungcap[]      @relation("NhacungcapToSanpham")
+  HoaDonDienTuDetail HoaDonDienTuDetail[]
 }
 
 model Donhang {
@@ -422,9 +423,14 @@ model Dathang {
   nhacungcap   Nhacungcap?      @relation(fields: [nhacungcapId], references: [id])
   sanpham      Dathangsanpham[]
   PhieuKho     PhieuKho[]
+  PhieuThuChi  PhieuThuChi[]
+
+  poStatus     POStatus?        @default(MOI)
+  proposalOrders PaymentProposalPurchaseOrder[]
 
   @@index([ngaynhan])
   @@index([status])
+  @@index([poStatus])
   @@index([nhacungcapId])
   @@index([ngaynhan, status])
   @@index([nhacungcapId, ngaynhan])
@@ -967,6 +973,13 @@ model PhieuThuChi {
 
   // Relations
   donhang Donhang? @relation(fields: [donhangId], references: [id])
+  dathang Dathang? @relation(fields: [dathangId], references: [id])
+
+  // ERP bill image
+  billImage String?
+
+  // ERP Payment Proposal relation
+  paymentProposalSupplier PaymentProposalSupplier?
 
   @@index([maPhieu])
   @@index([loai])
@@ -1050,11 +1063,33 @@ model HoaDonDienTu {
 
   // Relations
   donhang Donhang @relation(fields: [donhangId], references: [id], onDelete: Cascade)
+  details HoaDonDienTuDetail[]
 
   @@index([soHoaDon])
   @@index([donhangId])
   @@index([ngayLap])
   @@index([trangThai])
+}
+
+model HoaDonDienTuDetail {
+  id           String @id @default(uuid())
+  hoaDonId     String
+  sanphamId    String
+  tenSanPham   String // Lưu tên tại thời điểm xuất HD
+  maSanPham    String // Lưu mã tại thời điểm xuất HD
+  dvt          String?
+  soluong      Decimal @postgres.Decimal(20, 3)
+  dongia       Decimal @postgres.Decimal(20, 3)
+  vat          Decimal @default(0) @postgres.Decimal(20, 3)
+  thanhtien    Decimal @postgres.Decimal(20, 3)
+  ghichu       String?
+
+  // Relations
+  hoaDon  HoaDonDienTu @relation(fields: [hoaDonId], references: [id], onDelete: Cascade)
+  sanpham Sanpham      @relation(fields: [sanphamId], references: [id])
+
+  @@index([hoaDonId])
+  @@index([sanphamId])
 }
 
 // ===========================
@@ -1084,6 +1119,7 @@ enum TrangThaiPhieu {
   NHAP // Đang nhập
   CHO_DUYET // Chờ duyệt
   DA_DUYET // Đã duyệt
+  DA_THANH_TOAN // Đã thanh toán (Hoàn tất)
   HUY // Hủy
 }
 
@@ -1103,6 +1139,63 @@ enum TrangThaiHoaDon {
   NHAP // Đang nhập
   DA_XUAT // Đã xuất
   HUY // Hủy
+}
+
+// ERP Purchasing Enums
+enum POStatus {
+  MOI
+  DA_DOI_CHIEU
+  CHO_THANH_TOAN
+  DA_THANH_TOAN
+}
+
+// ===========================
+// MODELS: ERP PAYMENT PROPOSAL
+// ===========================
+
+model PaymentProposal {
+  id          String   @id @default(uuid())
+  maDeXuat    String   @unique // DXTT-2024-001
+  ngayLap     DateTime @default(now())
+  status      String   @default("MOI") // MOI, KHONG_DUYET, CHO_THANH_TOAN, DA_THANH_TOAN
+  description String?
+  totalAmount Decimal  @default(0) @postgres.Decimal(20, 3)
+  comment     String?  // Lý do nếu không duyệt
+  tenant_id   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  items       PaymentProposalSupplier[]
+
+  @@index([maDeXuat])
+  @@index([status])
+}
+
+model PaymentProposalSupplier {
+  id               String   @id @default(uuid())
+  proposalId       String
+  supplierId       String
+  amount           Decimal  @default(0) @postgres.Decimal(20, 3)
+  status           String   @default("CHO_THANH_TOAN") // CHO_THANH_TOAN, DA_THANH_TOAN
+  paymentProposal  PaymentProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  paymentVoucherId String?  @unique
+  paymentVoucher   PhieuThuChi?    @relation(fields: [paymentVoucherId], references: [id])
+  purchaseOrders   PaymentProposalPurchaseOrder[]
+
+  @@index([proposalId])
+  @@index([supplierId])
+  @@index([status])
+}
+
+model PaymentProposalPurchaseOrder {
+  id                        String   @id @default(uuid())
+  paymentProposalSupplierId String
+  purchaseOrderId           String
+  paymentProposalSupplier   PaymentProposalSupplier @relation(fields: [paymentProposalSupplierId], references: [id], onDelete: Cascade)
+  purchaseOrder             Dathang                 @relation(fields: [purchaseOrderId], references: [id])
+
+  @@unique([paymentProposalSupplierId, purchaseOrderId])
+  @@index([paymentProposalSupplierId])
+  @@index([purchaseOrderId])
 }
 
 // ===========================
