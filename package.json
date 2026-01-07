@@ -9,6 +9,7 @@
     "dev:fe": "cd frontend && npm run start",
     "dev:full": "./bun-dev.sh --full",
     "dev:fresh": "./bun-dev.sh --fresh",
+    "db:sync": "./bun-dev.sh --sync",
     "install:api": "cd api && bun install",
     "install:frontend": "cd frontend && npm install",
     "install:all": "cd api && bun install && cd ../frontend && npm install",

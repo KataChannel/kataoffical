@@ -53,12 +53,13 @@ show_menu() {
     echo -e "  ${GREEN}9)${NC} 🚀 Deploy V3 (Build + Upload + Deploy)"
     echo -e "  ${GREEN}10)${NC} 📋 Mở Menu chính (menu.sh)"
     echo -e "  ${GREEN}11)${NC} 🔍 Check TypeScript Errors (toàn dự án)"
+    echo -e "  ${GREEN}12)${NC} 🔄 Sync Database Optimized (Source -> Target)"
     echo ""
     echo -e "  ${RED}0)${NC} ❌ Thoát"
     echo ""
     echo -e "${MAGENTA}═══════════════════════════════════════════════════════${NC}"
     echo ""
-    read -p "👉 Chọn option [0-11]: " choice
+    read -p "👉 Chọn option [0-12]: " choice
 }
 
 # ============================================
@@ -323,6 +324,24 @@ check_typescript_errors() {
 }
 
 # ============================================
+# SYNC DATABASE OPTIMIZED
+# ============================================
+sync_database_optimized() {
+    log_info "🔄 Bắt đầu Sync Database Optimized..."
+    echo ""
+    
+    if [[ ! -f "./api/scripts/sync-database-optimized.sh" ]]; then
+        log_error "Không tìm thấy file api/scripts/sync-database-optimized.sh!"
+        return 1
+    fi
+    
+    chmod +x ./api/scripts/sync-database-optimized.sh
+    ./api/scripts/sync-database-optimized.sh
+    
+    log_success "Sync Database hoàn thành!"
+}
+
+# ============================================
 # MAIN LOGIC
 # ============================================
 
@@ -354,6 +373,9 @@ elif [[ "$1" == "--install" ]]; then
     exit 0
 elif [[ "$1" == "--generate" ]]; then
     stage_generate
+    exit 0
+elif [[ "$1" == "--sync" ]]; then
+    sync_database_optimized
     exit 0
 fi
 
@@ -411,6 +433,11 @@ while true; do
             ;;
         11)
             check_typescript_errors
+            echo ""
+            read -p "Nhấn Enter để tiếp tục..."
+            ;;
+        12)
+            sync_database_optimized
             echo ""
             read -p "Nhấn Enter để tiếp tục..."
             ;;
