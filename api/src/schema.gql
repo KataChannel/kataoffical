@@ -537,6 +537,8 @@ input CreatePhieuThuChiDto {
   ghichu: String
   lydo: String
   ngay: String
+  arDocumentItemId: String
+  paymentProposalSupplierId: String
 }
 
 input UpdatePhieuThuChiDto {

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import {
-  Args,
-  Field,
-  Float,
-  Int,
-  ObjectType,
-  Query,
-  Resolver,
+    Args,
+    Field,
+    Float,
+    Int,
+    ObjectType,
+    Query,
+    Resolver,
 } from '@nestjs/graphql';
 import GraphQLJSON from 'graphql-type-json';
 import { PrismaService } from 'prisma/prisma.service';
@@ -230,7 +230,7 @@ export class DashboardResolver {
       rawQuery,
       startDate,
       endDate,
-    );
+    ) as any[];
 
     return result.map((item: any) => ({
       period: String(item.period),
@@ -271,7 +271,7 @@ export class DashboardResolver {
       startDate,
       endDate,
       limit,
-    );
+    ) as any[];
 
     return result.map((item: any) => ({
       sanpham: {
@@ -314,7 +314,7 @@ export class DashboardResolver {
       startDate,
       endDate,
       limit,
-    );
+    ) as any[];
 
     return result.map((item: any) => ({
       sanpham: {

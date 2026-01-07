@@ -43,7 +43,7 @@ import { ARDocumentService } from '../ar-document.service';
                      'bg-gray-100 text-gray-600': doc.status === 'MOI',
                      'bg-blue-100 text-blue-600': doc.status === 'CHO_THU_TIEN',
                      'bg-green-100 text-green-600': doc.status === 'DA_THU_TIEN',
-                     'bg-red-100 text-red-600': row.status === 'KHONG_DUYET'
+                     'bg-red-100 text-red-600': doc.status === 'KHONG_DUYET'
                    }">
                {{doc.status}}
              </span>

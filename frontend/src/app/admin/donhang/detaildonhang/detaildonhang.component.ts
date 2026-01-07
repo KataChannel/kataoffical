@@ -23,6 +23,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
@@ -71,6 +72,7 @@ import { ListDonhangComponent } from '../listdonhang/listdonhang.component';
     MatSortModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
   ],
   // providers: [provideNativeDateAdapter()],
   templateUrl: './detaildonhang.component.html',
