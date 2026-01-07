@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateNhanvienDto, UpdateNhanvienDto } from './dto';
 import { Nhanvien, Prisma } from '@prisma/client';
@@ -11,85 +15,117 @@ export class NhanvienService {
     try {
       // Kiểm tra mã nhân viên đã tồn tại chưa
       const existing = await this.prisma.nhanvien.findUnique({
-        where: { maNV: createNhanvienDto.maNV }
+        where: { maNV: createNhanvienDto.maNV },
       });
 
       if (existing) {
-        throw new ConflictException(`Nhân viên với mã ${createNhanvienDto.maNV} đã tồn tại`);
+        throw new ConflictException(
+          `Nhân viên với mã ${createNhanvienDto.maNV} đã tồn tại`,
+        );
       }
 
       // Kiểm tra email nếu có (và không phải empty string)
       if (createNhanvienDto.email && createNhanvienDto.email.trim() !== '') {
         const existingEmail = await this.prisma.nhanvien.findUnique({
-          where: { email: createNhanvienDto.email }
+          where: { email: createNhanvienDto.email },
         });
 
         if (existingEmail) {
-          throw new ConflictException(`Email ${createNhanvienDto.email} đã được sử dụng`);
+          throw new ConflictException(
+            `Email ${createNhanvienDto.email} đã được sử dụng`,
+          );
         }
       }
 
       // Kiểm tra phòng ban nếu có (và không phải empty string)
-      if (createNhanvienDto.phongbanId && createNhanvienDto.phongbanId.trim() !== '') {
+      if (
+        createNhanvienDto.phongbanId &&
+        createNhanvienDto.phongbanId.trim() !== ''
+      ) {
         const phongban = await this.prisma.phongban.findUnique({
-          where: { id: createNhanvienDto.phongbanId }
+          where: { id: createNhanvienDto.phongbanId },
         });
 
         if (!phongban) {
-          throw new NotFoundException(`Phòng ban với ID ${createNhanvienDto.phongbanId} không tồn tại`);
+          throw new NotFoundException(
+            `Phòng ban với ID ${createNhanvienDto.phongbanId} không tồn tại`,
+          );
         }
       }
 
       // Kiểm tra user nếu có (và không phải empty string)
       if (createNhanvienDto.userId && createNhanvienDto.userId.trim() !== '') {
         const user = await this.prisma.user.findUnique({
-          where: { id: createNhanvienDto.userId }
+          where: { id: createNhanvienDto.userId },
         });
 
         if (!user) {
-          throw new NotFoundException(`User với ID ${createNhanvienDto.userId} không tồn tại`);
+          throw new NotFoundException(
+            `User với ID ${createNhanvienDto.userId} không tồn tại`,
+          );
         }
 
         // Kiểm tra user đã được gán cho nhân viên khác chưa
         const existingUserNhanvien = await this.prisma.nhanvien.findUnique({
-          where: { userId: createNhanvienDto.userId }
+          where: { userId: createNhanvienDto.userId },
         });
 
         if (existingUserNhanvien) {
-          throw new ConflictException(`User này đã được gán cho nhân viên ${existingUserNhanvien.maNV}`);
+          throw new ConflictException(
+            `User này đã được gán cho nhân viên ${existingUserNhanvien.maNV}`,
+          );
         }
       }
 
       // Convert date strings to Date objects and handle empty strings for unique fields
       const data: any = { ...createNhanvienDto };
-      
+
       // Convert empty strings to null for unique fields to avoid constraint violations
-      const uniqueFields = ['email', 'cmnd', 'maLamViec', 'userId', 'phongbanId'];
+      const uniqueFields = [
+        'email',
+        'cmnd',
+        'maLamViec',
+        'userId',
+        'phongbanId',
+      ];
       for (const field of uniqueFields) {
         if (data[field] === '' || data[field] === undefined) {
           data[field] = null;
         }
       }
-      
+
       // Convert other empty strings to null for cleaner data
-      const optionalFields = ['soDienThoai', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu', 'soTaiKhoan', 'nganHang', 'chiNhanh'];
+      const optionalFields = [
+        'soDienThoai',
+        'diaChiHienTai',
+        'chucVu',
+        'viTri',
+        'ghiChu',
+        'soTaiKhoan',
+        'nganHang',
+        'chiNhanh',
+      ];
       for (const field of optionalFields) {
         if (data[field] === '') {
           data[field] = null;
         }
       }
-      
+
       // Remove fields that don't exist in Prisma schema
       delete data.queQuan;
-      
+
       // Handle date fields - convert to Date only if valid, otherwise set to null
       if (data.ngaySinh && data.ngaySinh !== '' && data.ngaySinh !== null) {
         data.ngaySinh = new Date(data.ngaySinh);
       } else {
         data.ngaySinh = null;
       }
-      
-      if (data.ngayVaoLam && data.ngayVaoLam !== '' && data.ngayVaoLam !== null) {
+
+      if (
+        data.ngayVaoLam &&
+        data.ngayVaoLam !== '' &&
+        data.ngayVaoLam !== null
+      ) {
         data.ngayVaoLam = new Date(data.ngayVaoLam);
       } else {
         data.ngayVaoLam = null;
@@ -104,13 +140,16 @@ export class NhanvienService {
               id: true,
               email: true,
               name: true,
-              isActive: true
-            }
-          }
-        }
+              isActive: true,
+            },
+          },
+        },
       });
     } catch (error) {
-      if (error instanceof ConflictException || error instanceof NotFoundException) {
+      if (
+        error instanceof ConflictException ||
+        error instanceof NotFoundException
+      ) {
         throw error;
       }
       throw new Error(`Lỗi khi tạo nhân viên: ${error.message}`);
@@ -124,7 +163,12 @@ export class NhanvienService {
     search?: string;
     page?: number;
     limit?: number;
-  }): Promise<{ data: Nhanvien[]; total: number; page: number; limit: number }> {
+  }): Promise<{
+    data: Nhanvien[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     const where: Prisma.NhanvienWhereInput = {};
 
     if (options?.phongbanId) {
@@ -141,7 +185,7 @@ export class NhanvienService {
         { maNV: { contains: options.search, mode: 'insensitive' } },
         { hoTen: { contains: options.search, mode: 'insensitive' } },
         { email: { contains: options.search, mode: 'insensitive' } },
-        { soDienThoai: { contains: options.search, mode: 'insensitive' } }
+        { soDienThoai: { contains: options.search, mode: 'insensitive' } },
       ];
     }
 
@@ -159,15 +203,15 @@ export class NhanvienService {
               id: true,
               email: true,
               name: true,
-              isActive: true
-            }
-          }
+              isActive: true,
+            },
+          },
         },
         orderBy: { maNV: 'asc' },
         skip,
-        take: limit
+        take: limit,
       }),
-      this.prisma.nhanvien.count({ where })
+      this.prisma.nhanvien.count({ where }),
     ]);
 
     return { data, total, page, limit };
@@ -179,8 +223,8 @@ export class NhanvienService {
       include: {
         phongban: {
           include: {
-            parent: true
-          }
+            parent: true,
+          },
         },
         user: {
           select: {
@@ -188,10 +232,10 @@ export class NhanvienService {
             email: true,
             name: true,
             isActive: true,
-            createdAt: true
-          }
-        }
-      }
+            createdAt: true,
+          },
+        },
+      },
     });
 
     if (!nhanvien) {
@@ -206,8 +250,8 @@ export class NhanvienService {
       where: { maNV },
       include: {
         phongban: true,
-        user: true
-      }
+        user: true,
+      },
     });
 
     if (!nhanvien) {
@@ -217,7 +261,10 @@ export class NhanvienService {
     return nhanvien;
   }
 
-  async update(id: string, updateNhanvienDto: UpdateNhanvienDto): Promise<Nhanvien> {
+  async update(
+    id: string,
+    updateNhanvienDto: UpdateNhanvienDto,
+  ): Promise<Nhanvien> {
     try {
       // Kiểm tra nhân viên tồn tại
       await this.findOne(id);
@@ -228,11 +275,13 @@ export class NhanvienService {
           // Allow null - unassign from phòng ban
         } else {
           const phongban = await this.prisma.phongban.findUnique({
-            where: { id: updateNhanvienDto.phongbanId }
+            where: { id: updateNhanvienDto.phongbanId },
           });
 
           if (!phongban) {
-            throw new NotFoundException(`Phòng ban với ID ${updateNhanvienDto.phongbanId} không tồn tại`);
+            throw new NotFoundException(
+              `Phòng ban với ID ${updateNhanvienDto.phongbanId} không tồn tại`,
+            );
           }
         }
       }
@@ -243,49 +292,68 @@ export class NhanvienService {
           // Allow null - unlink from user
         } else {
           const user = await this.prisma.user.findUnique({
-            where: { id: updateNhanvienDto.userId }
+            where: { id: updateNhanvienDto.userId },
           });
 
           if (!user) {
-            throw new NotFoundException(`User với ID ${updateNhanvienDto.userId} không tồn tại`);
+            throw new NotFoundException(
+              `User với ID ${updateNhanvienDto.userId} không tồn tại`,
+            );
           }
 
           // Kiểm tra user đã được gán cho nhân viên khác chưa
           const existingUserNhanvien = await this.prisma.nhanvien.findFirst({
             where: {
               userId: updateNhanvienDto.userId,
-              id: { not: id }
-            }
+              id: { not: id },
+            },
           });
 
           if (existingUserNhanvien) {
-            throw new ConflictException(`User này đã được gán cho nhân viên ${existingUserNhanvien.maNV}`);
+            throw new ConflictException(
+              `User này đã được gán cho nhân viên ${existingUserNhanvien.maNV}`,
+            );
           }
         }
       }
 
       // Convert date strings to Date objects and handle empty strings for unique fields
       const data: any = { ...updateNhanvienDto };
-      
+
       // Convert empty strings to null for unique fields to avoid constraint violations
-      const uniqueFields = ['email', 'cmnd', 'maLamViec', 'userId', 'phongbanId'];
+      const uniqueFields = [
+        'email',
+        'cmnd',
+        'maLamViec',
+        'userId',
+        'phongbanId',
+      ];
       for (const field of uniqueFields) {
         if (data[field] === '') {
           data[field] = null;
         }
       }
-      
+
       // Convert other empty strings to null for cleaner data
-      const optionalFields = ['soDienThoai', 'diaChiHienTai', 'chucVu', 'viTri', 'ghiChu', 'soTaiKhoan', 'nganHang', 'chiNhanh'];
+      const optionalFields = [
+        'soDienThoai',
+        'diaChiHienTai',
+        'chucVu',
+        'viTri',
+        'ghiChu',
+        'soTaiKhoan',
+        'nganHang',
+        'chiNhanh',
+      ];
       for (const field of optionalFields) {
         if (data[field] === '') {
           data[field] = null;
         }
       }
-      
+
       // Remove fields that don't exist in Prisma schema
       delete data.queQuan;
-      
+
       // Handle date fields - convert to Date objects or null
       if (data.ngaySinh !== undefined) {
         data.ngaySinh = data.ngaySinh ? new Date(data.ngaySinh) : null;
@@ -304,13 +372,16 @@ export class NhanvienService {
               id: true,
               email: true,
               name: true,
-              isActive: true
-            }
-          }
-        }
+              isActive: true,
+            },
+          },
+        },
       });
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof ConflictException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ConflictException
+      ) {
         throw error;
       }
       throw new Error(`Lỗi khi cập nhật nhân viên: ${error.message}`);
@@ -324,22 +395,27 @@ export class NhanvienService {
 
       // Kiểm tra xem nhân viên có phải trưởng phòng không
       const phongbanQuanLy = await this.prisma.phongban.findFirst({
-        where: { truongPhongId: id }
+        where: { truongPhongId: id },
       });
 
       if (phongbanQuanLy) {
         throw new ConflictException(
-          `Không thể xóa nhân viên đang làm trưởng phòng của ${phongbanQuanLy.ten}. Vui lòng chuyển quyền trưởng phòng trước.`
+          `Không thể xóa nhân viên đang làm trưởng phòng của ${phongbanQuanLy.ten}. Vui lòng chuyển quyền trưởng phòng trước.`,
         );
       }
 
       await this.prisma.nhanvien.delete({
-        where: { id }
+        where: { id },
       });
 
-      return { message: `Đã xóa nhân viên ${nhanvien.hoTen} (${nhanvien.maNV})` };
+      return {
+        message: `Đã xóa nhân viên ${nhanvien.hoTen} (${nhanvien.maNV})`,
+      };
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof ConflictException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ConflictException
+      ) {
         throw error;
       }
       throw new Error(`Lỗi khi xóa nhân viên: ${error.message}`);
@@ -353,53 +429,53 @@ export class NhanvienService {
       byTrangThai,
       byChucVu,
       withUser,
-      withoutPhongban
+      withoutPhongban,
     ] = await Promise.all([
       this.prisma.nhanvien.count(),
-      
+
       this.prisma.nhanvien.groupBy({
         by: ['phongbanId'],
         _count: true,
-        orderBy: { _count: { phongbanId: 'desc' } }
+        orderBy: { _count: { phongbanId: 'desc' } },
       }),
-      
+
       this.prisma.nhanvien.groupBy({
         by: ['trangThai'],
-        _count: true
+        _count: true,
       }),
-      
+
       this.prisma.nhanvien.groupBy({
         by: ['chucVu'],
         _count: true,
-        orderBy: { _count: { chucVu: 'desc' } }
+        orderBy: { _count: { chucVu: 'desc' } },
       }),
-      
+
       this.prisma.nhanvien.count({
-        where: { userId: { not: null } }
+        where: { userId: { not: null } },
       }),
-      
+
       this.prisma.nhanvien.count({
-        where: { phongbanId: null }
-      })
+        where: { phongbanId: null },
+      }),
     ]);
 
     // Get phongban details
     const phongbanIds = byPhongban
-      .filter(item => item.phongbanId !== null)
-      .map(item => item.phongbanId as string);
-    
+      .filter((item) => item.phongbanId !== null)
+      .map((item) => item.phongbanId as string);
+
     const phongbanDetails = await this.prisma.phongban.findMany({
       where: { id: { in: phongbanIds } },
-      select: { id: true, ma: true, ten: true }
+      select: { id: true, ma: true, ten: true },
     });
 
-    const byPhongbanWithDetails = byPhongban.map(item => {
-      const phongban = phongbanDetails.find(pb => pb.id === item.phongbanId);
+    const byPhongbanWithDetails = byPhongban.map((item) => {
+      const phongban = phongbanDetails.find((pb) => pb.id === item.phongbanId);
       return {
         phongbanId: item.phongbanId,
         phongbanMa: phongban?.ma || 'N/A',
         phongbanTen: phongban?.ten || 'Chưa phân công',
-        count: item._count
+        count: item._count,
       };
     });
 
@@ -407,9 +483,9 @@ export class NhanvienService {
       total,
       byPhongban: byPhongbanWithDetails,
       byTrangThai,
-      byChucVu: byChucVu.filter(item => item.chucVu !== null),
+      byChucVu: byChucVu.filter((item) => item.chucVu !== null),
       withUser,
-      withoutPhongban
+      withoutPhongban,
     };
   }
 
@@ -419,7 +495,7 @@ export class NhanvienService {
 
     // Kiểm tra user
     const user = await this.prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
     });
 
     if (!user) {
@@ -428,11 +504,13 @@ export class NhanvienService {
 
     // Kiểm tra user đã được gán chưa
     const existingUserNhanvien = await this.prisma.nhanvien.findUnique({
-      where: { userId }
+      where: { userId },
     });
 
     if (existingUserNhanvien && existingUserNhanvien.id !== nhanvienId) {
-      throw new ConflictException(`User này đã được gán cho nhân viên ${existingUserNhanvien.maNV}`);
+      throw new ConflictException(
+        `User này đã được gán cho nhân viên ${existingUserNhanvien.maNV}`,
+      );
     }
 
     // Link nhân viên với user
@@ -440,7 +518,7 @@ export class NhanvienService {
       where: { id: nhanvienId },
       data: {
         userId,
-        email: user.email || nhanvien.email
+        email: user.email || nhanvien.email,
       },
       include: {
         phongban: true,
@@ -449,10 +527,10 @@ export class NhanvienService {
             id: true,
             email: true,
             name: true,
-            isActive: true
-          }
-        }
-      }
+            isActive: true,
+          },
+        },
+      },
     });
   }
 
@@ -464,8 +542,8 @@ export class NhanvienService {
       data: { userId: null },
       include: {
         phongban: true,
-        user: true
-      }
+        user: true,
+      },
     });
   }
 }

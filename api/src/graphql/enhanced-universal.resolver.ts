@@ -167,8 +167,7 @@ export class EnhancedUniversalResolver {
   @Query(() => GraphQLJSON, {
     name: 'findFirst',
     nullable: true,
-    description:
-      'Enhanced dynamic findFirst with field selection and ordering',
+    description: 'Enhanced dynamic findFirst with field selection and ordering',
   })
   async findFirst(
     @Args('modelName', {
@@ -432,7 +431,7 @@ export class EnhancedUniversalResolver {
     console.log(`🗑️ Enhanced batch delete:`, {
       model: modelName,
       count: ids?.length || 0,
-      ids: ids?.slice(0, 5) // Log first 5 IDs for debugging
+      ids: ids?.slice(0, 5), // Log first 5 IDs for debugging
     });
 
     try {
@@ -481,7 +480,8 @@ export class EnhancedUniversalResolver {
 
     @Args('aggregations', {
       type: () => GraphQLJSON,
-      description: 'Aggregation operations to perform (e.g., { _max: { order: true } })',
+      description:
+        'Aggregation operations to perform (e.g., { _max: { order: true } })',
     })
     aggregations: any,
 
@@ -499,7 +499,11 @@ export class EnhancedUniversalResolver {
     });
 
     try {
-      return await this.enhancedService.aggregate(modelName, aggregations, where);
+      return await this.enhancedService.aggregate(
+        modelName,
+        aggregations,
+        where,
+      );
     } catch (error) {
       console.error(`❌ Enhanced aggregate error:`, error);
       throw error;

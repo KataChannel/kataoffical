@@ -61,7 +61,7 @@ export class DetailNhanvienComponent implements OnInit {
     } catch (error: any) {
       console.error('Error loading nhanvien:', error);
       this.error.set('Không thể tải thông tin nhân viên');
-      this.snackBar.open('Không thể tải thông tin nhân viên', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Không thể tải thông tin nhân viên', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
     } finally {
       this.loading.set(false);
     }
@@ -136,18 +136,18 @@ export class DetailNhanvienComponent implements OnInit {
 
     try {
       await this.nhanvienService.deleteNhanvien(this.id);
-      this.snackBar.open('Xóa nhân viên thành công!', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Xóa nhân viên thành công!', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       this.router.navigate(['/admin/nhanvien/list']);
     } catch (error: any) {
       const message = error?.error?.message || 'Có lỗi xảy ra khi xóa nhân viên';
-      this.snackBar.open(message, 'Đóng', { duration: 5000 });
+      this.snackBar.open(message, 'Đóng', { duration: 5000, panelClass: ["snackbar-success"] });
       console.error('Error deleting nhanvien:', error);
     }
   }
 
   async linkUser() {
     // Placeholder for linking user functionality
-    this.snackBar.open('Chức năng liên kết tài khoản đang được phát triển', 'Đóng', { duration: 3000 });
+    this.snackBar.open('Chức năng liên kết tài khoản đang được phát triển', 'Đóng', { duration: 3000, panelClass: ["snackbar-info"] });
   }
 
   async unlinkUser() {
@@ -158,11 +158,11 @@ export class DetailNhanvienComponent implements OnInit {
 
     try {
       await this.nhanvienService.unlinkFromUser(this.id);
-      this.snackBar.open('Hủy liên kết tài khoản thành công!', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Hủy liên kết tài khoản thành công!', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       await this.loadNhanvien();
     } catch (error: any) {
       const message = error?.error?.message || 'Có lỗi xảy ra khi hủy liên kết';
-      this.snackBar.open(message, 'Đóng', { duration: 5000 });
+      this.snackBar.open(message, 'Đóng', { duration: 5000, panelClass: ["snackbar-success"] });
       console.error('Error unlinking user:', error);
     }
   }

@@ -7,8 +7,16 @@ import { PrismaService } from 'prisma/prisma.service';
 export class AuditMiddleware implements NestMiddleware {
   constructor(private readonly prisma: PrismaService) {}
 
-  async use(req: Request & { auditOldValues?: any }, res: Response, next: NextFunction) {
-    if (req.method === 'PUT' || req.method === 'PATCH' || req.method === 'DELETE') {
+  async use(
+    req: Request & { auditOldValues?: any },
+    res: Response,
+    next: NextFunction,
+  ) {
+    if (
+      req.method === 'PUT' ||
+      req.method === 'PATCH' ||
+      req.method === 'DELETE'
+    ) {
       try {
         const entityId = req.params?.id || req.params[0] || null;
         if (entityId) {

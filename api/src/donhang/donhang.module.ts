@@ -16,16 +16,32 @@ import { DonhangService } from './donhang.service';
 import { PriceHistoryService } from './price-history.service';
 
 @Module({
-  imports: [PrismaModule, ImportdataModule, SharedModule, AuthModule, BanggiaModule, ConfirmationModule],
-  controllers: [DonhangController, DonhangPriceController, CancelOrderController],
+  imports: [
+    PrismaModule,
+    ImportdataModule,
+    SharedModule,
+    AuthModule,
+    BanggiaModule,
+    ConfirmationModule,
+  ],
+  controllers: [
+    DonhangController,
+    DonhangPriceController,
+    CancelOrderController,
+  ],
   providers: [
-    DonhangService, 
-    DonhangCronService, 
+    DonhangService,
+    DonhangCronService,
     CancelOrderService,
     PriceHistoryService,
-    StatusMachineService, 
-    TonkhoManagerService
+    StatusMachineService,
+    TonkhoManagerService,
   ],
-  exports: [DonhangService, DonhangCronService, CancelOrderService, PriceHistoryService]
+  exports: [
+    DonhangService,
+    DonhangCronService,
+    CancelOrderService,
+    PriceHistoryService,
+  ],
 })
 export class DonhangModule {}

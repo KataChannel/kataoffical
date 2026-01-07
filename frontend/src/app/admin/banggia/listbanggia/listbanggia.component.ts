@@ -202,16 +202,14 @@ export class ListBanggiaComponent {
 
       await Promise.all(updatePromises);
 
-      this._snackBar.open(
-        `Đã cập nhật giá bán mặc định cho ${banggiaSanpham.length} sản phẩm từ bảng giá ${item.title}`, 
+      this._snackBar.open(`Đã cập nhật giá bán mặc định cho ${banggiaSanpham.length} sản phẩm từ bảng giá ${item.title}`, 
         'Đóng', 
         {
           horizontalPosition: "end",
           verticalPosition: "top",
           panelClass: ['snackbar-success'],
           duration: 3000
-        }
-      );
+        });
 
     } catch (error) {
       console.error('Lỗi cập nhật giá bán mặc định:', error);
@@ -609,16 +607,14 @@ ListStatus: any[] = [
       // Use optimized bulk delete method
       const result = await this._BanggiaGraphqlService.DeleteBulkBanggia(this.EditList);
 
-      this._snackBar.open(
-        result.message || `Xóa thành công ${result.success} bảng giá${result.fail > 0 ? `, ${result.fail} lỗi` : ''}`,
+      this._snackBar.open(result.message || `Xóa thành công ${result.success} bảng giá${result.fail > 0 ? `, ${result.fail} lỗi` : ''}`,
         '',
         {
           duration: 3000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: result.fail > 0 ? ['snackbar-warning'] : ['snackbar-success'],
-        }
-      );
+        });
       
       this.EditList = [];
       await this.ngOnInit();

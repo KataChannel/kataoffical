@@ -558,6 +558,19 @@ input CreateHoaDonDienTuInput {
   donhangId: String!
   mauSo: String
   kyHieu: String
+  details: [CreateHoaDonDetailInput!]
+  ghichu: String
+}
+
+input CreateHoaDonDetailInput {
+  sanphamId: String!
+  tenSanPham: String!
+  maSanPham: String!
+  dvt: String
+  soluong: Float!
+  dongia: Float!
+  vat: Float
+  thanhtien: Float!
   ghichu: String
 }
 

@@ -21,9 +21,9 @@ export class EnhancedUniversalService {
   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
   private synchronizeDateField(fieldName: string, value: any): Date | null {
     if (!value) return null;
-    
+
     // console.log(`🔄 GraphQL synchronizing ${fieldName}: ${value} (type: ${typeof value})`);
-    
+
     try {
       // Frontend đã gửi UTC, chỉ cần parse trực tiếp
       return new Date(value);
@@ -35,7 +35,7 @@ export class EnhancedUniversalService {
 
   private toUTC(value: any): string | null {
     if (!value) return null;
-    
+
     try {
       // Frontend đã gửi UTC, chỉ cần parse trực tiếp
       return new Date(value).toISOString();
@@ -62,12 +62,12 @@ export class EnhancedUniversalService {
       include?: any;
       select?: any;
     },
-    info?: GraphQLResolveInfo
+    info?: GraphQLResolveInfo,
   ) {
     try {
       // Generate cache key for this query
       const cacheKey = this.generateCacheKey('findMany', modelName, args);
-      
+
       // Try to get from cache first for read operations
       if (!this.isWriteOperation(args)) {
         const cachedResult = await this.redisService.read(cacheKey);
@@ -79,38 +79,46 @@ export class EnhancedUniversalService {
 
       // Get the model
       const model = this.getModel(modelName);
-      
+
       // Chuẩn hóa date filters trong where conditions
       const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
       const normalizedArgs = { ...args, where: normalizedWhere };
-      
+
       // Build optimized query with field selection
-      const queryOptions = await this.buildOptimizedQuery(modelName, normalizedArgs, info);
-      
+      const queryOptions = await this.buildOptimizedQuery(
+        modelName,
+        normalizedArgs,
+        info,
+      );
+
       // Execute the query
       const startTime = Date.now();
       const results = await model.findMany(queryOptions);
       const queryTime = Date.now() - startTime;
-      
+
       console.log(`✅ ${modelName} findMany completed:`, {
         resultCount: results.length,
         queryTime: `${queryTime}ms`,
         isOptimized: !!queryOptions.select || !!queryOptions.include,
-        cached: false
+        cached: false,
       });
 
       // Post-process with DataLoader if needed
-      const processedResults = await this.postProcessWithDataLoader(results, modelName, queryOptions, info);
-      
+      const processedResults = await this.postProcessWithDataLoader(
+        results,
+        modelName,
+        queryOptions,
+        info,
+      );
+
       // Cache the result for read operations
       if (!this.isWriteOperation(args) && processedResults) {
         const ttl = this.getCacheTTL(modelName);
         await this.redisService.create(cacheKey, processedResults, ttl);
         console.log(`💾 Cached ${modelName} findMany for ${ttl}s`);
       }
-      
+
       return processedResults;
-      
     } catch (error) {
       console.error(`❌ Enhanced findMany error for ${modelName}:`, error);
       throw new Error(`Failed to query ${modelName}: ${error.message}`);
@@ -127,50 +135,53 @@ export class EnhancedUniversalService {
       include?: any;
       select?: any;
     },
-    info?: GraphQLResolveInfo
+    info?: GraphQLResolveInfo,
   ) {
     console.log(`🎯 Enhanced findUnique for ${modelName}:`, {
       whereFields: Object.keys(args.where || {}),
       hasCustomSelect: !!args.select,
-      hasCustomInclude: !!args.include
+      hasCustomInclude: !!args.include,
     });
 
     try {
       // ⚡ Check Redis cache first
       const cacheKey = this.generateCacheKey('findUnique', modelName, args);
       const cachedResult = await this.redisService.read(cacheKey);
-      
+
       if (cachedResult) {
         console.log(`🎯 GraphQL cache hit for findUnique ${modelName}`);
         return cachedResult;
       }
 
       const model = this.getModel(modelName);
-      
+
       // Chuẩn hóa date filters trong where
       const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
       const normalizedArgs = { ...args, where: normalizedWhere };
-      
-      const queryOptions = await this.buildOptimizedQuery(modelName, normalizedArgs, info);
-      
+
+      const queryOptions = await this.buildOptimizedQuery(
+        modelName,
+        normalizedArgs,
+        info,
+      );
+
       const startTime = Date.now();
       const result = await model.findUnique(queryOptions);
       const queryTime = Date.now() - startTime;
 
-      // 💾 Cache successful results  
+      // 💾 Cache successful results
       if (result) {
         const ttl = this.getCacheTTL(modelName);
         await this.redisService.create(cacheKey, result, ttl);
         console.log(`💾 GraphQL cached findUnique ${modelName} for ${ttl}s`);
       }
-      
+
       // console.log(`✅ ${modelName} findUnique completed:`, {
       //   found: !!result,
       //   queryTime: `${queryTime}ms`
       // });
 
       return result;
-      
     } catch (error) {
       console.error(`❌ Enhanced findUnique error for ${modelName}:`, error);
       throw new Error(`Failed to find ${modelName}: ${error.message}`);
@@ -188,53 +199,58 @@ export class EnhancedUniversalService {
       include?: any;
       select?: any;
     },
-    info?: GraphQLResolveInfo
+    info?: GraphQLResolveInfo,
   ) {
     console.log(`🥇 Enhanced findFirst for ${modelName}:`, {
       hasWhere: !!args.where,
       hasOrderBy: !!args.orderBy,
       whereFields: args.where ? Object.keys(args.where) : [],
       hasCustomSelect: !!args.select,
-      hasCustomInclude: !!args.include
+      hasCustomInclude: !!args.include,
     });
 
     try {
       // ⚡ Check Redis cache first
       const cacheKey = this.generateCacheKey('findFirst', modelName, args);
       const cachedResult = await this.redisService.read(cacheKey);
-      
+
       if (cachedResult) {
         console.log(`🥇 GraphQL cache hit for findFirst ${modelName}`);
         return cachedResult;
       }
 
       const model = this.getModel(modelName);
-      
+
       // Chuẩn hóa date filters trong where
-      const normalizedWhere = args.where ? this.normalizeDateFilters(modelName, args.where) : undefined;
+      const normalizedWhere = args.where
+        ? this.normalizeDateFilters(modelName, args.where)
+        : undefined;
       const normalizedArgs = { ...args, where: normalizedWhere };
-      
-      const queryOptions = await this.buildOptimizedQuery(modelName, normalizedArgs, info);
-      
+
+      const queryOptions = await this.buildOptimizedQuery(
+        modelName,
+        normalizedArgs,
+        info,
+      );
+
       const startTime = Date.now();
       const result = await model.findFirst(queryOptions);
       const queryTime = Date.now() - startTime;
 
-      // 💾 Cache successful results  
+      // 💾 Cache successful results
       if (result) {
         const ttl = this.getCacheTTL(modelName);
         await this.redisService.create(cacheKey, result, ttl);
         console.log(`💾 GraphQL cached findFirst ${modelName} for ${ttl}s`);
       }
-      
+
       console.log(`✅ ${modelName} findFirst completed:`, {
         found: !!result,
         queryTime: `${queryTime}ms`,
-        hasOrderBy: !!args.orderBy
+        hasOrderBy: !!args.orderBy,
       });
 
       return result;
-      
     } catch (error) {
       console.error(`❌ Enhanced findFirst error for ${modelName}:`, error);
       throw new Error(`Failed to find first ${modelName}: ${error.message}`);
@@ -251,7 +267,7 @@ export class EnhancedUniversalService {
       include?: any;
       select?: any;
     },
-    info?: GraphQLResolveInfo
+    info?: GraphQLResolveInfo,
   ) {
     console.log(`➕ Enhanced create for ${modelName}:`, {
       hasData: !!args.data,
@@ -260,37 +276,46 @@ export class EnhancedUniversalService {
 
     try {
       const model = this.getModel(modelName);
-      
+
       // Chuẩn hóa date fields trong data
-      const normalizedData = this.normalizeDateFieldsForModel(modelName, args.data);
-      
+      const normalizedData = this.normalizeDateFieldsForModel(
+        modelName,
+        args.data,
+      );
+
       // Handle model-specific relation fields
-      const finalData = this.normalizeRelationFieldsForModel(modelName, normalizedData);
-      
+      const finalData = this.normalizeRelationFieldsForModel(
+        modelName,
+        normalizedData,
+      );
+
       // Build query options for response
-      const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
+      const queryOptions = await this.buildOptimizedQuery(
+        modelName,
+        args,
+        info,
+      );
       const createOptions = {
         data: finalData,
-        ...queryOptions
+        ...queryOptions,
       };
-      
+
       const startTime = Date.now();
       console.log('createOptions', createOptions);
-      
+
       const result = await model.create(createOptions);
       const queryTime = Date.now() - startTime;
-      
+
       // Clear related caches - both DataLoader and Redis cache
       this.dataLoader.clearLoaderCache(modelName);
       await this.invalidateCache(modelName);
-      
+
       // console.log(`✅ ${modelName} create completed:`, {
       //   id: result.id,
       //   queryTime: `${queryTime}ms`
       // });
 
       return result;
-      
     } catch (error) {
       console.error(`❌ Enhanced create error for ${modelName}:`, error);
       throw new Error(`Failed to create ${modelName}: ${error.message}`);
@@ -308,7 +333,7 @@ export class EnhancedUniversalService {
       include?: any;
       select?: any;
     },
-    info?: GraphQLResolveInfo
+    info?: GraphQLResolveInfo,
   ) {
     console.log(`✏️ Enhanced update for ${modelName}:`, {
       whereFields: Object.keys(args.where || {}),
@@ -317,75 +342,98 @@ export class EnhancedUniversalService {
 
     try {
       const model = this.getModel(modelName);
-      
+
       // Clean data to prevent complex relation errors
-      let cleanedData = { ...args.data };
-      
+      const cleanedData = { ...args.data };
+
       // Define fields that should be excluded from updates because they are complex relations
       const excludeFromUpdates = [
-        'roles', 'permissions', 'profile', 'userRoles', 'rolePermissions',
-        'user', 'role', 'permission', 'khachhang', 'nhomkhachhang'
+        'roles',
+        'permissions',
+        'profile',
+        'userRoles',
+        'rolePermissions',
+        'user',
+        'role',
+        'permission',
+        'khachhang',
+        'nhomkhachhang',
       ];
-      
+
       // Remove complex relation fields that cause Prisma errors
-      excludeFromUpdates.forEach(field => {
+      excludeFromUpdates.forEach((field) => {
         if (cleanedData[field]) {
           // Check if it's an array of objects with nested relations
           if (Array.isArray(cleanedData[field])) {
-            console.log(`🚫 Enhanced service removing complex relation array field '${field}' from update data`);
+            console.log(
+              `🚫 Enhanced service removing complex relation array field '${field}' from update data`,
+            );
             delete cleanedData[field];
           }
           // Check if it's a nested object with complex structure
-          else if (typeof cleanedData[field] === 'object' && cleanedData[field] !== null) {
+          else if (
+            typeof cleanedData[field] === 'object' &&
+            cleanedData[field] !== null
+          ) {
             const nestedKeys = Object.keys(cleanedData[field]);
-            const hasComplexNesting = nestedKeys.some(key => 
-              typeof cleanedData[field][key] === 'object' && cleanedData[field][key] !== null
+            const hasComplexNesting = nestedKeys.some(
+              (key) =>
+                typeof cleanedData[field][key] === 'object' &&
+                cleanedData[field][key] !== null,
             );
             if (hasComplexNesting) {
-              console.log(`🚫 Enhanced service removing complex nested relation field '${field}' from update data`);
+              console.log(
+                `🚫 Enhanced service removing complex nested relation field '${field}' from update data`,
+              );
               delete cleanedData[field];
             }
           }
         }
       });
-      
+
       // Chuẩn hóa date fields trong data
-      const normalizedData = this.normalizeDateFieldsForModel(modelName, cleanedData);
+      const normalizedData = this.normalizeDateFieldsForModel(
+        modelName,
+        cleanedData,
+      );
       // Chuẩn hóa date filters trong where
       const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
-      
-      const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
-      
+
+      const queryOptions = await this.buildOptimizedQuery(
+        modelName,
+        args,
+        info,
+      );
+
       // ✅ FIX: Only take select/include from queryOptions, NOT where/data
       const updateOptions = {
         where: normalizedWhere,
         data: normalizedData,
         ...(queryOptions.select && { select: queryOptions.select }),
-        ...(queryOptions.include && { include: queryOptions.include })
+        ...(queryOptions.include && { include: queryOptions.include }),
       };
-      
+
       console.log(`📤 Final update options for ${modelName}:`, {
         whereKeys: Object.keys(updateOptions.where || {}),
         dataKeys: Object.keys(updateOptions.data || {}),
         hasSelect: !!updateOptions.select,
-        hasInclude: !!updateOptions.include
+        hasInclude: !!updateOptions.include,
       });
-      
+
       const startTime = Date.now();
       const result = await model.update(updateOptions);
       const queryTime = Date.now() - startTime;
-      
+
       // Clear related caches - both DataLoader and Redis cache
       this.dataLoader.clearLoaderCache(modelName);
       await this.invalidateCache(modelName);
-      
+
       // console.log(`✅ ${modelName} update completed:`, {
       //   id: result.id,
       //   queryTime: `${queryTime}ms`
       // });
 
       return result;
-      
     } catch (error) {
       console.error(`❌ Enhanced update error for ${modelName}:`, error);
       throw new Error(`Failed to update ${modelName}: ${error.message}`);
@@ -399,7 +447,7 @@ export class EnhancedUniversalService {
     modelName: string,
     args: {
       where: any;
-    }
+    },
   ) {
     console.log(`🗑️ Enhanced delete for ${modelName}:`, {
       whereFields: Object.keys(args.where || {}),
@@ -407,60 +455,71 @@ export class EnhancedUniversalService {
 
     try {
       const model = this.getModel(modelName);
-      
+
       const startTime = Date.now();
       let result;
-      
+
       // Special handling for models that need compound where clauses
       if (this.needsFindFirstDelete(modelName, args.where)) {
         // First find the record to get its ID
         const recordToDelete = await model.findFirst({
-          where: args.where
+          where: args.where,
         });
-        
+
         if (!recordToDelete) {
-          throw new Error(`No ${modelName} record found with provided criteria`);
+          throw new Error(
+            `No ${modelName} record found with provided criteria`,
+          );
         }
-        
+
         // Then delete by ID
         result = await model.delete({
-          where: { id: recordToDelete.id }
+          where: { id: recordToDelete.id },
         });
       } else {
         // Standard delete for models with proper unique constraints
         result = await model.delete({
-          where: args.where
+          where: args.where,
         });
       }
-      
+
       const queryTime = Date.now() - startTime;
-      
+
       // Clear related caches - both DataLoader and Redis cache
       this.dataLoader.clearLoaderCache(modelName);
       await this.invalidateCache(modelName);
-      
+
       // console.log(`✅ ${modelName} delete completed:`, {
       //   id: result.id,
       //   queryTime: `${queryTime}ms`
       // });
 
       return result;
-      
     } catch (error) {
       // Handle the case where the record doesn't exist
-      if (error.code === 'P2025' || error.message.includes('No record was found for a delete')) {
+      if (
+        error.code === 'P2025' ||
+        error.message.includes('No record was found for a delete')
+      ) {
         // Clear related caches even for delete not found cases
         this.dataLoader.clearLoaderCache(modelName);
         await this.invalidateCache(modelName);
-        
-        console.log(`✅ Delete operation handled gracefully - Record not found in ${modelName}:`, {
-          where: args.where,
-          message: 'Record already deleted or not found, goal achieved'
-        });
+
+        console.log(
+          `✅ Delete operation handled gracefully - Record not found in ${modelName}:`,
+          {
+            where: args.where,
+            message: 'Record already deleted or not found, goal achieved',
+          },
+        );
         // Return a success response since the desired state is achieved (record doesn't exist)
-        return { id: args.where.id || null, deleted: true, message: 'Record not found, but deletion goal achieved' };
+        return {
+          id: args.where.id || null,
+          deleted: true,
+          message: 'Record not found, but deletion goal achieved',
+        };
       }
-      
+
       console.error(`❌ Enhanced delete error for ${modelName}:`, error);
       throw new Error(`Failed to delete ${modelName}: ${error.message}`);
     }
@@ -472,7 +531,7 @@ export class EnhancedUniversalService {
   private async buildOptimizedQuery(
     modelName: string,
     args: any,
-    info?: GraphQLResolveInfo
+    info?: GraphQLResolveInfo,
   ): Promise<any> {
     const queryOptions: any = {};
 
@@ -484,7 +543,7 @@ export class EnhancedUniversalService {
 
     // Handle field selection
     let fieldSelection: any = null;
-    
+
     // Priority: Custom select/include > GraphQL field selection > Default
     if (args.select || args.include) {
       if (args.select) queryOptions.select = args.select;
@@ -494,10 +553,14 @@ export class EnhancedUniversalService {
       fieldSelection = this.fieldSelection.getFieldSelection(info);
       if (fieldSelection) {
         // Optimize for specific model
-        fieldSelection = this.fieldSelection.optimizeForModel(modelName, fieldSelection);
-        
+        fieldSelection = this.fieldSelection.optimizeForModel(
+          modelName,
+          fieldSelection,
+        );
+
         if (fieldSelection.select) queryOptions.select = fieldSelection.select;
-        if (fieldSelection.include) queryOptions.include = fieldSelection.include;
+        if (fieldSelection.include)
+          queryOptions.include = fieldSelection.include;
       }
     }
 
@@ -516,10 +579,13 @@ export class EnhancedUniversalService {
     results: any[],
     modelName: string,
     queryOptions: any,
-    info?: GraphQLResolveInfo
+    info?: GraphQLResolveInfo,
   ): Promise<any[]> {
     // If we already have includes or specific selects, no need for DataLoader
-    if (queryOptions.include || (queryOptions.select && this.hasRelationFields(queryOptions.select))) {
+    if (
+      queryOptions.include ||
+      (queryOptions.select && this.hasRelationFields(queryOptions.select))
+    ) {
       return results;
     }
 
@@ -533,9 +599,9 @@ export class EnhancedUniversalService {
    */
   private hasRelationFields(select: any): boolean {
     if (!select || typeof select !== 'object') return false;
-    
-    return Object.values(select).some(value => 
-      typeof value === 'object' && value !== null
+
+    return Object.values(select).some(
+      (value) => typeof value === 'object' && value !== null,
     );
   }
 
@@ -544,45 +610,45 @@ export class EnhancedUniversalService {
    */
   private readonly modelMapping: { [key: string]: string } = {
     // Lowercase -> Prisma Client Property
-    'user': 'user',
-    'role': 'role',
-    'userrole': 'userRole',
-    'permission': 'permission',
-    'userpermission': 'userPermission',
-    'rolepermission': 'rolePermission',
-    'menu': 'menu',
-    'profile': 'profile',
-    'banggia': 'banggia',
-    'banggiaKhachhang': 'banggiaKhachhang',
-    'banggiasanpham': 'banggiasanpham',
-    'khachhang': 'khachhang',
-    'khachhangNhom': 'khachhangNhom',
-    'nhomkhachhang': 'nhomkhachhang',
-    'sanpham': 'sanpham',
-    'donhang': 'donhang',
-    'donhangsanpham': 'donhangsanpham',
-    'nhacungcap': 'nhacungcap',
-    'nhomncc': 'nhomNcc',  // ✅ FIX: Add nhomncc mapping to correct Prisma property
-    'dathang': 'dathang',
-    'dathangsanpham': 'dathangsanpham',
-    'congty': 'congty',
-    'kho': 'kho',
-    'sanphamkho': 'sanphamKho',
-    'phieukho': 'phieuKho',
-    'phieukhosanpham': 'phieuKhoSanpham',
-    'tonkho': 'tonKho', // ✅ FIX: tonKho -> tonKho (correct Prisma client property)
-    'chotkho': 'chotkho',
-    'chotkhodetail': 'chotkhodetail', // ✅ FIX: Add chotkhodetail mapping
-    'auditlog': 'auditLog',
-    'filemanager': 'fileManager',
-    'chataimessage': 'chatAIMessage',
-    'chataihistory': 'chatAIHistory',
-    'file': 'file',
-    'errorlog': 'errorLog',
-    'userguidblock': 'userguidBlock',
-    'userguidstep': 'userguidStep',
-    'importhistory': 'importHistory',
-    'congnoncc': 'congnoncc',
+    user: 'user',
+    role: 'role',
+    userrole: 'userRole',
+    permission: 'permission',
+    userpermission: 'userPermission',
+    rolepermission: 'rolePermission',
+    menu: 'menu',
+    profile: 'profile',
+    banggia: 'banggia',
+    banggiaKhachhang: 'banggiaKhachhang',
+    banggiasanpham: 'banggiasanpham',
+    khachhang: 'khachhang',
+    khachhangNhom: 'khachhangNhom',
+    nhomkhachhang: 'nhomkhachhang',
+    sanpham: 'sanpham',
+    donhang: 'donhang',
+    donhangsanpham: 'donhangsanpham',
+    nhacungcap: 'nhacungcap',
+    nhomncc: 'nhomNcc', // ✅ FIX: Add nhomncc mapping to correct Prisma property
+    dathang: 'dathang',
+    dathangsanpham: 'dathangsanpham',
+    congty: 'congty',
+    kho: 'kho',
+    sanphamkho: 'sanphamKho',
+    phieukho: 'phieuKho',
+    phieukhosanpham: 'phieuKhoSanpham',
+    tonkho: 'tonKho', // ✅ FIX: tonKho -> tonKho (correct Prisma client property)
+    chotkho: 'chotkho',
+    chotkhodetail: 'chotkhodetail', // ✅ FIX: Add chotkhodetail mapping
+    auditlog: 'auditLog',
+    filemanager: 'fileManager',
+    chataimessage: 'chatAIMessage',
+    chataihistory: 'chatAIHistory',
+    file: 'file',
+    errorlog: 'errorLog',
+    userguidblock: 'userguidBlock',
+    userguidstep: 'userguidStep',
+    importhistory: 'importHistory',
+    congnoncc: 'congnoncc',
   };
 
   /**
@@ -591,21 +657,25 @@ export class EnhancedUniversalService {
   private getModel(modelName: string) {
     const normalizedName = modelName.toLowerCase();
     const prismaProperty = this.modelMapping[normalizedName];
-    
+
     if (!prismaProperty) {
       // Log available models for debugging
       console.error(`❌ Model mapping not found for: ${modelName}`);
       console.log('Available mappings:', Object.keys(this.modelMapping));
       throw new Error(`Model ${modelName} not found in model mapping`);
     }
-    
+
     const model = this.prisma[prismaProperty];
-    
+
     if (!model) {
-      console.error(`❌ Prisma model not found for property: ${prismaProperty}`);
-      throw new Error(`Model ${modelName} (${prismaProperty}) not found in Prisma client`);
+      console.error(
+        `❌ Prisma model not found for property: ${prismaProperty}`,
+      );
+      throw new Error(
+        `Model ${modelName} (${prismaProperty}) not found in Prisma client`,
+      );
     }
-    
+
     // console.log(`✅ Model resolved: ${modelName} -> ${prismaProperty}`);
     return model;
   }
@@ -617,24 +687,24 @@ export class EnhancedUniversalService {
     try {
       const normalizedName = modelName.toLowerCase();
       const prismaProperty = this.modelMapping[normalizedName];
-      
+
       if (!prismaProperty) {
         return {
           name: modelName,
           available: false,
           supportsOptimization: false,
-          error: 'Model not found in mapping'
+          error: 'Model not found in mapping',
         };
       }
-      
+
       const isAvailable = !!this.prisma[prismaProperty];
-      
+
       return {
         name: modelName,
         prismaProperty,
         available: isAvailable,
         supportsOptimization: isAvailable,
-        normalizedName
+        normalizedName,
       };
     } catch (error) {
       console.error(`❌ Failed to get metadata for ${modelName}:`, error);
@@ -642,7 +712,7 @@ export class EnhancedUniversalService {
         name: modelName,
         available: false,
         supportsOptimization: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -651,7 +721,7 @@ export class EnhancedUniversalService {
    * Get all available models from mapping
    */
   getAvailableModels(): string[] {
-    return Object.keys(this.modelMapping).filter(modelName => {
+    return Object.keys(this.modelMapping).filter((modelName) => {
       const prismaProperty = this.modelMapping[modelName];
       return !!this.prisma[prismaProperty];
     });
@@ -663,40 +733,44 @@ export class EnhancedUniversalService {
   async batchOperation(
     modelName: string,
     operation: 'create' | 'update' | 'delete',
-    items: any[]
+    items: any[],
   ): Promise<any> {
-    console.log(`📦 Batch ${operation} for ${modelName}:`, items.length, 'items');
+    console.log(
+      `📦 Batch ${operation} for ${modelName}:`,
+      items.length,
+      'items',
+    );
 
     try {
       const model = this.getModel(modelName);
-      
+
       switch (operation) {
         case 'create':
           return await model.createMany({
             data: items,
-            skipDuplicates: true
+            skipDuplicates: true,
           });
-          
+
         case 'update':
           // For updates, we need to process individually or use transaction
-          const updatePromises = items.map(item => 
+          const updatePromises = items.map((item) =>
             model.update({
               where: { id: item.id },
-              data: item.data
-            })
+              data: item.data,
+            }),
           );
           return await Promise.all(updatePromises);
-          
+
         case 'delete':
-          const ids = items.map(item => item.id || item);
+          const ids = items.map((item) => item.id || item);
           return await model.deleteMany({
             where: {
               id: {
-                in: ids
-              }
-            }
+                in: ids,
+              },
+            },
           });
-          
+
         default:
           throw new Error(`Unsupported batch operation: ${operation}`);
       }
@@ -721,12 +795,15 @@ export class EnhancedUniversalService {
   private normalizeDateFieldsForModel(modelName: string, data: any): any {
     if (!data || typeof data !== 'object') return data;
 
-    console.log(`🔄 Normalizing date fields for ${modelName}:`, Object.keys(data));
+    console.log(
+      `🔄 Normalizing date fields for ${modelName}:`,
+      Object.keys(data),
+    );
 
     // Define date fields cho từng model với ưu tiên cao cho ngaygiao, ngaynhan
     const dateFieldsMap: Record<string, string[]> = {
       donhang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
-      dathang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'], 
+      dathang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
       tonkho: ['ngaynhan', 'createdAt', 'updatedAt'],
       phieukho: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
       phieugiaohang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
@@ -735,23 +812,35 @@ export class EnhancedUniversalService {
       // Thêm các model khác nếu cần
     };
 
-    const dateFields = dateFieldsMap[modelName.toLowerCase()] || ['createdAt', 'updatedAt'];
+    const dateFields = dateFieldsMap[modelName.toLowerCase()] || [
+      'createdAt',
+      'updatedAt',
+    ];
     const normalizedData = { ...data };
-    
+
     // Enhanced synchronization for each date field
-    dateFields.forEach(field => {
-      if (normalizedData[field] !== undefined && normalizedData[field] !== null) {
+    dateFields.forEach((field) => {
+      if (
+        normalizedData[field] !== undefined &&
+        normalizedData[field] !== null
+      ) {
         try {
           // Use enhanced synchronization for critical fields
           if (['ngaygiao', 'ngaynhan'].includes(field)) {
-            normalizedData[field] = this.synchronizeDateField(field, normalizedData[field]);
+            normalizedData[field] = this.synchronizeDateField(
+              field,
+              normalizedData[field],
+            );
           } else {
             // Standard normalization for other fields
             const utcValue = this.toUTC(normalizedData[field]);
             normalizedData[field] = utcValue ? new Date(utcValue) : null;
           }
         } catch (error) {
-          console.error(`❌ Error normalizing ${field} for ${modelName}:`, error);
+          console.error(
+            `❌ Error normalizing ${field} for ${modelName}:`,
+            error,
+          );
           throw new Error(`Failed to normalize ${field}: ${error.message}`);
         }
       }
@@ -763,7 +852,7 @@ export class EnhancedUniversalService {
 
   /**
    * Xử lý where conditions có chứa date filters
-   * @param modelName Tên model  
+   * @param modelName Tên model
    * @param where Where conditions
    * @returns Where conditions với date fields đã được chuẩn hóa
    */
@@ -771,7 +860,7 @@ export class EnhancedUniversalService {
     if (!where || typeof where !== 'object') return where;
 
     const normalizedWhere = { ...where };
-    
+
     // Define date fields cho từng model
     const dateFieldsMap: Record<string, string[]> = {
       donhang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
@@ -781,28 +870,42 @@ export class EnhancedUniversalService {
       auditlog: ['createdAt', 'updatedAt'],
     };
 
-    const dateFields = dateFieldsMap[modelName.toLowerCase()] || ['createdAt', 'updatedAt'];
+    const dateFields = dateFieldsMap[modelName.toLowerCase()] || [
+      'createdAt',
+      'updatedAt',
+    ];
 
-    dateFields.forEach(field => {
+    dateFields.forEach((field) => {
       if (normalizedWhere[field]) {
         // Xử lý date range filters (gte, lte, gt, lt)
         if (typeof normalizedWhere[field] === 'object') {
           const dateFilter = normalizedWhere[field];
-          
+
           if (dateFilter.gte) {
-            dateFilter.gte = new Date(this.validateAndConvertToUTC(dateFilter.gte) || dateFilter.gte);
+            dateFilter.gte = new Date(
+              this.validateAndConvertToUTC(dateFilter.gte) || dateFilter.gte,
+            );
           }
           if (dateFilter.lte) {
-            dateFilter.lte = new Date(this.validateAndConvertToUTC(dateFilter.lte) || dateFilter.lte);
+            dateFilter.lte = new Date(
+              this.validateAndConvertToUTC(dateFilter.lte) || dateFilter.lte,
+            );
           }
           if (dateFilter.gt) {
-            dateFilter.gt = new Date(this.validateAndConvertToUTC(dateFilter.gt) || dateFilter.gt);
+            dateFilter.gt = new Date(
+              this.validateAndConvertToUTC(dateFilter.gt) || dateFilter.gt,
+            );
           }
           if (dateFilter.lt) {
-            dateFilter.lt = new Date(this.validateAndConvertToUTC(dateFilter.lt) || dateFilter.lt);
+            dateFilter.lt = new Date(
+              this.validateAndConvertToUTC(dateFilter.lt) || dateFilter.lt,
+            );
           }
           if (dateFilter.equals) {
-            dateFilter.equals = new Date(this.validateAndConvertToUTC(dateFilter.equals) || dateFilter.equals);
+            dateFilter.equals = new Date(
+              this.validateAndConvertToUTC(dateFilter.equals) ||
+                dateFilter.equals,
+            );
           }
         } else {
           // Xử lý exact date match
@@ -823,31 +926,32 @@ export class EnhancedUniversalService {
   async aggregate(
     modelName: string,
     aggregations: any,
-    where?: any
+    where?: any,
   ): Promise<any> {
     try {
       // Get the model
       const model = this.getModel(modelName);
-      
+
       // Normalize date filters in where conditions
-      const normalizedWhere = where ? this.normalizeDateFilters(modelName, where) : undefined;
-      
+      const normalizedWhere = where
+        ? this.normalizeDateFilters(modelName, where)
+        : undefined;
+
       // Execute aggregate query
       const startTime = Date.now();
       const result = await model.aggregate({
         ...aggregations,
-        ...(normalizedWhere && { where: normalizedWhere })
+        ...(normalizedWhere && { where: normalizedWhere }),
       });
       const queryTime = Date.now() - startTime;
-      
+
       console.log(`🔢 ${modelName} aggregate completed:`, {
         operations: Object.keys(aggregations),
         queryTime: `${queryTime}ms`,
-        hasWhere: !!normalizedWhere
+        hasWhere: !!normalizedWhere,
       });
 
       return result;
-      
     } catch (error) {
       console.error(`❌ Enhanced aggregate error for ${modelName}:`, error);
       throw new Error(`Aggregate operation failed: ${error.message}`);
@@ -855,9 +959,18 @@ export class EnhancedUniversalService {
   }
 
   // ✅ Redis Cache Helper Methods
-  private generateCacheKey(operation: string, modelName: string, args: any): string {
+  private generateCacheKey(
+    operation: string,
+    modelName: string,
+    args: any,
+  ): string {
     const argsHash = JSON.stringify(args);
-    return this.redisService.generateKey('graphql', operation, modelName, argsHash);
+    return this.redisService.generateKey(
+      'graphql',
+      operation,
+      modelName,
+      argsHash,
+    );
   }
 
   private isWriteOperation(args: any): boolean {
@@ -868,21 +981,26 @@ export class EnhancedUniversalService {
   private getCacheTTL(modelName: string): number {
     // Different cache TTL based on model type
     const cacheConfig = {
-      sanpham: 1800,      // 30 minutes
-      khachhang: 1800,    // 30 minutes  
-      donhang: 600,       // 10 minutes
-      banggia: 3600,      // 1 hour
-      menu: 3600,         // 1 hour
-      user: 1200,         // 20 minutes
-      role: 3600,         // 1 hour
-      permission: 3600,   // 1 hour
+      sanpham: 1800, // 30 minutes
+      khachhang: 1800, // 30 minutes
+      donhang: 600, // 10 minutes
+      banggia: 3600, // 1 hour
+      menu: 3600, // 1 hour
+      user: 1200, // 20 minutes
+      role: 3600, // 1 hour
+      permission: 3600, // 1 hour
     };
-    
+
     return cacheConfig[modelName.toLowerCase()] || 600; // Default 10 minutes
   }
 
   async invalidateCache(modelName: string) {
-    const pattern = this.redisService.generateKey('graphql', '*', modelName, '*');
+    const pattern = this.redisService.generateKey(
+      'graphql',
+      '*',
+      modelName,
+      '*',
+    );
     await this.redisService.deletePattern(pattern);
     console.log(`🗑️ Invalidated GraphQL cache for ${modelName}`);
   }
@@ -902,12 +1020,15 @@ export class EnhancedUniversalService {
         // Keep userId and permissionId as they are for direct foreign key reference
         if (normalizedData.user && !normalizedData.userId) {
           // If user relation is provided but no userId, extract the ID
-          normalizedData.userId = normalizedData.user.connect?.id || normalizedData.user.id;
+          normalizedData.userId =
+            normalizedData.user.connect?.id || normalizedData.user.id;
           delete normalizedData.user;
         }
         if (normalizedData.permission && !normalizedData.permissionId) {
           // If permission relation is provided but no permissionId, extract the ID
-          normalizedData.permissionId = normalizedData.permission.connect?.id || normalizedData.permission.id;
+          normalizedData.permissionId =
+            normalizedData.permission.connect?.id ||
+            normalizedData.permission.id;
           delete normalizedData.permission;
         }
         break;
@@ -915,11 +1036,13 @@ export class EnhancedUniversalService {
       case 'userrole':
         // UserRole should use direct foreign keys
         if (normalizedData.user && !normalizedData.userId) {
-          normalizedData.userId = normalizedData.user.connect?.id || normalizedData.user.id;
+          normalizedData.userId =
+            normalizedData.user.connect?.id || normalizedData.user.id;
           delete normalizedData.user;
         }
         if (normalizedData.role && !normalizedData.roleId) {
-          normalizedData.roleId = normalizedData.role.connect?.id || normalizedData.role.id;
+          normalizedData.roleId =
+            normalizedData.role.connect?.id || normalizedData.role.id;
           delete normalizedData.role;
         }
         break;
@@ -927,11 +1050,14 @@ export class EnhancedUniversalService {
       case 'rolepermission':
         // RolePermission should use direct foreign keys
         if (normalizedData.role && !normalizedData.roleId) {
-          normalizedData.roleId = normalizedData.role.connect?.id || normalizedData.role.id;
+          normalizedData.roleId =
+            normalizedData.role.connect?.id || normalizedData.role.id;
           delete normalizedData.role;
         }
         if (normalizedData.permission && !normalizedData.permissionId) {
-          normalizedData.permissionId = normalizedData.permission.connect?.id || normalizedData.permission.id;
+          normalizedData.permissionId =
+            normalizedData.permission.connect?.id ||
+            normalizedData.permission.id;
           delete normalizedData.permission;
         }
         break;
@@ -940,24 +1066,24 @@ export class EnhancedUniversalService {
         // Convert direct IDs to nested relations if needed
         if (normalizedData.chotkhoId && !normalizedData.chotkho) {
           normalizedData.chotkho = {
-            connect: { id: normalizedData.chotkhoId }
+            connect: { id: normalizedData.chotkhoId },
           };
           delete normalizedData.chotkhoId;
         }
         if (normalizedData.sanphamId && !normalizedData.sanpham) {
           normalizedData.sanpham = {
-            connect: { id: normalizedData.sanphamId }
+            connect: { id: normalizedData.sanphamId },
           };
           delete normalizedData.sanphamId;
         }
         if (normalizedData.userId && !normalizedData.user) {
           normalizedData.user = {
-            connect: { id: normalizedData.userId }
+            connect: { id: normalizedData.userId },
           };
           delete normalizedData.userId;
         }
         break;
-      
+
       // Add more cases for other models as needed
       default:
         // No special handling needed
@@ -975,34 +1101,34 @@ export class EnhancedUniversalService {
     // Models that typically need findFirst + delete by ID
     const modelsNeedingFindFirst = [
       'RolePermission',
-      'UserPermission', 
-      'UserRole'
+      'UserPermission',
+      'UserRole',
     ];
-    
+
     if (!modelsNeedingFindFirst.includes(modelName)) {
       return false;
     }
-    
+
     // If where clause already has ID, no need for findFirst
     if (whereClause.id) {
       return false;
     }
-    
+
     // For RolePermission: if we have roleId + permissionId but no id
     if (modelName === 'RolePermission') {
       return whereClause.roleId && whereClause.permissionId && !whereClause.id;
     }
-    
-    // For UserPermission: if we have userId + permissionId but no id  
+
+    // For UserPermission: if we have userId + permissionId but no id
     if (modelName === 'UserPermission') {
       return whereClause.userId && whereClause.permissionId && !whereClause.id;
     }
-    
+
     // For UserRole: if we have userId + roleId but no id
     if (modelName === 'UserRole') {
       return whereClause.userId && whereClause.roleId && !whereClause.id;
     }
-    
+
     return false;
   }
 }

@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { PhieukhoService } from './phieukho.service';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
@@ -11,11 +21,15 @@ export class PhieukhoController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @Audit({entity: 'Create Phieukho', action: AuditAction.CREATE, includeResponse: true})
+  @Audit({
+    entity: 'Create Phieukho',
+    action: AuditAction.CREATE,
+    includeResponse: true,
+  })
   @SmartCache({
     invalidate: ['phieukho', 'kho'],
     get: { ttl: 600, keyPrefix: 'phieukho' },
-    updateCache: true
+    updateCache: true,
   })
   create(@Body() createPhieukhoDto: any) {
     return this.phieukhoService.create(createPhieukhoDto);
@@ -29,7 +43,11 @@ export class PhieukhoController {
 
   @Post('xuatnhapton')
   @UseGuards(JwtAuthGuard)
-  @Audit({entity: 'Xuat Nhap Ton', action: AuditAction.CREATE, includeResponse: true})
+  @Audit({
+    entity: 'Xuat Nhap Ton',
+    action: AuditAction.CREATE,
+    includeResponse: true,
+  })
   @CacheInvalidate(['phieukho', 'kho', 'sanpham'])
   xuatnhapton(@Body() query: any) {
     return this.phieukhoService.xuatnhapton(query);
@@ -37,32 +55,43 @@ export class PhieukhoController {
 
   @Post('adjustment')
   @UseGuards(JwtAuthGuard)
-  @Audit({entity: 'Create Adjustment Phieukho', action: AuditAction.CREATE, includeResponse: true})
+  @Audit({
+    entity: 'Create Adjustment Phieukho',
+    action: AuditAction.CREATE,
+    includeResponse: true,
+  })
   @CacheInvalidate(['phieukho', 'kho', 'sanpham'])
-  createAdjustment(@Body() data: {
-    type: 'nhap' | 'xuat';
-    sanphamId: string;
-    soluong: number;
-    ghichu: string;
-    khoId: string;
-    chothkhoId?: string;
-  }) {
+  createAdjustment(
+    @Body()
+    data: {
+      type: 'nhap' | 'xuat';
+      sanphamId: string;
+      soluong: number;
+      ghichu: string;
+      khoId: string;
+      chothkhoId?: string;
+    },
+  ) {
     return this.phieukhoService.createAdjustmentPhieuKho(data);
   }
-  
+
   @Get('findid/:id')
   @Cache(600, 'phieukho')
   findOne(@Param('id') id: string) {
     return this.phieukhoService.findOne(id);
   }
-  
+
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  @Audit({entity: 'Update Phieukho', action: AuditAction.UPDATE, includeResponse: true})
+  @Audit({
+    entity: 'Update Phieukho',
+    action: AuditAction.UPDATE,
+    includeResponse: true,
+  })
   @SmartCache({
     invalidate: ['phieukho', 'kho'],
     get: { ttl: 600, keyPrefix: 'phieukho' },
-    updateCache: true
+    updateCache: true,
   })
   update(@Param('id') id: string, @Body() updatePhieukhoDto: any) {
     return this.phieukhoService.update(id, updatePhieukhoDto);
@@ -70,7 +99,11 @@ export class PhieukhoController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  @Audit({entity: 'Remove Phieukho', action: AuditAction.DELETE, includeResponse: true})
+  @Audit({
+    entity: 'Remove Phieukho',
+    action: AuditAction.DELETE,
+    includeResponse: true,
+  })
   @CacheInvalidate(['phieukho', 'kho'])
   remove(@Param('id') id: string) {
     return this.phieukhoService.remove(id);

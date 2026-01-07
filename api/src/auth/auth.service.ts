@@ -5,7 +5,10 @@ import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, private jwtService: JwtService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
   async register(email: string, password: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -14,50 +17,64 @@ export class AuthService {
     });
   }
 
-  async login(SDT:string,email: string, password: string) {   
-    const user:any = await this.prisma.user.findFirst({ 
+  async login(SDT: string, email: string, password: string) {
+    const user: any = await this.prisma.user.findFirst({
       where: { OR: [{ email }, { SDT }] },
       include: {
-        roles: { include: { role: { include: { permissions: {include:{permission:true}} } } } },
+        roles: {
+          include: {
+            role: {
+              include: { permissions: { include: { permission: true } } },
+            },
+          },
+        },
         userPermissions: {
           include: {
-            permission: true
+            permission: true,
           },
           where: {
             OR: [
               { expiresAt: null }, // Never expires
               { expiresAt: { gt: new Date() } }, // Not expired yet
             ],
-          }
-        }
+          },
+        },
       },
-     });    
+    });
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     // Get role-based permissions
-    const rolePermissions: any[] = Array.from(new Set(user.roles.flatMap((role: any) => role.role.permissions.map((p: any) => p.permission))));
-    
+    const rolePermissions: any[] = Array.from(
+      new Set(
+        user.roles.flatMap((role: any) =>
+          role.role.permissions.map((p: any) => p.permission),
+        ),
+      ),
+    );
+
     // Get user-specific granted permissions
     const validUserPermissions = user.userPermissions
       .filter((up: any) => up.isGranted)
       .map((up: any) => up.permission);
-    
+
     // Get user-specific denied permissions
     const deniedUserPermissions = user.userPermissions
       .filter((up: any) => !up.isGranted)
       .map((up: any) => up.permission.id);
-    
+
     // Merge permissions: role permissions + user granted - user denied
     const allPermissions = [
-      ...rolePermissions.filter((p: any) => !deniedUserPermissions.includes(p.id)),
-      ...validUserPermissions
+      ...rolePermissions.filter(
+        (p: any) => !deniedUserPermissions.includes(p.id),
+      ),
+      ...validUserPermissions,
     ];
-    
+
     // Remove duplicates based on permission id
     const uniquePermissions = Array.from(
-      new Map(allPermissions.map(p => [p.id, p])).values()
+      new Map(allPermissions.map((p) => [p.id, p])).values(),
     );
 
     const resultUser = {
@@ -68,25 +85,29 @@ export class AuthService {
       }),
       permissions: uniquePermissions,
     };
-    
+
     // Remove sensitive data
     delete resultUser.password;
     delete resultUser.userPermissions;
 
-    const payload = { 
-      id: user.id, 
+    const payload = {
+      id: user.id,
       email: user.email,
       roles: resultUser.roles,
-      permissions: uniquePermissions.map(p => p.name) // Include permission names in JWT
+      permissions: uniquePermissions.map((p) => p.name), // Include permission names in JWT
     };
     const result = {
       access_token: this.jwtService.sign(payload),
       user: resultUser,
     };
-    return result
+    return result;
   }
 
-  async changePassword(userId: string, oldPassword: string, newPassword: string) {
+  async changePassword(
+    userId: string,
+    oldPassword: string,
+    newPassword: string,
+  ) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user || !(await bcrypt.compare(oldPassword, user.password))) {
       throw new UnauthorizedException('Old password is incorrect');
@@ -107,58 +128,68 @@ export class AuthService {
     });
     return { newPassword };
   }
-  async validateOAuthLogin(provider: string, providerId: string, email?: string, SDT?: string) {
+  async validateOAuthLogin(
+    provider: string,
+    providerId: string,
+    email?: string,
+    SDT?: string,
+  ) {
     let user = await this.prisma.user.findUnique({ where: { providerId } });
 
     if (!user) {
       // Kiểm tra nếu email hoặc SDT đã tồn tại
       const existingUser = await this.prisma.user.findFirst({
         where: {
-          OR: [
-            ...(email ? [{ email }] : []),
-            ...(SDT ? [{ SDT }] : [])
-          ]
-        }
+          OR: [...(email ? [{ email }] : []), ...(SDT ? [{ SDT }] : [])],
+        },
       });
 
       if (existingUser) {
         // Cập nhật user hiện có với providerId
         user = await this.prisma.user.update({
           where: { id: existingUser.id },
-          data: { 
-            provider, 
+          data: {
+            provider,
             providerId,
             ...(email && { email }),
-            ...(SDT && { SDT })
-          }
+            ...(SDT && { SDT }),
+          },
         });
       } else {
         // Tạo user mới
         const newPassword = Math.random().toString(36).slice(-8);
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         user = await this.prisma.user.create({
-          data: { 
-            provider, 
-            providerId, 
-            email: email || '', 
+          data: {
+            provider,
+            providerId,
+            email: email || '',
             password: hashedPassword,
-            ...(SDT && { SDT })
+            ...(SDT && { SDT }),
           },
         });
       }
     }
-    const token = this.jwtService.sign({ id: user.id, provider: user.provider });
+    const token = this.jwtService.sign({
+      id: user.id,
+      provider: user.provider,
+    });
     return { token, user };
   }
 
   async getUserRoles(userId: string) {
     return this.prisma.userRole.findMany({
       where: { userId },
-      include: { role: { include: { permissions: { include: { permission: true } } } } },
+      include: {
+        role: { include: { permissions: { include: { permission: true } } } },
+      },
     });
   }
 
-  async hasPermission(userId: string, permissionName: string): Promise<boolean> {
+  async hasPermission(
+    userId: string,
+    permissionName: string,
+  ): Promise<boolean> {
     // 1. Check user-specific permissions first (highest priority)
     const userPermission = await this.prisma.userPermission.findFirst({
       where: {
@@ -185,14 +216,18 @@ export class AuthService {
     // 2. Fall back to role-based permissions
     const roles = await this.getUserRoles(userId);
     return roles.some((userRole) =>
-      userRole.role.permissions.some((rp) => rp.permission.name === permissionName),
+      userRole.role.permissions.some(
+        (rp) => rp.permission.name === permissionName,
+      ),
     );
   }
 
   async checkPermission(userId: string, permissionName: string) {
     const hasPerm = await this.hasPermission(userId, permissionName);
     if (!hasPerm) {
-      throw new UnauthorizedException('Bạn không có quyền thực hiện thao tác này');
+      throw new UnauthorizedException(
+        'Bạn không có quyền thực hiện thao tác này',
+      );
     }
   }
 
@@ -209,7 +244,7 @@ export class AuthService {
         roleName: userRole.role.name,
         isGranted: true,
         isActive: true,
-      }))
+      })),
     );
 
     // Get user-specific permissions
@@ -266,10 +301,7 @@ export class AuthService {
       where: {
         userId,
         permission: { name: permissionName },
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } },
-        ],
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
       },
       include: { permission: true },
     });
@@ -287,14 +319,18 @@ export class AuthService {
     // Check role permissions
     const roles = await this.getUserRoles(userId);
     const hasRolePermission = roles.some((userRole) =>
-      userRole.role.permissions.some((rp) => rp.permission.name === permissionName),
+      userRole.role.permissions.some(
+        (rp) => rp.permission.name === permissionName,
+      ),
     );
 
     if (hasRolePermission) {
       const roleWithPermission = roles.find((userRole) =>
-        userRole.role.permissions.some((rp) => rp.permission.name === permissionName),
+        userRole.role.permissions.some(
+          (rp) => rp.permission.name === permissionName,
+        ),
       );
-      
+
       return {
         hasPermission: true,
         source: 'role',

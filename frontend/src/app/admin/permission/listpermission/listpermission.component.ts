@@ -107,7 +107,7 @@ export class ListPermissionComponent implements OnInit {
       this.total.set(this.dataSource.data.length);
       this.updatePagination();
     } catch (error: any) {
-      this.snackBar.open('Lỗi khi tải dữ liệu: ' + error.message, 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi tải dữ liệu: ' + error.message, 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
     }
   }
 
@@ -233,11 +233,11 @@ export class ListPermissionComponent implements OnInit {
         await this.permissionService.DeletePermission(permission.id);
       }
       
-      this.snackBar.open(`Đã xóa ${this.EditList.length} permission thành công`, 'Đóng', { duration: 3000 });
+      this.snackBar.open(`Đã xóa ${ this.EditList.length} permission thành công`, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       this.EditList = [];
       await this.loadPermissions();
     } catch (error: any) {
-      this.snackBar.open('Lỗi khi xóa permission: ' + error.message, 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi xóa permission: ' + error.message, 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
     }
   }
 }

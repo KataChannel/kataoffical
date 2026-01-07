@@ -50,15 +50,16 @@
         </button>
         
         <mat-menu #exportMenu="matMenu">
-          <!-- <button mat-menu-item (click)="ExportExcel(editDathang, 'Congno')">
-            <mat-icon>cloud_download</mat-icon>
-            <span>Xuất từ Server (Nhanh)</span>
-          </button> -->
           <button mat-menu-item (click)="ExportExcelTableFormat(editDathang, 'Congnoncc')">
             <mat-icon>table_view</mat-icon>
             <span>Xuất định dạng bảng (Chi tiết)</span>
           </button>
         </mat-menu>
+
+        <button *ngIf="editDathang.length > 0" (click)="createPaymentProposal()" mat-flat-button class="!bg-teal-600 !text-white" matTooltip="Lập đề xuất thanh toán">
+          <mat-icon>send</mat-icon>
+          Lập đề xuất
+        </button>
         <button matTooltip="Tìm kiếm" (click)="doSearch()" [disabled]="isSearching" color="primary" mat-icon-button
           class="relative">
           <div *ngIf="isSearching" class="absolute inset-0 flex items-center justify-center">
@@ -378,6 +379,15 @@
                 'text-red-500': row[column] === 'huy'
               }">
               {{ Trangthaidon[row[column]] }}
+            </span>
+            } @case ('poStatus') {
+            <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
+                'text-blue-500': row[column] === 'MOI',
+                'text-teal-500': row[column] === 'DA_DOI_CHIEU',
+                'text-yellow-600': row[column] === 'CHO_THANH_TOAN',
+                'text-green-600': row[column] === 'DA_THANH_TOAN'
+              }">
+              {{ row[column] === 'MOI' ? 'Mới' : (row[column] === 'DA_DOI_CHIEU' ? 'Đã đối chiếu' : (row[column] === 'CHO_THANH_TOAN' ? 'Chờ thanh toán' : (row[column] === 'DA_THANH_TOAN' ? 'Đã thanh toán' : row[column]))) }}
             </span>
             } @case ('updatedAt') {
             <span class="max-w-40 line-clamp-4 text-xs">

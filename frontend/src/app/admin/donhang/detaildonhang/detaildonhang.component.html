@@ -8,12 +8,54 @@
     <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>
     </button>
-    <!-- Xuất Hóa Đơn Button -->
-    <button mat-icon-button color="accent" *ngIf="!isEdit() && DetailDonhang()?.id" 
-            (click)="xuatHoaDon()" 
-            matTooltip="Xuất hóa đơn điện tử">
-      <mat-icon>receipt_long</mat-icon>
-    </button>
+    
+    <!-- ERP Status Badge -->
+    <div *ngIf="DetailDonhang()?.soStatus" class="px-2 py-1 rounded text-xs font-bold uppercase"
+         [ngClass]="{
+           'bg-gray-100 text-gray-600': DetailDonhang().soStatus === 'MOI',
+           'bg-blue-100 text-blue-600': DetailDonhang().soStatus === 'DA_GIAO_THUC_TE',
+           'bg-green-100 text-green-600': DetailDonhang().soStatus === 'DA_DOI_CHIEU',
+           'bg-amber-100 text-amber-600': DetailDonhang().soStatus === 'CHO_THU_TIEN',
+           'bg-emerald-100 text-emerald-600': DetailDonhang().soStatus === 'DA_THU_TIEN'
+         }">
+      {{ DetailDonhang().soStatus }}
+    </div>
+
+    <!-- ERP Action Buttons -->
+    <ng-container *ngIf="!isEdit() && DetailDonhang()?.id">
+       <!-- 1. Confirm Delivery (MOI -> DA_GIAO_THUC_TE) -->
+       <button mat-flat-button color="primary" 
+               *ngIf="!DetailDonhang().soStatus || DetailDonhang().soStatus === 'MOI'"
+               [disabled]="isERPActionLoading()"
+               (click)="xacNhanGiaoThucTe()">
+         Xác nhận giao
+       </button>
+
+       <!-- 2. Reconcile (DA_GIAO_THUC_TE -> DA_DOI_CHIEU) -->
+       <button mat-flat-button color="accent" 
+               *ngIf="DetailDonhang().soStatus === 'DA_GIAO_THUC_TE'"
+               [disabled]="isERPActionLoading()"
+               (click)="doiChieu()">
+         Đối chiếu (Kế toán)
+       </button>
+    </ng-container>
+    <!-- Invoice Buttons -->
+    <ng-container *ngIf="!isEdit() && DetailDonhang()?.id">
+      <!-- If already exported, show view button -->
+      <button mat-icon-button color="primary" *ngIf="DetailDonhang()?.xuatHoaDon"
+              (click)="goToInvoice()"
+              matTooltip="Xem hóa đơn điện tử">
+        <mat-icon class="text-green-600">description</mat-icon>
+      </button>
+      
+      <!-- If not exported yet, show export button -->
+      <button mat-icon-button color="accent" *ngIf="!DetailDonhang()?.xuatHoaDon"
+              [disabled]="DetailDonhang().soStatus !== 'DA_DOI_CHIEU' && DetailDonhang().soStatus !== 'CHO_THU_TIEN' && DetailDonhang().soStatus !== 'DA_THU_TIEN'"
+              (click)="xuatHoaDon()" 
+              [matTooltip]="(DetailDonhang().soStatus === 'DA_DOI_CHIEU' || DetailDonhang().soStatus === 'CHO_THU_TIEN' || DetailDonhang().soStatus === 'DA_THU_TIEN') ? 'Xuất hóa đơn điện tử' : 'Vui lòng ĐỐI CHIẾU trước khi xuất hóa đơn'">
+        <mat-icon [class.opacity-30]="DetailDonhang().soStatus !== 'DA_DOI_CHIEU' && DetailDonhang().soStatus !== 'CHO_THU_TIEN' && DetailDonhang().soStatus !== 'DA_THU_TIEN'">receipt_long</mat-icon>
+      </button>
+    </ng-container>
     <!-- <button mat-icon-button color="primary" (click)="printContent()">
       <mat-icon>print</mat-icon>
     </button> -->
@@ -272,10 +314,20 @@
               <td class="border p-2 text-center">{{idx+1}}</td>
               <td class="border p-2">{{item.title}}</td>
               <td class="border p-2 text-center">{{item.dvt}}</td>
-              <td class="border p-2 text-center">{{item.giaban|number:'1.0-2'}}</td>
+              <td class="border p-2 text-center">
+                <ng-container *ngIf="DetailDonhang().soStatus === 'DA_GIAO_THUC_TE'; else viewGiaban">
+                  <input type="number" [(ngModel)]="item.giaban" class="w-20 text-end border p-1 rounded">
+                </ng-container>
+                <ng-template #viewGiaban>{{item.giaban|number:'1.0-2'}}</ng-template>
+              </td>
               <td class="border p-2 text-end max-w-10">{{item.sldat|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-">{{item.slgiao|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-10">{{item.slnhan|number:'1.0-2'}}</td>
+              <td class="border p-2 text-end max-w-10">
+                <ng-container *ngIf="DetailDonhang().soStatus === 'DA_GIAO_THUC_TE'; else viewSlnhan">
+                  <input type="number" [(ngModel)]="item.slnhan" class="w-20 text-end border p-1 rounded">
+                </ng-container>
+                <ng-template #viewSlnhan>{{item.slnhan|number:'1.0-2'}}</ng-template>
+              </td>
               <td class="border p-2">{{item.ghichu}}</td>
             </tr>
             }

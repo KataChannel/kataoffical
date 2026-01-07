@@ -292,11 +292,9 @@ export class TestingComponent implements OnInit {
   async runAllTests() {
     this.isRunning.set(true);
     
-    this._snackBar.open('Bắt đầu chạy test toàn bộ hệ thống...', 'Đóng', {
-      duration: 3000,
+    this._snackBar.open('Bắt đầu chạy test toàn bộ hệ thống...', 'Đóng', { duration: 3000,
       horizontalPosition: 'end',
-      verticalPosition: 'top'
-    });
+      verticalPosition: 'top', panelClass: ["snackbar-success"] });
 
     for (const module of this.modules()) {
       for (const test of module.tests) {
@@ -310,16 +308,14 @@ export class TestingComponent implements OnInit {
     const failed = this.failedTests();
     const total = this.totalTests();
     
-    this._snackBar.open(
-      `Hoàn thành! ${success}/${total} tests passed, ${failed} failed`,
+    this._snackBar.open(`Hoàn thành! ${success}/${total} tests passed, ${failed} failed`,
       'Đóng',
       {
         duration: 5000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: failed === 0 ? ['snackbar-success'] : ['snackbar-warning']
-      }
-    );
+      });
   }
 
   async runModuleTests(moduleName: string) {
@@ -536,9 +532,9 @@ export class TestingComponent implements OnInit {
         };
         try {
           await this._DathangService.CreateDathang(testDhNcc);
-          this._snackBar.open(`✅ Created test: ${testDhNcc.madathang}`, 'Close', { duration: 2000 });
+          this._snackBar.open(`✅ Created test: ${ testDhNcc.madathang}`, 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         } catch (e) {
-          this._snackBar.open('⚠️ Create simulation (method may have different signature)', 'Close', { duration: 2000 });
+          this._snackBar.open('⚠️ Create simulation (method may have different signature, { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-warning"] })', 'Close', { duration: 2000 });
         }
         await this.delay(300);
         break;
@@ -551,7 +547,7 @@ export class TestingComponent implements OnInit {
             trangthai: 'DANHAN',
             ghichu: 'Updated test data'
           });
-          this._snackBar.open('✅ Updated test đặt hàng NCC', 'Close', { duration: 2000 });
+          this._snackBar.open('✅ Updated test đặt hàng NCC', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         }
         await this.delay(300);
         break;
@@ -565,23 +561,23 @@ export class TestingComponent implements OnInit {
               await this._DathangService.DeleteDathang(id);
             }
             this.clearTestIds('dathangncc');
-            this._snackBar.open(`🗑️ Deleted ${dhNccDeleteIds.length} test records`, 'Close', { duration: 3000 });
+            this._snackBar.open(`🗑️ Deleted ${ dhNccDeleteIds.length} test records`, 'Close', { duration: 3000, panelClass: ["snackbar-success"] });
           }
         } else {
-          this._snackBar.open('ℹ️ No test data to delete', 'Close', { duration: 2000 });
+          this._snackBar.open('ℹ️ No test data to delete', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         }
         break;
         
       case 'Confirm Đặt Hàng':
         const dhConfirmIds = this.getTestIds('dathangncc');
         if (dhConfirmIds.length > 0) {
-          this._snackBar.open('✅ Confirm simulation', 'Close', { duration: 2000 });
+          this._snackBar.open('✅ Confirm simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         }
         await this.delay(300);
         break;
         
       case 'Nhu Cầu Đặt Hàng':
-        this._snackBar.open('✅ Demand calculation simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Demand calculation simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
@@ -611,30 +607,30 @@ export class TestingComponent implements OnInit {
         };
         try {
           await this._PhieukhoService.CreatePhieukho(testPk);
-          this._snackBar.open(`✅ Created test: ${testPk.maphieu}`, 'Close', { duration: 2000 });
+          this._snackBar.open(`✅ Created test: ${ testPk.maphieu}`, 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         } catch (e) {
-          this._snackBar.open('⚠️ Create simulation', 'Close', { duration: 2000 });
+          this._snackBar.open('⚠️ Create simulation', 'Close', { duration: 2000, panelClass: ["snackbar-warning"] });
         }
         await this.delay(300);
         break;
         
       case 'Update Phiếu Kho':
-        this._snackBar.open('✅ Update simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Update simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
       case 'Delete Phiếu Kho':
-        this._snackBar.open('✅ Delete simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Delete simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
       case 'Xuất Nhập Tồn':
-        this._snackBar.open('✅ Inventory report simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Inventory report simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
       case 'Create Adjustment':
-        this._snackBar.open('✅ Adjustment simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Adjustment simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
@@ -659,30 +655,30 @@ export class TestingComponent implements OnInit {
         };
         try {
           await this._SanphamService.CreateSanpham(testSp);
-          this._snackBar.open(`✅ Created test: ${testSp.masanpham}`, 'Close', { duration: 2000 });
+          this._snackBar.open(`✅ Created test: ${ testSp.masanpham}`, 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         } catch (e) {
-          this._snackBar.open('⚠️ Create simulation', 'Close', { duration: 2000 });
+          this._snackBar.open('⚠️ Create simulation', 'Close', { duration: 2000, panelClass: ["snackbar-warning"] });
         }
         await this.delay(300);
         break;
         
       case 'Update Sản Phẩm':
-        this._snackBar.open('✅ Update simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Update simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
       case 'Delete Sản Phẩm':
-        this._snackBar.open('✅ Delete simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Delete simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
       case 'Search Sản Phẩm':
-        this._snackBar.open('✅ Search simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Search simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
       case 'Import Sản Phẩm':
-        this._snackBar.open('📥 Import simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('📥 Import simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
@@ -708,25 +704,25 @@ export class TestingComponent implements OnInit {
         };
         try {
           await this._KhachhangService.CreateKhachhang(testKh);
-          this._snackBar.open(`✅ Created test: ${testKh.makhachhang}`, 'Close', { duration: 2000 });
+          this._snackBar.open(`✅ Created test: ${ testKh.makhachhang}`, 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         } catch (e) {
-          this._snackBar.open('⚠️ Create simulation', 'Close', { duration: 2000 });
+          this._snackBar.open('⚠️ Create simulation', 'Close', { duration: 2000, panelClass: ["snackbar-warning"] });
         }
         await this.delay(300);
         break;
         
       case 'Update Khách Hàng':
-        this._snackBar.open('✅ Update simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Update simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
       case 'Delete Khách Hàng':
-        this._snackBar.open('✅ Delete simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Delete simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
       case 'Get Công Nợ':
-        this._snackBar.open('✅ Debt report simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Debt report simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
@@ -752,20 +748,20 @@ export class TestingComponent implements OnInit {
         };
         try {
           await this._NhacungcapService.CreateNhacungcap(testNcc);
-          this._snackBar.open(`✅ Created test: ${testNcc.manhacungcap}`, 'Close', { duration: 2000 });
+          this._snackBar.open(`✅ Created test: ${ testNcc.manhacungcap}`, 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         } catch (e) {
-          this._snackBar.open('⚠️ Create simulation', 'Close', { duration: 2000 });
+          this._snackBar.open('⚠️ Create simulation', 'Close', { duration: 2000, panelClass: ["snackbar-warning"] });
         }
         await this.delay(300);
         break;
         
       case 'Update Nhà Cung Cấp':
-        this._snackBar.open('✅ Update simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Update simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
       case 'Delete Nhà Cung Cấp':
-        this._snackBar.open('✅ Delete simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Delete simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
@@ -792,20 +788,20 @@ export class TestingComponent implements OnInit {
         };
         try {
           this._BanggiaService.CreateBanggia(testBg);
-          this._snackBar.open(`✅ Created test: ${testBg.mabanggia}`, 'Close', { duration: 2000 });
+          this._snackBar.open(`✅ Created test: ${ testBg.mabanggia}`, 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         } catch (e) {
-          this._snackBar.open('⚠️ Create simulation', 'Close', { duration: 2000 });
+          this._snackBar.open('⚠️ Create simulation', 'Close', { duration: 2000, panelClass: ["snackbar-warning"] });
         }
         await this.delay(300);
         break;
         
       case 'Update Bảng Giá':
-        this._snackBar.open('✅ Update simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Update simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
       case 'Delete Bảng Giá':
-        this._snackBar.open('✅ Delete simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Delete simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
@@ -832,17 +828,17 @@ export class TestingComponent implements OnInit {
           trangthai: 'DACHOT',
           ghichu: 'Test data - will be deleted'
         };
-        this._snackBar.open('⚠️ Create simulation (method may not exist)', 'Close', { duration: 2000 });
+        this._snackBar.open('⚠️ Create simulation (method may not exist, { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-warning"] })', 'Close', { duration: 2000 });
         await this.delay(300);
         break;
         
       case 'Process Chốt Kho':
-        this._snackBar.open('✅ Process simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Process simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
       case 'Get Outstanding':
-        this._snackBar.open('✅ Outstanding report simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Outstanding report simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
@@ -854,17 +850,17 @@ export class TestingComponent implements OnInit {
   private async testTonkho(testName: string): Promise<void> {
     switch (testName) {
       case 'Get All Tồn Kho':
-        this._snackBar.open('✅ List inventory simulation (service might not exist)', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ List inventory simulation (service might not exist, { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-success"] })', 'Close', { duration: 2000 });
         await this.delay(300);
         break;
         
       case 'Get by Sản Phẩm':
-        this._snackBar.open('✅ Get by product simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Get by product simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
       case 'Sync Tồn Kho':
-        this._snackBar.open('✅ Sync inventory simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Sync inventory simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
@@ -890,20 +886,20 @@ export class TestingComponent implements OnInit {
         };
         try {
           await this._UserService.CreateUser(testUser);
-          this._snackBar.open(`✅ Created test: ${testUser.username}`, 'Close', { duration: 2000 });
+          this._snackBar.open(`✅ Created test: ${ testUser.username}`, 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         } catch (e) {
-          this._snackBar.open('⚠️ Create simulation', 'Close', { duration: 2000 });
+          this._snackBar.open('⚠️ Create simulation', 'Close', { duration: 2000, panelClass: ["snackbar-warning"] });
         }
         await this.delay(300);
         break;
         
       case 'Update User':
-        this._snackBar.open('✅ Update user simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Update user simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
       case 'Assign Role':
-        this._snackBar.open('✅ Assign role simulation', 'Close', { duration: 2000 });
+        this._snackBar.open('✅ Assign role simulation', 'Close', { duration: 2000, panelClass: ["snackbar-success"] });
         await this.delay(300);
         break;
         
@@ -1017,11 +1013,9 @@ export class TestingComponent implements OnInit {
     const totalCount = this.getTotalTestDataCount();
     
     if (totalCount === 0) {
-      this._snackBar.open('⚠️ Không có test data để xóa', 'Đóng', {
-        duration: 3000,
+      this._snackBar.open('⚠️ Không có test data để xóa', 'Đóng', { duration: 3000,
         horizontalPosition: 'end',
-        verticalPosition: 'top'
-      });
+        verticalPosition: 'top', panelClass: ["snackbar-warning"] });
       return;
     }
 
@@ -1046,27 +1040,24 @@ export class TestingComponent implements OnInit {
 
     this.isRunning.set(false);
 
-    this._snackBar.open(
-      `🗑️ Cleanup complete! Deleted: ${deletedCount}, Failed: ${failedCount}`,
+    this._snackBar.open(`🗑️ Cleanup complete! Deleted: ${deletedCount}, Failed: ${failedCount}`,
       'Đóng',
       {
         duration: 5000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: failedCount === 0 ? ['snackbar-success'] : ['snackbar-warning']
-      }
-    );
+      });
   }
 
   async cleanupModuleTestData(moduleName: string) {
     const ids = this.getTestIds(moduleName);
     
     if (ids.length === 0) {
-      this._snackBar.open(`⚠️ Module ${moduleName} không có test data`, 'Đóng', {
+      this._snackBar.open(`⚠️ Module ${ moduleName} không có test data`, 'Đóng', {
         duration: 3000,
         horizontalPosition: 'end',
-        verticalPosition: 'top'
-      });
+        verticalPosition: 'top', panelClass: ["snackbar-warning"] });
       return;
     }
 
@@ -1079,27 +1070,23 @@ export class TestingComponent implements OnInit {
       await this.deleteModuleTestData(moduleName, ids);
       this.clearTestIds(moduleName);
       
-      this._snackBar.open(
-        `✅ Đã xóa ${ids.length} test records từ ${moduleName}`,
+      this._snackBar.open(`✅ Đã xóa ${ids.length} test records từ ${moduleName}`,
         'Đóng',
         {
           duration: 3000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success']
-        }
-      );
+        });
     } catch (error: any) {
-      this._snackBar.open(
-        `❌ Lỗi khi xóa test data: ${error.message}`,
+      this._snackBar.open(`❌ Lỗi khi xóa test data: ${error.message}`,
         'Đóng',
         {
           duration: 5000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-error']
-        }
-      );
+        });
     }
 
     this.isRunning.set(false);

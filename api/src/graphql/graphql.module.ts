@@ -19,16 +19,16 @@ import { DashboardResolver } from '../dashboard/dashboard.resolver';
   ],
   providers: [
     // Original universal services (keep for backward compatibility)
-    UniversalResolver, 
+    UniversalResolver,
     UniversalService,
-    
+
     // Enhanced GraphQL services with dynamic field selection
     EnhancedUniversalResolver,
     EnhancedUniversalService,
     DataLoaderService,
     FieldSelectionService,
     GraphQLPerformanceService,
-    
+
     // Dashboard resolver
     DashboardResolver,
   ],

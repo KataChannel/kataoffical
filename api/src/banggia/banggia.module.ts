@@ -10,9 +10,15 @@ import { SharedModule } from '../shared/shared.module';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, ErrorlogsModule, ImportdataModule, SharedModule, AuthModule],
+  imports: [
+    PrismaModule,
+    ErrorlogsModule,
+    ImportdataModule,
+    SharedModule,
+    AuthModule,
+  ],
   controllers: [BanggiaController],
   providers: [BanggiaService, BanggiaPriceHistoryService, SocketGateway],
-  exports: [BanggiaService, BanggiaPriceHistoryService]
+  exports: [BanggiaService, BanggiaPriceHistoryService],
 })
 export class BanggiaModule {}

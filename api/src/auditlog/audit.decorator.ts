@@ -9,4 +9,5 @@ export interface AuditConfig {
   includeResponse?: boolean;
 }
 export const AUDIT_METADATA_KEY = 'audit';
-export const Audit = (config: AuditConfig) => SetMetadata(AUDIT_METADATA_KEY, config);
+export const Audit = (config: AuditConfig) =>
+  SetMetadata(AUDIT_METADATA_KEY, config);

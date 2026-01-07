@@ -1,11 +1,16 @@
 // audit.interceptor.ts
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, HttpException } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+  HttpException,
+} from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { Reflector } from '@nestjs/core';
 import { AuditService } from '../auditlog/auditlog.service';
 import { AUDIT_METADATA_KEY } from './audit.decorator';
-
 
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
@@ -15,7 +20,10 @@ export class AuditInterceptor implements NestInterceptor {
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const auditConfig = this.reflector.get(AUDIT_METADATA_KEY, context.getHandler());
+    const auditConfig = this.reflector.get(
+      AUDIT_METADATA_KEY,
+      context.getHandler(),
+    );
     if (!auditConfig) {
       return next.handle();
     }
@@ -25,20 +33,29 @@ export class AuditInterceptor implements NestInterceptor {
       tap(async (result) => {
         try {
           const dynamicConfig = request.auditConfig || {};
-          
+
           // Log warning if user is not authenticated for audit action
           if (!request.user?.id) {
-            console.warn(`AUDIT WARNING: Action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
+            console.warn(
+              `AUDIT WARNING: Action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`,
+            );
           }
-          
+
           await this.auditService.logActivity({
             entityName: auditConfig.entity,
-            entityId: dynamicConfig.entityId || this.extractEntityId(request, result, auditConfig),
+            entityId:
+              dynamicConfig.entityId ||
+              this.extractEntityId(request, result, auditConfig),
             action: auditConfig.action,
             userId: request.user?.id || null,
             userEmail: request.user?.email || null,
-            oldValues: dynamicConfig.changes?.oldValues || request.auditOldValues || null,
-            newValues: dynamicConfig.changes?.newValues || this.extractNewValues(result, auditConfig),
+            oldValues:
+              dynamicConfig.changes?.oldValues ||
+              request.auditOldValues ||
+              null,
+            newValues:
+              dynamicConfig.changes?.newValues ||
+              this.extractNewValues(result, auditConfig),
             changedFields: this.getChangedFields(
               dynamicConfig.changes?.oldValues || request.auditOldValues,
               dynamicConfig.changes?.newValues || result,
@@ -62,42 +79,50 @@ export class AuditInterceptor implements NestInterceptor {
       }),
       catchError((error) => {
         const dynamicConfig = request.auditConfig || {};
-        
+
         // Log warning if user is not authenticated for audit action (error case)
         if (!request.user?.id) {
-          console.warn(`AUDIT WARNING: Error in action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url}, Error: ${error.message}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
+          console.warn(
+            `AUDIT WARNING: Error in action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url}, Error: ${error.message}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`,
+          );
         }
-        
-        this.auditService.logActivity({
-          entityName: auditConfig.entity,
-          entityId: dynamicConfig.entityId || request.params?.id || 'N/A',
-          action: auditConfig.action,
-          userId: request.user?.id || null,
-          userEmail: request.user?.email || null,
-          oldValues: dynamicConfig.changes?.oldValues || request.auditOldValues || null,
-          newValues: dynamicConfig.changes?.newValues || null,
-          changedFields: this.getChangedFields(
-            dynamicConfig.changes?.oldValues || request.auditOldValues,
-            dynamicConfig.changes?.newValues,
-          ),
-          ipAddress: this.getClientIp(request),
-          userAgent: request.headers['user-agent'] || null,
-          sessionId: request.session?.id || null,
-          metadata: {
-            endpoint: request.url,
-            method: request.method,
-            responseTime: Date.now() - startTime,
-            authenticated: !!request.user?.id,
-            ...auditConfig.metadata,
-          },
-          status: 'ERROR',
-          errorDetails: {
-            message: error.message || 'Unknown error',
-            statusCode: error instanceof HttpException ? error.getStatus() : 500,
-          },
-        }).catch((auditError) => {
-          console.error('Audit logging failed:', auditError);
-        });
+
+        this.auditService
+          .logActivity({
+            entityName: auditConfig.entity,
+            entityId: dynamicConfig.entityId || request.params?.id || 'N/A',
+            action: auditConfig.action,
+            userId: request.user?.id || null,
+            userEmail: request.user?.email || null,
+            oldValues:
+              dynamicConfig.changes?.oldValues ||
+              request.auditOldValues ||
+              null,
+            newValues: dynamicConfig.changes?.newValues || null,
+            changedFields: this.getChangedFields(
+              dynamicConfig.changes?.oldValues || request.auditOldValues,
+              dynamicConfig.changes?.newValues,
+            ),
+            ipAddress: this.getClientIp(request),
+            userAgent: request.headers['user-agent'] || null,
+            sessionId: request.session?.id || null,
+            metadata: {
+              endpoint: request.url,
+              method: request.method,
+              responseTime: Date.now() - startTime,
+              authenticated: !!request.user?.id,
+              ...auditConfig.metadata,
+            },
+            status: 'ERROR',
+            errorDetails: {
+              message: error.message || 'Unknown error',
+              statusCode:
+                error instanceof HttpException ? error.getStatus() : 500,
+            },
+          })
+          .catch((auditError) => {
+            console.error('Audit logging failed:', auditError);
+          });
         return throwError(() => error);
       }),
     );
@@ -144,7 +169,10 @@ export class AuditInterceptor implements NestInterceptor {
     if (!oldValues || !newValues) return [];
 
     const changed: string[] = [];
-    const allKeys = new Set([...Object.keys(oldValues || {}), ...Object.keys(newValues || {})]);
+    const allKeys = new Set([
+      ...Object.keys(oldValues || {}),
+      ...Object.keys(newValues || {}),
+    ]);
 
     for (const key of allKeys) {
       if (JSON.stringify(oldValues[key]) !== JSON.stringify(newValues[key])) {

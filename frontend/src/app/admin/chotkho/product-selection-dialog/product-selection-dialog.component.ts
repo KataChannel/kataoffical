@@ -215,7 +215,7 @@ export class ProductSelectionDialogComponent implements OnInit {
       this.warehouses.set(warehouses);
     } catch (error) {
       console.error('Error loading warehouses:', error);
-      this.snackBar.open('Lỗi khi tải danh sách kho', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi tải danh sách kho', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
     } finally {
       this.isLoadingWarehouses.set(false);
     }
@@ -241,7 +241,7 @@ export class ProductSelectionDialogComponent implements OnInit {
       this.filteredProducts.set(products);
     } catch (error) {
       console.error('Error loading products:', error);
-      this.snackBar.open('Lỗi khi tải danh sách sản phẩm', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi tải danh sách sản phẩm', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
     } finally {
       this.isLoadingProducts.set(false);
     }
@@ -292,7 +292,7 @@ export class ProductSelectionDialogComponent implements OnInit {
 
     const selectedWarehouse = this.warehouses().find(w => w.id === this.selectedWarehouseId);
     if (!selectedWarehouse) {
-      this.snackBar.open('Không tìm thấy thông tin kho', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Không tìm thấy thông tin kho', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       return;
     }
 

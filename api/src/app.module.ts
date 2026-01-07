@@ -41,6 +41,7 @@ import { UserModule } from './user/user.module';
 import { UserguideModule } from './userguide/userguide.module';
 // import { UploadModule } from './upload/upload.module';
 // import { MinioModule } from './minio/minio.module';
+import { ARDocumentModule } from './ar-document/ar-document.module';
 import { CacheModule } from './cache/cache.module';
 import { ConfirmationModule } from './confirmation/confirmation.module';
 import { CronManagementModule } from './cron-management/cron-management.module';
@@ -48,6 +49,7 @@ import { DatabaseSyncModule } from './database-sync/database-sync.module';
 import { GraphQLUniversalModule } from './graphql/graphql.module';
 import { HoaDonModule } from './hoadon/hoadon.module';
 import { NhanvienModule } from './nhanvien/nhanvien.module';
+import { PaymentProposalModule } from './payment-proposal/payment-proposal.module';
 import { PhieuThuChiModule } from './phieuthuchi/phieuthuchi.module';
 import { PhongbanModule } from './phongban/phongban.module';
 import { RedisModule } from './redis/redis.module';
@@ -55,14 +57,16 @@ import { DatabaseSyncService } from './services/database-sync.service';
 import { SupportModule } from './support/support.module';
 import { ThanhToanModule } from './thanhtoan/thanhtoan.module';
 import { UserPermissionModule } from './user-permission/user-permission.module';
-import { PaymentProposalModule } from './payment-proposal/payment-proposal.module';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       // typePaths: ['./**/*.graphql'], // Comment out to use code-first approach
-      autoSchemaFile: process.env.NODE_ENV === 'production' ? '/tmp/schema.gql' : join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile:
+        process.env.NODE_ENV === 'production'
+          ? '/tmp/schema.gql'
+          : join(process.cwd(), 'src/schema.gql'),
       // definitions: {
       //   path: join(process.cwd(), 'src/graphql.ts'),
       //   outputAs: 'class',
@@ -83,7 +87,7 @@ import { PaymentProposalModule } from './payment-proposal/payment-proposal.modul
         };
       },
     }),
-    AuthModule, 
+    AuthModule,
     UserModule,
     PrismaModule,
     MenuModule,
@@ -105,7 +109,7 @@ import { PaymentProposalModule } from './payment-proposal/payment-proposal.modul
     CallbackModule,
     DashboardModule,
     UserguideModule,
-    ImportdataModule,    
+    ImportdataModule,
     AuditLogModule,
     RedisModule,
     CacheModule,
@@ -124,6 +128,7 @@ import { PaymentProposalModule } from './payment-proposal/payment-proposal.modul
     BaoCaoModule,
     CronManagementModule,
     PaymentProposalModule,
+    ARDocumentModule,
   ],
   controllers: [AppController],
   providers: [
@@ -150,11 +155,7 @@ import { PaymentProposalModule } from './payment-proposal/payment-proposal.modul
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuditUserValidationMiddleware)
-      .forRoutes('*');
-    consumer
-      .apply(AuditMiddleware)
-      .forRoutes('*');
+    consumer.apply(AuditUserValidationMiddleware).forRoutes('*');
+    consumer.apply(AuditMiddleware).forRoutes('*');
   }
 }

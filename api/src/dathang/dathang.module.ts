@@ -12,6 +12,6 @@ import { AuthModule } from 'src/auth/auth.module';
   imports: [PrismaModule, ImportdataModule, SharedModule, AuthModule],
   controllers: [DathangController],
   providers: [DathangService, StatusMachineService, TonkhoManagerService],
-  exports: [DathangService]
+  exports: [DathangService],
 })
 export class DathangModule {}

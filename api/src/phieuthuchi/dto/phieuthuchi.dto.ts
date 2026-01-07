@@ -1,17 +1,17 @@
 import { Field, InputType } from '@nestjs/graphql';
 import {
-    DoiTuongThuChi,
-    LoaiPhieuThuChi,
-    PhuongThucThanhToan
+  DoiTuongThuChi,
+  LoaiPhieuThuChi,
+  PhuongThucThanhToan,
 } from '@prisma/client';
 import {
-    IsBoolean,
-    IsDateString,
-    IsEnum,
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    IsString
+  IsBoolean,
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
 } from 'class-validator';
 
 @InputType()
@@ -75,6 +75,16 @@ export class CreatePhieuThuChiDto {
   @IsOptional()
   @IsDateString()
   ngay?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  arDocumentItemId?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  paymentProposalSupplierId?: string;
 }
 
 @InputType()

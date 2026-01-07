@@ -1,59 +1,56 @@
 import {
-  Component,
-  effect,
-  inject,
-  TemplateRef,
-  ViewChild,
-  signal,
-  ChangeDetectionStrategy,
+    animate,
+    state,
+    style,
+    transition,
+    trigger,
+} from '@angular/animations';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    effect,
+    inject,
+    ViewChild
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenu, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import {
-  readExcelFile,
-  readExcelFileNoWorker,
-  readExcelFileNoWorkerArray,
-  writeExcelFile,
-  writeExcelFileSheets,
-} from '../../../shared/utils/exceldrive.utils';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
-} from '@angular/animations';
-import { SanphamService } from '../../sanpham/sanpham.service';
-import { GraphqlService } from '../../../shared/services/graphql.service';
-import { GenId } from '../../../shared/utils/shared.utils';
-import { TimezoneService } from '../../../shared/services/timezone.service';
-import { DathangService } from '../dathang.service';
-import { DonhangService } from '../../donhang/donhang.service';
-import { MatExpansionModule } from '@angular/material/expansion';
-import {
-  NestedDataDialogComponent,
-  NestedDataDialogData,
-} from './nested-data-dialog/nested-data-dialog.component';
+import { Router, RouterOutlet } from '@angular/router';
 import moment from 'moment';
+import { GraphqlService } from '../../../shared/services/graphql.service';
+import { TimezoneService } from '../../../shared/services/timezone.service';
+import {
+    readExcelFileNoWorker,
+    readExcelFileNoWorkerArray,
+    writeExcelFile,
+    writeExcelFileSheets
+} from '../../../shared/utils/exceldrive.utils';
+import { GenId } from '../../../shared/utils/shared.utils';
+import { DonhangService } from '../../donhang/donhang.service';
+import { SanphamService } from '../../sanpham/sanpham.service';
+import { DathangService } from '../dathang.service';
+import {
+    NestedDataDialogComponent,
+    NestedDataDialogData,
+} from './nested-data-dialog/nested-data-dialog.component';
 
 @Component({
   selector: 'app-nhucaudathang',
@@ -1147,16 +1144,14 @@ export class NhucaudathangComponent {
 
         if (errors.length > 0) {
           this._snackBar.dismiss();
-          this._snackBar.open(
-            `Có ${errors.length} lỗi trong file. Xem console để biết chi tiết.`,
+          this._snackBar.open(`Có ${errors.length} lỗi trong file. Xem console để biết chi tiết.`,
             'Đóng',
             {
               duration: 5000,
               horizontalPosition: 'end',
               verticalPosition: 'top',
               panelClass: ['snackbar-error'],
-            }
-          );
+            });
           console.error('Validation errors:', errors);
           return;
         }
@@ -1271,19 +1266,16 @@ export class NhucaudathangComponent {
         // Show results
         if (processErrors.length > 0) {
           console.error('Process errors:', processErrors);
-          this._snackBar.open(
-            `Hoàn thành với ${processErrors.length} lỗi. Xem console để biết chi tiết.`,
+          this._snackBar.open(`Hoàn thành với ${processErrors.length} lỗi. Xem console để biết chi tiết.`,
             'Đóng',
             {
               duration: 5000,
               horizontalPosition: 'end',
               verticalPosition: 'top',
               panelClass: ['snackbar-warning'],
-            }
-          );
+            });
         } else {
-          this._snackBar.open(
-            `Cập nhật TonKho thành công: ${updatedCount} cập nhật, ${createdCount} tạo mới (bao gồm cả slton = 0)`,
+          this._snackBar.open(`Cập nhật TonKho thành công: ${ updatedCount} cập nhật, ${createdCount}`,
             'Đóng',
             {
               duration: 4000,

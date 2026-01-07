@@ -10,6 +10,6 @@ import { ErrorlogsModule } from 'src/errorlogs/errorlogs.module';
   imports: [PrismaModule, ErrorlogsModule, AuthModule],
   controllers: [PermissionController],
   providers: [PermissionService, SocketGateway],
-  exports: [PermissionService]
+  exports: [PermissionService],
 })
 export class PermissionModule {}

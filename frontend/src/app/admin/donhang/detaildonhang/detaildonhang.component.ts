@@ -47,6 +47,7 @@ import {
 } from '../../../shared/utils/shared.utils';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { BanggiaService } from '../../banggia/banggia.service';
+import { HoadonService } from '../../hoadon/hoadon.service';
 import { KhachhangService } from '../../khachhang/khachhang.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { UserService } from '../../user/user.service';
@@ -89,6 +90,7 @@ export class DetailDonhangComponent {
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
+  hoadonService = inject(HoadonService);
   private titleService: Title = inject(Title);
   @ViewChild('BgHethanDialog') BgHethanDialog!: TemplateRef<any>;
   @ViewChild('confirmRemoveDialog') confirmRemoveDialog!: TemplateRef<any>;
@@ -204,6 +206,8 @@ export class DetailDonhangComponent {
   // ListSanpham: any = this._SanphamService.ListSanpham;
   isEdit = signal(false);
   isDelete = signal(false);
+  isLoading = signal(false);
+  isERPActionLoading = signal(false);
   filterKhachhang: any = [];
   filterBanggia: any[] = [];
   ListSanpham: any[] = [];
@@ -315,6 +319,47 @@ export class DetailDonhangComponent {
       await this.createDonhang();
     } else {
       await this.updateDonhang();
+    }
+  }
+
+  async xacNhanGiaoThucTe() {
+    if (!confirm('Xác nhận đã giao hàng thực tế cho đơn này?')) return;
+    
+    this.isERPActionLoading.set(true);
+    try {
+      await this._DonhangService.xacNhanGiaoThucTe(this.donhangId()!);
+      this._snackBar.open('Đã xác nhận giao hàng thực tế', '', { duration: 2000 });
+      await this._DonhangService.getDonhangByid(this.donhangId()!);
+      this.DetailDonhang.set(this._DonhangService.DetailDonhang());
+    } catch (error: any) {
+      this._snackBar.open(error.message || 'Lỗi khi xác nhận giao hàng', '', { duration: 3000 });
+    } finally {
+      this.isERPActionLoading.set(false);
+    }
+  }
+
+  async doiChieu() {
+    if (!confirm('Xác nhận đối chiếu công nợ cho đơn này? Sau khi đối chiếu sẽ không thể sửa sản phẩm.')) return;
+
+    this.isERPActionLoading.set(true);
+    try {
+      const payload = {
+        sanpham: this.DetailDonhang().sanpham.map((sp: any) => ({
+          idSP: sp.idSP,
+          slnhan: sp.slnhan,
+          giaban: sp.giaban
+        })),
+        ghichu: ' Accountants matched'
+      };
+      
+      await this._DonhangService.doiChieu(this.donhangId()!, payload);
+      this._snackBar.open('Đã đối chiếu công nợ thành công', '', { duration: 2000 });
+      await this._DonhangService.getDonhangByid(this.donhangId()!);
+      this.DetailDonhang.set(this._DonhangService.DetailDonhang());
+    } catch (error: any) {
+      this._snackBar.open(error.message || 'Lỗi khi đối chiếu', '', { duration: 3000 });
+    } finally {
+      this.isERPActionLoading.set(false);
     }
   }
 
@@ -1092,7 +1137,7 @@ export class DetailDonhangComponent {
   async xuatHoaDon() {
     const donhangId = this.DetailDonhang()?.id;
     if (!donhangId) {
-      this._snackBar.open('Không tìm thấy đơn hàng', 'Đóng', { duration: 3000 });
+      this._snackBar.open('Không tìm thấy đơn hàng', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       return;
     }
 
@@ -1103,18 +1148,12 @@ export class DetailDonhangComponent {
       
       if (!confirmed) return;
 
-      this._snackBar.open('Đang xuất hóa đơn...', '', { duration: 2000 });
+      this._snackBar.open('Đang xuất hóa đơn...', '', { duration: 2000, panelClass: ["snackbar-info"] });
 
       // Call GraphQL mutation to create invoice
       const mutation = `
         mutation CreateHoaDon($donhangId: String!) {
-          createHoaDonDienTu(input: { donhangId: $donhangId }) {
-            id
-            soHoaDon
-            trangThai
-            tongThanhToan
-            pdfUrl
-          }
+          createHoaDonDienTu(input: { donhangId: $donhangId })
         }
       `;
 
@@ -1127,11 +1166,11 @@ export class DetailDonhangComponent {
       
       if (result?.data?.createHoaDonDienTu) {
         const hoaDon = result.data.createHoaDonDienTu;
-        this._snackBar.open(
-          `✅ Xuất hóa đơn thành công: ${hoaDon.soHoaDon}`, 
+        // Update local flag to reflect that invoice has been created
+        this.DetailDonhang.update((v: any) => ({ ...v, xuatHoaDon: true }));
+        this._snackBar.open(`✅ Xuất hóa đơn thành công: ${ hoaDon.soHoaDon}`, 
           'Xem', 
-          { duration: 5000 }
-        ).onAction().subscribe(() => {
+          { duration: 5000, panelClass: ["snackbar-success"] }).onAction().subscribe(() => {
           // Navigate to invoice detail or download PDF
           if (hoaDon.pdfUrl) {
             window.open(hoaDon.pdfUrl, '_blank');
@@ -1144,12 +1183,37 @@ export class DetailDonhangComponent {
       }
     } catch (error: any) {
       console.error('Error creating invoice:', error);
-      this._snackBar.open(
-        `❌ Lỗi khi xuất hóa đơn: ${error.message || 'Unknown error'}`,
+      this._snackBar.open(`❌ Lỗi khi xuất hóa đơn: ${ error.message || 'Unknown error'}`,
         'Đóng',
-        { duration: 5000 }
-      );
+        { duration: 5000, panelClass: ["snackbar-error"] });
     }
+  }
+
+  async goToInvoice() {
+    const orderId = this.DetailDonhang()?.id;
+    if (!orderId) return;
+    
+    this._snackBar.open('Đang tìm thông tin hóa đơn...', '', { duration: 1000 });
+    
+    this.hoadonService.getList({ where: { donhangId: orderId } }).subscribe({
+      next: (res: any) => {
+        const invoices = res.items || [];
+        if (invoices.length > 0) {
+          const invoice = invoices[0];
+          this._router.navigate(['/admin/hoadon/detail', invoice.id]);
+        } else {
+          this._snackBar.open('⚠️ Không tìm thấy thông tin hóa đơn của đơn hàng này', 'Đóng', { 
+            duration: 3000,
+            panelClass: ["snackbar-warning"] 
+          });
+          // Nếu không thấy nhưng flag là true, có thể reset flag hoặc báo lỗi
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this._snackBar.open('❌ Lỗi khi tìm hóa đơn', 'Đóng', { duration: 3000 });
+      }
+    });
   }
 
   FillSlug() {

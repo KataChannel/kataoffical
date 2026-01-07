@@ -4,9 +4,7 @@ import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class ChotkhoService {
-  constructor(
-    private prisma: PrismaService
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   /**
    * 🎯 CREATE METHOD: Tạo chốt kho với master-detail structure
@@ -29,13 +27,14 @@ export class ChotkhoService {
   }) {
     try {
       return await this.prisma.$transaction(async (prisma) => {
-        const { ngaychot, title, ghichu, khoId, userId, details } = inventoryData;
-        
+        const { ngaychot, title, ghichu, khoId, userId, details } =
+          inventoryData;
+
         // Validate khoId exists
         const kho = await prisma.kho.findUnique({
-          where: { id: khoId }
+          where: { id: khoId },
         });
-        
+
         if (!kho) {
           throw new Error(`Kho với ID ${khoId} không tồn tại trong hệ thống`);
         }
@@ -43,25 +42,28 @@ export class ChotkhoService {
         // Validate all sanphamId exist
         for (const detail of details) {
           const sanpham = await prisma.sanpham.findUnique({
-            where: { id: detail.sanphamId }
+            where: { id: detail.sanphamId },
           });
-          
+
           if (!sanpham) {
-            throw new Error(`Sản phẩm với ID ${detail.sanphamId} không tồn tại trong hệ thống`);
+            throw new Error(
+              `Sản phẩm với ID ${detail.sanphamId} không tồn tại trong hệ thống`,
+            );
           }
         }
-        
+
         // Tạo master record - Chotkho
         const chotkhoMaster = await prisma.chotkho.create({
           data: {
             ngaychot: ngaychot || new Date(),
-            title: title || `Chốt kho ${new Date().toLocaleDateString('vi-VN')}`,
+            title:
+              title || `Chốt kho ${new Date().toLocaleDateString('vi-VN')}`,
             ghichu: ghichu || '',
             khoId,
             userId,
             codeId: `CHOTKHO_${Date.now()}`,
-            isActive: true
-          }
+            isActive: true,
+          },
         });
 
         console.log(`📦 Created master chotkho record: ${chotkhoMaster.id}`);
@@ -69,8 +71,11 @@ export class ChotkhoService {
         // Tạo detail records - Chotkhodetail
         let detailCount = 0;
         for (const detail of details) {
-          const chenhlech = Number(detail.sltonhethong) - Number(detail.sltonthucte) - Number(detail.slhuy);
-          
+          const chenhlech =
+            Number(detail.sltonhethong) -
+            Number(detail.sltonthucte) -
+            Number(detail.slhuy);
+
           await prisma.chotkhodetail.create({
             data: {
               chotkhoId: chotkhoMaster.id,
@@ -81,10 +86,10 @@ export class ChotkhoService {
               chenhlech: new Decimal(chenhlech),
               ghichu: detail.ghichu || '',
               userId,
-              ngaychot: chotkhoMaster.ngaychot
-            }
+              ngaychot: chotkhoMaster.ngaychot,
+            },
           });
-          
+
           detailCount++;
         }
 
@@ -93,29 +98,29 @@ export class ChotkhoService {
           where: { id: chotkhoMaster.id },
           include: {
             kho: {
-              select: { id: true, name: true, makho: true }
+              select: { id: true, name: true, makho: true },
             },
             user: {
-              select: { 
-                id: true, 
+              select: {
+                id: true,
                 email: true,
-                profile: { select: { name: true } }
-              }
+                profile: { select: { name: true } },
+              },
             },
             details: {
               include: {
                 sanpham: {
-                  select: { id: true, title: true, masp: true }
-                }
-              }
-            }
-          }
+                  select: { id: true, title: true, masp: true },
+                },
+              },
+            },
+          },
         });
 
         return {
           success: true,
           message: `Tạo chốt kho thành công với ${detailCount} sản phẩm`,
-          data: result
+          data: result,
         };
       });
     } catch (error) {
@@ -132,31 +137,31 @@ export class ChotkhoService {
       const sanphamKhoRecords = await this.prisma.sanphamKho.findMany({
         where: {
           khoId,
-          soluong: { gt: 0 }
+          soluong: { gt: 0 },
         },
         include: {
           sanpham: {
             select: {
               id: true,
               title: true,
-              masp: true
-            }
-          }
+              masp: true,
+            },
+          },
         },
         orderBy: {
           sanpham: {
-            title: 'asc'
-          }
-        }
+            title: 'asc',
+          },
+        },
       });
 
-      return sanphamKhoRecords.map(item => ({
+      return sanphamKhoRecords.map((item) => ({
         sanphamId: item.sanphamId,
         sanpham: item.sanpham,
         sltonhethong: Number(item.soluong),
         sltonthucte: 0,
         slhuy: 0,
-        chenhlech: Number(item.soluong)
+        chenhlech: Number(item.soluong),
       }));
     } catch (error) {
       console.error('Error getting products by kho:', error);
@@ -171,17 +176,17 @@ export class ChotkhoService {
     try {
       return await this.prisma.kho.findMany({
         where: {
-          isActive: true
+          isActive: true,
         },
         select: {
           id: true,
           name: true,
           makho: true,
-          diachi: true
+          diachi: true,
         },
         orderBy: {
-          name: 'asc'
-        }
+          name: 'asc',
+        },
       });
     } catch (error) {
       console.error('Error getting all kho:', error);
@@ -201,16 +206,16 @@ export class ChotkhoService {
               slton: true,
               sltontt: true,
               slchogiao: true,
-              slchonhap: true
-            }
-          }
+              slchonhap: true,
+            },
+          },
         },
         orderBy: {
-          title: 'asc'
-        }
+          title: 'asc',
+        },
       });
 
-      return products.map(product => ({
+      return products.map((product) => ({
         id: product.id,
         masp: product.masp,
         title: product.title,
@@ -218,15 +223,17 @@ export class ChotkhoService {
         dongia: Number(product.giaban) || 0,
         status: product.isActive,
         ghichu: product.ghichu,
-        tonkho: product.TonKho ? {
-          slton: Number(product.TonKho.slton) || 0,
-          slhuy: 0, // TonKho không có field slhuy
-          sltinhthucte: Number(product.TonKho.sltontt) || 0,
-        } : {
-          slton: 0,
-          slhuy: 0,
-          sltinhthucte: 0,
-        }
+        tonkho: product.TonKho
+          ? {
+              slton: Number(product.TonKho.slton) || 0,
+              slhuy: 0, // TonKho không có field slhuy
+              sltinhthucte: Number(product.TonKho.sltontt) || 0,
+            }
+          : {
+              slton: 0,
+              slhuy: 0,
+              sltinhthucte: 0,
+            },
       }));
     } catch (error) {
       console.error('Error getting all products:', error);
@@ -236,7 +243,7 @@ export class ChotkhoService {
 
   async findAll(page: number = 1, limit: number = 10) {
     const skip = (page - 1) * limit;
-    
+
     const [items, total] = await Promise.all([
       this.prisma.chotkho.findMany({
         skip,
@@ -246,17 +253,17 @@ export class ChotkhoService {
             select: {
               id: true,
               name: true,
-              makho: true
-            }
+              makho: true,
+            },
           },
           user: {
             select: {
               id: true,
               email: true,
               profile: {
-                select: { name: true }
-              }
-            }
+                select: { name: true },
+              },
+            },
           },
           details: {
             include: {
@@ -264,17 +271,17 @@ export class ChotkhoService {
                 select: {
                   id: true,
                   title: true,
-                  masp: true
-                }
-              }
-            }
-          }
+                  masp: true,
+                },
+              },
+            },
+          },
         },
         orderBy: {
-          ngaychot: 'desc'
-        }
+          ngaychot: 'desc',
+        },
       }),
-      this.prisma.chotkho.count()
+      this.prisma.chotkho.count(),
     ]);
 
     return {
@@ -283,8 +290,8 @@ export class ChotkhoService {
         current: page,
         pageSize: limit,
         total,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
@@ -296,17 +303,17 @@ export class ChotkhoService {
           select: {
             id: true,
             name: true,
-            makho: true
-          }
+            makho: true,
+          },
         },
         user: {
           select: {
             id: true,
             email: true,
             profile: {
-              select: { name: true }
-            }
-          }
+              select: { name: true },
+            },
+          },
         },
         details: {
           include: {
@@ -314,34 +321,41 @@ export class ChotkhoService {
               select: {
                 id: true,
                 title: true,
-                masp: true
-              }
-            }
-          }
-        }
-      }
+                masp: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
   async update(id: string, updateData: any) {
     return this.prisma.chotkho.update({
       where: { id },
-      data: updateData
+      data: updateData,
     });
   }
 
   async remove(id: string) {
     return this.prisma.chotkho.delete({
-      where: { id }
+      where: { id },
     });
   }
 
   async search(searchParams: any) {
-    const { khoId, sanphamId, fromDate, toDate, page = 1, limit = 10 } = searchParams;
+    const {
+      khoId,
+      sanphamId,
+      fromDate,
+      toDate,
+      page = 1,
+      limit = 10,
+    } = searchParams;
     const skip = (page - 1) * limit;
-    
+
     const where: any = {};
-    
+
     if (khoId) where.khoId = khoId;
     if (fromDate || toDate) {
       where.ngaychot = {};
@@ -352,7 +366,7 @@ export class ChotkhoService {
     // Filter by sanphamId through details relation
     if (sanphamId) {
       where.details = {
-        some: { sanphamId }
+        some: { sanphamId },
       };
     }
 
@@ -366,17 +380,17 @@ export class ChotkhoService {
             select: {
               id: true,
               name: true,
-              makho: true
-            }
+              makho: true,
+            },
           },
           user: {
             select: {
               id: true,
               email: true,
               profile: {
-                select: { name: true }
-              }
-            }
+                select: { name: true },
+              },
+            },
           },
           details: {
             include: {
@@ -384,17 +398,17 @@ export class ChotkhoService {
                 select: {
                   id: true,
                   title: true,
-                  masp: true
-                }
-              }
-            }
-          }
+                  masp: true,
+                },
+              },
+            },
+          },
         },
         orderBy: {
-          ngaychot: 'desc'
-        }
+          ngaychot: 'desc',
+        },
       }),
-      this.prisma.chotkho.count({ where })
+      this.prisma.chotkho.count({ where }),
     ]);
 
     return {
@@ -403,8 +417,8 @@ export class ChotkhoService {
         current: page,
         pageSize: limit,
         total,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
@@ -425,7 +439,7 @@ export class ChotkhoService {
         slhuy: number;
         ghichu?: string;
       }>;
-    }
+    },
   ) {
     return this.prisma.$transaction(async (prisma) => {
       // Update master record
@@ -435,21 +449,24 @@ export class ChotkhoService {
           ngaychot: data.ngaychot,
           title: data.title,
           ghichu: data.ghichu,
-          isActive: data.isActive
-        }
+          isActive: data.isActive,
+        },
       });
 
       // Handle details if provided
       if (data.details && data.details.length > 0) {
         // Delete existing details
         await prisma.chotkhodetail.deleteMany({
-          where: { chotkhoId: id }
+          where: { chotkhoId: id },
         });
 
         // Create new details
         for (const detail of data.details) {
-          const chenhlech = Number(detail.sltonhethong) - Number(detail.sltonthucte) - Number(detail.slhuy);
-          
+          const chenhlech =
+            Number(detail.sltonhethong) -
+            Number(detail.sltonthucte) -
+            Number(detail.slhuy);
+
           await prisma.chotkhodetail.create({
             data: {
               chotkhoId: id,
@@ -459,8 +476,8 @@ export class ChotkhoService {
               slhuy: detail.slhuy,
               chenhlech,
               ghichu: detail.ghichu || '',
-              ngaychot: updatedMaster.ngaychot
-            }
+              ngaychot: updatedMaster.ngaychot,
+            },
           });
         }
       }
@@ -470,20 +487,20 @@ export class ChotkhoService {
         where: { id },
         include: {
           user: {
-            select: { 
-              id: true, 
+            select: {
+              id: true,
               email: true,
-              profile: { select: { name: true } }
-            }
+              profile: { select: { name: true } },
+            },
           },
           details: {
             include: {
               sanpham: {
-                select: { id: true, title: true, masp: true }
-              }
-            }
-          }
-        }
+                select: { id: true, title: true, masp: true },
+              },
+            },
+          },
+        },
       });
     });
   }

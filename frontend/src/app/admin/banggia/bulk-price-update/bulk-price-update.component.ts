@@ -129,7 +129,7 @@ export class BulkPriceUpdateComponent implements OnInit {
       }
     } catch (error) {
       console.error('Error loading banggia list:', error);
-      this.snackBar.open('Lỗi tải danh sách bảng giá', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi tải danh sách bảng giá', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
     } finally {
       this.loading.set(false);
     }
@@ -150,7 +150,7 @@ export class BulkPriceUpdateComponent implements OnInit {
 
         this.processExcelData(jsonData);
       } catch (error) {
-        this.snackBar.open('Lỗi đọc file Excel', 'Đóng', { duration: 3000 });
+        this.snackBar.open('Lỗi đọc file Excel', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       }
     };
     reader.readAsArrayBuffer(file);
@@ -178,7 +178,7 @@ export class BulkPriceUpdateComponent implements OnInit {
 
     this.priceUpdates.set(updates);
     this.calculateSummary();
-    this.snackBar.open(`Đã tải ${updates.length} sản phẩm từ Excel`, 'Đóng', { duration: 3000 });
+    this.snackBar.open(`Đã tải ${ updates.length} sản phẩm từ Excel`, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
   }
 
   // Download Excel Template
@@ -248,7 +248,7 @@ export class BulkPriceUpdateComponent implements OnInit {
   // Preview Changes
   async previewChanges() {
     if (this.priceUpdates().length === 0) {
-      this.snackBar.open('Chưa có dữ liệu để xem trước', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Chưa có dữ liệu để xem trước', 'Đóng', { duration: 3000, panelClass: ["snackbar-warning"] });
       return;
     }
 
@@ -256,7 +256,7 @@ export class BulkPriceUpdateComponent implements OnInit {
     this.calculateSummary();
 
     // Show preview in dialog or expand view
-    this.snackBar.open('Xem trước thay đổi', 'Đóng', { duration: 2000 });
+    this.snackBar.open('Xem trước thay đổi', 'Đóng', { duration: 2000, panelClass: ["snackbar-success"] });
     
     setTimeout(() => {
       this.previewing.set(false);
@@ -266,12 +266,12 @@ export class BulkPriceUpdateComponent implements OnInit {
   // Apply Changes
   async applyChanges() {
     if (!this.updateForm.valid) {
-      this.snackBar.open('Vui lòng điền đầy đủ thông tin', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Vui lòng điền đầy đủ thông tin', 'Đóng', { duration: 3000, panelClass: ["snackbar-warning"] });
       return;
     }
 
     if (this.priceUpdates().length === 0) {
-      this.snackBar.open('Chưa có dữ liệu để cập nhật', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Chưa có dữ liệu để cập nhật', 'Đóng', { duration: 3000, panelClass: ["snackbar-warning"] });
       return;
     }
 
@@ -324,14 +324,12 @@ export class BulkPriceUpdateComponent implements OnInit {
         }
       }
 
-      this.snackBar.open(
-        `Hoàn thành! Thành công: ${this.summary().success}, Thất bại: ${this.summary().failed}`,
+      this.snackBar.open(`Hoàn thành! Thành công: ${ this.summary().success}, Thất bại: ${this.summary().failed}`,
         'Đóng',
-        { duration: 5000 }
-      );
+        { duration: 5000, panelClass: ["snackbar-error"] });
 
     } catch (error: any) {
-      this.snackBar.open(`Lỗi: ${error.message}`, 'Đóng', { duration: 5000 });
+      this.snackBar.open(`Lỗi: ${ error.message}`, 'Đóng', { duration: 5000, panelClass: ["snackbar-error"] });
     } finally {
       this.processing.set(false);
     }

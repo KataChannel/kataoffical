@@ -33,35 +33,49 @@ export class DatabaseSyncService {
 
   private setupScheduledSync() {
     // Cron job chạy vào 7h sáng giờ Việt Nam (0h UTC)
-    cron.schedule('0 0 * * *', async () => {
-      this.logger.log('Bắt đầu đồng bộ database định kỳ - 7h sáng VN');
-      await this.syncDatabase();
-    }, {
-      timezone: 'Asia/Ho_Chi_Minh'
-    });
+    cron.schedule(
+      '0 0 * * *',
+      async () => {
+        this.logger.log('Bắt đầu đồng bộ database định kỳ - 7h sáng VN');
+        await this.syncDatabase();
+      },
+      {
+        timezone: 'Asia/Ho_Chi_Minh',
+      },
+    );
 
     // Cron job chạy vào 17h chiều giờ Việt Nam (10h UTC)
-    cron.schedule('0 10 * * *', async () => {
-      this.logger.log('Bắt đầu đồng bộ database định kỳ - 17h chiều VN');
-      await this.syncDatabase();
-    }, {
-      timezone: 'Asia/Ho_Chi_Minh'
-    });
+    cron.schedule(
+      '0 10 * * *',
+      async () => {
+        this.logger.log('Bắt đầu đồng bộ database định kỳ - 17h chiều VN');
+        await this.syncDatabase();
+      },
+      {
+        timezone: 'Asia/Ho_Chi_Minh',
+      },
+    );
 
-    this.logger.log('Đã thiết lập lịch đồng bộ database: 7h sáng và 17h chiều (giờ VN)');
+    this.logger.log(
+      'Đã thiết lập lịch đồng bộ database: 7h sáng và 17h chiều (giờ VN)',
+    );
   }
 
   private setupTestCron() {
     // Test cron - chạy mỗi phút để kiểm tra hoạt động
     // XÓA HOẶC COMMENT SAU KHI TEST XONG
-    cron.schedule('* * * * *', () => {
-      const now = new Date();
-      this.logger.log(
-        `⏰ Test cron đang chạy - ${now.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`,
-      );
-    }, {
-      timezone: 'Asia/Ho_Chi_Minh'
-    });
+    cron.schedule(
+      '* * * * *',
+      () => {
+        const now = new Date();
+        this.logger.log(
+          `⏰ Test cron đang chạy - ${now.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`,
+        );
+      },
+      {
+        timezone: 'Asia/Ho_Chi_Minh',
+      },
+    );
     this.logger.log('🧪 Test cron đã được thiết lập (chạy mỗi phút để test)');
   }
 
@@ -69,7 +83,7 @@ export class DatabaseSyncService {
     const startTime = Date.now();
     const jobId = 'DATABASE_SYNC_DAILY';
     const jobName = 'Đồng bộ Database định kỳ';
-    
+
     // Khởi tạo log trong database
     const log = await this.prisma.cronExecutionLog.create({
       data: {
@@ -82,39 +96,44 @@ export class DatabaseSyncService {
         message: 'Bắt đầu quá trình đồng bộ database...',
       },
     });
-    
+
     try {
       this.logger.log('🚀 Đang thực thi script đồng bộ database...');
-      
+
       const isProduction = process.env.NODE_ENV === 'production';
       const projectRoot = path.resolve(__dirname, '..', '..');
       const apiRoot = projectRoot.replace('/dist', '');
-      
+
       const scriptPath = isProduction
         ? '/app/scripts/sync-database-optimized.sh'
         : path.join(apiRoot, 'scripts', 'sync-database-optimized.sh');
-      
+
       this.logger.log(`📁 Script path: ${scriptPath}`);
-      
+
       const fs = await import('fs');
       if (!fs.existsSync(scriptPath)) {
         throw new Error(`Script không tồn tại: ${scriptPath}`);
       }
-      
+
       const { stdout, stderr } = await execAsync(`bash ${scriptPath}`, {
         cwd: path.dirname(scriptPath),
         timeout: 300000,
-        maxBuffer: 50 * 1024 * 1024
+        maxBuffer: 50 * 1024 * 1024,
       });
-      
+
       let importantOutput = '';
       if (stdout) {
         importantOutput = stdout
           .split('\n')
-          .filter(line => !line.match(/^(COPY \d+|SET|ALTER TABLE|CREATE|DROP|TRUNCATE|DO|\s*)$/))
+          .filter(
+            (line) =>
+              !line.match(
+                /^(COPY \d+|SET|ALTER TABLE|CREATE|DROP|TRUNCATE|DO|\s*)$/,
+              ),
+          )
           .join('\n');
       }
-      
+
       const duration = Date.now() - startTime;
       const stats = await this.getDatabaseStats();
       this.logSyncSuccess(duration, stats);
@@ -135,17 +154,17 @@ export class DatabaseSyncService {
           } as any,
         },
       });
-      
-      return { 
-        success: true, 
-        timestamp: new Date(), 
+
+      return {
+        success: true,
+        timestamp: new Date(),
         duration,
-        ...stats
+        ...stats,
       };
     } catch (error) {
       const duration = Date.now() - startTime;
       this.logger.error(`❌ Lỗi khi đồng bộ database: ${error.message}`);
-      
+
       // Cập nhật log thất bại
       await this.prisma.cronExecutionLog.update({
         where: { id: log.id },
@@ -162,14 +181,22 @@ export class DatabaseSyncService {
         },
       });
 
-      return { success: false, timestamp: new Date(), duration, error: error.message };
+      return {
+        success: false,
+        timestamp: new Date(),
+        duration,
+        error: error.message,
+      };
     }
   }
 
   /**
    * Lấy thống kê chi tiết về database
    */
-  private async getDatabaseStats(): Promise<{ databaseSize: string; tableStats: { name: string; count: number }[] }> {
+  private async getDatabaseStats(): Promise<{
+    databaseSize: string;
+    tableStats: { name: string; count: number }[];
+  }> {
     try {
       // Lấy dung lượng database
       const sizeResult = await this.prisma.$queryRaw<{ size: string }[]>`
@@ -179,14 +206,20 @@ export class DatabaseSyncService {
 
       // Lấy số lượng records của các bảng quan trọng
       const tableStats: { name: string; count: number }[] = [];
-      
+
       const tables = [
         { name: 'Khachhang', model: () => this.prisma.khachhang.count() },
         { name: 'Sanpham', model: () => this.prisma.sanpham.count() },
         { name: 'Donhang', model: () => this.prisma.donhang.count() },
-        { name: 'Donhangsanpham', model: () => this.prisma.donhangsanpham.count() },
+        {
+          name: 'Donhangsanpham',
+          model: () => this.prisma.donhangsanpham.count(),
+        },
         { name: 'Banggia', model: () => this.prisma.banggia.count() },
-        { name: 'Banggiasanpham', model: () => this.prisma.banggiasanpham.count() },
+        {
+          name: 'Banggiasanpham',
+          model: () => this.prisma.banggiasanpham.count(),
+        },
         { name: 'Nhacungcap', model: () => this.prisma.nhacungcap.count() },
         { name: 'Dathang', model: () => this.prisma.dathang.count() },
         { name: 'User', model: () => this.prisma.user.count() },
@@ -216,54 +249,79 @@ export class DatabaseSyncService {
   /**
    * Log kết quả sync thành công với chi tiết
    */
-  private logSyncSuccess(duration: number, stats: { databaseSize: string; tableStats: { name: string; count: number }[] }) {
+  private logSyncSuccess(
+    duration: number,
+    stats: {
+      databaseSize: string;
+      tableStats: { name: string; count: number }[];
+    },
+  ) {
     const divider = '═'.repeat(50);
-    
+
     this.logger.log(`\n${divider}`);
     this.logger.log(`✅ ĐỒNG BỘ DATABASE THÀNH CÔNG`);
     this.logger.log(`${divider}`);
     this.logger.log(`⏱️  Thời gian thực thi: ${this.formatDuration(duration)}`);
     this.logger.log(`💾 Dung lượng database: ${stats.databaseSize}`);
-    this.logger.log(`📅 Thời điểm hoàn thành: ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`);
-    
+    this.logger.log(
+      `📅 Thời điểm hoàn thành: ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`,
+    );
+
     if (stats.tableStats.length > 0) {
       this.logger.log(`\n📊 THỐNG KÊ DỮ LIỆU:`);
       this.logger.log(`${'─'.repeat(35)}`);
-      
+
       // Tính tổng records
       const totalRecords = stats.tableStats
-        .filter(t => t.count >= 0)
+        .filter((t) => t.count >= 0)
         .reduce((sum, t) => sum + t.count, 0);
-      
+
       // Hiển thị theo nhóm
-      const businessTables = stats.tableStats.filter(t => 
-        ['Khachhang', 'Sanpham', 'Donhang', 'Donhangsanpham', 'Nhacungcap', 'Dathang'].includes(t.name)
+      const businessTables = stats.tableStats.filter((t) =>
+        [
+          'Khachhang',
+          'Sanpham',
+          'Donhang',
+          'Donhangsanpham',
+          'Nhacungcap',
+          'Dathang',
+        ].includes(t.name),
       );
-      const priceTables = stats.tableStats.filter(t => 
-        ['Banggia', 'Banggiasanpham'].includes(t.name)
+      const priceTables = stats.tableStats.filter((t) =>
+        ['Banggia', 'Banggiasanpham'].includes(t.name),
       );
-      const systemTables = stats.tableStats.filter(t => 
-        ['User', 'Kho', 'Nhanvien', 'Menu', 'Permission', 'Role'].includes(t.name)
+      const systemTables = stats.tableStats.filter((t) =>
+        ['User', 'Kho', 'Nhanvien', 'Menu', 'Permission', 'Role'].includes(
+          t.name,
+        ),
       );
 
       this.logger.log(`\n🏢 Dữ liệu kinh doanh:`);
-      businessTables.forEach(t => {
-        this.logger.log(`   ${t.name.padEnd(18)} : ${t.count >= 0 ? t.count.toLocaleString('vi-VN').padStart(10) : 'N/A'.padStart(10)} records`);
+      businessTables.forEach((t) => {
+        this.logger.log(
+          `   ${t.name.padEnd(18)} : ${t.count >= 0 ? t.count.toLocaleString('vi-VN').padStart(10) : 'N/A'.padStart(10)} records`,
+        );
       });
 
       this.logger.log(`\n💰 Bảng giá:`);
-      priceTables.forEach(t => {
-        this.logger.log(`   ${t.name.padEnd(18)} : ${t.count >= 0 ? t.count.toLocaleString('vi-VN').padStart(10) : 'N/A'.padStart(10)} records`);
+      priceTables.forEach((t) => {
+        this.logger.log(
+          `   ${t.name.padEnd(18)} : ${t.count >= 0 ? t.count.toLocaleString('vi-VN').padStart(10) : 'N/A'.padStart(10)} records`,
+        );
       });
 
       this.logger.log(`\n⚙️ Hệ thống:`);
-      systemTables.forEach(t => {
-        this.logger.log(`   ${t.name.padEnd(18)} : ${t.count >= 0 ? t.count.toLocaleString('vi-VN').padStart(10) : 'N/A'.padStart(10)} records`);
+      systemTables.forEach((t) => {
+        this.logger.log(
+          `   ${t.name.padEnd(18)} : ${t.count >= 0 ? t.count.toLocaleString('vi-VN').padStart(10) : 'N/A'.padStart(10)} records`,
+        );
       });
 
-      this.logger.log(`\n📈 TỔNG CỘNG: ${totalRecords.toLocaleString('vi-VN')} records`);
+      this.logger.log(
+        `\n📈 TỔNG CỘNG: ${totalRecords.toLocaleString('vi-VN')} records`,
+      );
     }
-    
+
     this.logger.log(`${divider}\n`);
   }
 
@@ -287,7 +345,10 @@ export class DatabaseSyncService {
   /**
    * Lấy thông tin tổng quan database mà không sync
    */
-  async getDatabaseInfo(): Promise<{ databaseSize: string; tableStats: { name: string; count: number }[] }> {
+  async getDatabaseInfo(): Promise<{
+    databaseSize: string;
+    tableStats: { name: string; count: number }[];
+  }> {
     return await this.getDatabaseStats();
   }
 }

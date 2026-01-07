@@ -220,7 +220,7 @@ export class ImportPreviewDialogComponent implements OnInit, AfterViewInit {
 
   exportValidData(): void {
     if (this.data.validationResult.validData.length === 0) {
-      this.snackBar.open('Không có dữ liệu hợp lệ để export', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Không có dữ liệu hợp lệ để export', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       return;
     }
     
@@ -229,7 +229,7 @@ export class ImportPreviewDialogComponent implements OnInit, AfterViewInit {
 
   exportInvalidData(): void {
     if (this.data.validationResult.invalidData.length === 0) {
-      this.snackBar.open('Không có dữ liệu lỗi để export', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Không có dữ liệu lỗi để export', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       return;
     }
     

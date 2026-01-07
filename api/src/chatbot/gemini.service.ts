@@ -29,7 +29,7 @@
 //     const uploadDir = path.join(__dirname, '../../uploads');
 //     const filePath = path.join(uploadDir, fileName);
 //     await writeFile(filePath, fileBuffer);
-    
+
 //     const uploadedFile = await this.uploadToGemini(filePath, 'image/jpeg');
 //     const chatSession = this.model.startChat({
 //       generationConfig: {
@@ -49,7 +49,7 @@
 //         },
 //       ],
 //     });
-    
+
 //     const result = await chatSession.sendMessage('');
 //     return result.response.text();
 //   }

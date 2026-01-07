@@ -11,7 +11,7 @@ import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { RedisService } from '../redis/redis.service';
 
-export const Cache = (ttl?: number, keyPrefix?: string) => 
+export const Cache = (ttl?: number, keyPrefix?: string) =>
   SetMetadata('cache', { ttl, keyPrefix });
 
 export const CacheInvalidate = (patterns: string[]) =>
@@ -38,18 +38,21 @@ export class CacheInterceptor implements NestInterceptor {
 
       const request = context.switchToHttp().getRequest();
       const response = context.switchToHttp().getResponse();
-      
+
       if (!request || !request.method) {
         this.logger.warn('Invalid request object, skipping cache');
         return next.handle();
       }
-      
+
       if (request.method !== 'GET') {
         return this.handleNonGetRequest(context, next);
       }
 
-      const cacheConfig = this.reflector.get<{ttl?: number, keyPrefix?: string}>('cache', context.getHandler());
-      
+      const cacheConfig = this.reflector.get<{
+        ttl?: number;
+        keyPrefix?: string;
+      }>('cache', context.getHandler());
+
       if (!cacheConfig) {
         return next.handle();
       }
@@ -65,7 +68,10 @@ export class CacheInterceptor implements NestInterceptor {
           return of(cachedData);
         }
       } catch (error) {
-        this.logger.error(`Failed to read from cache: ${cacheKey}`, error.message);
+        this.logger.error(
+          `Failed to read from cache: ${cacheKey}`,
+          error.message,
+        );
       }
 
       this.logger.debug(`Cache miss: ${cacheKey}`);
@@ -77,7 +83,10 @@ export class CacheInterceptor implements NestInterceptor {
             await this.redisService.create(cacheKey, data, ttl);
             this.logger.debug(`Cached response: ${cacheKey}`);
           } catch (error) {
-            this.logger.error(`Failed to cache response: ${cacheKey}`, error.message);
+            this.logger.error(
+              `Failed to cache response: ${cacheKey}`,
+              error.message,
+            );
           }
         }),
       );
@@ -87,7 +96,10 @@ export class CacheInterceptor implements NestInterceptor {
     }
   }
 
-  private handleNonGetRequest(context: ExecutionContext, next: CallHandler): Observable<any> {
+  private handleNonGetRequest(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Observable<any> {
     try {
       const contextType = context.getType();
       if (contextType !== 'http') {
@@ -95,15 +107,24 @@ export class CacheInterceptor implements NestInterceptor {
       }
 
       const request = context.switchToHttp().getRequest();
-      
+
       if (!request || !request.method) {
         return next.handle();
       }
-      
-      const invalidationPatterns = this.reflector.get<string[]>('cacheInvalidate', context.getHandler());
-      const cacheConfig = this.reflector.get<{ttl?: number, keyPrefix?: string}>('cache', context.getHandler());
-      
-      if (invalidationPatterns && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) {
+
+      const invalidationPatterns = this.reflector.get<string[]>(
+        'cacheInvalidate',
+        context.getHandler(),
+      );
+      const cacheConfig = this.reflector.get<{
+        ttl?: number;
+        keyPrefix?: string;
+      }>('cache', context.getHandler());
+
+      if (
+        invalidationPatterns &&
+        ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)
+      ) {
         return next.handle().pipe(
           tap(async (responseData) => {
             try {
@@ -114,11 +135,17 @@ export class CacheInterceptor implements NestInterceptor {
               }
 
               // 2. Then, immediately cache new data for CREATE/UPDATE operations
-              if (responseData && ['POST', 'PUT', 'PATCH'].includes(request.method)) {
+              if (
+                responseData &&
+                ['POST', 'PUT', 'PATCH'].includes(request.method)
+              ) {
                 await this.cacheNewData(request, responseData, cacheConfig);
               }
             } catch (error) {
-              this.logger.error('Failed to handle cache operations:', error.message);
+              this.logger.error(
+                'Failed to handle cache operations:',
+                error.message,
+              );
             }
           }),
         );
@@ -136,14 +163,18 @@ export class CacheInterceptor implements NestInterceptor {
     const url = request.url;
     const method = request.method;
     const query = JSON.stringify(request.query || {});
-    
+
     return this.redisService.generateKey(prefix, method, url, query);
   }
 
   /**
    * Cache new data immediately after CREATE/UPDATE operations
    */
-  private async cacheNewData(request: any, responseData: any, cacheConfig?: {ttl?: number, keyPrefix?: string}): Promise<void> {
+  private async cacheNewData(
+    request: any,
+    responseData: any,
+    cacheConfig?: { ttl?: number; keyPrefix?: string },
+  ): Promise<void> {
     try {
       if (!responseData || !cacheConfig) {
         return;
@@ -153,35 +184,43 @@ export class CacheInterceptor implements NestInterceptor {
 
       // Cache individual item if response contains single object
       if (responseData.id) {
-        const itemCacheKey = this.generateCacheKey({
-          ...request,
-          url: `${request.url.split('?')[0]}/${responseData.id}`,
-          method: 'GET'
-        }, cacheConfig.keyPrefix);
-        
+        const itemCacheKey = this.generateCacheKey(
+          {
+            ...request,
+            url: `${request.url.split('?')[0]}/${responseData.id}`,
+            method: 'GET',
+          },
+          cacheConfig.keyPrefix,
+        );
+
         await this.redisService.create(itemCacheKey, responseData, ttl);
         this.logger.debug(`Cached new item: ${itemCacheKey}`);
       }
 
       // Update list cache with new data
-      const listCacheKey = this.generateCacheKey({
-        ...request,
-        url: request.url.split('?')[0],
-        method: 'GET',
-        query: {}
-      }, cacheConfig.keyPrefix);
+      const listCacheKey = this.generateCacheKey(
+        {
+          ...request,
+          url: request.url.split('?')[0],
+          method: 'GET',
+          query: {},
+        },
+        cacheConfig.keyPrefix,
+      );
 
       try {
         const existingList = await this.redisService.read(listCacheKey);
         if (existingList && Array.isArray(existingList)) {
-          let updatedList = [...existingList];
-          
+          const updatedList = [...existingList];
+
           if (request.method === 'POST') {
             // Add new item to list
             updatedList.unshift(responseData);
           } else if (request.method === 'PUT' || request.method === 'PATCH') {
             // Update existing item in list
-            const index = updatedList.findIndex(item => item.id === responseData.id);
+            const index = updatedList.findIndex(
+              (item) => item.id === responseData.id,
+            );
             if (index !== -1) {
               updatedList[index] = responseData;
             }
@@ -194,7 +233,6 @@ export class CacheInterceptor implements NestInterceptor {
         // List cache doesn't exist or error reading it - skip update
         this.logger.debug(`Skipped list cache update: ${error.message}`);
       }
-
     } catch (error) {
       this.logger.error('Failed to cache new data:', error.message);
     }

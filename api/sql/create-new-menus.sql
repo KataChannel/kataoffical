@@ -140,9 +140,37 @@ WHERE r."name" = 'Admin' AND p."name" IN (
   'phieuthuchi.view', 'phieuthuchi.create', 'phieuthuchi.update', 'phieuthuchi.delete',
   'thanhtoan.view', 'thanhtoan.create', 'thanhtoan.update', 'thanhtoan.delete',
   'hoadon.view', 'hoadon.create', 'hoadon.update', 'hoadon.delete',
-  'cashflow.view', 'cashflow.export'
+  'cashflow.view', 'cashflow.export',
+  'payment-proposal.view', 'payment-proposal.create', 'payment-proposal.update', 'payment-proposal.delete', 'payment-proposal.approve'
 )
 AND NOT EXISTS (SELECT 1 FROM "RolePermission" rp WHERE rp."roleId" = r."id" AND rp."permissionId" = p."id");
+
+-- 12. Tạo Permission cho Đề xuất thanh toán
+INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
+VALUES (gen_random_uuid(), 'P_PP_VIEW', 'payment-proposal.view', 'Kế toán', 'Xem danh sách đề xuất thanh toán', 64, NOW(), NOW())
+ON CONFLICT ("name") DO NOTHING;
+
+INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
+VALUES (gen_random_uuid(), 'P_PP_CREATE', 'payment-proposal.create', 'Kế toán', 'Tạo đề xuất thanh toán', 65, NOW(), NOW())
+ON CONFLICT ("name") DO NOTHING;
+
+INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
+VALUES (gen_random_uuid(), 'P_PP_UPDATE', 'payment-proposal.update', 'Kế toán', 'Cập nhật đề xuất thanh toán', 66, NOW(), NOW())
+ON CONFLICT ("name") DO NOTHING;
+
+INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
+VALUES (gen_random_uuid(), 'P_PP_DELETE', 'payment-proposal.delete', 'Kế toán', 'Xóa đề xuất thanh toán', 67, NOW(), NOW())
+ON CONFLICT ("name") DO NOTHING;
+
+INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
+VALUES (gen_random_uuid(), 'P_PP_APPROVE', 'payment-proposal.approve', 'Kế toán', 'Phê duyệt đề xuất thanh toán', 68, NOW(), NOW())
+ON CONFLICT ("name") DO NOTHING;
+
+-- 13. Tạo menu "Đề xuất thanh toán"
+INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
+SELECT gen_random_uuid(), 'Đề xuất thanh toán', 'assignment_turned_in', '/admin/payment-proposal',
+  (SELECT "id" FROM "Menu" WHERE "slug" = '/admin/ketoan' LIMIT 1), 0, true, NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/payment-proposal');
 
 -- ============================================================
 -- KIỂM TRA KẾT QUẢ
@@ -150,7 +178,7 @@ AND NOT EXISTS (SELECT 1 FROM "RolePermission" rp WHERE rp."roleId" = r."id" AND
 SELECT '=== Menus Kế Toán ===' as info;
 SELECT m."title", m."slug", m."icon", COALESCE(p."title", 'ROOT') as parent 
 FROM "Menu" m LEFT JOIN "Menu" p ON m."parentId" = p."id" 
-WHERE m."slug" IN ('/admin/ketoan', '/admin/phieuthuchi', '/admin/thanhtoan', '/admin/hoadon', '/admin/cashflow', '/admin/cron-management')
+WHERE m."slug" IN ('/admin/ketoan', '/admin/phieuthuchi', '/admin/thanhtoan', '/admin/hoadon', '/admin/cashflow', '/admin/cron-management', '/admin/payment-proposal')
    OR m."title" IN ('Kế Toán', 'Hệ thống')
 ORDER BY m."order";
 
@@ -158,6 +186,7 @@ SELECT '=== Permissions Kế Toán ===' as info;
 SELECT "name", "group" FROM "Permission" 
 WHERE "name" LIKE 'phieuthuchi%' OR "name" LIKE 'thanhtoan%' OR "name" LIKE 'hoadon%' 
    OR "name" LIKE 'cashflow%' OR "name" LIKE 'ketoan%' OR "name" LIKE 'cron-management%' 
+   OR "name" LIKE 'payment-proposal%'
 ORDER BY "group", "name";
 
 SELECT '=== Admin Permissions ===' as info;
@@ -167,4 +196,5 @@ JOIN "Role" r ON rp."roleId" = r."id"
 JOIN "Permission" p ON rp."permissionId" = p."id"
 WHERE p."name" LIKE 'phieuthuchi%' OR p."name" LIKE 'thanhtoan%' OR p."name" LIKE 'hoadon%' 
    OR p."name" LIKE 'cashflow%' OR p."name" LIKE 'ketoan%' OR p."name" LIKE 'cron-management%'
+   OR p."name" LIKE 'payment-proposal%'
 ORDER BY p."name";

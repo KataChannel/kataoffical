@@ -1,18 +1,18 @@
 import {
-    LoaiThanhToan,
-    PhuongThucThanhToan,
-    TrangThaiThanhToan
+  LoaiThanhToan,
+  PhuongThucThanhToan,
+  TrangThaiThanhToan,
 } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
-    IsArray,
-    IsDateString,
-    IsEnum,
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    IsString,
-    ValidateNested
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
 } from 'class-validator';
 
 export class CreateThanhToanDto {

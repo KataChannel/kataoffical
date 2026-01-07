@@ -26,7 +26,7 @@ export class RedisService implements OnModuleDestroy {
       reconnectOnError: (err) => {
         this.logger.error('Redis reconnection error:', err.message);
         return true;
-      }
+      },
     });
 
     this.client.on('connect', () => {
@@ -95,10 +95,15 @@ export class RedisService implements OnModuleDestroy {
       const keys = await this.client.keys(pattern);
       if (keys.length > 0) {
         await this.client.del(keys);
-        this.logger.debug(`Cache pattern deleted: ${pattern} (${keys.length} keys)`);
+        this.logger.debug(
+          `Cache pattern deleted: ${pattern} (${keys.length} keys)`,
+        );
       }
     } catch (error) {
-      this.logger.error(`Error deleting cache pattern ${pattern}:`, error.message);
+      this.logger.error(
+        `Error deleting cache pattern ${pattern}:`,
+        error.message,
+      );
     }
   }
 
@@ -107,7 +112,10 @@ export class RedisService implements OnModuleDestroy {
       const exists = await this.client.exists(key);
       return exists === 1;
     } catch (error) {
-      this.logger.error(`Error checking existence for key ${key}:`, error.message);
+      this.logger.error(
+        `Error checking existence for key ${key}:`,
+        error.message,
+      );
       return false;
     }
   }
@@ -126,7 +134,10 @@ export class RedisService implements OnModuleDestroy {
       const keys = await this.client.keys(pattern);
       return keys;
     } catch (error) {
-      this.logger.error(`Error getting keys for pattern ${pattern}:`, error.message);
+      this.logger.error(
+        `Error getting keys for pattern ${pattern}:`,
+        error.message,
+      );
       return [];
     }
   }
@@ -162,7 +173,7 @@ export class RedisService implements OnModuleDestroy {
   async cacheOrFetch<T>(
     key: string,
     fetchFn: () => Promise<T>,
-    ttl: number = 3600
+    ttl: number = 3600,
   ): Promise<T> {
     try {
       const cached = await this.read(key);

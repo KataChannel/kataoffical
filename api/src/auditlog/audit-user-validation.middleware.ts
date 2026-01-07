@@ -25,23 +25,28 @@ export class AuditUserValidationMiddleware implements NestMiddleware {
       '/health',
       '/swagger',
       '/callback',
-      '/app'
+      '/app',
     ];
 
-    const isPublicEndpoint = publicEndpoints.some(endpoint => 
-      req.path.startsWith(endpoint)
+    const isPublicEndpoint = publicEndpoints.some((endpoint) =>
+      req.path.startsWith(endpoint),
     );
 
     // Skip for GET requests on findby endpoints (often used for searching without auth)
-    const isPublicSearchEndpoint = req.method === 'POST' && req.path.includes('/findby');
+    const isPublicSearchEndpoint =
+      req.method === 'POST' && req.path.includes('/findby');
 
     if (!isPublicEndpoint && !isPublicSearchEndpoint) {
       // Check if this is a modifying operation that should have authentication
-      const isModifyingOperation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
-      
+      const isModifyingOperation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(
+        req.method,
+      );
+
       if (isModifyingOperation && !req.user?.id) {
-        this.logger.warn(`Potential security issue: ${req.method} ${req.path} accessed without authentication from IP: ${this.getClientIp(req)}`);
-        
+        this.logger.warn(
+          `Potential security issue: ${req.method} ${req.path} accessed without authentication from IP: ${this.getClientIp(req)}`,
+        );
+
         // Add a flag to the request to indicate missing authentication for audit
         req.auditMissingAuth = true;
       }

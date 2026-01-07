@@ -2,6 +2,19 @@ import { Injectable } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { Observable, map } from 'rxjs';
 
+export interface HoaDonDetail {
+  id: string;
+  sanphamId: string;
+  tenSanPham: string;
+  maSanPham: string;
+  dvt?: string;
+  soluong: number;
+  dongia: number;
+  vat?: number;
+  thanhtien: number;
+  ghichu?: string;
+}
+
 export interface HoaDonDienTu {
   id: string;
   donhangId: string;
@@ -21,122 +34,42 @@ export interface HoaDonDienTu {
   createdAt: Date;
   updatedAt: Date;
   donhang?: any;
+  details?: HoaDonDetail[];
 }
 
 const GET_HOADON_LIST = gql`
-  query GetHoaDonList($skip: Int, $take: Int, $where: HoaDonDienTuWhereInput, $orderBy: [HoaDonDienTuOrderByInput!]) {
-    hoaDonDienTuList(skip: $skip, take: $take, where: $where, orderBy: $orderBy) {
-      items {
-        id
-        donhangId
-        soHoaDon
-        mauSo
-        kyHieu
-        ngayLap
-        tongTien
-        tongVAT
-        tongThanhToan
-        trangThai
-        pdfUrl
-        ghichu
-        createdAt
-        updatedAt
-        donhang {
-          id
-          madonhang
-          khachhang {
-            name
-            mst
-          }
-        }
-      }
-      total
-    }
+  query GetHoaDonList($skip: Int, $take: Int, $where: JSON, $orderBy: JSON) {
+    hoaDonDienTuList(skip: $skip, take: $take, where: $where, orderBy: $orderBy)
   }
 `;
 
 const GET_HOADON_DETAIL = gql`
   query GetHoaDon($id: String!) {
-    hoaDonDienTu(id: $id) {
-      id
-      donhangId
-      soHoaDon
-      mauSo
-      kyHieu
-      ngayLap
-      tongTien
-      tongVAT
-      tongThanhToan
-      trangThai
-      pdfUrl
-      nguoiTaoId
-      nguoiDuyetId
-      ngayDuyet
-      ghichu
-      createdAt
-      updatedAt
-      donhang {
-        id
-        madonhang
-        ngaygiao
-        khachhang {
-          name
-          diachi
-          sdt
-          mst
-        }
-        sanpham {
-          id
-          soluong
-          gia
-          vat
-          thanhtien
-          sanpham {
-            title
-            masp
-            dvt
-          }
-        }
-      }
-    }
+    hoaDonDienTu(id: $id)
   }
 `;
 
 const CREATE_HOADON = gql`
   mutation CreateHoaDon($input: CreateHoaDonDienTuInput!) {
-    createHoaDonDienTu(input: $input) {
-      id
-      soHoaDon
-      trangThai
-    }
+    createHoaDonDienTu(input: $input)
   }
 `;
 
 const UPDATE_HOADON = gql`
   mutation UpdateHoaDon($id: String!, $input: UpdateHoaDonDienTuInput!) {
-    updateHoaDonDienTu(id: $id, input: $input) {
-      id
-      trangThai
-    }
+    updateHoaDonDienTu(id: $id, input: $input)
   }
 `;
 
 const XUAT_HOADON = gql`
   mutation XuatHoaDon($id: String!) {
-    xuatHoaDon(id: $id) {
-      id
-      trangThai
-      pdfUrl
-      ngayDuyet
-    }
+    xuatHoaDon(id: $id)
   }
 `;
 
 const GENERATE_PDF = gql`
   mutation GenerateHoaDonPDF($id: String!) {
-    generateHoaDonPDF(id: $id) {
-      pdfUrl
-    }
+    generateHoaDonPDF(id: $id)
   }
 `;
 

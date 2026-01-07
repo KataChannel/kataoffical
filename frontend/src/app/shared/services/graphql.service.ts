@@ -1,6 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
-import { ApolloQueryResult } from '@apollo/client/core';
 import { firstValueFrom } from 'rxjs';
 
 // ========================= INTERFACES =========================
@@ -1071,36 +1070,28 @@ export class GraphqlService {
       });
     };
 
-    // Process batches with controlled concurrency
+    // Process batches with controlled concurrency using a worker pool
     const executeInParallel = async (): Promise<T[]> => {
       const allResults: T[] = [];
-      const executing: Promise<void>[] = [];
-
-      for (let i = 0; i < batches; i++) {
-        const skip = i * batchSize;
-        const take = Math.min(batchSize, totalCount - skip);
-
-        const batchPromise = processBatch(skip, take).then(batchResult => {
-          allResults.push(...batchResult);
-        });
-
-        executing.push(batchPromise);
-
-        // Control concurrency
-        if (executing.length >= maxConcurrency) {
-          await Promise.race(executing);
-          // Remove completed promises
-          const stillRunning = executing.filter(p => {
-            // Check if promise is still pending
-            return p && typeof (p as any).isPending !== 'boolean';
-          });
-          executing.length = 0;
-          executing.push(...stillRunning);
+      const queue = Array.from({ length: batches }, (_, i) => i);
+      
+      const workers = Array.from({ length: Math.min(maxConcurrency, batches) }, async () => {
+        while (queue.length > 0) {
+          const i = queue.shift()!;
+          const skip = i * batchSize;
+          const take = Math.min(batchSize, totalCount - skip);
+          
+          try {
+            const batchResult = await processBatch(skip, take);
+            allResults.push(...batchResult);
+          } catch (error) {
+            console.error(`❌ Batch ${i} failed:`, error);
+            throw error;
+          }
         }
-      }
+      });
 
-      // Wait for all remaining promises
-      await Promise.all(executing);
+      await Promise.all(workers);
       return allResults;
     };
 

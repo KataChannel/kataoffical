@@ -9,22 +9,28 @@ import { PrismaService } from 'prisma/prisma.service';
 @Injectable()
 export class ServerStabilityService {
   private readonly logger = new Logger(ServerStabilityService.name);
-  
+
   // Circuit breaker state
-  private circuitBreakers = new Map<string, {
-    failureCount: number;
-    lastFailureTime: number;
-    state: 'CLOSED' | 'OPEN' | 'HALF_OPEN';
-    threshold: number;
-    timeout: number;
-  }>();
+  private circuitBreakers = new Map<
+    string,
+    {
+      failureCount: number;
+      lastFailureTime: number;
+      state: 'CLOSED' | 'OPEN' | 'HALF_OPEN';
+      threshold: number;
+      timeout: number;
+    }
+  >();
 
   // Request timeout tracking
-  private activeRequests = new Map<string, {
-    startTime: number;
-    route: string;
-    timeout: number;
-  }>();
+  private activeRequests = new Map<
+    string,
+    {
+      startTime: number;
+      route: string;
+      timeout: number;
+    }
+  >();
 
   constructor(private readonly prisma: PrismaService) {
     this.initializeHealthChecks();
@@ -65,13 +71,13 @@ export class ServerStabilityService {
       maxWait?: number;
       circuitBreakerKey?: string;
       retryCount?: number;
-    } = {}
+    } = {},
   ): Promise<T> {
     const {
       timeout = 15000,
       maxWait = 20000,
       circuitBreakerKey,
-      retryCount = 0
+      retryCount = 0,
     } = options;
 
     // Check circuit breaker if key provided
@@ -80,18 +86,18 @@ export class ServerStabilityService {
     }
 
     const operationId = `tx_${Date.now()}_${Math.random().toString(36)}`;
-    
+
     try {
       // Track the transaction
       this.activeRequests.set(operationId, {
         startTime: Date.now(),
         route: circuitBreakerKey || 'database_transaction',
-        timeout: timeout
+        timeout: timeout,
       });
 
       const result = await this.prisma.$transaction(operation, {
         timeout,
-        maxWait
+        maxWait,
       });
 
       // Success - reset circuit breaker failure count
@@ -102,7 +108,7 @@ export class ServerStabilityService {
       return result;
     } catch (error) {
       this.logger.error(`Transaction failed: ${error.message}`, error.stack);
-      
+
       // Record circuit breaker failure
       if (circuitBreakerKey) {
         this.recordCircuitBreakerFailure(circuitBreakerKey);
@@ -111,8 +117,13 @@ export class ServerStabilityService {
       // Retry logic for transient failures
       if (retryCount < 2 && this.isRetryableError(error)) {
         this.logger.warn(`Retrying transaction, attempt ${retryCount + 1}`);
-        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
-        return this.safeTransaction(operation, { ...options, retryCount: retryCount + 1 });
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1000 * (retryCount + 1)),
+        );
+        return this.safeTransaction(operation, {
+          ...options,
+          retryCount: retryCount + 1,
+        });
       }
 
       throw error;
@@ -130,11 +141,11 @@ export class ServerStabilityService {
       'connection',
       'ECONNRESET',
       'ENOTFOUND',
-      'ETIMEDOUT'
+      'ETIMEDOUT',
     ];
-    
-    return retryableMessages.some(msg => 
-      error.message?.toLowerCase().includes(msg.toLowerCase())
+
+    return retryableMessages.some((msg) =>
+      error.message?.toLowerCase().includes(msg.toLowerCase()),
     );
   }
 
@@ -146,11 +157,11 @@ export class ServerStabilityService {
       const start = Date.now();
       await this.prisma.$queryRaw`SELECT 1`;
       const duration = Date.now() - start;
-      
+
       if (duration > 5000) {
         this.logger.warn(`Database response slow: ${duration}ms`);
       }
-      
+
       // Reset database circuit breaker on success
       this.recordCircuitBreakerSuccess('database');
     } catch (error) {
@@ -166,11 +177,12 @@ export class ServerStabilityService {
     const memUsage = process.memoryUsage();
     const heapUsedMB = Math.round(memUsage.heapUsed / 1024 / 1024);
     const heapTotalMB = Math.round(memUsage.heapTotal / 1024 / 1024);
-    
-    if (heapUsedMB > 512) { // Alert if heap usage > 512MB
+
+    if (heapUsedMB > 512) {
+      // Alert if heap usage > 512MB
       this.logger.warn(`High memory usage: ${heapUsedMB}MB / ${heapTotalMB}MB`);
     }
-    
+
     // Force garbage collection if memory usage is very high
     if (heapUsedMB > 1024 && global.gc) {
       this.logger.warn('Forcing garbage collection due to high memory usage');
@@ -183,11 +195,13 @@ export class ServerStabilityService {
    */
   private checkRequestTimeouts(): void {
     const now = Date.now();
-    
+
     for (const [id, request] of this.activeRequests) {
       const duration = now - request.startTime;
       if (duration > request.timeout) {
-        this.logger.error(`Request timeout detected: ${request.route} running for ${duration}ms`);
+        this.logger.error(
+          `Request timeout detected: ${request.route} running for ${duration}ms`,
+        );
         // Consider this a failure for circuit breaker
         this.recordCircuitBreakerFailure(request.route);
       }
@@ -200,9 +214,9 @@ export class ServerStabilityService {
   private isCircuitBreakerClosed(key: string): boolean {
     const breaker = this.circuitBreakers.get(key);
     if (!breaker) return true;
-    
+
     const now = Date.now();
-    
+
     switch (breaker.state) {
       case 'CLOSED':
         return true;
@@ -235,24 +249,29 @@ export class ServerStabilityService {
         lastFailureTime: 0,
         state: 'CLOSED',
         threshold: 5,
-        timeout: 60000 // 1 minute
+        timeout: 60000, // 1 minute
       };
       this.circuitBreakers.set(key, breaker);
     }
-    
+
     breaker.failureCount++;
     breaker.lastFailureTime = Date.now();
-    
+
     if (breaker.failureCount >= breaker.threshold) {
       breaker.state = 'OPEN';
-      this.logger.error(`Circuit breaker OPEN for ${key} after ${breaker.failureCount} failures`);
+      this.logger.error(
+        `Circuit breaker OPEN for ${key} after ${breaker.failureCount} failures`,
+      );
     }
   }
 
   private updateCircuitBreakerStates(): void {
     const now = Date.now();
     for (const [key, breaker] of this.circuitBreakers) {
-      if (breaker.state === 'OPEN' && now - breaker.lastFailureTime > breaker.timeout) {
+      if (
+        breaker.state === 'OPEN' &&
+        now - breaker.lastFailureTime > breaker.timeout
+      ) {
         breaker.state = 'HALF_OPEN';
         this.logger.log(`Circuit breaker ${key} moved to HALF_OPEN state`);
       }
@@ -265,7 +284,7 @@ export class ServerStabilityService {
   async getHealthStatus(): Promise<any> {
     const memUsage = process.memoryUsage();
     const uptime = process.uptime();
-    
+
     // Check database connectivity
     let dbStatus = 'healthy';
     let dbResponseTime = 0;
@@ -284,18 +303,20 @@ export class ServerStabilityService {
       memory: {
         heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),
         heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024),
-        external: Math.round(memUsage.external / 1024 / 1024)
+        external: Math.round(memUsage.external / 1024 / 1024),
       },
       database: {
         status: dbStatus,
-        responseTime: dbResponseTime
+        responseTime: dbResponseTime,
       },
       activeRequests: this.activeRequests.size,
-      circuitBreakers: Array.from(this.circuitBreakers.entries()).map(([key, breaker]) => ({
-        key,
-        state: breaker.state,
-        failureCount: breaker.failureCount
-      }))
+      circuitBreakers: Array.from(this.circuitBreakers.entries()).map(
+        ([key, breaker]) => ({
+          key,
+          state: breaker.state,
+          failureCount: breaker.failureCount,
+        }),
+      ),
     };
   }
 }

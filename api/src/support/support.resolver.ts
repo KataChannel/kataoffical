@@ -3,7 +3,11 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { SupportService } from './support.service';
 import { CurrentUser } from '../auth/decorators/currentUser.decorator';
-import { CreateTicketInput, UpdateTicketInput, CreateResponseInput } from './dto/support.input';
+import {
+  CreateTicketInput,
+  UpdateTicketInput,
+  CreateResponseInput,
+} from './dto/support.input';
 import { SupportTicket, SupportResponse } from './entities/support.entity';
 
 @Resolver()

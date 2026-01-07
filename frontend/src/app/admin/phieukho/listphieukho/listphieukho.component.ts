@@ -221,18 +221,14 @@ export class ListPhieukhoComponent {
       await this.refresh();
       this.CountItem = this.Listphieukho().length;
       // Show success message
-      this._snackBar.open('Đã tải dữ liệu thành công!', 'Đóng', {
-        duration: 3000,
+      this._snackBar.open('Đã tải dữ liệu thành công!', 'Đóng', { duration: 3000,
         horizontalPosition: 'end',
-        verticalPosition: 'top',
-      });
+        verticalPosition: 'top', panelClass: ["snackbar-success"] });
     } catch (error) {
       console.error('Error loading data:', error);
-      this._snackBar.open('Có lỗi khi tải dữ liệu!', 'Đóng', {
-        duration: 3000,
+      this._snackBar.open('Có lỗi khi tải dữ liệu!', 'Đóng', { duration: 3000,
         horizontalPosition: 'end',
-        verticalPosition: 'top',
-      });
+        verticalPosition: 'top', panelClass: ["snackbar-error"] });
     }
   }
   DoImportData(data:any)

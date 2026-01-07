@@ -11,25 +11,32 @@ export class GraphQLPerformanceService {
 
   constructor() {
     console.log('🚀 GraphQL Performance Service initialized');
-    
+
     // Clean up old metrics every hour
-    setInterval(() => {
-      this.cleanupOldMetrics();
-    }, 60 * 60 * 1000);
+    setInterval(
+      () => {
+        this.cleanupOldMetrics();
+      },
+      60 * 60 * 1000,
+    );
   }
 
   /**
    * Start tracking a GraphQL operation
    */
-  startOperation(operationName: string, modelName: string, context: any = {}): string {
+  startOperation(
+    operationName: string,
+    modelName: string,
+    context: any = {},
+  ): string {
     const operationId = `${operationName}_${modelName}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     this.metrics.set(operationId, {
       operationName,
       modelName,
       startTime: Date.now(),
       context,
-      status: 'running'
+      status: 'running',
     });
 
     return operationId;
@@ -39,14 +46,14 @@ export class GraphQLPerformanceService {
    * End tracking a GraphQL operation
    */
   endOperation(
-    operationId: string, 
-    result: { 
-      success: boolean; 
-      recordCount?: number; 
+    operationId: string,
+    result: {
+      success: boolean;
+      recordCount?: number;
       error?: string;
       queryOptimized?: boolean;
       cacheHit?: boolean;
-    }
+    },
   ): void {
     const metric = this.metrics.get(operationId);
     if (!metric) return;
@@ -87,48 +94,66 @@ export class GraphQLPerformanceService {
       operationsByModel: new Map<string, any>(),
       slowestQueries: [] as any[],
       fastestQueries: [] as any[],
-      recentErrors: [] as any[]
+      recentErrors: [] as any[],
     };
 
     const relevantMetrics = Array.from(this.metrics.values()).filter(
-      metric => !modelName || metric.modelName === modelName
+      (metric) => !modelName || metric.modelName === modelName,
     );
 
     if (relevantMetrics.length === 0) return stats;
 
     // Calculate basic stats
     stats.totalOperations = relevantMetrics.length;
-    
-    const completedOperations = relevantMetrics.filter(m => m.status === 'completed');
-    const successfulOperations = completedOperations.filter(m => !m.error);
-    
+
+    const completedOperations = relevantMetrics.filter(
+      (m) => m.status === 'completed',
+    );
+    const successfulOperations = completedOperations.filter((m) => !m.error);
+
     if (completedOperations.length > 0) {
-      stats.averageDuration = completedOperations.reduce((sum, m) => sum + m.duration, 0) / completedOperations.length;
-      stats.successRate = (successfulOperations.length / completedOperations.length) * 100;
-      stats.optimizedQueryRate = (completedOperations.filter(m => m.queryOptimized).length / completedOperations.length) * 100;
-      stats.cacheHitRate = (completedOperations.filter(m => m.cacheHit).length / completedOperations.length) * 100;
+      stats.averageDuration =
+        completedOperations.reduce((sum, m) => sum + m.duration, 0) /
+        completedOperations.length;
+      stats.successRate =
+        (successfulOperations.length / completedOperations.length) * 100;
+      stats.optimizedQueryRate =
+        (completedOperations.filter((m) => m.queryOptimized).length /
+          completedOperations.length) *
+        100;
+      stats.cacheHitRate =
+        (completedOperations.filter((m) => m.cacheHit).length /
+          completedOperations.length) *
+        100;
     }
 
     // Group by model
-    relevantMetrics.forEach(metric => {
+    relevantMetrics.forEach((metric) => {
       const modelStats = stats.operationsByModel.get(metric.modelName) || {
         count: 0,
         averageDuration: 0,
-        successRate: 0
+        successRate: 0,
       };
-      
+
       modelStats.count++;
       stats.operationsByModel.set(metric.modelName, modelStats);
     });
 
     // Find slowest and fastest queries
-    const sortedByDuration = completedOperations.sort((a, b) => b.duration - a.duration);
-    stats.slowestQueries = sortedByDuration.slice(0, 5).map(this.formatMetricForDisplay);
-    stats.fastestQueries = sortedByDuration.slice(-5).reverse().map(this.formatMetricForDisplay);
+    const sortedByDuration = completedOperations.sort(
+      (a, b) => b.duration - a.duration,
+    );
+    stats.slowestQueries = sortedByDuration
+      .slice(0, 5)
+      .map(this.formatMetricForDisplay);
+    stats.fastestQueries = sortedByDuration
+      .slice(-5)
+      .reverse()
+      .map(this.formatMetricForDisplay);
 
     // Recent errors
     stats.recentErrors = relevantMetrics
-      .filter(m => m.error)
+      .filter((m) => m.error)
       .sort((a, b) => b.startTime - a.startTime)
       .slice(0, 10)
       .map(this.formatMetricForDisplay);
@@ -144,7 +169,7 @@ export class GraphQLPerformanceService {
       result,
       timestamp: Date.now(),
       ttl,
-      hits: 0
+      hits: 0,
     };
 
     this.queryCache.set(queryKey, cacheEntry);
@@ -158,9 +183,9 @@ export class GraphQLPerformanceService {
    */
   getCachedQueryResult(queryKey: string): any {
     const cacheEntry = this.queryCache.get(queryKey);
-    
+
     if (!cacheEntry) return null;
-    
+
     // Check if expired
     if (Date.now() - cacheEntry.timestamp > cacheEntry.ttl) {
       this.queryCache.delete(queryKey);
@@ -169,7 +194,7 @@ export class GraphQLPerformanceService {
 
     // Increment hit counter
     cacheEntry.hits++;
-    
+
     return cacheEntry.result;
   }
 
@@ -186,13 +211,16 @@ export class GraphQLPerformanceService {
    */
   getCacheStats(): any {
     const totalEntries = this.queryCache.size;
-    const totalHits = Array.from(this.queryCache.values()).reduce((sum, entry) => sum + entry.hits, 0);
-    
+    const totalHits = Array.from(this.queryCache.values()).reduce(
+      (sum, entry) => sum + entry.hits,
+      0,
+    );
+
     return {
       totalEntries,
       totalHits,
       memoryUsage: this.estimateCacheMemoryUsage(),
-      topCachedQueries: this.getTopCachedQueries()
+      topCachedQueries: this.getTopCachedQueries(),
     };
   }
 
@@ -213,22 +241,32 @@ export class GraphQLPerformanceService {
       metrics: Array.from(this.metrics.entries()),
       cacheStats: this.getCacheStats(),
       performanceStats: this.getPerformanceStats(),
-      exportedAt: new Date().toISOString()
+      exportedAt: new Date().toISOString(),
     };
   }
 
   // Private helper methods
 
   private logPerformanceInfo(metric: any): void {
-    const { operationName, modelName, duration, recordCount, queryOptimized, cacheHit, error } = metric;
-    
+    const {
+      operationName,
+      modelName,
+      duration,
+      recordCount,
+      queryOptimized,
+      cacheHit,
+      error,
+    } = metric;
+
     const logMessage = `📊 ${operationName}(${modelName}): ${duration}ms`;
     const details = [
       recordCount ? `${recordCount} records` : '',
       queryOptimized ? '🚀 optimized' : '',
       cacheHit ? '💾 cache hit' : '',
-      error ? `❌ error: ${error}` : '✅ success'
-    ].filter(Boolean).join(', ');
+      error ? `❌ error: ${error}` : '✅ success',
+    ]
+      .filter(Boolean)
+      .join(', ');
 
     if (error) {
       console.error(`${logMessage} - ${details}`);
@@ -251,7 +289,7 @@ export class GraphQLPerformanceService {
       recordCount: metric.recordCount,
       optimized: metric.queryOptimized,
       cacheHit: metric.cacheHit,
-      timestamp: new Date(metric.startTime).toISOString()
+      timestamp: new Date(metric.startTime).toISOString(),
     };
   }
 
@@ -261,27 +299,29 @@ export class GraphQLPerformanceService {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return hash.toString();
   }
 
   private cleanupOldMetrics(): void {
-    const cutoffTime = Date.now() - (24 * 60 * 60 * 1000); // 24 hours ago
-    
+    const cutoffTime = Date.now() - 24 * 60 * 60 * 1000; // 24 hours ago
+
     for (const [id, metric] of this.metrics) {
       if (metric.startTime < cutoffTime) {
         this.metrics.delete(id);
       }
     }
 
-    console.log(`🧹 Cleaned up old performance metrics. Current count: ${this.metrics.size}`);
+    console.log(
+      `🧹 Cleaned up old performance metrics. Current count: ${this.metrics.size}`,
+    );
   }
 
   private cleanupExpiredCache(): void {
     const now = Date.now();
-    
+
     for (const [key, entry] of this.queryCache) {
       if (now - entry.timestamp > entry.ttl) {
         this.queryCache.delete(key);
@@ -291,9 +331,12 @@ export class GraphQLPerformanceService {
 
   private estimateCacheMemoryUsage(): string {
     // Rough estimation of cache memory usage
-    const totalSize = Array.from(this.queryCache.values()).reduce((size, entry) => {
-      return size + JSON.stringify(entry.result).length;
-    }, 0);
+    const totalSize = Array.from(this.queryCache.values()).reduce(
+      (size, entry) => {
+        return size + JSON.stringify(entry.result).length;
+      },
+      0,
+    );
 
     if (totalSize < 1024) return `${totalSize} bytes`;
     if (totalSize < 1024 * 1024) return `${(totalSize / 1024).toFixed(3)} KB`;
@@ -305,7 +348,7 @@ export class GraphQLPerformanceService {
       .map(([key, entry]) => ({
         query: key,
         hits: entry.hits,
-        age: Date.now() - entry.timestamp
+        age: Date.now() - entry.timestamp,
       }))
       .sort((a, b) => b.hits - a.hits)
       .slice(0, 10);

@@ -16,14 +16,19 @@ export class PermissionService {
       const lastUpdated = await this.prisma.permission.aggregate({
         _max: { updatedAt: true },
       });
-      return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
+      return {
+        updatedAt: lastUpdated._max.updatedAt
+          ? new Date(lastUpdated._max.updatedAt).getTime()
+          : 0,
+      };
     } catch (error) {
       this._ErrorlogService.logError('getLastUpdatedPermission', error);
       throw error;
     }
   }
 
-  async generateCodeId(): Promise<string> { // Giữ nguyên logic 'I1' nếu nó không phụ thuộc vào 'sanpham'
+  async generateCodeId(): Promise<string> {
+    // Giữ nguyên logic 'I1' nếu nó không phụ thuộc vào 'sanpham'
     try {
       const latest = await this.prisma.permission.findFirst({
         orderBy: { codeId: 'desc' },
@@ -75,7 +80,7 @@ export class PermissionService {
         data: {
           ...data,
           // order: newOrder,
-          codeId: codeId
+          codeId: codeId,
         },
       });
       // this._SocketGateway.sendPermissionUpdate();
@@ -109,7 +114,7 @@ export class PermissionService {
         data,
         total,
         page,
-        pageCount: Math.ceil(total / limit)
+        pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
       this._ErrorlogService.logError('findByPermission', error);
@@ -132,7 +137,7 @@ export class PermissionService {
         data,
         total,
         page,
-        pageCount: Math.ceil(total / limit)
+        pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
       this._ErrorlogService.logError('findAllPermission', error);
@@ -157,7 +162,10 @@ export class PermissionService {
       if (data.order) {
         const { order, ...rest } = data;
         await this.prisma.permission.update({ where: { id }, data: rest });
-        updated = await this.prisma.permission.update({ where: { id }, data: { order } });
+        updated = await this.prisma.permission.update({
+          where: { id },
+          data: { order },
+        });
       } else {
         updated = await this.prisma.permission.update({ where: { id }, data });
       }
@@ -185,7 +193,7 @@ export class PermissionService {
       for (let i = 0; i < permissionIds.length; i++) {
         await this.prisma.permission.update({
           where: { id: permissionIds[i] },
-          data: { order: i + 1 }
+          data: { order: i + 1 },
         });
       }
       this._SocketGateway.sendPermissionUpdate();

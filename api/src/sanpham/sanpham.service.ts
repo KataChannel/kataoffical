@@ -29,24 +29,22 @@ export class SanphamService {
   //   return this.prisma.sanpham.create({ data });
   // }
 
-
-  async findAllForSelect() {    
+  async findAllForSelect() {
     try {
       const sanphams = await this.prisma.sanpham.findMany({
         select: {
           id: true,
           masp: true,
           title: true,
-          },
-          orderBy: { createdAt: 'desc' },
-        });
+        },
+        orderBy: { createdAt: 'desc' },
+      });
       return { data: sanphams };
     } catch (error) {
       console.log('Error in findAllSanpham:', error);
       throw error;
     }
   }
-
 
   async getLastUpdated(): Promise<{ updatedAt: number }> {
     try {
@@ -62,7 +60,7 @@ export class SanphamService {
       throw error;
     }
   }
-  
+
   async generateMaSP(): Promise<string> {
     // Lấy NCC mới nhất
     const latest = await this.prisma.sanpham.findFirst({
@@ -220,7 +218,7 @@ export class SanphamService {
         this.prisma.sanpham.update({
           where: { id: sp.sanphamId },
           data: { giaban: sp.giaban },
-        })
+        }),
       );
 
       await this.prisma.$transaction(updateOperations);
@@ -354,7 +352,7 @@ export class SanphamService {
           goiy: Math.abs(Number(tonkho.goiy)),
         };
       });
-    return combined;
+      return combined;
     } catch (error) {
       this._ErrorlogsService.logError('Lỗi lấy tất cả sản phẩm', {
         error: error.message,
@@ -512,7 +510,7 @@ export class SanphamService {
 
   async remove(id: string) {
     console.log(id);
-    
+
     return this.prisma.$transaction(async (tx) => {
       // Disconnect Nhacungcap relations if applicable
       await tx.sanpham.update({

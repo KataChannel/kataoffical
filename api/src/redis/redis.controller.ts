@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { RedisService } from './redis.service';
 
 @Controller('redis')
@@ -10,7 +19,7 @@ export class RedisController {
     const allData = await this.redisService.showAll();
     return { data: allData };
   }
-  
+
   @Get('keys')
   async keys(@Query('pattern') pattern: string) {
     const keys = await this.redisService.keys(pattern || '*');

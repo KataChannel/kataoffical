@@ -1,7 +1,9 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Nhomkhachhang } from '../entities/nhomkhachhang.entity';
 
-@ObjectType('NhomkhachhangConnection', { description: 'Kết nối phân trang cho nhóm khách hàng' })
+@ObjectType('NhomkhachhangConnection', {
+  description: 'Kết nối phân trang cho nhóm khách hàng',
+})
 export class NhomkhachhangConnection {
   @Field(() => [Nhomkhachhang], { description: 'Danh sách nhóm khách hàng' })
   data: Nhomkhachhang[];
@@ -25,7 +27,9 @@ export class NhomkhachhangConnection {
   hasPreviousPage: boolean;
 }
 
-@ObjectType('NhomkhachhangMutationResponse', { description: 'Response cho các mutation' })
+@ObjectType('NhomkhachhangMutationResponse', {
+  description: 'Response cho các mutation',
+})
 export class NhomkhachhangMutationResponse {
   @Field(() => Boolean, { description: 'Trạng thái thành công' })
   success: boolean;
@@ -33,6 +37,9 @@ export class NhomkhachhangMutationResponse {
   @Field(() => String, { nullable: true, description: 'Thông báo' })
   message?: string;
 
-  @Field(() => Nhomkhachhang, { nullable: true, description: 'Dữ liệu nhóm khách hàng' })
+  @Field(() => Nhomkhachhang, {
+    nullable: true,
+    description: 'Dữ liệu nhóm khách hàng',
+  })
   data?: Nhomkhachhang;
 }

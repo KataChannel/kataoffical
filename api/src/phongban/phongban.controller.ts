@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
   HttpCode,
-  HttpStatus
+  HttpStatus,
 } from '@nestjs/common';
 import { PhongbanService } from './phongban.service';
 import { CreatePhongbanDto, UpdatePhongbanDto } from './dto';
@@ -31,13 +31,13 @@ export class PhongbanController {
     @Query('level') level?: string,
     @Query('loai') loai?: string,
     @Query('parentId') parentId?: string,
-    @Query('includeChildren') includeChildren?: string
+    @Query('includeChildren') includeChildren?: string,
   ) {
     return this.phongbanService.findAll({
       level: level ? parseInt(level) : undefined,
       loai,
       parentId,
-      includeChildren: includeChildren === 'true'
+      includeChildren: includeChildren === 'true',
     });
   }
 
@@ -62,7 +62,10 @@ export class PhongbanController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePhongbanDto: UpdatePhongbanDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updatePhongbanDto: UpdatePhongbanDto,
+  ) {
     return this.phongbanService.update(id, updatePhongbanDto);
   }
 

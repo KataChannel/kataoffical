@@ -94,7 +94,7 @@ export class NhanvienService {
       return response;
     } catch (error: any) {
       this.error.set(error.message || 'Lỗi khi tải danh sách nhân viên');
-      this.snackBar.open('Lỗi khi tải danh sách nhân viên', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi tải danh sách nhân viên', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -117,7 +117,7 @@ export class NhanvienService {
       return response;
     } catch (error: any) {
       this.error.set(error.message || 'Lỗi khi tải thống kê');
-      this.snackBar.open('Lỗi khi tải thống kê', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi tải thống kê', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -140,7 +140,7 @@ export class NhanvienService {
       return response;
     } catch (error: any) {
       this.error.set(error.message || 'Lỗi khi tải chi tiết nhân viên');
-      this.snackBar.open('Lỗi khi tải chi tiết nhân viên', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi tải chi tiết nhân viên', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -163,7 +163,7 @@ export class NhanvienService {
       return response;
     } catch (error: any) {
       this.error.set(error.message || 'Lỗi khi tải nhân viên');
-      this.snackBar.open('Lỗi khi tải nhân viên', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi tải nhân viên', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -182,7 +182,7 @@ export class NhanvienService {
         this.http.post<Nhanvien>(this.apiUrl, data, { headers: this.getHeaders() })
       );
 
-      this.snackBar.open('Tạo nhân viên thành công', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Tạo nhân viên thành công', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       
       // Refresh list
       await this.getAllNhanvien({ page: this.page(), limit: this.limit() });
@@ -191,7 +191,7 @@ export class NhanvienService {
     } catch (error: any) {
       const message = error.error?.message || 'Lỗi khi tạo nhân viên';
       this.error.set(message);
-      this.snackBar.open(message, 'Đóng', { duration: 3000 });
+      this.snackBar.open(message, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -210,7 +210,7 @@ export class NhanvienService {
         this.http.patch<Nhanvien>(`${this.apiUrl}/${id}`, data, { headers: this.getHeaders() })
       );
 
-      this.snackBar.open('Cập nhật nhân viên thành công', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Cập nhật nhân viên thành công', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       
       // Refresh list
       await this.getAllNhanvien({ page: this.page(), limit: this.limit() });
@@ -219,7 +219,7 @@ export class NhanvienService {
     } catch (error: any) {
       const message = error.error?.message || 'Lỗi khi cập nhật nhân viên';
       this.error.set(message);
-      this.snackBar.open(message, 'Đóng', { duration: 3000 });
+      this.snackBar.open(message, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -238,7 +238,7 @@ export class NhanvienService {
         this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() })
       );
 
-      this.snackBar.open(response.message, 'Đóng', { duration: 3000 });
+      this.snackBar.open(response.message, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       
       // Refresh list
       await this.getAllNhanvien({ page: this.page(), limit: this.limit() });
@@ -247,7 +247,7 @@ export class NhanvienService {
     } catch (error: any) {
       const message = error.error?.message || 'Lỗi khi xóa nhân viên';
       this.error.set(message);
-      this.snackBar.open(message, 'Đóng', { duration: 3000 });
+      this.snackBar.open(message, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -270,12 +270,12 @@ export class NhanvienService {
         )
       );
 
-      this.snackBar.open('Liên kết user thành công', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Liên kết user thành công', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       return response;
     } catch (error: any) {
       const message = error.error?.message || 'Lỗi khi liên kết user';
       this.error.set(message);
-      this.snackBar.open(message, 'Đóng', { duration: 3000 });
+      this.snackBar.open(message, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -298,12 +298,12 @@ export class NhanvienService {
         )
       );
 
-      this.snackBar.open('Gỡ liên kết user thành công', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Gỡ liên kết user thành công', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       return response;
     } catch (error: any) {
       const message = error.error?.message || 'Lỗi khi gỡ liên kết user';
       this.error.set(message);
-      this.snackBar.open(message, 'Đóng', { duration: 3000 });
+      this.snackBar.open(message, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -348,7 +348,7 @@ export class NhanvienService {
       );
 
       if (!response.data || response.data.length === 0) {
-        this.snackBar.open('Không có dữ liệu để xuất', 'Đóng', { duration: 3000 });
+        this.snackBar.open('Không có dữ liệu để xuất', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
         return;
       }
 
@@ -402,11 +402,11 @@ export class NhanvienService {
       }));
 
       writeExcelFile(exportData, 'DanhSachNhanVien', headers, mapping);
-      this.snackBar.open(`Đã xuất ${response.data.length} nhân viên thành công`, 'Đóng', { duration: 3000 });
+      this.snackBar.open(`Đã xuất ${ response.data.length} nhân viên thành công`, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
 
     } catch (error: any) {
       console.error('Error exporting to Excel:', error);
-      this.snackBar.open('Lỗi khi xuất Excel', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi xuất Excel', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
     } finally {
       this.loading.set(false);
     }
@@ -449,7 +449,7 @@ export class NhanvienService {
 
     const headers = Object.keys(templateData[0]);
     writeExcelFile(templateData, 'MauImportNhanVien', headers);
-    this.snackBar.open('Đã tải mẫu import thành công', 'Đóng', { duration: 3000 });
+    this.snackBar.open('Đã tải mẫu import thành công', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
   }
 
   /**

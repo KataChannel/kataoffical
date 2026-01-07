@@ -1,52 +1,47 @@
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
-  Component,
-  computed,
-  effect,
-  inject,
-  TemplateRef,
-  ViewChild,
+    Component,
+    inject,
+    TemplateRef,
+    ViewChild
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import {
+    MatAutocompleteModule,
+    MatAutocompleteSelectedEvent,
+} from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
-import {
-  readExcelFile,
-  writeExcelFile,
-} from '../../../shared/utils/exceldrive.utils';
-import {
-  ConvertDriveData,
-  convertToSlug,
-  GenId,
-} from '../../../shared/utils/shared.utils';
+import { Router, RouterOutlet } from '@angular/router';
+import html2canvas from 'html2canvas';
+import moment from 'moment';
 import * as XLSX from 'xlsx-js-style';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import moment from 'moment';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import html2canvas from 'html2canvas';
-import { DathangService } from '../../dathang/dathang.service';
+import { GraphqlService } from '../../../shared/services/graphql.service';
+import {
+    readExcelFile
+} from '../../../shared/utils/exceldrive.utils';
+import {
+    convertToSlug,
+    GenId
+} from '../../../shared/utils/shared.utils';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
-import {
-  MatAutocompleteModule,
-  MatAutocompleteSelectedEvent,
-} from '@angular/material/autocomplete';
-import { MatChipsModule } from '@angular/material/chips';
-import { GraphqlService } from '../../../shared/services/graphql.service';
+import { DathangService } from '../../dathang/dathang.service';
 @Component({
   selector: 'app-listcongnoncc',
   templateUrl: './listcongnoncc.component.html',
@@ -88,6 +83,7 @@ export class ListcongnonccComponent {
     'name',
     'soluong',
     'tongtien',
+    'poStatus',
   ];
   ColumnName: any = {
     ngaynhan: 'Ngày Nhận',
@@ -96,6 +92,7 @@ export class ListcongnonccComponent {
     name: 'Tên Nhà Cung Cấp',
     soluong: 'Số Lượng',
     tongtien: 'Tổng',
+    poStatus: 'Trạng thái ERP',
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('CongnonccColFilter') || '[]'
@@ -192,10 +189,17 @@ export class ListcongnonccComponent {
     this.loadData(this.SearchParams);
   }
 
-  async ngOnInit(): Promise<void> {
-    this.initializeColumns();
-    this.setupDrawer();
-    this.loadData(this.SearchParams);
+  async ngOnInit() {
+    this.isLoading = true;
+    try {
+      this.initializeColumns();
+      this.setupDrawer();
+      await this.loadData();
+    } catch (error) {
+      console.error('Initial load error:', error);
+    } finally {
+      this.isLoading = false;
+    }
   }
   async doSearch() {
     this.isSearching = true;
@@ -529,60 +533,50 @@ export class ListcongnonccComponent {
     );
   }
 
-  async loadData(query: any): Promise<void> {
+  async loadData(query?: any): Promise<void> {
     this.isLoading = true;
     try {
-      // await this._DathangService.searchCongno(query);
-      this.SearchCongno();
-      // console.log(this.Listdathang());
+      await this.SearchCongno();
+      
       this.CountItem = this.Listdathang().length || 0;
-      // Nhóm dữ liệu theo nhà cung cấp để tính tổng tiền sau thuế
-      const supplierTotals = new Map();
-      // Tính tổng tiền sau thuế cho từng nhà cung cấp
       this.ListCongno = this.Listdathang();
-      // console.log(this.ListCongno);
 
       this.dataSource = new MatTableDataSource(this.ListCongno);
-      // this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.dataSource.filterPredicate = this.createFilter();
-      // this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-      // this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-      // this.paginator._intl.previousPageLabel = 'Về Trước';
-      // this.paginator._intl.firstPageLabel = 'Trang Đầu';
-      // this.paginator._intl.lastPageLabel = 'Trang Cuối';
 
-      const Congnonccs = await this._GraphqlService.findAll('nhacungcap', {
-        aggressiveCache: true,
-        enableStreaming: true,
-        select: {
-          id: true,
-          name: true,
-          mancc: true,
-        },
-      });
-      this.ListCongnoncc = this.filterListCongnoncc = Congnonccs.data;
+      // Fetch filter data in parallel
+      const [Nhacungccs, Nhomnccs] = await Promise.all([
+        this._GraphqlService.findAll('nhacungcap', {
+          aggressiveCache: true,
+          enableStreaming: true,
+          select: { id: true, name: true, mancc: true }
+        }),
+        this._GraphqlService.findAll('nhomncc', {
+          aggressiveCache: true,
+          enableStreaming: true,
+          select: { 
+            id: true, 
+            name: true,
+            description: true,
+            nhacungcap: {
+              select: { id: true, name: true, mancc: true }
+            }
+          }
+        })
+      ]);
 
-      const NhomCongnonccs = await this._GraphqlService.findAll('nhomncc', {
-        aggressiveCache: true,
-        enableStreaming: true,
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          nhacungcap: {
-            select: {
-              id: true,
-              name: true,
-              mancc: true,
-            },
-          },
-        },
-      });
-      this.ListNhomCongnoncc = this.filterListNhomCongnoncc =
-        NhomCongnonccs.data;
-      // console.log(this.filterListCongnoncc);
-      // console.log(this.filterListNhomCongnoncc);
+      if (Nhacungccs?.data) {
+        this.ListCongnoncc = this.filterListCongnoncc = Nhacungccs.data;
+      }
+      
+      if (Nhomnccs?.data) {
+        this.ListNhomCongnoncc = this.filterListNhomCongnoncc = Nhomnccs.data;
+      }
+
+    } catch (error) {
+      console.error('Error in loadData:', error);
+      this._snackBar.open('Lỗi tải dữ liệu công nợ', 'Đóng', { duration: 3000 });
     } finally {
       this.isLoading = false;
     }
@@ -603,6 +597,7 @@ export class ListcongnonccComponent {
         id: true,
         ngaynhan: true,
         madncc: true,
+        poStatus: true,
         nhacungcap: {
           select: {
             id: true,
@@ -806,6 +801,30 @@ export class ListcongnonccComponent {
       this.editDathang.push(item);
     }
   }
+  createPaymentProposal() {
+    if (this.editDathang.length === 0) {
+      this._snackBar.open('Vui lòng chọn ít nhất một đơn hàng', 'Đóng', { duration: 2000, panelClass: ["snackbar-warning"] });
+      return;
+    }
+
+    // Filter only orders that have been reconciled
+    const validOrders = this.editDathang.filter(order => order.poStatus === 'DA_DOI_CHIEU');
+    
+    if (validOrders.length === 0) {
+      this._snackBar.open('Chỉ các đơn hàng đã Đối chiếu mới có thể lập đề xuất thanh toán', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
+      return;
+    }
+
+    if (validOrders.length < this.editDathang.length) {
+      if (!confirm(`Chỉ có ${validOrders.length}/${this.editDathang.length} đơn hàng đã đối chiếu. Bạn có muốn tiếp tục lập đề xuất cho các đơn này?`)) {
+        return;
+      }
+    }
+
+    localStorage.setItem('selected_pos_for_proposal', JSON.stringify(validOrders));
+    this._router.navigate(['/admin/payment-proposal/create']);
+  }
+
   TinhTong(items: any, fieldTong: any) {
     return (
       items?.reduce((sum: any, item: any) => sum + (item[fieldTong] || 0), 0) ||

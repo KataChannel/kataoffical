@@ -5,6 +5,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UploadService } from '../../../shared/uploadfile/uploadfile.service';
 import { DathangService } from '../../dathang/dathang.service';
 import { KhachhangService } from '../../khachhang/khachhang.service';
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
@@ -35,8 +36,13 @@ export class DetailPhieuthuchiComponent implements OnInit {
     phuongThuc: 'TIEN_MAT',
     coHoaDon: false,
     ghichu: '',
-    lydo: ''
+    lydo: '',
+    paymentProposalSupplierId: '',
+    arDocumentItemId: '',
+    billImage: ''
   });
+
+  selectedFile = signal<File | null>(null);
 
   listKhachhang = signal<any[]>([]);
   listNhacungcap = signal<any[]>([]);
@@ -51,6 +57,7 @@ export class DetailPhieuthuchiComponent implements OnInit {
     private khachhangService: KhachhangService,
     private nhacungcapService: NhacungcapService,
     private dathangService: DathangService,
+    private uploadService: UploadService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -68,9 +75,31 @@ export class DetailPhieuthuchiComponent implements OnInit {
       const loai = this.route.snapshot.queryParamMap.get('loai');
       const doiTuong = this.route.snapshot.queryParamMap.get('doiTuong');
       const doiTuongId = this.route.snapshot.queryParamMap.get('doiTuongId');
+      const paymentProposalSupplierId = this.route.snapshot.queryParamMap.get('paymentProposalSupplierId');
 
       if (loai) this.updateField('loai', loai);
       if (doiTuong) this.updateField('doiTuong', doiTuong);
+      if (paymentProposalSupplierId) {
+          this.updateField('paymentProposalSupplierId', paymentProposalSupplierId);
+          this.updateField('doiTuong', 'NHACUNGCAP');
+          this.updateField('loai', 'CHI');
+      }
+
+      const arDocumentItemId = this.route.snapshot.queryParamMap.get('arDocumentItemId');
+      if (arDocumentItemId) {
+          this.updateField('arDocumentItemId', arDocumentItemId);
+          this.updateField('doiTuong', 'KHACHHANG');
+          this.updateField('loai', 'THU');
+          const amount = this.route.snapshot.queryParamMap.get('amount');
+          const customerId = this.route.snapshot.queryParamMap.get('customerId');
+          const customerName = this.route.snapshot.queryParamMap.get('customerName');
+          const maChungTu = this.route.snapshot.queryParamMap.get('maChungTu');
+          
+          if (amount) this.updateField('soTien', Number(amount));
+          if (customerId) this.updateField('doiTuongId', customerId);
+          if (customerName) this.updateField('tenDoiTuong', customerName);
+          if (maChungTu) this.updateField('lydo', `Thu tiền theo chứng từ công nợ ${maChungTu}`);
+      }
       
       if (dathangId) {
         this.updateField('dathangId', dathangId);
@@ -137,6 +166,8 @@ export class DetailPhieuthuchiComponent implements OnInit {
         soTien: data.soTien,
         donhangId: data.donhangId,
         dathangId: data.dathangId,
+        paymentProposalSupplierId: data.paymentProposalSupplierId,
+        billImage: data.billImage,
         doiTuong: data.doiTuong,
         doiTuongId: data.doiTuongId,
         tenDoiTuong: data.tenDoiTuong,
@@ -144,7 +175,8 @@ export class DetailPhieuthuchiComponent implements OnInit {
         coHoaDon: data.coHoaDon,
         ghichu: data.ghichu,
         lydo: data.lydo,
-        maDathang: data.dathang?.madncc
+        maDathang: data.dathang?.madncc,
+        arDocumentItemId: data.arDocumentItemId
       });
       if (data.doiTuong === 'NHACUNGCAP' && data.doiTuongId) {
         this.loadDathangsByNCC(data.doiTuongId);
@@ -209,6 +241,40 @@ export class DetailPhieuthuchiComponent implements OnInit {
     }));
     this.listDathang.set([]);
     this.filterDathang.set([]);
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile.set(file);
+    }
+  }
+
+  async processPayment() {
+    if (!this.phieuId()) return;
+    
+    // Mandatory bill for transfer
+    if (this.formData().phuongThuc === 'CHUYEN_KHOAN' && !this.selectedFile() && !this.formData().billImage) {
+      alert('Vui lòng upload hình ảnh chứng từ/bill chuyển khoản');
+      return;
+    }
+
+    if (!confirm('Xác nhận đã thực hiện thanh toán?')) return;
+
+    try {
+      let billUrl = this.formData().billImage;
+      
+      if (this.selectedFile()) {
+        const uploadResult = await this.uploadService.uploadlocal(this.selectedFile(), 'local', 'phieuthuchi');
+        billUrl = uploadResult.url || uploadResult.path;
+      }
+
+      await this.phieuThuChiService.thanhToan(this.phieuId()!, { billImage: billUrl });
+      alert('Đã xác nhận thanh toán thành công!');
+      this.router.navigate(['/admin/phieuthuchi']);
+    } catch (error: any) {
+      alert('Lỗi: ' + error.message);
+    }
   }
 
   async onSubmit() {

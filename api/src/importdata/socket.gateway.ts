@@ -1,21 +1,21 @@
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-@WebSocketGateway({ 
+@WebSocketGateway({
   cors: {
-    origin: '*', 
+    origin: '*',
   },
 })
-export class SocketGateway { 
+export class SocketGateway {
   @WebSocketServer() server: Server;
-  sendImportdataUpdate(): { success: boolean; error?: string } { 
+  sendImportdataUpdate(): { success: boolean; error?: string } {
     try {
-      this.server.emit('importdata-updated'); 
+      this.server.emit('importdata-updated');
       return { success: true };
     } catch (error) {
       return { success: false, error: (error as Error).message };
     }
   }
   notifyImportdataSpecificEvent(data: any): void {
-    this.server.emit('importdata-specific-event', data); 
+    this.server.emit('importdata-specific-event', data);
   }
 }

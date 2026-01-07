@@ -9,6 +9,6 @@ import { AuthModule } from 'src/auth/auth.module';
   imports: [PrismaModule, AuthModule],
   controllers: [NhomkhachhangController],
   providers: [NhomkhachhangService, NhomkhachhangResolver],
-  exports: [NhomkhachhangService]
+  exports: [NhomkhachhangService],
 })
 export class NhomkhachhangModule {}

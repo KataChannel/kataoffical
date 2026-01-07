@@ -673,17 +673,17 @@ export class KhoiluongKhachhangComponent implements OnInit, AfterViewInit {
   // Thống kê
   async thongke() {
     if (!this.selectedKhachhang) {
-      this.snackBar.open('Vui lòng chọn khách hàng', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Vui lòng chọn khách hàng', 'Đóng', { duration: 3000, panelClass: ["snackbar-warning"] });
       return;
     }
 
     if (!this.batdau || !this.ketthuc) {
-      this.snackBar.open('Vui lòng chọn khoảng thời gian', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Vui lòng chọn khoảng thời gian', 'Đóng', { duration: 3000, panelClass: ["snackbar-warning"] });
       return;
     }
 
     if (this.batdau > this.ketthuc) {
-      this.snackBar.open('Ngày bắt đầu không thể sau ngày kết thúc', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Ngày bắt đầu không thể sau ngày kết thúc', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       return;
     }
 
@@ -739,7 +739,7 @@ export class KhoiluongKhachhangComponent implements OnInit, AfterViewInit {
     const fileName = `ThongKe_KhoiLuong_${result.makh}_${moment(this.batdau).format('DDMMYYYY')}_${moment(this.ketthuc).format('DDMMYYYY')}`;
     
     writeExcelFile(exportData, fileName, Object.values(headers), headers);
-    this.snackBar.open('Xuất Excel thành công!', 'OK', { duration: 3000 });
+    this.snackBar.open('Xuất Excel thành công!', 'OK', { duration: 3000, panelClass: ["snackbar-success"] });
   }
 
   // Quick date selections

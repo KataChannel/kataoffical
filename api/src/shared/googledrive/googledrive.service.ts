@@ -14,9 +14,8 @@ export class GoogleDriveService {
       keyFile: serviceAccount,
       scopes: ['https://www.googleapis.com/auth/drive'],
     });
-    this.drive = google.drive({ version: 'v3', auth });    
+    this.drive = google.drive({ version: 'v3', auth });
   }
-
 
   async uploadFile(file: Express.Multer.File): Promise<string> {
     const response = await this.drive.files.create({
@@ -40,14 +39,13 @@ export class GoogleDriveService {
     // const fileUrl = `https://i.ibb.co/ynR7dC9L/bill.jpg`;
     const fileUrl = `https://drive.google.com/uc?export=view&id=${response.data.id}`;
     // const fileUrl = `https://drive.usercontent.google.com/download?id=${response.data.id}&authuser=0`;
-    
+
     return fileUrl;
   }
 
-
-  async queryFolders(driveId:any) {
+  async queryFolders(driveId: any) {
     console.log(driveId);
-    
+
     const response = await this.drive.files.list({
       q: `'${driveId}' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed = false`,
       fields: 'files(id, name, mimeType, createdTime, modifiedTime)',
@@ -67,7 +65,7 @@ export class GoogleDriveService {
 
     return response.data.files;
   }
-  async listUsersFolder(driveId:any) {
+  async listUsersFolder(driveId: any) {
     const response = await this.drive.permissions.list({
       fileId: driveId, // ID của Shared Drive
       supportsAllDrives: true,
@@ -84,8 +82,10 @@ export class GoogleDriveService {
     return response.data.permissions;
   }
 
-
-  async addUser(email: string, role: 'reader' | 'writer' | 'commenter' | 'fileOrganizer' | 'organizer') {
+  async addUser(
+    email: string,
+    role: 'reader' | 'writer' | 'commenter' | 'fileOrganizer' | 'organizer',
+  ) {
     const response = await this.drive.permissions.create({
       fileId: this.driveId,
       requestBody: {
@@ -99,7 +99,6 @@ export class GoogleDriveService {
     return response.data;
   }
 
-
   async removeUser(permissionId: string) {
     await this.drive.permissions.delete({
       fileId: this.driveId,
@@ -109,5 +108,4 @@ export class GoogleDriveService {
 
     return { message: `User ${permissionId} removed` };
   }
-  
 }

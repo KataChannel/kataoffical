@@ -1,14 +1,14 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    Post,
-    Put,
-    Query,
-    Request,
-    UseGuards,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { TrangThaiHoaDon } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -51,10 +51,7 @@ export class HoaDonController {
   }
 
   @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateDto: UpdateHoaDonDto,
-  ) {
+  async update(@Param('id') id: string, @Body() updateDto: UpdateHoaDonDto) {
     return this.hoaDonService.update(id, updateDto);
   }
 

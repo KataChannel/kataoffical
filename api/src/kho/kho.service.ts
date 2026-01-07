@@ -5,7 +5,6 @@ import { PrismaService } from 'prisma/prisma.service';
 export class khoService {
   constructor(private readonly prisma: PrismaService) {}
 
-
   async gettonkho(page: number, limit: number) {
     if (page < 1) throw new Error('Page number must be greater than 0');
     if (limit < 1) throw new Error('Limit must be greater than 0');
@@ -26,23 +25,27 @@ export class khoService {
     // Merge the product (sanpham) and inventory (tonKho) details into one object per record
     const mergedData = data.map(({ sanpham, ...inventory }) => {
       const valueCalculation =
-      (Number(inventory.slton) - Number(inventory.slchogiao) + Number(inventory.slchonhap)) *
-      (1 + Number(sanpham?.haohut ?? 0) / 100);
+        (Number(inventory.slton) -
+          Number(inventory.slchogiao) +
+          Number(inventory.slchonhap)) *
+        (1 + Number(sanpham?.haohut ?? 0) / 100);
 
       return {
-      ...inventory,
-      slchogiao: Number(inventory.slchogiao),
-      slchonhap: Number(inventory.slchonhap),
-      slton: Number(inventory.slton),
-      masp: sanpham?.masp ?? null,
-      dvt: sanpham?.dvt ?? null,
-      title: sanpham?.title ?? '',
-      subtitle: sanpham?.subtitle ?? '',
-      haohut: sanpham?.haohut ?? false,
-      goiy: valueCalculation < 0 ? parseFloat(Math.abs(valueCalculation).toFixed(3)) : 0,
+        ...inventory,
+        slchogiao: Number(inventory.slchogiao),
+        slchonhap: Number(inventory.slchonhap),
+        slton: Number(inventory.slton),
+        masp: sanpham?.masp ?? null,
+        dvt: sanpham?.dvt ?? null,
+        title: sanpham?.title ?? '',
+        subtitle: sanpham?.subtitle ?? '',
+        haohut: sanpham?.haohut ?? false,
+        goiy:
+          valueCalculation < 0
+            ? parseFloat(Math.abs(valueCalculation).toFixed(3))
+            : 0,
       };
     });
-   
 
     return {
       data: mergedData,
@@ -54,12 +57,10 @@ export class khoService {
       },
     };
   }
-  
+
   async create(data: any) {
     return this.prisma.kho.create({ data });
   }
-
-
 
   async findAll() {
     return this.prisma.kho.findMany();

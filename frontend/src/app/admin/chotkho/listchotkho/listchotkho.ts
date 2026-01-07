@@ -263,16 +263,14 @@ export class ListChotkhoComponent implements OnInit {
         }
       }
       
-      this._snackBar.open(
-        `Xóa thành công ${successCount} chỗ kho${errorCount > 0 ? `, ${errorCount} lỗi` : ''}`,
+      this._snackBar.open(`Xóa thành công ${successCount} chỗ kho${errorCount > 0 ? `, ${errorCount} lỗi` : ''}`,
         '',
         {
           duration: 3000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
-        }
-      );
+        });
       this.EditList = [];
       
       // Reload data after deletion
@@ -754,7 +752,7 @@ export class ListChotkhoComponent implements OnInit {
     if (file && (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'application/vnd.ms-excel')) {
       this.selectedFile = file;
     } else {
-      this._snackBar.open('Please select a valid Excel file (.xlsx or .xls)', 'Close', { duration: 3000 });
+      this._snackBar.open('Please select a valid Excel file (.xlsx or .xls, { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-success"] })', 'Close', { duration: 3000 });
     }
   }
 
@@ -763,7 +761,7 @@ export class ListChotkhoComponent implements OnInit {
     if (file && file.name.endsWith('.backup')) {
       this.selectedBackupFile = file;
     } else {
-      this._snackBar.open('Please select a valid backup file (.backup)', 'Close', { duration: 3000 });
+      this._snackBar.open('Please select a valid backup file (.backup, { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-success"] })', 'Close', { duration: 3000 });
     }
   }
 
@@ -821,7 +819,7 @@ export class ListChotkhoComponent implements OnInit {
   // Enhanced backup method with progress
   async startBackup() {
     if (!this.backupName) {
-      this._snackBar.open('Please enter a backup name', 'Close', { duration: 3000 });
+      this._snackBar.open('Please enter a backup name', 'Close', { duration: 3000, panelClass: ["snackbar-success"] });
       return;
     }
     
@@ -851,7 +849,7 @@ export class ListChotkhoComponent implements OnInit {
   // Enhanced restore method with progress
   async startRestore() {
     if (!this.selectedBackupFile) {
-      this._snackBar.open('Please select a backup file', 'Close', { duration: 3000 });
+      this._snackBar.open('Please select a backup file', 'Close', { duration: 3000, panelClass: ["snackbar-success"] });
       return;
     }
     
@@ -898,7 +896,7 @@ export class ListChotkhoComponent implements OnInit {
       }
 
       await this._ChotkhoService.exportData('excel', { data: dataToExport });
-      this._snackBar.open('Export completed successfully', 'Close', { duration: 3000 });
+      this._snackBar.open('Export completed successfully', 'Close', { duration: 3000, panelClass: ["snackbar-success"] });
     } catch (error) {
       this.handleOperationError('Export failed', error);
     }
@@ -923,7 +921,7 @@ export class ListChotkhoComponent implements OnInit {
       
       // Force refresh data
       await this.smartRefresh();
-      this._snackBar.open('Cache cleared successfully', 'Close', { duration: 3000 });
+      this._snackBar.open('Cache cleared successfully', 'Close', { duration: 3000, panelClass: ["snackbar-success"] });
     } catch (error) {
       this.handleOperationError('Clear cache failed', error);
     }

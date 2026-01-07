@@ -1,14 +1,14 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment.development';
-import { StorageService } from '../../shared/utils/storage.service';
-import { GraphqlService } from '../../shared/services/graphql.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ErrorLogService } from '../../shared/services/errorlog.service';
-import { SharedSocketService } from '../../shared/services/sharedsocket.service';
-import { DonhangService } from './donhang.service';
-import { NhanvienService } from '../nhanvien/nhanvien.service';
+import { Router } from '@angular/router';
 import moment from 'moment';
+import { environment } from '../../../environments/environment.development';
+import { ErrorLogService } from '../../shared/services/errorlog.service';
+import { GraphqlService } from '../../shared/services/graphql.service';
+import { SharedSocketService } from '../../shared/services/sharedsocket.service';
+import { StorageService } from '../../shared/utils/storage.service';
+import { NhanvienService } from '../nhanvien/nhanvien.service';
+import { DonhangService } from './donhang.service';
 
 @Injectable({
   providedIn: 'root'
@@ -595,7 +595,7 @@ export class DonhangGraphqlService {
         // Update progress every 10 rows or at milestones
         if (i % 10 === 0 || i === total - 1) {
           const progress = Math.round(((i + 1) / total) * 100);
-          this._snackBar.open(`⏳ Đang xử lý ${i + 1}/${total} (${progress}%)...`, '', {
+          this._snackBar.open(`⏳ Đang xử lý ${ i + 1}/${total} (${progress}%)...`, '', {
             duration: undefined,
             horizontalPosition: 'end',
             verticalPosition: 'top',

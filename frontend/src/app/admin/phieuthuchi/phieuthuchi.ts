@@ -11,7 +11,9 @@ export interface PhieuThuChi {
   tenDoiTuong?: string;
   phuongThuc: 'TIEN_MAT' | 'CHUYEN_KHOAN' | 'THE' | 'VI_DIEN_TU';
   coHoaDon: boolean;
-  trangThai: 'NHAP' | 'CHO_DUYET' | 'DA_DUYET' | 'HUY';
+  trangThai: 'NHAP' | 'CHO_DUYET' | 'DA_DUYET' | 'HUY' | 'DA_THANH_TOAN';
+  paymentProposalSupplierId?: string;
+  billImage?: string;
   nguoiTaoId?: string;
   nguoiDuyetId?: string;
   ngayDuyet?: Date;
@@ -28,6 +30,8 @@ export interface CreatePhieuThuChiDto {
   soTien: number;
   donhangId?: string;
   dathangId?: string;
+  paymentProposalSupplierId?: string;
+  billImage?: string;
   doiTuong: 'KHACHHANG' | 'NHACUNGCAP' | 'NHANVIEN' | 'KHAC';
   doiTuongId?: string;
   tenDoiTuong?: string;
@@ -37,6 +41,7 @@ export interface CreatePhieuThuChiDto {
   lydo?: string;
   ngay?: string;
   maDathang?: string;
+  arDocumentItemId?: string;
 }
 
 export interface PhieuThuChiFilter {

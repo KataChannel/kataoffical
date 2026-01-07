@@ -232,7 +232,7 @@ export class DetailUserguideComponent {
       }
     } catch (error: any) {
       console.error('Error uploading image:', error);
-      this._snackBar.open('Lỗi upload hình ảnh: ' + (error.message || 'Unknown error'), '', {
+      this._snackBar.open('Lỗi upload hình ảnh: ' + (error.message || 'Unknown error', { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-error"] }), '', {
         duration: 5000,
         panelClass: ['snackbar-error'],
       });
@@ -277,7 +277,7 @@ export class DetailUserguideComponent {
       }
     } catch (error: any) {
       console.error('Error uploading video:', error);
-      this._snackBar.open('Lỗi upload video: ' + (error.message || 'Unknown error'), '', {
+      this._snackBar.open('Lỗi upload video: ' + (error.message || 'Unknown error', { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-error"] }), '', {
         duration: 5000,
         panelClass: ['snackbar-error'],
       });

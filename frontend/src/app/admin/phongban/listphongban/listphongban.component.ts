@@ -240,20 +240,16 @@ export class ListPhongbanComponent implements OnInit {
     let message = `Xác nhận xóa phòng ban "${phongban.ten}"?`;
     
     if (hasChildren) {
-      this.snackBar.open(
-        'Không thể xóa phòng ban có bộ phận con. Vui lòng xóa các bộ phận con trước.',
+      this.snackBar.open('Không thể xóa phòng ban có bộ phận con. Vui lòng xóa các bộ phận con trước.',
         'Đóng',
-        { duration: 5000 }
-      );
+        { duration: 5000, panelClass: ["snackbar-error"] });
       return;
     }
 
     if (hasNhanvien) {
-      this.snackBar.open(
-        `Không thể xóa phòng ban có ${phongban._count?.nhanviens} nhân viên. Vui lòng chuyển nhân viên trước.`,
+      this.snackBar.open(`Không thể xóa phòng ban có ${ phongban._count?.nhanviens} nhân viên. Vui lòng chuyển nhân viên trước.`,
         'Đóng',
-        { duration: 5000 }
-      );
+        { duration: 5000, panelClass: ["snackbar-error"] });
       return;
     }
 
@@ -286,7 +282,7 @@ export class ListPhongbanComponent implements OnInit {
    */
   onExport() {
     // TODO: Implement Excel export
-    this.snackBar.open('Tính năng xuất Excel đang được phát triển', 'Đóng', { duration: 3000 });
+    this.snackBar.open('Tính năng xuất Excel đang được phát triển', 'Đóng', { duration: 3000, panelClass: ["snackbar-info"] });
   }
 
   /**

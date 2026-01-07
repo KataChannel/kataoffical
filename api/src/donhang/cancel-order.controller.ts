@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { CancelOrderService, CancelOrderDto } from './cancel-order.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -15,12 +24,12 @@ export class CancelOrderController {
   async cancelDonhang(
     @Param('id') orderId: string,
     @Body('lydohuy') lydohuy: string,
-    @Request() req: any
+    @Request() req: any,
   ) {
     const dto: CancelOrderDto = {
       orderId,
       lydohuy,
-      userId: req.user?.id
+      userId: req.user?.id,
     };
 
     return await this.cancelOrderService.cancelDonhang(dto);
@@ -34,12 +43,12 @@ export class CancelOrderController {
   async cancelDathang(
     @Param('id') orderId: string,
     @Body('lydohuy') lydohuy: string,
-    @Request() req: any
+    @Request() req: any,
   ) {
     const dto: CancelOrderDto = {
       orderId,
       lydohuy,
-      userId: req.user?.id
+      userId: req.user?.id,
     };
 
     return await this.cancelOrderService.cancelDathang(dto);
@@ -54,13 +63,13 @@ export class CancelOrderController {
     @Query('skip') skip?: string,
     @Query('take') take?: string,
     @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string
+    @Query('endDate') endDate?: string,
   ) {
     return await this.cancelOrderService.getCanceledOrders('donhang', {
       skip: skip ? parseInt(skip) : undefined,
       take: take ? parseInt(take) : undefined,
       startDate: startDate ? new Date(startDate) : undefined,
-      endDate: endDate ? new Date(endDate) : undefined
+      endDate: endDate ? new Date(endDate) : undefined,
     });
   }
 
@@ -73,13 +82,13 @@ export class CancelOrderController {
     @Query('skip') skip?: string,
     @Query('take') take?: string,
     @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string
+    @Query('endDate') endDate?: string,
   ) {
     return await this.cancelOrderService.getCanceledOrders('dathang', {
       skip: skip ? parseInt(skip) : undefined,
       take: take ? parseInt(take) : undefined,
       startDate: startDate ? new Date(startDate) : undefined,
-      endDate: endDate ? new Date(endDate) : undefined
+      endDate: endDate ? new Date(endDate) : undefined,
     });
   }
 }

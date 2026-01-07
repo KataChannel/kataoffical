@@ -1,12 +1,17 @@
-import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
+import { BanggiaPriceHistoryService } from '../banggia/banggia-price-history.service';
 import { StatusMachineService } from '../common/status-machine.service';
 import { TonkhoManagerService } from '../common/tonkho-manager.service';
 import { PerformanceLogger } from '../shared/performance-logger';
-import { BanggiaPriceHistoryService } from '../banggia/banggia-price-history.service';
-import { PriceHistoryService } from './price-history.service';
 import { UpdateProductPriceDto } from './dto/price-management.dto';
+import { PriceHistoryService } from './price-history.service';
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 const DEFAUL_BANGGIA_ID = '84a62698-5784-4ac3-b506-5e662d1511cb';
 @Injectable()
@@ -161,215 +166,232 @@ export class DonhangService {
   }
 
   async search(params: any) {
-    return await PerformanceLogger.logAsync('DonhangService.search', async () => {
-      const {
-        Batdau,
-        Ketthuc,
-        Type,
-        pageSize = 10,
-        pageNumber = 1,
-        query,
-      } = params;
+    return await PerformanceLogger.logAsync(
+      'DonhangService.search',
+      async () => {
+        const {
+          Batdau,
+          Ketthuc,
+          Type,
+          pageSize = 10,
+          pageNumber = 1,
+          query,
+          khachhangId,
+          xuatHoaDon,
+        } = params;
 
-    const ngaygiao =
-      Batdau || Ketthuc
-        ? {
-            ...(Batdau && { gte: new Date(Batdau) }),
-            ...(Ketthuc && { lte: new Date(Ketthuc) }),
-          }
-        : undefined;
+        const ngaygiao =
+          Batdau || Ketthuc
+            ? {
+                ...(Batdau && { gte: new Date(Batdau) }),
+                ...(Ketthuc && { lte: new Date(Ketthuc) }),
+              }
+            : undefined;
 
-    const where: any = {
-      ...(ngaygiao && { ngaygiao }),
-      status: Array.isArray(params.Status)
-        ? { in: params.Status }
-        : params.Status,
-    };
-    if (Type && Type !== 'all') {
-      where.khachhang = { loaikh: Type };
-    }
-    if (query) {
-      where.OR = [
-      { madonhang: { contains: query, mode: 'insensitive' } },
-      { khachhang: { name: { contains: query, mode: 'insensitive' } } },
-      ];
-    }
+        const where: any = {
+          ...(ngaygiao && { ngaygiao }),
+          status: Array.isArray(params.Status)
+            ? { in: params.Status }
+            : params.Status,
+          ...(khachhangId && { khachhangId }),
+          ...(typeof xuatHoaDon === 'boolean' && { xuatHoaDon }),
+        };
+        if (Type && Type !== 'all') {
+          where.khachhang = { ...where.khachhang, loaikh: Type };
+        }
+        if (query) {
+          where.OR = [
+            { madonhang: { contains: query, mode: 'insensitive' } },
+            { khachhang: { name: { contains: query, mode: 'insensitive' } } },
+          ];
+        }
 
-    const [total, donhangs] = await Promise.all([
-      this.prisma.donhang.count({ where }),
-      this.prisma.donhang.findMany({
-        where,
-        include: {
-          sanpham: {
+        const [total, donhangs] = await Promise.all([
+          this.prisma.donhang.count({ where }),
+          this.prisma.donhang.findMany({
+            where,
             include: {
-              sanpham: true,
+              sanpham: {
+                include: {
+                  sanpham: true,
+                },
+              },
+              khachhang: {
+                include: { banggia: { include: { sanpham: true } } },
+              },
             },
-          },
-          khachhang: { include: { banggia: { include: { sanpham: true } } } },
-        },
-        orderBy: { createdAt: 'desc' },
-        skip: (Number(pageNumber) - 1) * Number(pageSize),
-        take: Number(pageSize),
-      }),
-    ]);
-    const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
-      ...donhang,
-      sanpham: sanpham.map((item: any) => {
-        // const priceFromBanggia = khachhang?.banggia
-        //   ? khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)
-        //       ?.giaban
-        //   : 0;
-        // const giaban =
-        //   priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
+            orderBy: { createdAt: 'desc' },
+            skip: (Number(pageNumber) - 1) * Number(pageSize),
+            take: Number(pageSize),
+          }),
+        ]);
+        const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
+          ...donhang,
+          sanpham: sanpham.map((item: any) => {
+            // const priceFromBanggia = khachhang?.banggia
+            //   ? khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)
+            //       ?.giaban
+            //   : 0;
+            // const giaban =
+            //   priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
+
+            return {
+              ...item.sanpham,
+              idSP: item.idSP,
+              giaban: item.giaban,
+              sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+              slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+              slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+              ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+              ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+              ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
+              ghichu: item.ghichu,
+            };
+          }),
+          khachhang: khachhang
+            ? (({ banggia, ...rest }) => rest)(khachhang as any)
+            : null, // Xóa banggia
+          name: khachhang?.name,
+        }));
 
         return {
-          ...item.sanpham,
-          idSP: item.idSP,
-          giaban: item.giaban,
-          sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
-          slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
-          slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
-          ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
-          ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
-          ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
-          ghichu: item.ghichu,
+          data: result,
+          total,
+          pageNumber,
+          pageSize,
+          totalPages: Math.ceil(total / pageSize),
         };
-      }),
-      khachhang: khachhang
-        ? (({ banggia, ...rest }) => rest)(khachhang as any)
-        : null, // Xóa banggia
-      name: khachhang?.name,
-    }));
-
-    return {
-      data: result,
-      total,
-      pageNumber,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
-    };
-    }, params);
+      },
+      params,
+    );
   }
 
   async congnokhachhang(params: any) {
-    return await PerformanceLogger.logAsync('DonhangService.congnokhachhang', async () => {
-      const { Batdau, Ketthuc, Status, khachhangIds, query } = params;
+    return await PerformanceLogger.logAsync(
+      'DonhangService.congnokhachhang',
+      async () => {
+        const { Batdau, Ketthuc, Status, khachhangIds, query } = params;
 
-    console.time('congnokhachhang-query');
+        console.time('congnokhachhang-query');
 
-    // Build WHERE clause efficiently
-    const whereConditions: any = {};
+        // Build WHERE clause efficiently
+        const whereConditions: any = {};
 
-    // Date range filter
-    if (Batdau && Ketthuc) {
-      whereConditions.ngaygiao = {
-        gte: new Date(Batdau),
-        lte: new Date(Ketthuc),
-      };
-    }
+        // Date range filter
+        if (Batdau && Ketthuc) {
+          whereConditions.ngaygiao = {
+            gte: new Date(Batdau),
+            lte: new Date(Ketthuc),
+          };
+        }
 
-    // Status filter
-    if (Status && Array.isArray(Status) && Status.length > 0) {
-      whereConditions.status = { in: Status };
-    }
+        // Status filter
+        if (Status && Array.isArray(Status) && Status.length > 0) {
+          whereConditions.status = { in: Status };
+        }
 
-    // Customer filter
-    if (khachhangIds && Array.isArray(khachhangIds) && khachhangIds.length > 0) {
-      whereConditions.khachhangId = { in: khachhangIds };
-    }
+        // Customer filter
+        if (
+          khachhangIds &&
+          Array.isArray(khachhangIds) &&
+          khachhangIds.length > 0
+        ) {
+          whereConditions.khachhangId = { in: khachhangIds };
+        }
 
-    // Search query
-    if (query) {
-      whereConditions.OR = [
-        { madonhang: { contains: query, mode: 'insensitive' } },
-        { khachhang: { name: { contains: query, mode: 'insensitive' } } },
-      ];
-    }
+        // Search query
+        if (query) {
+          whereConditions.OR = [
+            { madonhang: { contains: query, mode: 'insensitive' } },
+            { khachhang: { name: { contains: query, mode: 'insensitive' } } },
+          ];
+        }
 
-    // Optimized query with minimal select and efficient joins
-    const donhangs = await this.prisma.donhang.findMany({
-      where: whereConditions,
-      select: {
-        id: true,
-        madonhang: true,
-        ngaygiao: true,
-        tongtien: true,
-        tongvat: true,
-        vat: true, // 🔥 Thêm vat để tính lại tongtien từ tong
-        khachhang: {
+        // Optimized query with minimal select and efficient joins
+        const donhangs = await this.prisma.donhang.findMany({
+          where: whereConditions,
           select: {
-            name: true,
-            makh: true,
+            id: true,
+            madonhang: true,
+            ngaygiao: true,
+            tongtien: true,
+            tongvat: true,
+            vat: true, // 🔥 Thêm vat để tính lại tongtien từ tong
+            khachhang: {
+              select: {
+                name: true,
+                makh: true,
+              },
+            },
+            sanpham: {
+              select: {
+                slnhan: true,
+                giaban: true,
+              },
+            },
           },
-        },
-        sanpham: {
-          select: {
-            slnhan: true,
-            giaban: true,
-          },
-        },
+          orderBy: { createdAt: 'desc' },
+        });
+
+        // Process results efficiently
+        const result = donhangs.map((donhang) => {
+          let tong = 0;
+          let soluong = 0;
+
+          // Calculate totals efficiently without parseFloat overhead
+          // 🔥 Loại bỏ sản phẩm có slnhan = 0
+          for (const item of donhang.sanpham) {
+            const slnhan = Number(item.slnhan) || 0;
+
+            // Skip items with zero received quantity
+            if (slnhan === 0) continue;
+
+            const giaban = Number(item.giaban) || 0;
+            tong += slnhan * giaban;
+            soluong += slnhan;
+          }
+
+          // 🔥 BUGFIX: Tính lại tongvat và tongtien từ tong (đã tính từ slnhan)
+          // Thay vì lấy trực tiếp từ DB (có thể cũ)
+          const vatRate = Number(donhang.vat) || 0;
+          const tongvat = tong * vatRate;
+          const tongtien = tong + tongvat;
+
+          return {
+            id: donhang.id,
+            madonhang: donhang.madonhang,
+            ngaygiao: donhang.ngaygiao,
+            tong: tong.toFixed(3),
+            soluong: soluong.toFixed(3),
+            tongtien: parseFloat(tongtien.toFixed(3)),
+            tongvat: parseFloat(tongvat.toFixed(3)),
+            name: donhang.khachhang?.name,
+            makh: donhang.khachhang?.makh,
+          };
+        });
+
+        console.timeEnd('congnokhachhang-query');
+        return result || [];
       },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    // Process results efficiently
-    const result = donhangs.map((donhang) => {
-      let tong = 0;
-      let soluong = 0;
-
-      // Calculate totals efficiently without parseFloat overhead
-      // 🔥 Loại bỏ sản phẩm có slnhan = 0
-      for (const item of donhang.sanpham) {
-        const slnhan = Number(item.slnhan) || 0;
-        
-        // Skip items with zero received quantity
-        if (slnhan === 0) continue;
-        
-        const giaban = Number(item.giaban) || 0;
-        tong += slnhan * giaban;
-        soluong += slnhan;
-      }
-
-      // 🔥 BUGFIX: Tính lại tongvat và tongtien từ tong (đã tính từ slnhan)
-      // Thay vì lấy trực tiếp từ DB (có thể cũ)
-      const vatRate = Number(donhang.vat) || 0;
-      const tongvat = tong * vatRate;
-      const tongtien = tong + tongvat;
-
-      return {
-        id: donhang.id,
-        madonhang: donhang.madonhang,
-        ngaygiao: donhang.ngaygiao,
-        tong: tong.toFixed(3),
-        soluong: soluong.toFixed(3),
-        tongtien: parseFloat(tongtien.toFixed(3)),
-        tongvat: parseFloat(tongvat.toFixed(3)),
-        name: donhang.khachhang?.name,
-        makh: donhang.khachhang?.makh,
-      };
-    });
-
-    console.timeEnd('congnokhachhang-query');
-    return result || [];
-    }, params);
+      params,
+    );
   }
 
-
   async downloadcongnokhachhang(params: any) {
-    const { Batdau, Ketthuc, query,ids } = params;
-    
+    const { Batdau, Ketthuc, query, ids } = params;
+
     // ✅ Sử dụng TimezoneUtilService cho date range
-    const dateRange =  {
-        gte: Batdau ? new Date(Batdau) : undefined,
-        lte: Ketthuc ? new Date(Ketthuc) : undefined,
-    } 
+    const dateRange = {
+      gte: Batdau ? new Date(Batdau) : undefined,
+      lte: Ketthuc ? new Date(Ketthuc) : undefined,
+    };
     const where: any = {
       ngaygiao: dateRange,
       status: Array.isArray(params.Status)
         ? { in: params.Status }
         : params.Status,
     };
-    if(ids.length>0){
+    if (ids.length > 0) {
       where.id = { in: ids };
     }
     if (query) {
@@ -378,7 +400,7 @@ export class DonhangService {
         { khachhang: { name: { contains: query, mode: 'insensitive' } } },
       ];
     }
-    
+
     const donhangs = await this.prisma.donhang.findMany({
       where,
       include: {
@@ -391,9 +413,9 @@ export class DonhangService {
       },
       orderBy: { createdAt: 'desc' },
     });
-    
+
     const Sanphams = await this.prisma.sanpham.findMany();
-    
+
     // Step 1: Flatten all order items với thông tin cơ bản
     // 🔥 Loại bỏ sản phẩm có slnhan = 0
     const flatItems = donhangs.flatMap((v: any) => {
@@ -407,14 +429,17 @@ export class DonhangService {
           const giaban = v1.giaban || 0;
           const vat: any = Number(product?.vat) || 0;
           const thanhtiensauvat = v1.slnhan * giaban * (1 + vat);
-          
+
           // Chuẩn hóa ngày giao để đảm bảo grouping chính xác
-          const normalizedDate = v.ngaygiao ? 
-            moment(v.ngaygiao).tz('Asia/Ho_Chi_Minh').startOf('day').format('YYYY-MM-DD') : 
-            'no-date';
-            
-          // const normalizedDate = v.ngaygiao ? 
-          //   moment(v.ngaygiao).utc().startOf('day').format('YYYY-MM-DD') : 
+          const normalizedDate = v.ngaygiao
+            ? moment(v.ngaygiao)
+                .tz('Asia/Ho_Chi_Minh')
+                .startOf('day')
+                .format('YYYY-MM-DD')
+            : 'no-date';
+
+          // const normalizedDate = v.ngaygiao ?
+          //   moment(v.ngaygiao).utc().startOf('day').format('YYYY-MM-DD') :
           //   'no-date';
           return {
             id: v.id,
@@ -447,12 +472,12 @@ export class DonhangService {
       return (a.tenhang || '').localeCompare(b.tenhang || '');
     });
 
-    flatItems.forEach(item => {
+    flatItems.forEach((item) => {
       // Tạo key duy nhất cho combination (customer + date)
       const customerKey = item.makhachhang || 'unknown-customer';
       const dateKey = item.ngaygiaoNormalized;
       const combinationKey = `${customerKey}|${dateKey}`;
-      
+
       if (!combinationTotals.has(combinationKey)) {
         combinationTotals.set(combinationKey, {
           tongtiensauvat: 0,
@@ -463,15 +488,15 @@ export class DonhangService {
             tenkhachhang: item.tenkhachhang,
             diachi: item.diachi,
             SDT: item.SDT,
-            email: item.email
+            email: item.email,
           },
           dateInfo: {
             ngaygiao: item.ngaygiao,
-            ngaygiaoNormalized: item.ngaygiaoNormalized
-          }
+            ngaygiaoNormalized: item.ngaygiaoNormalized,
+          },
         });
       }
-      
+
       const combination = combinationTotals.get(combinationKey);
       combination.tongtiensauvat += item.thanhtiensauvat;
       combination.tongtientruocthue += item.thanhtientruocvat;
@@ -479,28 +504,32 @@ export class DonhangService {
     });
 
     // Step 3: Apply tongtiensauvat cho từng item dựa trên combination
-    const result = flatItems.map(item => {
+    const result = flatItems.map((item) => {
       const customerKey = item.makhachhang || 'unknown-customer';
       const dateKey = item.ngaygiaoNormalized;
       const combinationKey = `${customerKey}|${dateKey}`;
       const combination = combinationTotals.get(combinationKey);
-      
+
       return {
         ...item,
-        tongtiensauvat: combination ? combination.tongtiensauvat : item.thanhtiensauvat,
-        tongtientruocthue: combination ? combination.tongtientruocthue : item.thanhtientruocvat,
+        tongtiensauvat: combination
+          ? combination.tongtiensauvat
+          : item.thanhtiensauvat,
+        tongtientruocthue: combination
+          ? combination.tongtientruocthue
+          : item.thanhtientruocvat,
         // Thêm debug info (có thể remove sau)
         _debug: {
           combinationKey: combinationKey,
-          itemsInCombination: combination?.itemCount || 0
-        }
+          itemsInCombination: combination?.itemCount || 0,
+        },
       };
     });
-    
+
     combinationTotals.forEach((value, key) => {
       // console.log(`${key}: ${value.tongtiensauvat} VND (${value.itemCount} items)`);
     });
-    
+
     // Group data by customer and create Excel file
     return this.createCongnoExcelFile(result || [], params);
   }
@@ -530,163 +559,166 @@ export class DonhangService {
       { key: 'thanhtiensauvat', header: 'Thành Tiền Sau VAT', width: 20 },
       { key: 'tongtiensauvat', header: 'Tổng Tiền Sau Thuế', width: 20 },
       { key: 'tongtientruocthue', header: 'Tổng Tiền Trước Thuế', width: 20 },
-      { key: 'tongcong', header: 'Tổng Cộng Khách Hàng', width: 25 }
+      { key: 'tongcong', header: 'Tổng Cộng Khách Hàng', width: 25 },
     ];
-
 
     worksheet.columns = columns;
 
     // Style header row
-  // Header logo and title for rows 1-9
-  // Add logo image
-  // Helper function to set fallback logo
-  const setFallbackLogo = () => {
-    const logoCell = worksheet.getCell('A1');
-    logoCell.value = 'TRAN GIA';
-    logoCell.font = { 
-      bold: true, 
-      size: 16, 
-      color: { argb: 'FFFF0000' }
+    // Header logo and title for rows 1-9
+    // Add logo image
+    // Helper function to set fallback logo
+    const setFallbackLogo = () => {
+      const logoCell = worksheet.getCell('A1');
+      logoCell.value = 'TRAN GIA';
+      logoCell.font = {
+        bold: true,
+        size: 16,
+        color: { argb: 'FFFF0000' },
+      };
+      logoCell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFCC00' },
+      };
+      logoCell.alignment = { horizontal: 'left', vertical: 'middle' };
+      logoCell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+      // Set row height for fallback text
+      worksheet.getRow(1).height = 30;
     };
-    logoCell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFFFCC00' }
-    };
-    logoCell.alignment = { horizontal: 'left', vertical: 'middle' };
-    logoCell.border = {
-      top: { style: 'thin' },
-      left: { style: 'thin' },
-      bottom: { style: 'thin' },
-      right: { style: 'thin' }
-    };
-    // Set row height for fallback text
-    worksheet.getRow(1).height = 30;
-  };
 
-  try {
-    const response = await fetch('https://tg.rausachtrangia.com/images/logo.svg');
-    if (response.ok) {
-      const imageBuffer = await response.arrayBuffer();
-      const imageId = workbook.addImage({
-        buffer: imageBuffer,
-        extension: 'png',
-      });
-      
-      // Merge cells A1:P1 for logo area first
-      worksheet.mergeCells('A1:P1');
-      
-      // Add image to cell A1 with specific dimensions
-      worksheet.addImage(imageId, {
-        tl: { col: 0, row: 0 }, // Top-left position (A1)
-        ext: { width: 200, height: 60 } // Image dimensions in pixels
-      });
-      
-      // Set row height to match image height (convert pixels to points: pixels * 0.75)
-      worksheet.getRow(1).height = 60 * 0.75; // 45 points
-    } else {
+    try {
+      const response = await fetch(
+        'https://tg.rausachtrangia.com/images/logo.svg',
+      );
+      if (response.ok) {
+        const imageBuffer = await response.arrayBuffer();
+        const imageId = workbook.addImage({
+          buffer: imageBuffer,
+          extension: 'png',
+        });
+
+        // Merge cells A1:P1 for logo area first
+        worksheet.mergeCells('A1:P1');
+
+        // Add image to cell A1 with specific dimensions
+        worksheet.addImage(imageId, {
+          tl: { col: 0, row: 0 }, // Top-left position (A1)
+          ext: { width: 200, height: 60 }, // Image dimensions in pixels
+        });
+
+        // Set row height to match image height (convert pixels to points: pixels * 0.75)
+        worksheet.getRow(1).height = 60 * 0.75; // 45 points
+      } else {
+        // Fallback to text if image fails to load
+        worksheet.mergeCells('A1:P1');
+        setFallbackLogo();
+      }
+    } catch (error) {
+      console.error('Error loading logo image:', error);
       // Fallback to text if image fails to load
-      worksheet.mergeCells('A1:P1');
+      worksheet.mergeCells('A1:H1');
+      worksheet.mergeCells('I1:P1');
       setFallbackLogo();
     }
-  } catch (error) {
-    console.error('Error loading logo image:', error);
-    // Fallback to text if image fails to load
-    worksheet.mergeCells('A1:H1');
-    worksheet.mergeCells('I1:P1');
-    setFallbackLogo();
-  }
-  
-  // Group data by customer and then by date
-  const groupedData = this.groupDataByCustomerAndDate(data);
-  
-  // Get first customer info for display
-  const firstCustomer = groupedData[0];  
-  worksheet.getCell('A4').value = `Tên Khách Hàng: ${firstCustomer?.tenkhachhang || ''}`;
-  worksheet.getCell('A5').value = `Địa chỉ: ${firstCustomer?.diachi || ''}`; 
-  worksheet.getCell('A6').value = `Điện thoại: ${firstCustomer?.SDT || ''}`;
-  worksheet.getCell('A7').value = `Người Liên Hệ: ${firstCustomer?.nguoilienhe || ''}`;
-  worksheet.getCell('I7').value = `Email: ${firstCustomer?.email || ''}`;
 
-  // Merge company info across columns
-  worksheet.mergeCells('A4:P4');
-  worksheet.mergeCells('A5:P5');
-  worksheet.mergeCells('A6:P6');
-  worksheet.mergeCells('A7:H7');
-  worksheet.mergeCells('I7:P7');
+    // Group data by customer and then by date
+    const groupedData = this.groupDataByCustomerAndDate(data);
 
-  // Add report title
-  const titleCell = worksheet.getCell('A2');
-  titleCell.value = 'BÁO CÁO CÔNG NỢ KHÁCH HÀNG';
-  titleCell.font = { bold: true, size: 14 };
-  titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
-  worksheet.mergeCells('A2:P2');
+    // Get first customer info for display
+    const firstCustomer = groupedData[0];
+    worksheet.getCell('A4').value =
+      `Tên Khách Hàng: ${firstCustomer?.tenkhachhang || ''}`;
+    worksheet.getCell('A5').value = `Địa chỉ: ${firstCustomer?.diachi || ''}`;
+    worksheet.getCell('A6').value = `Điện thoại: ${firstCustomer?.SDT || ''}`;
+    worksheet.getCell('A7').value =
+      `Người Liên Hệ: ${firstCustomer?.nguoilienhe || ''}`;
+    worksheet.getCell('I7').value = `Email: ${firstCustomer?.email || ''}`;
 
-  // Add date range if available
-  if (params.Batdau || params.Ketthuc) {
-    const dateRange = `Từ ngày: ${params.Batdau ? moment(params.Batdau).format('DD/MM/YYYY') : 'N/A'} - Đến ngày: ${params.Ketthuc ? moment(params.Ketthuc).format('DD/MM/YYYY') : 'N/A'}`;
-    const dateCell = worksheet.getCell('A3');
-    dateCell.value = dateRange;
-    dateCell.alignment = { horizontal: 'center', vertical: 'middle' };
-    worksheet.mergeCells('A3:P3');
-  }
+    // Merge company info across columns
+    worksheet.mergeCells('A4:P4');
+    worksheet.mergeCells('A5:P5');
+    worksheet.mergeCells('A6:P6');
+    worksheet.mergeCells('A7:H7');
+    worksheet.mergeCells('I7:P7');
 
-  // Set row heights for header section
-  worksheet.getRow(1).height = 30;
-  worksheet.getRow(2).height = 25;
-  worksheet.getRow(3).height = 20;
+    // Add report title
+    const titleCell = worksheet.getCell('A2');
+    titleCell.value = 'BÁO CÁO CÔNG NỢ KHÁCH HÀNG';
+    titleCell.font = { bold: true, size: 14 };
+    titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+    worksheet.mergeCells('A2:P2');
 
-  // Add actual column headers at row 10
-  columns.forEach((column, index: number) => {
-    const cell = worksheet.getCell(10, index + 1);
-    cell.value = column.header;
-  });
+    // Add date range if available
+    if (params.Batdau || params.Ketthuc) {
+      const dateRange = `Từ ngày: ${params.Batdau ? moment(params.Batdau).format('DD/MM/YYYY') : 'N/A'} - Đến ngày: ${params.Ketthuc ? moment(params.Ketthuc).format('DD/MM/YYYY') : 'N/A'}`;
+      const dateCell = worksheet.getCell('A3');
+      dateCell.value = dateRange;
+      dateCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      worksheet.mergeCells('A3:P3');
+    }
 
+    // Set row heights for header section
+    worksheet.getRow(1).height = 30;
+    worksheet.getRow(2).height = 25;
+    worksheet.getRow(3).height = 20;
+
+    // Add actual column headers at row 10
+    columns.forEach((column, index: number) => {
+      const cell = worksheet.getCell(10, index + 1);
+      cell.value = column.header;
+    });
 
     const headerRow = worksheet.getRow(10);
-
 
     headerRow.font = { bold: true, color: { argb: 'FFFFFF' } };
     headerRow.fill = {
       type: 'pattern',
       pattern: 'solid',
-      fgColor: { argb: '366092' }
+      fgColor: { argb: '366092' },
     };
     headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
     headerRow.height = 25;
-    
+
     let currentRow = 11; // Start after header row
     const mergeRanges: any[] = [];
 
     // Add data with customer and date grouping
     for (const customerData of groupedData) {
       const customerStartRow = currentRow;
-      
+
       for (const dateGroup of customerData.dateGroups) {
         const dateStartRow = currentRow;
-        
+
         // Group items by madonhang within this date group
         const orderGroups = new Map();
-        dateGroup.items.forEach(item => {
+        dateGroup.items.forEach((item) => {
           const orderKey = item.madonhang || 'unknown-order';
           if (!orderGroups.has(orderKey)) {
             orderGroups.set(orderKey, []);
           }
           orderGroups.get(orderKey).push(item);
         });
-        
+
         // Process each order group
         for (const [orderKey, orderItems] of orderGroups) {
           const orderStartRow = currentRow;
-          
+
           for (const item of orderItems) {
             const row = worksheet.getRow(currentRow);
-            
+
             // Format date
             const ngaygiao = item.ngaygiao ? new Date(item.ngaygiao) : null;
-            
+
             row.values = {
-              ngaygiao: ngaygiao ? moment(ngaygiao).tz('Asia/Ho_Chi_Minh').format("DD/MM/YYYY") : '',
+              ngaygiao: ngaygiao
+                ? moment(ngaygiao).tz('Asia/Ho_Chi_Minh').format('DD/MM/YYYY')
+                : '',
               makhachhang: item.makhachhang || '',
               tenkhachhang: item.tenkhachhang || '',
               madonhang: item.madonhang || '',
@@ -702,17 +734,26 @@ export class DonhangService {
               ghichu: item.ghichu || '',
               tongtiensauvat: Number(item.tongtiensauvat) || 0,
               tongtientruocthue: Number(item.tongtientruocthue) || 0,
-              tongcong: Number(customerData.tongtiensauvat) || 0  // Tổng cộng của cả khách hàng
+              tongcong: Number(customerData.tongtiensauvat) || 0, // Tổng cộng của cả khách hàng
             };
 
             // Format number columns
-            ['soluong', 'dongia', 'thanhtientruocvat', 'dongiavathoadon', 'thanhtiensauvat', 'tongtiensauvat', 'tongtientruocthue', 'tongcong'].forEach(col => {
+            [
+              'soluong',
+              'dongia',
+              'thanhtientruocvat',
+              'dongiavathoadon',
+              'thanhtiensauvat',
+              'tongtiensauvat',
+              'tongtientruocthue',
+              'tongcong',
+            ].forEach((col) => {
               const cell = row.getCell(col);
               cell.numFmt = '#,##0.00';
               cell.alignment = { horizontal: 'right' };
             });
 
-            ['vat'].forEach(col => {
+            ['vat'].forEach((col) => {
               const cell = row.getCell(col);
               cell.numFmt = '0.00%';
               cell.alignment = { horizontal: 'right' };
@@ -720,78 +761,89 @@ export class DonhangService {
 
             currentRow++;
           }
-          
+
           const orderEndRow = currentRow - 1;
-          
+
           // Create merge ranges for customer info by madonhang
           if (orderEndRow > orderStartRow) {
-            const makhachhangColIndex = columns.findIndex(c => c.key === 'makhachhang') + 1;
-            const tenkhachhangColIndex = columns.findIndex(c => c.key === 'tenkhachhang') + 1;
-            const madonhangColIndex = columns.findIndex(c => c.key === 'madonhang') + 1;
-            
+            const makhachhangColIndex =
+              columns.findIndex((c) => c.key === 'makhachhang') + 1;
+            const tenkhachhangColIndex =
+              columns.findIndex((c) => c.key === 'tenkhachhang') + 1;
+            const madonhangColIndex =
+              columns.findIndex((c) => c.key === 'madonhang') + 1;
+
             // Merge makhachhang theo madonhang
             mergeRanges.push({
               range: `${String.fromCharCode(64 + makhachhangColIndex)}${orderStartRow}:${String.fromCharCode(64 + makhachhangColIndex)}${orderEndRow}`,
-              value: orderItems[0].makhachhang || ''
+              value: orderItems[0].makhachhang || '',
             });
-            
+
             // Merge tenkhachhang theo madonhang
             mergeRanges.push({
               range: `${String.fromCharCode(64 + tenkhachhangColIndex)}${orderStartRow}:${String.fromCharCode(64 + tenkhachhangColIndex)}${orderEndRow}`,
-              value: orderItems[0].tenkhachhang || ''
+              value: orderItems[0].tenkhachhang || '',
             });
-            
+
             // Merge madonhang theo madonhang (giống logic trước đó)
             mergeRanges.push({
               range: `${String.fromCharCode(64 + madonhangColIndex)}${orderStartRow}:${String.fromCharCode(64 + madonhangColIndex)}${orderEndRow}`,
-              value: orderItems[0].madonhang || ''
+              value: orderItems[0].madonhang || '',
             });
           }
         }
 
         const dateEndRow = currentRow - 1;
-        
+
         // Skip daily summary row - removed as requested
-        
+
         // Create merge ranges for date grouping (merge ngaygiao column for same date)
         if (dateEndRow > dateStartRow) {
-          const ngaygiaoColIndex = columns.findIndex(c => c.key === 'ngaygiao') + 1;
+          const ngaygiaoColIndex =
+            columns.findIndex((c) => c.key === 'ngaygiao') + 1;
           mergeRanges.push({
             range: `${String.fromCharCode(64 + ngaygiaoColIndex)}${dateStartRow}:${String.fromCharCode(64 + ngaygiaoColIndex)}${dateEndRow}`,
-            value: dateGroup.items[0].ngaygiao ? moment(dateGroup.items[0].ngaygiao).tz('Asia/Ho_Chi_Minh').format("DD/MM/YYYY") : ''
+            value: dateGroup.items[0].ngaygiao
+              ? moment(dateGroup.items[0].ngaygiao)
+                  .tz('Asia/Ho_Chi_Minh')
+                  .format('DD/MM/YYYY')
+              : '',
           });
-          
+
           // THÊM: Merge tongtiensauvat cho cùng ngày giao của cùng khách hàng
-          const tongtiensauvatColIndex = columns.findIndex(c => c.key === 'tongtiensauvat') + 1;
+          const tongtiensauvatColIndex =
+            columns.findIndex((c) => c.key === 'tongtiensauvat') + 1;
           mergeRanges.push({
             range: `${String.fromCharCode(64 + tongtiensauvatColIndex)}${dateStartRow}:${String.fromCharCode(64 + tongtiensauvatColIndex)}${dateEndRow}`,
-            value: dateGroup.items[0].tongtiensauvat
+            value: dateGroup.items[0].tongtiensauvat,
           });
-          
+
           // THÊM: Merge tongtientruocthue cho cùng ngày giao của cùng khách hàng
-          const tongtientruocthueColIndex = columns.findIndex(c => c.key === 'tongtientruocthue') + 1;
+          const tongtientruocthueColIndex =
+            columns.findIndex((c) => c.key === 'tongtientruocthue') + 1;
           mergeRanges.push({
             range: `${String.fromCharCode(64 + tongtientruocthueColIndex)}${dateStartRow}:${String.fromCharCode(64 + tongtientruocthueColIndex)}${dateEndRow}`,
-            value: dateGroup.items[0].tongtientruocthue
+            value: dateGroup.items[0].tongtientruocthue,
           });
         }
       }
 
       const customerEndRow = currentRow - 1;
-      
+
       // THÊM: Merge tongcong cho toàn bộ khách hàng
       if (customerEndRow > customerStartRow) {
-        const tongcongColIndex = columns.findIndex(c => c.key === 'tongcong') + 1;
+        const tongcongColIndex =
+          columns.findIndex((c) => c.key === 'tongcong') + 1;
         mergeRanges.push({
           range: `${String.fromCharCode(64 + tongcongColIndex)}${customerStartRow}:${String.fromCharCode(64 + tongcongColIndex)}${customerEndRow}`,
-          value: customerData.tongtiensauvat  // Tổng cộng của cả khách hàng
+          value: customerData.tongtiensauvat, // Tổng cộng của cả khách hàng
         });
       }
     }
 
     // Apply merge ranges with duplicate check
     const appliedRanges = new Set<string>();
-    mergeRanges.forEach(merge => {
+    mergeRanges.forEach((merge) => {
       if (!appliedRanges.has(merge.range)) {
         try {
           worksheet.mergeCells(merge.range);
@@ -800,7 +852,10 @@ export class DonhangService {
           cell.alignment = { horizontal: 'center', vertical: 'middle' };
           cell.font = { bold: true };
         } catch (error) {
-          console.warn(`Warning: Could not merge range ${merge.range}:`, error.message);
+          console.warn(
+            `Warning: Could not merge range ${merge.range}:`,
+            error.message,
+          );
         }
       }
     });
@@ -812,7 +867,7 @@ export class DonhangService {
           top: { style: 'thin' },
           left: { style: 'thin' },
           bottom: { style: 'thin' },
-          right: { style: 'thin' }
+          right: { style: 'thin' },
         };
       });
     });
@@ -823,11 +878,12 @@ export class DonhangService {
 
     // Generate buffer
     const buffer = await workbook.xlsx.writeBuffer();
-    
+
     return {
       buffer: buffer,
       filename: filename,
-      contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      contentType:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     };
   }
 
@@ -835,46 +891,46 @@ export class DonhangService {
    * Group data by customer and then by date (updated with normalized date keys)
    */
   private groupDataByCustomerAndDate(data: any[]): any[] {
-    const customerMap = new Map();   
-    data.forEach(item => {
+    const customerMap = new Map();
+    data.forEach((item) => {
       const customerKey = item.makhachhang || 'unknown-customer';
-      
+
       if (!customerMap.has(customerKey)) {
         customerMap.set(customerKey, {
           makhachhang: item.makhachhang,
-          tenkhachhang: item.tenkhachhang,  
+          tenkhachhang: item.tenkhachhang,
           diachi: item.diachi,
           SDT: item.SDT,
-          email : item.email,
+          email: item.email,
           tongtiensauvat: 0, // Sẽ được tính lại dựa trên từng date group
           items: [],
-          dateGroups: []
+          dateGroups: [],
         });
       }
-      
+
       const customer = customerMap.get(customerKey);
       customer.items.push(item);
       // KHÔNG tính tổng ở đây, sẽ tính từ date groups
     });
-    
+
     // Group items by normalized date within each customer
-    customerMap.forEach(customer => {
+    customerMap.forEach((customer) => {
       const dateMap = new Map();
-      
-      customer.items.forEach(item => {
+
+      customer.items.forEach((item) => {
         // Sử dụng normalized date key giống như logic chính
         const dateKey = item.ngaygiaoNormalized || 'no-date';
-        
+
         if (!dateMap.has(dateKey)) {
           dateMap.set(dateKey, {
             date: item.ngaygiao,
             dateKey: dateKey,
             items: [],
             tongtiensauvat: 0,
-            combinationKey: `${customer.makhachhang}|${dateKey}`
+            combinationKey: `${customer.makhachhang}|${dateKey}`,
           });
         }
-        
+
         const dateGroup = dateMap.get(dateKey);
         dateGroup.items.push(item);
         // Sử dụng tongtiensauvat đã được tính trong main logic
@@ -883,7 +939,7 @@ export class DonhangService {
           dateGroup.tongtiensauvat = Number(item.tongtiensauvat) || 0;
         }
       });
-      
+
       // Sort date groups by date
       customer.dateGroups = Array.from(dateMap.values()).sort((a, b) => {
         if (!a.date && !b.date) return 0;
@@ -891,16 +947,16 @@ export class DonhangService {
         if (!b.date) return -1;
         return new Date(a.date).getTime() - new Date(b.date).getTime();
       });
-      
+
       // Tính tổng customer.tongtiensauvat từ các date groups (chỉ để hiển thị tổng cho customer)
       customer.tongtiensauvat = customer.dateGroups.reduce((sum, dateGroup) => {
         return sum + dateGroup.tongtiensauvat;
       }, 0);
     });
-    
+
     // Sort customers by name
-    return Array.from(customerMap.values()).sort((a, b) => 
-      (a.tenkhachhang || '').localeCompare(b.tenkhachhang || '')
+    return Array.from(customerMap.values()).sort((a, b) =>
+      (a.tenkhachhang || '').localeCompare(b.tenkhachhang || ''),
     );
   }
 
@@ -909,27 +965,27 @@ export class DonhangService {
    */
   private groupDataByCustomer(data: any[]): any[] {
     const customerMap = new Map();
-    
-    data.forEach(item => {
+
+    data.forEach((item) => {
       const customerKey = item.makhachhang || 'unknown';
-      
+
       if (!customerMap.has(customerKey)) {
         customerMap.set(customerKey, {
           makhachhang: item.makhachhang,
           tenkhachhang: item.tenkhachhang,
           tongtiensauvat: 0,
-          items: []
+          items: [],
         });
       }
-      
+
       const customer = customerMap.get(customerKey);
       customer.items.push(item);
       customer.tongtiensauvat += Number(item.thanhtiensauvat) || 0;
     });
-    
+
     // Sort customers by name
-    return Array.from(customerMap.values()).sort((a, b) => 
-      (a.tenkhachhang || '').localeCompare(b.tenkhachhang || '')
+    return Array.from(customerMap.values()).sort((a, b) =>
+      (a.tenkhachhang || '').localeCompare(b.tenkhachhang || ''),
     );
   }
 
@@ -942,9 +998,9 @@ export class DonhangService {
 
     // ✅ Sử dụng TimezoneUtilService cho date range
     const dateRange = {
-        gte: Batdau ? new Date(Batdau) : undefined,
-        lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      }
+      gte: Batdau ? new Date(Batdau) : undefined,
+      lte: Ketthuc ? new Date(Ketthuc) : undefined,
+    };
 
     // Lấy danh sách đơn hàng theo điều kiện lọc
     const donhangs = await this.prisma.donhang.findMany({
@@ -1002,307 +1058,356 @@ export class DonhangService {
     // Chia danh sách đơn hàng thành các batch nhỏ
     for (let i = 0; i < listdonhang.length; i += batchSize) {
       const batch = listdonhang.slice(i, i + batchSize);
-      console.log(`Xử lý batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(listdonhang.length / batchSize)} với ${batch.length} đơn hàng`);
+      console.log(
+        `Xử lý batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(listdonhang.length / batchSize)} với ${batch.length} đơn hàng`,
+      );
 
       try {
-        const batchResult = await this.prisma.$transaction(async (prisma) => {
-          let updatedCount = 0;
-          let errorCount = 0;
+        const batchResult = await this.prisma.$transaction(
+          async (prisma) => {
+            let updatedCount = 0;
+            let errorCount = 0;
 
-          for (const donhangId of batch) {
-            try {
-              // 1. Tìm đơn hàng với khách hàng và bảng giá của khách hàng
-              const donhang = await prisma.donhang.findUnique({
-                where: { id: donhangId },
-                include: {
-                  khachhang: {
-                    include: {
-                      banggia: {
-                        include: {
-                          sanpham: {
-                            include: {
-                              sanpham: true
-                            }
+            for (const donhangId of batch) {
+              try {
+                // 1. Tìm đơn hàng với khách hàng và bảng giá của khách hàng
+                const donhang = await prisma.donhang.findUnique({
+                  where: { id: donhangId },
+                  include: {
+                    khachhang: {
+                      include: {
+                        banggia: {
+                          include: {
+                            sanpham: {
+                              include: {
+                                sanpham: true,
+                              },
+                            },
                           },
                         },
                       },
                     },
+                    sanpham: {
+                      include: {
+                        sanpham: true,
+                      },
+                    },
                   },
-                  sanpham: {
-                    include: {
-                      sanpham: true
-                    }
-                  },
-                },
-              });
+                });
 
-              console.log(`Đơn hàng ${donhangId} đã được tìm thấy`);
-              console.log(`Đơn hàng ${donhang} đã được tìm thấy`);
-              
-              if (!donhang) {
-                console.warn(`Đơn hàng ${donhangId} không tồn tại`);
-                errorCount++;
-                continue;
-              }
+                console.log(`Đơn hàng ${donhangId} đã được tìm thấy`);
+                console.log(`Đơn hàng ${donhang} đã được tìm thấy`);
 
-              // 2. Kiểm tra khách hàng có bảng giá không
-              if (!donhang.khachhang) {
-                console.warn(`Đơn hàng ${donhang.madonhang} không có thông tin khách hàng`);
-                errorCount++;
-                continue;
-              }
-
-              if (!donhang.khachhang.banggia) {
-                console.warn(`Khách hàng ${donhang.khachhang.name} không có bảng giá được gán`);
-                errorCount++;
-                continue;
-              }
-
-              // Lấy bảng giá hiện tại của khách hàng
-              const banggiaKhachhang = donhang.khachhang.banggia;
-
-              // Lấy bảng giá mặc định để fallback
-              const banggiaDefault = await prisma.banggia.findUnique({
-                where: { id: DEFAUL_BANGGIA_ID },
-                include: {
-                  sanpham: {
-                    include: {
-                      sanpham: true
-                    }
-                  },
-                },
-              });
-
-              console.log(`Cập nhật giá cho đơn hàng ${donhang.madonhang} từ bảng giá ${banggiaKhachhang.mabanggia} (của khách hàng ${donhang.khachhang.name})`);
-
-              let tongchua = 0; // Tổng tiền chưa VAT
-              let hasUpdates = false;
-
-              // 3. Cập nhật giá cho từng sản phẩm trong đơn hàng với logic ưu tiên
-              for (const donhangSanpham of donhang.sanpham) {
-                // Tìm giá từ bảng giá của khách hàng (ưu tiên 1)
-                const giaSanpham = banggiaKhachhang.sanpham.find(
-                  (bgsp) => bgsp.sanphamId === donhangSanpham.idSP,
-                );
-
-                // Tìm giá từ bảng giá mặc định (ưu tiên 2)
-                const giaSanphamDefault = banggiaDefault?.sanpham.find(
-                  (bgsp) => bgsp.sanphamId === donhangSanpham.idSP,
-                );
-
-                let giaban = 0;
-                let giaSource = 'none';
-
-                // Logic ưu tiên lấy giá
-                if (giaSanpham) {
-                  const giabanFromBanggia = Number(giaSanpham.giaban);
-                  if (giabanFromBanggia > 0) {
-                    // Ưu tiên 1: Có giá từ bảng giá của khách hàng và > 0
-                    giaban = giabanFromBanggia;
-                    giaSource = `bảng giá ${banggiaKhachhang.mabanggia} (của khách hàng)`;
-                  } else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
-                    // Ưu tiên 2: Giá bảng giá khách hàng = 0, lấy từ bảng giá mặc định
-                    giaban = Number(giaSanphamDefault.giaban);
-                    giaSource = 'bảng giá mặc định (fallback do giá = 0)';
-                  } else {
-                    // Ưu tiên 3: Cả 2 đều = 0 hoặc không có, trả về 0
-                    giaban = 0;
-                    giaSource = 'không tìm thấy giá hợp lệ (trả về 0)';
-                  }
-                } else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
-                  // Ưu tiên 2: Không có trong bảng giá khách hàng, lấy từ bảng giá mặc định
-                  giaban = Number(giaSanphamDefault.giaban);
-                  giaSource = 'bảng giá mặc định (không có trong bảng giá khách hàng)';
-                } else {
-                  // Ưu tiên 3: Không tìm thấy ở đâu, trả về 0
-                  giaban = 0;
-                  giaSource = 'không tìm thấy trong cả 2 bảng giá (trả về 0)';
+                if (!donhang) {
+                  console.warn(`Đơn hàng ${donhangId} không tồn tại`);
+                  errorCount++;
+                  continue;
                 }
 
-                if (giaban > 0) {
-                  const sldat = Number(donhangSanpham.sldat) || 0;
-                  const slgiao = Number(donhangSanpham.slgiao) || 0;
-                  const slnhan = Number(donhangSanpham.slnhan) || 0;
-                  const vat = Number(donhangSanpham.vat) || 0;
+                // 2. Kiểm tra khách hàng có bảng giá không
+                if (!donhang.khachhang) {
+                  console.warn(
+                    `Đơn hàng ${donhang.madonhang} không có thông tin khách hàng`,
+                  );
+                  errorCount++;
+                  continue;
+                }
 
-                  // Lưu giá trị cũ để ghi log
-                  const oldGiaban = Number(donhangSanpham.giaban) || 0;
-                  const oldTtdat = Number(donhangSanpham.ttdat) || 0;
-                  const oldTtgiao = Number(donhangSanpham.ttgiao) || 0;
-                  const oldTtnhan = Number(donhangSanpham.ttnhan) || 0;
-                  const oldTtsauvat = Number(donhangSanpham.ttsauvat) || 0;
+                if (!donhang.khachhang.banggia) {
+                  console.warn(
+                    `Khách hàng ${donhang.khachhang.name} không có bảng giá được gán`,
+                  );
+                  errorCount++;
+                  continue;
+                }
 
-                  // 4. Cập nhật giá và tính toán lại các giá trị
-                  const ttdat = giaban * sldat;
-                  const ttgiao = giaban * slgiao;
-                  const ttnhan = giaban * slnhan;
-                  const ttsauvat = ttnhan * (1 + vat);
+                // Lấy bảng giá hiện tại của khách hàng
+                const banggiaKhachhang = donhang.khachhang.banggia;
 
-                  // 🔥 BUGFIX: Luôn cộng ttnhan vào tongchua để tính tongtien chính xác
-                  // Không phụ thuộc vào việc giá có thay đổi hay không
-                  tongchua += ttnhan;
-
-                  // Kiểm tra có thay đổi giá không
-                  const hasGiaChange = oldGiaban !== giaban;
-
-                  if (hasGiaChange) {
-                    await prisma.donhangsanpham.update({
-                      where: { id: donhangSanpham.id },
-                      data: {
-                        giaban: giaban,
-                        ttdat: ttdat,
-                        ttgiao: ttgiao,
-                        ttnhan: ttnhan,
-                        ttsauvat: ttsauvat,
+                // Lấy bảng giá mặc định để fallback
+                const banggiaDefault = await prisma.banggia.findUnique({
+                  where: { id: DEFAUL_BANGGIA_ID },
+                  include: {
+                    sanpham: {
+                      include: {
+                        sanpham: true,
                       },
-                    });
+                    },
+                  },
+                });
 
-                    // Ghi log audit cho việc đồng bộ giá
-                    await prisma.auditLog.create({
-                      data: {
-                        entityName: 'Donhangsanpham',
-                        entityId: donhangSanpham.id,
-                        action: 'UPDATE',
-                        oldValues: {
-                          giaban: oldGiaban,
-                          ttdat: oldTtdat,
-                          ttgiao: oldTtgiao,
-                          ttnhan: oldTtnhan,
-                          ttsauvat: oldTtsauvat,
-                        },
-                        newValues: {
+                console.log(
+                  `Cập nhật giá cho đơn hàng ${donhang.madonhang} từ bảng giá ${banggiaKhachhang.mabanggia} (của khách hàng ${donhang.khachhang.name})`,
+                );
+
+                let tongchua = 0; // Tổng tiền chưa VAT
+                let hasUpdates = false;
+
+                // 3. Cập nhật giá cho từng sản phẩm trong đơn hàng với logic ưu tiên
+                for (const donhangSanpham of donhang.sanpham) {
+                  // Tìm giá từ bảng giá của khách hàng (ưu tiên 1)
+                  const giaSanpham = banggiaKhachhang.sanpham.find(
+                    (bgsp) => bgsp.sanphamId === donhangSanpham.idSP,
+                  );
+
+                  // Tìm giá từ bảng giá mặc định (ưu tiên 2)
+                  const giaSanphamDefault = banggiaDefault?.sanpham.find(
+                    (bgsp) => bgsp.sanphamId === donhangSanpham.idSP,
+                  );
+
+                  let giaban = 0;
+                  let giaSource = 'none';
+
+                  // Logic ưu tiên lấy giá
+                  if (giaSanpham) {
+                    const giabanFromBanggia = Number(giaSanpham.giaban);
+                    if (giabanFromBanggia > 0) {
+                      // Ưu tiên 1: Có giá từ bảng giá của khách hàng và > 0
+                      giaban = giabanFromBanggia;
+                      giaSource = `bảng giá ${banggiaKhachhang.mabanggia} (của khách hàng)`;
+                    } else if (
+                      giaSanphamDefault &&
+                      Number(giaSanphamDefault.giaban) > 0
+                    ) {
+                      // Ưu tiên 2: Giá bảng giá khách hàng = 0, lấy từ bảng giá mặc định
+                      giaban = Number(giaSanphamDefault.giaban);
+                      giaSource = 'bảng giá mặc định (fallback do giá = 0)';
+                    } else {
+                      // Ưu tiên 3: Cả 2 đều = 0 hoặc không có, trả về 0
+                      giaban = 0;
+                      giaSource = 'không tìm thấy giá hợp lệ (trả về 0)';
+                    }
+                  } else if (
+                    giaSanphamDefault &&
+                    Number(giaSanphamDefault.giaban) > 0
+                  ) {
+                    // Ưu tiên 2: Không có trong bảng giá khách hàng, lấy từ bảng giá mặc định
+                    giaban = Number(giaSanphamDefault.giaban);
+                    giaSource =
+                      'bảng giá mặc định (không có trong bảng giá khách hàng)';
+                  } else {
+                    // Ưu tiên 3: Không tìm thấy ở đâu, trả về 0
+                    giaban = 0;
+                    giaSource = 'không tìm thấy trong cả 2 bảng giá (trả về 0)';
+                  }
+
+                  if (giaban > 0) {
+                    const sldat = Number(donhangSanpham.sldat) || 0;
+                    const slgiao = Number(donhangSanpham.slgiao) || 0;
+                    const slnhan = Number(donhangSanpham.slnhan) || 0;
+                    const vat = Number(donhangSanpham.vat) || 0;
+
+                    // Lưu giá trị cũ để ghi log
+                    const oldGiaban = Number(donhangSanpham.giaban) || 0;
+                    const oldTtdat = Number(donhangSanpham.ttdat) || 0;
+                    const oldTtgiao = Number(donhangSanpham.ttgiao) || 0;
+                    const oldTtnhan = Number(donhangSanpham.ttnhan) || 0;
+                    const oldTtsauvat = Number(donhangSanpham.ttsauvat) || 0;
+
+                    // 4. Cập nhật giá và tính toán lại các giá trị
+                    const ttdat = giaban * sldat;
+                    const ttgiao = giaban * slgiao;
+                    const ttnhan = giaban * slnhan;
+                    const ttsauvat = ttnhan * (1 + vat);
+
+                    // 🔥 BUGFIX: Luôn cộng ttnhan vào tongchua để tính tongtien chính xác
+                    // Không phụ thuộc vào việc giá có thay đổi hay không
+                    tongchua += ttnhan;
+
+                    // Kiểm tra có thay đổi giá không
+                    const hasGiaChange = oldGiaban !== giaban;
+
+                    if (hasGiaChange) {
+                      await prisma.donhangsanpham.update({
+                        where: { id: donhangSanpham.id },
+                        data: {
                           giaban: giaban,
                           ttdat: ttdat,
                           ttgiao: ttgiao,
                           ttnhan: ttnhan,
                           ttsauvat: ttsauvat,
                         },
-                        changedFields: ['giaban', 'ttdat', 'ttgiao', 'ttnhan', 'ttsauvat'],
-                        metadata: {
-                          action: 'DONGBOGIA',
-                          donhangId: donhang.id,
-                          madonhang: donhang.madonhang,
-                          khachhangId: donhang.khachhang.id,
-                          khachhangName: donhang.khachhang.name,
-                          banggiaId: banggiaKhachhang.id,
-                          mabanggia: banggiaKhachhang.mabanggia,
-                          sanphamId: donhangSanpham.idSP,
-                          sanphamTitle: donhangSanpham.sanpham?.title,
-                          sanphamMasp: donhangSanpham.sanpham?.masp,
-                          giaSource: giaSource,
-                          giaDifference: giaban - oldGiaban,
-                          percentChange: oldGiaban > 0 ? ((giaban - oldGiaban) / oldGiaban * 100).toFixed(2) + '%' : 'N/A',
+                      });
+
+                      // Ghi log audit cho việc đồng bộ giá
+                      await prisma.auditLog.create({
+                        data: {
+                          entityName: 'Donhangsanpham',
+                          entityId: donhangSanpham.id,
+                          action: 'UPDATE',
+                          oldValues: {
+                            giaban: oldGiaban,
+                            ttdat: oldTtdat,
+                            ttgiao: oldTtgiao,
+                            ttnhan: oldTtnhan,
+                            ttsauvat: oldTtsauvat,
+                          },
+                          newValues: {
+                            giaban: giaban,
+                            ttdat: ttdat,
+                            ttgiao: ttgiao,
+                            ttnhan: ttnhan,
+                            ttsauvat: ttsauvat,
+                          },
+                          changedFields: [
+                            'giaban',
+                            'ttdat',
+                            'ttgiao',
+                            'ttnhan',
+                            'ttsauvat',
+                          ],
+                          metadata: {
+                            action: 'DONGBOGIA',
+                            donhangId: donhang.id,
+                            madonhang: donhang.madonhang,
+                            khachhangId: donhang.khachhang.id,
+                            khachhangName: donhang.khachhang.name,
+                            banggiaId: banggiaKhachhang.id,
+                            mabanggia: banggiaKhachhang.mabanggia,
+                            sanphamId: donhangSanpham.idSP,
+                            sanphamTitle: donhangSanpham.sanpham?.title,
+                            sanphamMasp: donhangSanpham.sanpham?.masp,
+                            giaSource: giaSource,
+                            giaDifference: giaban - oldGiaban,
+                            percentChange:
+                              oldGiaban > 0
+                                ? (
+                                    ((giaban - oldGiaban) / oldGiaban) *
+                                    100
+                                  ).toFixed(2) + '%'
+                                : 'N/A',
+                          },
+                          status: 'SUCCESS',
                         },
-                        status: 'SUCCESS',
-                      },
-                    });
+                      });
 
-                    hasUpdates = true;
+                      hasUpdates = true;
 
-                    console.log(`✅ Cập nhật sản phẩm ${donhangSanpham.sanpham?.title} - Giá: ${oldGiaban} → ${giaban} (từ ${giaSource})`);
+                      console.log(
+                        `✅ Cập nhật sản phẩm ${donhangSanpham.sanpham?.title} - Giá: ${oldGiaban} → ${giaban} (từ ${giaSource})`,
+                      );
+                    } else {
+                      // Giá không đổi, nhưng vẫn tính tongchua để cập nhật tongtien
+                      console.log(
+                        `ℹ️ Sản phẩm ${donhangSanpham.sanpham?.title} - Giá không đổi: ${giaban} (từ ${giaSource})`,
+                      );
+                    }
                   } else {
-                    // Giá không đổi, nhưng vẫn tính tongchua để cập nhật tongtien
-                    console.log(`ℹ️ Sản phẩm ${donhangSanpham.sanpham?.title} - Giá không đổi: ${giaban} (từ ${giaSource})`);
+                    // Nếu không có giá hợp lệ, vẫn cộng ttnhan hiện tại vào tongchua
+                    const currentTtnhan = Number(donhangSanpham.ttnhan) || 0;
+                    tongchua += currentTtnhan;
+                    console.warn(
+                      `⚠️ Sản phẩm ${donhangSanpham.sanpham?.title} - ${giaSource}, sử dụng ttnhan hiện tại: ${currentTtnhan}`,
+                    );
                   }
-                } else {
-                  // Nếu không có giá hợp lệ, vẫn cộng ttnhan hiện tại vào tongchua
-                  const currentTtnhan = Number(donhangSanpham.ttnhan) || 0;
-                  tongchua += currentTtnhan;
-                  console.warn(`⚠️ Sản phẩm ${donhangSanpham.sanpham?.title} - ${giaSource}, sử dụng ttnhan hiện tại: ${currentTtnhan}`);
                 }
-              }
 
-              // 5. 🔥 BUGFIX: Luôn tính lại tổng tiền cho đơn hàng dựa trên tongchua
-              // Không chỉ khi hasUpdates = true, vì slnhan có thể đã thay đổi trước đó
-              // Lưu giá trị cũ của đơn hàng
-              const oldTongvat = Number(donhang.tongvat) || 0;
-              const oldTongtien = Number(donhang.tongtien) || 0;
+                // 5. 🔥 BUGFIX: Luôn tính lại tổng tiền cho đơn hàng dựa trên tongchua
+                // Không chỉ khi hasUpdates = true, vì slnhan có thể đã thay đổi trước đó
+                // Lưu giá trị cũ của đơn hàng
+                const oldTongvat = Number(donhang.tongvat) || 0;
+                const oldTongtien = Number(donhang.tongtien) || 0;
 
-              const vatRate = Number(donhang.vat) || 0;
-              const tongvat = tongchua * (vatRate);
-              const tongtien = tongchua + tongvat;
+                const vatRate = Number(donhang.vat) || 0;
+                const tongvat = tongchua * vatRate;
+                const tongtien = tongchua + tongvat;
 
-              // Chỉ cập nhật nếu có sự thay đổi về tổng tiền
-              const hasTotalChange = Math.abs(tongtien - oldTongtien) > 0.01; // Tolerance cho làm tròn
+                // Chỉ cập nhật nếu có sự thay đổi về tổng tiền
+                const hasTotalChange = Math.abs(tongtien - oldTongtien) > 0.01; // Tolerance cho làm tròn
 
-              if (hasTotalChange || hasUpdates) {
-                await prisma.donhang.update({
-                  where: { id: donhangId },
-                  data: {
-                    tongvat: tongvat,
-                    tongtien: tongtien,
-                  },
-                });
-
-                // Ghi log audit cho việc cập nhật tổng tiền đơn hàng
-                await prisma.auditLog.create({
-                  data: {
-                    entityName: 'Donhang',
-                    entityId: donhang.id,
-                    action: 'UPDATE',
-                    oldValues: {
-                      tongvat: oldTongvat,
-                      tongtien: oldTongtien,
-                    },
-                    newValues: {
+                if (hasTotalChange || hasUpdates) {
+                  await prisma.donhang.update({
+                    where: { id: donhangId },
+                    data: {
                       tongvat: tongvat,
                       tongtien: tongtien,
                     },
-                    changedFields: ['tongvat', 'tongtien'],
-                    metadata: {
-                      action: 'DONGBOGIA_TOTAL',
-                      madonhang: donhang.madonhang,
-                      khachhangId: donhang.khachhang.id,
-                      khachhangName: donhang.khachhang.name,
-                      banggiaId: banggiaKhachhang.id,
-                      mabanggia: banggiaKhachhang.mabanggia,
-                      tongchua: tongchua,
-                      vatRate: vatRate,
-                      tongtienDifference: tongtien - oldTongtien,
-                      percentChange: oldTongtien > 0 ? ((tongtien - oldTongtien) / oldTongtien * 100).toFixed(2) + '%' : 'N/A',
-                      updatedProductsCount: donhang.sanpham.length,
-                      reason: hasUpdates ? 'Price changed' : 'Total recalculation (slnhan may have changed)',
+                  });
+
+                  // Ghi log audit cho việc cập nhật tổng tiền đơn hàng
+                  await prisma.auditLog.create({
+                    data: {
+                      entityName: 'Donhang',
+                      entityId: donhang.id,
+                      action: 'UPDATE',
+                      oldValues: {
+                        tongvat: oldTongvat,
+                        tongtien: oldTongtien,
+                      },
+                      newValues: {
+                        tongvat: tongvat,
+                        tongtien: tongtien,
+                      },
+                      changedFields: ['tongvat', 'tongtien'],
+                      metadata: {
+                        action: 'DONGBOGIA_TOTAL',
+                        madonhang: donhang.madonhang,
+                        khachhangId: donhang.khachhang.id,
+                        khachhangName: donhang.khachhang.name,
+                        banggiaId: banggiaKhachhang.id,
+                        mabanggia: banggiaKhachhang.mabanggia,
+                        tongchua: tongchua,
+                        vatRate: vatRate,
+                        tongtienDifference: tongtien - oldTongtien,
+                        percentChange:
+                          oldTongtien > 0
+                            ? (
+                                ((tongtien - oldTongtien) / oldTongtien) *
+                                100
+                              ).toFixed(2) + '%'
+                            : 'N/A',
+                        updatedProductsCount: donhang.sanpham.length,
+                        reason: hasUpdates
+                          ? 'Price changed'
+                          : 'Total recalculation (slnhan may have changed)',
+                      },
+                      status: 'SUCCESS',
                     },
-                    status: 'SUCCESS',
-                  },
-                });
+                  });
 
-                console.log(`✅ Cập nhật tổng tiền đơn hàng ${donhang.madonhang}: Tổng chưa VAT: ${tongchua}, VAT: ${tongvat}, Tổng tiền: ${oldTongtien} → ${tongtien} ${hasUpdates ? '(giá thay đổi)' : '(tính lại từ slnhan)'}`);
-              } else {
-                console.log(`ℹ️ Đơn hàng ${donhang.madonhang}: Tổng tiền không thay đổi (${tongtien})`);
+                  console.log(
+                    `✅ Cập nhật tổng tiền đơn hàng ${donhang.madonhang}: Tổng chưa VAT: ${tongchua}, VAT: ${tongvat}, Tổng tiền: ${oldTongtien} → ${tongtien} ${hasUpdates ? '(giá thay đổi)' : '(tính lại từ slnhan)'}`,
+                  );
+                } else {
+                  console.log(
+                    `ℹ️ Đơn hàng ${donhang.madonhang}: Tổng tiền không thay đổi (${tongtien})`,
+                  );
+                }
+
+                updatedCount++;
+              } catch (error) {
+                console.error(`Lỗi khi cập nhật đơn hàng ${donhangId}:`, error);
+                errorCount++;
               }
-
-              
-              updatedCount++;
-            } catch (error) {
-              console.error(`Lỗi khi cập nhật đơn hàng ${donhangId}:`, error);
-              errorCount++;
             }
-          }
 
-          return { updatedCount, errorCount };
-        }, {
-          maxWait: 15000, // Tăng thời gian chờ tối đa lên 15 giây
-          timeout: 12000,  // Tăng timeout cho mỗi transaction lên 12 giây
-        });
+            return { updatedCount, errorCount };
+          },
+          {
+            maxWait: 15000, // Tăng thời gian chờ tối đa lên 15 giây
+            timeout: 12000, // Tăng timeout cho mỗi transaction lên 12 giây
+          },
+        );
 
         totalUpdatedCount += batchResult.updatedCount;
         totalErrorCount += batchResult.errorCount;
 
-        console.log(`Hoàn thành batch: ${batchResult.updatedCount} thành công, ${batchResult.errorCount} lỗi`);
-        
+        console.log(
+          `Hoàn thành batch: ${batchResult.updatedCount} thành công, ${batchResult.errorCount} lỗi`,
+        );
+
         // Thêm delay nhỏ giữa các batch để tránh quá tải
         if (i + batchSize < listdonhang.length) {
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise((resolve) => setTimeout(resolve, 100));
         }
-
       } catch (error) {
-        console.error(`Lỗi khi xử lý batch từ ${i} đến ${i + batchSize - 1}:`, error);
+        console.error(
+          `Lỗi khi xử lý batch từ ${i} đến ${i + batchSize - 1}:`,
+          error,
+        );
         totalErrorCount += batch.length; // Đếm toàn bộ batch này là lỗi
       }
     }
-
-
 
     return {
       status: 'success',
@@ -1318,9 +1423,9 @@ export class DonhangService {
 
     // ✅ Sử dụng TimezoneUtilService cho date range
     const dateRange = {
-        gte: Batdau ? new Date(Batdau) : undefined,
-        lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      }
+      gte: Batdau ? new Date(Batdau) : undefined,
+      lte: Ketthuc ? new Date(Ketthuc) : undefined,
+    };
 
     const result = await this.prisma.donhang.findMany({
       where: {
@@ -1351,8 +1456,21 @@ export class DonhangService {
         gionhanhang: khachhang?.gionhanhang,
         machuyen: khachhang?.machuyen,
         tongsomon: sanpham.length,
-        soluongtt: parseFloat(sanpham.reduce((total, item: any) => total + Number(item.slgiao || 0), 0).toFixed(3)),
-        loadpoint: parseFloat(sanpham.reduce((total, item: any) => total + (Number(item.sanpham?.loadpoint || 0) * Number(item.sldat || 0)), 0).toFixed(3)),
+        soluongtt: parseFloat(
+          sanpham
+            .reduce((total, item: any) => total + Number(item.slgiao || 0), 0)
+            .toFixed(3),
+        ),
+        loadpoint: parseFloat(
+          sanpham
+            .reduce(
+              (total, item: any) =>
+                total +
+                Number(item.sanpham?.loadpoint || 0) * Number(item.sldat || 0),
+              0,
+            )
+            .toFixed(3),
+        ),
         // ✅ nhanvienchiahang and shipper are now string fields
         shipper: donhang.shipper || null,
         nhanvienchiahang: donhang.nhanvienchiahang || null,
@@ -1374,8 +1492,12 @@ export class DonhangService {
           },
         },
         // khachhang: true,
-        khachhang: { include: { banggia: {select: {id:true,title:true,mabanggia:true}} } },
-        banggia: {select: {id:true,title:true,mabanggia:true}},
+        khachhang: {
+          include: {
+            banggia: { select: { id: true, title: true, mabanggia: true } },
+          },
+        },
+        banggia: { select: { id: true, title: true, mabanggia: true } },
       },
     });
     if (!result) {
@@ -1384,7 +1506,16 @@ export class DonhangService {
 
     return {
       ...result,
-      loadpoint: parseFloat(result?.sanpham?.reduce((total, item: any) => total + (Number(item.sanpham?.loadpoint || 0) * Number(item.sldat || 0)), 0).toFixed(3)),
+      loadpoint: parseFloat(
+        result?.sanpham
+          ?.reduce(
+            (total, item: any) =>
+              total +
+              Number(item.sanpham?.loadpoint || 0) * Number(item.sldat || 0),
+            0,
+          )
+          .toFixed(3),
+      ),
       sanpham: result.sanpham.map((item: any) => {
         return {
           ...item.sanpham,
@@ -1397,53 +1528,58 @@ export class DonhangService {
           ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
           ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
           vat: parseFloat((item.vat ?? 0).toFixed(3)),
-          ttsauvat: parseFloat((item.ttnhan * (1 + (item.vat || 0))).toFixed(3)),
+          ttsauvat: parseFloat(
+            (item.ttnhan * (1 + (item.vat || 0))).toFixed(3),
+          ),
           ghichu: item.ghichu,
         };
-      })
+      }),
     };
   }
 
   async findAll() {
-    return await PerformanceLogger.logAsync('DonhangService.findAll', async () => {
-      const donhangs = await this.prisma.donhang.findMany({
-      include: {
-        sanpham: {
+    return await PerformanceLogger.logAsync(
+      'DonhangService.findAll',
+      async () => {
+        const donhangs = await this.prisma.donhang.findMany({
           include: {
-            sanpham: true,
+            sanpham: {
+              include: {
+                sanpham: true,
+              },
+            },
+            khachhang: { include: { banggia: { include: { sanpham: true } } } },
           },
-        },
-        khachhang: { include: { banggia: { include: { sanpham: true } } } },
+          orderBy: { createdAt: 'desc' },
+        });
+        const result = donhangs.map((donhang) => ({
+          ...donhang,
+          sanpham: donhang.sanpham.map((item: any) => {
+            // const priceFromBanggia = donhang.khachhang?.banggia
+            //   ? donhang.khachhang.banggia.sanpham.find(
+            //       (sp) => sp.sanphamId === item.idSP,
+            //     )?.giaban
+            //   : 0;
+            // const giaban =
+            //   priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
+            return {
+              ...item.sanpham,
+              idSP: item.idSP,
+              giaban: item.giaban,
+              sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+              slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+              slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+              ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+              ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+              ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
+              ghichu: item.ghichu,
+            };
+          }),
+          name: donhang.khachhang?.name,
+        }));
+        return result;
       },
-      orderBy: { createdAt: 'desc' },
-    });
-    const result = donhangs.map((donhang) => ({
-      ...donhang,
-      sanpham: donhang.sanpham.map((item: any) => {
-        // const priceFromBanggia = donhang.khachhang?.banggia
-        //   ? donhang.khachhang.banggia.sanpham.find(
-        //       (sp) => sp.sanphamId === item.idSP,
-        //     )?.giaban
-        //   : 0;
-        // const giaban =
-        //   priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
-        return {
-          ...item.sanpham,
-          idSP: item.idSP,
-          giaban: item.giaban,
-          sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
-          slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
-          slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
-          ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
-          ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
-          ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
-          ghichu: item.ghichu,
-        };
-      }),
-      name: donhang.khachhang?.name,
-    }));
-    return result;
-    });
+    );
   }
 
   async searchfield(searchParams: Record<string, any>) {
@@ -1572,7 +1708,7 @@ export class DonhangService {
                   ttdat: 0,
                   ttgiao: 0,
                   ttnhan: 0,
-                  ghichu:item.Remark || '',
+                  ghichu: item.Remark || '',
                 };
               } catch (error) {
                 console.warn(
@@ -1621,7 +1757,7 @@ export class DonhangService {
       fail: 0,
       skip: 0,
       duplicates: [] as any[],
-      errors: [] as any[]
+      errors: [] as any[],
     };
 
     for (const order of validRawData) {
@@ -1631,7 +1767,7 @@ export class DonhangService {
           processResults.fail++;
           processResults.errors.push({
             customer: order?.originalData?.tenkh || 'Unknown',
-            error: 'Missing required data (khachhangId or ngaygiao)'
+            error: 'Missing required data (khachhangId or ngaygiao)',
           });
           continue;
         }
@@ -1639,18 +1775,18 @@ export class DonhangService {
         // Kiểm tra đơn hàng theo ngày (ngày giao tính theo startOf day và endOf day)
         const startOfDay = this.getStartOfDay(order.ngaygiao);
         const endOfDay = this.getEndOfDay(order.ngaygiao);
-        
+
         const existingOrders = await this.prisma.donhang.findMany({
           where: {
             khachhangId: order.khachhangId,
-            ngaygiao: { 
-              gte: startOfDay, 
-              lte: endOfDay 
+            ngaygiao: {
+              gte: startOfDay,
+              lte: endOfDay,
             },
           },
-          include: { 
+          include: {
             sanpham: true,
-            khachhang: true 
+            khachhang: true,
           },
         });
 
@@ -1662,7 +1798,9 @@ export class DonhangService {
             customerName: order.originalData?.tenkh || 'Unknown',
             deliveryDate: order.ngaygiao,
             newProductCount: order.sanpham.length,
-            existingProductCounts: existingOrders.map(eo => eo.sanpham.length)
+            existingProductCounts: existingOrders.map(
+              (eo) => eo.sanpham.length,
+            ),
           });
         } else {
           // Không trùng - tạo mới luôn
@@ -1670,20 +1808,26 @@ export class DonhangService {
             await this.create(order);
             processResults.success++;
           } catch (createError: any) {
-            console.error(`Lỗi tạo đơn hàng cho ${order.originalData?.tenkh}:`, createError);
+            console.error(
+              `Lỗi tạo đơn hàng cho ${order.originalData?.tenkh}:`,
+              createError,
+            );
             processResults.fail++;
             processResults.errors.push({
               customer: order.originalData?.tenkh,
-              error: createError.message || 'Unknown error'
+              error: createError.message || 'Unknown error',
             });
           }
         }
       } catch (checkError: any) {
-        console.error(`Lỗi kiểm tra đơn hàng cho ${order.originalData?.tenkh}:`, checkError);
+        console.error(
+          `Lỗi kiểm tra đơn hàng cho ${order.originalData?.tenkh}:`,
+          checkError,
+        );
         processResults.fail++;
         processResults.errors.push({
           customer: order.originalData?.tenkh,
-          error: checkError.message || 'Check error'
+          error: checkError.message || 'Check error',
         });
       }
     }
@@ -1693,15 +1837,15 @@ export class DonhangService {
       return {
         status: 'duplicates_found',
         message: `Tìm thấy ${duplicateChecks.length} đơn hàng trùng ngày giao`,
-        duplicates: duplicateChecks.map(dup => ({
+        duplicates: duplicateChecks.map((dup) => ({
           customerName: dup.customerName,
           deliveryDate: dup.deliveryDate,
           newProductCount: dup.newProductCount,
           existingOrderCount: dup.existingOrders.length,
-          existingProductCounts: dup.existingProductCounts
+          existingProductCounts: dup.existingProductCounts,
         })),
         processResults,
-        pendingOrders: duplicateChecks.map(dup => dup.order) // Lưu để xử lý sau
+        pendingOrders: duplicateChecks.map((dup) => dup.order), // Lưu để xử lý sau
       };
     }
 
@@ -1709,17 +1853,20 @@ export class DonhangService {
     return {
       status: 'completed',
       message: `Import hoàn tất: ${processResults.success} thành công, ${processResults.fail} thất bại`,
-      ...processResults
+      ...processResults,
     };
   }
 
   // 🎯 NEW METHOD: Process confirmed duplicate orders
-  async ImportDonhangOldConfirmed(pendingOrders: any[], userChoice: 'proceed' | 'skip') {
+  async ImportDonhangOldConfirmed(
+    pendingOrders: any[],
+    userChoice: 'proceed' | 'skip',
+  ) {
     const processResults = {
       success: 0,
       fail: 0,
       skip: 0,
-      errors: [] as any[]
+      errors: [] as any[],
     };
 
     if (userChoice === 'skip') {
@@ -1727,7 +1874,7 @@ export class DonhangService {
       return {
         status: 'skipped',
         message: `Đã bỏ qua ${pendingOrders.length} đơn hàng trùng lặp`,
-        ...processResults
+        ...processResults,
       };
     }
 
@@ -1737,11 +1884,14 @@ export class DonhangService {
         await this.create(order);
         processResults.success++;
       } catch (createError: any) {
-        console.error(`Lỗi tạo đơn hàng cho ${order.originalData?.tenkh}:`, createError);
+        console.error(
+          `Lỗi tạo đơn hàng cho ${order.originalData?.tenkh}:`,
+          createError,
+        );
         processResults.fail++;
         processResults.errors.push({
           customer: order.originalData?.tenkh,
-          error: createError.message || 'Unknown error'
+          error: createError.message || 'Unknown error',
         });
       }
     }
@@ -1749,18 +1899,16 @@ export class DonhangService {
     return {
       status: 'completed',
       message: `Import hoàn tất: ${processResults.success} thành công, ${processResults.fail} thất bại`,
-      ...processResults
+      ...processResults,
     };
   }
 
-  
-
   async ImportDonhang(data: any) {
     const acc: Record<string, any> = {};
-    
+
     // ✅ FIX: Track duplicate products per customer to merge quantities
     const productTracker: Record<string, Map<string, any>> = {};
-    
+
     for (const curr of data) {
       if (!acc[curr.makh]) {
         const khachhang = await this.prisma.khachhang.findFirst({
@@ -1781,26 +1929,31 @@ export class DonhangService {
         // Initialize product tracker for this customer
         productTracker[curr.makh] = new Map();
       }
-      
+
       const sanphamRecord = await this.prisma.sanpham.findFirst({
         where: { masp: curr.masp },
       });
-      
+
       // ✅ FIX: Check if product already exists for this customer
       const tracker = productTracker[curr.makh];
       const existingProduct = tracker.get(curr.masp);
-      
+
       if (existingProduct) {
         // Product already exists - merge quantities
-        console.log(`⚠️ [IMPORT] Duplicate product ${curr.masp} for customer ${curr.makh} - merging quantities`);
-        existingProduct.sldat = Number(existingProduct.sldat) + Number(curr.sldat);
-        existingProduct.slgiao = Number(existingProduct.slgiao) + Number(curr.slgiao);
-        existingProduct.slnhan = Number(existingProduct.slnhan) + Number(curr.slnhan);
-        
+        console.log(
+          `⚠️ [IMPORT] Duplicate product ${curr.masp} for customer ${curr.makh} - merging quantities`,
+        );
+        existingProduct.sldat =
+          Number(existingProduct.sldat) + Number(curr.sldat);
+        existingProduct.slgiao =
+          Number(existingProduct.slgiao) + Number(curr.slgiao);
+        existingProduct.slnhan =
+          Number(existingProduct.slnhan) + Number(curr.slnhan);
+
         // Append notes if different
         if (curr.ghichu && curr.ghichu !== existingProduct.ghichu) {
-          existingProduct.ghichu = existingProduct.ghichu 
-            ? `${existingProduct.ghichu}; ${curr.ghichu}` 
+          existingProduct.ghichu = existingProduct.ghichu
+            ? `${existingProduct.ghichu}; ${curr.ghichu}`
             : curr.ghichu;
         }
       } else {
@@ -1813,20 +1966,20 @@ export class DonhangService {
           slnhan: Number(curr.slnhan),
           ghichu: curr.ghichu,
         };
-        
+
         tracker.set(curr.masp, productData);
         acc[curr.makh].sanpham.push(productData);
       }
     }
     const convertData: any = Object.values(acc);
-    
+
     // ✅ Enhanced tracking with detailed results
     let success = 0;
     let fail = 0;
     const successList: any[] = [];
     const failList: any[] = [];
     const duplicateInfo: any[] = [];
-    
+
     for (const element of convertData) {
       try {
         const result = await this.create(element);
@@ -1836,23 +1989,32 @@ export class DonhangService {
           name: element.name,
           madonhang: result.madonhang,
           totalProducts: element.sanpham.length,
-          ngaygiao: element.ngaygiao
+          ngaygiao: element.ngaygiao,
         });
-        
+
         // Track if any products were merged (duplicates detected)
-        const mergedProducts = element.sanpham.filter((sp: any) => 
-          sp.sldat > 0 || sp.slgiao > 0 || sp.slnhan > 0
+        const mergedProducts = element.sanpham.filter(
+          (sp: any) => sp.sldat > 0 || sp.slgiao > 0 || sp.slnhan > 0,
         );
-        if (mergedProducts.length < data.filter((d: any) => d.makh === element.makh).length) {
+        if (
+          mergedProducts.length <
+          data.filter((d: any) => d.makh === element.makh).length
+        ) {
           duplicateInfo.push({
             makh: element.makh,
-            originalCount: data.filter((d: any) => d.makh === element.makh).length,
+            originalCount: data.filter((d: any) => d.makh === element.makh)
+              .length,
             mergedCount: mergedProducts.length,
-            saved: data.filter((d: any) => d.makh === element.makh).length - mergedProducts.length
+            saved:
+              data.filter((d: any) => d.makh === element.makh).length -
+              mergedProducts.length,
           });
         }
       } catch (error) {
-        console.error(`❌ [IMPORT] Failed to import order for ${element.makh}:`, error.message);
+        console.error(
+          `❌ [IMPORT] Failed to import order for ${element.makh}:`,
+          error.message,
+        );
 
         await this.prisma.importHistory.create({
           data: {
@@ -1868,24 +2030,24 @@ export class DonhangService {
             createdBy: 'system', // replace with the actual account ID if available
           },
         });
-        
+
         fail += 1;
         failList.push({
           makh: element.makh,
           name: element.name,
-          error: error.message
+          error: error.message,
         });
       }
     }
-    
+
     // ✅ Return detailed import summary
     console.log('✅ [IMPORT] Import completed:', {
       total: convertData.length,
       success,
       fail,
-      duplicatesDetected: duplicateInfo.length
+      duplicatesDetected: duplicateInfo.length,
     });
-    
+
     return {
       total: convertData.length,
       success,
@@ -1894,11 +2056,12 @@ export class DonhangService {
       failList,
       duplicateInfo: duplicateInfo.length > 0 ? duplicateInfo : undefined,
       message: `Imported ${success}/${convertData.length} orders successfully${
-        duplicateInfo.length > 0 ? `, merged ${duplicateInfo.reduce((sum, d) => sum + d.saved, 0)} duplicate products` : ''
-      }`
+        duplicateInfo.length > 0
+          ? `, merged ${duplicateInfo.reduce((sum, d) => sum + d.saved, 0)} duplicate products`
+          : ''
+      }`,
     };
   }
-
 
   async DonhangcodeToNumber(code: any) {
     if (!code.match(/^TG-[A-Z]{2}\d{5}$/)) {
@@ -1936,7 +2099,7 @@ export class DonhangService {
     const tong = sanpham.reduce((total, sp) => {
       const giaban = parseFloat((sp.giaban || 0).toString());
       const slnhan = parseFloat((sp.slnhan || 0).toString());
-      return total + (giaban * slnhan);
+      return total + giaban * slnhan;
     }, 0);
 
     // tongvat = tong * donhang.vat
@@ -1947,26 +2110,25 @@ export class DonhangService {
 
     return { tong, tongvat, tongtien };
   }
-  
-  async create(dto: any) {
 
+  async create(dto: any) {
     const maxOrderResult = await this.prisma.donhang.aggregate({
       _max: {
-      order: true,
+        order: true,
       },
     });
     let maxOrder = maxOrderResult._max.order || 0;
     let madonhang = await this.DonhangnumberToCode(maxOrder + 1);
-    
+
     // Kiểm tra mã đơn hàng đã tồn tại chưa với giới hạn attempts để tránh infinite loop
-    let existingDonhang = await this.prisma.donhang.findUnique(
-      { where: { madonhang } }
-    );
+    let existingDonhang = await this.prisma.donhang.findUnique({
+      where: { madonhang },
+    });
 
     // Nếu mã đã tồn tại, tăng maxOrder cho đến khi tìm được mã chưa tồn tại
     let attempts = 0;
     const maxOrderAttempts = 50;
-    
+
     while (existingDonhang && attempts < maxOrderAttempts) {
       maxOrder++;
       madonhang = await this.DonhangnumberToCode(maxOrder + 1);
@@ -1975,14 +2137,12 @@ export class DonhangService {
       });
       attempts++;
     }
-    
+
     if (existingDonhang) {
       throw new InternalServerErrorException(
-        `Không thể tạo mã đơn hàng duy nhất sau ${maxOrderAttempts} lần thử`
+        `Không thể tạo mã đơn hàng duy nhất sau ${maxOrderAttempts} lần thử`,
       );
-    }    
-
-
+    }
 
     return this.prisma.$transaction(async (prisma) => {
       // Get khachhang data
@@ -2001,7 +2161,7 @@ export class DonhangService {
           madonhang: madonhang,
           ngaygiao: new Date(dto.ngaygiao),
           khachhangId: dto.khachhangId,
-          banggiaId: dto.banggiaId||khachhang.banggiaId ||DEFAUL_BANGGIA_ID,
+          banggiaId: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID,
           vat: parseFloat((dto.vat || 0.05).toString()), // Default 5% VAT
           isActive: dto.isActive,
           order: maxOrder + 1,
@@ -2013,12 +2173,15 @@ export class DonhangService {
               let sanphamArray;
               if (Array.isArray(dto?.sanpham)) {
                 sanphamArray = dto.sanpham;
-              } else if (dto?.sanpham?.create && Array.isArray(dto.sanpham.create)) {
+              } else if (
+                dto?.sanpham?.create &&
+                Array.isArray(dto.sanpham.create)
+              ) {
                 sanphamArray = dto.sanpham.create;
               } else {
                 sanphamArray = [];
               }
-              
+
               return sanphamArray.map((sp) => {
                 return {
                   idSP: sp.idSP || sp.id,
@@ -2037,7 +2200,7 @@ export class DonhangService {
                   isActive: sp.isActive !== undefined ? sp.isActive : true,
                 };
               });
-            })()
+            })(),
           },
         },
         include: {
@@ -2047,10 +2210,12 @@ export class DonhangService {
 
       // Calculate totals using new formula and helper method
       const vatRate = parseFloat((dto.vat || 0.05).toString());
-      
+
       // Get banggia to update product prices
       const banggia = await prisma.banggia.findUnique({
-        where: { id: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID },
+        where: {
+          id: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID,
+        },
         include: { sanpham: true },
       });
       const banggiaDefault = await prisma.banggia.findUnique({
@@ -2059,50 +2224,59 @@ export class DonhangService {
       });
 
       // Update product prices from banggia and recalculate totals
-      const updatedSanpham = dto?.sanpham?.map((sp) => {
-        const giaSanpham = banggia?.sanpham.find(bgsp => bgsp.sanphamId === (sp.idSP || sp.id));
-        const giaSanphamDefault = banggiaDefault?.sanpham.find(bgsp => bgsp.sanphamId === (sp.idSP || sp.id));
-        
-        let giaban = parseFloat((sp.giaban || 0).toString());
-        
-        if (giaSanpham) {
-          const giabanFromBanggia = parseFloat(giaSanpham.giaban.toString());
-          if (giabanFromBanggia === 0 && giaSanphamDefault) {
-        // Nếu giá trong bảng giá hiện tại = 0, lấy giá từ bảng giá mặc định
-        giaban = parseFloat(giaSanphamDefault.giaban.toString());
-          } else {
-        giaban = giabanFromBanggia;
+      const updatedSanpham =
+        dto?.sanpham?.map((sp) => {
+          const giaSanpham = banggia?.sanpham.find(
+            (bgsp) => bgsp.sanphamId === (sp.idSP || sp.id),
+          );
+          const giaSanphamDefault = banggiaDefault?.sanpham.find(
+            (bgsp) => bgsp.sanphamId === (sp.idSP || sp.id),
+          );
+
+          let giaban = parseFloat((sp.giaban || 0).toString());
+
+          if (giaSanpham) {
+            const giabanFromBanggia = parseFloat(giaSanpham.giaban.toString());
+            if (giabanFromBanggia === 0 && giaSanphamDefault) {
+              // Nếu giá trong bảng giá hiện tại = 0, lấy giá từ bảng giá mặc định
+              giaban = parseFloat(giaSanphamDefault.giaban.toString());
+            } else {
+              giaban = giabanFromBanggia;
+            }
+          } else if (giaSanphamDefault) {
+            // Nếu không tìm thấy trong bảng giá hiện tại, lấy từ bảng giá mặc định
+            giaban = parseFloat(giaSanphamDefault.giaban.toString());
           }
-        } else if (giaSanphamDefault) {
-          // Nếu không tìm thấy trong bảng giá hiện tại, lấy từ bảng giá mặc định
-          giaban = parseFloat(giaSanphamDefault.giaban.toString());
-        }
-        
-        const slnhan = parseFloat((sp.slnhan ?? 0).toString());
-        const vat = parseFloat((sp.vat ?? 0).toString());
-        
-        return {
-          ...sp,
-          giaban: giaban,
-          ttdat: giaban * parseFloat((sp.sldat ?? 0).toString()),
-          ttgiao: giaban * parseFloat((sp.slgiao ?? 0).toString()),
-          ttnhan: giaban * slnhan,
-          ttsauvat: (giaban * slnhan) * (1 + vat),
-        };
-      }) || [];
+
+          const slnhan = parseFloat((sp.slnhan ?? 0).toString());
+          const vat = parseFloat((sp.vat ?? 0).toString());
+
+          return {
+            ...sp,
+            giaban: giaban,
+            ttdat: giaban * parseFloat((sp.sldat ?? 0).toString()),
+            ttgiao: giaban * parseFloat((sp.slgiao ?? 0).toString()),
+            ttnhan: giaban * slnhan,
+            ttsauvat: giaban * slnhan * (1 + vat),
+          };
+        }) || [];
 
       // Update donhangsanpham with new prices and create audit logs
       if (updatedSanpham.length > 0) {
         await Promise.all(
           updatedSanpham.map(async (sp) => {
-            const originalProduct = dto.sanpham.find(p => (p.idSP || p.id) === (sp.idSP || sp.id));
-            const originalPrice = originalProduct ? parseFloat((originalProduct.giaban || 0).toString()) : 0;
-            
+            const originalProduct = dto.sanpham.find(
+              (p) => (p.idSP || p.id) === (sp.idSP || sp.id),
+            );
+            const originalPrice = originalProduct
+              ? parseFloat((originalProduct.giaban || 0).toString())
+              : 0;
+
             // Update price
             await prisma.donhangsanpham.updateMany({
-              where: { 
+              where: {
                 donhangId: newDonhang.id,
-                idSP: sp.idSP || sp.id 
+                idSP: sp.idSP || sp.id,
               },
               data: {
                 giaban: sp.giaban,
@@ -2113,7 +2287,7 @@ export class DonhangService {
                 // Keep original ghichu - DON'T overwrite with metadata
               },
             });
-            
+
             // Create audit log if price changed
             if (sp.giaban !== originalPrice) {
               try {
@@ -2130,30 +2304,40 @@ export class DonhangService {
                       donhangId: newDonhang.id,
                       madonhang: newDonhang.madonhang,
                       sanphamId: sp.idSP || sp.id,
-                      banggiaId: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID,
+                      banggiaId:
+                        dto.banggiaId ||
+                        khachhang.banggiaId ||
+                        DEFAUL_BANGGIA_ID,
                       capturedAt: new Date().toISOString(),
                       priceSource: 'banggia',
                       priceChange: {
                         from: originalPrice,
                         to: sp.giaban,
                         difference: sp.giaban - originalPrice,
-                        percentChange: originalPrice > 0 ? ((sp.giaban - originalPrice) / originalPrice * 100) : 0
+                        percentChange:
+                          originalPrice > 0
+                            ? ((sp.giaban - originalPrice) / originalPrice) *
+                              100
+                            : 0,
                       },
-                      userNote: sp.ghichu || ''
-                    }
-                  }
+                      userNote: sp.ghichu || '',
+                    },
+                  },
                 });
               } catch (auditError) {
                 // Don't fail order creation if audit log fails
                 console.error('Failed to create price audit log:', auditError);
               }
             }
-          })
+          }),
         );
       }
 
-      const { tongvat, tongtien } = this.calculateDonhangTotals(updatedSanpham, vatRate);
-      
+      const { tongvat, tongtien } = this.calculateDonhangTotals(
+        updatedSanpham,
+        vatRate,
+      );
+
       // Update donhang with calculated totals
       await prisma.donhang.update({
         where: { id: newDonhang.id },
@@ -2180,6 +2364,93 @@ export class DonhangService {
     });
   }
 
+  // ERP: Xác nhận giao hàng thực tế (Sau khi giao xong, trước khi đối chiếu)
+  async xacNhanGiaoThucTe(id: string, data: { ghichu?: string }) {
+    return this.prisma.$transaction(async (tx) => {
+      const oldDonhang = await tx.donhang.findUnique({
+        where: { id },
+      });
+
+      if (!oldDonhang) throw new NotFoundException('Đơn hàng không tồn tại');
+
+      // Update status
+      return tx.donhang.update({
+        where: { id },
+        data: {
+          soStatus: 'DA_GIAO_THUC_TE',
+          ghichu: data.ghichu
+            ? `${oldDonhang.ghichu || ''}\n[Giao thực tế]: ${data.ghichu}`
+            : oldDonhang.ghichu,
+        },
+      });
+    });
+  }
+
+  // ERP: Đối chiếu đơn hàng (Kế toán chốt số lượng và giá cuối cùng)
+  async doiChieu(id: string, data: { sanpham: any[]; ghichu?: string }) {
+    return this.prisma.$transaction(async (tx) => {
+      const oldDonhang = await tx.donhang.findUnique({
+        where: { id },
+        include: { sanpham: true },
+      });
+
+      if (!oldDonhang) throw new NotFoundException('Đơn hàng không tồn tại');
+      if (
+        oldDonhang.soStatus === 'CHO_THU_TIEN' ||
+        oldDonhang.soStatus === 'DA_THU_TIEN'
+      ) {
+        throw new BadRequestException(
+          'Đơn hàng đã được đưa vào chứng từ công nợ hoặc đã thu tiền, không thể đối chiếu lại.',
+        );
+      }
+
+      // Cập nhật từng sản phẩm
+      let total = 0;
+      let totalVat = 0;
+
+      for (const sp of data.sanpham) {
+        const item = await tx.donhangsanpham.findFirst({
+          where: { donhangId: id, idSP: sp.idSP },
+        });
+
+        const slnhan = parseFloat(Number(sp.slnhan || 0).toFixed(3));
+        const giaban = parseFloat(Number(sp.giaban || 0).toFixed(3));
+        const ttnhan = slnhan * giaban;
+
+        if (item) {
+          await tx.donhangsanpham.update({
+            where: { id: item.id },
+            data: {
+              slnhan,
+              giaban,
+              ttnhan,
+              ghichu: sp.ghichu,
+            },
+          });
+        }
+
+        total += ttnhan;
+      }
+
+      const vatRate = Number(oldDonhang.vat) || 0;
+      totalVat = total * vatRate;
+
+      // Cập nhật trạng thái đơn hàng và tổng tiền thực tế
+      return tx.donhang.update({
+        where: { id },
+        data: {
+          soStatus: 'DA_DOI_CHIEU',
+          tongtien: total + totalVat,
+          tongvat: totalVat,
+          ghichu: data.ghichu
+            ? `${oldDonhang.ghichu || ''}\n[Đối chiếu]: ${data.ghichu}`
+            : oldDonhang.ghichu,
+        },
+        include: { sanpham: true },
+      });
+    });
+  }
+
   async update(id: string, data: any) {
     return this.prisma.$transaction(async (prisma) => {
       // 1. Lấy đơn hàng cũ kèm chi tiết sản phẩm
@@ -2191,18 +2462,28 @@ export class DonhangService {
         throw new NotFoundException('Đơn hàng không tồn tại');
       }
 
+      // ERP Protection: Không cho sửa nếu đã vào luồng kế toán
+      if (
+        oldDonhang.soStatus === 'CHO_THU_TIEN' ||
+        oldDonhang.soStatus === 'DA_THU_TIEN'
+      ) {
+        throw new BadRequestException(
+          'Đơn hàng đã vào luồng công nợ hoặc đã thu tiền, không thể chỉnh sửa thông tin cốt lõi.',
+        );
+      }
+
       // 2. Validate status transition if status is changing
       if (data.status && data.status !== oldDonhang.status) {
         const transition = this.statusMachine.validateTransition(
           'donhang',
           oldDonhang.status,
           data.status,
-          true // Allow reverse transitions for corrections
+          true, // Allow reverse transitions for corrections
         );
 
         if (!transition.isValid) {
           throw new BadRequestException(
-            `Invalid status transition: ${oldDonhang.status} → ${data.status}. ${transition.reason}`
+            `Invalid status transition: ${oldDonhang.status} → ${data.status}. ${transition.reason}`,
           );
         }
       }
@@ -2220,7 +2501,7 @@ export class DonhangService {
             operation: 'increment',
             slchogiao: incValue,
             slton: incValue,
-            reason: `Rollback DAGIAO→DADAT for order ${oldDonhang.madonhang}`
+            reason: `Rollback DAGIAO→DADAT for order ${oldDonhang.madonhang}`,
           });
         }
 
@@ -2254,7 +2535,8 @@ export class DonhangService {
             status: 'dadat',
             nhanvienchiahang: data.nhanvienchiahang,
             shipper: data.shipper,
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
+            printCount:
+              data.printCount !== undefined ? data.printCount : undefined,
             ...(data.sanpham && data.sanpham.length
               ? {
                   sanpham: {
@@ -2351,7 +2633,8 @@ export class DonhangService {
             ghichu: data.ghichu,
             nhanvienchiahang: data.nhanvienchiahang,
             shipper: data.shipper,
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
+            printCount:
+              data.printCount !== undefined ? data.printCount : undefined,
             ...(data.sanpham && data.sanpham.length
               ? {
                   sanpham: {
@@ -2465,7 +2748,8 @@ export class DonhangService {
             status: 'dagiao',
             nhanvienchiahang: data.nhanvienchiahang,
             shipper: data.shipper,
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
+            printCount:
+              data.printCount !== undefined ? data.printCount : undefined,
             sanpham: {
               updateMany: data.sanpham.map((sp: any) => ({
                 where: { idSP: sp.id },
@@ -2488,11 +2772,11 @@ export class DonhangService {
           soluong: number;
           ghichu?: string;
         }[] = [];
-        
+
         for (const item of data.sanpham) {
           const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(3));
           const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(3));
-          
+
           if (receivedQty < shippedQty) {
             // Xử lý hao hụt: hoàn lại tồn kho cho phần thiếu
             const shortage = shippedQty - receivedQty;
@@ -2500,7 +2784,7 @@ export class DonhangService {
               where: { sanphamId: item.id },
               data: { slton: { increment: shortage } }, // Hoàn lại số lượng thiếu vào tồn kho
             });
-            
+
             shortageItems.push({
               sanphamId: item.id,
               soluong: shortage,
@@ -2532,32 +2816,34 @@ export class DonhangService {
         }
         // 🔥 Tính lại ttnhan, ttsauvat và tổng tiền cho đơn hàng
         let tongchua = 0;
-        
+
         // Update từng sản phẩm với tính toán lại giá trị
         for (const item of data.sanpham) {
           const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
           const received = parseFloat((item.slnhan ?? 0).toFixed(3));
-          
+
           // Tìm sản phẩm trong DB để lấy giaban và vat
-          const donhangSanpham = oldDonhang.sanpham.find((sp: any) => sp.idSP === item.id);
+          const donhangSanpham = oldDonhang.sanpham.find(
+            (sp: any) => sp.idSP === item.id,
+          );
           if (!donhangSanpham) continue;
-          
+
           const giaban = parseFloat((donhangSanpham.giaban ?? 0).toFixed(3));
           const vat = parseFloat((donhangSanpham.vat ?? 0).toFixed(3));
-          
+
           // 🔥 Tính lại ttnhan và ttsauvat dựa trên slnhan
           const ttnhan = giaban * received;
           const ttsauvat = ttnhan * (1 + vat);
-          
+
           tongchua += ttnhan;
-          
+
           const shortageNote =
             received < delivered
               ? item.ghichu
                 ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(3)}`
                 : `Thiếu ${(delivered - received).toFixed(3)}`
               : item.ghichu || '';
-          
+
           await prisma.donhangsanpham.update({
             where: { id: donhangSanpham.id },
             data: {
@@ -2568,17 +2854,18 @@ export class DonhangService {
             },
           });
         }
-        
+
         // 🔥 Tính lại tổng tiền cho đơn hàng
         const vatRate = parseFloat((oldDonhang.vat ?? 0).toFixed(3));
         const tongvat = tongchua * vatRate;
         const tongtien = tongchua + tongvat;
-        
+
         return prisma.donhang.update({
           where: { id },
           data: {
             status: 'danhan',
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
+            printCount:
+              data.printCount !== undefined ? data.printCount : undefined,
             tongtien: parseFloat(tongtien.toFixed(3)),
             tongvat: parseFloat(tongvat.toFixed(3)),
           },
@@ -2591,7 +2878,8 @@ export class DonhangService {
           where: { id },
           data: {
             status: 'hoanthanh',
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
+            printCount:
+              data.printCount !== undefined ? data.printCount : undefined,
           },
         });
       }
@@ -2659,7 +2947,7 @@ export class DonhangService {
       // 4. DADAT → DAGIAO: Reserve inventory and create PhieuKho
       if (oldDonhang.status === 'dadat' && data.status === 'dagiao') {
         const tonkhoOpsGiao: any[] = [];
-        
+
         for (const sp of data.sanpham) {
           const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
           tonkhoOpsGiao.push({
@@ -2667,7 +2955,7 @@ export class DonhangService {
             operation: 'decrement',
             slchogiao: decValue,
             slton: decValue,
-            reason: `DADAT→DAGIAO for order ${data.madonhang}`
+            reason: `DADAT→DAGIAO for order ${data.madonhang}`,
           });
         }
 
@@ -2676,10 +2964,10 @@ export class DonhangService {
 
         // Create PhieuKho
         const maphieuNew = `PX-${data.madonhang}`;
-        
+
         // Check for existing phieu to prevent duplicates
         const existingPhieu = await prisma.phieuKho.findUnique({
-          where: { maphieu: maphieuNew }
+          where: { maphieu: maphieuNew },
         });
 
         if (!existingPhieu) {
@@ -2709,7 +2997,8 @@ export class DonhangService {
             ...data,
             status: 'dagiao',
             ngaygiao: new Date(data.ngaygiao),
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
+            printCount:
+              data.printCount !== undefined ? data.printCount : undefined,
             sanpham: {
               updateMany: data.sanpham.map((sp: any) => ({
                 where: { idSP: sp.id },
@@ -2727,11 +3016,11 @@ export class DonhangService {
       if (oldDonhang.status === 'dagiao' && data.status === 'danhan') {
         const tonkhoOpsNhan: any[] = [];
         const shortageItems: any[] = [];
-        
+
         for (const item of data.sanpham) {
           const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(3));
           const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(3));
-          
+
           if (receivedQty < shippedQty) {
             // Handle shortage - return excess to inventory
             const shortage = shippedQty - receivedQty;
@@ -2739,9 +3028,9 @@ export class DonhangService {
               sanphamId: item.id,
               operation: 'increment',
               slton: shortage,
-              reason: `Shortage return for order ${data.madonhang}: ${shortage.toFixed(3)}`
+              reason: `Shortage return for order ${data.madonhang}: ${shortage.toFixed(3)}`,
             });
-            
+
             shortageItems.push({
               sanphamId: item.id,
               soluong: shortage,
@@ -2781,7 +3070,8 @@ export class DonhangService {
           data: {
             ...data,
             status: 'danhan',
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
+            printCount:
+              data.printCount !== undefined ? data.printCount : undefined,
             sanpham: {
               updateMany: data.sanpham.map((sp: any) => ({
                 where: { idSP: sp.id },
@@ -2801,7 +3091,8 @@ export class DonhangService {
           where: { id },
           data: {
             status: 'hoanthanh',
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
+            printCount:
+              data.printCount !== undefined ? data.printCount : undefined,
           },
         });
       }
@@ -2809,7 +3100,7 @@ export class DonhangService {
       // 7. Cancel order (any status → HUY)
       if (data.status === 'huy') {
         const tonkhoOpsCancel: any[] = [];
-        
+
         // Rollback inventory based on current status
         if (oldDonhang.status === 'dadat') {
           // Just remove slchogiao reservation
@@ -2819,7 +3110,7 @@ export class DonhangService {
               sanphamId: sp.idSP,
               operation: 'decrement',
               slchogiao: incValue,
-              reason: `Cancel order ${oldDonhang.madonhang} from DADAT`
+              reason: `Cancel order ${oldDonhang.madonhang} from DADAT`,
             });
           }
         } else if (oldDonhang.status === 'dagiao') {
@@ -2831,7 +3122,7 @@ export class DonhangService {
               operation: 'increment',
               slchogiao: incValue,
               slton: incValue,
-              reason: `Cancel order ${oldDonhang.madonhang} from DAGIAO`
+              reason: `Cancel order ${oldDonhang.madonhang} from DAGIAO`,
             });
           }
         }
@@ -2844,15 +3135,15 @@ export class DonhangService {
         // Remove related PhieuKho
         const maphieu = `PX-${oldDonhang.madonhang}`;
         const existingPhieu = await prisma.phieuKho.findUnique({
-          where: { maphieu }
+          where: { maphieu },
         });
-        
+
         if (existingPhieu) {
           await prisma.phieuKhoSanpham.deleteMany({
-            where: { phieuKhoId: existingPhieu.id }
+            where: { phieuKhoId: existingPhieu.id },
           });
           await prisma.phieuKho.delete({
-            where: { id: existingPhieu.id }
+            where: { id: existingPhieu.id },
           });
         }
 
@@ -2861,7 +3152,8 @@ export class DonhangService {
           data: {
             status: 'huy',
             ghichu: data.ghichu || 'Đơn hàng đã hủy',
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
+            printCount:
+              data.printCount !== undefined ? data.printCount : undefined,
           },
         });
       }
@@ -2869,26 +3161,32 @@ export class DonhangService {
       // 8. Regular update without status change
       if (!data.status || data.status === oldDonhang.status) {
         // 🔥 SPECIAL CASE: If order is in 'danhan' status and slnhan is being updated
-        if (oldDonhang.status === 'danhan' && data.sanpham && data.sanpham.length > 0) {
+        if (
+          oldDonhang.status === 'danhan' &&
+          data.sanpham &&
+          data.sanpham.length > 0
+        ) {
           let tongchua = 0;
-          
+
           // Update each product with recalculated values based on slnhan
           for (const item of data.sanpham) {
             const received = parseFloat((item.slnhan ?? 0).toFixed(3));
-            
+
             // Find product in DB to get giaban and vat
-            const donhangSanpham = oldDonhang.sanpham.find((sp: any) => sp.idSP === item.id);
+            const donhangSanpham = oldDonhang.sanpham.find(
+              (sp: any) => sp.idSP === item.id,
+            );
             if (!donhangSanpham) continue;
-            
+
             const giaban = parseFloat((donhangSanpham.giaban ?? 0).toFixed(3));
             const vat = parseFloat((donhangSanpham.vat ?? 0).toFixed(3));
-            
+
             // 🔥 Recalculate ttnhan and ttsauvat based on slnhan
             const ttnhan = giaban * received;
             const ttsauvat = ttnhan * (1 + vat);
-            
+
             tongchua += ttnhan;
-            
+
             await prisma.donhangsanpham.update({
               where: { id: donhangSanpham.id },
               data: {
@@ -2899,14 +3197,16 @@ export class DonhangService {
               },
             });
           }
-          
+
           // 🔥 Recalculate total amount for the order
           const vatRate = parseFloat((oldDonhang.vat ?? 0).toFixed(3));
           const tongvat = tongchua * vatRate;
           const tongtien = tongchua + tongvat;
-          
-          console.log(`🔥 [danhan special case] tongchua=${tongchua}, tongvat=${tongvat}, tongtien=${tongtien}`);
-          
+
+          console.log(
+            `🔥 [danhan special case] tongchua=${tongchua}, tongvat=${tongvat}, tongtien=${tongtien}`,
+          );
+
           // Update order with recalculated totals
           return prisma.donhang.update({
             where: { id },
@@ -2927,7 +3227,8 @@ export class DonhangService {
               giodi: data.giodi,
               giove: data.giove,
               kynhan: data.kynhan,
-              printCount: data.printCount !== undefined ? data.printCount : undefined,
+              printCount:
+                data.printCount !== undefined ? data.printCount : undefined,
               tongtien: parseFloat(tongtien.toFixed(3)),
               tongvat: parseFloat(tongvat.toFixed(3)),
             },
@@ -2936,28 +3237,38 @@ export class DonhangService {
             },
           });
         }
-        
+
         // Regular update for other cases
         const updatedDonhang = await prisma.donhang.update({
           where: { id },
           data: {
             ...(data.title !== undefined && { title: data.title }),
             ...(data.type !== undefined && { type: data.type }),
-            ...(data.ngaygiao !== undefined && { ngaygiao: new Date(data.ngaygiao) }),
-            ...(data.khachhangId !== undefined && { khachhangId: data.khachhangId }),
+            ...(data.ngaygiao !== undefined && {
+              ngaygiao: new Date(data.ngaygiao),
+            }),
+            ...(data.khachhangId !== undefined && {
+              khachhangId: data.khachhangId,
+            }),
             ...(data.banggiaId !== undefined && { banggiaId: data.banggiaId }),
-            ...(data.vat !== undefined && { vat: parseFloat(data.vat.toString()) }),
+            ...(data.vat !== undefined && {
+              vat: parseFloat(data.vat.toString()),
+            }),
             ...(data.isActive !== undefined && { isActive: data.isActive }),
             ...(data.order !== undefined && { order: data.order }),
             ...(data.ghichu !== undefined && { ghichu: data.ghichu }),
             ...(data.status !== undefined && { status: data.status }),
-            ...(data.nhanvienchiahang !== undefined && { nhanvienchiahang: data.nhanvienchiahang }),
+            ...(data.nhanvienchiahang !== undefined && {
+              nhanvienchiahang: data.nhanvienchiahang,
+            }),
             ...(data.shipper !== undefined && { shipper: data.shipper }),
             ...(data.phieuve !== undefined && { phieuve: data.phieuve }),
             ...(data.giodi !== undefined && { giodi: data.giodi }),
             ...(data.giove !== undefined && { giove: data.giove }),
             ...(data.kynhan !== undefined && { kynhan: data.kynhan }),
-            ...(data.printCount !== undefined && { printCount: data.printCount }),
+            ...(data.printCount !== undefined && {
+              printCount: data.printCount,
+            }),
           },
           include: {
             sanpham: true,
@@ -2974,20 +3285,29 @@ export class DonhangService {
               sanpham: true,
             },
           });
-          
+
           if (!donhangWithLatestSanpham) {
             throw new Error(`Không tìm thấy đơn hàng với id ${id}`);
           }
-          
-          const sanphamForCalculation = data.sanpham || donhangWithLatestSanpham.sanpham.map(sp => ({
-            giaban: sp.giaban,
-            slnhan: sp.slnhan
-          }));
-          
-          const vatRate = data.vat ? parseFloat(data.vat.toString()) : parseFloat(updatedDonhang.vat.toString());
-          const { tongvat, tongtien } = this.calculateDonhangTotals(sanphamForCalculation, vatRate);
 
-          console.log(`🔥 [regular update] Recalculating with slnhan from latest data: tongvat=${tongvat}, tongtien=${tongtien}`);
+          const sanphamForCalculation =
+            data.sanpham ||
+            donhangWithLatestSanpham.sanpham.map((sp) => ({
+              giaban: sp.giaban,
+              slnhan: sp.slnhan,
+            }));
+
+          const vatRate = data.vat
+            ? parseFloat(data.vat.toString())
+            : parseFloat(updatedDonhang.vat.toString());
+          const { tongvat, tongtien } = this.calculateDonhangTotals(
+            sanphamForCalculation,
+            vatRate,
+          );
+
+          console.log(
+            `🔥 [regular update] Recalculating with slnhan from latest data: tongvat=${tongvat}, tongtien=${tongtien}`,
+          );
 
           await prisma.donhang.update({
             where: { id },
@@ -3002,7 +3322,9 @@ export class DonhangService {
       }
 
       // If no valid transition found, return error
-      throw new Error(`Invalid status transition from ${oldDonhang.status} to ${data.status}`);
+      throw new Error(
+        `Invalid status transition from ${oldDonhang.status} to ${data.status}`,
+      );
     });
   }
 
@@ -3018,81 +3340,86 @@ export class DonhangService {
 
   async updatePhieugiao(id: string, data: any) {
     try {
-      return await this.prisma.safeTransaction(async (prisma) => {
-        const updatedDonhang = await prisma.donhang.update({
-          where: { id },
-          data: {
-            title: data.title,
-            type: data.type,
-            madonhang: data.madonhang,
-            ngaygiao: new Date(data.ngaygiao),
-            khachhangId: data.khachhangId,
-            isActive: data.isActive,
-            status: data.status,
-            order: data.order,
-            ghichu: data.ghichu,
-            printCount: data.printCount,
-            isshowvat: data.isshowvat,
-            tongtien: parseFloat((data.tongtien ?? 0).toFixed(3)),
-            tongvat: parseFloat((data.tongvat ?? 0).toFixed(3))
-          },
-          include: {
-            sanpham: true,
-          },
-        });
-
-        // Get current sanpham IDs in database
-        const currentSanpham = await prisma.donhangsanpham.findMany({
-          where: { donhangId: id },
-          select: { idSP: true }
-        });
-        
-        const currentSanphamIds = currentSanpham.map(sp => sp.idSP);
-        const newSanphamIds = data.sanpham.map((sp: any) => sp.id);
-        
-        // Delete sanpham that are no longer in the frontend array
-        const sanphamToDelete = currentSanphamIds.filter(spId => !newSanphamIds.includes(spId));
-        if (sanphamToDelete.length > 0) {
-          await prisma.donhangsanpham.deleteMany({
-            where: {
-              donhangId: id,
-              idSP: {
-                in: sanphamToDelete
-              }
-            }
-          });
-        }
-
-        // OPTIMIZATION: Replace N+1 queries with batch operations using Promise.all
-        const updatePromises = data.sanpham.map((sp: any) =>
-          prisma.donhangsanpham.updateMany({
-            where: { 
-              donhangId: id,
-              idSP: sp.id 
-            },
+      return await this.prisma.safeTransaction(
+        async (prisma) => {
+          const updatedDonhang = await prisma.donhang.update({
+            where: { id },
             data: {
-              ghichu: sp.ghichu,
-              sldat: parseFloat((Number(sp.sldat) || 0).toFixed(3)),
-              slgiao: parseFloat((Number(sp.slgiao) || 0).toFixed(3)),
-              slnhan: parseFloat((Number(sp.slnhan) || 0).toFixed(3)),
-              ttdat: parseFloat((Number(sp.ttdat) || 0).toFixed(3)),
-              ttgiao: parseFloat((Number(sp.ttgiao) || 0).toFixed(3)),
-              ttnhan: parseFloat((Number(sp.ttnhan) || 0).toFixed(3)),
-              vat: parseFloat((Number(sp.vat) || 0).toFixed(3)),
-              ttsauvat: parseFloat((Number(sp.ttsauvat) || 0).toFixed(3)),
+              title: data.title,
+              type: data.type,
+              madonhang: data.madonhang,
+              ngaygiao: new Date(data.ngaygiao),
+              khachhangId: data.khachhangId,
+              isActive: data.isActive,
+              status: data.status,
+              order: data.order,
+              ghichu: data.ghichu,
+              printCount: data.printCount,
+              isshowvat: data.isshowvat,
+              tongtien: parseFloat((data.tongtien ?? 0).toFixed(3)),
+              tongvat: parseFloat((data.tongvat ?? 0).toFixed(3)),
             },
-          })
-        );
+            include: {
+              sanpham: true,
+            },
+          });
 
-        // Execute all updates concurrently instead of sequentially
-        await Promise.all(updatePromises);
+          // Get current sanpham IDs in database
+          const currentSanpham = await prisma.donhangsanpham.findMany({
+            where: { donhangId: id },
+            select: { idSP: true },
+          });
 
-        return updatedDonhang;
-      }, {
-        timeout: 45000,  // Increase timeout to 45 seconds
-        maxWait: 10000,  // Wait up to 10 seconds for connection
-        retries: 2       // Retry twice on timeout
-      });
+          const currentSanphamIds = currentSanpham.map((sp) => sp.idSP);
+          const newSanphamIds = data.sanpham.map((sp: any) => sp.id);
+
+          // Delete sanpham that are no longer in the frontend array
+          const sanphamToDelete = currentSanphamIds.filter(
+            (spId) => !newSanphamIds.includes(spId),
+          );
+          if (sanphamToDelete.length > 0) {
+            await prisma.donhangsanpham.deleteMany({
+              where: {
+                donhangId: id,
+                idSP: {
+                  in: sanphamToDelete,
+                },
+              },
+            });
+          }
+
+          // OPTIMIZATION: Replace N+1 queries with batch operations using Promise.all
+          const updatePromises = data.sanpham.map((sp: any) =>
+            prisma.donhangsanpham.updateMany({
+              where: {
+                donhangId: id,
+                idSP: sp.id,
+              },
+              data: {
+                ghichu: sp.ghichu,
+                sldat: parseFloat((Number(sp.sldat) || 0).toFixed(3)),
+                slgiao: parseFloat((Number(sp.slgiao) || 0).toFixed(3)),
+                slnhan: parseFloat((Number(sp.slnhan) || 0).toFixed(3)),
+                ttdat: parseFloat((Number(sp.ttdat) || 0).toFixed(3)),
+                ttgiao: parseFloat((Number(sp.ttgiao) || 0).toFixed(3)),
+                ttnhan: parseFloat((Number(sp.ttnhan) || 0).toFixed(3)),
+                vat: parseFloat((Number(sp.vat) || 0).toFixed(3)),
+                ttsauvat: parseFloat((Number(sp.ttsauvat) || 0).toFixed(3)),
+              },
+            }),
+          );
+
+          // Execute all updates concurrently instead of sequentially
+          await Promise.all(updatePromises);
+
+          return updatedDonhang;
+        },
+        {
+          timeout: 45000, // Increase timeout to 45 seconds
+          maxWait: 10000, // Wait up to 10 seconds for connection
+          retries: 2, // Retry twice on timeout
+        },
+      );
     } catch (error) {
       console.error('Error updating phieugiao:', error);
       throw error;
@@ -3107,151 +3434,158 @@ export class DonhangService {
     // Process in smaller batches to prevent timeout
     for (let i = 0; i < ids.length; i += BATCH_SIZE) {
       const batch = ids.slice(i, i + BATCH_SIZE);
-      
+
       try {
-        const batchResult = await this.prisma.safeTransaction(async (prisma) => {
-          let success = 0;
-          let fail = 0;
+        const batchResult = await this.prisma.safeTransaction(
+          async (prisma) => {
+            let success = 0;
+            let fail = 0;
 
-          // Process batch items concurrently instead of sequentially
-          const batchPromises = batch.map(async (id) => {
-            try {
-              // 1. Lấy đơn hàng cũ kèm chi tiết sản phẩm
-              const oldDonhang = await prisma.donhang.findUnique({
-                where: { id },
-                include: { sanpham: true },
-              });
-
-              if (!oldDonhang) {
-                return { success: 0, fail: 1 };
-              }
-
-              // 2. Chuyển từ 'dadat' sang 'danhan'
-              if (oldDonhang.status === 'dadat' && status === 'danhan') {
-                // Batch inventory updates
-                const inventoryUpdates = oldDonhang.sanpham.map(sp => {
-                  const decValue = parseFloat((sp.sldat ?? 0).toFixed(3));
-                  return prisma.tonKho.update({
-                    where: { sanphamId: sp.idSP },
-                    data: {
-                      slchogiao: { decrement: decValue },
-                      slton: { decrement: decValue },
-                    },
-                  });
-                });
-
-                await Promise.all(inventoryUpdates);
-
-                // Deduplicate products and aggregate quantities
-                const uniqueSanpham = oldDonhang.sanpham.reduce(
-                  (acc: any[], sp: any) => {
-                    const existing = acc.find((item) => item.sanphamId === sp.idSP);
-                    if (existing) {
-                      existing.soluong += parseFloat((sp.sldat ?? 0).toFixed(3));
-                    } else {
-                      acc.push({
-                        sanphamId: sp.idSP,
-                        soluong: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                        ghichu: sp.ghichu,
-                      });
-                    }
-                    return acc;
-                  },
-                  [],
-                );
-
-                // Create phieu xuat kho
-                const maphieuNew = `PX-${oldDonhang.madonhang}-${this.formatDateForFilename()}`;
-                const phieuPayload = {
-                  ngay: oldDonhang.ngaygiao
-                    ? new Date(oldDonhang.ngaygiao)
-                    : new Date(),
-                  type: 'xuat',
-                  khoId: 'DEFAUL_KHO_ID', // Define this constant
-                  ghichu: oldDonhang.ghichu || 'Xuất kho hàng loạt',
-                  isActive: true,
-                };
-
-                // Handle phieuKho upsert
-                const existingPhieu = await prisma.phieuKho.findUnique({
-                  where: { maphieu: maphieuNew },
+            // Process batch items concurrently instead of sequentially
+            const batchPromises = batch.map(async (id) => {
+              try {
+                // 1. Lấy đơn hàng cũ kèm chi tiết sản phẩm
+                const oldDonhang = await prisma.donhang.findUnique({
+                  where: { id },
                   include: { sanpham: true },
                 });
 
-                if (existingPhieu) {
-                  await prisma.phieuKhoSanpham.deleteMany({
-                    where: { phieuKhoId: existingPhieu.id },
+                if (!oldDonhang) {
+                  return { success: 0, fail: 1 };
+                }
+
+                // 2. Chuyển từ 'dadat' sang 'danhan'
+                if (oldDonhang.status === 'dadat' && status === 'danhan') {
+                  // Batch inventory updates
+                  const inventoryUpdates = oldDonhang.sanpham.map((sp) => {
+                    const decValue = parseFloat((sp.sldat ?? 0).toFixed(3));
+                    return prisma.tonKho.update({
+                      where: { sanphamId: sp.idSP },
+                      data: {
+                        slchogiao: { decrement: decValue },
+                        slton: { decrement: decValue },
+                      },
+                    });
                   });
 
-                  await prisma.phieuKho.update({
-                    where: { maphieu: maphieuNew },
-                    data: {
-                      ...phieuPayload,
-                      sanpham: {
-                        create: uniqueSanpham,
-                      },
+                  await Promise.all(inventoryUpdates);
+
+                  // Deduplicate products and aggregate quantities
+                  const uniqueSanpham = oldDonhang.sanpham.reduce(
+                    (acc: any[], sp: any) => {
+                      const existing = acc.find(
+                        (item) => item.sanphamId === sp.idSP,
+                      );
+                      if (existing) {
+                        existing.soluong += parseFloat(
+                          (sp.sldat ?? 0).toFixed(3),
+                        );
+                      } else {
+                        acc.push({
+                          sanphamId: sp.idSP,
+                          soluong: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                          ghichu: sp.ghichu,
+                        });
+                      }
+                      return acc;
                     },
+                    [],
+                  );
+
+                  // Create phieu xuat kho
+                  const maphieuNew = `PX-${oldDonhang.madonhang}-${this.formatDateForFilename()}`;
+                  const phieuPayload = {
+                    ngay: oldDonhang.ngaygiao
+                      ? new Date(oldDonhang.ngaygiao)
+                      : new Date(),
+                    type: 'xuat',
+                    khoId: 'DEFAUL_KHO_ID', // Define this constant
+                    ghichu: oldDonhang.ghichu || 'Xuất kho hàng loạt',
+                    isActive: true,
+                  };
+
+                  // Handle phieuKho upsert
+                  const existingPhieu = await prisma.phieuKho.findUnique({
+                    where: { maphieu: maphieuNew },
+                    include: { sanpham: true },
                   });
-                } else {
-                  await prisma.phieuKho.create({
+
+                  if (existingPhieu) {
+                    await prisma.phieuKhoSanpham.deleteMany({
+                      where: { phieuKhoId: existingPhieu.id },
+                    });
+
+                    await prisma.phieuKho.update({
+                      where: { maphieu: maphieuNew },
+                      data: {
+                        ...phieuPayload,
+                        sanpham: {
+                          create: uniqueSanpham,
+                        },
+                      },
+                    });
+                  } else {
+                    await prisma.phieuKho.create({
+                      data: {
+                        maphieu: maphieuNew,
+                        ...phieuPayload,
+                        sanpham: {
+                          create: uniqueSanpham,
+                        },
+                      },
+                    });
+                  }
+
+                  // Update order status and quantities
+                  await prisma.donhang.update({
+                    where: { id },
                     data: {
-                      maphieu: maphieuNew,
-                      ...phieuPayload,
+                      status: 'danhan',
                       sanpham: {
-                        create: uniqueSanpham,
+                        updateMany: oldDonhang.sanpham.map((sp: any) => ({
+                          where: { idSP: sp.idSP },
+                          data: {
+                            slgiao: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                            slnhan: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                          },
+                        })),
                       },
                     },
                   });
                 }
 
-                // Update order status and quantities
-                await prisma.donhang.update({
-                  where: { id },
-                  data: {
-                    status: 'danhan',
-                    sanpham: {
-                      updateMany: oldDonhang.sanpham.map((sp: any) => ({
-                        where: { idSP: sp.idSP },
-                        data: {
-                          slgiao: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                          slnhan: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                        },
-                      })),
-                    },
-                  },
-                });
+                return { success: 1, fail: 0 };
+              } catch (error) {
+                console.error(`Error updating donhang ${id}:`, error);
+                return { success: 0, fail: 1 };
               }
+            });
 
-              return { success: 1, fail: 0 };
-            } catch (error) {
-              console.error(`Error updating donhang ${id}:`, error);
-              return { success: 0, fail: 1 };
-            }
-          });
+            const results = await Promise.all(batchPromises);
 
-          const results = await Promise.all(batchPromises);
-          
-          results.forEach(result => {
-            success += result.success;
-            fail += result.fail;
-          });
+            results.forEach((result) => {
+              success += result.success;
+              fail += result.fail;
+            });
 
-          return { success, fail };
-        }, {
-          timeout: 60000,  // 60 seconds for bulk operations
-          maxWait: 10000,
-          retries: 2
-        });
+            return { success, fail };
+          },
+          {
+            timeout: 60000, // 60 seconds for bulk operations
+            maxWait: 10000,
+            retries: 2,
+          },
+        );
 
         totalSuccess += batchResult.success;
         totalFail += batchResult.fail;
-        
+
         // Add small delay between batches to prevent overwhelming database
         if (i + BATCH_SIZE < ids.length) {
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise((resolve) => setTimeout(resolve, 100));
         }
       } catch (error) {
-        console.error(`Batch ${Math.floor(i/BATCH_SIZE) + 1} failed:`, error);
+        console.error(`Batch ${Math.floor(i / BATCH_SIZE) + 1} failed:`, error);
         totalFail += batch.length;
       }
     }
@@ -3410,24 +3744,24 @@ export class DonhangService {
           status: { in: params.status as any[] },
           sanpham: {
             some: {
-              idSP: params.sanphamId
-            }
-          }
+              idSP: params.sanphamId,
+            },
+          },
         },
         include: {
           sanpham: {
-            where: { idSP: params.sanphamId }
+            where: { idSP: params.sanphamId },
           },
           khachhang: {
             select: {
               id: true,
               name: true,
-              makh: true
-            }
-          }
-        }
+              makh: true,
+            },
+          },
+        },
       });
-      
+
       return data || [];
     } catch (error) {
       console.error('Error finding orders by status:', error);
@@ -3438,19 +3772,22 @@ export class DonhangService {
   /**
    * Hoàn tất đơn hàng - chuyển trạng thái sang 'danhan'
    */
-  async completeDonhang(id: string, data: {
-    status: string;
-    slnhan: number;
-    completedBy?: string;
-    completedAt?: Date;
-    ghichu?: string;
-  }): Promise<{ success: boolean; message?: string }> {
+  async completeDonhang(
+    id: string,
+    data: {
+      status: string;
+      slnhan: number;
+      completedBy?: string;
+      completedAt?: Date;
+      ghichu?: string;
+    },
+  ): Promise<{ success: boolean; message?: string }> {
     try {
       return await this.prisma.$transaction(async (prisma) => {
         // Lấy đơn hàng hiện tại
         const donhang = await prisma.donhang.findUnique({
           where: { id },
-          include: { sanpham: true }
+          include: { sanpham: true },
         });
 
         if (!donhang) {
@@ -3463,58 +3800,58 @@ export class DonhangService {
           data: {
             status: 'danhan',
             ghichu: data.ghichu,
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         });
 
         // Cập nhật số lượng nhận trong donhangsanpham và tính lại ttnhan, ttsauvat
         let tongchua = 0;
-        
+
         for (const sp of donhang.sanpham) {
           const giaban = parseFloat((sp.giaban || 0).toString());
           const vat = parseFloat((sp.vat || 0).toString());
           const newSlnhan = parseFloat(data.slnhan.toString());
-          
+
           // 🔥 Tính lại ttnhan và ttsauvat dựa trên slnhan
           const ttnhan = giaban * newSlnhan;
           const ttsauvat = ttnhan * (1 + vat);
-          
+
           tongchua += ttnhan;
-          
+
           await prisma.donhangsanpham.update({
             where: { id: sp.id },
             data: {
               slnhan: newSlnhan,
               ttnhan: parseFloat(ttnhan.toFixed(3)),
               ttsauvat: parseFloat(ttsauvat.toFixed(3)),
-              ghichu: data.ghichu
-            }
+              ghichu: data.ghichu,
+            },
           });
 
           // 🎯 QUAN TRỌNG: Cập nhật TonKho - giảm slchogiao về 0
           const oldSlgiao = parseFloat((sp.slgiao || 0).toString());
-          
+
           // Nếu nhận đủ: slchogiao = 0
           // Nếu nhận thiếu: hoàn lại phần thiếu vào slton
           const shortage = oldSlgiao - newSlnhan;
-          
+
           await this.updateTonKhoSafely(sp.idSP, {
             slchogiao: { decrement: oldSlgiao }, // Giảm về 0
-            ...(shortage > 0 && { slton: { increment: shortage } }) // Hoàn lại nếu thiếu
+            ...(shortage > 0 && { slton: { increment: shortage } }), // Hoàn lại nếu thiếu
           });
         }
-        
+
         // 🔥 Tính lại tổng tiền cho đơn hàng
         const vatRate = parseFloat((donhang.vat || 0).toString());
         const tongvat = tongchua * vatRate;
         const tongtien = tongchua + tongvat;
-        
+
         await prisma.donhang.update({
           where: { id },
           data: {
             tongtien: parseFloat(tongtien.toFixed(3)),
             tongvat: parseFloat(tongvat.toFixed(3)),
-          }
+          },
         });
 
         return { success: true, message: 'Hoàn tất đơn hàng thành công' };
@@ -3528,7 +3865,9 @@ export class DonhangService {
   /**
    * Hoàn tất tất cả đơn hàng chờ giao cho sản phẩm cụ thể
    */
-  async completePendingDeliveriesForProduct(sanphamId: string): Promise<{ success: boolean; count: number; message?: string }> {
+  async completePendingDeliveriesForProduct(
+    sanphamId: string,
+  ): Promise<{ success: boolean; count: number; message?: string }> {
     try {
       // First, find all pending orders without transaction to avoid timeout
       const pendingOrders = await this.prisma.donhang.findMany({
@@ -3537,22 +3876,22 @@ export class DonhangService {
           sanpham: {
             some: {
               idSP: sanphamId,
-              slgiao: { gt: 0 }
-            }
-          }
+              slgiao: { gt: 0 },
+            },
+          },
         },
         include: {
           sanpham: {
-            where: { idSP: sanphamId }
-          }
-        }
+            where: { idSP: sanphamId },
+          },
+        },
       });
 
       if (pendingOrders.length === 0) {
         return {
           success: true,
           count: 0,
-          message: 'Không có đơn hàng chờ giao nào'
+          message: 'Không có đơn hàng chờ giao nào',
         };
       }
 
@@ -3562,82 +3901,89 @@ export class DonhangService {
 
       for (let i = 0; i < pendingOrders.length; i += batchSize) {
         const batch = pendingOrders.slice(i, i + batchSize);
-        
-        const batchResult = await this.prisma.$transaction(async (prisma) => {
-          let batchCount = 0;
-          
-          for (const order of batch) {
-            // 🔥 Tính lại tổng tiền cho đơn hàng
-            let tongchua = 0;
-            
-            // Collect all sanpham updates for this order
-            const sanphamUpdates = order.sanpham.map(sp => {
-              const giaban = parseFloat((sp.giaban || 0).toString());
-              const vat = parseFloat((sp.vat || 0).toString());
-              const slnhan = parseFloat((sp.slgiao || 0).toString()); // slnhan = slgiao khi auto-complete
-              
-              // 🔥 Tính lại ttnhan và ttsauvat
-              const ttnhan = giaban * slnhan;
-              const ttsauvat = ttnhan * (1 + vat);
-              
-              tongchua += ttnhan;
-              
-              return {
-                id: sp.id,
-                slnhan: slnhan,
-                ttnhan: parseFloat(ttnhan.toFixed(3)),
-                ttsauvat: parseFloat(ttsauvat.toFixed(3)),
-                ghichu: (sp.ghichu || '') + ' | Auto-completed for inventory close'
-              };
-            });
 
-            // 🔥 Tính tổng tiền đơn hàng
-            const vatRate = parseFloat((order.vat || 0).toString());
-            const tongvat = tongchua * vatRate;
-            const tongtien = tongchua + tongvat;
+        const batchResult = await this.prisma.$transaction(
+          async (prisma) => {
+            let batchCount = 0;
 
-            // Update order status
-            await prisma.donhang.update({
-              where: { id: order.id },
-              data: {
-                status: 'danhan',
-                tongtien: parseFloat(tongtien.toFixed(3)),
-                tongvat: parseFloat(tongvat.toFixed(3)),
-                ghichu: (order.ghichu || '') + ' | Tự động hoàn tất trước chốt kho',
-                updatedAt: new Date()
-              }
-            });
+            for (const order of batch) {
+              // 🔥 Tính lại tổng tiền cho đơn hàng
+              let tongchua = 0;
 
-            // Batch update all sanpham for this order
-            for (const update of sanphamUpdates) {
-              await prisma.donhangsanpham.update({
-                where: { id: update.id },
-                data: {
-                  slnhan: update.slnhan,
-                  ttnhan: update.ttnhan,
-                  ttsauvat: update.ttsauvat,
-                  ghichu: update.ghichu
-                }
+              // Collect all sanpham updates for this order
+              const sanphamUpdates = order.sanpham.map((sp) => {
+                const giaban = parseFloat((sp.giaban || 0).toString());
+                const vat = parseFloat((sp.vat || 0).toString());
+                const slnhan = parseFloat((sp.slgiao || 0).toString()); // slnhan = slgiao khi auto-complete
+
+                // 🔥 Tính lại ttnhan và ttsauvat
+                const ttnhan = giaban * slnhan;
+                const ttsauvat = ttnhan * (1 + vat);
+
+                tongchua += ttnhan;
+
+                return {
+                  id: sp.id,
+                  slnhan: slnhan,
+                  ttnhan: parseFloat(ttnhan.toFixed(3)),
+                  ttsauvat: parseFloat(ttsauvat.toFixed(3)),
+                  ghichu:
+                    (sp.ghichu || '') + ' | Auto-completed for inventory close',
+                };
               });
+
+              // 🔥 Tính tổng tiền đơn hàng
+              const vatRate = parseFloat((order.vat || 0).toString());
+              const tongvat = tongchua * vatRate;
+              const tongtien = tongchua + tongvat;
+
+              // Update order status
+              await prisma.donhang.update({
+                where: { id: order.id },
+                data: {
+                  status: 'danhan',
+                  tongtien: parseFloat(tongtien.toFixed(3)),
+                  tongvat: parseFloat(tongvat.toFixed(3)),
+                  ghichu:
+                    (order.ghichu || '') + ' | Tự động hoàn tất trước chốt kho',
+                  updatedAt: new Date(),
+                },
+              });
+
+              // Batch update all sanpham for this order
+              for (const update of sanphamUpdates) {
+                await prisma.donhangsanpham.update({
+                  where: { id: update.id },
+                  data: {
+                    slnhan: update.slnhan,
+                    ttnhan: update.ttnhan,
+                    ttsauvat: update.ttsauvat,
+                    ghichu: update.ghichu,
+                  },
+                });
+              }
+
+              // Update TonKho using atomic operations
+              for (const sp of order.sanpham) {
+                await this.tonkhoManager.updateTonkhoAtomic([
+                  {
+                    sanphamId: sp.idSP,
+                    operation: 'decrement',
+                    slchogiao: parseFloat(sp.slgiao.toString()),
+                    reason: `Auto-complete pending delivery for order ${order.madonhang}`,
+                  },
+                ]);
+              }
+
+              batchCount += order.sanpham.length;
             }
 
-            // Update TonKho using atomic operations
-            for (const sp of order.sanpham) {
-              await this.tonkhoManager.updateTonkhoAtomic([{
-                sanphamId: sp.idSP,
-                operation: 'decrement',
-                slchogiao: parseFloat(sp.slgiao.toString()),
-                reason: `Auto-complete pending delivery for order ${order.madonhang}`
-              }]);
-            }
-
-            batchCount += order.sanpham.length;
-          }
-          
-          return batchCount;
-        }, {
-          timeout: 30000 // Increase timeout to 30 seconds
-        });
+            return batchCount;
+          },
+          {
+            timeout: 30000, // Increase timeout to 30 seconds
+          },
+        );
 
         totalCompleted += batchResult;
       }
@@ -3645,14 +3991,14 @@ export class DonhangService {
       return {
         success: true,
         count: totalCompleted,
-        message: `Đã hoàn tất ${totalCompleted} đơn hàng chờ giao`
+        message: `Đã hoàn tất ${totalCompleted} đơn hàng chờ giao`,
       };
     } catch (error) {
       console.error('Error completing pending deliveries:', error);
       return {
         success: false,
         count: 0,
-        message: error.message || 'Lỗi khi hoàn tất đơn hàng chờ giao'
+        message: error.message || 'Lỗi khi hoàn tất đơn hàng chờ giao',
       };
     }
   }
@@ -3660,18 +4006,21 @@ export class DonhangService {
   /**
    * Helper method to safely update TonKho, creating record if not exists
    */
-  private async updateTonKhoSafely(sanphamId: string, updateData: any): Promise<void> {
+  private async updateTonKhoSafely(
+    sanphamId: string,
+    updateData: any,
+  ): Promise<void> {
     try {
       // Kiểm tra TonKho có tồn tại không
       const existingTonKho = await this.prisma.tonKho.findUnique({
-        where: { sanphamId }
+        where: { sanphamId },
       });
 
       if (existingTonKho) {
         // Update existing record
         await this.prisma.tonKho.update({
           where: { sanphamId },
-          data: updateData
+          data: updateData,
         });
       } else {
         // Create new record với giá trị mặc định
@@ -3681,8 +4030,8 @@ export class DonhangService {
             sanphamId,
             slton: initialValue.slton,
             slchogiao: initialValue.slchogiao,
-            slchonhap: initialValue.slchonhap
-          }
+            slchonhap: initialValue.slchonhap,
+          },
         });
       }
     } catch (error) {
@@ -3696,7 +4045,7 @@ export class DonhangService {
    */
   private calculateInitialTonKhoValue(updateData: any): {
     slton: number;
-    slchogiao: number; 
+    slchogiao: number;
     slchonhap: number;
   } {
     // Tính toán giá trị ban đầu dựa trên updateData
@@ -3713,9 +4062,15 @@ export class DonhangService {
     }
 
     if (updateData.slchogiao) {
-      if (typeof updateData.slchogiao === 'object' && updateData.slchogiao.increment) {
+      if (
+        typeof updateData.slchogiao === 'object' &&
+        updateData.slchogiao.increment
+      ) {
         slchogiao = updateData.slchogiao.increment;
-      } else if (typeof updateData.slchogiao === 'object' && updateData.slchogiao.decrement) {
+      } else if (
+        typeof updateData.slchogiao === 'object' &&
+        updateData.slchogiao.decrement
+      ) {
         slchogiao = -updateData.slchogiao.decrement;
       } else {
         slchogiao = updateData.slchogiao;
@@ -3723,9 +4078,15 @@ export class DonhangService {
     }
 
     if (updateData.slchonhap) {
-      if (typeof updateData.slchonhap === 'object' && updateData.slchonhap.increment) {
+      if (
+        typeof updateData.slchonhap === 'object' &&
+        updateData.slchonhap.increment
+      ) {
         slchonhap = updateData.slchonhap.increment;
-      } else if (typeof updateData.slchonhap === 'object' && updateData.slchonhap.decrement) {
+      } else if (
+        typeof updateData.slchonhap === 'object' &&
+        updateData.slchonhap.decrement
+      ) {
         slchonhap = -updateData.slchonhap.decrement;
       } else {
         slchonhap = updateData.slchonhap;
@@ -3748,30 +4109,30 @@ export class DonhangService {
           sanpham: {
             some: {
               idSP: sanphamId,
-              slgiao: { gt: 0 }
-            }
-          }
+              slgiao: { gt: 0 },
+            },
+          },
         },
         include: {
           sanpham: {
-            where: { idSP: sanphamId }
+            where: { idSP: sanphamId },
           },
           khachhang: {
             select: {
               id: true,
               name: true,
-              makh: true
-            }
-          }
-        }
+              makh: true,
+            },
+          },
+        },
       });
 
-      return orders.map(order => ({
+      return orders.map((order) => ({
         id: order.id,
         status: order.status,
         khachhang: order.khachhang,
         sanpham: order.sanpham[0], // Since we filtered by sanphamId
-        createdAt: order.createdAt
+        createdAt: order.createdAt,
       }));
     } catch (error) {
       console.error('Error getting pending orders for product:', error);
@@ -3803,11 +4164,11 @@ export class DonhangService {
         include: {
           sanpham: {
             include: {
-              sanpham: { select: { masp: true, title: true } }
-            }
+              sanpham: { select: { masp: true, title: true } },
+            },
           },
-          banggia: { select: { mabanggia: true, title: true } }
-        }
+          banggia: { select: { mabanggia: true, title: true } },
+        },
       });
 
       if (!donhang) {
@@ -3819,13 +4180,13 @@ export class DonhangService {
       for (const item of donhang.sanpham) {
         // Extract price metadata
         const metadata = this.extractPriceMetadata(item.ghichu || '');
-        
+
         if (!metadata?.banggiaId || !metadata?.capturedAt) {
           discrepancies.push({
             sanphamId: item.idSP,
             sanphamCode: item.sanpham.masp,
             issue: 'NO_PRICE_METADATA',
-            message: 'Không có thông tin giá gốc'
+            message: 'Không có thông tin giá gốc',
           });
           continue;
         }
@@ -3834,7 +4195,7 @@ export class DonhangService {
         try {
           const currentPrice = await this.priceHistoryService.getCurrentPrice(
             metadata.banggiaId,
-            item.idSP
+            item.idSP,
           );
 
           if (!currentPrice) {
@@ -3842,7 +4203,7 @@ export class DonhangService {
               sanphamId: item.idSP,
               sanphamCode: item.sanpham.masp,
               issue: 'PRICE_NOT_FOUND',
-              message: 'Không tìm thấy giá hiện tại'
+              message: 'Không tìm thấy giá hiện tại',
             });
             continue;
           }
@@ -3864,7 +4225,7 @@ export class DonhangService {
               difference: priceDiff,
               percentChange: parseFloat(percentChange),
               capturedAt: metadata.capturedAt,
-              message: `Giá đã thay đổi ${percentChange}% so với khi đặt hàng`
+              message: `Giá đã thay đổi ${percentChange}% so với khi đặt hàng`,
             });
           }
         } catch (error) {
@@ -3872,7 +4233,7 @@ export class DonhangService {
             sanphamId: item.idSP,
             sanphamCode: item.sanpham.masp,
             issue: 'VERIFICATION_ERROR',
-            message: error.message
+            message: error.message,
           });
         }
       }
@@ -3883,11 +4244,11 @@ export class DonhangService {
         verifiedAt: new Date().toISOString(),
         totalItems: donhang.sanpham.length,
         discrepancies: discrepancies,
-        hasDiscrepancies: discrepancies.length > 0
+        hasDiscrepancies: discrepancies.length > 0,
       };
     } catch (error) {
       throw new InternalServerErrorException(
-        error.message || 'Error verifying order prices'
+        error.message || 'Error verifying order prices',
       );
     }
   }
@@ -3895,20 +4256,28 @@ export class DonhangService {
   /**
    * ✅ Get price at specific date from history
    */
-  async getPriceAtDate(banggiaId: string, sanphamId: string, date: Date): Promise<any> {
+  async getPriceAtDate(
+    banggiaId: string,
+    sanphamId: string,
+    date: Date,
+  ): Promise<any> {
     try {
-      const history = await this.priceHistoryService.getPriceHistory(banggiaId, sanphamId);
-      
+      const history = await this.priceHistoryService.getPriceHistory(
+        banggiaId,
+        sanphamId,
+      );
+
       if (!history || !Array.isArray(history) || history.length === 0) {
         return null;
       }
 
       // Find the price that was valid at the given date
       const targetDate = new Date(date);
-      
+
       // Sort history by changedAt descending (history is already an array)
-      const sortedHistory = history.sort((a: any, b: any) => 
-        new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime()
+      const sortedHistory = history.sort(
+        (a: any, b: any) =>
+          new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime(),
       );
 
       // Find the first price change that happened before or at the target date
@@ -3921,7 +4290,7 @@ export class DonhangService {
             date: date,
             price: change.newPrice,
             priceChangeDate: change.changedAt,
-            metadata: change
+            metadata: change,
           };
         }
       }
@@ -3934,11 +4303,11 @@ export class DonhangService {
         date: date,
         price: oldestChange.oldPrice || oldestChange.newPrice,
         priceChangeDate: oldestChange.changedAt,
-        note: 'Price before first recorded change'
+        note: 'Price before first recorded change',
       };
     } catch (error) {
       throw new InternalServerErrorException(
-        error.message || 'Error getting price at date'
+        error.message || 'Error getting price at date',
       );
     }
   }
@@ -3954,9 +4323,9 @@ export class DonhangService {
         include: {
           sanpham: {
             where: { id: dto.donhangsanphamId },
-            include: { sanpham: true }
-          }
-        }
+            include: { sanpham: true },
+          },
+        },
       });
 
       if (!donhang) {
@@ -3965,7 +4334,9 @@ export class DonhangService {
 
       // Không cho sửa đơn đã giao/hoàn thành
       if (donhang.status === 'dagiao' || donhang.status === 'hoanthanh') {
-        throw new BadRequestException('Không thể sửa giá đơn hàng đã giao/hoàn thành');
+        throw new BadRequestException(
+          'Không thể sửa giá đơn hàng đã giao/hoàn thành',
+        );
       }
 
       const donhangsanpham = donhang.sanpham[0];
@@ -3976,8 +4347,9 @@ export class DonhangService {
       const oldPrice = Number(donhangsanpham.giaban);
 
       // Validate price change percentage
-      const changePercent = oldPrice !== 0 ? ((dto.newPrice - oldPrice) / oldPrice) * 100 : 0;
-      
+      const changePercent =
+        oldPrice !== 0 ? ((dto.newPrice - oldPrice) / oldPrice) * 100 : 0;
+
       // Require reason if change > 20%
       if (Math.abs(changePercent) > 20 && !dto.changeReason) {
         throw new BadRequestException('Thay đổi giá > 20% yêu cầu nhập lý do');
@@ -3993,26 +4365,32 @@ export class DonhangService {
             ttnhan: dto.newPrice * Number(donhangsanpham.slnhan),
             ttgiao: dto.newPrice * Number(donhangsanpham.slgiao),
             ttdat: dto.newPrice * Number(donhangsanpham.sldat),
-          }
+          },
         });
 
         // 2. Track in audit log
-        await this.donhangPriceHistoryService.trackDonhangPriceChange(dto, oldPrice);
+        await this.donhangPriceHistoryService.trackDonhangPriceChange(
+          dto,
+          oldPrice,
+        );
 
         // 3. Recalculate order totals
         const allProducts = await tx.donhangsanpham.findMany({
-          where: { donhangId: dto.donhangId }
+          where: { donhangId: dto.donhangId },
         });
 
-        const tongtien = allProducts.reduce((sum, p) => sum + Number(p.ttnhan), 0);
+        const tongtien = allProducts.reduce(
+          (sum, p) => sum + Number(p.ttnhan),
+          0,
+        );
         const tongvat = tongtien * (Number(donhang.vat || 0) / 100);
 
         await tx.donhang.update({
           where: { id: dto.donhangId },
           data: {
             tongtien,
-            tongvat
-          }
+            tongvat,
+          },
         });
 
         return {
@@ -4027,17 +4405,20 @@ export class DonhangService {
             newTotals: {
               tongtien,
               tongvat,
-              tongcong: tongtien + tongvat
-            }
-          }
+              tongcong: tongtien + tongvat,
+            },
+          },
         };
       });
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
       throw new InternalServerErrorException(
-        error.message || 'Lỗi khi cập nhật giá sản phẩm'
+        error.message || 'Lỗi khi cập nhật giá sản phẩm',
       );
     }
   }
@@ -4047,13 +4428,13 @@ export class DonhangService {
    */
   async getDonhangPriceAudit(donhangId: string) {
     try {
-      return await this.donhangPriceHistoryService.getDonhangPriceAudit({ 
+      return await this.donhangPriceHistoryService.getDonhangPriceAudit({
         donhangId,
-        limit: 100 
+        limit: 100,
       });
     } catch (error) {
       throw new InternalServerErrorException(
-        error.message || 'Lỗi khi lấy lịch sử giá'
+        error.message || 'Lỗi khi lấy lịch sử giá',
       );
     }
   }

@@ -17,7 +17,9 @@ export class OptimizedCongnoccService {
 
     const where: any = {
       ngaynhan: dateRange,
-      status: Array.isArray(params.Status) ? { in: params.Status } : params.Status,
+      status: Array.isArray(params.Status)
+        ? { in: params.Status }
+        : params.Status,
     };
 
     if (query) {
@@ -34,16 +36,16 @@ export class OptimizedCongnoccService {
         madncc: true,
         ngaynhan: true,
         nhacungcap: {
-          select: { name: true, mancc: true }
+          select: { name: true, mancc: true },
         },
         sanpham: {
           select: {
             slnhan: true,
             sanpham: {
-              select: { giaban: true }
-            }
-          }
-        }
+              select: { giaban: true },
+            },
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -51,14 +53,14 @@ export class OptimizedCongnoccService {
     const processedResult = result.map((v: any) => {
       let tong = 0;
       let soluong = 0;
-      
+
       for (const item of v.sanpham) {
         const slnhan = Number(item.slnhan) || 0;
         const giaban = Number(item.sanpham?.giaban) || 0;
         tong += slnhan * giaban;
         soluong += slnhan;
       }
-      
+
       return {
         id: v.id,
         madathang: v.madncc,
@@ -80,8 +82,8 @@ export class OptimizedCongnoccService {
     console.time('⚡ RAW_SQL Method');
     const { Batdau, Ketthuc, query } = params;
 
-    let whereConditions: string[] = [];
-    let queryParams: any[] = [];
+    const whereConditions: string[] = [];
+    const queryParams: any[] = [];
     let paramIndex = 1;
 
     // Date range conditions
@@ -100,7 +102,9 @@ export class OptimizedCongnoccService {
     // Status conditions
     if (params.Status) {
       if (Array.isArray(params.Status)) {
-        const placeholders = params.Status.map(() => `$${paramIndex++}`).join(',');
+        const placeholders = params.Status.map(() => `$${paramIndex++}`).join(
+          ',',
+        );
         whereConditions.push(`d.status IN (${placeholders})`);
         queryParams.push(...params.Status);
       } else {
@@ -112,12 +116,17 @@ export class OptimizedCongnoccService {
 
     // Search query conditions
     if (query) {
-      whereConditions.push(`(d.madncc ILIKE $${paramIndex} OR n.name ILIKE $${paramIndex})`);
+      whereConditions.push(
+        `(d.madncc ILIKE $${paramIndex} OR n.name ILIKE $${paramIndex})`,
+      );
       queryParams.push(`%${query}%`);
       paramIndex++;
     }
 
-    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+    const whereClause =
+      whereConditions.length > 0
+        ? `WHERE ${whereConditions.join(' AND ')}`
+        : '';
 
     const sqlQuery = `
       SELECT 
@@ -157,14 +166,14 @@ export class OptimizedCongnoccService {
   // 🚀 APPROACH 3: Cached Version (Redis Layer)
   async congnoccCached(params: any) {
     console.time('💨 CACHED Method');
-    
+
     // Create cache key from parameters
     const cacheKey = `congnoncc:${JSON.stringify(params)}`;
-    
+
     try {
       // Try to get from cache first - using selective fields as fallback
       const result = await this.congnoccSelectiveFields(params);
-      
+
       console.timeEnd('💨 CACHED Method');
       return result;
     } catch (error) {

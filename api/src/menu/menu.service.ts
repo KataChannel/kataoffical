@@ -17,7 +17,10 @@ export class MenuService {
   }
 
   async findOne(id: string) {
-    return this.prisma.menu.findUnique({ where: { id }, include: { children: true } });
+    return this.prisma.menu.findUnique({
+      where: { id },
+      include: { children: true },
+    });
   }
 
   async update(id: string, data: any) {
@@ -28,31 +31,34 @@ export class MenuService {
     return this.prisma.menu.delete({ where: { id } });
   }
 
-  async getTree(data:any){   
+  async getTree(data: any) {
     // if(Object.entries(data).length === 0){
     //   data =['donhang.view'];
     // }
-    const menus = await this.findAll();  
-    const filteredMenus = menus.filter(v => {
+    const menus = await this.findAll();
+    const filteredMenus = menus.filter((v) => {
       const path = v.slug;
-      const result = `${path?.split("/").pop()}.view`;
+      const result = `${path?.split('/').pop()}.view`;
       v.isActive = data?.includes(result);
       return v.isActive;
     });
-    const parentIds = new Set(filteredMenus.map(v => v.parentId).filter(id => id));
-    const existingIds = new Set(filteredMenus.map(v => v.id));
-    const parents = menus.filter(v => parentIds.has(v.id) && !existingIds.has(v.id));
+    const parentIds = new Set(
+      filteredMenus.map((v) => v.parentId).filter((id) => id),
+    );
+    const existingIds = new Set(filteredMenus.map((v) => v.id));
+    const parents = menus.filter(
+      (v) => parentIds.has(v.id) && !existingIds.has(v.id),
+    );
     filteredMenus.push(...parents);
     menus.length = 0;
-    menus.push(...filteredMenus);    
-    return this.buildTree(menus).sort((a:any,b:any) => a.order - b.order);
+    menus.push(...filteredMenus);
+    return this.buildTree(menus).sort((a: any, b: any) => a.order - b.order);
   }
 
-  
   private buildTree(menus: any[], parentId: string | null = null) {
     return menus
-      .filter(menu => menu.parentId === parentId)
-      .map(menu => ({ ...menu, children: this.buildTree(menus, menu.id) }));
+      .filter((menu) => menu.parentId === parentId)
+      .map((menu) => ({ ...menu, children: this.buildTree(menus, menu.id) }));
   }
   async reorderMenus(menuIds: string[]) {
     // Update the order of each menu based on its position in the array
@@ -62,6 +68,6 @@ export class MenuService {
         data: { order: i + 1 },
       });
     }
-    return true
+    return true;
   }
 }

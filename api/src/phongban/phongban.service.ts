@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreatePhongbanDto, UpdatePhongbanDto } from './dto';
 import { Phongban, Prisma } from '@prisma/client';
@@ -11,31 +15,35 @@ export class PhongbanService {
     try {
       // Kiểm tra mã phòng ban đã tồn tại chưa
       const existing = await this.prisma.phongban.findUnique({
-        where: { ma: createPhongbanDto.ma }
+        where: { ma: createPhongbanDto.ma },
       });
 
       if (existing) {
-        throw new ConflictException(`Phòng ban với mã ${createPhongbanDto.ma} đã tồn tại`);
+        throw new ConflictException(
+          `Phòng ban với mã ${createPhongbanDto.ma} đã tồn tại`,
+        );
       }
 
       // Tính level nếu có parent
       let level = 1;
       if (createPhongbanDto.parentId) {
         const parent = await this.prisma.phongban.findUnique({
-          where: { id: createPhongbanDto.parentId }
+          where: { id: createPhongbanDto.parentId },
         });
-        
+
         if (!parent) {
-          throw new NotFoundException(`Phòng ban cha với ID ${createPhongbanDto.parentId} không tồn tại`);
+          throw new NotFoundException(
+            `Phòng ban cha với ID ${createPhongbanDto.parentId} không tồn tại`,
+          );
         }
-        
+
         level = parent.level + 1;
       }
 
       return await this.prisma.phongban.create({
         data: {
           ...createPhongbanDto,
-          level
+          level,
         },
         include: {
           parent: true,
@@ -43,13 +51,16 @@ export class PhongbanService {
           _count: {
             select: {
               children: true,
-              nhanviens: true
-            }
-          }
-        }
+              nhanviens: true,
+            },
+          },
+        },
       });
     } catch (error) {
-      if (error instanceof ConflictException || error instanceof NotFoundException) {
+      if (
+        error instanceof ConflictException ||
+        error instanceof NotFoundException
+      ) {
         throw error;
       }
       throw new Error(`Lỗi khi tạo phòng ban: ${error.message}`);
@@ -83,14 +94,11 @@ export class PhongbanService {
         _count: {
           select: {
             children: true,
-            nhanviens: true
-          }
-        }
+            nhanviens: true,
+          },
+        },
       },
-      orderBy: [
-        { level: 'asc' },
-        { ma: 'asc' }
-      ]
+      orderBy: [{ level: 'asc' }, { ma: 'asc' }],
     });
   }
 
@@ -102,15 +110,15 @@ export class PhongbanService {
         children: true,
         truongPhong: true,
         nhanviens: {
-          orderBy: { maNV: 'asc' }
+          orderBy: { maNV: 'asc' },
         },
         _count: {
           select: {
             children: true,
-            nhanviens: true
-          }
-        }
-      }
+            nhanviens: true,
+          },
+        },
+      },
     });
 
     if (!phongban) {
@@ -131,10 +139,10 @@ export class PhongbanService {
         _count: {
           select: {
             children: true,
-            nhanviens: true
-          }
-        }
-      }
+            nhanviens: true,
+          },
+        },
+      },
     });
 
     if (!phongban) {
@@ -155,24 +163,27 @@ export class PhongbanService {
               include: {
                 children: true,
                 _count: {
-                  select: { nhanviens: true }
-                }
-              }
+                  select: { nhanviens: true },
+                },
+              },
             },
             _count: {
-              select: { nhanviens: true }
-            }
-          }
+              select: { nhanviens: true },
+            },
+          },
         },
         _count: {
-          select: { nhanviens: true }
-        }
+          select: { nhanviens: true },
+        },
       },
-      orderBy: { ma: 'asc' }
+      orderBy: { ma: 'asc' },
     });
   }
 
-  async update(id: string, updatePhongbanDto: UpdatePhongbanDto): Promise<Phongban> {
+  async update(
+    id: string,
+    updatePhongbanDto: UpdatePhongbanDto,
+  ): Promise<Phongban> {
     try {
       // Kiểm tra phòng ban tồn tại
       await this.findOne(id);
@@ -184,13 +195,15 @@ export class PhongbanService {
           level = 1;
         } else {
           const parent = await this.prisma.phongban.findUnique({
-            where: { id: updatePhongbanDto.parentId }
+            where: { id: updatePhongbanDto.parentId },
           });
-          
+
           if (!parent) {
-            throw new NotFoundException(`Phòng ban cha với ID ${updatePhongbanDto.parentId} không tồn tại`);
+            throw new NotFoundException(
+              `Phòng ban cha với ID ${updatePhongbanDto.parentId} không tồn tại`,
+            );
           }
-          
+
           level = parent.level + 1;
         }
       }
@@ -199,7 +212,7 @@ export class PhongbanService {
         where: { id },
         data: {
           ...updatePhongbanDto,
-          ...(level !== undefined && { level })
+          ...(level !== undefined && { level }),
         },
         include: {
           parent: true,
@@ -208,10 +221,10 @@ export class PhongbanService {
           _count: {
             select: {
               children: true,
-              nhanviens: true
-            }
-          }
-        }
+              nhanviens: true,
+            },
+          },
+        },
       });
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -230,10 +243,10 @@ export class PhongbanService {
           _count: {
             select: {
               children: true,
-              nhanviens: true
-            }
-          }
-        }
+              nhanviens: true,
+            },
+          },
+        },
       });
 
       if (!phongban) {
@@ -242,21 +255,28 @@ export class PhongbanService {
 
       // Kiểm tra có phòng ban con không
       if (phongban._count.children > 0) {
-        throw new ConflictException('Không thể xóa phòng ban có bộ phận con. Vui lòng xóa các bộ phận con trước.');
+        throw new ConflictException(
+          'Không thể xóa phòng ban có bộ phận con. Vui lòng xóa các bộ phận con trước.',
+        );
       }
 
       // Kiểm tra có nhân viên không
       if (phongban._count.nhanviens > 0) {
-        throw new ConflictException(`Không thể xóa phòng ban có ${phongban._count.nhanviens} nhân viên. Vui lòng chuyển nhân viên trước.`);
+        throw new ConflictException(
+          `Không thể xóa phòng ban có ${phongban._count.nhanviens} nhân viên. Vui lòng chuyển nhân viên trước.`,
+        );
       }
 
       await this.prisma.phongban.delete({
-        where: { id }
+        where: { id },
       });
 
       return { message: `Đã xóa phòng ban ${phongban.ten} (${phongban.ma})` };
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof ConflictException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ConflictException
+      ) {
         throw error;
       }
       throw new Error(`Lỗi khi xóa phòng ban: ${error.message}`);
@@ -266,43 +286,43 @@ export class PhongbanService {
   async getStatistics() {
     const [total, byLevel, byLoai, topByNhanvien] = await Promise.all([
       this.prisma.phongban.count(),
-      
+
       this.prisma.phongban.groupBy({
         by: ['level'],
         _count: true,
-        orderBy: { level: 'asc' }
+        orderBy: { level: 'asc' },
       }),
-      
+
       this.prisma.phongban.groupBy({
         by: ['loai'],
-        _count: true
+        _count: true,
       }),
-      
+
       this.prisma.phongban.findMany({
         take: 10,
         include: {
           _count: {
-            select: { nhanviens: true }
-          }
+            select: { nhanviens: true },
+          },
         },
         orderBy: {
           nhanviens: {
-            _count: 'desc'
-          }
-        }
-      })
+            _count: 'desc',
+          },
+        },
+      }),
     ]);
 
     return {
       total,
       byLevel,
       byLoai,
-      topByNhanvien: topByNhanvien.map(pb => ({
+      topByNhanvien: topByNhanvien.map((pb) => ({
         id: pb.id,
         ma: pb.ma,
         ten: pb.ten,
-        nhanvienCount: pb._count.nhanviens
-      }))
+        nhanvienCount: pb._count.nhanviens,
+      })),
     };
   }
 }

@@ -19,7 +19,10 @@ export class UpdateProductPriceDto {
   @Min(0)
   newPrice: number;
 
-  @ApiProperty({ description: 'Lý do thay đổi giá', example: 'Điều chỉnh theo thỏa thuận khách hàng' })
+  @ApiProperty({
+    description: 'Lý do thay đổi giá',
+    example: 'Điều chỉnh theo thỏa thuận khách hàng',
+  })
   @IsString()
   changeReason: string;
 
@@ -74,7 +77,11 @@ export class GetPriceHistoryDto {
   @IsString()
   sanphamId?: string;
 
-  @ApiProperty({ required: false, description: 'Số lượng records', example: 50 })
+  @ApiProperty({
+    required: false,
+    description: 'Số lượng records',
+    example: 50,
+  })
   @IsOptional()
   @IsNumber()
   limit?: number;
@@ -91,7 +98,11 @@ export class GetDonhangPriceAuditDto {
   @IsString()
   sanphamId?: string;
 
-  @ApiProperty({ required: false, description: 'Số lượng records', example: 50 })
+  @ApiProperty({
+    required: false,
+    description: 'Số lượng records',
+    example: 50,
+  })
   @IsOptional()
   @IsNumber()
   limit?: number;

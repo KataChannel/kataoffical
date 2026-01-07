@@ -74,7 +74,7 @@ export class PhongbanService {
       return response;
     } catch (error: any) {
       this.error.set(error.message || 'Lỗi khi tải danh sách phòng ban');
-      this.snackBar.open('Lỗi khi tải danh sách phòng ban', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi tải danh sách phòng ban', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -97,7 +97,7 @@ export class PhongbanService {
       return response;
     } catch (error: any) {
       this.error.set(error.message || 'Lỗi khi tải cây phòng ban');
-      this.snackBar.open('Lỗi khi tải cây phòng ban', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi tải cây phòng ban', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -120,7 +120,7 @@ export class PhongbanService {
       return response;
     } catch (error: any) {
       this.error.set(error.message || 'Lỗi khi tải thống kê');
-      this.snackBar.open('Lỗi khi tải thống kê', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi tải thống kê', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -143,7 +143,7 @@ export class PhongbanService {
       return response;
     } catch (error: any) {
       this.error.set(error.message || 'Lỗi khi tải chi tiết phòng ban');
-      this.snackBar.open('Lỗi khi tải chi tiết phòng ban', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi tải chi tiết phòng ban', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -166,7 +166,7 @@ export class PhongbanService {
       return response;
     } catch (error: any) {
       this.error.set(error.message || 'Lỗi khi tải phòng ban');
-      this.snackBar.open('Lỗi khi tải phòng ban', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi tải phòng ban', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -185,7 +185,7 @@ export class PhongbanService {
         this.http.post<Phongban>(this.apiUrl, data, { headers: this.getHeaders() })
       );
 
-      this.snackBar.open('Tạo phòng ban thành công', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Tạo phòng ban thành công', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       
       // Refresh list
       await this.getAllPhongban();
@@ -194,7 +194,7 @@ export class PhongbanService {
     } catch (error: any) {
       const message = error.error?.message || 'Lỗi khi tạo phòng ban';
       this.error.set(message);
-      this.snackBar.open(message, 'Đóng', { duration: 3000 });
+      this.snackBar.open(message, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -213,7 +213,7 @@ export class PhongbanService {
         this.http.patch<Phongban>(`${this.apiUrl}/${id}`, data, { headers: this.getHeaders() })
       );
 
-      this.snackBar.open('Cập nhật phòng ban thành công', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Cập nhật phòng ban thành công', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       
       // Refresh list
       await this.getAllPhongban();
@@ -222,7 +222,7 @@ export class PhongbanService {
     } catch (error: any) {
       const message = error.error?.message || 'Lỗi khi cập nhật phòng ban';
       this.error.set(message);
-      this.snackBar.open(message, 'Đóng', { duration: 3000 });
+      this.snackBar.open(message, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       throw error;
     } finally {
       this.loading.set(false);
@@ -241,7 +241,7 @@ export class PhongbanService {
         this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() })
       );
 
-      this.snackBar.open(response.message, 'Đóng', { duration: 3000 });
+      this.snackBar.open(response.message, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       
       // Refresh list
       await this.getAllPhongban();
@@ -250,7 +250,7 @@ export class PhongbanService {
     } catch (error: any) {
       const message = error.error?.message || 'Lỗi khi xóa phòng ban';
       this.error.set(message);
-      this.snackBar.open(message, 'Đóng', { duration: 3000 });
+      this.snackBar.open(message, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       throw error;
     } finally {
       this.loading.set(false);

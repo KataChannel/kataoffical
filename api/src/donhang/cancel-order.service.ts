@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import Redis from 'ioredis';
@@ -29,14 +33,16 @@ export class CancelOrderService {
         `*donhang*${orderId}*`,
         `*donhang*`,
         `*tonkho*`,
-        `*phieukho*`
+        `*phieukho*`,
       ];
 
       for (const pattern of patterns) {
         const keys = await this.redis.keys(pattern);
         if (keys && keys.length > 0) {
           await this.redis.del(...keys);
-          console.log(`[CACHE] Invalidated ${keys.length} keys for pattern: ${pattern}`);
+          console.log(
+            `[CACHE] Invalidated ${keys.length} keys for pattern: ${pattern}`,
+          );
         }
       }
     } catch (error) {
@@ -53,14 +59,16 @@ export class CancelOrderService {
         `*dathang*${orderId}*`,
         `*dathang*`,
         `*tonkho*`,
-        `*phieukho*`
+        `*phieukho*`,
       ];
 
       for (const pattern of patterns) {
         const keys = await this.redis.keys(pattern);
         if (keys && keys.length > 0) {
           await this.redis.del(...keys);
-          console.log(`[CACHE] Invalidated ${keys.length} keys for pattern: ${pattern}`);
+          console.log(
+            `[CACHE] Invalidated ${keys.length} keys for pattern: ${pattern}`,
+          );
         }
       }
     } catch (error) {
@@ -93,11 +101,11 @@ export class CancelOrderService {
       include: {
         sanpham: {
           include: {
-            sanpham: true
-          }
+            sanpham: true,
+          },
         },
-        PhieuKho: true
-      }
+        PhieuKho: true,
+      },
     });
 
     if (!donhang) {
@@ -126,7 +134,9 @@ export class CancelOrderService {
     const result = await this.prisma.$transaction(async (tx) => {
       // Nếu đơn hàng đã xuất kho (có PhieuKho), cần hoàn trả tồn kho
       if (hasPhieuXuatKho && donhang.sanpham && donhang.sanpham.length > 0) {
-        console.log(`[CancelOrder] Hoàn trả tồn kho cho đơn hàng ${donhang.madonhang}`);
+        console.log(
+          `[CancelOrder] Hoàn trả tồn kho cho đơn hàng ${donhang.madonhang}`,
+        );
 
         // Hoàn trả từng sản phẩm
         for (const item of donhang.sanpham) {
@@ -134,7 +144,7 @@ export class CancelOrderService {
           if (item.sanpham && slgiao > 0) {
             // Lấy sanphamId từ relation
             const sanphamId = item.sanpham.id;
-            
+
             // Cập nhật TonKho: tăng lại số lượng đã xuất
             await tx.tonKho.upsert({
               where: { sanphamId },
@@ -147,36 +157,38 @@ export class CancelOrderService {
               },
               update: {
                 slton: {
-                  increment: slgiao
+                  increment: slgiao,
                 },
                 sltontt: {
-                  increment: slgiao
-                }
-              }
+                  increment: slgiao,
+                },
+              },
             });
 
             restoredItems.push({
               masp: item.sanpham.masp,
               tensanpham: item.sanpham.title,
-              soluong: slgiao
+              soluong: slgiao,
             });
 
             console.log(
-              `[CancelOrder] Hoàn trả ${slgiao} ${item.sanpham.masp} vào kho`
+              `[CancelOrder] Hoàn trả ${slgiao} ${item.sanpham.masp} vào kho`,
             );
           }
         }
 
         // Xóa các phiếu xuất kho liên quan
         await tx.phieuKho.deleteMany({
-          where: { 
+          where: {
             donhang: {
-              id: orderId
-            }
-          }
+              id: orderId,
+            },
+          },
         });
 
-        console.log(`[CancelOrder] Đã xóa ${donhang.PhieuKho.length} phiếu xuất kho`);
+        console.log(
+          `[CancelOrder] Đã xóa ${donhang.PhieuKho.length} phiếu xuất kho`,
+        );
       }
 
       // Cập nhật đơn hàng: status = 'huy', thêm lý do hủy
@@ -185,16 +197,16 @@ export class CancelOrderService {
         data: {
           status: 'huy',
           lydohuy: lydohuy.trim(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         include: {
           sanpham: {
             include: {
-              sanpham: true
-            }
+              sanpham: true,
+            },
           },
-          khachhang: true
-        }
+          khachhang: true,
+        },
       });
 
       // Ghi log audit
@@ -210,20 +222,20 @@ export class CancelOrderService {
             metadata: {
               actionType: 'CANCEL',
               inventoryRestored: hasPhieuXuatKho,
-              restoredItems
-            }
-          }
+              restoredItems,
+            },
+          },
         });
       }
 
       return {
         success: true,
-        message: hasPhieuXuatKho 
+        message: hasPhieuXuatKho
           ? 'Đơn hàng đã được hủy và tồn kho đã được hoàn trả'
           : 'Đơn hàng đã được hủy',
         data: updatedDonhang,
         restoredInventory: hasPhieuXuatKho,
-        oldStatus
+        oldStatus,
       };
     });
 
@@ -259,11 +271,11 @@ export class CancelOrderService {
       include: {
         sanpham: {
           include: {
-            sanpham: true
-          }
+            sanpham: true,
+          },
         },
-        PhieuKho: true
-      }
+        PhieuKho: true,
+      },
     });
 
     if (!dathang) {
@@ -292,29 +304,37 @@ export class CancelOrderService {
     const result = await this.prisma.$transaction(async (tx) => {
       // Nếu đơn đặt hàng đã nhập kho (có PhieuKho), cần trừ lại tồn kho
       if (hasPhieuNhapKho && dathang.sanpham && dathang.sanpham.length > 0) {
-        console.log(`[CancelOrder] Trừ tồn kho cho đơn đặt hàng ${dathang.madncc}`);
+        console.log(
+          `[CancelOrder] Trừ tồn kho cho đơn đặt hàng ${dathang.madncc}`,
+        );
 
         // Trừ từng sản phẩm
         for (const item of dathang.sanpham) {
           const slnhan = Number(item.slnhan || 0);
           if (item.sanpham && slnhan > 0) {
             const sanphamId = item.sanpham.id;
-            
+
             // Cập nhật TonKho: giảm lại số lượng đã nhập
             const currentTonKho = await tx.tonKho.findUnique({
-              where: { sanphamId }
+              where: { sanphamId },
             });
 
             if (currentTonKho) {
-              const newSlton = Math.max(0, Number(currentTonKho.slton) - slnhan);
-              const newSltontt = Math.max(0, Number(currentTonKho.sltontt) - slnhan);
-              
+              const newSlton = Math.max(
+                0,
+                Number(currentTonKho.slton) - slnhan,
+              );
+              const newSltontt = Math.max(
+                0,
+                Number(currentTonKho.sltontt) - slnhan,
+              );
+
               await tx.tonKho.update({
                 where: { sanphamId },
                 data: {
                   slton: newSlton,
-                  sltontt: newSltontt
-                }
+                  sltontt: newSltontt,
+                },
               });
 
               restoredItems.push({
@@ -322,11 +342,11 @@ export class CancelOrderService {
                 tensanpham: item.sanpham.title,
                 soluong: slnhan,
                 oldTonkho: Number(currentTonKho.slton),
-                newTonkho: newSlton
+                newTonkho: newSlton,
               });
 
               console.log(
-                `[CancelOrder] Trừ ${slnhan} ${item.sanpham.masp} khỏi kho (Tồn kho: ${currentTonKho.slton} → ${newSlton})`
+                `[CancelOrder] Trừ ${slnhan} ${item.sanpham.masp} khỏi kho (Tồn kho: ${currentTonKho.slton} → ${newSlton})`,
               );
             }
           }
@@ -334,14 +354,16 @@ export class CancelOrderService {
 
         // Xóa các phiếu nhập kho liên quan
         await tx.phieuKho.deleteMany({
-          where: { 
+          where: {
             dathang: {
-              id: orderId
-            }
-          }
+              id: orderId,
+            },
+          },
         });
 
-        console.log(`[CancelOrder] Đã xóa ${dathang.PhieuKho.length} phiếu nhập kho`);
+        console.log(
+          `[CancelOrder] Đã xóa ${dathang.PhieuKho.length} phiếu nhập kho`,
+        );
       }
 
       // Cập nhật đơn đặt hàng: status = 'huy', thêm lý do hủy
@@ -350,16 +372,16 @@ export class CancelOrderService {
         data: {
           status: 'huy',
           lydohuy: lydohuy.trim(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         include: {
           sanpham: {
             include: {
-              sanpham: true
-            }
+              sanpham: true,
+            },
           },
-          nhacungcap: true
-        }
+          nhacungcap: true,
+        },
       });
 
       // Ghi log audit
@@ -375,20 +397,20 @@ export class CancelOrderService {
             metadata: {
               actionType: 'CANCEL',
               inventoryRestored: hasPhieuNhapKho,
-              restoredItems
-            }
-          }
+              restoredItems,
+            },
+          },
         });
       }
 
       return {
         success: true,
-        message: hasPhieuNhapKho 
+        message: hasPhieuNhapKho
           ? 'Đơn đặt hàng đã được hủy và tồn kho đã được điều chỉnh'
           : 'Đơn đặt hàng đã được hủy',
         data: updatedDathang,
         restoredInventory: hasPhieuNhapKho,
-        oldStatus
+        oldStatus,
       };
     });
 
@@ -402,14 +424,17 @@ export class CancelOrderService {
   /**
    * Lấy thông tin đơn hàng đã hủy
    */
-  async getCanceledOrders(type: 'donhang' | 'dathang', options?: {
-    skip?: number;
-    take?: number;
-    startDate?: Date;
-    endDate?: Date;
-  }) {
+  async getCanceledOrders(
+    type: 'donhang' | 'dathang',
+    options?: {
+      skip?: number;
+      take?: number;
+      startDate?: Date;
+      endDate?: Date;
+    },
+  ) {
     const where: any = {
-      status: 'huy'
+      status: 'huy',
     };
 
     if (options?.startDate || options?.endDate) {
@@ -429,15 +454,15 @@ export class CancelOrderService {
           khachhang: true,
           sanpham: {
             include: {
-              sanpham: true
-            }
-          }
+              sanpham: true,
+            },
+          },
         },
         orderBy: {
-          updatedAt: 'desc'
+          updatedAt: 'desc',
         },
         skip: options?.skip || 0,
-        take: options?.take || 50
+        take: options?.take || 50,
       });
     } else {
       return await this.prisma.dathang.findMany({
@@ -446,15 +471,15 @@ export class CancelOrderService {
           nhacungcap: true,
           sanpham: {
             include: {
-              sanpham: true
-            }
-          }
+              sanpham: true,
+            },
+          },
         },
         orderBy: {
-          updatedAt: 'desc'
+          updatedAt: 'desc',
         },
         skip: options?.skip || 0,
-        take: options?.take || 50
+        take: options?.take || 50,
       });
     }
   }

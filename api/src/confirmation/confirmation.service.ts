@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import * as crypto from 'crypto';
 import { PrismaService } from 'prisma/prisma.service';
 import { SocketGateway } from '../socket.gateway';
@@ -22,7 +26,7 @@ export class ConfirmationService {
 
     // Tạo token ngẫu nhiên
     const token = crypto.randomBytes(32).toString('hex');
-    
+
     // Token hết hạn sau 7 ngày
     const tokenExpiredAt = new Date();
     tokenExpiredAt.setDate(tokenExpiredAt.getDate() + 7);

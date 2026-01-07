@@ -8,7 +8,9 @@ export class CallbackController {
   constructor(private readonly callbackService: CallbackService) {}
 
   @Post('call_back_data_demo')
-  async callBackData(@Body() param: CallbackDataInput): Promise<CallbackDataOutput> {
+  async callBackData(
+    @Body() param: CallbackDataInput,
+  ): Promise<CallbackDataOutput> {
     return this.callbackService.processCallback(param);
   }
 }

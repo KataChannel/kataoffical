@@ -1063,23 +1063,19 @@ export class ListImportdataComponent implements OnInit {
         return;
       }
 
-      const importSnackbar = this._snackBar.open(
-        `Đang import ${finalData.length} sản phẩm...`,
+      const importSnackbar = this._snackBar.open(`Đang import ${finalData.length} sản phẩm...`,
         '',
         {
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
-        }
-      );
+        });
 
       try {
         await this._SanphamService.ImportSanpham(finalData);
 
         importSnackbar.dismiss();
-        this._snackBar.open(
-          `Import thành công ${finalData.length} sản phẩm${
-            result.overwrite ? ' (ghi đè)' : ' (thêm mới)'
+        this._snackBar.open(`Import thành công ${finalData.length})' : ' (thêm mới)'
           }!`,
           '',
           {
@@ -1148,22 +1144,18 @@ export class ListImportdataComponent implements OnInit {
         return;
       }
 
-      const importSnackbar = this._snackBar.open(
-        `Đang import ${finalData.length} khách hàng...`,
+      const importSnackbar = this._snackBar.open(`Đang import ${finalData.length} khách hàng...`,
         '',
         {
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
-        }
-      );
+        });
 
       try {
         await this._KhachhangService.ImportKhachhang(finalData);
         importSnackbar.dismiss();
-        this._snackBar.open(
-          `Import thành công ${finalData.length} khách hàng${
-            result.overwrite ? ' (ghi đè)' : ' (thêm mới)'
+        this._snackBar.open(`Import thành công ${finalData.length})' : ' (thêm mới)'
           }!`,
           '',
           {
@@ -1237,22 +1229,18 @@ export class ListImportdataComponent implements OnInit {
         return;
       }
 
-      const importSnackbar = this._snackBar.open(
-        `Đang import ${finalData.length} nhà cung cấp...`,
+      const importSnackbar = this._snackBar.open(`Đang import ${finalData.length} nhà cung cấp...`,
         '',
         {
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
-        }
-      );
+        });
 
       try {
         await this._NhacungcapService.ImportNhacungcap(finalData);
         importSnackbar.dismiss();
-        this._snackBar.open(
-          `Import thành công ${finalData.length} nhà cung cấp${
-            result.overwrite ? ' (ghi đè)' : ' (thêm mới)'
+        this._snackBar.open(`Import thành công ${finalData.length})' : ' (thêm mới)'
           }!`,
           '',
           {
@@ -1326,22 +1314,18 @@ export class ListImportdataComponent implements OnInit {
         return;
       }
 
-      const importSnackbar = this._snackBar.open(
-        `Đang import ${finalData.length} bảng giá...`,
+      const importSnackbar = this._snackBar.open(`Đang import ${finalData.length} bảng giá...`,
         '',
         {
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
-        }
-      );
+        });
 
       try {
         await this._BanggiaService.ImportBanggia(finalData);
         importSnackbar.dismiss();
-        this._snackBar.open(
-          `Import thành công ${finalData.length} bảng giá${
-            result.overwrite ? ' (ghi đè)' : ' (thêm mới)'
+        this._snackBar.open(`Import thành công ${finalData.length})' : ' (thêm mới)'
           }!`,
           '',
           {
@@ -1411,15 +1395,13 @@ export class ListImportdataComponent implements OnInit {
         return;
       }
 
-      const importSnackbar = this._snackBar.open(
-        `Đang import ${finalData.length} kho...`,
+      const importSnackbar = this._snackBar.open(`Đang import ${finalData.length} kho...`,
         '',
         {
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
-        }
-      );
+        });
 
       try {
         // Process warehouse data using individual create/update operations
@@ -1442,9 +1424,7 @@ export class ListImportdataComponent implements OnInit {
         this.rawListKho = this._KhoService.ListKho();
 
         importSnackbar.dismiss();
-        this._snackBar.open(
-          `Import thành công ${finalData.length} kho${
-            duplicates.length > 0 ? ` (${duplicates.length} trùng lặp)` : ''
+        this._snackBar.open(`Import thành công ${ finalData.length} kho${duplicates.length > 0 ? ` (${duplicates.length})` : ''
           }!`,
           '',
           {
@@ -1452,8 +1432,7 @@ export class ListImportdataComponent implements OnInit {
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-success'],
-          }
-        );
+          });
       } catch (error) {
         importSnackbar.dismiss();
         this._snackBar.open('Có lỗi xảy ra khi import kho', '', {
@@ -1491,15 +1470,13 @@ export class ListImportdataComponent implements OnInit {
             v.masp !== null &&
             v.masp !== ''
         );
-      const importSnackbar = this._snackBar.open(
-        'Đang import Đơn hàng...',
+      const importSnackbar = this._snackBar.open('Đang import Đơn hàng...',
         '',
         {
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
-        }
-      );
+        });
       await this._DonhangService.ImportDonhang(ListDH);
       importSnackbar.dismiss();
       this._snackBar.open('Import Đơn hàng thành công!', '', {
@@ -1579,30 +1556,26 @@ export class ListImportdataComponent implements OnInit {
 
       console.log('Final BGSP data for import:', fixedListBGSP);
 
-      const importSnackbar = this._snackBar.open(
-        `Đang import ${fixedListBGSP.length} bảng giá sản phẩm...`,
+      const importSnackbar = this._snackBar.open(`Đang import ${fixedListBGSP.length} bảng giá sản phẩm...`,
         '',
         {
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
-        }
-      );
+        });
 
       try {
         await this._BanggiaService.importSPBG(fixedListBGSP);
         
         importSnackbar.dismiss();
-        this._snackBar.open(
-          `Import thành công ${fixedListBGSP.length} bảng giá sản phẩm!`,
+        this._snackBar.open(`Import thành công ${fixedListBGSP.length} bảng giá sản phẩm!`,
           '',
           {
             duration: 2000,
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-success'],
-          }
-        );
+          });
       } catch (error) {
         console.error('Error importing banggiasanpham:', error);
         importSnackbar.dismiss();
@@ -1660,15 +1633,13 @@ export class ListImportdataComponent implements OnInit {
             this.rawListSP.find((product) => product?.masp === spId)
           ),
         }));
-      const importSnackbar = this._snackBar.open(
-        'Đang import Nhà cung cấp sản phẩm...',
+      const importSnackbar = this._snackBar.open('Đang import Nhà cung cấp sản phẩm...',
         '',
         {
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
-        }
-      );
+        });
       console.log('ListNCCSP for import:', ListNCCSP);
       
       await this._NhacungcapService.ImportNhacungcap(ListNCCSP);
@@ -1780,16 +1751,14 @@ export class ListImportdataComponent implements OnInit {
 
           await this._PhieukhoService.CreatePhieukho(phieuNhapData);
           
-          this._snackBar.open(
-            `Tạo phiếu nhập thành công với ${phieuNhapDetails.length} sản phẩm`,
+          this._snackBar.open(`Tạo phiếu nhập thành công với ${phieuNhapDetails.length} sản phẩm`,
             '',
             {
               duration: 3000,
               horizontalPosition: 'end',
               verticalPosition: 'top',
               panelClass: ['snackbar-success'],
-            }
-          );
+            });
           
           // Delay để tránh conflict transaction
           await new Promise(resolve => setTimeout(resolve, 2000));
@@ -1811,16 +1780,14 @@ export class ListImportdataComponent implements OnInit {
 
           await this._PhieukhoService.CreatePhieukho(phieuXuatData);
           
-          this._snackBar.open(
-            `Tạo phiếu xuất thành công với ${phieuXuatDetails.length} sản phẩm`,
+          this._snackBar.open(`Tạo phiếu xuất thành công với ${phieuXuatDetails.length} sản phẩm`,
             '',
             {
               duration: 3000,
               horizontalPosition: 'end',
               verticalPosition: 'top',
               panelClass: ['snackbar-success'],
-            }
-          );
+            });
         }
 
         if (phieuNhapDetails.length === 0 && phieuXuatDetails.length === 0) {
@@ -1834,16 +1801,14 @@ export class ListImportdataComponent implements OnInit {
         
       } catch (error: any) {
         console.error('Error creating phieukho during xuatnhapton import:', error);
-        this._snackBar.open(
-          `Lỗi khi tạo phiếu kho: ${error?.message || 'Unknown error'}`,
+        this._snackBar.open(`Lỗi khi tạo phiếu kho: ${error?.message || 'Unknown error'}`,
           '',
           {
             duration: 5000,
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-error'],
-          }
-        );
+          });
       }
     }
 
@@ -1865,15 +1830,13 @@ export class ListImportdataComponent implements OnInit {
           ghichu: v.ghichu,
         }));
 
-      const importSnackbar = this._snackBar.open(
-        'Đang import Đặt hàng...',
+      const importSnackbar = this._snackBar.open('Đang import Đặt hàng...',
         '',
         {
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
-        }
-      );
+        });
       await this._DathangService.ImportDathang(ListDH);
       importSnackbar.dismiss();
       this._snackBar.open('Import Đặt hàng thành công!', '', {
@@ -1899,15 +1862,13 @@ export class ListImportdataComponent implements OnInit {
           slnhan: Number(v.slnhan),
           ghichu: v.ghichu,
         }));
-      const importSnackbar = this._snackBar.open(
-        'Đang import Đơn hàng...',
+      const importSnackbar = this._snackBar.open('Đang import Đơn hàng...',
         '',
         {
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
-        }
-      );
+        });
       await this._DonhangService.ImportDonhang(ListDH);
       importSnackbar.dismiss();
       this._snackBar.open('Import Đơn hàng thành công!', '', {

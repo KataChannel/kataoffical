@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { CreateTicketInput, UpdateTicketInput, CreateResponseInput } from './dto/support.input';
+import {
+  CreateTicketInput,
+  UpdateTicketInput,
+  CreateResponseInput,
+} from './dto/support.input';
 
 @Injectable()
 export class SupportService {
@@ -8,14 +12,16 @@ export class SupportService {
 
   async findTickets(user: any, status?: string, priority?: string) {
     const where: any = {};
-    
+
     if (status) where.status = status;
     if (priority) where.priority = priority;
 
     // If user is not admin/tech support, only show their tickets
     const userRoles = user?.roles || [];
-    const isAdminOrTech = userRoles.some((r: string) => ['ADMIN', 'TECH_SUPPORT'].includes(r));
-    
+    const isAdminOrTech = userRoles.some((r: string) =>
+      ['ADMIN', 'TECH_SUPPORT'].includes(r),
+    );
+
     if (!isAdminOrTech) {
       where.createdBy = user.id;
     }
@@ -100,7 +106,7 @@ export class SupportService {
 
   async createTicket(user: any, input: CreateTicketInput) {
     const { attachmentUrls, ...ticketData } = input;
-    
+
     const ticket = await (this.prisma as any).supportTicket.create({
       data: {
         ...ticketData,
@@ -112,7 +118,7 @@ export class SupportService {
     // Create attachments if provided
     if (attachmentUrls && attachmentUrls.length > 0) {
       await (this.prisma as any).supportAttachment.createMany({
-        data: attachmentUrls.map(url => ({
+        data: attachmentUrls.map((url) => ({
           fileUrl: url,
           fileName: url.split('/').pop() || 'file',
           fileType: this.getFileTypeFromUrl(url),
@@ -136,7 +142,7 @@ export class SupportService {
 
   async addResponse(user: any, ticketId: string, input: CreateResponseInput) {
     const { attachmentUrls, ...responseData } = input;
-    
+
     const response = await (this.prisma as any).supportResponse.create({
       data: {
         ...responseData,
@@ -148,7 +154,7 @@ export class SupportService {
     // Create attachments if provided
     if (attachmentUrls && attachmentUrls.length > 0) {
       await (this.prisma as any).supportAttachment.createMany({
-        data: attachmentUrls.map(url => ({
+        data: attachmentUrls.map((url) => ({
           fileUrl: url,
           fileName: url.split('/').pop() || 'file',
           fileType: this.getFileTypeFromUrl(url),
@@ -201,7 +207,7 @@ export class SupportService {
     const ext = url.split('.').pop()?.toLowerCase();
     const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     const videoExts = ['mp4', 'webm', 'mov'];
-    
+
     if (imageExts.includes(ext || '')) return 'image/*';
     if (videoExts.includes(ext || '')) return 'video/*';
     return 'application/octet-stream';

@@ -11,7 +11,10 @@ export class NhanvienResolver {
   constructor(private readonly nhanvienService: NhanvienService) {}
 
   @Mutation(() => GraphQLJSON, { name: 'createNhanvien' })
-  create(@Args('input', { type: () => GraphQLJSON }) createNhanvienDto: CreateNhanvienDto) {
+  create(
+    @Args('input', { type: () => GraphQLJSON })
+    createNhanvienDto: CreateNhanvienDto,
+  ) {
     return this.nhanvienService.create(createNhanvienDto);
   }
 
@@ -22,7 +25,7 @@ export class NhanvienResolver {
     @Args('chucVu', { nullable: true }) chucVu?: string,
     @Args('search', { nullable: true }) search?: string,
     @Args('page', { type: () => Int, nullable: true }) page?: number,
-    @Args('limit', { type: () => Int, nullable: true }) limit?: number
+    @Args('limit', { type: () => Int, nullable: true }) limit?: number,
   ) {
     return this.nhanvienService.findAll({
       phongbanId,
@@ -30,7 +33,7 @@ export class NhanvienResolver {
       chucVu,
       search,
       page,
-      limit
+      limit,
     });
   }
 
@@ -52,7 +55,8 @@ export class NhanvienResolver {
   @Mutation(() => GraphQLJSON, { name: 'updateNhanvien' })
   update(
     @Args('id') id: string,
-    @Args('input', { type: () => GraphQLJSON }) updateNhanvienDto: UpdateNhanvienDto
+    @Args('input', { type: () => GraphQLJSON })
+    updateNhanvienDto: UpdateNhanvienDto,
   ) {
     return this.nhanvienService.update(id, updateNhanvienDto);
   }
@@ -65,7 +69,7 @@ export class NhanvienResolver {
   @Mutation(() => GraphQLJSON, { name: 'linkNhanvienToUser' })
   linkToUser(
     @Args('nhanvienId') nhanvienId: string,
-    @Args('userId') userId: string
+    @Args('userId') userId: string,
   ) {
     return this.nhanvienService.linkToUser(nhanvienId, userId);
   }

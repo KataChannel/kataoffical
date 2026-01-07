@@ -1,5 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Args, Field, Float, Int, ObjectType, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Field,
+  Float,
+  Int,
+  ObjectType,
+  Query,
+  Resolver,
+} from '@nestjs/graphql';
 import GraphQLJSON from 'graphql-type-json';
 import { PrismaService } from 'prisma/prisma.service';
 
@@ -14,7 +22,7 @@ export class AggregateCount {
 export class AggregateSum {
   @Field(() => Float, { nullable: true })
   tongtien?: number;
-  
+
   @Field(() => Float, { nullable: true })
   tongvat?: number;
 }
@@ -23,7 +31,7 @@ export class AggregateSum {
 export class AggregateResult {
   @Field(() => AggregateCount)
   _count: AggregateCount;
-  
+
   @Field(() => AggregateSum, { nullable: true })
   _sum?: AggregateSum;
 }
@@ -32,16 +40,16 @@ export class AggregateResult {
 export class DailyMonthlyReportItem {
   @Field(() => String)
   period: string;
-  
+
   @Field(() => Int)
   totalDonhang: number;
-  
+
   @Field(() => Int)
   totalDathang: number;
-  
+
   @Field(() => Float)
   totalRevenue: number;
-  
+
   @Field(() => Float)
   totalProfit: number;
 }
@@ -50,10 +58,10 @@ export class DailyMonthlyReportItem {
 export class SanphamInfo {
   @Field(() => String)
   id: string;
-  
+
   @Field(() => String, { nullable: true })
   title?: string;
-  
+
   @Field(() => String, { nullable: true })
   masp?: string;
 }
@@ -62,10 +70,10 @@ export class SanphamInfo {
 export class TopProductItem {
   @Field(() => SanphamInfo)
   sanpham: SanphamInfo;
-  
+
   @Field(() => Float)
   totalQuantity: number;
-  
+
   @Field(() => Float)
   totalValue: number;
 }
@@ -78,10 +86,10 @@ export class DashboardResolver {
   @Query(() => AggregateResult)
   async aggregateDonhang(
     @Args('batdau', { nullable: true }) batdau?: string,
-    @Args('ketthuc', { nullable: true }) ketthuc?: string
+    @Args('ketthuc', { nullable: true }) ketthuc?: string,
   ): Promise<AggregateResult> {
-    let processedWhere: any = {};
-    
+    const processedWhere: any = {};
+
     if (batdau || ketthuc) {
       processedWhere.createdAt = {};
       if (batdau) {
@@ -113,10 +121,10 @@ export class DashboardResolver {
   @Query(() => AggregateResult)
   async aggregateDathang(
     @Args('batdau', { nullable: true }) batdau?: string,
-    @Args('ketthuc', { nullable: true }) ketthuc?: string
+    @Args('ketthuc', { nullable: true }) ketthuc?: string,
   ): Promise<AggregateResult> {
-    let processedWhere: any = {};
-    
+    const processedWhere: any = {};
+
     if (batdau || ketthuc) {
       processedWhere.createdAt = {};
       if (batdau) {
@@ -128,7 +136,7 @@ export class DashboardResolver {
     }
 
     const count = await this.prisma.dathang.count({ where: processedWhere });
-    
+
     // Tính tổng từ Dathangsanpham
     const sumQuery = await this.prisma.dathangsanpham.aggregate({
       where: {
@@ -141,8 +149,8 @@ export class DashboardResolver {
 
     return {
       _count: { _all: count },
-      _sum: { 
-        tongtien: sumQuery._sum?.ttdat ? Number(sumQuery._sum.ttdat) : 0 
+      _sum: {
+        tongtien: sumQuery._sum?.ttdat ? Number(sumQuery._sum.ttdat) : 0,
       },
     };
   }
@@ -222,7 +230,7 @@ export class DashboardResolver {
       rawQuery,
       startDate,
       endDate,
-    ) as any[];
+    );
 
     return result.map((item: any) => ({
       period: String(item.period),
@@ -263,7 +271,7 @@ export class DashboardResolver {
       startDate,
       endDate,
       limit,
-    ) as any[];
+    );
 
     return result.map((item: any) => ({
       sanpham: {
@@ -306,7 +314,7 @@ export class DashboardResolver {
       startDate,
       endDate,
       limit,
-    ) as any[];
+    );
 
     return result.map((item: any) => ({
       sanpham: {
@@ -320,17 +328,14 @@ export class DashboardResolver {
   }
 
   // ==================== DASHBOARD WIDGETS ====================
-  
+
   @Query(() => GraphQLJSON, { name: 'donhangChoXacNhan' })
   async donhangChoXacNhan() {
     // Find orders that need confirmation
     // xacNhanLan1 = false OR xacNhanLan2 = false
     const donhangs = await this.prisma.donhang.findMany({
       where: {
-        OR: [
-          { xacNhanLan1: false },
-          { xacNhanLan1: true, xacNhanLan2: false },
-        ],
+        OR: [{ xacNhanLan1: false }, { xacNhanLan1: true, xacNhanLan2: false }],
         status: {
           notIn: ['huy', 'hoanthanh'],
         },
@@ -403,8 +408,7 @@ export class DashboardResolver {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const soKhachQuaHan = congNoData.filter(
-      (item) =>
-        item.ngayMuaGanNhat && item.ngayMuaGanNhat < thirtyDaysAgo,
+      (item) => item.ngayMuaGanNhat && item.ngayMuaGanNhat < thirtyDaysAgo,
     ).length;
 
     const trungBinhNo = soKhachNo > 0 ? tongCongNo / soKhachNo : 0;

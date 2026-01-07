@@ -18,7 +18,10 @@ export class HoaDonResolver {
     @Args('orderBy', { type: () => GraphQLJSON, nullable: true }) orderBy?: any,
   ) {
     // Convert frontend params to service params
-    const page = skip !== undefined && take !== undefined ? Math.floor(skip / take) + 1 : 1;
+    const page =
+      skip !== undefined && take !== undefined
+        ? Math.floor(skip / take) + 1
+        : 1;
     const limit = take || 20;
 
     const filters: any = {

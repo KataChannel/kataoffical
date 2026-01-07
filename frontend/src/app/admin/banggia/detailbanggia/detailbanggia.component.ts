@@ -314,7 +314,7 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     } catch (error) {
       console.error('[LOAD] ===== Load Failed =====');
       console.error('[LOAD] Error:', error);
-      this._snackBar.open('Lỗi tải bảng giá', 'Đóng', { duration: 3000 });
+      this._snackBar.open('Lỗi tải bảng giá', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       
       // Reset lastProcessedId on error để cho phép retry
       this.lastProcessedId = null;
@@ -347,7 +347,7 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       this.ListSanpham = ListSanpham.data || [];
     }catch(error){
       console.error('Lỗi load danh sách sản phẩm:', error);
-      this._snackBar.open('Lỗi tải danh sách sản phẩm', 'Đóng', { duration: 3000 });
+      this._snackBar.open('Lỗi tải danh sách sản phẩm', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
     }
   }
   async LoadListKhachhang(){
@@ -376,7 +376,7 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       this.filterKhachhang = this.ListKhachhang = Khachhangs.data || [];
     }catch(error){
       console.error('Lỗi load danh sách khách hàng:', error);
-      this._snackBar.open('Lỗi tải danh sách khách hàng', 'Đóng', { duration: 3000 });
+      this._snackBar.open('Lỗi tải danh sách khách hàng', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
     }
   }
   ngAfterViewInit() {
@@ -748,14 +748,12 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     
     if (!banggiaId || !sanphamId) {
       console.error('[UPDATE-PRICE] Missing banggiaId or sanphamId');
-      this._snackBar.open(
-        '✗ Lỗi: Thiếu thông tin bảng giá hoặc sản phẩm',
+      this._snackBar.open('✗ Lỗi: Thiếu thông tin bảng giá hoặc sản phẩm',
         'Đóng',
         {
           duration: 3000,
           panelClass: ['snackbar-error']
-        }
-      );
+        });
       return;
     }
     
@@ -810,16 +808,14 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       this.pendingChanges.delete(index);
       
       // Show success notification
-      this._snackBar.open(
-        `✓ Đã cập nhật giá: ${newPrice.toLocaleString('vi-VN')} VND`,
+      this._snackBar.open(`✓ Đã cập nhật giá: ${newPrice.toLocaleString('vi-VN')} VND`,
         '',
         {
           duration: 2000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
-        }
-      );
+        });
       
       console.log('[UPDATE-PRICE] Success');
     } catch (error) {
@@ -845,16 +841,14 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       });
       
       const errorMessage = error instanceof Error ? error.message : 'Vui lòng thử lại';
-      this._snackBar.open(
-        `✗ Lỗi cập nhật giá: ${errorMessage}`,
+      this._snackBar.open(`✗ Lỗi cập nhật giá: ${errorMessage}`,
         'Đóng',
         {
           duration: 4000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-error'],
-        }
-      );
+        });
     } finally {
       this.updatingPriceForRow.set(null);
     }
@@ -1153,28 +1147,24 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       console.log('[CUSTOMER] Final customer count:', finalKhachhangCount);
       
       // Show success với số lượng khách hàng mới
-      this._snackBar.open(
-        `✓ Cập nhật ${finalKhachhangCount} khách hàng thành công`, 
+      this._snackBar.open(`✓ Cập nhật ${finalKhachhangCount} khách hàng thành công`, 
         '', 
         {
           duration: 2000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
-        }
-      );
+        });
     } catch (error) {
       console.error('[CUSTOMER] Error updating customers:', error);
-      this._snackBar.open(
-        '✗ Lỗi cập nhật khách hàng: ' + (error instanceof Error ? error.message : 'Vui lòng thử lại'), 
+      this._snackBar.open('✗ Lỗi cập nhật khách hàng: ' + (error instanceof Error ? error.message : 'Vui lòng thử lại', { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-error"] }), 
         'Đóng', 
         {
           duration: 3000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-error'],
-        }
-      );
+        });
     }
   }
 

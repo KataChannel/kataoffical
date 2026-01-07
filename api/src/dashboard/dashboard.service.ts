@@ -46,13 +46,13 @@ export class DashboardService {
 
   async getDonhang(data: any) {
     const { Batdau, Ketthuc } = data;
-    
+
     // ✅ Prepare date filters using TimezoneUtilService
-    const startDate = Batdau 
+    const startDate = Batdau
       ? new Date(this.getStartOfDay(Batdau))
       : new Date(this.getStartOfDay(new Date()));
 
-    const endDate = Ketthuc 
+    const endDate = Ketthuc
       ? new Date(this.getEndOfDay(Ketthuc))
       : new Date(this.getEndOfDay(new Date()));
 
@@ -120,42 +120,43 @@ export class DashboardService {
     ]);
 
     // 4. Số lượng từng sản phẩm - FIX: Sử dụng sldat thay vì soluong
-    const [productQuantitiesDonhang, productQuantitiesDathang] = await Promise.all([
-      this.prisma.donhangsanpham.groupBy({
-      by: ['idSP'],
-      where: {
-        donhang: dateFilter,
-      },
-      _sum: {
-        sldat: true,
-      },
-      }),
-      this.prisma.dathangsanpham.groupBy({
-      by: ['idSP'],
-      where: {
-        dathang: dathangDateFilter,
-      },
-      _sum: {
-        sldat: true,
-      },
-      }),
-    ]);
+    const [productQuantitiesDonhang, productQuantitiesDathang] =
+      await Promise.all([
+        this.prisma.donhangsanpham.groupBy({
+          by: ['idSP'],
+          where: {
+            donhang: dateFilter,
+          },
+          _sum: {
+            sldat: true,
+          },
+        }),
+        this.prisma.dathangsanpham.groupBy({
+          by: ['idSP'],
+          where: {
+            dathang: dathangDateFilter,
+          },
+          _sum: {
+            sldat: true,
+          },
+        }),
+      ]);
 
     // Get product details
     const productIds = [
       ...new Set([
-      ...productQuantitiesDonhang.map((p) => p.idSP),
-      ...productQuantitiesDathang.map((p) => p.idSP),
+        ...productQuantitiesDonhang.map((p) => p.idSP),
+        ...productQuantitiesDathang.map((p) => p.idSP),
       ]),
     ];
 
     const products = await this.prisma.sanpham.findMany({
       where: {
-      id: { in: productIds },
+        id: { in: productIds },
       },
       select: {
-      id: true,
-      title: true,
+        id: true,
+        title: true,
       },
     });
 

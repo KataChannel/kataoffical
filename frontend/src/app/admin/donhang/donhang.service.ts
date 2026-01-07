@@ -1,8 +1,8 @@
-import { Inject, Injectable, signal,Signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
-import { StorageService } from '../../shared/utils/storage.service';
 import { TimezoneService } from '../../shared/services/timezone.service';
+import { StorageService } from '../../shared/utils/storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -680,6 +680,50 @@ export class DonhangService {
       return data;
     } catch (error: any) {
       console.error('Lỗi khi hủy đơn hàng:', error);
+      throw error;
+    }
+  }
+
+  async xacNhanGiaoThucTe(id: string, ghichu?: string): Promise<any> {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+        body: JSON.stringify({ ghichu }),
+      };
+      
+      const response = await fetch(`${environment.APIURL}/donhang/xac-nhan-giao-thuc-te/${id}`, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error in xacNhanGiaoThucTe:', error);
+      throw error;
+    }
+  }
+
+  async doiChieu(id: string, dulieu: any): Promise<any> {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+        body: JSON.stringify(dulieu),
+      };
+      
+      const response = await fetch(`${environment.APIURL}/donhang/doi-chieu/${id}`, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error in doiChieu:', error);
       throw error;
     }
   }

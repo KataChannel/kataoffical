@@ -1,4 +1,12 @@
-import { makeSchema, objectType, queryType, mutationType, arg, nonNull, list } from 'nexus';
+import {
+  makeSchema,
+  objectType,
+  queryType,
+  mutationType,
+  arg,
+  nonNull,
+  list,
+} from 'nexus';
 import { join } from 'path';
 import { GraphQLJSON } from 'graphql-type-json';
 
@@ -37,7 +45,7 @@ const Query = queryType({
             include: args.include,
             select: args.select,
           },
-          info
+          info,
         );
       },
     });
@@ -60,7 +68,7 @@ const Query = queryType({
             include: args.include,
             select: args.select,
           },
-          info
+          info,
         );
       },
     });
@@ -98,8 +106,8 @@ const Query = queryType({
           'dynamic-field-selection',
           'dataloader-optimization',
           'nexus-schema-generation',
-          'prisma-integration'
-        ]
+          'prisma-integration',
+        ],
       }),
     });
   },
@@ -126,7 +134,7 @@ const Mutation = mutationType({
             include: args.include,
             select: args.select,
           },
-          info
+          info,
         );
       },
     });
@@ -151,7 +159,7 @@ const Mutation = mutationType({
             include: args.include,
             select: args.select,
           },
-          info
+          info,
         );
       },
     });
@@ -183,7 +191,7 @@ const Mutation = mutationType({
         return context.enhancedService.batchOperation(
           args.modelName,
           'create',
-          args.data
+          args.data,
         );
       },
     });
@@ -199,7 +207,7 @@ const Mutation = mutationType({
         return context.enhancedService.batchOperation(
           args.modelName,
           'update',
-          args.items
+          args.items,
         );
       },
     });
@@ -215,7 +223,7 @@ const Mutation = mutationType({
         return context.enhancedService.batchOperation(
           args.modelName,
           'delete',
-          args.ids
+          args.ids,
         );
       },
     });
@@ -225,7 +233,10 @@ const Mutation = mutationType({
       type: 'JSON',
       description: 'Clear DataLoader cache for performance optimization',
       args: {
-        modelName: arg({ type: 'String', description: 'Specific model (optional)' }),
+        modelName: arg({
+          type: 'String',
+          description: 'Specific model (optional)',
+        }),
       },
       resolve: async (_, args, context) => {
         if (args.modelName) {
@@ -233,7 +244,7 @@ const Mutation = mutationType({
         } else {
           context.dataLoader.clearCache();
         }
-        
+
         return {
           success: true,
           message: `Cache cleared${args.modelName ? ` for ${args.modelName}` : ' for all models'}`,

@@ -4,7 +4,7 @@ import { Resolver, Query, Field, ObjectType, Float } from '@nestjs/graphql';
 export class TestItem {
   @Field(() => String)
   name: string;
-  
+
   @Field(() => Float)
   value: number;
 }
@@ -15,9 +15,9 @@ export class TestResolver {
   async testQuery(): Promise<TestItem[]> {
     return [
       {
-        name: "test",
+        name: 'test',
         value: 100,
-      }
+      },
     ];
   }
 }

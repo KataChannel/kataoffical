@@ -1,18 +1,21 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    Post,
-    Put,
-    Query,
-    Request,
-    UseGuards,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { LoaiPhieuThuChi, TrangThaiPhieu } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreatePhieuThuChiDto, UpdatePhieuThuChiDto } from './dto/phieuthuchi.dto';
+import {
+  CreatePhieuThuChiDto,
+  UpdatePhieuThuChiDto,
+} from './dto/phieuthuchi.dto';
 import { PhieuThuChiService } from './phieuthuchi.service';
 
 @Controller('phieuthuchi')
@@ -90,5 +93,13 @@ export class PhieuThuChiController {
   @Post(':id/huy')
   async huy(@Param('id') id: string) {
     return this.phieuThuChiService.huy(id);
+  }
+
+  @Post(':id/thanh-toan')
+  async thanhToan(
+    @Param('id') id: string,
+    @Body('billImage') billImage?: string,
+  ) {
+    return this.phieuThuChiService.thanhToan(id, billImage);
   }
 }

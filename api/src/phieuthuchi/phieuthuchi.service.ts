@@ -1,18 +1,29 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { LoaiPhieuThuChi, TrangThaiPhieu } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
-import { CreatePhieuThuChiDto, UpdatePhieuThuChiDto } from './dto/phieuthuchi.dto';
+import { PaymentProposalService } from '../payment-proposal/payment-proposal.service';
+import {
+  CreatePhieuThuChiDto,
+  UpdatePhieuThuChiDto,
+} from './dto/phieuthuchi.dto';
 
 @Injectable()
 export class PhieuThuChiService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private paymentProposalService: PaymentProposalService,
+  ) {}
 
   // Sinh mã phiếu tự động
   async generateMaPhieu(loai: LoaiPhieuThuChi): Promise<string> {
     const prefix = loai === LoaiPhieuThuChi.THU ? 'PTH' : 'PTC';
     const year = new Date().getFullYear().toString().slice(-2);
     const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
-    
+
     // Tìm số thứ tự lớn nhất trong tháng
     const lastPhieu = await this.prisma.phieuThuChi.findFirst({
       where: {
@@ -72,16 +83,36 @@ export class PhieuThuChiService {
     }
 
     try {
-      return await this.prisma.phieuThuChi.create({
-        data,
-        include: {
-          donhang: {
-            include: {
-              khachhang: true,
+      return await this.prisma.$transaction(async (tx) => {
+        const phieu = await tx.phieuThuChi.create({
+          data,
+          include: {
+            donhang: {
+              include: {
+                khachhang: true,
+              },
             },
+            dathang: true,
           },
-          dathang: true,
-        },
+        });
+
+        // Liên kết với Chứng từ công nợ (Bán hàng)
+        if (createDto.arDocumentItemId) {
+          await tx.aRDocumentItem.update({
+            where: { id: createDto.arDocumentItemId },
+            data: { receiptVoucherId: phieu.id },
+          });
+        }
+
+        // Liên kết với Đề xuất thanh toán (Mua hàng)
+        if (createDto.paymentProposalSupplierId) {
+          await tx.paymentProposalSupplier.update({
+            where: { id: createDto.paymentProposalSupplierId },
+            data: { paymentVoucherId: phieu.id },
+          });
+        }
+
+        return phieu;
       });
     } catch (error) {
       console.error('Error creating PhieuThuChi:', error);
@@ -187,7 +218,9 @@ export class PhieuThuChiService {
 
     // Chỉ cho phép cập nhật phiếu ở trạng thái NHAP
     if (phieu.trangThai !== TrangThaiPhieu.NHAP) {
-      throw new BadRequestException('Chỉ có thể cập nhật phiếu ở trạng thái NHAP');
+      throw new BadRequestException(
+        'Chỉ có thể cập nhật phiếu ở trạng thái NHAP',
+      );
     }
 
     return this.prisma.phieuThuChi.update({
@@ -209,8 +242,13 @@ export class PhieuThuChiService {
     const phieu = await this.findOne(id);
 
     // Chỉ cho phép xóa phiếu ở trạng thái NHAP hoặc HUY
-    if (phieu.trangThai !== TrangThaiPhieu.NHAP && phieu.trangThai !== TrangThaiPhieu.HUY) {
-      throw new BadRequestException('Chỉ có thể xóa phiếu ở trạng thái NHAP hoặc HUY');
+    if (
+      phieu.trangThai !== TrangThaiPhieu.NHAP &&
+      phieu.trangThai !== TrangThaiPhieu.HUY
+    ) {
+      throw new BadRequestException(
+        'Chỉ có thể xóa phiếu ở trạng thái NHAP hoặc HUY',
+      );
     }
 
     await this.prisma.phieuThuChi.delete({
@@ -225,7 +263,9 @@ export class PhieuThuChiService {
     const phieu = await this.findOne(id);
 
     if (phieu.trangThai !== TrangThaiPhieu.NHAP) {
-      throw new BadRequestException('Chỉ có thể gửi duyệt phiếu ở trạng thái NHAP');
+      throw new BadRequestException(
+        'Chỉ có thể gửi duyệt phiếu ở trạng thái NHAP',
+      );
     }
 
     return this.prisma.phieuThuChi.update({
@@ -241,7 +281,9 @@ export class PhieuThuChiService {
     const phieu = await this.findOne(id);
 
     if (phieu.trangThai !== TrangThaiPhieu.CHO_DUYET) {
-      throw new BadRequestException('Chỉ có thể duyệt phiếu ở trạng thái CHO_DUYET');
+      throw new BadRequestException(
+        'Chỉ có thể duyệt phiếu ở trạng thái CHO_DUYET',
+      );
     }
 
     return this.prisma.phieuThuChi.update({
@@ -267,6 +309,134 @@ export class PhieuThuChiService {
       data: {
         trangThai: TrangThaiPhieu.HUY,
       },
+    });
+  }
+
+  // ERP: Hoàn tất thanh toán
+  async thanhToan(id: string, billImage?: string) {
+    const phieu = await this.prisma.phieuThuChi.findUnique({
+      where: { id },
+      include: {
+        paymentProposalSupplier: {
+          include: {
+            purchaseOrders: true,
+          },
+        },
+        arDocumentItem: {
+          include: {
+            salesOrders: true,
+          },
+        },
+      },
+    });
+
+    if (!phieu) {
+      throw new NotFoundException(`Không tìm thấy phiếu thu chi với ID: ${id}`);
+    }
+
+    if (
+      phieu.trangThai !== TrangThaiPhieu.DA_DUYET &&
+      phieu.trangThai !== TrangThaiPhieu.CHO_DUYET
+    ) {
+      // Thường phải duyệt rồi mới chi, hoặc tùy workflow.
+      // Ở đây ta cho phép từ DA_DUYET sang DA_THANH_TOAN
+    }
+
+    if (phieu.phuongThuc === 'CHUYEN_KHOAN' && !billImage) {
+      throw new BadRequestException(
+        'Bắt buộc upload ảnh bill cho hình thức chuyển khoản',
+      );
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Cập nhật trạng thái phiếu chi
+      const updatedPhieu = await tx.phieuThuChi.update({
+        where: { id },
+        data: {
+          trangThai: TrangThaiPhieu.DA_THANH_TOAN,
+          billImage: billImage || undefined,
+        },
+      });
+
+      // 2. Nếu có liên kết với Đề xuất thanh toán
+      if (phieu.paymentProposalSupplier) {
+        // Cập nhật trạng thái NCC trong đề xuất
+        await tx.paymentProposalSupplier.update({
+          where: { id: phieu.paymentProposalSupplier.id },
+          data: { status: 'DA_THANH_TOAN' },
+        });
+
+        // Cập nhật trạng thái các đơn PO liên quan
+        const poIds = phieu.paymentProposalSupplier.purchaseOrders.map(
+          (po) => po.purchaseOrderId,
+        );
+        if (poIds.length > 0) {
+          await tx.dathang.updateMany({
+            where: { id: { in: poIds } },
+            data: { poStatus: 'DA_THANH_TOAN' },
+          });
+        }
+
+        // Kiểm tra để cập nhật trạng thái đề xuất Master
+        // Lưu ý: Ta gọi service sau transaction hoặc thực hiện logic ở đây.
+        // Tốt nhất là thực hiện logic ở đây để đảm bảo tính nhất quán trong transaction.
+        const otherItems = await tx.paymentProposalSupplier.findMany({
+          where: {
+            proposalId: phieu.paymentProposalSupplier.proposalId,
+            id: { not: phieu.paymentProposalSupplier.id },
+          },
+        });
+
+        const allPaid = otherItems.every(
+          (item) => item.status === 'DA_THANH_TOAN',
+        );
+        if (allPaid) {
+          await tx.paymentProposal.update({
+            where: { id: phieu.paymentProposalSupplier.proposalId },
+            data: { status: 'DA_THANH_TOAN' },
+          });
+        }
+      }
+
+      // 3. Nếu có liên kết với Chứng từ công nợ (AR Document - Bán hàng)
+      if (phieu.arDocumentItem) {
+        // Cập nhật trạng thái mục công nợ
+        await tx.aRDocumentItem.update({
+          where: { id: phieu.arDocumentItem.id },
+          data: { status: 'DA_THU_TIEN' },
+        });
+
+        // Cập nhật trạng thái các đơn SO liên quan
+        const soIds = phieu.arDocumentItem.salesOrders.map(
+          (so) => so.salesOrderId,
+        );
+        if (soIds.length > 0) {
+          await tx.donhang.updateMany({
+            where: { id: { in: soIds } },
+            data: { soStatus: 'DA_THU_TIEN' },
+          });
+        }
+
+        // Kiểm tra để cập nhật trạng thái AR Document Master
+        const otherItems = await tx.aRDocumentItem.findMany({
+          where: {
+            arDocumentId: phieu.arDocumentItem.arDocumentId,
+            id: { not: phieu.arDocumentItem.id },
+          },
+        });
+
+        const allPaid = otherItems.every(
+          (item) => item.status === 'DA_THU_TIEN',
+        );
+        if (allPaid) {
+          await tx.aRDocument.update({
+            where: { id: phieu.arDocumentItem.arDocumentId },
+            data: { status: 'DA_THU_TIEN' },
+          });
+        }
+      }
+
+      return updatedPhieu;
     });
   }
 
@@ -298,8 +468,10 @@ export class PhieuThuChiService {
       tongThu,
       tongChi,
       tonQuy,
-      soPhieuThu: phieuList.filter((p) => p.loai === LoaiPhieuThuChi.THU).length,
-      soPhieuChi: phieuList.filter((p) => p.loai === LoaiPhieuThuChi.CHI).length,
+      soPhieuThu: phieuList.filter((p) => p.loai === LoaiPhieuThuChi.THU)
+        .length,
+      soPhieuChi: phieuList.filter((p) => p.loai === LoaiPhieuThuChi.CHI)
+        .length,
     };
   }
 

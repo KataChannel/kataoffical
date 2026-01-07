@@ -54,11 +54,9 @@ export class CancelOrderService {
     }
 
     // Show loading snackbar
-    const loadingSnack = this.snackBar.open('⏳ Đang xử lý hủy đơn hàng...', '', {
-      duration: 0,
+    const loadingSnack = this.snackBar.open('⏳ Đang xử lý hủy đơn hàng...', '', { duration: 0,
       horizontalPosition: 'end',
-      verticalPosition: 'top'
-    });
+      verticalPosition: 'top', panelClass: ["snackbar-info"] });
 
     try {
       const result = await this.donhangService.cancelDonhang(order.id, lydohuy);

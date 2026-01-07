@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { AuditAction } from '@prisma/client';
 import { Audit } from 'src/auditlog/audit.decorator';
@@ -12,11 +21,15 @@ export class MenuController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  @Audit({entity: 'Create Menu', action: AuditAction.CREATE, includeResponse: true})
+  @Audit({
+    entity: 'Create Menu',
+    action: AuditAction.CREATE,
+    includeResponse: true,
+  })
   @SmartCache({
     invalidate: ['menu'],
     get: { ttl: 1800, keyPrefix: 'menu' },
-    updateCache: true
+    updateCache: true,
   })
   create(@Body() createMenuDto: any) {
     return this.menuService.create(createMenuDto);
@@ -44,11 +57,15 @@ export class MenuController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  @Audit({entity: 'Update Menu', action: AuditAction.UPDATE, includeResponse: true})
+  @Audit({
+    entity: 'Update Menu',
+    action: AuditAction.UPDATE,
+    includeResponse: true,
+  })
   @SmartCache({
     invalidate: ['menu'],
     get: { ttl: 1800, keyPrefix: 'menu' },
-    updateCache: true
+    updateCache: true,
   })
   update(@Param('id') id: string, @Body() updateMenuDto: any) {
     return this.menuService.update(id, updateMenuDto);
@@ -56,10 +73,13 @@ export class MenuController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  @Audit({entity: 'Delete Menu', action: AuditAction.DELETE, includeResponse: true})
+  @Audit({
+    entity: 'Delete Menu',
+    action: AuditAction.DELETE,
+    includeResponse: true,
+  })
   @CacheInvalidate(['menu'])
   remove(@Param('id') id: string) {
     return this.menuService.remove(id);
   }
-
 }

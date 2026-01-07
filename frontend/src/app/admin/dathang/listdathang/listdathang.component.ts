@@ -496,16 +496,14 @@ export class ListDathangComponent {
       const result: any = await this._DathangService.DeleteBulkDathang(
         this.EditList.map((v: any) => v.id)
       );
-      this._snackBar.open(
-        `Xóa thành công ${result.success} đặt hàng ${result.fail} lỗi`,
+      this._snackBar.open(`Xóa thành công ${result.success} đặt hàng ${result.fail} lỗi`,
         '',
         {
           duration: 2000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
-        }
-      );
+        });
     } catch (error: any) {
       console.error('Lỗi khi xóa đặt hàng:', error);
       this._snackBar.open('Có lỗi xảy ra khi xóa đặt hàng', '', {
@@ -606,16 +604,14 @@ export class ListDathangComponent {
       });
     }
 
-    this._snackBar.open(
-      `Xử lý ${files.length} file: ${processedCount} thành công, ${skippedCount} bỏ qua, ${errorCount} lỗi`,
+    this._snackBar.open(`Xử lý ${files.length} file: ${processedCount} thành công, ${skippedCount} bỏ qua, ${errorCount} lỗi`,
       '',
       {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-warning'],
-      }
-    );
+      });
 
     // Reset file input
     event.target.value = '';
@@ -903,16 +899,14 @@ export class ListDathangComponent {
                             
       const result = await this._DathangService.ImportDathang(ordersToImport);
 
-      this._snackBar.open(
-        `Import thành công: ${result.success} đơn hàng, ${result.fail} lỗi`,
+      this._snackBar.open(`Import thành công: ${result.success} đơn hàng, ${result.fail} lỗi`,
         '',
         {
           duration: 3000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
-        }
-      );
+        });
 
       this.dialog.closeAll();
 

@@ -1,4 +1,12 @@
-import { IsString, IsOptional, IsObject, IsNumber, IsPositive, Min, Max } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsObject,
+  IsNumber,
+  IsPositive,
+  Min,
+  Max,
+} from 'class-validator';
 export class FilterDto {
   @IsString()
   type: string;

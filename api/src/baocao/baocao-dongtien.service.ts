@@ -29,7 +29,9 @@ export class BaoCaoDongTienService {
   /**
    * Lấy báo cáo dòng tiền theo khoảng thời gian
    */
-  async getBaoCaoDongTien(query: BaoCaoDongTienQuery): Promise<ThongKeDongTien> {
+  async getBaoCaoDongTien(
+    query: BaoCaoDongTienQuery,
+  ): Promise<ThongKeDongTien> {
     const { tuNgay, denNgay, groupBy = 'day' } = query;
 
     // Mặc định: 30 ngày gần nhất
@@ -46,7 +48,13 @@ export class BaoCaoDongTienService {
     ]);
 
     // Nhóm dữ liệu theo ngày/tuần/tháng
-    const groupedData = this.groupDongTien(thuData, chiData, groupBy, startDate, endDate);
+    const groupedData = this.groupDongTien(
+      thuData,
+      chiData,
+      groupBy,
+      startDate,
+      endDate,
+    );
 
     // Tính tổng thu, tổng chi, tồn cuối kỳ
     const tongThu = thuData.reduce((sum, item) => sum + Number(item.soTien), 0);
@@ -232,7 +240,9 @@ export class BaoCaoDongTienService {
    * Lấy số tuần trong năm
    */
   private getWeekNumber(date: Date): number {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const d = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+    );
     const dayNum = d.getUTCDay() || 7;
     d.setUTCDate(d.getUTCDate() + 4 - dayNum);
     const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));

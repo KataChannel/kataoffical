@@ -1,6 +1,26 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  UseGuards,
+  HttpException,
+  HttpStatus,
+  Query,
+} from '@nestjs/common';
 import { PermissionService } from './permission.service';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; // Giả sử đường dẫn này là cố định
 import { AuditAction } from '@prisma/client';
 import { Audit } from 'src/auditlog/audit.decorator';
@@ -24,15 +44,18 @@ export class PermissionController {
   @SmartCache({
     invalidate: ['permission'],
     get: { ttl: 3600, keyPrefix: 'permission' },
-    updateCache: true
+    updateCache: true,
   })
   async create(@Body() data: any) {
     try {
       console.log(data);
-      
+
       return await this.permissionService.create(data);
     } catch (error) {
-      throw new HttpException(error.message || 'Create failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Create failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
   @ApiOperation({ summary: 'Find permissions by parameters' })
@@ -42,13 +65,29 @@ export class PermissionController {
     try {
       return await this.permissionService.findBy(param);
     } catch (error) {
-      throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Find failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
   @ApiOperation({ summary: 'Get all permissions with pagination' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items per page (default: 10)' })
-  @ApiResponse({ status: 200, description: 'List of permissions with pagination info' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (default: 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of items per page (default: 10)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of permissions with pagination info',
+  })
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get()
   @Cache(3600, 'permission')
@@ -62,10 +101,16 @@ export class PermissionController {
 
       // Kiểm tra giá trị hợp lệ
       if (isNaN(pageNum) || pageNum < 1) {
-        throw new HttpException('Page must be a positive integer', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Page must be a positive integer',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       if (isNaN(limitNum) || limitNum < 1) {
-        throw new HttpException('Limit must be a positive integer', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Limit must be a positive integer',
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       return await this.permissionService.findAll(pageNum, limitNum);
@@ -84,7 +129,10 @@ export class PermissionController {
     try {
       return await this.permissionService.getLastUpdatedPermission();
     } catch (error) {
-      throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Get last updated failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -96,7 +144,10 @@ export class PermissionController {
     try {
       return await this.permissionService.findOne(id);
     } catch (error) {
-      throw new HttpException(error.message || 'Find one failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Find one failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -114,13 +165,16 @@ export class PermissionController {
   @SmartCache({
     invalidate: ['permission'],
     get: { ttl: 3600, keyPrefix: 'permission' },
-    updateCache: true
+    updateCache: true,
   })
   async update(@Param('id') id: string, @Body() data: any) {
     try {
       return await this.permissionService.update(id, data);
     } catch (error) {
-      throw new HttpException(error.message || 'Update failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Update failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -139,7 +193,10 @@ export class PermissionController {
     try {
       return await this.permissionService.remove(id);
     } catch (error) {
-      throw new HttpException(error.message || 'Delete failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Delete failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -155,9 +212,14 @@ export class PermissionController {
   @CacheInvalidate(['permission'])
   async reorder(@Body() body: { permissionIds: string[] }) {
     try {
-      return await this.permissionService.reorderPermissions(body.permissionIds);
+      return await this.permissionService.reorderPermissions(
+        body.permissionIds,
+      );
     } catch (error) {
-      throw new HttpException(error.message || 'Reorder failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Reorder failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -176,8 +238,10 @@ export class PermissionController {
     try {
       return await this.permissionService.updateCodeIds();
     } catch (error) {
-      throw new HttpException(error.message || 'Update code IDs failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Update code IDs failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
-
 }

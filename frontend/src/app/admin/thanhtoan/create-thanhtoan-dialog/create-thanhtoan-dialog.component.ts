@@ -14,11 +14,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import moment from 'moment';
 import { GraphqlService } from '../../../shared/services/graphql.service';
-import {
-    BadgeComponent,
-    CardComponent,
-    CardContentComponent
-} from '../../../shared/ui';
 import { ThanhtoanService } from '../thanhtoan.service';
 
 @Component({
@@ -36,10 +31,7 @@ import { ThanhtoanService } from '../thanhtoan.service';
     MatTableModule,
     MatDatepickerModule,
     MatCheckboxModule,
-    MatProgressSpinnerModule,
-    BadgeComponent,
-    CardComponent,
-    CardContentComponent
+    MatProgressSpinnerModule
   ],
   template: `
     <div class="flex flex-col h-full max-h-[90vh] sm:max-h-[85vh]">
@@ -466,7 +458,7 @@ export class CreateThanhToanDialogComponent implements OnInit {
       
     } catch (e) {
        console.error('Error loading orders', e);
-       this.snackBar.open('Lỗi khi tải danh sách đơn nợ', 'Đóng');
+       this.snackBar.open('Lỗi khi tải danh sách đơn nợ', 'Đóng', { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-error"] });
     } finally {
        this.isLoadingOrders = false;
     }
@@ -522,7 +514,7 @@ export class CreateThanhToanDialogComponent implements OnInit {
 
   async submit() {
      if (this.totalAllocated <= 0) {
-        this.snackBar.open('Vui lòng phân bổ số tiền', 'Đóng');
+        this.snackBar.open('Vui lòng phân bổ số tiền', 'Đóng', { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-warning"] });
         return;
      }
 
@@ -546,12 +538,12 @@ export class CreateThanhToanDialogComponent implements OnInit {
 
      this.thanhtoanService.createBulk(payload).subscribe({
         next: (res) => {
-           this.snackBar.open(`Đã tạo thanh toán cho ${res.count} đơn hàng`, 'Đóng', { duration: 3000 });
+           this.snackBar.open(`Đã tạo thanh toán cho ${ res.count} đơn hàng`, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
            this.dialogRef.close(true);
         },
         error: (err) => {
            console.error('Error creating payments', err);
-           this.snackBar.open('Lỗi khi tạo thanh toán', 'Đóng');
+           this.snackBar.open('Lỗi khi tạo thanh toán', 'Đóng', { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-error"] });
            this.isSubmitting.set(false);
         }
      });

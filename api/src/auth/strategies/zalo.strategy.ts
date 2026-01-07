@@ -16,7 +16,12 @@ export class ZaloStrategy extends PassportStrategy(Strategy, 'zalo') {
     });
   }
 
-  async validate(accessToken: string, refreshToken: string, profile: any, done: Function) {
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: any,
+    done: Function,
+  ) {
     const { id, name } = profile;
     const user = await this.authService.validateOAuthLogin('zalo', id, name);
     done(null, user);

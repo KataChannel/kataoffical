@@ -9,6 +9,6 @@ import { AuthModule } from '../auth/auth.module';
   imports: [PrismaModule, AuthModule],
   controllers: [NhanvienController],
   providers: [NhanvienService, NhanvienResolver],
-  exports: [NhanvienService]
+  exports: [NhanvienService],
 })
 export class NhanvienModule {}

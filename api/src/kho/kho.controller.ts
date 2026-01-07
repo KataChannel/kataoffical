@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { khoService } from './kho.service';
 import { AuditAction } from '@prisma/client';
 import { Audit } from 'src/auditlog/audit.decorator';
@@ -12,16 +22,20 @@ export class khoController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  @Audit({entity: 'Create Kho', action: AuditAction.CREATE, includeResponse: true})
+  @Audit({
+    entity: 'Create Kho',
+    action: AuditAction.CREATE,
+    includeResponse: true,
+  })
   @SmartCache({
     invalidate: ['kho'],
     get: { ttl: 1800, keyPrefix: 'kho' },
-    updateCache: true
+    updateCache: true,
   })
   create(@Body() createkhoDto: any) {
     return this.khoService.create(createkhoDto);
   }
-  
+
   @Get('tonkho')
   @Cache(600, 'kho:tonkho')
   getPaginated(@Query('page') page: string, @Query('limit') limit: string) {
@@ -29,7 +43,7 @@ export class khoController {
     const limitNumber = parseInt(limit, 10) || 10;
     return this.khoService.gettonkho(pageNumber, limitNumber);
   }
-  
+
   @Get()
   @Cache(1800, 'kho')
   findAll() {
@@ -41,14 +55,18 @@ export class khoController {
   findOne(@Param('id') id: string) {
     return this.khoService.findOne(id);
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  @Audit({entity: 'Update Kho', action: AuditAction.UPDATE, includeResponse: true})
+  @Audit({
+    entity: 'Update Kho',
+    action: AuditAction.UPDATE,
+    includeResponse: true,
+  })
   @SmartCache({
     invalidate: ['kho'],
     get: { ttl: 1800, keyPrefix: 'kho' },
-    updateCache: true
+    updateCache: true,
   })
   update(@Param('id') id: string, @Body() updatekhoDto: any) {
     return this.khoService.update(id, updatekhoDto);
@@ -56,7 +74,11 @@ export class khoController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  @Audit({entity: 'Delete Kho', action: AuditAction.DELETE, includeResponse: true})
+  @Audit({
+    entity: 'Delete Kho',
+    action: AuditAction.DELETE,
+    includeResponse: true,
+  })
   @CacheInvalidate(['kho'])
   remove(@Param('id') id: string) {
     return this.khoService.remove(id);

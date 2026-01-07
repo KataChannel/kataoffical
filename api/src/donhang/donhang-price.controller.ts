@@ -10,7 +10,12 @@ import {
   HttpStatus,
   HttpCode,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { DonhangService } from './donhang.service';
 import { PriceHistoryService } from './price-history.service';
 import {
@@ -34,7 +39,10 @@ export class DonhangPriceController {
   @ApiOperation({ summary: 'Cập nhật giá sản phẩm trong đơn hàng' })
   @ApiResponse({ status: 200, description: 'Cập nhật thành công' })
   @ApiResponse({ status: 400, description: 'Dữ liệu không hợp lệ' })
-  @ApiResponse({ status: 404, description: 'Đơn hàng hoặc sản phẩm không tồn tại' })
+  @ApiResponse({
+    status: 404,
+    description: 'Đơn hàng hoặc sản phẩm không tồn tại',
+  })
   async updateProductPrice(
     @Body() dto: UpdateProductPriceDto,
     @Req() req: any,
@@ -44,7 +52,7 @@ export class DonhangPriceController {
       dto.changedBy = req.user.id;
       dto.changedByEmail = req.user.email;
     }
-    
+
     // Extract IP and User Agent
     dto.ipAddress = req.ip || req.connection.remoteAddress;
     dto.userAgent = req.headers['user-agent'];
@@ -56,9 +64,9 @@ export class DonhangPriceController {
   @ApiOperation({ summary: 'Lấy lịch sử thay đổi giá của đơn hàng' })
   @ApiResponse({ status: 200, description: 'Trả về lịch sử audit' })
   async getDonhangPriceAudit(@Param('donhangId') donhangId: string) {
-    return await this.priceHistoryService.getDonhangPriceAudit({ 
+    return await this.priceHistoryService.getDonhangPriceAudit({
       donhangId,
-      limit: 100 
+      limit: 100,
     });
   }
 
@@ -70,14 +78,16 @@ export class DonhangPriceController {
   }
 
   @Get('audit/product/:sanphamId')
-  @ApiOperation({ summary: 'Lấy lịch sử giá của sản phẩm trong tất cả đơn hàng' })
+  @ApiOperation({
+    summary: 'Lấy lịch sử giá của sản phẩm trong tất cả đơn hàng',
+  })
   async getProductPriceAudit(
     @Param('sanphamId') sanphamId: string,
     @Query('limit') limit?: number,
   ) {
-    return await this.priceHistoryService.getDonhangPriceAudit({ 
+    return await this.priceHistoryService.getDonhangPriceAudit({
       sanphamId,
-      limit: limit || 50 
+      limit: limit || 50,
     });
   }
 
@@ -97,7 +107,10 @@ export class DonhangPriceController {
     @Param('banggiaId') banggiaId: string,
     @Param('sanphamId') sanphamId: string,
   ) {
-    return await this.priceHistoryService.getPriceComparison(sanphamId, banggiaId);
+    return await this.priceHistoryService.getPriceComparison(
+      sanphamId,
+      banggiaId,
+    );
   }
 
   @Get('product/:sanphamId/statistics')
@@ -107,8 +120,8 @@ export class DonhangPriceController {
     @Query('days') days?: number,
   ) {
     return await this.priceHistoryService.getPriceStatistics(
-      sanphamId, 
-      days || 30
+      sanphamId,
+      days || 30,
     );
   }
 }

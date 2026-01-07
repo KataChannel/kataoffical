@@ -7,10 +7,7 @@ import { PrismaService } from 'prisma/prisma.service';
 export class DonhangCronService {
   private readonly logger = new Logger(DonhangCronService.name);
 
-  constructor(
-    private readonly prisma: PrismaService,
-  ) {}
-
+  constructor(private readonly prisma: PrismaService) {}
 
   @Cron('0 13 * * *', {
     name: 'auto-complete-orders',
@@ -18,14 +15,19 @@ export class DonhangCronService {
   })
   async autoCompleteOrdersDaily() {
     try {
-      this.logger.log('Starting auto-complete orders cron job at 13:00 Vietnam time');
+      this.logger.log(
+        'Starting auto-complete orders cron job at 13:00 Vietnam time',
+      );
 
       // Lấy ngày hiện tại và tạo startOfDay/endOfDay trực tiếp (UTC)
       const now = new Date();
-      
+
       // Tạo startOfDay và endOfDay cho ngày hiện tại
-      const startOfDay =  moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-      const endOfDay =  moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
+      const startOfDay = moment()
+        .tz('Asia/Ho_Chi_Minh')
+        .startOf('day')
+        .toDate();
+      const endOfDay = moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
 
       this.logger.log(`Processing orders from ${startOfDay} to ${endOfDay}`);
 
@@ -33,7 +35,7 @@ export class DonhangCronService {
       const ordersToUpdate = await this.prisma.donhang.findMany({
         where: {
           status: {
-            in: ['dagiao']
+            in: ['dagiao'],
           },
           ngaygiao: {
             gte: startOfDay,
@@ -63,8 +65,10 @@ export class DonhangCronService {
 
       // Cập nhật từng đơn hàng để thêm ghi chú riêng biệt
       let updateCount = 0;
-      const currentTime = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
-      
+      const currentTime = new Date().toLocaleString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+      });
+
       for (const order of ordersToUpdate) {
         try {
           await this.prisma.donhang.update({
@@ -76,23 +80,27 @@ export class DonhangCronService {
             },
           });
           updateCount++;
-          
+
           this.logger.log(
-            `Order updated: ${order.madonhang} - Customer: ${order.khachhang?.name || 'N/A'} - Delivery Date: ${order.ngaygiao}`
+            `Order updated: ${order.madonhang} - Customer: ${order.khachhang?.name || 'N/A'} - Delivery Date: ${order.ngaygiao}`,
           );
         } catch (error) {
-          this.logger.error(`Failed to update order ${order.madonhang}:`, error);
+          this.logger.error(
+            `Failed to update order ${order.madonhang}:`,
+            error,
+          );
         }
       }
 
-      this.logger.log(`Successfully updated ${updateCount} orders to 'danhan' status`);
+      this.logger.log(
+        `Successfully updated ${updateCount} orders to 'danhan' status`,
+      );
 
       // Tạo audit log cho việc auto-complete
       await this.createAuditLog(ordersToUpdate, updateCount);
-
     } catch (error) {
       this.logger.error('Error in auto-complete orders cron job:', error);
-      
+
       // Có thể thêm notification hoặc alert ở đây
       // await this.notificationService.sendErrorAlert('Cron job auto-complete orders failed', error);
     }
@@ -125,7 +133,7 @@ export class DonhangCronService {
     try {
       const executionTime = new Date();
       const vietnamTime = this.convertToVietnamTime(executionTime);
-      
+
       // Tạo audit log tổng quan cho cron job execution
       await this.prisma.auditLog.create({
         data: {
@@ -138,7 +146,7 @@ export class DonhangCronService {
             status: 'dagiao',
             scheduledTime: '14:00 Vietnam Time',
             timezone: 'Asia/Ho_Chi_Minh',
-            executionType: 'CRON_EXECUTION'
+            executionType: 'CRON_EXECUTION',
           },
           newValues: {
             action: 'auto-complete-orders-daily',
@@ -154,13 +162,20 @@ export class DonhangCronService {
               successfulUpdates: updateCount,
               failedUpdates: orders.length - updateCount,
               processingDuration: '< 1 second',
-              affectedCustomers: [...new Set(orders.map(o => o.khachhang?.name).filter(Boolean))].length
+              affectedCustomers: [
+                ...new Set(
+                  orders.map((o) => o.khachhang?.name).filter(Boolean),
+                ),
+              ].length,
             },
             dateRange: {
-              startOfDay: moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate(),
+              startOfDay: moment()
+                .tz('Asia/Ho_Chi_Minh')
+                .startOf('day')
+                .toDate(),
               endOfDay: moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate(),
-              vietnamDate: vietnamTime.split(',')[0] // Chỉ lấy phần date
-            }
+              vietnamDate: vietnamTime.split(',')[0], // Chỉ lấy phần date
+            },
           },
           createdAt: executionTime,
         },
@@ -179,7 +194,7 @@ export class DonhangCronService {
               madonhang: order.madonhang,
               ngaygiao: order.ngaygiao,
               customer: order.khachhang?.name || 'Unknown',
-              processedBy: 'auto-complete-cron'
+              processedBy: 'auto-complete-cron',
             },
             newValues: {
               status: 'danhan',
@@ -193,8 +208,9 @@ export class DonhangCronService {
                 executionTime: vietnamTime,
                 orderIndex: index + 1,
                 totalOrders: orders.length,
-                autoCompleteReason: 'Daily auto-completion at 14:00 Vietnam time'
-              }
+                autoCompleteReason:
+                  'Daily auto-completion at 14:00 Vietnam time',
+              },
             },
             createdAt: new Date(executionTime.getTime() + index * 100), // Stagger để có thứ tự
           },
@@ -204,11 +220,15 @@ export class DonhangCronService {
       // Execute all individual order audit logs
       await Promise.all(auditLogPromises);
 
-      this.logger.log(`Created ${auditLogPromises.length + 1} audit log entries for auto-complete execution`);
-
+      this.logger.log(
+        `Created ${auditLogPromises.length + 1} audit log entries for auto-complete execution`,
+      );
     } catch (error) {
-      this.logger.error('Failed to create detailed audit logs for auto-complete orders:', error);
-      
+      this.logger.error(
+        'Failed to create detailed audit logs for auto-complete orders:',
+        error,
+      );
+
       // Fallback: Tạo audit log đơn giản nếu lỗi
       try {
         await this.prisma.auditLog.create({
@@ -219,7 +239,7 @@ export class DonhangCronService {
             entityId: null,
             oldValues: {
               executionType: 'CRON_ERROR',
-              cronJobName: 'auto-complete-orders'
+              cronJobName: 'auto-complete-orders',
             },
             newValues: {
               error: 'Failed to create detailed audit logs',
@@ -227,13 +247,16 @@ export class DonhangCronService {
               ordersProcessed: updateCount,
               timestamp: new Date().toISOString(),
               fallbackLog: true,
-              executionType: 'CRON_ERROR'
+              executionType: 'CRON_ERROR',
             },
             createdAt: new Date(),
           },
         });
       } catch (fallbackError) {
-        this.logger.error('Failed to create fallback audit log:', fallbackError);
+        this.logger.error(
+          'Failed to create fallback audit log:',
+          fallbackError,
+        );
       }
     }
   }
@@ -244,14 +267,19 @@ export class DonhangCronService {
   async manualAutoComplete(dateString?: string): Promise<any> {
     try {
       const targetDate = dateString ? new Date(dateString) : new Date();
-      
+
       // Tạo startOfDay và endOfDay trực tiếp từ targetDate
-      const startOfDay = moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+      const startOfDay = moment()
+        .tz('Asia/Ho_Chi_Minh')
+        .startOf('day')
+        .toDate();
       const endOfDay = moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
-      
+
       const vietnamDateString = this.convertToVietnamTime(targetDate);
 
-      this.logger.log(`Manual auto-complete for date: ${vietnamDateString} (${startOfDay.toISOString()} to ${endOfDay.toISOString()})`);
+      this.logger.log(
+        `Manual auto-complete for date: ${vietnamDateString} (${startOfDay.toISOString()} to ${endOfDay.toISOString()})`,
+      );
 
       const ordersToUpdate = await this.prisma.donhang.findMany({
         where: {
@@ -281,7 +309,7 @@ export class DonhangCronService {
             oldValues: {
               executionType: 'MANUAL_EXECUTION',
               targetDate: vietnamDateString,
-              status: 'dagiao'
+              status: 'dagiao',
             },
             newValues: {
               result: 'NO_ORDERS_FOUND',
@@ -289,10 +317,10 @@ export class DonhangCronService {
               searchRange: {
                 startOfDay: startOfDay.toISOString(),
                 endOfDay: endOfDay.toISOString(),
-                vietnamDate: vietnamDateString
+                vietnamDate: vietnamDateString,
               },
               executionTime: new Date().toISOString(),
-              executionType: 'MANUAL_EXECUTION'
+              executionType: 'MANUAL_EXECUTION',
             },
             createdAt: new Date(),
           },
@@ -309,7 +337,7 @@ export class DonhangCronService {
       const updateResult = await this.prisma.donhang.updateMany({
         where: {
           id: {
-            in: ordersToUpdate.map(order => order.id),
+            in: ordersToUpdate.map((order) => order.id),
           },
         },
         data: {
@@ -319,13 +347,17 @@ export class DonhangCronService {
       });
 
       // Tạo detailed audit logs cho manual execution
-      await this.createManualAuditLog(ordersToUpdate, updateResult.count, vietnamDateString);
+      await this.createManualAuditLog(
+        ordersToUpdate,
+        updateResult.count,
+        vietnamDateString,
+      );
 
       const result = {
         success: true,
         message: `Successfully updated ${updateResult.count} orders to 'danhan' status`,
         count: updateResult.count,
-        orders: ordersToUpdate.map(order => ({
+        orders: ordersToUpdate.map((order) => ({
           id: order.id,
           madonhang: order.madonhang,
           customer: order.khachhang?.name,
@@ -333,12 +365,13 @@ export class DonhangCronService {
         })),
       };
 
-      this.logger.log(`Manual auto-complete completed: ${updateResult.count} orders updated`);
+      this.logger.log(
+        `Manual auto-complete completed: ${updateResult.count} orders updated`,
+      );
       return result;
-
     } catch (error) {
       this.logger.error('Error in manual auto-complete:', error);
-      
+
       // Log error audit
       try {
         await this.prisma.auditLog.create({
@@ -349,14 +382,14 @@ export class DonhangCronService {
             entityId: null,
             oldValues: {
               executionType: 'MANUAL_EXECUTION_ERROR',
-              targetDate: dateString || 'current date'
+              targetDate: dateString || 'current date',
             },
             newValues: {
               error: 'Manual auto-complete failed',
               errorMessage: error.message,
               stackTrace: error.stack,
               executionTime: new Date().toISOString(),
-              executionType: 'MANUAL_EXECUTION_ERROR'
+              executionType: 'MANUAL_EXECUTION_ERROR',
             },
             createdAt: new Date(),
           },
@@ -376,10 +409,14 @@ export class DonhangCronService {
   /**
    * Tạo audit log chi tiết cho manual execution
    */
-  private async createManualAuditLog(orders: any[], updateCount: number, vietnamDate: string) {
+  private async createManualAuditLog(
+    orders: any[],
+    updateCount: number,
+    vietnamDate: string,
+  ) {
     try {
       const executionTime = new Date();
-      
+
       // Tạo audit log tổng quan cho manual execution
       await this.prisma.auditLog.create({
         data: {
@@ -391,7 +428,7 @@ export class DonhangCronService {
             executionType: 'MANUAL_EXECUTION',
             status: 'dagiao',
             targetDate: vietnamDate,
-            trigger: 'Manual testing/execution'
+            trigger: 'Manual testing/execution',
           },
           newValues: {
             action: 'manual-auto-complete',
@@ -406,16 +443,21 @@ export class DonhangCronService {
               totalOrders: orders.length,
               successfulUpdates: updateCount,
               failedUpdates: orders.length - updateCount,
-              affectedCustomers: [...new Set(orders.map(o => o.khachhang?.name).filter(Boolean))].length,
-              processingType: 'Manual execution for testing/admin purposes'
-            }
+              affectedCustomers: [
+                ...new Set(
+                  orders.map((o) => o.khachhang?.name).filter(Boolean),
+                ),
+              ].length,
+              processingType: 'Manual execution for testing/admin purposes',
+            },
           },
           createdAt: executionTime,
         },
       });
 
       // Tạo audit log cho từng đơn hàng (simplified for manual execution)
-      if (orders.length <= 10) { // Only create individual logs for small batches
+      if (orders.length <= 10) {
+        // Only create individual logs for small batches
         const auditLogPromises = orders.map(async (order, index) => {
           return this.prisma.auditLog.create({
             data: {
@@ -426,7 +468,7 @@ export class DonhangCronService {
               oldValues: {
                 status: 'dagiao',
                 madonhang: order.madonhang,
-                processedBy: 'manual-auto-complete'
+                processedBy: 'manual-auto-complete',
               },
               newValues: {
                 status: 'danhan',
@@ -437,8 +479,8 @@ export class DonhangCronService {
                   executionTime: vietnamDate,
                   orderIndex: index + 1,
                   totalOrders: orders.length,
-                  reason: 'Manual testing/admin execution'
-                }
+                  reason: 'Manual testing/admin execution',
+                },
               },
               createdAt: new Date(executionTime.getTime() + index * 50),
             },
@@ -446,11 +488,14 @@ export class DonhangCronService {
         });
 
         await Promise.all(auditLogPromises);
-        this.logger.log(`Created ${auditLogPromises.length + 1} audit log entries for manual execution`);
+        this.logger.log(
+          `Created ${auditLogPromises.length + 1} audit log entries for manual execution`,
+        );
       } else {
-        this.logger.log(`Created 1 summary audit log entry for manual execution (${orders.length} orders - too many for individual logs)`);
+        this.logger.log(
+          `Created 1 summary audit log entry for manual execution (${orders.length} orders - too many for individual logs)`,
+        );
       }
-
     } catch (error) {
       this.logger.error('Failed to create manual execution audit logs:', error);
     }

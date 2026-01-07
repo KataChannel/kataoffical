@@ -3,9 +3,9 @@ import { GraphQLJSON } from 'graphql-type-json';
 
 @Resolver()
 export class HealthResolver {
-  @Query(() => GraphQLJSON, { 
+  @Query(() => GraphQLJSON, {
     name: 'health',
-    description: 'GraphQL health check endpoint'
+    description: 'GraphQL health check endpoint',
   })
   async health() {
     return {
@@ -17,8 +17,8 @@ export class HealthResolver {
         'dynamic-field-selection',
         'dataloader-optimization',
         'performance-monitoring',
-        'enhanced-resolvers'
-      ]
+        'enhanced-resolvers',
+      ],
     };
   }
 }

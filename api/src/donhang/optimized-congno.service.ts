@@ -12,20 +12,25 @@ export class OptimizedCongnoService {
     // Build WHERE clause
     const whereConditions: Prisma.DonhangWhereInput = {
       // Date range filter
-      ...(Batdau && Ketthuc && {
-        ngaygiao: {
-          gte: new Date(Batdau),
-          lte: new Date(Ketthuc),
-        },
-      }),
+      ...(Batdau &&
+        Ketthuc && {
+          ngaygiao: {
+            gte: new Date(Batdau),
+            lte: new Date(Ketthuc),
+          },
+        }),
       // Status filter
-      ...(Status && Array.isArray(Status) && Status.length > 0 && {
-        status: { in: Status },
-      }),
+      ...(Status &&
+        Array.isArray(Status) &&
+        Status.length > 0 && {
+          status: { in: Status },
+        }),
       // Customer filter
-      ...(khachhangIds && Array.isArray(khachhangIds) && khachhangIds.length > 0 && {
-        khachhangId: { in: khachhangIds },
-      }),
+      ...(khachhangIds &&
+        Array.isArray(khachhangIds) &&
+        khachhangIds.length > 0 && {
+          khachhangId: { in: khachhangIds },
+        }),
       // Search query
       ...(query && {
         OR: [
@@ -107,7 +112,11 @@ export class OptimizedCongnoService {
       queryParams.push(Status);
     }
 
-    if (khachhangIds && Array.isArray(khachhangIds) && khachhangIds.length > 0) {
+    if (
+      khachhangIds &&
+      Array.isArray(khachhangIds) &&
+      khachhangIds.length > 0
+    ) {
       whereClause += ` AND d."khachhangId" = ANY($${queryParams.length + 1})`;
       queryParams.push(khachhangIds);
     }
@@ -154,7 +163,7 @@ export class OptimizedCongnoService {
   // Option 3: Cached version with Redis
   async getCongnoKhachHangCached(params: any) {
     const cacheKey = `congno:${JSON.stringify(params)}`;
-    
+
     // Try to get from cache first (implement Redis caching if available)
     // const cached = await this.redis.get(cacheKey);
     // if (cached) return JSON.parse(cached);

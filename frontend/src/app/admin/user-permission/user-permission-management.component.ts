@@ -505,7 +505,7 @@ export class UserPermissionManagementComponent {
           expiresAt: this.assignForm.expiresAt || undefined,
           reason: this.assignForm.reason || undefined
         });
-        this.snackBar.open('Cập nhật quyền thành công', 'Đóng', { duration: 3000 });
+        this.snackBar.open('Cập nhật quyền thành công', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       } else {
         // Create new permission
         await this.userPermissionService.assignPermissionToUser({
@@ -516,18 +516,16 @@ export class UserPermissionManagementComponent {
           reason: this.assignForm.reason || undefined,
           grantedBy: 'current-user' // TODO: Get current user ID
         });
-        this.snackBar.open('Thêm quyền thành công', 'Đóng', { duration: 3000 });
+        this.snackBar.open('Thêm quyền thành công', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       }
 
       await this.loadUserPermissions();
       this.closeAssignDialog();
     } catch (error: any) {
       console.error('Error assigning permission:', error);
-      this.snackBar.open(
-        error.message || 'Có lỗi xảy ra khi xử lý quyền', 
+      this.snackBar.open(error.message || 'Có lỗi xảy ra khi xử lý quyền', 
         'Đóng', 
-        { duration: 5000 }
-      );
+        { duration: 5000, panelClass: ["snackbar-error"] });
     } finally {
       this.isAssigning.set(false);
     }
@@ -543,15 +541,13 @@ export class UserPermissionManagementComponent {
       
       await this.userPermissionService.deleteUserPermission(permission.id);
       
-      this.snackBar.open('Thu hồi quyền thành công', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Thu hồi quyền thành công', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       await this.loadUserPermissions();
     } catch (error: any) {
       console.error('Error revoking permission:', error);
-      this.snackBar.open(
-        error.message || 'Có lỗi xảy ra khi thu hồi quyền', 
+      this.snackBar.open(error.message || 'Có lỗi xảy ra khi thu hồi quyền', 
         'Đóng', 
-        { duration: 5000 }
-      );
+        { duration: 5000, panelClass: ["snackbar-error"] });
     } finally {
       this.processingPermission.set(null);
     }

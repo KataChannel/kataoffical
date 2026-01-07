@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Delete, Param, Body, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Param,
+  Body,
+  Query,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { GoogleDriveService } from './googledrive.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ChatbotService } from '../../chatbot/chatbot.service';
@@ -22,11 +32,11 @@ export class GoogleDriveController {
     return savedFile;
   }
   @Get('queryfolder')
-  async queryFolders(@Query('query') query:any) {    
+  async queryFolders(@Query('query') query: any) {
     return this.googleDriveService.queryFolders(query);
   }
   @Get('listUsersFolder')
-  async listUsersFolder(@Query('query') query:any) {    
+  async listUsersFolder(@Query('query') query: any) {
     return this.googleDriveService.listUsersFolder(query);
   }
   @Get('folders')
@@ -39,7 +49,13 @@ export class GoogleDriveController {
   }
 
   @Post('users')
-  async addUser(@Body() body: { email: string; role: 'reader' | 'writer' | 'commenter' | 'fileOrganizer' | 'organizer' }) {
+  async addUser(
+    @Body()
+    body: {
+      email: string;
+      role: 'reader' | 'writer' | 'commenter' | 'fileOrganizer' | 'organizer';
+    },
+  ) {
     return this.googleDriveService.addUser(body.email, body.role);
   }
 

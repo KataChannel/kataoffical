@@ -175,7 +175,7 @@ export class FormNhanvienComponent implements OnInit {
         isActive: nhanvien.isActive
       });
     } catch (error) {
-      this.snackBar.open('Không thể tải thông tin nhân viên', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Không thể tải thông tin nhân viên', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       console.error('Error loading nhanvien:', error);
     } finally {
       this.loading.set(false);
@@ -184,7 +184,7 @@ export class FormNhanvienComponent implements OnInit {
 
   async onSubmit() {
     if (!this.nhanvienForm.valid) {
-      this.snackBar.open('Vui lòng điền đầy đủ thông tin bắt buộc', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Vui lòng điền đầy đủ thông tin bắt buộc', 'Đóng', { duration: 3000, panelClass: ["snackbar-warning"] });
       Object.keys(this.nhanvienForm.controls).forEach(key => {
         const control = this.nhanvienForm.get(key);
         if (control?.invalid) {

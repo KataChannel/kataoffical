@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
   HttpCode,
-  HttpStatus
+  HttpStatus,
 } from '@nestjs/common';
 import { NhanvienService } from './nhanvien.service';
 import { CreateNhanvienDto, UpdateNhanvienDto } from './dto';
@@ -33,7 +33,7 @@ export class NhanvienController {
     @Query('chucVu') chucVu?: string,
     @Query('search') search?: string,
     @Query('page') page?: string,
-    @Query('limit') limit?: string
+    @Query('limit') limit?: string,
   ) {
     return this.nhanvienService.findAll({
       phongbanId,
@@ -41,7 +41,7 @@ export class NhanvienController {
       chucVu,
       search,
       page: page ? parseInt(page) : undefined,
-      limit: limit ? parseInt(limit) : undefined
+      limit: limit ? parseInt(limit) : undefined,
     });
   }
 
@@ -61,7 +61,10 @@ export class NhanvienController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNhanvienDto: UpdateNhanvienDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateNhanvienDto: UpdateNhanvienDto,
+  ) {
     return this.nhanvienService.update(id, updateNhanvienDto);
   }
 

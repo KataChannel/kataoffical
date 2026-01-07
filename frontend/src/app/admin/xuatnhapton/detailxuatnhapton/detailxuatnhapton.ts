@@ -171,8 +171,7 @@
 //       // Validate data before creating
 //       const validationResult = this.validateChotkhoData();
 //       if (!validationResult.isValid) {
-//         this._snackBar.open(
-//           `Dữ liệu không hợp lệ: ${validationResult.errors.join(', ')}`,
+//         this._snackBar.open(//           `Dữ liệu không hợp lệ: ${validationResult.errors.join(', ')}`,
 //           '',
 //           {
 //             duration: 4000,
@@ -180,7 +179,7 @@
 //             verticalPosition: 'top',
 //             panelClass: ['snackbar-error'],
 //           }
-//         );
+//);
 //         return;
 //       }
 
@@ -347,8 +346,7 @@
 //       // Validate data before updating
 //       const validationResult = this.validateChotkhoData();
 //       if (!validationResult.isValid) {
-//         this._snackBar.open(
-//           `Dữ liệu không hợp lệ: ${validationResult.errors.join(', ')}`,
+//         this._snackBar.open(//           `Dữ liệu không hợp lệ: ${validationResult.errors.join(', ')}`,
 //           '',
 //           {
 //             duration: 4000,
@@ -356,7 +354,7 @@
 //             verticalPosition: 'top',
 //             panelClass: ['snackbar-error'],
 //           }
-//         );
+//);
 //         return;
 //       }
 
@@ -365,8 +363,7 @@
 //       const currentId = this._ChotkhoService.chotkhoId();
 
 //       if (!currentId || currentId === 'new') {
-//         this._snackBar.open(
-//           '❌ Không thể cập nhật: Không tìm thấy ID chốt kho',
+//         this._snackBar.open(//           '❌ Không thể cập nhật: Không tìm thấy ID chốt kho',
 //           '',
 //           {
 //             duration: 3000,
@@ -374,7 +371,7 @@
 //             verticalPosition: 'top',
 //             panelClass: ['snackbar-error'],
 //           }
-//         );
+//);
 //         return;
 //       }
 
@@ -717,9 +714,8 @@
 //       const totalFailed = deliveryResults.failed + receiptResults.failed;
 
 //       if (totalProcessed > 0) {
-//         this._snackBar.open(
-//           `✅ Đã xử lý ${totalProcessed} đơn hàng/đặt hàng` + 
-//           (totalFailed > 0 ? `, ${totalFailed} lỗi` : ''), '', {
+//         this._snackBar.open(//           `✅ Đã xử lý ${ totalProcessed} đơn hàng/đặt hàng` + 
+//           (totalFailed > 0 ? `, ${totalFailed}), '', {
 //           duration: 4000,
 //           panelClass: ['snackbar-success']
 //         });
@@ -1127,8 +1123,7 @@
 //       }
 
 //       // Show progress
-//       this._snackBar.open(
-//         `🔄 Đang xử lý ${data.length} bản ghi chốt kho...`,
+//       this._snackBar.open(//         `🔄 Đang xử lý ${data.length} bản ghi chốt kho...`,
 //         '',
 //         {
 //           duration: 0,
@@ -1136,15 +1131,14 @@
 //           verticalPosition: 'top',
 //           panelClass: ['snackbar-info'],
 //         }
-//       );
+//);
 
 //       const result = await this._ChotkhoService.bulkCreateChotkho(data);
 
 //       this._snackBar.dismiss();
 
 //       if (result) {
-//         this._snackBar.open(
-//           `✅ Xử lý hàng loạt thành công - ${result.data?.length || 0} bản ghi`,
+//         this._snackBar.open(//           `✅ Xử lý hàng loạt thành công - ${result.data?.length || 0} bản ghi`,
 //           '',
 //           {
 //             duration: 3000,
@@ -1152,7 +1146,7 @@
 //             verticalPosition: 'top',
 //             panelClass: ['snackbar-success'],
 //           }
-//         );
+//);
 
 //         await this.refreshChotkhoData();
 //       } else {
@@ -1201,8 +1195,7 @@
 //       }));
 //     });
 
-//     this._snackBar.open(
-//       '✅ Đã đánh dấu hoàn tất giao hàng và nhập hàng cho tất cả sản phẩm',
+//     this._snackBar.open(//       '✅ Đã đánh dấu hoàn tất giao hàng và nhập hàng cho tất cả sản phẩm',
 //       '',
 //       {
 //         duration: 3000,
@@ -1210,7 +1203,7 @@
 //         verticalPosition: 'top',
 //         panelClass: ['snackbar-success'],
 //       }
-//     );
+//);
 //   }
 
 //   // 🎯 NEW METHOD: Reset pending quantities for specific items
@@ -1530,9 +1523,8 @@
 //       this._snackBar.dismiss();
 
 //       if (itemsWithDiscrepancy.length > 0) {
-//         this._snackBar.open(
-//           `✅ Đã xử lý ${itemsWithDiscrepancy.length} chênh lệch` +
-//           (positiveDiscrepancy.length > 0 ? ` | ${positiveDiscrepancy.length} thừa` : '') +
+//         this._snackBar.open(//           `✅ Đã xử lý ${ itemsWithDiscrepancy.length} chênh lệch` +
+//           (positiveDiscrepancy.length > 0 ? ` | ${positiveDiscrepancy.length}) +
 //           (negativeDiscrepancy.length > 0 ? ` | ${negativeDiscrepancy.length} thiếu` : ''), '', {
 //           duration: 4000,
 //           panelClass: ['snackbar-success']

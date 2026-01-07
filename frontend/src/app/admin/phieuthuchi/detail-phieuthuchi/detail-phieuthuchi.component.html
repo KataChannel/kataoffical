@@ -269,8 +269,9 @@
                 [class.badge-secondary]="phieuThuChiService.detailPhieuThuChi()?.trangThai === 'NHAP'"
                 [class.badge-warning]="phieuThuChiService.detailPhieuThuChi()?.trangThai === 'CHO_DUYET'"
                 [class.badge-success]="phieuThuChiService.detailPhieuThuChi()?.trangThai === 'DA_DUYET'"
+                [class.badge-primary]="phieuThuChiService.detailPhieuThuChi()?.trangThai === 'DA_THANH_TOAN'"
                 [class.badge-danger]="phieuThuChiService.detailPhieuThuChi()?.trangThai === 'HUY'">
-                {{ phieuThuChiService.detailPhieuThuChi()?.trangThai }}
+                {{ phieuThuChiService.detailPhieuThuChi()?.trangThai === 'DA_THANH_TOAN' ? 'Đã thanh toán' : phieuThuChiService.detailPhieuThuChi()?.trangThai }}
               </span>
             </span>
           </div>
@@ -285,6 +286,46 @@
             </div>
           }
         </div>
+
+        <!-- Confirm Payment Section -->
+        @if (phieuThuChiService.detailPhieuThuChi()?.trangThai === 'DA_DUYET' && phieuThuChiService.detailPhieuThuChi()?.loai === 'CHI') {
+            <div class="mt-8 p-6 border-2 border-dashed border-blue-300 rounded-xl bg-blue-50">
+                <h3 class="text-lg font-bold text-blue-800 mb-4 flex items-center">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    Xác nhận thanh toán (Kế toán/Quỹ)
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Hình ảnh chứng từ / Bill chuyển khoản</label>
+                        <input type="file" (change)="onFileSelected($event)" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200">
+                        @if (formData().billImage) {
+                            <div class="mt-2">
+                                <a [href]="formData().billImage" target="_blank" class="text-blue-600 underline text-xs">Xem chứng từ đã có</a>
+                            </div>
+                        }
+                    </div>
+                    <div class="flex items-end">
+                        <button (click)="processPayment()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg flex justify-center items-center transition-all">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            XÁC NHẬN ĐÃ THANH TOÁN
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Show Bill Image if already paid -->
+        @if (phieuThuChiService.detailPhieuThuChi()?.trangThai === 'DA_THANH_TOAN' && phieuThuChiService.detailPhieuThuChi()?.billImage) {
+            <div class="mt-6 p-4 border rounded-lg bg-gray-50">
+                <span class="block text-sm font-medium text-gray-700 mb-2">Chứng từ thanh toán:</span>
+                <img [src]="phieuThuChiService.detailPhieuThuChi()?.billImage" alt="Bill payment" class="max-w-xs rounded shadow-sm border cursor-pointer hover:opacity-90" (click)="$any($event.target).requestFullscreen()">
+            </div>
+        }
       </div>
     }
   </div>

@@ -1,4 +1,12 @@
-import { IsString, IsOptional, IsEnum, IsEmail, IsDateString, IsNumber, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsEmail,
+  IsDateString,
+  IsNumber,
+  IsBoolean,
+} from 'class-validator';
 import { GioiTinh, TrangThaiNhanvien } from '@prisma/client';
 
 export class CreateNhanvienDto {

@@ -13,7 +13,7 @@
 
 //   constructor(private configService: ConfigService) {
 //     this.bucketName = this.configService.get<string>('MINIO_BUCKET_NAME') || 'uploads';
-    
+
 //     // Get configuration values
 //     const endpoint = this.configService.get<string>('MINIO_ENDPOINT') || 'localhost';
 //     const port = parseInt(this.configService.get<string>('MINIO_PORT') || '9000');
@@ -58,7 +58,7 @@
 //   private async initializeBucket() {
 //     try {
 //       console.log(`Testing MinIO connection to ${this.configService.get('MINIO_ENDPOINT')}:${this.configService.get('MINIO_PORT')}...`);
-      
+
 //       // Test connection first by listing buckets
 //       try {
 //         const buckets = await this.minioClient.listBuckets();
@@ -66,7 +66,7 @@
 //         this.isMinioReady = true;
 //       } catch (connectionError) {
 //         console.error('❌ MinIO connection test failed:', connectionError);
-        
+
 //         // Check for specific authentication errors
 //         if (connectionError.code === 'SignatureDoesNotMatch') {
 //           console.error('🔑 Authentication Error - Possible causes:');
@@ -74,7 +74,7 @@
 //           console.error('2. Keys have special characters that need escaping');
 //           console.error('3. Clock synchronization issue between client and server');
 //           console.error('4. Region mismatch');
-          
+
 //           // Test with different region
 //           await this.testWithDifferentRegions();
 //         } else if (connectionError.code === 'ECONNREFUSED') {
@@ -83,10 +83,10 @@
 //           console.error('2. Wrong port number');
 //           console.error('3. Firewall blocking the connection');
 //           console.error('4. Wrong endpoint URL');
-          
+
 //           await this.testAlternativeConnection();
 //         }
-        
+
 //         this.isMinioReady = false;
 //         return;
 //       }
@@ -95,12 +95,12 @@
 //       console.log(`Checking if bucket '${this.bucketName}' exists...`);
 //       const bucketExists = await this.minioClient.bucketExists(this.bucketName);
 //       console.log(`Bucket '${this.bucketName}' exists: ${bucketExists}`);
-      
+
 //       if (!bucketExists) {
 //         console.log(`Creating bucket '${this.bucketName}'...`);
 //         await this.minioClient.makeBucket(this.bucketName, this.configService.get('MINIO_REGION') || 'us-east-1');
 //         console.log(`Bucket '${this.bucketName}' created successfully`);
-        
+
 //         // Set bucket policy to allow read access
 //         try {
 //           const policy = {
@@ -114,7 +114,7 @@
 //               },
 //             ],
 //           };
-          
+
 //           await this.minioClient.setBucketPolicy(this.bucketName, JSON.stringify(policy));
 //           console.log('✅ Bucket policy set successfully - files will be publicly readable');
 //         } catch (policyError) {
@@ -124,10 +124,10 @@
 //       } else {
 //         console.log(`✅ Bucket '${this.bucketName}' already exists and is ready`);
 //       }
-      
+
 //       this.isMinioReady = true;
 //       console.log('🚀 MinIO initialization completed successfully');
-      
+
 //     } catch (error) {
 //       console.error('❌ Error initializing MinIO bucket:', error);
 //       console.error('MinIO service will be unavailable. Upload functionality disabled.');
@@ -148,7 +148,7 @@
 //     for (const region of regions) {
 //       try {
 //         console.log(`Testing region: ${region || 'default'}`);
-        
+
 //         const testClient = new Minio.Client({
 //           endPoint: endpoint || 'localhost',
 //           port: port,
@@ -157,12 +157,12 @@
 //           secretKey: secretKey,
 //           region: region,
 //         });
-        
+
 //         await testClient.listBuckets();
 //         console.log(`✅ Authentication successful with region: ${region || 'default'}!`);
 //         console.log(`💡 Consider setting MINIO_REGION=${region} in your .env file`);
 //         break;
-        
+
 //       } catch (error) {
 //         console.log(`❌ Region ${region || 'default'} failed: ${error.message}`);
 //       }
@@ -173,16 +173,16 @@
 //     const endpoint = this.configService.get<string>('MINIO_ENDPOINT');
 //     const accessKey = this.configService.get<string>('MINIO_ACCESS_KEY');
 //     const secretKey = this.configService.get<string>('MINIO_SECRET_KEY');
-    
+
 //     console.log(`🔍 Testing alternative MinIO configurations for ${endpoint}...`);
-    
+
 //     // Test common MinIO ports
 //     const commonPorts = ['9000', '9001', '80', '443'];
-    
+
 //     for (const testPort of commonPorts) {
 //       try {
 //         console.log(`Testing port ${testPort}...`);
-        
+
 //         const testClient = new Minio.Client({
 //           endPoint: endpoint || 'localhost',
 //           port: parseInt(testPort),
@@ -190,12 +190,12 @@
 //           accessKey: accessKey,
 //           secretKey: secretKey,
 //         });
-        
+
 //         await testClient.listBuckets();
 //         console.log(`✅ Connection successful on port ${testPort}!`);
 //         console.log(`💡 Consider updating MINIO_PORT to ${testPort} in your .env file`);
 //         break;
-        
+
 //       } catch (error) {
 //         console.log(`❌ Port ${testPort} failed: ${error.message}`);
 //       }
@@ -228,7 +228,7 @@
 //       // Validate file size based on type
 //       const isVideo = file.mimetype.startsWith('video/');
 //       const maxSize = isVideo ? 100 * 1024 * 1024 : 10 * 1024 * 1024; // 100MB for videos, 10MB for images
-      
+
 //       if (file.size > maxSize) {
 //         const maxSizeMB = maxSize / (1024 * 1024);
 //         throw new BadRequestException(`File too large. Maximum size is ${maxSizeMB}MB`);
@@ -279,7 +279,7 @@
 
 //       } catch (uploadError) {
 //         console.error('❌ MinIO upload error:', uploadError);
-        
+
 //         if (uploadError.code === 'SignatureDoesNotMatch') {
 //           throw new BadRequestException(
 //             'Authentication failed. Please check MinIO credentials configuration.'
@@ -297,11 +297,11 @@
 
 //     } catch (error) {
 //       console.error('❌ Upload error:', error);
-      
+
 //       if (error instanceof BadRequestException) {
 //         throw error;
 //       }
-      
+
 //       throw new BadRequestException(
 //         `Upload failed: ${error.message || 'Unknown error'}`
 //       );
@@ -330,7 +330,7 @@
 //     try {
 //       const buckets = await this.minioClient.listBuckets();
 //       const bucketExists = await this.minioClient.bucketExists(this.bucketName);
-      
+
 //       return {
 //         status: 'healthy',
 //         message: 'MinIO connection is working properly',
@@ -358,7 +358,7 @@
 //     const port = this.configService.get<string>('MINIO_PORT') || '9000';
 //     const useSSL = this.configService.get<string>('MINIO_USE_SSL') === 'true';
 //     const protocol = useSSL ? 'https' : 'http';
-    
+
 //     // Handle different URL formats based on port
 //     if (port === '80' && !useSSL) {
 //       return `http://${endpoint}/${this.bucketName}/${filePath}`;

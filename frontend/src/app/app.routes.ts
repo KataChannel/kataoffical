@@ -507,10 +507,85 @@ export const routes: Routes = [
         path: 'hoadon',
         canActivate: [PermissionGuard],
         data: { permission: 'hoadon.view' },
-        loadComponent: () =>
-          import('./admin/hoadon/list-hoadon/list-hoadon.component').then(
-            (c) => c.ListHoadonComponent
-          ),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./admin/hoadon/list-hoadon/list-hoadon.component').then(
+                (c) => c.ListHoadonComponent
+              ),
+          },
+          {
+            path: 'detail/:id',
+            loadComponent: () =>
+              import('./admin/hoadon/detail-hoadon/detail-hoadon.component').then(
+                (c) => c.DetailHoadonComponent
+              ),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./admin/hoadon/detail-hoadon/detail-hoadon.component').then(
+                (c) => c.DetailHoadonComponent
+              ),
+          }
+        ]
+      },
+      {
+        path: 'payment-proposal',
+        canActivate: [PermissionGuard],
+        data: { permission: 'payment-proposal.view' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./admin/payment-proposal/list-payment-proposal/list-payment-proposal.component').then(
+                (c) => c.ListPaymentProposalComponent
+              ),
+          },
+          {
+            path: 'create',
+            loadComponent: () =>
+              import('./admin/payment-proposal/create-payment-proposal.component').then(
+                (c) => c.CreatePaymentProposalComponent
+              ),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./admin/payment-proposal/detail-payment-proposal/detail-payment-proposal.component').then(
+                (c) => c.DetailPaymentProposalComponent
+              ),
+          },
+        ],
+      },
+      {
+        path: 'ar-document',
+        canActivate: [PermissionGuard],
+        data: { permission: 'ar-document.view' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./admin/ar-document/list-ar-document/list-ar-document.component').then(
+                (c) => c.ListARDocumentComponent
+              ),
+          },
+          {
+            path: 'create',
+            loadComponent: () =>
+              import('./admin/ar-document/create-ar-document/create-ar-document.component').then(
+                (c) => c.CreateARDocumentComponent
+              ),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./admin/ar-document/detail-ar-document/detail-ar-document.component').then(
+                (c) => c.DetailARDocumentComponent
+              ),
+          },
+        ],
       },
       {
         path: 'cashflow',

@@ -225,15 +225,13 @@ export class DetailRoleComponent {
       // If operation failed, rollback the optimistic update
       if (!result) {
         item.hasPermission = originalState;
-        this._snackBar.open(
-          `Lỗi khi ${newState ? 'gán' : 'xóa'} quyền. Vui lòng thử lại.`, 
+        this._snackBar.open(`Lỗi khi ${newState ? 'gán' : 'xóa'} quyền. Vui lòng thử lại.`, 
           '', {
             duration: 3000,
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-error'],
-          }
-        );
+          });
       }
       
     } catch (error) {
@@ -241,15 +239,13 @@ export class DetailRoleComponent {
       item.hasPermission = originalState;
       console.error('Error toggling permission:', error);
       
-      this._snackBar.open(
-        `Lỗi khi ${newState ? 'gán' : 'xóa'} quyền: ${error}`, 
+      this._snackBar.open(`Lỗi khi ${newState ? 'gán' : 'xóa'} quyền: ${error}`, 
         '', {
           duration: 3000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-error'],
-        }
-      );
+        });
     } finally {
       // Clear loading state
       this.isTogglingPermission.set('');

@@ -17,7 +17,13 @@ export class MinioController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
-    @Body() body: {title?: string; category?: string; group?: string; description?: string},
+    @Body()
+    body: {
+      title?: string;
+      category?: string;
+      group?: string;
+      description?: string;
+    },
   ) {
     const imageUrl = await this.minioService.uploadFile(file, body);
     return { imageUrl };

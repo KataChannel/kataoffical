@@ -7,14 +7,11 @@ import {
     ButtonComponent,
     CardComponent,
     CardContentComponent,
-    DialogComponent,
-    DialogFooterComponent,
-    DialogHeaderComponent,
-    DialogTitleComponent,
     EmptyStateComponent,
     ErrorStateComponent,
     SkeletonComponent
 } from '../../../shared/ui';
+import { CreateHoadonDialogComponent } from '../create-hoadon-dialog/create-hoadon-dialog.component';
 import { HoaDonDienTu, HoadonService } from '../hoadon.service';
 
 @Component({
@@ -27,13 +24,10 @@ import { HoaDonDienTu, HoadonService } from '../hoadon.service';
     CardComponent,
     CardContentComponent,
     BadgeComponent,
-    DialogComponent,
-    DialogHeaderComponent,
-    DialogTitleComponent,
-    DialogFooterComponent,
     SkeletonComponent,
     EmptyStateComponent,
-    ErrorStateComponent
+    ErrorStateComponent,
+    CreateHoadonDialogComponent
   ],
   template: `
     <!-- Mobile-First HoaDon List -->
@@ -325,24 +319,10 @@ import { HoaDonDienTu, HoadonService } from '../hoadon.service';
     </div>
 
     <!-- Create Dialog -->
-    <ui-dialog [isOpen]="createDialog()" (closed)="createDialog.set(false)">
-      <ui-dialog-header>
-        <ui-dialog-title>Tạo hóa đơn mới</ui-dialog-title>
-      </ui-dialog-header>
-      
-      <div class="py-4">
-        <p class="text-sm text-muted-foreground">
-          Chức năng tạo hóa đơn sẽ được triển khai trong phiên bản tiếp theo.
-          Hiện tại hóa đơn được tạo tự động từ đơn hàng.
-        </p>
-      </div>
-
-      <ui-dialog-footer>
-        <ui-button variant="outline" (click)="createDialog.set(false)">
-          Đóng
-        </ui-button>
-      </ui-dialog-footer>
-    </ui-dialog>
+    <app-create-hoadon-dialog 
+      [isOpen]="createDialog()" 
+      (closed)="onCreateClosed($event)">
+    </app-create-hoadon-dialog>
   `
 })
 export class ListHoadonComponent implements OnInit {
@@ -402,9 +382,9 @@ export class ListHoadonComponent implements OnInit {
     this.hoadonService.getList({
       orderBy: [{ ngayLap: 'desc' }]
     }).subscribe({
-      next: (data) => {
-        this.list.set(data.items);
-        this.total.set(data.total);
+      next: (res: any) => {
+        this.list.set(res.items || []);
+        this.total.set(res.total || 0);
         this.loading.set(false);
       },
       error: (err) => {
@@ -483,5 +463,12 @@ export class ListHoadonComponent implements OnInit {
 
   downloadPDF(url: string): void {
     window.open(url, '_blank');
+  }
+
+  onCreateClosed(success: boolean): void {
+    this.createDialog.set(false);
+    if (success) {
+      this.loadData();
+    }
   }
 }

@@ -990,7 +990,7 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
         await this.generateExcelWithTableFormat(exportData, title);
         
         // Show success message for client-side export
-        this._snackBar.open('Xuất file Excel (định dạng bảng) thành công!', 'Đóng', {
+        this._snackBar.open('Xuất file Excel (định dạng bảng, { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-success"] }) thành công!', 'Đóng', {
           duration: 3000,
           horizontalPosition: 'center',
           verticalPosition: 'top',
@@ -1039,7 +1039,7 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
       this.editDonhang = [];
       
       // Show success message
-      this._snackBar.open('Xuất file Excel (định dạng bảng) thành công!', 'Đóng', {
+      this._snackBar.open('Xuất file Excel (định dạng bảng, { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-success"] }) thành công!', 'Đóng', {
         duration: 3000,
         horizontalPosition: 'center',
         verticalPosition: 'top',
@@ -1050,7 +1050,7 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
       console.error('Error exporting Excel with table format:', error);
       
       // Show error message
-      this._snackBar.open('Lỗi khi xuất file Excel (định dạng bảng)!', 'Đóng', {
+      this._snackBar.open('Lỗi khi xuất file Excel (định dạng bảng, { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-error"] })!', 'Đóng', {
         duration: 5000,
         horizontalPosition: 'center',
         verticalPosition: 'top',
@@ -1562,16 +1562,14 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
     this.isLoading = true;
     
     // Hiển thị progress snackbar
-    let progressSnackbar = this._snackBar.open(
-      `Đang đồng bộ giá và VAT cho ${this.editDonhang.length} đơn hàng...`, 
+    let progressSnackbar = this._snackBar.open(`Đang đồng bộ giá và VAT cho ${this.editDonhang.length} đơn hàng...`, 
       'Đang xử lý', 
       {
         duration: 0, // Không tự động đóng
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-info'],
-      }
-    );
+      });
 
     try {
       // Bước 1: Đồng bộ giá từ bảng giá

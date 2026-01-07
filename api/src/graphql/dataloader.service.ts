@@ -18,15 +18,19 @@ export class DataLoaderService {
   getLoader<T>(
     modelName: string,
     relationField: string,
-    keyField = 'id'
+    keyField = 'id',
   ): DataLoader<string, T[]> {
     const loaderKey = `${modelName}_${relationField}_${keyField}`;
-    
+
     if (!this.loaders.has(loaderKey)) {
       const loader = new DataLoader<string, T[]>(
         async (keys: readonly string[]) => {
-          console.log(`🔄 DataLoader batch loading for ${loaderKey}:`, keys.length, 'items');
-          
+          console.log(
+            `🔄 DataLoader batch loading for ${loaderKey}:`,
+            keys.length,
+            'items',
+          );
+
           try {
             // Get the model delegate
             const model = this.prisma[modelName.toLowerCase()];
@@ -38,25 +42,25 @@ export class DataLoaderService {
             const results = await model.findMany({
               where: {
                 [keyField]: {
-                  in: Array.from(keys)
-                }
+                  in: Array.from(keys),
+                },
               },
               include: {
-                [relationField]: true
-              }
+                [relationField]: true,
+              },
             });
 
             // Group results by key
             const groupedResults = new Map<string, T[]>();
-            
+
             // Initialize all keys with empty arrays
-            keys.forEach(key => groupedResults.set(key, []));
-            
+            keys.forEach((key) => groupedResults.set(key, []));
+
             // Group results by the key field
             results.forEach((item: any) => {
               const key = item[keyField];
               const relationData = item[relationField];
-              
+
               if (Array.isArray(relationData)) {
                 groupedResults.set(key, relationData);
               } else if (relationData) {
@@ -65,8 +69,7 @@ export class DataLoaderService {
             });
 
             // Return results in the same order as keys
-            return keys.map(key => groupedResults.get(key) || []);
-            
+            return keys.map((key) => groupedResults.get(key) || []);
           } catch (error) {
             console.error(`❌ DataLoader error for ${loaderKey}:`, error);
             throw error;
@@ -76,7 +79,7 @@ export class DataLoaderService {
           // Cache results for 5 minutes
           cacheKeyFn: (key) => String(key),
           maxBatchSize: 100,
-        }
+        },
       );
 
       this.loaders.set(loaderKey, loader);
@@ -90,15 +93,19 @@ export class DataLoaderService {
    */
   getSingleLoader<T>(
     modelName: string,
-    keyField = 'id'
+    keyField = 'id',
   ): DataLoader<string, T | null> {
     const loaderKey = `${modelName}_single_${keyField}`;
-    
+
     if (!this.loaders.has(loaderKey)) {
       const loader = new DataLoader<string, T | null>(
         async (keys: readonly string[]) => {
-          console.log(`🔄 DataLoader single batch loading for ${loaderKey}:`, keys.length, 'items');
-          
+          console.log(
+            `🔄 DataLoader single batch loading for ${loaderKey}:`,
+            keys.length,
+            'items',
+          );
+
           try {
             const model = this.prisma[modelName.toLowerCase()];
             if (!model) {
@@ -108,9 +115,9 @@ export class DataLoaderService {
             const results = await model.findMany({
               where: {
                 [keyField]: {
-                  in: Array.from(keys)
-                }
-              }
+                  in: Array.from(keys),
+                },
+              },
             });
 
             // Create a map for O(1) lookup
@@ -120,17 +127,19 @@ export class DataLoaderService {
             });
 
             // Return results in the same order as keys
-            return keys.map(key => resultMap.get(key) || null);
-            
+            return keys.map((key) => resultMap.get(key) || null);
           } catch (error) {
-            console.error(`❌ DataLoader single error for ${loaderKey}:`, error);
+            console.error(
+              `❌ DataLoader single error for ${loaderKey}:`,
+              error,
+            );
             throw error;
           }
         },
         {
           cacheKeyFn: (key) => String(key),
           maxBatchSize: 100,
-        }
+        },
       );
 
       this.loaders.set(loaderKey, loader);
@@ -146,7 +155,7 @@ export class DataLoaderService {
     modelName: string,
     relationField: string,
     parentId: string,
-    keyField = 'id'
+    keyField = 'id',
   ): Promise<T[]> {
     const loader = this.getLoader<T>(modelName, relationField, keyField);
     return loader.load(parentId);
@@ -158,7 +167,7 @@ export class DataLoaderService {
   async loadSingleRelatedData<T>(
     modelName: string,
     id: string,
-    keyField = 'id'
+    keyField = 'id',
   ): Promise<T | null> {
     const loader = this.getSingleLoader<T>(modelName, keyField);
     return loader.load(id);
@@ -169,17 +178,21 @@ export class DataLoaderService {
    */
   clearCache(): void {
     console.log('🗑️ Clearing all DataLoader caches');
-    this.loaders.forEach(loader => loader.clearAll());
+    this.loaders.forEach((loader) => loader.clearAll());
   }
 
   /**
    * Clear cache for specific loader
    */
-  clearLoaderCache(modelName: string, relationField?: string, keyField = 'id'): void {
-    const loaderKey = relationField 
+  clearLoaderCache(
+    modelName: string,
+    relationField?: string,
+    keyField = 'id',
+  ): void {
+    const loaderKey = relationField
       ? `${modelName}_${relationField}_${keyField}`
       : `${modelName}_single_${keyField}`;
-    
+
     const loader = this.loaders.get(loaderKey);
     if (loader) {
       console.log(`🗑️ Clearing cache for ${loaderKey}`);
@@ -194,17 +207,19 @@ export class DataLoaderService {
     modelName: string,
     ids: string[],
     relationField?: string,
-    keyField = 'id'
+    keyField = 'id',
   ): Promise<void> {
     if (ids.length === 0) return;
 
-    const loader = relationField 
+    const loader = relationField
       ? this.getLoader<T>(modelName, relationField, keyField)
       : this.getSingleLoader<T>(modelName, keyField);
 
     // Prime the cache with batch loading
-    await Promise.all(ids.map(id => loader.load(id)));
-    
-    console.log(`🚀 Preloaded ${ids.length} items for ${modelName}${relationField ? `.${relationField}` : ''}`);
+    await Promise.all(ids.map((id) => loader.load(id)));
+
+    console.log(
+      `🚀 Preloaded ${ids.length} items for ${modelName}${relationField ? `.${relationField}` : ''}`,
+    );
   }
 }

@@ -4,7 +4,8 @@ import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class ChatbotService {
-  private readonly apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+  private readonly apiUrl =
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
   private readonly apiKey = process.env.GOOGLE_API_KEY;
   private genAI: GoogleGenerativeAI;
   constructor(private readonly prisma: PrismaService) {
@@ -36,54 +37,64 @@ export class ChatbotService {
   //         prompt += part.text + " ";
   //       }
   //     }
-    
+
   //     // Loại bỏ khoảng trắng thừa ở cuối prompt
   //     prompt = prompt.trim();
   //     console.log("Prompt:", prompt);
-      
+
   //     const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
   //     const result = await model.generateContent([{ text: prompt }]);
-    
+
   //     return result;
   //   }
-    
-    // Giả sử jsonData là dữ liệu JSON bạn cung cấp
-  async analyzeImage(fileUrl:any): Promise<any> {
+
+  // Giả sử jsonData là dữ liệu JSON bạn cung cấp
+  async analyzeImage(fileUrl: any): Promise<any> {
     try {
-        const response = await fetch(fileUrl);
-        if (!response.ok) throw new Error(`Lỗi tải ảnh: ${response.statusText}`);
+      const response = await fetch(fileUrl);
+      if (!response.ok) throw new Error(`Lỗi tải ảnh: ${response.statusText}`);
 
-        const arrayBuffer = await response.arrayBuffer();
-        const imageBuffer = Buffer.from(arrayBuffer);
+      const arrayBuffer = await response.arrayBuffer();
+      const imageBuffer = Buffer.from(arrayBuffer);
 
-        const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" }); // Sử dụng model hỗ trợ hình ảnh
+      const model = this.genAI.getGenerativeModel({
+        model: 'gemini-2.0-flash',
+      }); // Sử dụng model hỗ trợ hình ảnh
 
-        // const prompt = "Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON, định dạng mẫu [{\"title\":\"Trứng bắc thảo\",\"dvt\":\"Quả\",\"khachhang\":[{\"madonhang\":\"TG-AA00002\",\"name\":\"99 SOUL\",\"data\":{\"SLDAT\":1,\"SLTT\":\"1,2\"}},{\"name\":\"NHÀ HÀNG DOOKKI\",\"madonhang\":\"TG-AA00001\",\"data\":{\"SLDAT\":1,\"SLTT\":\"1,2\"}}]},{\"title\":\"Bún gạo\",\"dvt\":\"Kg\",\"khachhang\":[{\"name\":\"99 SOUL\",\"madonhang\":\"TG-AA00002\",\"data\":{\"SLDAT\":1,\"SLTT\":\"1,2\"}},{\"name\":\"NHÀ HÀNG DOOKKI\",\"madonhang\":\"TG-AA00001\",\"data\":{\"SLDAT\":\"\",\"SLTT\":\"1,2\"}}]}]";
-        const prompt = "Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON, định dạng mẫu [{\"makh\":\"KS00213\",\"name\":\"NHÀ HÀNG DOOKKI\",\"madonhang\":\"TG-AA00001\",\"sanpham\":[{\"title\":\"Khoai Tây TQ\",\"masp\":\"I100129\",\"dvt\":\"Kg\",\"sld\":1,\"sltt\":1},{\"title\":\"Đậu đỏ\",\"masp\":\"I100820\",\"dvt\":\"Kg\",\"sld\":1,\"sltt\":1}]},{\"makh\":\"KS00001\",\"name\":\"99 Soul\",\"madonhang\":\"TG-AA00003\",\"sanpham\":[{\"title\":\"Chanh ĐaLat\",\"masp\":\"I100058\",\"dvt\":\"Kg\",\"sld\":1,\"sltt\":1},{\"title\":\"Chanh giấy\",\"masp\":\"I100059\",\"dvt\":\"Kg\",\"sld\":1,\"sltt\":1}]}]";
-        const result = await model.generateContent([
-            { text: prompt },
-            { inlineData: { mimeType: "image/jpeg", data: imageBuffer.toString("base64") } }
-        ]);
+      // const prompt = "Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON, định dạng mẫu [{\"title\":\"Trứng bắc thảo\",\"dvt\":\"Quả\",\"khachhang\":[{\"madonhang\":\"TG-AA00002\",\"name\":\"99 SOUL\",\"data\":{\"SLDAT\":1,\"SLTT\":\"1,2\"}},{\"name\":\"NHÀ HÀNG DOOKKI\",\"madonhang\":\"TG-AA00001\",\"data\":{\"SLDAT\":1,\"SLTT\":\"1,2\"}}]},{\"title\":\"Bún gạo\",\"dvt\":\"Kg\",\"khachhang\":[{\"name\":\"99 SOUL\",\"madonhang\":\"TG-AA00002\",\"data\":{\"SLDAT\":1,\"SLTT\":\"1,2\"}},{\"name\":\"NHÀ HÀNG DOOKKI\",\"madonhang\":\"TG-AA00001\",\"data\":{\"SLDAT\":\"\",\"SLTT\":\"1,2\"}}]}]";
+      const prompt =
+        'Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON, định dạng mẫu [{"makh":"KS00213","name":"NHÀ HÀNG DOOKKI","madonhang":"TG-AA00001","sanpham":[{"title":"Khoai Tây TQ","masp":"I100129","dvt":"Kg","sld":1,"sltt":1},{"title":"Đậu đỏ","masp":"I100820","dvt":"Kg","sld":1,"sltt":1}]},{"makh":"KS00001","name":"99 Soul","madonhang":"TG-AA00003","sanpham":[{"title":"Chanh ĐaLat","masp":"I100058","dvt":"Kg","sld":1,"sltt":1},{"title":"Chanh giấy","masp":"I100059","dvt":"Kg","sld":1,"sltt":1}]}]';
+      const result = await model.generateContent([
+        { text: prompt },
+        {
+          inlineData: {
+            mimeType: 'image/jpeg',
+            data: imageBuffer.toString('base64'),
+          },
+        },
+      ]);
 
-        const responseText = result.response.text();
-        // Làm sạch chuỗi JSON
-        const cleanedJson = responseText.substring(responseText.indexOf('['), responseText.lastIndexOf(']') + 1)
-        console.log("Chuỗi JSON sau khi làm sạch:", cleanedJson);
+      const responseText = result.response.text();
+      // Làm sạch chuỗi JSON
+      const cleanedJson = responseText.substring(
+        responseText.indexOf('['),
+        responseText.lastIndexOf(']') + 1,
+      );
+      console.log('Chuỗi JSON sau khi làm sạch:', cleanedJson);
 
-        try {
-            const jsonData = JSON.parse(cleanedJson);
-            return jsonData;
-        } catch (jsonError) {
-            console.error("Lỗi parse JSON:", jsonError);
-            console.log("Chuỗi trả về lỗi sau khi làm sạch:", cleanedJson)
-            return responseText
-        }
-
+      try {
+        const jsonData = JSON.parse(cleanedJson);
+        return jsonData;
+      } catch (jsonError) {
+        console.error('Lỗi parse JSON:', jsonError);
+        console.log('Chuỗi trả về lỗi sau khi làm sạch:', cleanedJson);
+        return responseText;
+      }
     } catch (error) {
-        console.error("Lỗi phân tích hình ảnh:", error);
-        throw error;
+      console.error('Lỗi phân tích hình ảnh:', error);
+      throw error;
     }
-}
+  }
 
   async chatWithAI(userId: string, message: string) {
     const requestBody = {
@@ -94,9 +105,11 @@ export class ChatbotService {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),
-      });     
+      });
       const data = await response.json();
-      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'Không có phản hồi từ AI';
+      const reply =
+        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        'Không có phản hồi từ AI';
       const result = await this.prisma.chatAIMessage.create({
         data: { userId, message, reply },
       });
@@ -115,7 +128,9 @@ export class ChatbotService {
   }
 
   async findOne(id: string) {
-    const chatbot = await this.prisma.chatAIMessage.findUnique({ where: { id } });
+    const chatbot = await this.prisma.chatAIMessage.findUnique({
+      where: { id },
+    });
     if (!chatbot) throw new NotFoundException('Chatbot not found');
     return chatbot;
   }

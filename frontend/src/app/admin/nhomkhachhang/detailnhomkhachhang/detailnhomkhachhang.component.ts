@@ -254,16 +254,14 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
           }
         }
         
-        this._snackBar.open(
-          errorMessage, 
+        this._snackBar.open(errorMessage, 
           '', 
           {
             duration: 5000, // Increased duration for error messages
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-error'],
-          }
-        );
+          });
       } finally {
         this.isLoading.set(false);
       }
@@ -467,16 +465,14 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
           }
         }
         
-        this._snackBar.open(
-          errorMessage, 
+        this._snackBar.open(errorMessage, 
           '', 
           {
             duration: 5000, // Increased duration for error messages
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-error'],
-          }
-        );
+          });
       } finally {
         this.isLoading.set(false);
       }

@@ -648,16 +648,14 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
       const result: any = await this._DonhangService.UpdateBulkDonhang(
         this.EditList.map((v: any) => v.id)
       );
-      this._snackBar.open(
-        `Cập nhật thành công ${result.success} đơn hàng${result.fail ? `, ${result.fail} lỗi` : ''}`,
+      this._snackBar.open(`Cập nhật thành công ${result.success} đơn hàng${result.fail ? `, ${result.fail} lỗi` : ''}`,
         '',
         {
           duration: 3000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
-        }
-      );
+        });
     } catch (error: any) {
       console.error('Lỗi khi cập nhật đơn hàng:', error);
       this._snackBar.open('Có lỗi xảy ra khi cập nhật đơn hàng', '', {

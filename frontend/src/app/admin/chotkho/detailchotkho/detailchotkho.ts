@@ -817,7 +817,7 @@ import * as XLSXStyle from 'xlsx-js-style';
         ];
         
         if (!validTypes.includes(file.type) && !file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
-          this._snackBar.open('Vui lòng chọn file Excel (.xlsx hoặc .xls)', 'Đóng', {
+          this._snackBar.open('Vui lòng chọn file Excel (.xlsx hoặc .xls, { duration: 3000, horizontalPosition: "end", verticalPosition: "top", panelClass: ["snackbar-warning"] })', 'Đóng', {
             duration: 3000,
             panelClass: ['snackbar-error']
           });
@@ -904,14 +904,12 @@ import * as XLSXStyle from 'xlsx-js-style';
         // Reset file input
         event.target.value = '';
 
-        this._snackBar.open(
-          `Import thành công ${processedData.length} sản phẩm từ Excel`,
+        this._snackBar.open(`Import thành công ${processedData.length} sản phẩm từ Excel`,
           'Đóng',
           {
             duration: 4000,
             panelClass: ['snackbar-success']
-          }
-        );
+          });
 
         console.log('Excel import completed:', {
           importedItems: processedData.length,
@@ -920,14 +918,12 @@ import * as XLSXStyle from 'xlsx-js-style';
 
       } catch (error) {
         console.error('Error importing Excel:', error);
-        this._snackBar.open(
-          `Lỗi khi import Excel: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        this._snackBar.open(`Lỗi khi import Excel: ${error instanceof Error ? error.message : 'Unknown error'}`,
           'Đóng',
           {
             duration: 5000,
             panelClass: ['snackbar-error']
-          }
-        );
+          });
       }
     }
 
@@ -1047,14 +1043,12 @@ import * as XLSXStyle from 'xlsx-js-style';
         // Show warning for products not found
         if (notFoundProducts.length > 0) {
           console.warn('Products not found in system:', notFoundProducts);
-          this._snackBar.open(
-            `Cảnh báo: ${notFoundProducts.length} sản phẩm không tìm thấy trong hệ thống`,
+          this._snackBar.open(`Cảnh báo: ${notFoundProducts.length} sản phẩm không tìm thấy trong hệ thống`,
             'Xem chi tiết',
             {
               duration: 5000,
               panelClass: ['snackbar-warning']
-            }
-          ).onAction().subscribe(() => {
+            }).onAction().subscribe(() => {
             console.log('Not found products:', notFoundProducts.join(', '));
           });
         }
@@ -1209,27 +1203,23 @@ import * as XLSXStyle from 'xlsx-js-style';
           XLSX.writeFile(workbook, filename);
         }
 
-        this._snackBar.open(
-          `Đã tải xuống file mẫu: ${filename}`,
+        this._snackBar.open(`Đã tải xuống file mẫu: ${filename}`,
           'Đóng',
           {
             duration: 4000,
             panelClass: ['snackbar-success']
-          }
-        );
+          });
 
         console.log('Excel template exported successfully:', filename);
 
       } catch (error) {
         console.error('Error exporting Excel template:', error);
-        this._snackBar.open(
-          `Lỗi khi tạo file mẫu: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        this._snackBar.open(`Lỗi khi tạo file mẫu: ${error instanceof Error ? error.message : 'Unknown error'}`,
           'Đóng',
           {
             duration: 5000,
             panelClass: ['snackbar-error']
-          }
-        );
+          });
       }
     }
 

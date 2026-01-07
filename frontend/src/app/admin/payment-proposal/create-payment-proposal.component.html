@@ -1,0 +1,90 @@
+<div class="p-6 bg-white rounded-lg shadow-sm">
+  <div class="flex justify-between items-center mb-6 border-b pb-4">
+    <div class="flex items-center">
+      <button mat-icon-button (click)="goBack()" class="mr-2">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="text-2xl font-bold text-gray-800">Lập Đề xuất thanh toán mới</h1>
+    </div>
+    <div class="flex space-x-2">
+      <button mat-flat-button color="primary" (click)="submit()" [disabled]="loading() || proposalData.items.length === 0" class="!bg-teal-600 !text-white h-12 px-6">
+        <mat-icon class="mr-2">send</mat-icon>
+        Gửi phê duyệt
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left Column: Primary Info -->
+    <div class="lg:col-span-1 space-y-6">
+      <div class="bg-gray-50 p-4 rounded-lg border">
+        <h2 class="font-bold text-gray-700 mb-4 flex items-center">
+            <mat-icon class="mr-2 text-blue-500">info</mat-icon>
+            Thông tin đề xuất
+        </h2>
+        
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Mã đề xuất</mat-label>
+          <input matInput [(ngModel)]="proposalData.maDeXuat" placeholder="Ví dụ: DXTT-2023-001">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Mô tả / Ghi chú</mat-label>
+          <textarea matInput [(ngModel)]="proposalData.description" placeholder="Nội dung đề xuất thanh toán..." rows="4"></textarea>
+        </mat-form-field>
+
+        <div class="mt-4 pt-4 border-t">
+            <div class="flex justify-between items-center bg-blue-100 p-4 rounded-lg">
+                <span class="font-semibold text-blue-800">Tổng tiền đề xuất:</span>
+                <span class="text-2xl font-bold text-red-600">{{formatCurrency(calculateTotal())}}</span>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Grouped Items -->
+    <div class="lg:col-span-2 space-y-6">
+        <h2 class="font-bold text-gray-800 flex items-center text-lg">
+            <mat-icon class="mr-2 text-teal-500">list_alt</mat-icon>
+            Chi tiết thanh toán cho Nhà cung cấp ({{proposalData.items.length}})
+        </h2>
+
+        <div *ngFor="let item of proposalData.items" class="border rounded-lg overflow-hidden shadow-sm bg-white mb-4">
+            <div class="bg-gray-100 p-4 flex justify-between items-center border-b font-bold">
+                <span class="text-lg">{{item.supplierName}}</span>
+                <span class="text-red-600">{{formatCurrency(item.amount)}}</span>
+            </div>
+            <div class="p-0 overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 border-b">
+                            <th class="p-3 text-left font-semibold text-gray-600">Đơn hàng</th>
+                            <th class="p-3 text-left font-semibold text-gray-600">Ngày</th>
+                            <th class="p-3 text-right font-semibold text-gray-600">Tổng tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let po of item.pos" class="border-b last:border-0">
+                            <td class="p-3 font-medium text-blue-700">{{po.madncc}}</td>
+                            <td class="p-3 text-gray-500">{{po.ngaynhan | date:'dd/MM/yyyy'}}</td>
+                            <td class="p-3 text-right font-semibold">{{formatCurrency(po.tongtien)}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div *ngIf="proposalData.items.length === 0" class="p-10 text-center border-2 border-dashed rounded-lg text-gray-500">
+            <mat-icon class="text-4xl">warning</mat-icon>
+            <p>Vui lòng chọn các đơn hàng từ màn hình Công nợ Nhà cung cấp để lập đề xuất.</p>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="loading()" class="fixed inset-0 bg-white bg-opacity-70 flex items-center justify-center z-50">
+    <div class="flex flex-col items-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mb-4"></div>
+        <p class="font-bold text-teal-600">Đang xử lý...</p>
+    </div>
+</div>

@@ -41,38 +41,42 @@ export class CacheController {
   @ApiResponse({ status: 200, description: 'Cache invalidated successfully' })
   async invalidateCache(@Param('model') model: string) {
     console.log(`[CACHE] Invalidating cache for model: ${model}`);
-    
+
     try {
       // Get all keys matching the pattern
       const pattern = `*${model.toLowerCase()}*`;
       const keys = await this.redis.keys(pattern);
-      
-      console.log(`[CACHE] Found ${keys?.length || 0} cache keys matching pattern: ${pattern}`);
+
+      console.log(
+        `[CACHE] Found ${keys?.length || 0} cache keys matching pattern: ${pattern}`,
+      );
       console.log(`[CACHE] Keys:`, keys);
-      
+
       // Delete matching keys
       if (keys && keys.length > 0) {
         await this.redis.del(...keys);
         console.log(`[CACHE] ✅ Deleted ${keys.length} cache keys`);
       }
-      
+
       // Also try to delete common cache key patterns
       const commonPatterns = [
         `findMany_banggia*`,
         `findUnique_banggia*`,
         `banggia_*`,
       ];
-      
+
       for (const pattern of commonPatterns) {
         const patternKeys = await this.redis.keys(pattern);
         if (patternKeys && patternKeys.length > 0) {
           await this.redis.del(...patternKeys);
-          console.log(`[CACHE] ✅ Deleted ${patternKeys.length} keys for pattern: ${pattern}`);
+          console.log(
+            `[CACHE] ✅ Deleted ${patternKeys.length} keys for pattern: ${pattern}`,
+          );
         }
       }
-      
+
       console.log(`[CACHE] ✅ Cache invalidation completed for '${model}'`);
-      
+
       return {
         success: true,
         message: `Cache invalidated for model: ${model}`,
@@ -92,14 +96,17 @@ export class CacheController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Invalidate all cache' })
-  @ApiResponse({ status: 200, description: 'All cache invalidated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'All cache invalidated successfully',
+  })
   async invalidateAllCache() {
     console.log(`[CACHE] Invalidating ALL cache`);
-    
+
     try {
       await this.redis.flushdb();
       console.log(`[CACHE] ✅ All cache cleared successfully`);
-      
+
       return {
         success: true,
         message: 'All cache invalidated successfully',
@@ -124,9 +131,11 @@ export class CacheController {
       const keys = await this.redis.keys('*');
       const dbSize = await this.redis.dbsize();
       const info = await this.redis.info('memory');
-      
-      console.log(`[CACHE] Cache has ${keys?.length || 0} keys, DB size: ${dbSize}`);
-      
+
+      console.log(
+        `[CACHE] Cache has ${keys?.length || 0} keys, DB size: ${dbSize}`,
+      );
+
       return {
         success: true,
         totalKeys: keys?.length || 0,

@@ -259,4 +259,30 @@ export class PhieuThuChiService {
       this.loading.set(false);
     }
   }
+
+  async thanhToan(id: string, data: { billImage?: string }) {
+    try {
+      this.loading.set(true);
+      const response = await fetch(
+        `${environment.APIURL}/phieuthuchi/${id}/thanh-toan`,
+        {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify(data)
+        }
+      );
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error finalising payment:', error);
+      throw error;
+    } finally {
+      this.loading.set(false);
+    }
+  }
 }

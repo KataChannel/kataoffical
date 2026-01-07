@@ -64,7 +64,7 @@
 
 //     try {
 //       const results = await Promise.all(
-//         files.map(file => 
+//         files.map(file =>
 //           this.uploadService.uploadFile(file, folder || 'uploads')
 //         )
 //       );
@@ -94,9 +94,7 @@
 
 //   // Fixed: Updated route pattern from ":filePath(.*)" to ":filePath/*path"
 
-
 //   // Alternative approach: Using a single parameter with wildcard
-
 
 //   // Fixed: Updated route pattern from ":filePath(.*)" to "*filePath"
 //   @Get('download/*filePath')
@@ -106,10 +104,10 @@
 //   ) {
 //     try {
 //       const stream = await this.uploadService.getFile(filePath);
-      
+
 //       res.setHeader('Content-Type', 'application/octet-stream');
 //       res.setHeader('Content-Disposition', `attachment; filename="${filePath}"`);
-      
+
 //       stream.pipe(res);
 //     } catch (error) {
 //       throw new BadRequestException(error.message);

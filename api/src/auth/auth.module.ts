@@ -10,7 +10,7 @@ import { PassportModule } from '@nestjs/passport';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService,GoogleStrategy, FacebookStrategy, ZaloStrategy],
+  providers: [AuthService, GoogleStrategy, FacebookStrategy, ZaloStrategy],
   imports: [
     PrismaModule,
     PassportModule.register({ defaultStrategy: 'google' }),

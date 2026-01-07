@@ -1,6 +1,24 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, UsePipes, ValidationPipe, DefaultValuePipe, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  UsePipes,
+  ValidationPipe,
+  DefaultValuePipe,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
-import { CreateDashboardDto, UpdateDashboardDto, ReorderDashboardDto, FindByDto } from './dto/dashboard.dto';
+import {
+  CreateDashboardDto,
+  UpdateDashboardDto,
+  ReorderDashboardDto,
+  FindByDto,
+} from './dto/dashboard.dto';
 import { SummaryQueryDto } from './dto/summary-query.dto';
 
 @Controller('dashboard')
@@ -12,35 +30,34 @@ export class DashboardController {
   }
   @Get('top-products') // GET /dashboard/top-products?limit=5&preset=week
   getTopSellingProducts(
-      @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number,
-      @Query() query: SummaryQueryDto
+    @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number,
+    @Query() query: SummaryQueryDto,
   ) {
     return this.dashboardService.getTopSellingProducts(limit, query);
   }
 
   @Get('low-stock') // GET /dashboard/low-stock
   getLowStockProducts() {
-      // Có thể thêm tham số query để tùy chỉnh ngưỡng
-      return this.dashboardService.getLowStockProducts();
+    // Có thể thêm tham số query để tùy chỉnh ngưỡng
+    return this.dashboardService.getLowStockProducts();
   }
 
   @Get('recent-orders') // GET /dashboard/recent-orders?limit=10
   getRecentOrders(
-      @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
   ) {
-      return this.dashboardService.getRecentOrders(limit);
+    return this.dashboardService.getRecentOrders(limit);
   }
   @Get('sales-trend') // GET /dashboard/sales-trend?preset=month
   getSalesTrend(@Query() query: SummaryQueryDto) {
-      return this.dashboardService.getSalesTrend(query);
+    return this.dashboardService.getSalesTrend(query);
   }
   @Get('doanhthu') // GET /dashboard/sales-trend?preset=month
   getDoanhthu(@Query() query: SummaryQueryDto) {
-      return this.dashboardService.getDoanhthu(query);
+    return this.dashboardService.getDoanhthu(query);
   }
   @Get('donhang') // GET /dashboard/sales-trend?preset=month
   getDonhang(@Query() query: any) {
-      return this.dashboardService.getDonhang(query);
+    return this.dashboardService.getDonhang(query);
   }
-
 }

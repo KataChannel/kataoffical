@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Req, Get, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  Get,
+  Res,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
@@ -18,7 +26,9 @@ export class AuthController {
     if (!req.user) {
       return res.redirect(`${process.env.BASE_URL}/login`);
     }
-    return res.redirect(`${process.env.BASE_URL}/login?token=${req.user.token}`);
+    return res.redirect(
+      `${process.env.BASE_URL}/login?token=${req.user.token}`,
+    );
   }
 
   @Get('facebook')
@@ -27,7 +37,9 @@ export class AuthController {
   @Get('facebook/callback')
   facebookCallback(@Req() req, @Res() res) {
     const token = req.user.token;
-    return res.redirect(`${process.env.BASE_URL}/oauth-callback?token=${token}`);
+    return res.redirect(
+      `${process.env.BASE_URL}/oauth-callback?token=${token}`,
+    );
   }
   @Get('zalo')
   async zaloLogin() {}
@@ -35,10 +47,10 @@ export class AuthController {
   @Get('zalo/callback')
   zaloCallback(@Req() req, @Res() res) {
     const token = req.user.token;
-    return res.redirect(`${process.env.BASE_URL}/oauth-callback?token=${token}`);
+    return res.redirect(
+      `${process.env.BASE_URL}/oauth-callback?token=${token}`,
+    );
   }
-
-
 
   @Post('register')
   register(@Body() body: { email: string; password: string; name: string }) {
@@ -46,8 +58,12 @@ export class AuthController {
   }
 
   @Post('login')
-  @Audit({entity: 'Auth Login',action: AuditAction.LOGIN,includeResponse: true})
-  login(@Body() body: {SDT:string; email: string; password: string }) {
+  @Audit({
+    entity: 'Auth Login',
+    action: AuditAction.LOGIN,
+    includeResponse: true,
+  })
+  login(@Body() body: { SDT: string; email: string; password: string }) {
     console.log(body);
     return this.authService.login(body.SDT, body.email, body.password);
   }
@@ -58,7 +74,11 @@ export class AuthController {
     @Req() req,
     @Body() body: { oldPassword: string; newPassword: string },
   ) {
-    return this.authService.changePassword(req.user.id, body.oldPassword, body.newPassword);
+    return this.authService.changePassword(
+      req.user.id,
+      body.oldPassword,
+      body.newPassword,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -66,5 +86,4 @@ export class AuthController {
   randomPassword(@Req() req) {
     return this.authService.generateRandomPassword(req.user.id);
   }
-  
 }

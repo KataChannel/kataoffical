@@ -1,52 +1,45 @@
+import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  computed,
-  effect,
-  inject,
-  OnDestroy,
-  OnInit,
-  signal,
-  ViewChild,
-  TemplateRef,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    computed,
+    effect,
+    inject,
+    OnDestroy,
+    OnInit,
+    signal,
+    TemplateRef,
+    ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { ActivatedRoute, Route, Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
-import { ListPhieugiaohangComponent } from '../listphieugiaohang/listphieugiaohang.component';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import {
-  ConvertDriveData,
-  GenId,
-  convertToSlug,
-} from '../../../shared/utils/shared.utils';
 import { MatMenuModule } from '@angular/material/menu';
-import { KhachhangService } from '../../khachhang/khachhang.service';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { BanggiaService } from '../../banggia/banggia.service';
-import moment from 'moment';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { Title } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { SharedInputService } from '../../../shared/services/shared-input.service';
+import { LoadingUtils } from '../../../shared/utils/loading.utils';
+import {
+    convertToSlug
+} from '../../../shared/utils/shared.utils';
 import { DonhangService } from '../../donhang/donhang.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { UserService } from '../../user/user.service';
-import { SharedInputService } from '../../../shared/services/shared-input.service';
-import { LoadingUtils } from '../../../shared/utils/loading.utils';
-import { Title } from '@angular/platform-browser';
+import { ListPhieugiaohangComponent } from '../listphieugiaohang/listphieugiaohang.component';
 @Component({
   selector: 'app-detailphieugiaohang',
   imports: [

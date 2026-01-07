@@ -21,13 +21,21 @@ export class NhomkhachhangFilterInput {
 
 @InputType()
 export class NhomkhachhangPaginationInput {
-  @Field(() => Number, { nullable: true, defaultValue: 1, description: 'Trang hiện tại' })
+  @Field(() => Number, {
+    nullable: true,
+    defaultValue: 1,
+    description: 'Trang hiện tại',
+  })
   @IsOptional()
   @IsInt()
   @Min(1)
   page?: number = 1;
 
-  @Field(() => Number, { nullable: true, defaultValue: 10, description: 'Số lượng mỗi trang' })
+  @Field(() => Number, {
+    nullable: true,
+    defaultValue: 10,
+    description: 'Số lượng mỗi trang',
+  })
   @IsOptional()
   @IsInt()
   @Min(1)
@@ -36,12 +44,20 @@ export class NhomkhachhangPaginationInput {
 
 @InputType()
 export class NhomkhachhangSortInput {
-  @Field(() => String, { nullable: true, defaultValue: 'createdAt', description: 'Trường sắp xếp' })
+  @Field(() => String, {
+    nullable: true,
+    defaultValue: 'createdAt',
+    description: 'Trường sắp xếp',
+  })
   @IsOptional()
   @IsString()
   field?: string = 'createdAt';
 
-  @Field(() => String, { nullable: true, defaultValue: 'desc', description: 'Hướng sắp xếp: asc hoặc desc' })
+  @Field(() => String, {
+    nullable: true,
+    defaultValue: 'desc',
+    description: 'Hướng sắp xếp: asc hoặc desc',
+  })
   @IsOptional()
   @IsString()
   direction?: 'asc' | 'desc' = 'desc';

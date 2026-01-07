@@ -139,7 +139,7 @@ import { UserPermissionOverviewComponent } from '../../user-permission/user-perm
         }
       } catch (error) {
         console.error('Error loading user:', error);
-        this._snackBar.open('Lỗi khi tải thông tin người dùng', 'Đóng', { duration: 3000 });
+        this._snackBar.open('Lỗi khi tải thông tin người dùng', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       }
     }
     async ngOnInit() {    
@@ -175,7 +175,7 @@ import { UserPermissionOverviewComponent } from '../../user-permission/user-perm
           this._router.navigate(['/admin/user', id]);
         } catch (error) {
           console.error('Error loading user:', error);
-          this._snackBar.open('Lỗi khi tải thông tin người dùng', 'Đóng', { duration: 3000 });
+          this._snackBar.open('Lỗi khi tải thông tin người dùng', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
           this._router.navigate(['/admin/user']);
           return;
         }

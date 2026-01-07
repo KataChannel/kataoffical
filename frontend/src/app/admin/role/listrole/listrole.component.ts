@@ -103,7 +103,7 @@ export class ListRoleComponent implements OnInit {
       this.total.set(this.dataSource.data.length);
       this.updatePagination();
     } catch (error: any) {
-      this.snackBar.open('Lỗi khi tải dữ liệu: ' + error.message, 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi tải dữ liệu: ' + error.message, 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
     }
   }
 
@@ -229,11 +229,11 @@ export class ListRoleComponent implements OnInit {
         await this.roleService.DeleteRole(role.id);
       }
       
-      this.snackBar.open(`Đã xóa ${this.EditList.length} role thành công`, 'Đóng', { duration: 3000 });
+      this.snackBar.open(`Đã xóa ${ this.EditList.length} role thành công`, 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       this.EditList = [];
       await this.loadRoles();
     } catch (error: any) {
-      this.snackBar.open('Lỗi khi xóa role: ' + error.message, 'Đóng', { duration: 3000 });
+      this.snackBar.open('Lỗi khi xóa role: ' + error.message, 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
     }
   }
 }

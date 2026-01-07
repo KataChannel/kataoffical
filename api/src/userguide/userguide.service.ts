@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { SocketGateway } from './socket.gateway';
 import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
@@ -16,7 +20,11 @@ export class UserguideService {
       const lastUpdated = await this.prisma.userguidStep.aggregate({
         _max: { updatedAt: true },
       });
-      return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
+      return {
+        updatedAt: lastUpdated._max.updatedAt
+          ? new Date(lastUpdated._max.updatedAt).getTime()
+          : 0,
+      };
     } catch (error) {
       this._ErrorlogService.logError('getLastUpdatedUserguide', error);
       throw error;
@@ -53,7 +61,7 @@ export class UserguideService {
         data: {
           ...data,
           order: newOrder,
-          codeId: codeId
+          codeId: codeId,
         },
       });
       this._SocketGateway.sendUserguideUpdate();
@@ -82,7 +90,7 @@ export class UserguideService {
         data,
         total,
         page,
-        pageCount: Math.ceil(total / limit)
+        pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
       this._ErrorlogService.logError('findByUserguide', error);
@@ -106,7 +114,7 @@ export class UserguideService {
         data,
         total,
         page,
-        pageCount: Math.ceil(total / limit)
+        pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
       this._ErrorlogService.logError('findAllUserguide', error);
@@ -142,18 +150,22 @@ export class UserguideService {
         // Get existing blocks
         const existingBlocks = await this.prisma.userguidBlock.findMany({
           where: { stepId: id },
-          select: { id: true }
+          select: { id: true },
         });
-        
-        const incomingBlockIds = UserguidBlocks.filter(block => block.id).map(block => block.id);
-        const blocksToDelete = existingBlocks.filter(existing => !incomingBlockIds.includes(existing.id));
-        
+
+        const incomingBlockIds = UserguidBlocks.filter((block) => block.id).map(
+          (block) => block.id,
+        );
+        const blocksToDelete = existingBlocks.filter(
+          (existing) => !incomingBlockIds.includes(existing.id),
+        );
+
         // Delete removed blocks
         if (blocksToDelete.length > 0) {
           await this.prisma.userguidBlock.deleteMany({
             where: {
-              id: { in: blocksToDelete.map(block => block.id) }
-            }
+              id: { in: blocksToDelete.map((block) => block.id) },
+            },
           });
         }
 
@@ -172,16 +184,18 @@ export class UserguideService {
                 data: { ...block, stepId: id },
               });
             }
-          })
+          }),
         );
       }
-      
+
       this._SocketGateway.sendUserguideUpdate();
       return updatedUserguide;
     } catch (error) {
       console.log('Error updating userguide:', error);
       this._ErrorlogService.logError('updateUserguide', error);
-      throw new InternalServerErrorException('Lỗi khi cập nhật userguide', { cause: error });
+      throw new InternalServerErrorException('Lỗi khi cập nhật userguide', {
+        cause: error,
+      });
     }
   }
 
@@ -201,7 +215,7 @@ export class UserguideService {
       for (let i = 0; i < userguideIds.length; i++) {
         await this.prisma.userguidStep.update({
           where: { id: userguideIds[i] },
-          data: { order: i + 1 }
+          data: { order: i + 1 },
         });
       }
       this._SocketGateway.sendUserguideUpdate();

@@ -1,8 +1,25 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, HttpStatus, HttpException, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  HttpStatus,
+  HttpException,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { NhacungcapService } from './nhacungcap.service';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Cache, CacheInvalidate } from '../common/cache.interceptor';
 import { SmartCache } from '../common/smart-cache.decorator';
@@ -11,31 +28,41 @@ import { SmartCache } from '../common/smart-cache.decorator';
 export class NhacungcapController {
   constructor(private readonly nhacungcapService: NhacungcapService) {}
 
-  @ApiBearerAuth() 
-  @ApiOperation({ summary: 'Create a new nhacungcap' }) 
-  @ApiBody({ type: Object }) 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create a new nhacungcap' })
+  @ApiBody({ type: Object })
   @UseGuards(JwtAuthGuard)
   @Post()
-  @Audit({ entity: 'Nhacungcap', action: AuditAction.CREATE, includeResponse: true })
+  @Audit({
+    entity: 'Nhacungcap',
+    action: AuditAction.CREATE,
+    includeResponse: true,
+  })
   @SmartCache({
     invalidate: ['nhacungcap'],
     get: { ttl: 1800, keyPrefix: 'nhacungcap' },
-    updateCache: true
+    updateCache: true,
   })
-  async create(@Body() data: any) { 
+  async create(@Body() data: any) {
     try {
       return await this.nhacungcapService.create(data);
     } catch (error) {
-      throw new HttpException(error.message || 'Create failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Create failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
   @ApiOperation({ summary: 'Get last updated nhacungcap' })
-  @Get('lastupdated') 
-  async getLastUpdatedNhacungcap() { 
+  @Get('lastupdated')
+  async getLastUpdatedNhacungcap() {
     try {
       return await this.nhacungcapService.getLastUpdatedNhacungcap();
     } catch (error) {
-      throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Get last updated failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
   @Post('import')
@@ -61,7 +88,10 @@ export class NhacungcapController {
   }
 
   @ApiOperation({ summary: 'Get all nhacungcaps with pagination' })
-  @ApiResponse({ status: 200, description: 'List of nhacungcaps with pagination info' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of nhacungcaps with pagination info',
+  })
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get()
   async findAll(@Query() query: any) {
@@ -72,7 +102,7 @@ export class NhacungcapController {
         error.message || 'Failed to fetch nhacungcaps',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    } 
+    }
   }
 
   @Get('findid/:id')
@@ -99,26 +129,36 @@ export class NhacungcapController {
     }
   }
   @ApiOperation({ summary: 'Find nhacungcaps by parameters' })
-  @ApiBody({ type: Object }) 
+  @ApiBody({ type: Object })
   @Post('findby')
   async findby(@Body() param: any) {
     try {
       return await this.nhacungcapService.findBy(param);
     } catch (error) {
-      throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Find failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  @Audit({entity: 'Update Nhacungcap', action: AuditAction.UPDATE, includeResponse: true})
+  @Audit({
+    entity: 'Update Nhacungcap',
+    action: AuditAction.UPDATE,
+    includeResponse: true,
+  })
   @SmartCache({
     invalidate: ['nhacungcap'],
     get: { ttl: 1800, keyPrefix: 'nhacungcap' },
-    updateCache: true
+    updateCache: true,
   })
   async update(@Param('id') id: string, @Body() updateNhacungcapDto: any) {
     try {
-      const result = await this.nhacungcapService.update(id, updateNhacungcapDto);
+      const result = await this.nhacungcapService.update(
+        id,
+        updateNhacungcapDto,
+      );
       return {
         statusCode: HttpStatus.OK,
         message: 'Nhà cung cấp updated successfully',
@@ -135,7 +175,11 @@ export class NhacungcapController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  @Audit({entity: 'Delete Nhacungcap', action: AuditAction.DELETE, includeResponse: true})
+  @Audit({
+    entity: 'Delete Nhacungcap',
+    action: AuditAction.DELETE,
+    includeResponse: true,
+  })
   @CacheInvalidate(['nhacungcap'])
   async remove(@Param('id') id: string) {
     try {
@@ -153,5 +197,4 @@ export class NhacungcapController {
       };
     }
   }
-  
 }

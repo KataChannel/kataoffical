@@ -735,15 +735,55 @@ export class DetailDathangComponent {
     this._DathangService
       .updateDathang(this.DetailDathang())
       .then((res: any) => {
-        this._snackBar.open('Đã Nhận Hàng Thành Công', '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
         this.isEdit.update((value) => !value);
       });
   }
+
+  canEditERP(): boolean {
+    const poStatus = this.DetailDathang()?.poStatus;
+    return !poStatus || poStatus === 'MOI';
+  }
+
+  async DoiChieu() {
+    if (!this.canEditERP()) {
+      this._snackBar.open('Đơn hàng đã được đối chiếu hoặc thanh toán, không thể thay đổi.', '', {
+        duration: 3000,
+        panelClass: ['snackbar-error'],
+      });
+      return;
+    }
+
+    try {
+      const payload = {
+        sanpham: this.dataSource.data.map((item: any) => ({
+          idSP: item.idSP || item.id,
+          sldat: item.sldat,
+          gianhap: item.gianhap,
+          ghichu: item.ghichu
+        })),
+        ghichu: this.DetailDathang().ghichu
+      };
+
+      await this._DathangService.doiChieu(this.dathangId(), payload);
+      
+      this._snackBar.open('Đối chiếu đơn hàng thành công', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      
+      if (this.isEdit()) {
+        this.toggleEdit();
+      }
+    } catch (error: any) {
+      this._snackBar.open(error.message || 'Lỗi khi đối chiếu đơn hàng', '', {
+        duration: 3000,
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
   Dathang() {
     this.DetailDathang.update((v: any) => {
       v.status = 'dadat';
@@ -843,27 +883,27 @@ export class DetailDathangComponent {
    * Check if user can edit sldat field
    */
   canEditSldat(): boolean {
-    return this.hasPermission('dathang.sldat');
+    return this.hasPermission('dathang.sldat') && this.canEditERP();
   }
 
   /**
    * Check if user can edit slgiao field
    */
   canEditSlgiao(): boolean {
-    return this.hasPermission('dathang.slgiao');
+    return this.hasPermission('dathang.slgiao') && this.canEditERP();
   }
 
   /**
    * Check if user can edit slnhan field
    */
   canEditSlnhan(): boolean {
-    return this.hasPermission('dathang.slnhan');
+    return this.hasPermission('dathang.slnhan') && this.canEditERP();
   }
 
   /**
    * Check if user can edit gianhap field
    */
   canEditGianhap(): boolean {
-    return this.hasPermission('dathang.gianhap');
+    return this.hasPermission('dathang.gianhap') && this.canEditERP();
   }
 }

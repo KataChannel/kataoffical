@@ -1,4 +1,9 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -12,9 +17,9 @@ export class DateResponseInterceptor implements NestInterceptor {
   constructor() {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    return next.handle().pipe(
-      map(data => this.transformDatesInResponse(data, context))
-    );
+    return next
+      .handle()
+      .pipe(map((data) => this.transformDatesInResponse(data, context)));
   }
 
   /**
@@ -28,7 +33,7 @@ export class DateResponseInterceptor implements NestInterceptor {
     if (context) {
       const request = context.switchToHttp?.()?.getRequest?.();
       const endpoint = request?.url || 'unknown';
-      
+
       if (endpoint.includes('dathang') || endpoint.includes('donhang')) {
         console.log(`📤 Enhanced date response transform for ${endpoint}`);
       }
@@ -36,7 +41,7 @@ export class DateResponseInterceptor implements NestInterceptor {
 
     // Nếu là array
     if (Array.isArray(data)) {
-      return data.map(item => this.transformDatesInObject(item));
+      return data.map((item) => this.transformDatesInObject(item));
     }
 
     // Nếu là object
@@ -60,21 +65,35 @@ export class DateResponseInterceptor implements NestInterceptor {
     // Priority date fields requiring enhanced synchronization
     const criticalDateFields = ['ngaygiao', 'ngaynhan'];
     const commonDateFields = [
-      'createdAt', 'updatedAt', 'ngaytao', 'ngaycapnhat',
-      'batdau', 'ketthuc', 'startDate', 'endDate', 'date', 'datetime', 'ngay'
+      'createdAt',
+      'updatedAt',
+      'ngaytao',
+      'ngaycapnhat',
+      'batdau',
+      'ketthuc',
+      'startDate',
+      'endDate',
+      'date',
+      'datetime',
+      'ngay',
     ];
 
-    Object.keys(transformed).forEach(key => {
+    Object.keys(transformed).forEach((key) => {
       const value = transformed[key];
 
       // Enhanced handling for critical date fields
       if (criticalDateFields.includes(key) && this.isDateValue(value)) {
         try {
           // Ensure proper UTC format for critical fields
-          const utcDate = value instanceof Date ? value.toISOString() : new Date(value).toISOString();
+          const utcDate =
+            value instanceof Date
+              ? value.toISOString()
+              : new Date(value).toISOString();
           transformed[key] = new Date(utcDate).toISOString();
-          
-          console.log(`📤 Response transform ${key}: ${value} → ${transformed[key]}`);
+
+          console.log(
+            `📤 Response transform ${key}: ${value} → ${transformed[key]}`,
+          );
         } catch (error) {
           console.error(`❌ Error transforming ${key}:`, error);
           transformed[key] = value; // Keep original on error
@@ -108,7 +127,8 @@ export class DateResponseInterceptor implements NestInterceptor {
     // Nếu là string có format ISO date
     if (typeof value === 'string') {
       // Check ISO format với timezone (có T và Z hoặc offset)
-      const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?(Z|[+-]\d{2}:\d{2})$/;
+      const isoRegex =
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?(Z|[+-]\d{2}:\d{2})$/;
       return isoRegex.test(value);
     }
 

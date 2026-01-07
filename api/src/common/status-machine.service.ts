@@ -1,7 +1,16 @@
 import { Injectable } from '@nestjs/common';
 
 export type EntityType = 'donhang' | 'dathang';
-export type DonhangStatus = 'dadat' | 'dagiao' | 'danhan' | 'huy' | 'hoanthanh';
+export type DonhangStatus =
+  | 'dadat'
+  | 'dagiao'
+  | 'danhan'
+  | 'huy'
+  | 'hoanthanh'
+  | 'DA_GIAO_THUC_TE'
+  | 'DA_DOI_CHIEU'
+  | 'CHO_THU_TIEN'
+  | 'DA_THU_TIEN';
 export type DathangStatus = 'dadat' | 'dagiao' | 'danhan' | 'huy' | 'hoanthanh';
 
 export interface StatusTransition {
@@ -16,32 +25,36 @@ export interface StatusTransition {
 export class StatusMachineService {
   private readonly validTransitions = {
     donhang: {
-      'dadat': ['dagiao', 'huy'],
-      'dagiao': ['danhan', 'huy'],
-      'danhan': ['hoanthanh'],
-      'huy': [],
-      'hoanthanh': []
+      dadat: ['dagiao', 'huy'],
+      dagiao: ['danhan', 'huy', 'DA_GIAO_THUC_TE'],
+      DA_GIAO_THUC_TE: ['DA_DOI_CHIEU', 'huy'],
+      DA_DOI_CHIEU: ['CHO_THU_TIEN', 'huy'],
+      danhan: ['hoanthanh', 'DA_GIAO_THUC_TE'],
+      hoanthanh: [],
+      huy: [],
+      CHO_THU_TIEN: ['DA_THU_TIEN'],
+      DA_THU_TIEN: [],
     },
     dathang: {
-      'dadat': ['dagiao', 'huy'],
-      'dagiao': ['danhan', 'huy'],
-      'danhan': ['hoanthanh'],
-      'huy': [],
-      'hoanthanh': []
-    }
+      dadat: ['dagiao', 'huy'],
+      dagiao: ['danhan', 'huy'],
+      danhan: ['hoanthanh'],
+      huy: [],
+      hoanthanh: [],
+    },
   };
 
   private readonly reverseTransitions = {
     donhang: {
-      'dagiao': ['dadat'],
-      'danhan': ['dagiao'],
-      'huy': ['dadat', 'dagiao'],
+      dagiao: ['dadat'],
+      danhan: ['dagiao'],
+      huy: ['dadat', 'dagiao'],
     },
     dathang: {
-      'dagiao': ['dadat'],
-      'danhan': ['dagiao'],
-      'huy': ['dadat', 'dagiao'],
-    }
+      dagiao: ['dadat'],
+      danhan: ['dagiao'],
+      huy: ['dadat', 'dagiao'],
+    },
   };
 
   /**
@@ -51,30 +64,32 @@ export class StatusMachineService {
     entity: EntityType,
     fromStatus: string,
     toStatus: string,
-    allowReverse: boolean = false
+    allowReverse: boolean = false,
   ): StatusTransition {
     // Check forward transitions
-    const validForward = this.validTransitions[entity][fromStatus]?.includes(toStatus);
-    
+    const validForward =
+      this.validTransitions[entity][fromStatus]?.includes(toStatus);
+
     if (validForward) {
       return {
         from: fromStatus,
         to: toStatus,
         entity,
-        isValid: true
+        isValid: true,
       };
     }
 
     // Check reverse transitions if allowed
     if (allowReverse) {
-      const validReverse = this.reverseTransitions[entity][fromStatus]?.includes(toStatus);
+      const validReverse =
+        this.reverseTransitions[entity][fromStatus]?.includes(toStatus);
       if (validReverse) {
         return {
           from: fromStatus,
           to: toStatus,
           entity,
           isValid: true,
-          reason: 'Reverse transition'
+          reason: 'Reverse transition',
         };
       }
     }
@@ -84,16 +99,20 @@ export class StatusMachineService {
       to: toStatus,
       entity,
       isValid: false,
-      reason: `Invalid transition from ${fromStatus} to ${toStatus} for ${entity}`
+      reason: `Invalid transition from ${fromStatus} to ${toStatus} for ${entity}`,
     };
   }
 
   /**
    * Get all valid next statuses for a given status
    */
-  getValidNextStatuses(entity: EntityType, currentStatus: string, includeReverse: boolean = false): string[] {
+  getValidNextStatuses(
+    entity: EntityType,
+    currentStatus: string,
+    includeReverse: boolean = false,
+  ): string[] {
     const forward = this.validTransitions[entity][currentStatus] || [];
-    
+
     if (!includeReverse) {
       return forward;
     }

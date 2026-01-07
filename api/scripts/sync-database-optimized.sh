@@ -56,6 +56,9 @@ TARGET_ONLY_TABLES=(
     "ThanhToan"
     "HoaDonDienTu"
     "CronExecutionLog"
+    "PaymentProposal"
+    "PaymentProposalSupplier"
+    "PaymentProposalPurchaseOrder"
 )
 
 echo "[$TIMESTAMP] 🚜 Đang backup các bảng chỉ có ở V3..." | tee -a $LOG_FILE

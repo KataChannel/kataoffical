@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 
 export interface UserPermissionData {
@@ -40,7 +44,9 @@ export class UserPermissionService {
       where: { id: data.permissionId },
     });
     if (!permission) {
-      throw new NotFoundException(`Permission with ID ${data.permissionId} not found`);
+      throw new NotFoundException(
+        `Permission with ID ${data.permissionId} not found`,
+      );
     }
 
     // Check if granting user exists
@@ -48,7 +54,9 @@ export class UserPermissionService {
       where: { id: data.grantedBy },
     });
     if (!grantingUser) {
-      throw new NotFoundException(`Granting user with ID ${data.grantedBy} not found`);
+      throw new NotFoundException(
+        `Granting user with ID ${data.grantedBy} not found`,
+      );
     }
 
     // Create or update user permission
@@ -139,10 +147,7 @@ export class UserPermissionService {
       where: {
         userId,
         permissionId,
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } },
-        ],
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
       },
       include: {
         permission: true,
@@ -155,15 +160,15 @@ export class UserPermissionService {
   /**
    * Get effective permission by permission name
    */
-  async getUserEffectivePermissionByName(userId: string, permissionName: string) {
+  async getUserEffectivePermissionByName(
+    userId: string,
+    permissionName: string,
+  ) {
     const userPermission = await this.prisma.userPermission.findFirst({
       where: {
         userId,
         permission: { name: permissionName },
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } },
-        ],
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
       },
       include: {
         permission: true,
@@ -184,22 +189,26 @@ export class UserPermissionService {
     page?: number;
     limit?: number;
   }) {
-    const { userId, permissionId, isGranted, isExpired, page = 1, limit = 50 } = params;
-    
+    const {
+      userId,
+      permissionId,
+      isGranted,
+      isExpired,
+      page = 1,
+      limit = 50,
+    } = params;
+
     const where: any = {};
-    
+
     if (userId) where.userId = userId;
     if (permissionId) where.permissionId = permissionId;
     if (typeof isGranted === 'boolean') where.isGranted = isGranted;
-    
+
     if (typeof isExpired === 'boolean') {
       if (isExpired) {
         where.expiresAt = { lt: new Date() };
       } else {
-        where.OR = [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } },
-        ];
+        where.OR = [{ expiresAt: null }, { expiresAt: { gt: new Date() } }];
       }
     }
 
@@ -208,11 +217,11 @@ export class UserPermissionService {
         where,
         include: {
           user: { select: { id: true, name: true, email: true } },
-          permission: { select: { id: true, name: true, codeId: true, description: true } },
+          permission: {
+            select: { id: true, name: true, codeId: true, description: true },
+          },
         },
-        orderBy: [
-          { createdAt: 'desc' },
-        ],
+        orderBy: [{ createdAt: 'desc' }],
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -240,7 +249,7 @@ export class UserPermissionService {
     expiresAt?: Date;
   }) {
     const results: any[] = [];
-    
+
     for (const userId of data.userIds) {
       for (const permissionId of data.permissionIds) {
         const result = await this.prisma.userPermission.upsert({
@@ -297,10 +306,7 @@ export class UserPermissionService {
       this.prisma.userPermission.count(),
       this.prisma.userPermission.count({
         where: {
-          OR: [
-            { expiresAt: null },
-            { expiresAt: { gt: new Date() } },
-          ],
+          OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
         },
       }),
       this.prisma.userPermission.count({
@@ -311,19 +317,13 @@ export class UserPermissionService {
       this.prisma.userPermission.count({
         where: {
           isGranted: true,
-          OR: [
-            { expiresAt: null },
-            { expiresAt: { gt: new Date() } },
-          ],
+          OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
         },
       }),
       this.prisma.userPermission.count({
         where: {
           isGranted: false,
-          OR: [
-            { expiresAt: null },
-            { expiresAt: { gt: new Date() } },
-          ],
+          OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
         },
       }),
     ]);

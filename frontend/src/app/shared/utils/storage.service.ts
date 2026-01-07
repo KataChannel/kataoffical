@@ -75,14 +75,12 @@ export class StorageService {
       };
 
       request.onblocked = () => {
-        this.snackBar.open(
-          'Cannot access PermissionDB: Database is blocked by another connection',
+        this.snackBar.open('Cannot access PermissionDB: Database is blocked by another connection',
           'Close',
           {
             duration: 5000,
             panelClass: ['snackbar-error'],
-          }
-        );
+          });
         reject(new Error('PermissionDB blocked'));
       };
     });
@@ -183,14 +181,12 @@ export class StorageService {
           };
 
           request.onblocked = () => {
-            this.snackBar.open(
-              'Cannot delete PermissionDB: Please close other tabs or refresh',
+            this.snackBar.open('Cannot delete PermissionDB: Please close other tabs or refresh',
               'Retry',
               {
                 duration: 5000,
                 panelClass: ['snackbar-error'],
-              }
-            ).onAction().subscribe(() => {
+              }).onAction().subscribe(() => {
               // Retry will be handled by the loop
             });
             reject(new Error('Deletion of PermissionDB blocked'));

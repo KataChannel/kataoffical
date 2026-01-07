@@ -26,7 +26,7 @@ export class AuditService {
   private isProcessing = false;
   private batchSize = 10;
   private batchTimeout = 5000; // 5 seconds
-  
+
   constructor(private readonly prisma: PrismaService) {
     // Start batch processing
     this.processBatchPeriodically();
@@ -36,15 +36,19 @@ export class AuditService {
     try {
       // Log warning if userId is null for tracking purposes
       if (!data.userId) {
-        console.warn(`AUDIT SERVICE: Logging activity without userId - Entity: ${data.entityName}, Action: ${data.action}, IP: ${data.ipAddress}`);
+        console.warn(
+          `AUDIT SERVICE: Logging activity without userId - Entity: ${data.entityName}, Action: ${data.action}, IP: ${data.ipAddress}`,
+        );
       }
-      
+
       // Add to queue for batch processing instead of immediate DB write
-      const changedFields = data.changedFields || this.getChangedFields(data.oldValues, data.newValues);
+      const changedFields =
+        data.changedFields ||
+        this.getChangedFields(data.oldValues, data.newValues);
       this.auditQueue.push({
         ...data,
         changedFields: changedFields || [],
-        status: data.status || 'SUCCESS'
+        status: data.status || 'SUCCESS',
       });
 
       // Trigger immediate processing if queue is full
@@ -68,7 +72,7 @@ export class AuditService {
     try {
       // Use batch insert to reduce connection usage
       await this.prisma.auditLog.createMany({
-        data: batch.map(item => ({
+        data: batch.map((item) => ({
           entityName: item.entityName,
           entityId: item.entityId,
           action: item.action,
@@ -84,7 +88,7 @@ export class AuditService {
           status: item.status || 'SUCCESS',
           errorDetails: item.errorDetails || null,
         })),
-        skipDuplicates: true
+        skipDuplicates: true,
       });
     } catch (error) {
       console.error('Failed to create audit log batch:', error);
@@ -103,46 +107,49 @@ export class AuditService {
   async getAuditLogs(param: any) {
     const { page = 1, pageSize = 50, isOne, ...where } = param;
     const skip = (page - 1) * pageSize;
-    
+
     // Build base where clause
     const baseWhere: any = {};
-    
+
     if (where.id) baseWhere.id = where.id;
-    
+
     if (where.entityName) {
-      baseWhere.entityName = { contains: where.entityName, mode: 'insensitive' };
+      baseWhere.entityName = {
+        contains: where.entityName,
+        mode: 'insensitive',
+      };
     }
-    
+
     if (where.entityId) {
       baseWhere.entityId = { contains: where.entityId, mode: 'insensitive' };
     }
-    
+
     if (where.userId) {
       baseWhere.userId = { contains: where.userId, mode: 'insensitive' };
     }
-    
+
     if (where.action) {
       baseWhere.action = { contains: where.action, mode: 'insensitive' };
     }
-    
+
     if (where.status) {
       baseWhere.status = { contains: where.status, mode: 'insensitive' };
     }
-    
+
     // Handle date range filtering - support both old and new parameter names
     const dateFrom = where.createdAtFrom || where.startDate;
     const dateTo = where.createdAtTo || where.endDate;
-    
+
     if (dateFrom || dateTo) {
       baseWhere.createdAt = {};
-      
+
       if (dateFrom) {
         // Set to start of day (00:00:00)
         const fromDate = new Date(dateFrom);
         fromDate.setHours(0, 0, 0, 0);
         baseWhere.createdAt.gte = fromDate;
       }
-      
+
       if (dateTo) {
         // Set to end of day (23:59:59.999)
         const toDate = new Date(dateTo);
@@ -164,37 +171,37 @@ export class AuditService {
         sqlParams.push(`%${where.entityName}%`);
         paramIndex++;
       }
-      
+
       if (baseWhere.entityId) {
         sqlConditions.push(`"entityId" ILIKE $${paramIndex}`);
         sqlParams.push(`%${where.entityId}%`);
         paramIndex++;
       }
-      
+
       if (baseWhere.userId) {
         sqlConditions.push(`"userId" ILIKE $${paramIndex}`);
         sqlParams.push(`%${where.userId}%`);
         paramIndex++;
       }
-      
+
       if (baseWhere.action) {
         sqlConditions.push(`action::text ILIKE $${paramIndex}`);
         sqlParams.push(`%${where.action}%`);
         paramIndex++;
       }
-      
+
       if (baseWhere.status) {
         sqlConditions.push(`status ILIKE $${paramIndex}`);
         sqlParams.push(`%${where.status}%`);
         paramIndex++;
       }
-      
+
       if (baseWhere.createdAt?.gte) {
         sqlConditions.push(`"createdAt" >= $${paramIndex}`);
         sqlParams.push(baseWhere.createdAt.gte);
         paramIndex++;
       }
-      
+
       if (baseWhere.createdAt?.lte) {
         sqlConditions.push(`"createdAt" <= $${paramIndex}`);
         sqlParams.push(baseWhere.createdAt.lte);
@@ -202,26 +209,29 @@ export class AuditService {
       }
 
       // Add JSON search condition
-      sqlConditions.push(`("oldValues"::text ILIKE $${paramIndex} OR "newValues"::text ILIKE $${paramIndex + 1})`);
+      sqlConditions.push(
+        `("oldValues"::text ILIKE $${paramIndex} OR "newValues"::text ILIKE $${paramIndex + 1})`,
+      );
       sqlParams.push(`%${where.searchValue}%`);
       sqlParams.push(`%${where.searchValue}%`);
       paramIndex += 2;
 
-      const whereClause = sqlConditions.length > 0 ? `WHERE ${sqlConditions.join(' AND ')}` : '';
-      
+      const whereClause =
+        sqlConditions.length > 0 ? `WHERE ${sqlConditions.join(' AND ')}` : '';
+
       if (isOne) {
         const result: any = await this.prisma.$queryRawUnsafe(
           `SELECT * FROM "AuditLog" ${whereClause} ORDER BY "createdAt" DESC LIMIT 1`,
-          ...sqlParams
+          ...sqlParams,
         );
-        
+
         if (result.length > 0) {
           const log = result[0];
           // Fetch user data separately
           if (log.userId) {
             const user = await this.prisma.user.findUnique({
               where: { id: log.userId },
-              select: { email: true, SDT: true }
+              select: { email: true, SDT: true },
             });
             log.user = user;
           }
@@ -233,30 +243,32 @@ export class AuditService {
       // Get total count
       const countResult: any = await this.prisma.$queryRawUnsafe(
         `SELECT COUNT(*)::int as count FROM "AuditLog" ${whereClause}`,
-        ...sqlParams
+        ...sqlParams,
       );
       const total = countResult[0]?.count || 0;
 
       // Get paginated data
       sqlParams.push(pageSize);
       sqlParams.push(skip);
-      
+
       const logs: any = await this.prisma.$queryRawUnsafe(
         `SELECT * FROM "AuditLog" ${whereClause} ORDER BY "createdAt" DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
-        ...sqlParams
+        ...sqlParams,
       );
 
       // Fetch user data for all logs
-      const logsWithUsers = await Promise.all(logs.map(async (log: any) => {
-        if (log.userId) {
-          const user = await this.prisma.user.findUnique({
-            where: { id: log.userId },
-            select: { email: true, SDT: true }
-          });
-          return { ...log, user };
-        }
-        return log;
-      }));
+      const logsWithUsers = await Promise.all(
+        logs.map(async (log: any) => {
+          if (log.userId) {
+            const user = await this.prisma.user.findUnique({
+              where: { id: log.userId },
+              select: { email: true, SDT: true },
+            });
+            return { ...log, user };
+          }
+          return log;
+        }),
+      );
 
       return {
         data: logsWithUsers,
@@ -304,7 +316,10 @@ export class AuditService {
     if (!oldValues || !newValues) return [];
 
     const changed: string[] = [];
-    const allKeys = new Set([...Object.keys(oldValues || {}), ...Object.keys(newValues || {})]);
+    const allKeys = new Set([
+      ...Object.keys(oldValues || {}),
+      ...Object.keys(newValues || {}),
+    ]);
 
     for (const key of allKeys) {
       if (JSON.stringify(oldValues[key]) !== JSON.stringify(newValues[key])) {

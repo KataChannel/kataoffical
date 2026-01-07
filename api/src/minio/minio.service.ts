@@ -9,24 +9,30 @@ export class MinioService {
   private bucketName: string;
   private options: ClientOptions;
   constructor(private prisma: PrismaService) {
-    this.bucketName = process.env.MINIO_BUCKET?.trim() || 
-                      process.env.MINIO_BUCKET_NAME?.trim() || 
-                      'uploads';
+    this.bucketName =
+      process.env.MINIO_BUCKET?.trim() ||
+      process.env.MINIO_BUCKET_NAME?.trim() ||
+      'uploads';
     this.options = {
-      endPoint: process.env.MINIO_ENDPOINT?.trim() || 'storage.rausachtrangia.com',
+      endPoint:
+        process.env.MINIO_ENDPOINT?.trim() || 'storage.rausachtrangia.com',
       port: parseInt(process.env.MINIO_PORT?.trim() || '9000', 10),
       useSSL: process.env.MINIO_USE_SSL?.trim() === 'true',
-      accessKey: process.env.MINIO_ACCESS_KEY?.trim() || 
-                 process.env.MINIO_ROOT_USER?.trim() || 
-                 'admin',
-      secretKey: process.env.MINIO_SECRET_KEY?.trim() || 
-                 process.env.MINIO_ROOT_PASSWORD?.trim() || 
-                 'password',
+      accessKey:
+        process.env.MINIO_ACCESS_KEY?.trim() ||
+        process.env.MINIO_ROOT_USER?.trim() ||
+        'admin',
+      secretKey:
+        process.env.MINIO_SECRET_KEY?.trim() ||
+        process.env.MINIO_ROOT_PASSWORD?.trim() ||
+        'password',
     };
     this.client = new Client(this.options);
-    this.ensureBucketExists().catch(err => {
+    this.ensureBucketExists().catch((err) => {
       console.error('MinIO bucket initialization failed:', err.message);
-      console.warn('Support upload may not work until MinIO is properly configured');
+      console.warn(
+        'Support upload may not work until MinIO is properly configured',
+      );
     });
   }
 
@@ -38,7 +44,7 @@ export class MinioService {
       }
     } catch (error) {
       console.log(this.options);
-      
+
       console.error('Error checking/creating bucket:', error);
       throw new InternalServerErrorException('Minio bucket error');
     }
@@ -95,7 +101,7 @@ export class MinioService {
       const codeId = await this.generateCodeId();
       await this.prisma.fileManager.create({
         data: {
-          codeId: codeId, 
+          codeId: codeId,
           url,
           fileType: file.mimetype,
           fileSize: file.size,

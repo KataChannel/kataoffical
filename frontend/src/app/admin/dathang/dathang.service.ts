@@ -1,9 +1,8 @@
-import { Inject, Injectable, signal,Signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
-import { StorageService } from '../../shared/utils/storage.service';
-import moment from 'moment';
 import { TimezoneService } from '../../shared/services/timezone.service';
+import { StorageService } from '../../shared/utils/storage.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -473,6 +472,33 @@ export class DathangService {
       return data;
     } catch (error: any) {
       console.error('Lỗi khi hủy đơn đặt hàng:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * ERP: Đối chiếu đơn hàng NCC
+   */
+  async doiChieu(id: string, data: any) {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+        body: JSON.stringify(data),
+      };
+      const response = await fetch(`${environment.APIURL}/dathang/${id}/doi-chieu`, options);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      const result = await response.json();
+      this.getDathangByid(id);
+      return result;
+    } catch (error) {
+      console.error('Lỗi khi đối chiếu:', error);
       throw error;
     }
   }

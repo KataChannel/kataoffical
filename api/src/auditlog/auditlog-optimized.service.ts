@@ -36,27 +36,25 @@ export class AuditServiceOptimized {
   private isProcessing = false;
   private batchSize = 10;
   private batchTimeout = 5000; // 5 seconds
-  
+
   // Critical entities that should always be logged
   private readonly criticalEntities = [
     'Donhang',
-    'Khachhang', 
+    'Khachhang',
     'User',
     'Banggia',
     'BanggiaSanpham',
     'Nhacungcap',
-    'Dathang'
+    'Dathang',
   ];
-  
+
   // Critical actions that should always be logged
-  private readonly criticalActions: AuditAction[] = [
-    'DELETE'
-  ];
-  
+  private readonly criticalActions: AuditAction[] = ['DELETE'];
+
   constructor(private readonly prisma: PrismaService) {
     // Start batch processing
     this.processBatchPeriodically();
-    
+
     // Log configuration on startup
     this.logger.log('Audit Service Optimized initialized');
     this.logger.log(`Critical entities: ${this.criticalEntities.join(', ')}`);
@@ -67,25 +65,32 @@ export class AuditServiceOptimized {
     try {
       // Strategy 1: Determine if this is a critical action
       const isCritical = this.isCriticalChange(data);
-      
+
       // Strategy 2: Sampling - Skip 90% of non-critical logs
       if (!isCritical && Math.random() > 0.1) {
         // Silently skip non-critical logs
         return;
       }
-      
+
       // Log critical vs non-critical (for monitoring)
       if (isCritical) {
-        this.logger.debug(`[CRITICAL] Logging ${data.action} on ${data.entityName}`);
+        this.logger.debug(
+          `[CRITICAL] Logging ${data.action} on ${data.entityName}`,
+        );
       }
-      
+
       // Strategy 3: Store minimal diff instead of full data
-      const changedFields = data.changedFields || this.getChangedFields(data.oldValues, data.newValues);
-      const changeSummary = this.createMinimalDiff(data.oldValues, data.newValues);
-      
+      const changedFields =
+        data.changedFields ||
+        this.getChangedFields(data.oldValues, data.newValues);
+      const changeSummary = this.createMinimalDiff(
+        data.oldValues,
+        data.newValues,
+      );
+
       // Strategy 4: Compress user agent
       const compressedUserAgent = this.compressUserAgent(data.userAgent);
-      
+
       // Add to queue for batch processing
       this.auditQueue.push({
         entityName: data.entityName,
@@ -99,13 +104,13 @@ export class AuditServiceOptimized {
           changeSummary: changeSummary,
           compressed: true,
           isCritical: isCritical,
-          ...data.metadata
+          ...data.metadata,
         },
         ipAddress: data.ipAddress,
         userAgent: compressedUserAgent, // Compressed UA
         sessionId: data.sessionId,
         status: data.status || 'SUCCESS',
-        errorDetails: data.errorDetails || null
+        errorDetails: data.errorDetails || null,
       });
 
       // Trigger immediate processing if queue is full
@@ -113,7 +118,10 @@ export class AuditServiceOptimized {
         await this.processBatch();
       }
     } catch (error) {
-      this.logger.error(`Failed to queue audit log: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to queue audit log: ${error.message}`,
+        error.stack,
+      );
       // Don't throw - don't break business logic
     }
   }
@@ -126,17 +134,17 @@ export class AuditServiceOptimized {
     if (this.criticalEntities.includes(data.entityName)) {
       return true;
     }
-    
+
     // Always log critical actions (DELETE, etc.)
     if (this.criticalActions.includes(data.action)) {
       return true;
     }
-    
+
     // Always log if there was an error
     if (data.status === 'ERROR' || data.errorDetails) {
       return true;
     }
-    
+
     return false;
   }
 
@@ -147,35 +155,38 @@ export class AuditServiceOptimized {
     if (!oldVal || !newVal) {
       return JSON.stringify(newVal || oldVal || {});
     }
-    
+
     const changes: any = {};
-    
+
     // Only store changed values
     for (const key in newVal) {
       if (oldVal[key] !== newVal[key]) {
         // Store only new value, not both old and new
         // If you need old value for critical fields, add here
         changes[key] = newVal[key];
-        
+
         // For critical numeric fields, store delta
-        if (typeof newVal[key] === 'number' && typeof oldVal[key] === 'number') {
+        if (
+          typeof newVal[key] === 'number' &&
+          typeof oldVal[key] === 'number'
+        ) {
           changes[`${key}_delta`] = newVal[key] - oldVal[key];
         }
       }
     }
-    
+
     // Compress JSON
     return JSON.stringify(changes);
   }
 
   /**
    * Compress user agent string to save space
-   * "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36..." 
+   * "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36..."
    * → "Win/Chrome"
    */
   private compressUserAgent(ua: string | null): string | null {
     if (!ua) return null;
-    
+
     try {
       // Detect OS
       let os = 'Other';
@@ -184,14 +195,15 @@ export class AuditServiceOptimized {
       else if (ua.includes('Linux')) os = 'Linux';
       else if (ua.includes('Android')) os = 'Android';
       else if (ua.includes('iOS') || ua.includes('iPhone')) os = 'iOS';
-      
+
       // Detect Browser
       let browser = 'Other';
       if (ua.includes('Chrome') && !ua.includes('Edg')) browser = 'Chrome';
       else if (ua.includes('Firefox')) browser = 'Firefox';
-      else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
+      else if (ua.includes('Safari') && !ua.includes('Chrome'))
+        browser = 'Safari';
       else if (ua.includes('Edg')) browser = 'Edge';
-      
+
       return `${os}/${browser}`;
     } catch (error) {
       return 'Unknown';
@@ -203,15 +215,15 @@ export class AuditServiceOptimized {
    */
   private getChangedFields(oldValues: any, newValues: any): string[] {
     if (!oldValues || !newValues) return [];
-    
+
     const changed: string[] = [];
-    
+
     for (const key in newValues) {
       if (oldValues[key] !== newValues[key]) {
         changed.push(key);
       }
     }
-    
+
     return changed;
   }
 
@@ -229,12 +241,15 @@ export class AuditServiceOptimized {
     try {
       await this.prisma.auditLog.createMany({
         data: batch,
-        skipDuplicates: true
+        skipDuplicates: true,
       });
-      
+
       this.logger.debug(`Processed ${batch.length} audit logs`);
     } catch (error) {
-      this.logger.error(`Failed to create audit log batch: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to create audit log batch: ${error.message}`,
+        error.stack,
+      );
       // Could implement retry logic here
     } finally {
       this.isProcessing = false;
@@ -256,13 +271,16 @@ export class AuditServiceOptimized {
   async getAuditLogs(param: any) {
     const { page = 1, pageSize = 50, isOne, ...where } = param;
     const skip = (page - 1) * pageSize;
-    
+
     // Build where clause
     const baseWhere: any = {};
-    
+
     if (where.id) baseWhere.id = where.id;
     if (where.entityName) {
-      baseWhere.entityName = { contains: where.entityName, mode: 'insensitive' };
+      baseWhere.entityName = {
+        contains: where.entityName,
+        mode: 'insensitive',
+      };
     }
     if (where.entityId) {
       baseWhere.entityId = { contains: where.entityId, mode: 'insensitive' };
@@ -276,11 +294,11 @@ export class AuditServiceOptimized {
     if (where.status) {
       baseWhere.status = { contains: where.status, mode: 'insensitive' };
     }
-    
+
     // Date range filtering
     const dateFrom = where.createdAtFrom || where.startDate;
     const dateTo = where.createdAtTo || where.endDate;
-    
+
     if (dateFrom || dateTo) {
       baseWhere.createdAt = {};
       if (dateFrom) {
@@ -304,9 +322,9 @@ export class AuditServiceOptimized {
         where: baseWhere,
         skip,
         take: pageSize,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.auditLog.count({ where: baseWhere })
+      this.prisma.auditLog.count({ where: baseWhere }),
     ]);
 
     return {
@@ -314,7 +332,7 @@ export class AuditServiceOptimized {
       total,
       page,
       pageSize,
-      totalPages: Math.ceil(total / pageSize)
+      totalPages: Math.ceil(total / pageSize),
     };
   }
 
@@ -324,24 +342,24 @@ export class AuditServiceOptimized {
   async getStatistics(days: number = 7) {
     const since = new Date();
     since.setDate(since.getDate() - days);
-    
+
     const [total, critical, byCriticalEntity, byAction] = await Promise.all([
       // Total logs
       this.prisma.auditLog.count({
-        where: { createdAt: { gte: since } }
+        where: { createdAt: { gte: since } },
       }),
-      
+
       // Critical logs
       this.prisma.auditLog.count({
         where: {
           createdAt: { gte: since },
           metadata: {
             path: ['isCritical'],
-            equals: true
-          }
-        }
+            equals: true,
+          },
+        },
       }),
-      
+
       // By entity
       this.prisma.$queryRaw`
         SELECT "entityName", COUNT(*) as count
@@ -351,7 +369,7 @@ export class AuditServiceOptimized {
         ORDER BY count DESC
         LIMIT 10
       `,
-      
+
       // By action
       this.prisma.$queryRaw`
         SELECT action, COUNT(*) as count
@@ -359,16 +377,17 @@ export class AuditServiceOptimized {
         WHERE "createdAt" >= ${since}
         GROUP BY action
         ORDER BY count DESC
-      `
+      `,
     ]);
-    
+
     return {
       total,
       critical,
-      samplingRate: total > 0 ? (critical / total * 100).toFixed(2) + '%' : '0%',
+      samplingRate:
+        total > 0 ? ((critical / total) * 100).toFixed(2) + '%' : '0%',
       byCriticalEntity,
       byAction,
-      period: `Last ${days} days`
+      period: `Last ${days} days`,
     };
   }
 }

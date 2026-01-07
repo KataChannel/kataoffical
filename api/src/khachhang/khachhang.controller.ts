@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Query, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  Query,
+  HttpException,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common';
 import { KhachhangService } from './khachhang.service';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
@@ -15,17 +27,24 @@ export class KhachhangController {
     try {
       return await this.khachhangService.getLastUpdated();
     } catch (error) {
-      throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.message || 'Get last updated failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
- }
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  @Audit({entity: 'Create Khachhang', action: AuditAction.CREATE, includeResponse: true})
+  @Audit({
+    entity: 'Create Khachhang',
+    action: AuditAction.CREATE,
+    includeResponse: true,
+  })
   @SmartCache({
     invalidate: ['khachhang'],
     get: { ttl: 1800, keyPrefix: 'khachhang' },
-    updateCache: true
+    updateCache: true,
   })
   create(@Body() createKhachhangDto: any) {
     return this.khachhangService.create(createKhachhangDto);
@@ -33,7 +52,11 @@ export class KhachhangController {
 
   @UseGuards(JwtAuthGuard)
   @Post('import')
-  @Audit({entity: 'Import Khachhang',action: AuditAction.IMPORT,includeResponse: true})
+  @Audit({
+    entity: 'Import Khachhang',
+    action: AuditAction.IMPORT,
+    includeResponse: true,
+  })
   @CacheInvalidate(['khachhang'])
   import(@Body() data: any) {
     return this.khachhangService.import(data);
@@ -61,7 +84,7 @@ export class KhachhangController {
         error.message || 'Failed to fetch khachhangs',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    } 
+    }
   }
   @Get()
   @Cache(1800, 'khachhang') // Cache for 30 minutes
@@ -73,7 +96,7 @@ export class KhachhangController {
         error.message || 'Failed to fetch khachhangs',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    } 
+    }
   }
 
   @Get(':id')
@@ -84,11 +107,15 @@ export class KhachhangController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  @Audit({entity: 'Update Khachhang', action: AuditAction.UPDATE, includeResponse: true})
+  @Audit({
+    entity: 'Update Khachhang',
+    action: AuditAction.UPDATE,
+    includeResponse: true,
+  })
   @SmartCache({
     invalidate: ['khachhang'],
     get: { ttl: 1800, keyPrefix: 'khachhang' },
-    updateCache: true
+    updateCache: true,
   })
   update(@Param('id') id: string, @Body() updateKhachhangDto: any) {
     return this.khachhangService.update(id, updateKhachhangDto);
@@ -96,7 +123,11 @@ export class KhachhangController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  @Audit({entity: 'Delete Khachhang', action: AuditAction.DELETE, includeResponse: true})
+  @Audit({
+    entity: 'Delete Khachhang',
+    action: AuditAction.DELETE,
+    includeResponse: true,
+  })
   @CacheInvalidate(['khachhang'])
   remove(@Param('id') id: string) {
     return this.khachhangService.remove(id);

@@ -7,11 +7,7 @@ import { HoaDonResolver } from './hoadon.resolver';
 import { HoaDonService } from './hoadon.service';
 
 @Module({
-  imports: [
-    PrismaModule,
-    AuthModule,
-    JwtModule.register({}),
-  ],
+  imports: [PrismaModule, AuthModule, JwtModule.register({})],
   controllers: [HoaDonController],
   providers: [HoaDonService, HoaDonResolver],
   exports: [HoaDonService],

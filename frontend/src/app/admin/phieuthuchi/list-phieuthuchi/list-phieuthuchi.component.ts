@@ -51,15 +51,15 @@ export class ListPhieuthuchiComponent implements OnInit {
     }
 
     const tongThu = list
-      .filter((p: any) => p.loai === 'THU' && p.trangThai === 'DA_DUYET')
+      .filter((p: any) => p.loai === 'THU' && (p.trangThai === 'DA_DUYET' || p.trangThai === 'DA_THANH_TOAN'))
       .reduce((sum: number, p: any) => sum + Number(p.soTien || 0), 0);
     
     const tongChi = list
-      .filter((p: any) => p.loai === 'CHI' && p.trangThai === 'DA_DUYET')
+      .filter((p: any) => p.loai === 'CHI' && (p.trangThai === 'DA_DUYET' || p.trangThai === 'DA_THANH_TOAN'))
       .reduce((sum: number, p: any) => sum + Number(p.soTien || 0), 0);
     
     const choDuyet = list.filter((p: any) => p.trangThai === 'CHO_DUYET').length;
-    const daDuyet = list.filter((p: any) => p.trangThai === 'DA_DUYET').length;
+    const daDuyet = list.filter((p: any) => p.trangThai === 'DA_DUYET' || p.trangThai === 'DA_THANH_TOAN').length;
 
     return { tongThu, tongChi, choDuyet, daDuyet };
   });
@@ -118,8 +118,10 @@ export class ListPhieuthuchiComponent implements OnInit {
   }
 
   // Badge variant helper
-  getBadgeVariant(trangThai: string): 'default' | 'destructive' | 'warning' | 'success' {
+  getBadgeVariant(trangThai: string): 'default' | 'destructive' | 'warning' | 'success' | 'primary' {
     switch (trangThai) {
+      case 'DA_THANH_TOAN':
+        return 'primary';
       case 'DA_DUYET':
         return 'success';
       case 'CHO_DUYET':
@@ -128,22 +130,6 @@ export class ListPhieuthuchiComponent implements OnInit {
         return 'destructive';
       default:
         return 'default';
-    }
-  }
-
-  // Trạng thái label helper
-  getTrangThaiLabel(trangThai: string): string {
-    switch (trangThai) {
-      case 'NHAP':
-        return 'Đang nhập';
-      case 'CHO_DUYET':
-        return 'Chờ duyệt';
-      case 'DA_DUYET':
-        return 'Đã duyệt';
-      case 'HUY':
-        return 'Hủy';
-      default:
-        return trangThai;
     }
   }
 
@@ -215,6 +201,7 @@ export class ListPhieuthuchiComponent implements OnInit {
       case 'NHAP': return 'badge-secondary';
       case 'CHO_DUYET': return 'badge-warning';
       case 'DA_DUYET': return 'badge-success';
+      case 'DA_THANH_TOAN': return 'badge-primary';
       case 'HUY': return 'badge-danger';
       default: return 'badge-light';
     }
@@ -225,6 +212,7 @@ export class ListPhieuthuchiComponent implements OnInit {
       case 'NHAP': return 'Đang nhập';
       case 'CHO_DUYET': return 'Chờ duyệt';
       case 'DA_DUYET': return 'Đã duyệt';
+      case 'DA_THANH_TOAN': return 'Đã thanh toán';
       case 'HUY': return 'Hủy';
       default: return trangThai;
     }

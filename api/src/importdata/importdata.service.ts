@@ -1,20 +1,24 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service'; 
-import { SocketGateway } from './socket.gateway'; 
+import { PrismaService } from 'prisma/prisma.service';
+import { SocketGateway } from './socket.gateway';
 import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
 @Injectable()
-export class ImportdataService { 
+export class ImportdataService {
   constructor(
     private readonly prisma: PrismaService,
-    private _SocketGateway: SocketGateway, 
+    private _SocketGateway: SocketGateway,
     private _ErrorlogService: ErrorlogsService,
   ) {}
-  async getLastUpdatedImportdata(): Promise<{ updatedAt: number }> { 
+  async getLastUpdatedImportdata(): Promise<{ updatedAt: number }> {
     try {
       const lastUpdated = await this.prisma.importHistory.aggregate({
         _max: { updatedAt: true },
       });
-      return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
+      return {
+        updatedAt: lastUpdated._max.updatedAt
+          ? new Date(lastUpdated._max.updatedAt).getTime()
+          : 0,
+      };
     } catch (error) {
       this._ErrorlogService.logError('getLastUpdatedImportdata', error);
       throw error;
@@ -23,7 +27,7 @@ export class ImportdataService {
   async generateCodeId(): Promise<string> {
     try {
       const latest = await this.prisma.importHistory.findFirst({
-        orderBy: { codeId: 'desc' }, 
+        orderBy: { codeId: 'desc' },
       });
       let nextNumber = 1;
       if (latest && latest.codeId) {
@@ -40,7 +44,7 @@ export class ImportdataService {
       throw error;
     }
   }
-  async create(data: any) { 
+  async create(data: any) {
     try {
       const maxOrder = await this.prisma.importHistory.aggregate({
         _max: { order: true },
@@ -48,15 +52,15 @@ export class ImportdataService {
       const newOrder = (maxOrder._max?.order || 0) + 1;
       const codeId = await this.generateCodeId();
       console.log('Creating importdata with codeId:', codeId);
-      
+
       const created = await this.prisma.importHistory.create({
         data: {
           ...data,
           order: newOrder,
-          codeId: codeId
+          codeId: codeId,
         },
       });
-      this._SocketGateway.sendImportdataUpdate(); 
+      this._SocketGateway.sendImportdataUpdate();
       return created;
     } catch (error) {
       this._ErrorlogService.logError('createImportdata', error);
@@ -65,7 +69,7 @@ export class ImportdataService {
   }
   async findBy(param: any) {
     console.log('findByImportdata', param);
-    
+
     try {
       const { isOne, page = 1, limit = 20, ...where } = param;
       if (isOne) {
@@ -89,21 +93,21 @@ export class ImportdataService {
         data,
         total,
         page,
-        pageCount: Math.ceil(total / limit)
+        pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
       this._ErrorlogService.logError('findByImportdata', error);
       throw error;
     }
   }
-  async findAll(page: number = 1, limit: number = 20) { 
+  async findAll(page: number = 1, limit: number = 20) {
     try {
       const skip = (page - 1) * limit;
       const [data, total] = await Promise.all([
         this.prisma.importHistory.findMany({
           skip,
           take: limit,
-          orderBy: { order: 'asc' }, 
+          orderBy: { order: 'asc' },
         }),
         this.prisma.importHistory.count(),
       ]);
@@ -111,7 +115,7 @@ export class ImportdataService {
         data,
         total,
         page,
-        pageCount: Math.ceil(total / limit)
+        pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
       this._ErrorlogService.logError('findAllImportdata', error);
@@ -120,23 +124,31 @@ export class ImportdataService {
   }
   async findOne(id: string) {
     try {
-      const item = await this.prisma.importHistory.findUnique({ where: { id } });
-      if (!item) throw new NotFoundException('Importdata not found'); 
+      const item = await this.prisma.importHistory.findUnique({
+        where: { id },
+      });
+      if (!item) throw new NotFoundException('Importdata not found');
       return item;
     } catch (error) {
       this._ErrorlogService.logError('findOneImportdata', error);
       throw error;
     }
   }
-  async update(id: string, data: any) { 
+  async update(id: string, data: any) {
     try {
       let updated;
       if (data.order) {
         const { order, ...rest } = data;
         await this.prisma.importHistory.update({ where: { id }, data: rest });
-        updated = await this.prisma.importHistory.update({ where: { id }, data: { order } });
+        updated = await this.prisma.importHistory.update({
+          where: { id },
+          data: { order },
+        });
       } else {
-        updated = await this.prisma.importHistory.update({ where: { id }, data });
+        updated = await this.prisma.importHistory.update({
+          where: { id },
+          data,
+        });
       }
       this._SocketGateway.sendImportdataUpdate();
       return updated;
@@ -145,7 +157,7 @@ export class ImportdataService {
       throw error;
     }
   }
-  async remove(id: string) { 
+  async remove(id: string) {
     try {
       const deleted = await this.prisma.importHistory.delete({ where: { id } });
       this._SocketGateway.sendImportdataUpdate();
@@ -155,15 +167,15 @@ export class ImportdataService {
       throw error;
     }
   }
-  async reorderImportdatas(importdataIds: string[]) { 
+  async reorderImportdatas(importdataIds: string[]) {
     try {
       for (let i = 0; i < importdataIds.length; i++) {
         await this.prisma.importHistory.update({
           where: { id: importdataIds[i] },
-          data: { order: i + 1 }
+          data: { order: i + 1 },
         });
       }
-      this._SocketGateway.sendImportdataUpdate(); 
+      this._SocketGateway.sendImportdataUpdate();
       return { status: 'success' };
     } catch (error) {
       this._ErrorlogService.logError('reorderImportdatas', error);

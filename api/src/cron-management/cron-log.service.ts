@@ -131,25 +131,27 @@ export class CronLogService {
     const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    const [total, running, success24h, failed24h, successRate7d] = await Promise.all([
-      this.prisma.cronExecutionLog.count(),
-      this.prisma.cronExecutionLog.count({ where: { status: 'running' } }),
-      this.prisma.cronExecutionLog.count({
-        where: { status: 'success', startTime: { gte: last24h } },
-      }),
-      this.prisma.cronExecutionLog.count({
-        where: { status: 'failed', startTime: { gte: last24h } },
-      }),
-      this.prisma.cronExecutionLog.groupBy({
-        by: ['status'],
-        where: { startTime: { gte: last7d } },
-        _count: true,
-      }),
-    ]);
+    const [total, running, success24h, failed24h, successRate7d] =
+      await Promise.all([
+        this.prisma.cronExecutionLog.count(),
+        this.prisma.cronExecutionLog.count({ where: { status: 'running' } }),
+        this.prisma.cronExecutionLog.count({
+          where: { status: 'success', startTime: { gte: last24h } },
+        }),
+        this.prisma.cronExecutionLog.count({
+          where: { status: 'failed', startTime: { gte: last24h } },
+        }),
+        this.prisma.cronExecutionLog.groupBy({
+          by: ['status'],
+          where: { startTime: { gte: last7d } },
+          _count: true,
+        }),
+      ]);
 
     // Calculate success rate
     const total7d = successRate7d.reduce((sum, s) => sum + s._count, 0);
-    const success7d = successRate7d.find(s => s.status === 'success')?._count || 0;
+    const success7d =
+      successRate7d.find((s) => s.status === 'success')?._count || 0;
     const rate = total7d > 0 ? Math.round((success7d / total7d) * 100) : 100;
 
     return {

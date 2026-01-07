@@ -26,7 +26,11 @@ export class BanggiaController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Import banggia data' })
   @ApiResponse({ status: 201, description: 'Data imported successfully' })
-  @Audit({entity: 'Import Banggia',action: AuditAction.CREATE,includeResponse: true})
+  @Audit({
+    entity: 'Import Banggia',
+    action: AuditAction.CREATE,
+    includeResponse: true,
+  })
   import(@Body() data: any) {
     console.log('Importing banggia data:', data);
     return this.banggiaService.importBanggia(data);
@@ -37,7 +41,11 @@ export class BanggiaController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Import spbg data' })
   @ApiResponse({ status: 201, description: 'Data imported successfully' })
-  @Audit({entity: 'Import SPBG',action: AuditAction.CREATE,includeResponse: true})
+  @Audit({
+    entity: 'Import SPBG',
+    action: AuditAction.CREATE,
+    includeResponse: true,
+  })
   importspbg(@Body() data: any) {
     return this.banggiaService.importSPBG(data);
   }
@@ -46,7 +54,11 @@ export class BanggiaController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Import bgkh data' })
   @ApiResponse({ status: 201, description: 'Data imported successfully' })
-  @Audit({entity: 'Import BGKH',action: AuditAction.CREATE,includeResponse: true})
+  @Audit({
+    entity: 'Import BGKH',
+    action: AuditAction.CREATE,
+    includeResponse: true,
+  })
   importbgkh(@Body() data: any) {
     return this.banggiaService.importBGKH(data);
   }
@@ -56,7 +68,11 @@ export class BanggiaController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new banggia' })
   @ApiResponse({ status: 201, description: 'Banggia created successfully' })
-  @Audit({entity: 'Create Banggia',action: AuditAction.CREATE,includeResponse: true})
+  @Audit({
+    entity: 'Create Banggia',
+    action: AuditAction.CREATE,
+    includeResponse: true,
+  })
   create(@Body() createBanggiaDto: any) {
     return this.banggiaService.createBanggia(createBanggiaDto);
   }
@@ -95,7 +111,10 @@ export class BanggiaController {
   @Post('addKHtoBG')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Add multiple khachhang to a banggia' })
-  @ApiResponse({ status: 200, description: 'Khachhang added to banggia successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Khachhang added to banggia successfully',
+  })
   addMultipleKhachhangToBanggia(@Body() data: any) {
     return this.banggiaService.addKHtoBG(data.banggiaId, data.khachhangIds);
   }
@@ -103,9 +122,15 @@ export class BanggiaController {
   @Post('removeKHfromBG')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Remove khachhang from a banggia' })
-  @ApiResponse({ status: 200, description: 'Khachhang removed from banggia successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Khachhang removed from banggia successfully',
+  })
   removeKHfromBG(@Body() data: any) {
-    return this.banggiaService.removeKHfromBG(data.banggiaId, data.khachhangIds);
+    return this.banggiaService.removeKHfromBG(
+      data.banggiaId,
+      data.khachhangIds,
+    );
   }
 
   @Get('findid/:id')
@@ -121,7 +146,11 @@ export class BanggiaController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a banggia' })
   @ApiResponse({ status: 200, description: 'Banggia updated successfully' })
-  @Audit({entity: 'Update Banggia',action: AuditAction.UPDATE,includeResponse: true})
+  @Audit({
+    entity: 'Update Banggia',
+    action: AuditAction.UPDATE,
+    includeResponse: true,
+  })
   update(@Param('id') id: string, @Body() updateBanggiaDto: any) {
     return this.banggiaService.update(id, updateBanggiaDto);
   }
@@ -131,7 +160,11 @@ export class BanggiaController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Remove a banggia with all related records' })
   @ApiResponse({ status: 204, description: 'Banggia removed successfully' })
-  @Audit({entity: 'Remove Banggia',action: AuditAction.DELETE,includeResponse: true})
+  @Audit({
+    entity: 'Remove Banggia',
+    action: AuditAction.DELETE,
+    includeResponse: true,
+  })
   remove(@Param('id') id: string) {
     return this.banggiaService.remove(id);
   }
@@ -140,21 +173,31 @@ export class BanggiaController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Bulk delete banggia with all related records' })
-  @ApiResponse({ status: 200, description: 'Banggia bulk deleted successfully' })
-  @Audit({entity: 'Bulk Delete Banggia',action: AuditAction.DELETE,includeResponse: true})
+  @ApiResponse({
+    status: 200,
+    description: 'Banggia bulk deleted successfully',
+  })
+  @Audit({
+    entity: 'Bulk Delete Banggia',
+    action: AuditAction.DELETE,
+    includeResponse: true,
+  })
   async removeBulk(@Body() body: { ids: string[] }) {
     return this.banggiaService.removeBulk(body.ids);
   }
 
   // ✅ Price History Endpoints
-  
+
   @Get(':banggiaId/sanpham/:sanphamId/price-history')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get price history for a product in banggia' })
-  @ApiResponse({ status: 200, description: 'Price history retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Price history retrieved successfully',
+  })
   getPriceHistory(
     @Param('banggiaId') banggiaId: string,
-    @Param('sanphamId') sanphamId: string
+    @Param('sanphamId') sanphamId: string,
   ) {
     return this.banggiaService.getPriceHistory(banggiaId, sanphamId);
   }
@@ -162,10 +205,13 @@ export class BanggiaController {
   @Get(':banggiaId/sanpham/:sanphamId/current-price')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get current price for a product in banggia' })
-  @ApiResponse({ status: 200, description: 'Current price retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Current price retrieved successfully',
+  })
   getCurrentPrice(
     @Param('banggiaId') banggiaId: string,
-    @Param('sanphamId') sanphamId: string
+    @Param('sanphamId') sanphamId: string,
   ) {
     return this.banggiaService.getCurrentPrice(banggiaId, sanphamId);
   }
@@ -175,16 +221,23 @@ export class BanggiaController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Bulk update prices with audit trail' })
   @ApiResponse({ status: 200, description: 'Prices updated successfully' })
-  @Audit({entity: 'Bulk Update Prices',action: AuditAction.UPDATE,includeResponse: true})
-  bulkUpdatePrices(@Body() body: {
-    updates: Array<{
-      banggiaId: string;
-      sanphamId: string;
-      newPrice: number;
-      reason?: string;
-    }>;
-    userId: string;
-  }) {
+  @Audit({
+    entity: 'Bulk Update Prices',
+    action: AuditAction.UPDATE,
+    includeResponse: true,
+  })
+  bulkUpdatePrices(
+    @Body()
+    body: {
+      updates: Array<{
+        banggiaId: string;
+        sanphamId: string;
+        newPrice: number;
+        reason?: string;
+      }>;
+      userId: string;
+    },
+  ) {
     return this.banggiaService.bulkUpdatePrices(body.updates, body.userId);
   }
 }

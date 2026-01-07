@@ -1,12 +1,26 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { ErrorlogsService } from './errorlogs.service';
 
 @Controller('errorlogs')
 export class ErrorlogsController {
   constructor(private readonly errorlogsService: ErrorlogsService) {}
   @Post()
-  async logFromClient(@Body() logData: { timestamp: string; message: string; details?: any }) {
-    await this.errorlogsService.logError(logData.message, logData.details, 'client');
+  async logFromClient(
+    @Body() logData: { timestamp: string; message: string; details?: any },
+  ) {
+    await this.errorlogsService.logError(
+      logData.message,
+      logData.details,
+      'client',
+    );
     return { status: 'Logged' };
   }
   // @Post()

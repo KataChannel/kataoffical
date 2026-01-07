@@ -180,15 +180,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   async ExportDoanhsoKhachTheongay(): Promise<void> {
     try {
       // Show loading snackbar
-      const loadingSnackbar = this._snackBar.open(
-        'Đang xuất dữ liệu...',
+      const loadingSnackbar = this._snackBar.open('Đang xuất dữ liệu...',
         '',
         {
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-info']
-        }
-      );
+        });
 
       this.isLoading = true;
 
@@ -220,16 +218,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
       if (!ListDonhang?.data || ListDonhang.data.length === 0) {
         loadingSnackbar.dismiss();
-        this._snackBar.open(
-          'Không có dữ liệu đơn hàng trong khoảng thời gian này',
+        this._snackBar.open('Không có dữ liệu đơn hàng trong khoảng thời gian này',
           'Đóng',
           {
             duration: 4000,
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-warning']
-          }
-        );
+          });
         this.isLoading = false;
         return;
       }
@@ -309,29 +305,25 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       
       // Dismiss loading and show success message
       loadingSnackbar.dismiss();
-      this._snackBar.open(
-        `Xuất Excel thành công! Tổng số dòng: ${excelData.length}`,
+      this._snackBar.open(`Xuất Excel thành công! Tổng số dòng: ${excelData.length}`,
         'Đóng',
         {
           duration: 5000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success']
-        }
-      );
+        });
 
     } catch (error) {
       console.error('Error exporting customer revenue:', error);
-      this._snackBar.open(
-        'Có lỗi xảy ra khi xuất Excel. Vui lòng thử lại.',
+      this._snackBar.open('Có lỗi xảy ra khi xuất Excel. Vui lòng thử lại.',
         'Đóng',
         {
           duration: 4000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-error']
-        }
-      );
+        });
     } finally {
       this.isLoading = false;
     }

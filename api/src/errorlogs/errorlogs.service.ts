@@ -4,8 +4,12 @@ import { PrismaService } from 'prisma/prisma.service';
 @Injectable()
 export class ErrorlogsService {
   constructor(private readonly prisma: PrismaService) {}
-  
-  async logError(message: string, details: any, source: string = 'server'): Promise<void> {
+
+  async logError(
+    message: string,
+    details: any,
+    source: string = 'server',
+  ): Promise<void> {
     const logEntry = {
       timestamp: new Date(),
       message,

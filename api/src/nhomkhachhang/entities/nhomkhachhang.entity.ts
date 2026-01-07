@@ -18,11 +18,16 @@ export class Nhomkhachhang {
   @Field(() => GraphQLDateTime, { description: 'Ngày cập nhật' })
   updatedAt: Date;
 
-  @Field(() => [KhachhangBasic], { nullable: true, description: 'Danh sách khách hàng trong nhóm' })
+  @Field(() => [KhachhangBasic], {
+    nullable: true,
+    description: 'Danh sách khách hàng trong nhóm',
+  })
   khachhang?: KhachhangBasic[];
 }
 
-@ObjectType('KhachhangBasic', { description: 'Thông tin cơ bản của khách hàng' })
+@ObjectType('KhachhangBasic', {
+  description: 'Thông tin cơ bản của khách hàng',
+})
 export class KhachhangBasic {
   @Field(() => ID, { description: 'ID khách hàng' })
   id: string;
@@ -30,7 +35,10 @@ export class KhachhangBasic {
   @Field(() => String, { nullable: true, description: 'Tên khách hàng' })
   name?: string;
 
-  @Field(() => String, { nullable: true, description: 'Tên khách hàng (tenkh)' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Tên khách hàng (tenkh)',
+  })
   tenkh?: string;
 
   @Field(() => String, { nullable: true, description: 'Địa chỉ khách hàng' })

@@ -11,7 +11,10 @@ export class PhongbanResolver {
   constructor(private readonly phongbanService: PhongbanService) {}
 
   @Mutation(() => GraphQLJSON, { name: 'createPhongban' })
-  create(@Args('input', { type: () => GraphQLJSON }) createPhongbanDto: CreatePhongbanDto) {
+  create(
+    @Args('input', { type: () => GraphQLJSON })
+    createPhongbanDto: CreatePhongbanDto,
+  ) {
     return this.phongbanService.create(createPhongbanDto);
   }
 
@@ -20,13 +23,13 @@ export class PhongbanResolver {
     @Args('level', { type: () => Int, nullable: true }) level?: number,
     @Args('loai', { nullable: true }) loai?: string,
     @Args('parentId', { nullable: true }) parentId?: string,
-    @Args('includeChildren', { nullable: true }) includeChildren?: boolean
+    @Args('includeChildren', { nullable: true }) includeChildren?: boolean,
   ) {
     return this.phongbanService.findAll({
       level,
       loai,
       parentId,
-      includeChildren
+      includeChildren,
     });
   }
 
@@ -53,7 +56,8 @@ export class PhongbanResolver {
   @Mutation(() => GraphQLJSON, { name: 'updatePhongban' })
   update(
     @Args('id') id: string,
-    @Args('input', { type: () => GraphQLJSON }) updatePhongbanDto: UpdatePhongbanDto
+    @Args('input', { type: () => GraphQLJSON })
+    updatePhongbanDto: UpdatePhongbanDto,
   ) {
     return this.phongbanService.update(id, updatePhongbanDto);
   }

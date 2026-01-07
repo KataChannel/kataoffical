@@ -765,16 +765,14 @@ export class ListDonhangComponent {
     this.isLoading.set(true);
     
     // Hiển thị progress snackbar
-    let progressSnackbar = this._snackBar.open(
-      `Đang đồng bộ giá và VAT cho ${this.EditList.length} đơn hàng...`, 
+    let progressSnackbar = this._snackBar.open(`Đang đồng bộ giá và VAT cho ${this.EditList.length} đơn hàng...`, 
       'Đang xử lý', 
       {
         duration: 0, // Không tự động đóng
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-info'],
-      }
-    );
+      });
 
     try {
       // Bước 1: Đồng bộ giá từ bảng giá
@@ -990,16 +988,14 @@ export class ListDonhangComponent {
         });
       } catch (error: any) {
         console.error(`Error processing file ${file.name}:`, error);
-        this._snackBar.open(
-          `Lỗi xử lý file ${file.name}: ${error.message}`,
+        this._snackBar.open(`Lỗi xử lý file ${file.name}: ${error.message}`,
           '',
           {
             duration: 1000,
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-error'],
-          }
-        );
+          });
         errorCount++;
         this.statusDetails.push({
           fileName: file.name,
@@ -1072,16 +1068,14 @@ export class ListDonhangComponent {
         const invalidFiles = Array.from(
           new Set(invalidItems.map((item) => item.tenfile || 'Unknown'))
         );
-        this._snackBar.open(
-          `Các Khách hàng sau không đủ dữ liệu : ${invalidFiles.join(', ')}`,
+        this._snackBar.open(`Các Khách hàng sau không đủ dữ liệu : ${invalidFiles.join(', ')}`,
           '',
           {
             duration: 5000,
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-error'],
-          }
-        );
+          });
         return;
       }
       
@@ -1109,29 +1103,25 @@ export class ListDonhangComponent {
         };
         
         this.dialog.closeAll();
-        this._snackBar.open(
-          `${finalResult.message} - Tổng kết: Thành công ${finalResult.success}, Thất bại ${finalResult.fail}, Bỏ qua ${finalResult.skip}`,
+        this._snackBar.open(`${finalResult.message} - Tổng kết: Thành công ${finalResult.success}, Thất bại ${finalResult.fail}, Bỏ qua ${finalResult.skip}`,
           '',
           {
             duration: 6000,
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-success'],
-          }
-        );
+          });
       } else {
         // Normal processing without duplicates
         this.dialog.closeAll();
-        this._snackBar.open(
-          `Nhập đơn hàng : Thành công ${result.success}, Thất bại ${result.fail}, Bỏ qua ${result.skip}. Reload Lại sau 3s`,
+        this._snackBar.open(`Nhập đơn hàng : Thành công ${result.success}, Thất bại ${result.fail}, Bỏ qua ${result.skip}. Reload Lại sau 3s`,
           '',
           {
             duration: 5000,
             horizontalPosition: 'end',
             verticalPosition: 'top',
             panelClass: ['snackbar-success'],
-          }
-        );
+          });
       }
     } catch (importError: any) {
       console.error('Lỗi khi nhập đơn hàng:', importError);
@@ -1227,16 +1217,14 @@ export class ListDonhangComponent {
       this.ngOnInit();
     } catch (error: any) {
       console.error('Error importing order:', error);
-      this._snackBar.open(
-        `Lỗi: ${error.message || 'Không thể nhập đơn hàng'}`,
+      this._snackBar.open(`Lỗi: ${error.message || 'Không thể nhập đơn hàng'}`,
         '',
         {
           duration: 5000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-error'],
-        }
-      );
+        });
     } finally {
       this.isLoading.set(false);
     }
@@ -1719,16 +1707,14 @@ export class ListDonhangComponent {
       const result: any = await this._DonhangService.DeleteBulkDonhang(
         this.EditList.map((v: any) => v.id)
       );
-      this._snackBar.open(
-        `Xóa thành công ${result.success} đơn hàng ${result.fail} lỗi`,
+      this._snackBar.open(`Xóa thành công ${result.success} đơn hàng ${result.fail} lỗi`,
         '',
         {
           duration: 3000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
-        }
-      );
+        });
       this.EditList = [];
       await this.LoadData();
     } catch (error: any) {

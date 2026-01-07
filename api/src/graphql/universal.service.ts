@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { PaginationInput, FilterInput, SortInput } from './types';
 
 @Injectable()
-export class UniversalService { // Fix: Rename to avoid conflict
+export class UniversalService {
+  // Fix: Rename to avoid conflict
   constructor(private readonly prisma: PrismaService) {}
 
   /**
@@ -11,21 +16,21 @@ export class UniversalService { // Fix: Rename to avoid conflict
    */
   private mapModelName(model: string): string {
     const modelMap: { [key: string]: string } = {
-      'tonkho': 'tonKho',           // TonKho -> tonKho in client
-      'sanpham': 'sanpham',         // Sanpham -> sanpham in client 
-      'khachhang': 'khachhang',     // Khachhang -> khachhang in client
-      'nhomkhachhang': 'nhomkhachhang', // Nhomkhachhang -> nhomkhachhang in client
-      'nhomncc': 'nhomNcc',         // ✅ ADD: NhomNcc -> nhomNcc in client
-      'nhacungcap': 'nhacungcap',   // Nhacungcap -> nhacungcap in client
-      'donhang': 'donhang',         // Donhang -> donhang in client
-      'dathang': 'dathang',         // Dathang -> dathang in client
-      'phieukho': 'phieuKho',       // PhieuKho -> phieuKho in client
-      'chotkho': 'chotkho',         // Chotkho -> chotkho in client
-      'menu': 'menu',               // Menu -> menu in client
-      'user': 'user',               // User -> user in client
-      'role': 'role',               // Role -> role in client
-      'permission': 'permission',   // Permission -> permission in client
-      'congnoncc':'congnoncc',   // ✅ ADD: Congnoncc -> congnoncc in client
+      tonkho: 'tonKho', // TonKho -> tonKho in client
+      sanpham: 'sanpham', // Sanpham -> sanpham in client
+      khachhang: 'khachhang', // Khachhang -> khachhang in client
+      nhomkhachhang: 'nhomkhachhang', // Nhomkhachhang -> nhomkhachhang in client
+      nhomncc: 'nhomNcc', // ✅ ADD: NhomNcc -> nhomNcc in client
+      nhacungcap: 'nhacungcap', // Nhacungcap -> nhacungcap in client
+      donhang: 'donhang', // Donhang -> donhang in client
+      dathang: 'dathang', // Dathang -> dathang in client
+      phieukho: 'phieuKho', // PhieuKho -> phieuKho in client
+      chotkho: 'chotkho', // Chotkho -> chotkho in client
+      menu: 'menu', // Menu -> menu in client
+      user: 'user', // User -> user in client
+      role: 'role', // Role -> role in client
+      permission: 'permission', // Permission -> permission in client
+      congnoncc: 'congnoncc', // ✅ ADD: Congnoncc -> congnoncc in client
       // Add more mappings as needed
     };
 
@@ -51,7 +56,13 @@ export class UniversalService { // Fix: Rename to avoid conflict
     // Check if model exists in Prisma
     const prismaModel = (this.prisma as any)[mappedModel];
     if (!prismaModel) {
-      throw new Error(`Model '${mappedModel}' does not exist in Prisma schema. Available models: ${Object.keys(this.prisma).filter(key => !key.startsWith('_')).join(', ')}`);
+      throw new Error(
+        `Model '${mappedModel}' does not exist in Prisma schema. Available models: ${Object.keys(
+          this.prisma,
+        )
+          .filter((key) => !key.startsWith('_'))
+          .join(', ')}`,
+      );
     }
 
     return { prismaModel, mappedModel };
@@ -65,7 +76,7 @@ export class UniversalService { // Fix: Rename to avoid conflict
     pagination: PaginationInput = { page: 1, pageSize: 10 },
     filter?: FilterInput,
     sort?: SortInput,
-    include?: any
+    include?: any,
   ) {
     // ✅ Validate and get Prisma model
     const { prismaModel, mappedModel } = this.validateAndGetPrismaModel(model);
@@ -77,7 +88,9 @@ export class UniversalService { // Fix: Rename to avoid conflict
     const where = this.buildWhereClause(filter);
 
     // Build orderBy clause
-    const orderBy = sort ? { [sort.field]: sort.direction } : { createdAt: 'desc' };
+    const orderBy = sort
+      ? { [sort.field]: sort.direction }
+      : { createdAt: 'desc' };
 
     try {
       const [data, total] = await Promise.all([
@@ -105,64 +118,73 @@ export class UniversalService { // Fix: Rename to avoid conflict
         },
       };
     } catch (error) {
-      throw new BadRequestException(`Error querying ${model}: ${error.message}`);
+      throw new BadRequestException(
+        `Error querying ${model}: ${error.message}`,
+      );
     }
   }
-async findMany(modelName: string, options: {
-  where?: any;
-  orderBy?: any;
-  skip?: number;
-  take?: number;
-  include?: any;
-  select?: any;
-} = {}) {
-  const { where, orderBy, skip = 0, take = 10, include, select } = options;
+  async findMany(
+    modelName: string,
+    options: {
+      where?: any;
+      orderBy?: any;
+      skip?: number;
+      take?: number;
+      include?: any;
+      select?: any;
+    } = {},
+  ) {
+    const { where, orderBy, skip = 0, take = 10, include, select } = options;
 
-  try {
-    const queryArgs: any = {
-      skip,
-      take,
-      where,
-      orderBy: orderBy || { createdAt: 'desc' },
-    };
+    try {
+      const queryArgs: any = {
+        skip,
+        take,
+        where,
+        orderBy: orderBy || { createdAt: 'desc' },
+      };
 
-    // ✅ PRIORITIZE SELECT OVER INCLUDE
-    if (select) {
-      queryArgs.select = select;
-    } else if (include) {
-      queryArgs.include = include;
+      // ✅ PRIORITIZE SELECT OVER INCLUDE
+      if (select) {
+        queryArgs.select = select;
+      } else if (include) {
+        queryArgs.include = include;
+      }
+
+      // Execute queries
+      const [data, total] = await Promise.all([
+        (this.prisma as any)[modelName].findMany(queryArgs),
+        (this.prisma as any)[modelName].count({ where: where || {} }),
+      ]);
+
+      // Return paginated result
+      const totalPages = Math.ceil(total / take);
+      const currentPage = Math.floor(skip / take) + 1;
+
+      return {
+        data,
+        total,
+        page: currentPage,
+        pageSize: take,
+        totalPages,
+        hasNextPage: currentPage < totalPages,
+        hasPreviousPage: currentPage > 1,
+      };
+    } catch (error) {
+      throw new BadRequestException(
+        `Error in findMany for ${modelName}: ${error.message}`,
+      );
     }
-
-    // Execute queries
-    const [data, total] = await Promise.all([
-      (this.prisma as any)[modelName].findMany(queryArgs),
-      (this.prisma as any)[modelName].count({ where: where || {} }),
-    ]);
-
-    // Return paginated result
-    const totalPages = Math.ceil(total / take);
-    const currentPage = Math.floor(skip / take) + 1;
-
-    return {
-      data,
-      total,
-      page: currentPage,
-      pageSize: take,
-      totalPages,
-      hasNextPage: currentPage < totalPages,
-      hasPreviousPage: currentPage > 1,
-    };
-  } catch (error) {
-    throw new BadRequestException(`Error in findMany for ${modelName}: ${error.message}`);
   }
-}
 
-
-  async findUnique(modelName: string, options: {
-    where: any;
-    include?: any;
-    select?: any;
-  }) {
+  async findUnique(
+    modelName: string,
+    options: {
+      where: any;
+      include?: any;
+      select?: any;
+    },
+  ) {
     const { where, include, select } = options;
 
     try {
@@ -175,10 +197,14 @@ async findMany(modelName: string, options: {
         queryArgs.include = include;
       }
 
-      const result = await (this.prisma as any)[modelName].findUnique(queryArgs);
+      const result = await (this.prisma as any)[modelName].findUnique(
+        queryArgs,
+      );
 
       if (!result) {
-        throw new NotFoundException(`${modelName} not found with the given criteria`);
+        throw new NotFoundException(
+          `${modelName} not found with the given criteria`,
+        );
       }
 
       return result;
@@ -186,10 +212,11 @@ async findMany(modelName: string, options: {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new BadRequestException(`Error in findUnique for ${modelName}: ${error.message}`);
+      throw new BadRequestException(
+        `Error in findUnique for ${modelName}: ${error.message}`,
+      );
     }
   }
-
 
   /**
    * Generic find by ID
@@ -220,11 +247,14 @@ async findMany(modelName: string, options: {
   async create(model: string, data: any, include?: any) {
     try {
       // ✅ Validate and get Prisma model
-      const { prismaModel, mappedModel } = this.validateAndGetPrismaModel(model);
+      const { prismaModel, mappedModel } =
+        this.validateAndGetPrismaModel(model);
 
       // ✅ Check if create method exists
       if (typeof prismaModel.create !== 'function') {
-        throw new Error(`Create method does not exist on model '${mappedModel}'`);
+        throw new Error(
+          `Create method does not exist on model '${mappedModel}'`,
+        );
       }
 
       console.log(`🔍 Creating ${mappedModel} with:`, { data, include });
@@ -235,32 +265,43 @@ async findMany(modelName: string, options: {
       });
 
       console.log(`✅ Create result for ${mappedModel}:`, result);
-      
+
       return result;
     } catch (error) {
       console.error(`❌ Error creating ${model}:`, error);
-      throw new BadRequestException(`Error creating ${model}: ${error.message}`);
+      throw new BadRequestException(
+        `Error creating ${model}: ${error.message}`,
+      );
     }
   }
 
   /**
    * Generic update with where clause
    */
-  async update(model: string, where: any, data: any, include?: any, select?: any) {
+  async update(
+    model: string,
+    where: any,
+    data: any,
+    include?: any,
+    select?: any,
+  ) {
     try {
       // ✅ Validate and get Prisma model
-      const { prismaModel, mappedModel } = this.validateAndGetPrismaModel(model);
+      const { prismaModel, mappedModel } =
+        this.validateAndGetPrismaModel(model);
 
       // ✅ Check if update method exists
       if (typeof prismaModel.update !== 'function') {
-        throw new Error(`Update method does not exist on model '${mappedModel}'`);
+        throw new Error(
+          `Update method does not exist on model '${mappedModel}'`,
+        );
       }
 
       console.log(`🔍 Updating ${mappedModel} with:`, {
         where,
         dataKeys: Object.keys(data),
         include,
-        select
+        select,
       });
 
       // Special handling for user updates
@@ -269,23 +310,29 @@ async findMany(modelName: string, options: {
           id: data.id,
           email: data.email,
           hasRoles: !!data.roles,
-          rolesCount: data.roles ? (Array.isArray(data.roles) ? data.roles.length : 'not array') : 0,
+          rolesCount: data.roles
+            ? Array.isArray(data.roles)
+              ? data.roles.length
+              : 'not array'
+            : 0,
           hasPermissions: !!data.permissions,
-          otherFields: Object.keys(data).filter(k => !['id', 'email', 'roles', 'permissions'].includes(k))
+          otherFields: Object.keys(data).filter(
+            (k) => !['id', 'email', 'roles', 'permissions'].includes(k),
+          ),
         });
       }
 
       // Validate data for relations to prevent "Required exactly one parent ID" error
       const cleanData = this.validateAndCleanRelationData(data);
-      
+
       console.log(`🧹 [CLEAN] Original data keys:`, Object.keys(data));
       console.log(`🧹 [CLEAN] Cleaned data keys:`, Object.keys(cleanData));
       console.log(`🧹 [CLEAN] Original khachhang:`, data.khachhang);
       console.log(`🧹 [CLEAN] Cleaned khachhang:`, cleanData.khachhang);
-      
+
       const updateOptions: any = {
         where,
-        data: cleanData
+        data: cleanData,
       };
 
       if (include) {
@@ -296,16 +343,21 @@ async findMany(modelName: string, options: {
         updateOptions.select = select;
       }
 
-      console.log(`📤 Final update options for ${mappedModel}:`, JSON.stringify(updateOptions, null, 2));
+      console.log(
+        `📤 Final update options for ${mappedModel}:`,
+        JSON.stringify(updateOptions, null, 2),
+      );
 
       const result = await prismaModel.update(updateOptions);
-      
+
       console.log(`✅ Update result for ${mappedModel}:`, result);
-      
+
       return result;
     } catch (error) {
       console.error(`❌ Error updating ${model}:`, error);
-      throw new BadRequestException(`Error updating ${model}: ${error.message}`);
+      throw new BadRequestException(
+        `Error updating ${model}: ${error.message}`,
+      );
     }
   }
 
@@ -315,65 +367,100 @@ async findMany(modelName: string, options: {
    */
   private validateAndCleanRelationData(data: any): any {
     if (!data || typeof data !== 'object') return data;
-    
+
     const cleanData = { ...data };
-    
+
     // Define fields that should be excluded from updates because they are complex relations
     // ✅ REMOVED khachhang and nhomkhachhang - they support connect/disconnect
     const excludeFromUpdates = [
-      'roles', 'permissions', 'profile', 'userRoles', 'rolePermissions',
-      'user', 'role', 'permission'  // ✅ Removed khachhang and nhomkhachhang here
+      'roles',
+      'permissions',
+      'profile',
+      'userRoles',
+      'rolePermissions',
+      'user',
+      'role',
+      'permission', // ✅ Removed khachhang and nhomkhachhang here
     ];
-    
+
     // Remove complex relation fields that cause Prisma errors
-    excludeFromUpdates.forEach(field => {
+    excludeFromUpdates.forEach((field) => {
       if (cleanData[field]) {
         // Check if it's an array of objects with nested relations
         if (Array.isArray(cleanData[field])) {
-          console.log(`🚫 Removing complex relation array field '${field}' from update data`);
+          console.log(
+            `🚫 Removing complex relation array field '${field}' from update data`,
+          );
           delete cleanData[field];
         }
         // Check if it's a nested object with complex structure
-        else if (typeof cleanData[field] === 'object' && cleanData[field] !== null) {
+        else if (
+          typeof cleanData[field] === 'object' &&
+          cleanData[field] !== null
+        ) {
           const nestedKeys = Object.keys(cleanData[field]);
-          const hasComplexNesting = nestedKeys.some(key => 
-            typeof cleanData[field][key] === 'object' && cleanData[field][key] !== null
+          const hasComplexNesting = nestedKeys.some(
+            (key) =>
+              typeof cleanData[field][key] === 'object' &&
+              cleanData[field][key] !== null,
           );
           if (hasComplexNesting) {
-            console.log(`🚫 Removing complex nested relation field '${field}' from update data`);
+            console.log(
+              `🚫 Removing complex nested relation field '${field}' from update data`,
+            );
             delete cleanData[field];
           }
         }
       }
     });
-    
+
     // ✅ NEW: Enhanced validation for relation fields including many-to-many
-    Object.keys(cleanData).forEach(key => {
+    Object.keys(cleanData).forEach((key) => {
       const value = cleanData[key];
-      
+
       if (value && typeof value === 'object' && !Array.isArray(value)) {
         // ✅ Support many-to-many relations (khachhang, nhomkhachhang, ncc, etc)
         // Handle connect/disconnect operations
         if (value.connect) {
           cleanData[key].connect = this.validateConnectArray(value.connect);
-          console.log(`✅ [RELATION] Validated connect for '${key}':`, cleanData[key].connect);
-          console.log(`✅ [RELATION] Connect count for '${key}':`, cleanData[key].connect.length);
+          console.log(
+            `✅ [RELATION] Validated connect for '${key}':`,
+            cleanData[key].connect,
+          );
+          console.log(
+            `✅ [RELATION] Connect count for '${key}':`,
+            cleanData[key].connect.length,
+          );
         }
         if (value.disconnect) {
-          cleanData[key].disconnect = this.validateConnectArray(value.disconnect);
-          console.log(`✅ [RELATION] Validated disconnect for '${key}':`, cleanData[key].disconnect);
-          console.log(`✅ [RELATION] Disconnect count for '${key}':`, cleanData[key].disconnect.length);
+          cleanData[key].disconnect = this.validateConnectArray(
+            value.disconnect,
+          );
+          console.log(
+            `✅ [RELATION] Validated disconnect for '${key}':`,
+            cleanData[key].disconnect,
+          );
+          console.log(
+            `✅ [RELATION] Disconnect count for '${key}':`,
+            cleanData[key].disconnect.length,
+          );
         }
-        
+
         // ✅ NEW: Support 'set' operation for many-to-many (replaces all with new values)
         if (value.set !== undefined) {
           if (Array.isArray(value.set)) {
             cleanData[key].set = this.validateConnectArray(value.set);
-            console.log(`✅ [RELATION] Validated set for '${key}':`, cleanData[key].set);
-            console.log(`✅ [RELATION] Set count for '${key}':`, cleanData[key].set.length);
+            console.log(
+              `✅ [RELATION] Validated set for '${key}':`,
+              cleanData[key].set,
+            );
+            console.log(
+              `✅ [RELATION] Set count for '${key}':`,
+              cleanData[key].set.length,
+            );
           }
         }
-        
+
         // Clean empty operations
         if (value.connect && value.connect.length === 0) {
           console.log(`🧹 [RELATION] Removing empty connect for '${key}'`);
@@ -383,18 +470,22 @@ async findMany(modelName: string, options: {
           console.log(`🧹 [RELATION] Removing empty disconnect for '${key}'`);
           delete cleanData[key].disconnect;
         }
-        if (value.set !== undefined && Array.isArray(value.set) && value.set.length === 0) {
+        if (
+          value.set !== undefined &&
+          Array.isArray(value.set) &&
+          value.set.length === 0
+        ) {
           console.log(`🧹 [RELATION] Removing empty set for '${key}'`);
           delete cleanData[key].set;
         }
-        
+
         // Remove empty relation object
         if (Object.keys(cleanData[key]).length === 0) {
           delete cleanData[key];
         }
       }
     });
-    
+
     console.log(`📋 Final cleaned data:`, Object.keys(cleanData));
     return cleanData;
   }
@@ -404,15 +495,19 @@ async findMany(modelName: string, options: {
    */
   private validateConnectArray(items: any[]): any[] {
     if (!Array.isArray(items)) return [];
-    
-    return items.filter(item => {
-      // Ensure item has valid id
-      return item && 
-             typeof item === 'object' && 
-             item.id && 
-             typeof item.id === 'string' && 
-             item.id.trim() !== '';
-    }).map(item => ({ id: item.id.trim() }));
+
+    return items
+      .filter((item) => {
+        // Ensure item has valid id
+        return (
+          item &&
+          typeof item === 'object' &&
+          item.id &&
+          typeof item.id === 'string' &&
+          item.id.trim() !== ''
+        );
+      })
+      .map((item) => ({ id: item.id.trim() }));
   }
 
   /**
@@ -432,7 +527,9 @@ async findMany(modelName: string, options: {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new BadRequestException(`Error updating ${model}: ${error.message}`);
+      throw new BadRequestException(
+        `Error updating ${model}: ${error.message}`,
+      );
     }
   }
 
@@ -453,7 +550,9 @@ async findMany(modelName: string, options: {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new BadRequestException(`Error deleting ${model}: ${error.message}`);
+      throw new BadRequestException(
+        `Error deleting ${model}: ${error.message}`,
+      );
     }
   }
 
@@ -467,7 +566,9 @@ async findMany(modelName: string, options: {
         skipDuplicates: true,
       });
     } catch (error) {
-      throw new BadRequestException(`Error bulk creating ${model}: ${error.message}`);
+      throw new BadRequestException(
+        `Error bulk creating ${model}: ${error.message}`,
+      );
     }
   }
 
@@ -478,12 +579,14 @@ async findMany(modelName: string, options: {
           (this.prisma as any)[model].update({
             where: { id },
             data,
-          })
-        )
+          }),
+        ),
       );
       return results;
     } catch (error) {
-      throw new BadRequestException(`Error bulk updating ${model}: ${error.message}`);
+      throw new BadRequestException(
+        `Error bulk updating ${model}: ${error.message}`,
+      );
     }
   }
 
@@ -497,7 +600,9 @@ async findMany(modelName: string, options: {
         },
       });
     } catch (error) {
-      throw new BadRequestException(`Error bulk deleting ${model}: ${error.message}`);
+      throw new BadRequestException(
+        `Error bulk deleting ${model}: ${error.message}`,
+      );
     }
   }
 
@@ -509,14 +614,14 @@ async findMany(modelName: string, options: {
     searchTerm: string,
     searchFields: string[],
     pagination: PaginationInput = { page: 1, pageSize: 10 },
-    include?: any
+    include?: any,
   ) {
     const { page, pageSize } = pagination;
     const skip = (page - 1) * pageSize;
 
     // Build search where clause
     const where = {
-      OR: searchFields.map(field => ({
+      OR: searchFields.map((field) => ({
         [field]: {
           contains: searchTerm,
           mode: 'insensitive',
@@ -550,7 +655,9 @@ async findMany(modelName: string, options: {
         },
       };
     } catch (error) {
-      throw new BadRequestException(`Error searching ${model}: ${error.message}`);
+      throw new BadRequestException(
+        `Error searching ${model}: ${error.message}`,
+      );
     }
   }
 
@@ -598,7 +705,9 @@ async findMany(modelName: string, options: {
         createdThisWeek,
       };
     } catch (error) {
-      throw new BadRequestException(`Error getting stats for ${model}: ${error.message}`);
+      throw new BadRequestException(
+        `Error getting stats for ${model}: ${error.message}`,
+      );
     }
   }
 
@@ -608,7 +717,7 @@ async findMany(modelName: string, options: {
   getAvailableModels(): string[] {
     return [
       'user',
-      'role', 
+      'role',
       'userRole',
       'permission',
       'rolePermission',
@@ -617,7 +726,7 @@ async findMany(modelName: string, options: {
       'banggia',
       'khachhang',
       'nhomkhachhang',
-      'nhomncc',       // ✅ ADD: nhom nha cung cap
+      'nhomncc', // ✅ ADD: nhom nha cung cap
       'sanpham',
       'donhang',
       'donhangsanpham',
@@ -632,7 +741,7 @@ async findMany(modelName: string, options: {
       'tonKho',
       'chotkho',
       'auditLog',
-      'congnoncc',  // ✅ ADD: congnoncc
+      'congnoncc', // ✅ ADD: congnoncc
     ];
   }
 

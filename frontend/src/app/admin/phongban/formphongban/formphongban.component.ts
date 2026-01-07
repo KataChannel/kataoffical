@@ -274,7 +274,7 @@ export class FormPhongbanComponent implements OnInit {
         moTa: phongban.moTa
       });
     } catch (error) {
-      this.snackBar.open('Không thể tải thông tin phòng ban', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Không thể tải thông tin phòng ban', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
       console.error('Error loading phongban:', error);
     } finally {
       this.loading.set(false);
@@ -283,7 +283,7 @@ export class FormPhongbanComponent implements OnInit {
 
   async onSubmit() {
     if (!this.phongbanForm.valid) {
-      this.snackBar.open('Vui lòng điền đầy đủ thông tin', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Vui lòng điền đầy đủ thông tin', 'Đóng', { duration: 3000, panelClass: ["snackbar-warning"] });
       return;
     }
 
@@ -293,16 +293,16 @@ export class FormPhongbanComponent implements OnInit {
 
       if (this.mode === 'create') {
         await this.phongbanService.createPhongban(formValue);
-        this.snackBar.open('Tạo phòng ban thành công!', 'Đóng', { duration: 3000 });
+        this.snackBar.open('Tạo phòng ban thành công!', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       } else if (this.id) {
         await this.phongbanService.updatePhongban(this.id, formValue);
-        this.snackBar.open('Cập nhật phòng ban thành công!', 'Đóng', { duration: 3000 });
+        this.snackBar.open('Cập nhật phòng ban thành công!', 'Đóng', { duration: 3000, panelClass: ["snackbar-success"] });
       }
 
       this.router.navigate(['/admin/phongban/list']);
     } catch (error: any) {
       const message = error?.error?.message || 'Có lỗi xảy ra. Vui lòng thử lại.';
-      this.snackBar.open(message, 'Đóng', { duration: 5000 });
+      this.snackBar.open(message, 'Đóng', { duration: 5000, panelClass: ["snackbar-success"] });
       console.error('Error submitting form:', error);
     } finally {
       this.submitting.set(false);

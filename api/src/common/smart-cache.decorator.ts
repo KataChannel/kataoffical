@@ -6,18 +6,30 @@ export const SmartCache = (options: {
   invalidate?: string[];
   updateCache?: boolean; // Auto update cache with new data
 }) => {
-  return (target: any, propertyName: string, descriptor: PropertyDescriptor) => {
+  return (
+    target: any,
+    propertyName: string,
+    descriptor: PropertyDescriptor,
+  ) => {
     // Apply cache metadata for GET operations
     if (options.get) {
       SetMetadata('cache', options.get)(target, propertyName, descriptor);
     }
-    
+
     // Apply cache invalidation patterns
     if (options.invalidate) {
-      SetMetadata('cacheInvalidate', options.invalidate)(target, propertyName, descriptor);
+      SetMetadata('cacheInvalidate', options.invalidate)(
+        target,
+        propertyName,
+        descriptor,
+      );
     }
-    
+
     // Apply smart update flag
-    SetMetadata('smartCacheUpdate', options.updateCache || false)(target, propertyName, descriptor);
+    SetMetadata('smartCacheUpdate', options.updateCache || false)(
+      target,
+      propertyName,
+      descriptor,
+    );
   };
 };

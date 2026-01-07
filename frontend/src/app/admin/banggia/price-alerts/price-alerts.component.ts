@@ -203,7 +203,7 @@ export class PriceAlertsComponent implements OnInit {
 
   async createAlert() {
     if (!this.alertForm.valid) {
-      this.snackBar.open('Vui lòng điền đầy đủ thông tin', 'Đóng', { duration: 3000 });
+      this.snackBar.open('Vui lòng điền đầy đủ thông tin', 'Đóng', { duration: 3000, panelClass: ["snackbar-warning"] });
       return;
     }
 
@@ -224,7 +224,7 @@ export class PriceAlertsComponent implements OnInit {
     };
 
     this.alerts.update(alerts => [...alerts, newAlert]);
-    this.snackBar.open('Đã tạo cảnh báo thành công', 'Đóng', { duration: 3000 });
+    this.snackBar.open('Đã tạo cảnh báo thành công', 'Đóng', { duration: 3000, panelClass: ["snackbar-warning"] });
     this.alertForm.reset({ type: 'change', notifyEmail: true, notifyInApp: true });
   }
 
@@ -234,14 +234,14 @@ export class PriceAlertsComponent implements OnInit {
     );
     
     const message = alert.enabled ? 'Đã tắt cảnh báo' : 'Đã bật cảnh báo';
-    this.snackBar.open(message, 'Đóng', { duration: 2000 });
+    this.snackBar.open(message, 'Đóng', { duration: 2000, panelClass: ["snackbar-success"] });
   }
 
   deleteAlert(alertId: string) {
     if (!confirm('Bạn có chắc chắn muốn xóa cảnh báo này?')) return;
     
     this.alerts.update(alerts => alerts.filter(a => a.id !== alertId));
-    this.snackBar.open('Đã xóa cảnh báo', 'Đóng', { duration: 2000 });
+    this.snackBar.open('Đã xóa cảnh báo', 'Đóng', { duration: 2000, panelClass: ["snackbar-warning"] });
   }
 
   markAsRead(notification: PriceChangeNotification) {
@@ -256,7 +256,7 @@ export class PriceAlertsComponent implements OnInit {
       notifications.map(n => ({ ...n, read: true }))
     );
     this.unreadCount.set(0);
-    this.snackBar.open('Đã đánh dấu tất cả là đã đọc', 'Đóng', { duration: 2000 });
+    this.snackBar.open('Đã đánh dấu tất cả là đã đọc', 'Đóng', { duration: 2000, panelClass: ["snackbar-success"] });
   }
 
   deleteNotification(notificationId: string) {

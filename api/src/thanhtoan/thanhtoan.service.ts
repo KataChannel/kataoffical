@@ -1,7 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LoaiThanhToan, StatusDonhang, TrangThaiThanhToan } from '@prisma/client';
+import {
+  LoaiThanhToan,
+  StatusDonhang,
+  TrangThaiThanhToan,
+} from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
-import { CreateBulkThanhToanDto, CreateThanhToanDto, UpdateThanhToanDto } from './dto/thanhtoan.dto';
+import {
+  CreateBulkThanhToanDto,
+  CreateThanhToanDto,
+  UpdateThanhToanDto,
+} from './dto/thanhtoan.dto';
 
 @Injectable()
 export class ThanhToanService {
@@ -12,7 +20,7 @@ export class ThanhToanService {
     const prefix = 'TT';
     const year = new Date().getFullYear().toString().slice(-2);
     const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
-    
+
     const lastThanhToan = await this.prisma.thanhToan.findFirst({
       where: {
         maThanhToan: {
@@ -81,12 +89,12 @@ export class ThanhToanService {
   // Thanh toán hàng loạt cho nhiều đơn hàng
   async createBulk(createBulkDto: CreateBulkThanhToanDto, nguoiTaoId?: string) {
     const results: any[] = [];
-    
+
     // Sử dụng transaction để đảm bảo dữ liệu nhất quán
     return await this.prisma.$transaction(async (prisma) => {
       for (const item of createBulkDto.items) {
         const maThanhToan = await this.generateMaThanhToan(); // Note: This might need careful handling in transaction for unique codes
-        
+
         const data: any = {
           maThanhToan,
           donhangId: item.donhangId,
@@ -96,23 +104,25 @@ export class ThanhToanService {
           trangThai: TrangThaiThanhToan.DA_THANH_TOAN,
           ghichu: item.ghichu || createBulkDto.ghichu,
           nguoiTaoId,
-          ngayThanhToan: createBulkDto.ngayThanhToan ? new Date(createBulkDto.ngayThanhToan) : new Date(),
+          ngayThanhToan: createBulkDto.ngayThanhToan
+            ? new Date(createBulkDto.ngayThanhToan)
+            : new Date(),
         };
 
         const tt = await prisma.thanhToan.create({
           data,
         });
-        
+
         results.push(tt);
-        
+
         // Cập nhật trạng thái đơn hàng (phiên bản dùng prisma nội bộ transaction)
         await this.checkAndUpdateOrderStatusInternal(item.donhangId, prisma);
       }
-      
+
       return {
         success: true,
         count: results.length,
-        items: results
+        items: results,
       };
     });
   }
@@ -122,11 +132,14 @@ export class ThanhToanService {
     return this.checkAndUpdateOrderStatusInternal(donhangId, this.prisma);
   }
 
-  private async checkAndUpdateOrderStatusInternal(donhangId: string, prisma: any) {
+  private async checkAndUpdateOrderStatusInternal(
+    donhangId: string,
+    prisma: any,
+  ) {
     // 1. Lấy thông tin đơn hàng và tổng tiền
     const donhang = await prisma.donhang.findUnique({
       where: { id: donhangId },
-      select: { tongtien: true, status: true }
+      select: { tongtien: true, status: true },
     });
 
     if (!donhang) return;
@@ -135,11 +148,11 @@ export class ThanhToanService {
     const aggregate = await prisma.thanhToan.aggregate({
       where: {
         donhangId,
-        trangThai: TrangThaiThanhToan.DA_THANH_TOAN
+        trangThai: TrangThaiThanhToan.DA_THANH_TOAN,
       },
       _sum: {
-        soTien: true
-      }
+        soTien: true,
+      },
     });
 
     const tongDaThanhToan = Number(aggregate._sum.soTien || 0);
@@ -147,13 +160,14 @@ export class ThanhToanService {
 
     // 3. Nếu đã thanh toán đủ hoặc thừa, chuyển trạng thái sang hoanthanh
     // (Chỉ cập nhật nếu đơn chưa hoàn thành và không bị hủy)
-    if (tongDaThanhToan >= tongPhaiThanhToan && 
-        donhang.status !== StatusDonhang.hoanthanh && 
-        donhang.status !== StatusDonhang.huy) {
-      
+    if (
+      tongDaThanhToan >= tongPhaiThanhToan &&
+      donhang.status !== StatusDonhang.hoanthanh &&
+      donhang.status !== StatusDonhang.huy
+    ) {
       await prisma.donhang.update({
         where: { id: donhangId },
-        data: { status: StatusDonhang.hoanthanh }
+        data: { status: StatusDonhang.hoanthanh },
       });
     }
   }
@@ -310,7 +324,10 @@ export class ThanhToanService {
       },
     });
 
-    const tongTien = thanhToanList.reduce((sum, tt) => sum + Number(tt.soTien), 0);
+    const tongTien = thanhToanList.reduce(
+      (sum, tt) => sum + Number(tt.soTien),
+      0,
+    );
 
     const theoLoai = {
       coHoaDon: thanhToanList

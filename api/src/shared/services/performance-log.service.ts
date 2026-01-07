@@ -57,7 +57,7 @@ export class PerformanceLogService {
   async saveMetrics(metrics: PerformanceMetric[]): Promise<void> {
     try {
       await this.prisma.performanceLog.createMany({
-        data: metrics.map(metric => ({
+        data: metrics.map((metric) => ({
           name: metric.name,
           duration: metric.duration,
           timestamp: new Date(metric.timestamp),
@@ -117,19 +117,19 @@ export class PerformanceLogService {
       avgDuration,
       slowestOperations,
       errorLogs,
-      operationBreakdown
+      operationBreakdown,
     ] = await Promise.all([
       // Tổng số operations
       this.prisma.performanceLog.count({
-        where: { timestamp: { gte: startTime } }
+        where: { timestamp: { gte: startTime } },
       }),
 
       // Số operations thành công
       this.prisma.performanceLog.count({
-        where: { 
+        where: {
           timestamp: { gte: startTime },
-          success: true 
-        }
+          success: true,
+        },
       }),
 
       // Thời gian trung bình
@@ -137,7 +137,7 @@ export class PerformanceLogService {
         where: { timestamp: { gte: startTime } },
         _avg: { duration: true },
         _max: { duration: true },
-        _min: { duration: true }
+        _min: { duration: true },
       }),
 
       // Top operations chậm nhất
@@ -150,18 +150,18 @@ export class PerformanceLogService {
           duration: true,
           timestamp: true,
           url: true,
-          error: true
-        }
+          error: true,
+        },
       }),
 
       // Logs lỗi
       this.prisma.performanceLog.findMany({
-        where: { 
+        where: {
           timestamp: { gte: startTime },
-          success: false 
+          success: false,
         },
         orderBy: { timestamp: 'desc' },
-        take: 20
+        take: 20,
       }),
 
       // Breakdown theo operation
@@ -172,8 +172,8 @@ export class PerformanceLogService {
         _avg: { duration: true },
         _max: { duration: true },
         _min: { duration: true },
-        orderBy: { _avg: { duration: 'desc' } }
-      })
+        orderBy: { _avg: { duration: 'desc' } },
+      }),
     ]);
 
     return {
@@ -182,43 +182,46 @@ export class PerformanceLogService {
         totalOperations: totalCount,
         successfulOperations: successCount,
         failedOperations: totalCount - successCount,
-        successRate: totalCount > 0 ? ((successCount / totalCount) * 100).toFixed(2) + '%' : '100%',
+        successRate:
+          totalCount > 0
+            ? ((successCount / totalCount) * 100).toFixed(2) + '%'
+            : '100%',
         avgDuration: avgDuration._avg?.duration?.toFixed(2) + 'ms' || '0ms',
         maxDuration: avgDuration._max?.duration?.toFixed(2) + 'ms' || '0ms',
-        minDuration: avgDuration._min?.duration?.toFixed(2) + 'ms' || '0ms'
+        minDuration: avgDuration._min?.duration?.toFixed(2) + 'ms' || '0ms',
       },
-      slowestOperations: slowestOperations.map(op => ({
+      slowestOperations: slowestOperations.map((op) => ({
         name: op.name,
         duration: op.duration.toFixed(2) + 'ms',
         timestamp: op.timestamp.toISOString(),
         url: op.url,
-        error: op.error
+        error: op.error,
       })),
-      recentErrors: errorLogs.map(log => ({
+      recentErrors: errorLogs.map((log) => ({
         name: log.name,
         error: log.error,
         duration: log.duration.toFixed(2) + 'ms',
         timestamp: log.timestamp.toISOString(),
-        url: log.url
+        url: log.url,
       })),
-      operationBreakdown: operationBreakdown.map(op => ({
+      operationBreakdown: operationBreakdown.map((op) => ({
         operation: op.name,
         count: op._count.name,
         avgDuration: op._avg.duration?.toFixed(2) + 'ms' || '0ms',
         maxDuration: op._max.duration?.toFixed(2) + 'ms' || '0ms',
-        minDuration: op._min.duration?.toFixed(2) + 'ms' || '0ms'
-      }))
+        minDuration: op._min.duration?.toFixed(2) + 'ms' || '0ms',
+      })),
     };
   }
 
   // Xóa logs cũ (cleanup)
   async cleanupOldLogs(daysToKeep: number = 30): Promise<number> {
     const cutoffDate = new Date(Date.now() - daysToKeep * 24 * 60 * 60 * 1000);
-    
+
     const result = await this.prisma.performanceLog.deleteMany({
       where: {
-        timestamp: { lt: cutoffDate }
-      }
+        timestamp: { lt: cutoffDate },
+      },
     });
 
     this.logger.log(`Cleaned up ${result.count} old performance logs`);
@@ -228,7 +231,7 @@ export class PerformanceLogService {
   // Lấy trends theo thời gian
   async getTrends(hours: number = 24) {
     const startTime = new Date(Date.now() - hours * 60 * 60 * 1000);
-    
+
     // Group by hour
     const trends = await this.prisma.$queryRaw<any[]>`
       SELECT 
@@ -243,13 +246,17 @@ export class PerformanceLogService {
       ORDER BY hour DESC
     `;
 
-    return trends.map(trend => ({
+    return trends.map((trend) => ({
       hour: trend.hour,
       totalOperations: parseInt(trend.total_operations),
       avgDuration: parseFloat(trend.avg_duration).toFixed(2) + 'ms',
       maxDuration: parseFloat(trend.max_duration).toFixed(2) + 'ms',
       errorCount: parseInt(trend.error_count),
-      errorRate: (parseInt(trend.error_count) / parseInt(trend.total_operations) * 100).toFixed(2) + '%'
+      errorRate:
+        (
+          (parseInt(trend.error_count) / parseInt(trend.total_operations)) *
+          100
+        ).toFixed(2) + '%',
     }));
   }
 }

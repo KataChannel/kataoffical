@@ -524,13 +524,11 @@ export class UserPermissionOverviewComponent {
       // Show result message
       const action = result.grantType === 'grant' ? 'cấp' : 'từ chối';
       if (successCount > 0) {
-        this.snackBar.open(
-          `Đã ${action} ${successCount} quyền thành công${errorCount > 0 ? `, ${errorCount} lỗi` : ''}`, 
+        this.snackBar.open(`Đã ${ action} ${successCount} quyền thành công${errorCount > 0 ? `, ${errorCount} lỗi` : ''}`, 
           'Đóng',
-          { duration: 5000 }
-        );
+          { duration: 5000, panelClass: ["snackbar-error"] });
       } else if (errorCount > 0) {
-        this.snackBar.open(`Lỗi khi ${action} quyền`, 'Đóng', { duration: 5000 });
+        this.snackBar.open(`Lỗi khi ${ action} quyền`, 'Đóng', { duration: 5000, panelClass: ["snackbar-error"] });
       }
       
       // Reload data

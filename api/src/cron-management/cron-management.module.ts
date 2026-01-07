@@ -8,12 +8,7 @@ import { CronLogService } from './cron-log.service';
 import { CronManagementController } from './cron-management.controller';
 
 @Module({
-  imports: [
-    PrismaModule,
-    AuthModule,
-    JwtModule.register({}),
-    DonhangModule,
-  ],
+  imports: [PrismaModule, AuthModule, JwtModule.register({}), DonhangModule],
   controllers: [CronManagementController],
   providers: [DatabaseSyncService, CronLogService],
   exports: [CronLogService],

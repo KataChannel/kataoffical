@@ -9,6 +9,6 @@ import { AuthModule } from '../auth/auth.module';
   imports: [PrismaModule, AuthModule],
   controllers: [PhongbanController],
   providers: [PhongbanService, PhongbanResolver],
-  exports: [PhongbanService]
+  exports: [PhongbanService],
 })
 export class PhongbanModule {}

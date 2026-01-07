@@ -6,7 +6,7 @@ import { PrismaService } from 'prisma/prisma.service';
 export class HealthController {
   constructor(
     private readonly serverStability: ServerStabilityService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
   ) {}
 
   @Get()
@@ -17,11 +17,11 @@ export class HealthController {
   @Get('detailed')
   async getDetailedHealth() {
     const basicHealth = await this.serverStability.getHealthStatus();
-    
+
     // Additional detailed checks
     const dbConnectionsCount = await this.getDatabaseConnectionsCount();
     const processStats = this.getProcessStats();
-    
+
     return {
       ...basicHealth,
       detailed: {
@@ -34,8 +34,8 @@ export class HealthController {
           nodeVersion: process.version,
           platform: process.platform,
           arch: process.arch,
-        }
-      }
+        },
+      },
     };
   }
 
@@ -44,22 +44,22 @@ export class HealthController {
     try {
       // Check database connectivity
       await this.prisma.$queryRaw`SELECT 1`;
-      
+
       return {
         status: 'ready',
         timestamp: new Date().toISOString(),
         checks: {
-          database: 'ok'
-        }
+          database: 'ok',
+        },
       };
     } catch (error) {
       return {
         status: 'not ready',
         timestamp: new Date().toISOString(),
         checks: {
-          database: 'failed'
+          database: 'failed',
         },
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -68,22 +68,22 @@ export class HealthController {
   async getLiveness() {
     const memUsage = process.memoryUsage();
     const heapUsedMB = Math.round(memUsage.heapUsed / 1024 / 1024);
-    
+
     // Consider unhealthy if memory usage is extremely high
     const isHealthy = heapUsedMB < 2048; // 2GB threshold
-    
+
     return {
       status: isHealthy ? 'alive' : 'unhealthy',
       timestamp: new Date().toISOString(),
       uptime: Math.floor(process.uptime()),
-      memoryUsage: heapUsedMB
+      memoryUsage: heapUsedMB,
     };
   }
 
   private async getDatabaseConnectionsCount(): Promise<number> {
     try {
       // For PostgreSQL, get active connection count
-      const result = await this.prisma.$queryRaw<{count: bigint}[]>`
+      const result = await this.prisma.$queryRaw<{ count: bigint }[]>`
         SELECT count(*) as count 
         FROM pg_stat_activity 
         WHERE state = 'active'
@@ -97,20 +97,20 @@ export class HealthController {
   private getProcessStats() {
     const cpuUsage = process.cpuUsage();
     const memUsage = process.memoryUsage();
-    
+
     return {
       pid: process.pid,
       uptime: Math.floor(process.uptime()),
       cpu: {
         user: cpuUsage.user,
-        system: cpuUsage.system
+        system: cpuUsage.system,
       },
       memory: {
         rss: Math.round(memUsage.rss / 1024 / 1024),
         heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024),
         heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),
-        external: Math.round(memUsage.external / 1024 / 1024)
-      }
+        external: Math.round(memUsage.external / 1024 / 1024),
+      },
     };
   }
 }

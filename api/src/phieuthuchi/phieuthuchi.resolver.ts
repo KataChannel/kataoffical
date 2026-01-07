@@ -2,7 +2,10 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import GraphQLJSON from 'graphql-type-json';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreatePhieuThuChiDto, UpdatePhieuThuChiDto } from './dto/phieuthuchi.dto';
+import {
+  CreatePhieuThuChiDto,
+  UpdatePhieuThuChiDto,
+} from './dto/phieuthuchi.dto';
 import { PhieuThuChiService } from './phieuthuchi.service';
 
 @Resolver(() => GraphQLJSON)

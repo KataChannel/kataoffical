@@ -1,18 +1,22 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    Post,
-    Put,
-    Query,
-    Request,
-    UseGuards,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { LoaiThanhToan, TrangThaiThanhToan } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateBulkThanhToanDto, CreateThanhToanDto, UpdateThanhToanDto } from './dto/thanhtoan.dto';
+import {
+  CreateBulkThanhToanDto,
+  CreateThanhToanDto,
+  UpdateThanhToanDto,
+} from './dto/thanhtoan.dto';
 import { ThanhToanService } from './thanhtoan.service';
 
 @Controller('thanhtoan')
@@ -27,7 +31,10 @@ export class ThanhToanController {
   }
 
   @Post('bulk')
-  async createBulk(@Body() createBulkDto: CreateBulkThanhToanDto, @Request() req: any) {
+  async createBulk(
+    @Body() createBulkDto: CreateBulkThanhToanDto,
+    @Request() req: any,
+  ) {
     const nguoiTaoId = req.user?.sub || req.user?.id;
     return this.thanhToanService.createBulk(createBulkDto, nguoiTaoId);
   }
@@ -75,10 +82,7 @@ export class ThanhToanController {
   }
 
   @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateDto: UpdateThanhToanDto,
-  ) {
+  async update(@Param('id') id: string, @Body() updateDto: UpdateThanhToanDto) {
     return this.thanhToanService.update(id, updateDto);
   }
 

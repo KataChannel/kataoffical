@@ -1,6 +1,9 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { BaoCaoDongTienService, ThongKeDongTien } from './baocao-dongtien.service';
+import {
+  BaoCaoDongTienService,
+  ThongKeDongTien,
+} from './baocao-dongtien.service';
 
 @Controller('baocao/dongtien')
 @UseGuards(JwtAuthGuard)

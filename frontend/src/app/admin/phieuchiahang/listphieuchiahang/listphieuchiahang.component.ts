@@ -1103,16 +1103,14 @@ export class ListPhieuchiahangComponent {
 
           } catch (error) {
             console.error('❌ [UpdateListBill] Error processing Excel:', error);
-            this._snackBar.open(
-              `❌ Lỗi: ${error instanceof Error ? error.message : 'Không thể xử lý file Excel'}`,
+            this._snackBar.open(`❌ Lỗi: ${error instanceof Error ? error.message : 'Không thể xử lý file Excel'}`,
               '',
               {
                 duration: 4000,
                 horizontalPosition: 'end',
                 verticalPosition: 'top',
                 panelClass: ['snackbar-error'],
-              }
-            );
+              });
           } finally {
             this.isLoading.set(false);
           }
