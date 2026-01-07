@@ -236,8 +236,59 @@
 
 
 
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 mt-4" *ngIf="dataSource.data.length > 0">
+      <!-- Doanh Số Card -->
+      <div class="group relative bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
+        <div class="flex items-center justify-between mb-4">
+          <div class="p-3 bg-blue-500 rounded-xl shadow-lg shadow-blue-200">
+            <mat-icon class="text-white">receipt_long</mat-icon>
+          </div>
+          <span class="text-xs font-bold text-blue-400 uppercase tracking-widest">Revenue</span>
+        </div>
+        <div class="text-blue-600 text-sm font-bold uppercase tracking-wider opacity-80">Tổng Doanh Số (CN Tạm)</div>
+        <div class="text-3xl font-black text-blue-900 mt-2 truncate">{{ totalRevenue | number }}</div>
+        <div class="mt-4 flex items-center text-xs text-blue-500 bg-blue-100/50 w-fit px-2 py-1 rounded-full">
+          <mat-icon class="text-sm mr-1 h-auto w-auto" style="font-size: 14px;">inventory_2</mat-icon>
+          {{ dataSource.data.length }} Đơn hàng
+        </div>
+      </div>
+      
+      <!-- Thanh Toán Card -->
+      <div class="group relative bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
+        <div class="flex items-center justify-between mb-4">
+          <div class="p-3 bg-emerald-500 rounded-xl shadow-lg shadow-emerald-200">
+            <mat-icon class="text-white">payments</mat-icon>
+          </div>
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Payments</span>
+        </div>
+        <div class="text-emerald-600 text-sm font-bold uppercase tracking-wider opacity-80">Đã Thanh Toán</div>
+        <div class="text-3xl font-black text-emerald-900 mt-2 truncate">{{ totalPaid | number }}</div>
+        <div class="mt-4 flex items-center text-xs text-emerald-500 bg-emerald-100/50 w-fit px-2 py-1 rounded-full">
+          <mat-icon class="text-sm mr-1 h-auto w-auto" style="font-size: 14px;">check_circle</mat-icon>
+          Tiền thu thực tế
+        </div>
+      </div>
+
+      <!-- Còn Lại Card -->
+      <div class="group relative bg-gradient-to-br from-rose-50 to-orange-50 border border-rose-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
+        <div class="flex items-center justify-between mb-4">
+          <div class="p-3 bg-rose-500 rounded-xl shadow-lg shadow-rose-200">
+            <mat-icon class="text-white">account_balance_wallet</mat-icon>
+          </div>
+          <span class="text-xs font-bold text-rose-400 uppercase tracking-widest">Balance</span>
+        </div>
+        <div class="text-rose-600 text-sm font-bold uppercase tracking-wider opacity-80">Còn Lại</div>
+        <div class="text-3xl font-black text-rose-900 mt-2 truncate">{{ totalRemaining | number }}</div>
+        <div class="mt-4 flex items-center text-xs text-rose-500 bg-rose-100/50 w-fit px-2 py-1 rounded-full">
+          <mat-icon class="text-sm mr-1 h-auto w-auto" style="font-size: 14px;">warning</mat-icon>
+          Dư nợ cần thu
+        </div>
+      </div>
+    </div>
+
     <!-- Table với loading state -->
-    <div class="w-full overflow-auto relative">
+    <div class="w-full overflow-auto relative rounded-2xl border border-gray-100 shadow-sm bg-white p-2">
       <!-- Loading indicator cho table -->
       <div *ngIf="isLoading && dataSource.data.length === 0"
         class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 z-10">
@@ -361,8 +412,18 @@
             </span>
             } 
             @case ('tongtien') {
-            <span class="max-w-40 line-clamp-4 text-end">
-              {{ row[column] | number : "1.0-3" }}
+            <span class="max-w-40 line-clamp-4 text-end font-bold text-blue-600">
+              {{ row[column] | number : "1.0-0" }}
+            </span>
+            } 
+            @case ('dathanhtoan') {
+            <span class="max-w-40 line-clamp-4 text-end font-bold text-emerald-600">
+              {{ row[column] | number : "1.0-0" }}
+            </span>
+            } 
+            @case ('conlai') {
+            <span class="max-w-40 line-clamp-4 text-end font-bold text-rose-600">
+              {{ row[column] | number : "1.0-0" }}
             </span>
             } 
              @case ('isActive') {

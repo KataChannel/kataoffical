@@ -1,50 +1,45 @@
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
-  Component,
-  computed,
-  effect,
-  inject,
-  TemplateRef,
-  ViewChild,
+    Component,
+    inject,
+    TemplateRef,
+    ViewChild
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
+import { Router, RouterOutlet } from '@angular/router';
+import html2canvas from 'html2canvas';
+import moment from 'moment';
+import * as XLSX from 'xlsx-js-style';
+import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 import {
-  readExcelFile,
-  writeExcelFile,
+    readExcelFile
 } from '../../../shared/utils/exceldrive.utils';
 import {
-  ConvertDriveData,
-  convertToSlug,
-  GenId,
+    ConvertDriveData,
+    convertToSlug,
+    GenId,
 } from '../../../shared/utils/shared.utils';
-import * as XLSX from 'xlsx-js-style'; 
-import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import moment from 'moment';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import html2canvas from 'html2canvas';
-import { DonhangService } from '../../donhang/donhang.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
-import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
-import {MatChipsModule} from '@angular/material/chips';
-import { GraphqlService } from '../../../shared/services/graphql.service';
+import { DonhangService } from '../../donhang/donhang.service';
 @Component({
   selector: 'app-listcongnokhachhang',
   templateUrl: './listcongnokhachhang.component.html',
@@ -88,6 +83,8 @@ export class ListcongnokhachhangComponent {
     'tong',
     'tongvat',
     'tongtien',
+    'dathanhtoan',
+    'conlai'
   ];
   ColumnName: any = {
     ngaygiao: 'Ngày Giao',
@@ -98,9 +95,11 @@ export class ListcongnokhachhangComponent {
     tong: 'Tổng',
     tongvat: 'Tổng VAT',
     tongtien: 'Tổng Tiền',
+    dathanhtoan: 'Đã Thanh Toán',
+    conlai: 'Còn Lại'
   };
   FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('CongnoColFilter') || '[]'
+    localStorage.getItem('CongnoColFilter') || '["ngaygiao", "madonhang", "makh", "name", "soluong", "tong", "tongvat", "tongtien", "dathanhtoan", "conlai"]'
   );
   exampleExport:any={}
   Columns: any[] = [];
@@ -108,6 +107,18 @@ export class ListcongnokhachhangComponent {
   Trangthaidon:any = TrangThaiDon;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+
+  get totalRevenue() {
+    return this.dataSource.data.reduce((sum: number, item: any) => sum + (Number(item.tongtien) || 0), 0);
+  }
+
+  get totalPaid() {
+    return this.dataSource.data.reduce((sum: number, item: any) => sum + (Number(item.dathanhtoan) || 0), 0);
+  }
+
+  get totalRemaining() {
+    return this.dataSource.data.reduce((sum: number, item: any) => sum + (Number(item.conlai) || 0), 0);
+  }
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   @ViewChild('ConfirmDongboDialog') confirmDongboDialog!: TemplateRef<any>;
   filterValues: { [key: string]: string } = {};

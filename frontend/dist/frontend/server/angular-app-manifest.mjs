@@ -1153,6 +1153,54 @@ export default {
       "chunk-V7AISDFT.js",
       "chunk-K7VAKZGX.js"
     ],
+    "route": "/admin/ar-document"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-LXFRKNIS.js",
+      "chunk-DRSGWHES.js",
+      "chunk-X6FAC3TC.js",
+      "chunk-KRNJE5C7.js",
+      "chunk-6EGVKZMR.js",
+      "chunk-XOT4T2UU.js",
+      "chunk-ZW44ZSN2.js",
+      "chunk-GVDV5XYY.js",
+      "chunk-V7AISDFT.js",
+      "chunk-K7VAKZGX.js"
+    ],
+    "route": "/admin/ar-document/create"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-LXFRKNIS.js",
+      "chunk-DRSGWHES.js",
+      "chunk-X6FAC3TC.js",
+      "chunk-KRNJE5C7.js",
+      "chunk-6EGVKZMR.js",
+      "chunk-XOT4T2UU.js",
+      "chunk-ZW44ZSN2.js",
+      "chunk-GVDV5XYY.js",
+      "chunk-V7AISDFT.js",
+      "chunk-K7VAKZGX.js"
+    ],
+    "route": "/admin/ar-document/*"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-LXFRKNIS.js",
+      "chunk-DRSGWHES.js",
+      "chunk-X6FAC3TC.js",
+      "chunk-KRNJE5C7.js",
+      "chunk-6EGVKZMR.js",
+      "chunk-XOT4T2UU.js",
+      "chunk-ZW44ZSN2.js",
+      "chunk-GVDV5XYY.js",
+      "chunk-V7AISDFT.js",
+      "chunk-K7VAKZGX.js"
+    ],
     "route": "/admin/cashflow"
   },
   {
@@ -1655,8 +1703,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72880, hash: '6f55da8044efb0825453debb737feb8dce0db73b8d11f7269afbb6d5f2b128f6', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24171, hash: '208b0b3fdae16bc31c44e505efe2ca09657a126605aacfa25fd514788df87e0c', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
-    'styles-Q34CVMQJ.css': {size: 192561, hash: '4jOWzgLGSqc', text: () => import('./assets-chunks/styles-Q34CVMQJ_css.mjs').then(m => m.default)}
+    'index.csr.html': {size: 72880, hash: 'b1c4b1431023bc113a2913217fc76c571e0a365e4694d007fbc492c2ce20b0d3', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24171, hash: '2037efcfbd30842f1e647818421487501b62d6c33621671cb8c72b81d48d9a26', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'styles-HV44OLB7.css': {size: 192840, hash: '4Vj5QwmKFMk', text: () => import('./assets-chunks/styles-HV44OLB7_css.mjs').then(m => m.default)}
   },
 };

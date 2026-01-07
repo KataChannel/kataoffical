@@ -55,13 +55,23 @@ import { ARDocumentService } from '../ar-document.service';
            </div>
 
            <div>
-             <div class="text-sm text-gray-500">Tổng tiền:</div>
-             <div class="text-2xl font-bold text-green-600">{{doc.totalAmount | number}}</div>
+             <div class="text-sm text-gray-500">Tổng doanh số (CN Tạm):</div>
+             <div class="text-2xl font-bold text-blue-600">{{doc.totalAmount | number}}</div>
+           </div>
+
+           <div>
+             <div class="text-sm text-gray-500">Đã thanh toán:</div>
+             <div class="text-2xl font-bold text-green-600">{{totalPaid | number}}</div>
+           </div>
+
+           <div class="pt-2 border-t">
+             <div class="text-sm text-gray-500">Còn lại:</div>
+             <div class="text-2xl font-bold text-red-600">{{remainingBalance | number}}</div>
            </div>
 
            <div *ngIf="doc.description">
              <div class="text-sm text-gray-500">Ghi chú:</div>
-             <div class="text-gray-700 italic border-l-4 pl-2">{{doc.description}}</div>
+             <div class="text-gray-700 italic border-l-4 pl-2 text-sm">{{doc.description}}</div>
            </div>
         </div>
 
@@ -92,23 +102,37 @@ import { ARDocumentService } from '../ar-document.service';
                  </div>
               </div>
 
-              <h3 class="text-sm font-semibold mb-2">Đơn hàng liên quan:</h3>
-              <table class="w-full text-sm">
-                <thead>
-                  <tr class="bg-gray-50 text-left">
-                    <th class="p-2">Mã đơn</th>
-                    <th class="p-2">Trạng thái SO</th>
-                    <th class="p-2 text-right">Thành tiền</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let so of item.salesOrders" class="border-b">
-                    <td class="p-2"><a class="text-blue-600" [routerLink]="['/admin/donhang', so.salesOrder.id]">{{so.salesOrder.madonhang}}</a></td>
-                    <td class="p-2">{{so.salesOrder.soStatus}}</td>
-                    <td class="p-2 text-right font-medium">{{so.salesOrder.tongtien | number}}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <h3 class="text-sm font-semibold mb-2">Chi tiết đơn hàng trong giai đoạn:</h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="bg-gray-50 text-left">
+                      <th class="p-2 border-b">Mã đơn</th>
+                      <th class="p-2 border-b">Ngày giao</th>
+                      <th class="p-2 border-b">Trạng thái (Status)</th>
+                      <th class="p-2 border-b text-right">Thành tiền</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let so of item.salesOrders" class="border-b hover:bg-gray-50">
+                      <td class="p-2"><a class="text-blue-600 font-medium whitespace-nowrap" [routerLink]="['/admin/donhang', so.salesOrder.id]">{{so.salesOrder.madonhang}}</a></td>
+                      <td class="p-2 whitespace-nowrap">{{so.salesOrder.ngaygiao | date:'dd/MM/yyyy'}}</td>
+                      <td class="p-2">
+                         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ring-1 ring-inset"
+                               [ngClass]="{
+                                 'bg-gray-50 text-gray-600 ring-gray-200': so.salesOrder.soStatus === 'MOI',
+                                 'bg-blue-50 text-blue-600 ring-blue-200': so.salesOrder.soStatus === 'DA_DOI_CHIEU',
+                                 'bg-green-50 text-green-600 ring-green-200': so.salesOrder.soStatus === 'DA_THU_TIEN',
+                                 'bg-yellow-50 text-yellow-600 ring-yellow-200': so.salesOrder.soStatus === 'CHO_THU_TIEN'
+                               }">
+                           {{getStatusLabel(so.salesOrder.soStatus)}}
+                         </span>
+                      </td>
+                      <td class="p-2 text-right font-medium">{{so.salesOrder.tongtien | number}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
               <!-- Thông tin phiếu thu nếu có -->
               <div *ngIf="item.receiptVoucher" class="mt-4 p-3 bg-emerald-50 rounded-lg border border-emerald-100 flex justify-between items-center">
@@ -137,6 +161,31 @@ export class DetailARDocumentComponent implements OnInit {
       const id = params.get('id');
       if (id) this.arService.findOne(id);
     });
+  }
+
+  get totalPaid() {
+    const doc = this.arService.DetailARDocument();
+    if (!doc) return 0;
+    return doc.items.reduce((sum: number, item: any) => {
+      return sum + (item.receiptVoucher ? Number(item.amount) : 0);
+    }, 0);
+  }
+
+  get remainingBalance() {
+    const doc = this.arService.DetailARDocument();
+    if (!doc) return 0;
+    return Number(doc.totalAmount) - this.totalPaid;
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'MOI': return 'Đã Nhận (Mới)';
+      case 'DA_GIAO_THUC_TE': return 'Đã Nhận Thực Tế';
+      case 'DA_DOI_CHIEU': return 'Đã Đối Chiếu (Verified)';
+      case 'CHO_THU_TIEN': return 'Chờ Thu Tiền';
+      case 'DA_THU_TIEN': return 'Đã Thanh Toán (Paid)';
+      default: return status || 'N/A';
+    }
   }
 
   async review(status: string) {

@@ -1,8 +1,8 @@
 import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
+    BadRequestException,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException,
 } from '@nestjs/common';
 import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
@@ -329,6 +329,14 @@ export class DonhangService {
                 giaban: true,
               },
             },
+            ThanhToan: {
+              where: { trangThai: 'DA_THANH_TOAN' },
+              select: { soTien: true }
+            },
+            PhieuThuChi: {
+              where: { loai: 'THU', trangThai: 'DA_THANH_TOAN' },
+              select: { soTien: true }
+            }
           },
           orderBy: { createdAt: 'desc' },
         });
@@ -357,6 +365,12 @@ export class DonhangService {
           const tongvat = tong * vatRate;
           const tongtien = tong + tongvat;
 
+          // Calculate total paid across both models
+          const paidFromThanhToan = (donhang as any).ThanhToan.reduce((sum: number, p: any) => sum + Number(p.soTien), 0);
+          const paidFromPhieuThu = (donhang as any).PhieuThuChi.reduce((sum: number, p: any) => sum + Number(p.soTien), 0);
+          const dathanhtoan = paidFromThanhToan + paidFromPhieuThu;
+          const conlai = tongtien - dathanhtoan;
+
           return {
             id: donhang.id,
             madonhang: donhang.madonhang,
@@ -365,6 +379,8 @@ export class DonhangService {
             soluong: soluong.toFixed(3),
             tongtien: parseFloat(tongtien.toFixed(3)),
             tongvat: parseFloat(tongvat.toFixed(3)),
+            dathanhtoan: parseFloat(dathanhtoan.toFixed(3)),
+            conlai: parseFloat(conlai.toFixed(3)),
             name: donhang.khachhang?.name,
             makh: donhang.khachhang?.makh,
           };

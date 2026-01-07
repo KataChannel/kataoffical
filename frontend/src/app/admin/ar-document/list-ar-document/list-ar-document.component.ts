@@ -78,6 +78,15 @@ import { ARDocumentService } from '../ar-document.service';
             </td>
           </ng-container>
 
+          <!-- Khách hàng -->
+          <ng-container matColumnDef="customer">
+            <th mat-header-cell *matHeaderCellDef> Khách hàng </th>
+            <td mat-cell *matCellDef="let row"> 
+               {{ row.items[0]?.customer?.name || 'N/A' }}
+               <span *ngIf="row.items.length > 1" class="text-xs text-gray-400">(+{{row.items.length - 1}})</span>
+            </td>
+          </ng-container>
+
           <!-- Ngày lập -->
           <ng-container matColumnDef="ngayLap">
             <th mat-header-cell *matHeaderCellDef> Ngày lập </th>
@@ -94,14 +103,14 @@ import { ARDocumentService } from '../ar-document.service';
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef> Trạng thái </th>
             <td mat-cell *matCellDef="let row"> 
-               <span class="px-2 py-1 rounded text-xs font-bold uppercase"
+               <span class="px-2 py-1 rounded text-xs font-bold uppercase transition-colors"
                      [ngClass]="{
                        'bg-gray-100 text-gray-600': row.status === 'MOI',
                        'bg-blue-100 text-blue-600': row.status === 'CHO_THU_TIEN',
                        'bg-green-100 text-green-600': row.status === 'DA_THU_TIEN',
                        'bg-red-100 text-red-600': row.status === 'KHONG_DUYET'
                      }">
-                 {{row.status}}
+                 {{ row.status === 'MOI' ? 'Mới' : (row.status === 'CHO_THU_TIEN' ? 'Chờ thu tiền' : (row.status === 'DA_THU_TIEN' ? 'Đã thu tiền' : 'Không duyệt')) }}
                </span>
             </td>
           </ng-container>
@@ -139,7 +148,7 @@ export class ListARDocumentComponent implements OnInit {
     denNgay: null
   };
 
-  displayedColumns: string[] = ['maChungTu', 'ngayLap', 'totalAmount', 'status', 'actions'];
+  displayedColumns: string[] = ['maChungTu', 'customer', 'ngayLap', 'totalAmount', 'status', 'actions'];
 
   ngOnInit() {
     this.loadData();
