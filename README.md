@@ -100,6 +100,10 @@ docker-compose up -d
 
 Historical documentation and implementation notes can be found in `archive/documentation/`.
 
+### 📌 Strategic Planning & Review (Latest)
+- **[Project Review (Assessment 2026)](./PROJECT_REVIEW.md)** - Detailed evaluation of current architecture.
+- **[Angular Upgrade Roadmap (19 → 21)](./UPGRADE_PLAN_ANGULAR.md)** - Technical plan for future framework upgrades.
+
 ## 🧪 Testing
 
 Test scripts and debugging tools are located in `archive/test-scripts/`.
