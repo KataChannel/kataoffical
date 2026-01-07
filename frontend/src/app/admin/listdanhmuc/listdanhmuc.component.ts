@@ -1,23 +1,20 @@
-import {AfterViewInit, Component, inject, viewChild, ViewChild} from '@angular/core';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
-import {MatSort, MatSortModule} from '@angular/material/sort';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import { ListDanhmuc } from './listdanhmuc';
-import { MatMenuModule } from '@angular/material/menu';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { DetailDanhmucComponent } from './detaildanhmuc/detaildanhmuc.component';
-import { DanhmucsService } from './listdanhmuc.service';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { environment } from '../../../environments/environment.development';
-import { ConvertDriveColumnName, ConvertDriveData } from '../../shared/utils/shared.utils';
+import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { Router, RouterOutlet } from '@angular/router';
 import { GoogleSheetService } from '../../shared/googlesheets/googlesheets.service';
+import { ConvertDriveColumnName, ConvertDriveData } from '../../shared/utils/shared.utils';
+import { DanhmucsService } from './listdanhmuc.service';
 @Component({
   selector: 'app-listdanhmuc',
   templateUrl: './listdanhmuc.component.html',

@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { DynamicComponentResolver } from './dynamic-component.resolver';
 import { AuthGuard } from './shared/common/users/guards/auth.guard';
 import { GuestGuard } from './shared/common/users/guards/guest.guard';
 import { PermissionGuard } from './shared/common/users/guards/permission.guard';
@@ -950,6 +949,7 @@ export const routes: Routes = [
             (c) => c.LienheComponent
           ),
       },
+/*
       {
         path: ':slug',
         resolve: { componentType: DynamicComponentResolver },
@@ -992,6 +992,7 @@ export const routes: Routes = [
           }
         },
       },
+      */
     ],
   },
 ];

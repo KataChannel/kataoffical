@@ -140,7 +140,7 @@
     <!-- @for (item of Detail?.Forms; track item.id; let idx = $index) {
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>{{item.Title}}</mat-label>
-        <input matInput [(ngModel)]="Detail?.Data[item.value]" [disabled]="!isEdit" [ngModelOptions]="{standalone: true}" [placeholder]="item.Title">
+        <input matInput [(ngModel)]="Detail.Data[item.value]" [disabled]="!isEdit" [ngModelOptions]="{standalone: true}" [placeholder]="item.Title">
       </mat-form-field>
     }
     @empty {

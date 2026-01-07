@@ -1,8 +1,5 @@
 {
-  "dependencies": {
-    "axios": "^1.12.2",
-    "class-validator": "^0.14.1"
-  },
+  "dependencies": {},
   "scripts": {
     "dev": "./bun-dev.sh",
     "dev:be": "cd api && bun run start:dev",
@@ -47,7 +44,5 @@
     "db:push": "cd api && bun prisma db push",
     "db:studio": "cd api && bun prisma studio"
   },
-  "devDependencies": {
-    "xlsx": "^0.18.5"
-  }
+  "devDependencies": {}
 }

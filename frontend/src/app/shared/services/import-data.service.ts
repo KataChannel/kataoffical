@@ -1,25 +1,10 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { readExcelFile, readExcelFileNoWorkerArray } from '../utils/exceldrive.utils';
-import { DataValidator, ValidationRule, ValidationResult } from '../utils/data-validation.utils';
 import { ImportPreviewDialogComponent } from '../components/import-preview-dialog/import-preview-dialog.component';
-
-export interface ImportConfig {
-  entityType: string;
-  validationRules?: ValidationRule[];
-  requiredFields?: string[];
-  maxRows?: number;
-  allowedFileTypes?: string[];
-}
-
-export interface ImportResult {
-  success: boolean;
-  validData: any[];
-  invalidData: any[];
-  errors: any[];
-  message: string;
-}
+import { ImportConfig, ImportResult } from '../models/import.models';
+import { DataValidator, ValidationResult, ValidationRule } from '../utils/data-validation.utils';
+import { readExcelFile, readExcelFileNoWorkerArray } from '../utils/exceldrive.utils';
 
 @Injectable({
   providedIn: 'root'
