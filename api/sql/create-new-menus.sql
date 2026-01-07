@@ -3,10 +3,10 @@
 -- File: api/sql/create-new-menus.sql
 
 -- ============================================================
--- PHẦN 1: CRON MANAGEMENT
+-- PHẦN 1: TẠO PERMISSIONS (Định nghĩa quyền trước)
 -- ============================================================
 
--- 1. Tạo Permission cho Cron Management
+-- 1.1. Cron Management
 INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
 VALUES (gen_random_uuid(), 'P_CRON_VIEW', 'cron-management.view', 'Hệ thống', 'Xem và quản lý Cron Jobs', 100, NOW(), NOW())
 ON CONFLICT ("name") DO NOTHING;
@@ -15,29 +15,7 @@ INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order
 VALUES (gen_random_uuid(), 'P_CRON_EXEC', 'cron-management.execute', 'Hệ thống', 'Kích hoạt Cron Jobs thủ công', 101, NOW(), NOW())
 ON CONFLICT ("name") DO NOTHING;
 
--- 2. Tạo Menu parent "Hệ thống" nếu chưa có
-INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
-SELECT gen_random_uuid(), 'Hệ thống', 'settings', NULL, NULL, 99, true, NOW(), NOW()
-WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "title" = 'Hệ thống' AND "parentId" IS NULL);
-
--- 3. Tạo menu con "Quản lý Cron Jobs"
-INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
-SELECT gen_random_uuid(), 'Quản lý Cron Jobs', 'schedule', '/admin/cron-management',
-  (SELECT "id" FROM "Menu" WHERE "title" = 'Hệ thống' AND "parentId" IS NULL LIMIT 1), 1, true, NOW(), NOW()
-WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/cron-management');
-
--- 4. Gán permission cho role Admin (Cron)
-INSERT INTO "RolePermission" ("id", "roleId", "permissionId")
-SELECT gen_random_uuid(), r."id", p."id"
-FROM "Role" r CROSS JOIN "Permission" p
-WHERE r."name" = 'Admin' AND p."name" IN ('cron-management.view', 'cron-management.execute')
-  AND NOT EXISTS (SELECT 1 FROM "RolePermission" rp WHERE rp."roleId" = r."id" AND rp."permissionId" = p."id");
-
--- ============================================================
--- PHẦN 2: KẾ TOÁN (Thu Chi, Thanh toán, Hóa đơn, Báo cáo)
--- ============================================================
-
--- 1. Tạo Permission cho Phiếu Thu Chi
+-- 1.2. Kế Toán - Phiếu Thu Chi
 INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
 VALUES (gen_random_uuid(), 'P_THUCHI_VIEW', 'phieuthuchi.view', 'Kế toán', 'Xem danh sách phiếu thu chi', 50, NOW(), NOW())
 ON CONFLICT ("name") DO NOTHING;
@@ -54,7 +32,7 @@ INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order
 VALUES (gen_random_uuid(), 'P_THUCHI_DELETE', 'phieuthuchi.delete', 'Kế toán', 'Xóa phiếu thu chi', 53, NOW(), NOW())
 ON CONFLICT ("name") DO NOTHING;
 
--- 2. Tạo Permission cho Thanh toán
+-- 1.3. Kế Toán - Thanh toán
 INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
 VALUES (gen_random_uuid(), 'P_THANHTOAN_VIEW', 'thanhtoan.view', 'Kế toán', 'Xem danh sách thanh toán', 54, NOW(), NOW())
 ON CONFLICT ("name") DO NOTHING;
@@ -71,7 +49,7 @@ INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order
 VALUES (gen_random_uuid(), 'P_THANHTOAN_DELETE', 'thanhtoan.delete', 'Kế toán', 'Xóa thanh toán', 57, NOW(), NOW())
 ON CONFLICT ("name") DO NOTHING;
 
--- 3. Tạo Permission cho Hóa đơn điện tử
+-- 1.4. Kế Toán - Hóa đơn điện tử
 INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
 VALUES (gen_random_uuid(), 'P_HOADON_VIEW', 'hoadon.view', 'Kế toán', 'Xem danh sách hóa đơn', 58, NOW(), NOW())
 ON CONFLICT ("name") DO NOTHING;
@@ -88,7 +66,7 @@ INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order
 VALUES (gen_random_uuid(), 'P_HOADON_DELETE', 'hoadon.delete', 'Kế toán', 'Xóa hóa đơn', 61, NOW(), NOW())
 ON CONFLICT ("name") DO NOTHING;
 
--- 4. Tạo Permission cho Báo cáo dòng tiền
+-- 1.5. Kế Toán - Báo cáo dòng tiền
 INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
 VALUES (gen_random_uuid(), 'P_CASHFLOW_VIEW', 'cashflow.view', 'Kế toán', 'Xem báo cáo dòng tiền', 62, NOW(), NOW())
 ON CONFLICT ("name") DO NOTHING;
@@ -97,55 +75,12 @@ INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order
 VALUES (gen_random_uuid(), 'P_CASHFLOW_EXPORT', 'cashflow.export', 'Kế toán', 'Xuất báo cáo dòng tiền', 63, NOW(), NOW())
 ON CONFLICT ("name") DO NOTHING;
 
--- 5. Tạo Permission cho menu cha Kế Toán
+-- 1.6. Kế Toán - Menu Tổng
 INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
 VALUES (gen_random_uuid(), 'P_KETOAN_VIEW', 'ketoan.view', 'Kế toán', 'Xem menu Kế Toán', 49, NOW(), NOW())
 ON CONFLICT ("name") DO NOTHING;
 
--- 6. Tạo Menu parent "Kế Toán" nếu chưa có
-INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
-SELECT gen_random_uuid(), 'Kế Toán', 'account_balance', '/admin/ketoan', NULL, 50, true, NOW(), NOW()
-WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/ketoan');
-
--- 7. Tạo menu "Phiếu Thu Chi"
-INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
-SELECT gen_random_uuid(), 'Phiếu Thu Chi', 'receipt_long', '/admin/phieuthuchi',
-  (SELECT "id" FROM "Menu" WHERE "slug" = '/admin/ketoan' LIMIT 1), 1, true, NOW(), NOW()
-WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/phieuthuchi');
-
--- 8. Tạo menu "Thanh toán"
-INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
-SELECT gen_random_uuid(), 'Thanh toán', 'payments', '/admin/thanhtoan',
-  (SELECT "id" FROM "Menu" WHERE "slug" = '/admin/ketoan' LIMIT 1), 2, true, NOW(), NOW()
-WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/thanhtoan');
-
--- 9. Tạo menu "Hóa đơn điện tử"
-INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
-SELECT gen_random_uuid(), 'Hóa đơn điện tử', 'description', '/admin/hoadon',
-  (SELECT "id" FROM "Menu" WHERE "slug" = '/admin/ketoan' LIMIT 1), 3, true, NOW(), NOW()
-WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/hoadon');
-
--- 10. Tạo menu "Báo cáo dòng tiền"
-INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
-SELECT gen_random_uuid(), 'Báo cáo dòng tiền', 'trending_up', '/admin/cashflow',
-  (SELECT "id" FROM "Menu" WHERE "slug" = '/admin/ketoan' LIMIT 1), 4, true, NOW(), NOW()
-WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/cashflow');
-
--- 11. Gán permission cho role Admin (Kế Toán)
-INSERT INTO "RolePermission" ("id", "roleId", "permissionId")
-SELECT gen_random_uuid(), r."id", p."id"
-FROM "Role" r CROSS JOIN "Permission" p
-WHERE r."name" = 'Admin' AND p."name" IN (
-  'ketoan.view',
-  'phieuthuchi.view', 'phieuthuchi.create', 'phieuthuchi.update', 'phieuthuchi.delete',
-  'thanhtoan.view', 'thanhtoan.create', 'thanhtoan.update', 'thanhtoan.delete',
-  'hoadon.view', 'hoadon.create', 'hoadon.update', 'hoadon.delete',
-  'cashflow.view', 'cashflow.export',
-  'payment-proposal.view', 'payment-proposal.create', 'payment-proposal.update', 'payment-proposal.delete', 'payment-proposal.approve'
-)
-AND NOT EXISTS (SELECT 1 FROM "RolePermission" rp WHERE rp."roleId" = r."id" AND rp."permissionId" = p."id");
-
--- 12. Tạo Permission cho Đề xuất thanh toán
+-- 1.7. Kế Toán - Đề xuất thanh toán (AP)
 INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
 VALUES (gen_random_uuid(), 'P_PP_VIEW', 'payment-proposal.view', 'Kế toán', 'Xem danh sách đề xuất thanh toán', 64, NOW(), NOW())
 ON CONFLICT ("name") DO NOTHING;
@@ -166,35 +101,121 @@ INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order
 VALUES (gen_random_uuid(), 'P_PP_APPROVE', 'payment-proposal.approve', 'Kế toán', 'Phê duyệt đề xuất thanh toán', 68, NOW(), NOW())
 ON CONFLICT ("name") DO NOTHING;
 
--- 13. Tạo menu "Đề xuất thanh toán"
+-- 1.8. Kế Toán - Chứng từ công nợ (AR)
+INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
+VALUES (gen_random_uuid(), 'P_AR_VIEW', 'ar-document.view', 'Kế toán', 'Xem danh sách chứng từ công nợ', 69, NOW(), NOW())
+ON CONFLICT ("name") DO NOTHING;
+
+INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
+VALUES (gen_random_uuid(), 'P_AR_CREATE', 'ar-document.create', 'Kế toán', 'Tạo chứng từ công nợ', 70, NOW(), NOW())
+ON CONFLICT ("name") DO NOTHING;
+
+INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
+VALUES (gen_random_uuid(), 'P_AR_UPDATE', 'ar-document.update', 'Kế toán', 'Cập nhật chứng từ công nợ', 71, NOW(), NOW())
+ON CONFLICT ("name") DO NOTHING;
+
+INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
+VALUES (gen_random_uuid(), 'P_AR_DELETE', 'ar-document.delete', 'Kế toán', 'Xóa chứng từ công nợ', 72, NOW(), NOW())
+ON CONFLICT ("name") DO NOTHING;
+
+INSERT INTO "Permission" ("id", "codeId", "name", "group", "description", "order", "createdAt", "updatedAt")
+VALUES (gen_random_uuid(), 'P_AR_APPROVE', 'ar-document.approve', 'Kế toán', 'Phê duyệt chứng từ công nợ', 73, NOW(), NOW())
+ON CONFLICT ("name") DO NOTHING;
+
+
+-- ============================================================
+-- PHẦN 2: TẠO MENU (Cấu trúc Menu)
+-- ============================================================
+
+-- 2.1. Parent Menu "Hệ thống"
 INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
-SELECT gen_random_uuid(), 'Đề xuất thanh toán', 'assignment_turned_in', '/admin/payment-proposal',
-  (SELECT "id" FROM "Menu" WHERE "slug" = '/admin/ketoan' LIMIT 1), 0, true, NOW(), NOW()
+SELECT gen_random_uuid(), 'Hệ thống', 'settings', NULL, NULL, 99, true, NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "title" = 'Hệ thống' AND "parentId" IS NULL);
+
+-- 2.2. Submenu "Quản lý Cron Jobs"
+INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
+SELECT gen_random_uuid(), 'Quản lý Cron Jobs', 'schedule', '/admin/cron-management',
+  (SELECT "id" FROM "Menu" WHERE "title" = 'Hệ thống' AND "parentId" IS NULL LIMIT 1), 1, true, NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/cron-management');
+
+-- 2.3. Parent Menu "Kế Toán"
+INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
+SELECT gen_random_uuid(), 'Kế Toán', 'account_balance', '/admin/ketoan', NULL, 50, true, NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/ketoan');
+
+-- 2.4. Submenu "Đề xuất thanh toán (AP)"
+INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
+SELECT gen_random_uuid(), 'Đề xuất thanh toán (AP)', 'assignment_turned_in', '/admin/payment-proposal',
+  (SELECT "id" FROM "Menu" WHERE "slug" = '/admin/ketoan' LIMIT 1), 1, true, NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/payment-proposal');
+
+-- 2.5. Submenu "Chứng từ công nợ (AR)"
+INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
+SELECT gen_random_uuid(), 'Chứng từ công nợ (AR)', 'assignment_ind', '/admin/ar-document',
+  (SELECT "id" FROM "Menu" WHERE "slug" = '/admin/ketoan' LIMIT 1), 2, true, NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/ar-document');
+
+-- 2.6. Submenu "Phiếu Thu Chi"
+INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
+SELECT gen_random_uuid(), 'Phiếu Thu Chi', 'receipt_long', '/admin/phieuthuchi',
+  (SELECT "id" FROM "Menu" WHERE "slug" = '/admin/ketoan' LIMIT 1), 3, true, NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/phieuthuchi');
+
+-- 2.7. Submenu "Thanh toán"
+INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
+SELECT gen_random_uuid(), 'Thanh toán', 'payments', '/admin/thanhtoan',
+  (SELECT "id" FROM "Menu" WHERE "slug" = '/admin/ketoan' LIMIT 1), 4, true, NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/thanhtoan');
+
+-- 2.8. Submenu "Hóa đơn điện tử"
+INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
+SELECT gen_random_uuid(), 'Hóa đơn điện tử', 'description', '/admin/hoadon',
+  (SELECT "id" FROM "Menu" WHERE "slug" = '/admin/ketoan' LIMIT 1), 5, true, NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/hoadon');
+
+-- 2.9. Submenu "Báo cáo dòng tiền"
+INSERT INTO "Menu" ("id", "title", "icon", "slug", "parentId", "order", "isActive", "createdAt", "updatedAt")
+SELECT gen_random_uuid(), 'Báo cáo dòng tiền', 'trending_up', '/admin/cashflow',
+  (SELECT "id" FROM "Menu" WHERE "slug" = '/admin/ketoan' LIMIT 1), 6, true, NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM "Menu" WHERE "slug" = '/admin/cashflow');
+
+
+-- ============================================================
+-- PHẦN 3: GÁN QUYỀN CHO ROLE ADMIN (FULL ACCESS)
+-- ============================================================
+
+INSERT INTO "RolePermission" ("id", "roleId", "permissionId")
+SELECT gen_random_uuid(), r."id", p."id"
+FROM "Role" r CROSS JOIN "Permission" p
+WHERE r."name" = 'Admin' AND (
+    p."name" LIKE 'cron-management.%' OR
+    p."name" LIKE 'phieuthuchi.%' OR
+    p."name" LIKE 'thanhtoan.%' OR
+    p."name" LIKE 'hoadon.%' OR
+    p."name" LIKE 'cashflow.%' OR
+    p."name" = 'ketoan.view' OR
+    p."name" LIKE 'payment-proposal.%' OR
+    p."name" LIKE 'ar-document.%'
+)
+AND NOT EXISTS (SELECT 1 FROM "RolePermission" rp WHERE rp."roleId" = r."id" AND rp."permissionId" = p."id");
+
 
 -- ============================================================
 -- KIỂM TRA KẾT QUẢ
 -- ============================================================
-SELECT '=== Menus Kế Toán ===' as info;
+SELECT '=== Menus ===' as info;
 SELECT m."title", m."slug", m."icon", COALESCE(p."title", 'ROOT') as parent 
 FROM "Menu" m LEFT JOIN "Menu" p ON m."parentId" = p."id" 
-WHERE m."slug" IN ('/admin/ketoan', '/admin/phieuthuchi', '/admin/thanhtoan', '/admin/hoadon', '/admin/cashflow', '/admin/cron-management', '/admin/payment-proposal')
-   OR m."title" IN ('Kế Toán', 'Hệ thống')
-ORDER BY m."order";
+WHERE m."slug" LIKE '/admin/%'
+ORDER BY parent DESC, m."order" ASC;
 
-SELECT '=== Permissions Kế Toán ===' as info;
-SELECT "name", "group" FROM "Permission" 
-WHERE "name" LIKE 'phieuthuchi%' OR "name" LIKE 'thanhtoan%' OR "name" LIKE 'hoadon%' 
-   OR "name" LIKE 'cashflow%' OR "name" LIKE 'ketoan%' OR "name" LIKE 'cron-management%' 
-   OR "name" LIKE 'payment-proposal%'
-ORDER BY "group", "name";
+SELECT '=== Permissions Count per Group ===' as info;
+SELECT "group", count(*) FROM "Permission" GROUP BY "group";
 
-SELECT '=== Admin Permissions ===' as info;
-SELECT r."name" as role_name, p."name" as permission_name
+SELECT '=== Admin Full Permissions ===' as info;
+SELECT p."name" as permission_name
 FROM "RolePermission" rp
 JOIN "Role" r ON rp."roleId" = r."id"
 JOIN "Permission" p ON rp."permissionId" = p."id"
-WHERE p."name" LIKE 'phieuthuchi%' OR p."name" LIKE 'thanhtoan%' OR p."name" LIKE 'hoadon%' 
-   OR p."name" LIKE 'cashflow%' OR p."name" LIKE 'ketoan%' OR p."name" LIKE 'cron-management%'
-   OR p."name" LIKE 'payment-proposal%'
+WHERE r."name" = 'Admin' AND (p."name" LIKE 'payment-proposal%' OR p."name" LIKE 'ar-document%')
 ORDER BY p."name";

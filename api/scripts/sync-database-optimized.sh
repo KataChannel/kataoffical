@@ -59,6 +59,9 @@ TARGET_ONLY_TABLES=(
     "PaymentProposal"
     "PaymentProposalSupplier"
     "PaymentProposalPurchaseOrder"
+    "ARDocument"
+    "ARDocumentItem"
+    "ARDocumentDonhang"
 )
 
 echo "[$TIMESTAMP] 🚜 Đang backup các bảng chỉ có ở V3..." | tee -a $LOG_FILE
@@ -136,7 +139,10 @@ DECLARE
         'User', 'UserPermission', 'UserRole', 'UserguidBlock', 'UserguidStep',
         'Xuatkho', 'Xuatkhosanpham',
         '_KhachhangNhom', '_NhacungcapNhom', '_NhacungcapToSanpham',
-        'performance_logs', 'support_attachments', 'support_responses', 'support_tickets'
+        'performance_logs', 'support_attachments', 'support_responses', 'support_tickets',
+        'PhieuThuChi', 'ThanhToan', 'HoaDonDienTu', 'CronExecutionLog',
+        'PaymentProposal', 'PaymentProposalSupplier', 'PaymentProposalPurchaseOrder',
+        'ARDocument', 'ARDocumentItem', 'ARDocumentDonhang'
     ];
     t TEXT;
 BEGIN
