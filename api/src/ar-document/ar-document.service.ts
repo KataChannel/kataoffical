@@ -93,8 +93,13 @@ export class ARDocumentService {
             (sum, item) => sum + item.amount,
             0,
           ),
+          paidAmount: 0,
+          remainingAmount: createDto.items.reduce(
+            (sum, item) => sum + item.amount,
+            0,
+          ),
           status: 'MOI',
-        },
+        } as any,
       });
 
       // 2. Create Items and Links
@@ -104,8 +109,10 @@ export class ARDocumentService {
             arDocumentId: doc.id,
             customerId: item.customerId,
             amount: item.amount,
+            paidAmount: 0,
+            remainingAmount: item.amount,
             status: 'CHO_THU_TIEN',
-          },
+          } as any,
         });
 
         for (const soId of item.salesOrderIds) {

@@ -1,12 +1,12 @@
 import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
+    BadRequestException,
+    Injectable,
+    NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import {
-  CreatePaymentProposalDto,
-  ReviewPaymentProposalDto,
+    CreatePaymentProposalDto,
+    ReviewPaymentProposalDto,
 } from './dto/payment-proposal.dto';
 
 @Injectable()
@@ -83,8 +83,13 @@ export class PaymentProposalService {
             (sum, item) => sum + item.amount,
             0,
           ),
+          paidAmount: 0,
+          remainingAmount: createDto.items.reduce(
+            (sum, item) => sum + item.amount,
+            0,
+          ),
           status: 'MOI',
-        },
+        } as any,
       });
 
       // 2. Create Items and Links
@@ -94,8 +99,10 @@ export class PaymentProposalService {
             proposalId: proposal.id,
             supplierId: item.supplierId,
             amount: item.amount,
+            paidAmount: 0,
+            remainingAmount: item.amount,
             status: 'CHO_THANH_TOAN',
-          },
+          } as any,
         });
 
         for (const poId of item.purchaseOrderIds) {

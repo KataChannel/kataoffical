@@ -110,3 +110,4 @@ docker-compose.override.yml
 # Docker images (too large for GitHub)
 docker-images/*.tar.gz
 docker-images/*.tar
+node_modules

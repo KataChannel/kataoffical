@@ -428,4 +428,49 @@ export class DashboardResolver {
       topKhachNo,
     };
   }
+
+  @Query(() => GraphQLJSON, { name: 'financialSummary' })
+  async financialSummary(
+    @Args('batdau', { nullable: true }) batdau?: string,
+    @Args('ketthuc', { nullable: true }) ketthuc?: string,
+  ) {
+    const where: any = {};
+    if (batdau || ketthuc) {
+      where.createdAt = {};
+      if (batdau) where.createdAt.gte = new Date(batdau);
+      if (ketthuc) where.createdAt.lte = new Date(ketthuc);
+    }
+
+    const [arStats, apStats] = await Promise.all([
+      this.prisma.aRDocument.aggregate({
+        where,
+        _sum: {
+          totalAmount: true,
+          paidAmount: true,
+          remainingAmount: true,
+        } as any,
+      }),
+      this.prisma.paymentProposal.aggregate({
+        where,
+        _sum: {
+          totalAmount: true,
+          paidAmount: true,
+          remainingAmount: true,
+        } as any,
+      }),
+    ]);
+
+    return {
+      ar: {
+        total: Number(arStats._sum?.totalAmount) || 0,
+        paid: Number((arStats._sum as any)?.paidAmount) || 0,
+        remaining: Number((arStats._sum as any)?.remainingAmount) || 0,
+      },
+      ap: {
+        total: Number(apStats._sum?.totalAmount) || 0,
+        paid: Number((apStats._sum as any)?.paidAmount) || 0,
+        remaining: Number((apStats._sum as any)?.remainingAmount) || 0,
+      },
+    };
+  }
 }

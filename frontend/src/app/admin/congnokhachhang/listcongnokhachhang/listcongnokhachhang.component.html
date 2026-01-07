@@ -426,6 +426,16 @@
               {{ row[column] | number : "1.0-0" }}
             </span>
             } 
+            @case ('soStatus') {
+              <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
+                  'text-gray-500': row[column] === 'CHO_DOI_CHIEU' || !row[column],
+                  'text-blue-500': row[column] === 'DA_DOI_CHIEU',
+                  'text-orange-500': row[column] === 'THU_TIEN_MOT_PHAN',
+                  'text-emerald-600': row[column] === 'DA_THU_TIEN'
+                }">
+                {{ row[column] || 'Mới' }}
+              </span>
+            }
              @case ('isActive') {
             <span class="max-w-40 line-clamp-4">
               @if (row[column]) {

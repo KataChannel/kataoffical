@@ -298,6 +298,7 @@ type Query {
   topProductsByValue(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
   donhangChoXacNhan: JSON!
   congNoSummary: JSON!
+  financialSummary(batdau: String, ketthuc: String): JSON!
   tickets(status: String, priority: String): [SupportTicket!]!
   ticket(id: String!): SupportTicket
   phongbans(level: Int, loai: String, parentId: String, includeChildren: Boolean): [JSON!]!

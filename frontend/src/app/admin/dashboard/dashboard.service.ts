@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable, forkJoin, map } from 'rxjs';
 import { Apollo, gql } from 'apollo-angular';
-import { TimezoneService } from '../../shared/services/timezone.service';
 import moment from 'moment';
+import { Observable, map } from 'rxjs';
+import { TimezoneService } from '../../shared/services/timezone.service';
 
 export interface ComprehensiveDashboardData {
   summary: {
@@ -123,6 +123,12 @@ const GET_TOP_PRODUCTS = gql`
   }
 `;
 
+const GET_FINANCIAL_SUMMARY = gql`
+  query GetFinancialSummary($batdau: String, $ketthuc: String) {
+    financialSummary(batdau: $batdau, ketthuc: $ketthuc)
+  }
+`;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -230,5 +236,26 @@ export class DashboardService {
   // Legacy methods for backward compatibility
   getDashboardData(batdau: string, ketthuc: string): Observable<any> {
     return this.getComprehensiveDashboard(batdau, ketthuc);
+  }
+
+  /**
+   * Lấy tóm tắt tài chính (AR/AP)
+   */
+  getFinancialSummary(batdau: string, ketthuc: string): Observable<any> {
+    const startDate = batdau ? moment(batdau).startOf('day').utc().toISOString() : null;
+    const endDate = ketthuc ? moment(ketthuc).endOf('day').utc().toISOString() : null;
+
+    return this.apollo.query({
+      query: GET_FINANCIAL_SUMMARY,
+      variables: {
+        batdau: startDate,
+        ketthuc: endDate
+      },
+      context: {
+        headers: this.getHeaders()
+      }
+    }).pipe(
+      map((result: any) => result.data.financialSummary)
+    );
   }
 }

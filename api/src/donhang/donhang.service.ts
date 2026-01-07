@@ -314,9 +314,11 @@ export class DonhangService {
             id: true,
             madonhang: true,
             ngaygiao: true,
+            status: true,
+            soStatus: true,
             tongtien: true,
             tongvat: true,
-            vat: true, // 🔥 Thêm vat để tính lại tongtien từ tong
+            vat: true,
             khachhang: {
               select: {
                 name: true,

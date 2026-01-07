@@ -1,14 +1,14 @@
 import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
+    BadRequestException,
+    Injectable,
+    NotFoundException,
 } from '@nestjs/common';
 import { LoaiPhieuThuChi, TrangThaiPhieu } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { PaymentProposalService } from '../payment-proposal/payment-proposal.service';
 import {
-  CreatePhieuThuChiDto,
-  UpdatePhieuThuChiDto,
+    CreatePhieuThuChiDto,
+    UpdatePhieuThuChiDto,
 } from './dto/phieuthuchi.dto';
 
 @Injectable()
@@ -312,7 +312,7 @@ export class PhieuThuChiService {
     });
   }
 
-  // ERP: Hoàn tất thanh toán
+  // ERP: Hoàn tất thanh toán với Cascade Update 4 tầng
   async thanhToan(id: string, billImage?: string) {
     const phieu = await this.prisma.phieuThuChi.findUnique({
       where: { id },
@@ -334,14 +334,6 @@ export class PhieuThuChiService {
       throw new NotFoundException(`Không tìm thấy phiếu thu chi với ID: ${id}`);
     }
 
-    if (
-      phieu.trangThai !== TrangThaiPhieu.DA_DUYET &&
-      phieu.trangThai !== TrangThaiPhieu.CHO_DUYET
-    ) {
-      // Thường phải duyệt rồi mới chi, hoặc tùy workflow.
-      // Ở đây ta cho phép từ DA_DUYET sang DA_THANH_TOAN
-    }
-
     if (phieu.phuongThuc === 'CHUYEN_KHOAN' && !billImage) {
       throw new BadRequestException(
         'Bắt buộc upload ảnh bill cho hình thức chuyển khoản',
@@ -349,7 +341,7 @@ export class PhieuThuChiService {
     }
 
     return this.prisma.$transaction(async (tx) => {
-      // 1. Cập nhật trạng thái phiếu chi
+      // --- TẦNG 1: CẬP NHẬT TRẠNG THÁI PHIẾU THU/CHI ---
       const updatedPhieu = await tx.phieuThuChi.update({
         where: { id },
         data: {
@@ -358,80 +350,120 @@ export class PhieuThuChiService {
         },
       });
 
-      // 2. Nếu có liên kết với Đề xuất thanh toán
+      const soTienThanhToan = Number(phieu.soTien);
+
+      // --- TẦNG 2 & 3: CẬP NHẬT CHỨNG TỪ GỐC VÀ ĐƠN HÀNG ---
+      
+      // XỬ LÝ MUA HÀNG (AP)
       if (phieu.paymentProposalSupplier) {
-        // Cập nhật trạng thái NCC trong đề xuất
+        const item = phieu.paymentProposalSupplier;
+        const newPaidAmount = Number(item.paidAmount) + soTienThanhToan;
+        const newRemainingAmount = Math.max(0, Number(item.amount) - newPaidAmount);
+        const newStatus = newRemainingAmount <= 0 ? 'DA_THANH_TOAN' : 'THANH_TOAN_MOT_PHAN';
+
+        // 2.1 Cập nhật PaymentProposalSupplier
         await tx.paymentProposalSupplier.update({
-          where: { id: phieu.paymentProposalSupplier.id },
-          data: { status: 'DA_THANH_TOAN' },
-        });
-
-        // Cập nhật trạng thái các đơn PO liên quan
-        const poIds = phieu.paymentProposalSupplier.purchaseOrders.map(
-          (po) => po.purchaseOrderId,
-        );
-        if (poIds.length > 0) {
-          await tx.dathang.updateMany({
-            where: { id: { in: poIds } },
-            data: { poStatus: 'DA_THANH_TOAN' },
-          });
-        }
-
-        // Kiểm tra để cập nhật trạng thái đề xuất Master
-        // Lưu ý: Ta gọi service sau transaction hoặc thực hiện logic ở đây.
-        // Tốt nhất là thực hiện logic ở đây để đảm bảo tính nhất quán trong transaction.
-        const otherItems = await tx.paymentProposalSupplier.findMany({
-          where: {
-            proposalId: phieu.paymentProposalSupplier.proposalId,
-            id: { not: phieu.paymentProposalSupplier.id },
+          where: { id: item.id },
+          data: { 
+            status: newStatus,
+            paidAmount: newPaidAmount,
+            remainingAmount: newRemainingAmount
           },
         });
 
-        const allPaid = otherItems.every(
-          (item) => item.status === 'DA_THANH_TOAN',
-        );
-        if (allPaid) {
+        // 2.2 Cập nhật PaymentProposal Master
+        const proposal = await tx.paymentProposal.findUnique({
+          where: { id: item.proposalId },
+          include: { items: true }
+        });
+
+        if (proposal) {
+          const totalPaid = proposal.items.reduce((sum, i) => 
+            sum + (i.id === item.id ? newPaidAmount : Number(i.paidAmount)), 0);
+          const totalRemaining = Math.max(0, Number(proposal.totalAmount) - totalPaid);
+          const masterStatus = totalRemaining <= 0 ? 'DA_THANH_TOAN' : 'THANH_TOAN_MOT_PHAN';
+
           await tx.paymentProposal.update({
-            where: { id: phieu.paymentProposalSupplier.proposalId },
-            data: { status: 'DA_THANH_TOAN' },
+            where: { id: proposal.id },
+            data: {
+              paidAmount: totalPaid,
+              remainingAmount: totalRemaining,
+              status: masterStatus
+            }
+          });
+        }
+
+        // 3. Cập nhật trạng thái các đơn PO liên quan
+        const poIds = item.purchaseOrders.map((po) => po.purchaseOrderId);
+        if (poIds.length > 0) {
+          await tx.dathang.updateMany({
+            where: { id: { in: poIds } },
+            data: { poStatus: newStatus as any },
+          });
+        }
+
+        // --- TẦNG 4: KHẤU TRỪ CÔNG NỢ ĐỐI TÁC (NCC) ---
+        if (item.supplierId) {
+          await tx.nhacungcap.update({
+            where: { id: item.supplierId },
+            data: { congNo: { decrement: soTienThanhToan } }
           });
         }
       }
 
-      // 3. Nếu có liên kết với Chứng từ công nợ (AR Document - Bán hàng)
+      // XỬ LÝ BÁN HÀNG (AR)
       if (phieu.arDocumentItem) {
-        // Cập nhật trạng thái mục công nợ
+        const item = phieu.arDocumentItem;
+        const newPaidAmount = Number(item.paidAmount) + soTienThanhToan;
+        const newRemainingAmount = Math.max(0, Number(item.amount) - newPaidAmount);
+        const newStatus = newRemainingAmount <= 0 ? 'DA_THU_TIEN' : 'THU_TIEN_MOT_PHAN';
+
+        // 2.1 Cập nhật ARDocumentItem
         await tx.aRDocumentItem.update({
-          where: { id: phieu.arDocumentItem.id },
-          data: { status: 'DA_THU_TIEN' },
-        });
-
-        // Cập nhật trạng thái các đơn SO liên quan
-        const soIds = phieu.arDocumentItem.salesOrders.map(
-          (so) => so.salesOrderId,
-        );
-        if (soIds.length > 0) {
-          await tx.donhang.updateMany({
-            where: { id: { in: soIds } },
-            data: { soStatus: 'DA_THU_TIEN' },
-          });
-        }
-
-        // Kiểm tra để cập nhật trạng thái AR Document Master
-        const otherItems = await tx.aRDocumentItem.findMany({
-          where: {
-            arDocumentId: phieu.arDocumentItem.arDocumentId,
-            id: { not: phieu.arDocumentItem.id },
+          where: { id: item.id },
+          data: { 
+            status: newStatus,
+            paidAmount: newPaidAmount,
+            remainingAmount: newRemainingAmount
           },
         });
 
-        const allPaid = otherItems.every(
-          (item) => item.status === 'DA_THU_TIEN',
-        );
-        if (allPaid) {
+        // 2.2 Cập nhật ARDocument Master
+        const arDoc = await tx.aRDocument.findUnique({
+          where: { id: item.arDocumentId },
+          include: { items: true }
+        });
+
+        if (arDoc) {
+          const totalPaid = arDoc.items.reduce((sum, i) => 
+            sum + (i.id === item.id ? newPaidAmount : Number(i.paidAmount)), 0);
+          const totalRemaining = Math.max(0, Number(arDoc.totalAmount) - totalPaid);
+          const masterStatus = totalRemaining <= 0 ? 'DA_THU_TIEN' : 'THU_TIEN_MOT_PHAN';
+
           await tx.aRDocument.update({
-            where: { id: phieu.arDocumentItem.arDocumentId },
-            data: { status: 'DA_THU_TIEN' },
+            where: { id: arDoc.id },
+            data: {
+              paidAmount: totalPaid,
+              remainingAmount: totalRemaining,
+              status: masterStatus
+            }
+          });
+        }
+
+        // 3. Cập nhật trạng thái các đơn SO liên quan
+        const soIds = item.salesOrders.map((so) => so.salesOrderId);
+        if (soIds.length > 0) {
+          await tx.donhang.updateMany({
+            where: { id: { in: soIds } },
+            data: { soStatus: newStatus as any },
+          });
+        }
+
+        // --- TẦNG 4: KHẤU TRỪ CÔNG NỢ ĐỐI TÁC (KHÁCH HÀNG) ---
+        if (item.customerId) {
+          await tx.khachhang.update({
+            where: { id: item.customerId },
+            data: { congNo: { decrement: soTienThanhToan } }
           });
         }
       }

@@ -113,6 +113,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Additional properties for enhanced dashboard
   retailCustomerRevenue: number = 0;
+  financialSummary: any = null;
   
   private subscriptions: Subscription[] = [];
   _GraphqlService: GraphqlService = inject(GraphqlService);
@@ -350,6 +351,28 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     
     // Load top customers
     this.loadTopCustomers();
+
+    // Load financial summary
+    this.loadFinancialSummary();
+  }
+
+  private loadFinancialSummary(): void {
+    const startDateStr = moment(this.startDate).format('YYYY-MM-DD');
+    const endDateStr = moment(this.endDate).format('YYYY-MM-DD');
+
+    const financialSub = this.dashboardService.getFinancialSummary(startDateStr, endDateStr)
+      .subscribe({
+        next: (data) => {
+          this.financialSummary = data;
+          this.checkLoadingComplete();
+        },
+        error: (error) => {
+          console.error('Error loading financial summary:', error);
+          this.isLoading = false;
+        }
+      });
+
+    this.subscriptions.push(financialSub);
   }
 
   private loadComprehensiveData(): void {

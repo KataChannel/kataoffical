@@ -188,6 +188,7 @@ model Khachhang {
   banggiaId       String?
   isshowvat       Boolean          @default(true)
   machuyen        String?
+  congNo          Decimal          @default(0) @postgres.Decimal(20, 3)
   arDocumentItems ARDocumentItem[]
   donhang         Donhang[]
   banggia         Banggia?         @relation("Banggiakhachhang", fields: [banggiaId], references: [id])
@@ -395,6 +396,7 @@ model Nhacungcap {
   updatedAt DateTime  @updatedAt
   isshowvat Boolean   @default(true)
   tenfile   String?
+  congNo    Decimal   @default(0) @postgres.Decimal(20, 3)
   dathang   Dathang[]
   NhomNcc   NhomNcc[] @relation("NhacungcapNhom")
   Sanpham   Sanpham[] @relation("NhacungcapToSanpham")
@@ -952,6 +954,8 @@ model PaymentProposal {
   status      String                    @default("MOI")
   description String?
   totalAmount Decimal                   @default(0) @postgres.Decimal(20, 3)
+  paidAmount  Decimal                   @default(0) @postgres.Decimal(20, 3)
+  remainingAmount Decimal               @default(0) @postgres.Decimal(20, 3)
   comment     String?
   tenant_id   String?
   createdAt   DateTime                  @default(now())
@@ -967,6 +971,8 @@ model PaymentProposalSupplier {
   proposalId       String
   supplierId       String
   amount           Decimal                        @default(0) @postgres.Decimal(20, 3)
+  paidAmount       Decimal                        @default(0) @postgres.Decimal(20, 3)
+  remainingAmount  Decimal                        @default(0) @postgres.Decimal(20, 3)
   status           String                         @default("CHO_THANH_TOAN")
   paymentVoucherId String?                        @unique
   purchaseOrders   PaymentProposalPurchaseOrder[]
@@ -997,6 +1003,8 @@ model ARDocument {
   status      String           @default("MOI")
   description String?
   totalAmount Decimal          @default(0) @postgres.Decimal(20, 3)
+  paidAmount  Decimal          @default(0) @postgres.Decimal(20, 3)
+  remainingAmount Decimal      @default(0) @postgres.Decimal(20, 3)
   comment     String?
   tenant_id   String?
   createdAt   DateTime         @default(now())
@@ -1012,6 +1020,8 @@ model ARDocumentItem {
   arDocumentId     String
   customerId       String
   amount           Decimal             @default(0) @postgres.Decimal(20, 3)
+  paidAmount       Decimal             @default(0) @postgres.Decimal(20, 3)
+  remainingAmount  Decimal             @default(0) @postgres.Decimal(20, 3)
   status           String              @default("CHO_THU_TIEN")
   receiptVoucherId String?             @unique
   salesOrders      ARDocumentDonhang[]

@@ -84,7 +84,8 @@ export class ListcongnokhachhangComponent {
     'tongvat',
     'tongtien',
     'dathanhtoan',
-    'conlai'
+    'conlai',
+    'soStatus'
   ];
   ColumnName: any = {
     ngaygiao: 'Ngày Giao',
@@ -96,7 +97,8 @@ export class ListcongnokhachhangComponent {
     tongvat: 'Tổng VAT',
     tongtien: 'Tổng Tiền',
     dathanhtoan: 'Đã Thanh Toán',
-    conlai: 'Còn Lại'
+    conlai: 'Còn Lại',
+    soStatus: 'Trạng Thái KT'
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('CongnoColFilter') || '["ngaygiao", "madonhang", "makh", "name", "soluong", "tong", "tongvat", "tongtien", "dathanhtoan", "conlai"]'
