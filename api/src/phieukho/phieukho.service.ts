@@ -1,17 +1,19 @@
 import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
+    BadRequestException,
+    Injectable,
+    NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
-import { convertXuatnhapton } from 'src/shared/utils/xuatnhapton.utils';
+
+import { TonkhoManagerService } from 'src/common/tonkho-manager.service';
 
 @Injectable()
 export class PhieukhoService {
   constructor(
     private readonly prisma: PrismaService,
     private _ImportdataService: ImportdataService,
+    private readonly tonkhoManager: TonkhoManagerService,
   ) {}
 
   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
@@ -275,36 +277,18 @@ export class PhieukhoService {
           include: { sanpham: true },
         });
 
-        // Update tonkho for each sanpham
-        for (const sp of data.sanpham) {
-          const soluong = Number(sp.soluong) || 0;
-          if (soluong > 0) {
-            if (data.type === 'nhap') {
-              // Tăng tồn kho
-              await prisma.tonKho.upsert({
-                where: { sanphamId: sp.sanphamId },
-                update: { slton: { increment: soluong } },
-                create: {
-                  sanphamId: sp.sanphamId,
-                  slton: soluong,
-                  slchogiao: 0,
-                  slchonhap: 0,
-                },
-              });
-            } else if (data.type === 'xuat') {
-              // Giảm tồn kho
-              await prisma.tonKho.upsert({
-                where: { sanphamId: sp.sanphamId },
-                update: { slton: { decrement: soluong } },
-                create: {
-                  sanphamId: sp.sanphamId,
-                  slton: -soluong, // Có thể âm nếu xuất trước khi nhập
-                  slchogiao: 0,
-                  slchonhap: 0,
-                },
-              });
-            }
-          }
+        // Update tonkho for each sanpham using TonkhoManager
+        const tonkhoOps = data.sanpham
+          .filter((sp: any) => (Number(sp.soluong) || 0) > 0)
+          .map((sp: any) => ({
+            sanphamId: sp.sanphamId,
+            operation: data.type === 'nhap' ? 'increment' : 'decrement',
+            slton: Number(sp.soluong),
+            reason: `Create PhieuKho: ${maphieukho}`,
+          }));
+
+        if (tonkhoOps.length > 0) {
+          await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps as any);
         }
 
         console.log(
@@ -358,20 +342,28 @@ export class PhieukhoService {
     return this.prisma.$transaction(async (prisma) => {
       const oldPhieuKho = await prisma.phieuKho.findUnique({
         where: { id },
-        include: { sanpham: true },
+        include: { sanpham: true, dathang: true, donhang: true },
       });
 
       if (!oldPhieuKho) throw new NotFoundException('Phiếu kho không tồn tại');
-      for (const oldSP of oldPhieuKho.sanpham) {
-        await prisma.sanpham.update({
-          where: { id: oldSP.sanphamId },
-          data: {
-            soluongkho:
-              oldPhieuKho.type === 'nhap'
-                ? { decrement: Number(oldSP.soluong) || 0 }
-                : { increment: Number(oldSP.soluong) || 0 },
-          },
-        });
+
+      // ERP Protection: Lock if related order is processed
+      if (oldPhieuKho.dathang && (['CHO_THANH_TOAN', 'DA_THANH_TOAN'] as any[]).includes(oldPhieuKho.dathang.poStatus)) {
+        throw new BadRequestException('Đơn hàng liên quan đã vào luồng thanh toán, không thể sửa phiếu kho.');
+      }
+      if (oldPhieuKho.donhang && (['CHO_THU_TIEN', 'DA_THU_TIEN'] as any[]).includes(oldPhieuKho.donhang.soStatus)) {
+        throw new BadRequestException('Đơn hàng liên quan đã vào luồng thu tiền, không thể sửa phiếu kho.');
+      }
+      // Rollback old stock using TonkhoManager
+      const rollbackOps = oldPhieuKho.sanpham.map((sp) => ({
+        sanphamId: sp.sanphamId,
+        operation: oldPhieuKho.type === 'nhap' ? 'decrement' : 'increment',
+        slton: Number(sp.soluong),
+        reason: `Rollback PhieuKho for update: ${oldPhieuKho.maphieu}`,
+      }));
+      
+      if (rollbackOps.length > 0) {
+        await this.tonkhoManager.updateTonkhoAtomic(rollbackOps as any);
       }
       const updatedPhieuKho = await prisma.phieuKho.update({
         where: { id },
@@ -395,17 +387,16 @@ export class PhieukhoService {
         include: { sanpham: true },
       });
 
-      // Cập nhật tồn kho theo loại phiếu mới
-      for (const newSP of data.sanpham) {
-        await prisma.sanpham.update({
-          where: { id: newSP.sanphamId },
-          data: {
-            soluongkho:
-              data.type === 'nhap'
-                ? { increment: newSP.soluong } // Tăng kho nếu là phiếu nhập
-                : { decrement: newSP.soluong }, // Giảm kho nếu là phiếu xuất
-          },
-        });
+      // Apply new stock using TonkhoManager
+      const applyOps = data.sanpham.map((sp: any) => ({
+        sanphamId: sp.sanphamId,
+        operation: data.type === 'nhap' ? 'increment' : 'decrement',
+        slton: Number(sp.soluong),
+        reason: `Apply PhieuKho update: ${updatedPhieuKho.maphieu}`,
+      }));
+
+      if (applyOps.length > 0) {
+        await this.tonkhoManager.updateTonkhoAtomic(applyOps as any);
       }
       return updatedPhieuKho;
     });
@@ -415,24 +406,30 @@ export class PhieukhoService {
     return this.prisma.$transaction(async (prisma) => {
       const phieuKho = await prisma.phieuKho.findUnique({
         where: { id },
-        include: { sanpham: true },
+        include: { sanpham: true, dathang: true, donhang: true },
       });
       if (!phieuKho) {
         throw new NotFoundException('Phiếu kho không tồn tại');
       }
 
-      // Điều chỉnh tồn kho (tonkho) ngược lại theo loại phiếu:
-      // Nếu là phiếu nhập thì giảm tồn, nếu là phiếu xuất thì tăng tồn
-      for (const item of phieuKho.sanpham) {
-        await prisma.tonKho.update({
-          where: { sanphamId: item.sanphamId },
-          data: {
-            slton:
-              phieuKho.type === 'nhap'
-                ? { decrement: item.soluong ?? 0 }
-                : { increment: item.soluong ?? 0 },
-          },
-        });
+      // ERP Protection: Lock if related order is processed
+      if (phieuKho.dathang && (['CHO_THANH_TOAN', 'DA_THANH_TOAN'] as any[]).includes(phieuKho.dathang.poStatus)) {
+        throw new BadRequestException('Đơn hàng liên quan đã vào luồng thanh toán, không thể xóa phiếu kho.');
+      }
+      if (phieuKho.donhang && (['CHO_THU_TIEN', 'DA_THU_TIEN'] as any[]).includes(phieuKho.donhang.soStatus)) {
+        throw new BadRequestException('Đơn hàng liên quan đã vào luồng thu tiền, không thể xóa phiếu kho.');
+      }
+
+      // Rollback stock using TonkhoManager
+      const removeOps = phieuKho.sanpham.map((sp) => ({
+        sanphamId: sp.sanphamId,
+        operation: phieuKho.type === 'nhap' ? 'decrement' : 'increment',
+        slton: Number(sp.soluong),
+        reason: `Remove PhieuKho: ${phieuKho.maphieu}`,
+      }));
+
+      if (removeOps.length > 0) {
+        await this.tonkhoManager.updateTonkhoAtomic(removeOps as any);
       }
 
       await prisma.phieuKhoSanpham.deleteMany({ where: { phieuKhoId: id } });

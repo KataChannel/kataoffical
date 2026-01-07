@@ -2,14 +2,13 @@ import { Module } from '@nestjs/common';
 import { PrismaModule } from 'prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
 import { RedisModule } from '../redis/redis.module';
-import { UniversalResolver } from './universal.resolver';
-import { UniversalService } from './universal.service';
+import { DataLoaderService } from './dataloader.service';
 import { EnhancedUniversalResolver } from './enhanced-universal.resolver';
 import { EnhancedUniversalService } from './enhanced-universal.service';
-import { DataLoaderService } from './dataloader.service';
 import { FieldSelectionService } from './field-selection.service';
 import { GraphQLPerformanceService } from './performance.service';
-import { DashboardResolver } from '../dashboard/dashboard.resolver';
+import { UniversalResolver } from './universal.resolver';
+import { UniversalService } from './universal.service';
 
 @Module({
   imports: [
@@ -28,9 +27,6 @@ import { DashboardResolver } from '../dashboard/dashboard.resolver';
     DataLoaderService,
     FieldSelectionService,
     GraphQLPerformanceService,
-
-    // Dashboard resolver
-    DashboardResolver,
   ],
   exports: [
     UniversalService,

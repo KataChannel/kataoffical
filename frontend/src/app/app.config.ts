@@ -1,21 +1,18 @@
-import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection, isDevMode } from '@angular/core';
-import { provideRouter, withRouterConfig } from '@angular/router';
-import { routes } from './app.routes';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { ApplicationConfig, isDevMode, provideZoneChangeDetection } from '@angular/core';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
-import { environment } from '../environments/environment.development';
-import { provideServiceWorker } from '@angular/service-worker';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
-import { DynamicDateAdapter } from './dynamic-date-adapter';
-import { APOLLO_OPTIONS } from 'apollo-angular';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideRouter } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 import { ApolloClientOptions, InMemoryCache } from '@apollo/client/core';
-import { HttpLink } from 'apollo-angular/http';
-import { Apollo } from 'apollo-angular';
 import { setContext } from '@apollo/client/link/context';
-import { isPlatformBrowser } from '@angular/common';
-import { PLATFORM_ID, inject } from '@angular/core';
+import { APOLLO_OPTIONS, Apollo } from 'apollo-angular';
+import { HttpLink } from 'apollo-angular/http';
+import { environment } from '../environments/environment.development';
+import { routes } from './app.routes';
+import { DynamicDateAdapter } from './dynamic-date-adapter';
 import { authInterceptor } from './shared/interceptors/auth.interceptor';
 export const MY_DATE_FORMATS = {
   parse: {
@@ -29,8 +26,29 @@ export const MY_DATE_FORMATS = {
   },
 };
 
+import { onError } from '@apollo/client/link/error';
+
 // Apollo GraphQL configuration
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
+  // Error handling link
+  const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
+    if (graphQLErrors) {
+      graphQLErrors.forEach(({ message, locations, path, extensions }) => {
+        console.group(`[GraphQL error]: Message: ${message}, Path: ${path}`);
+        console.log('Extensions:', extensions);
+        console.log('Locations:', locations);
+        console.log('Operation:', operation);
+        console.groupEnd();
+      });
+    }
+    if (networkError) {
+      console.group(`[Network error]: ${networkError.name}`);
+      console.log('Message:', networkError.message);
+      console.log('Detail:', networkError);
+      console.groupEnd();
+    }
+  });
+
   // Auth link to add token to every request
   const authLink = setContext((_, { headers }) => {
     // Get token from localStorage
@@ -60,7 +78,7 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   });
 
   return {
-    link: authLink.concat(link),
+    link: errorLink.concat(authLink).concat(link),
     cache: new InMemoryCache(),
     defaultOptions: {
       watchQuery: {

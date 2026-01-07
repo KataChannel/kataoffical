@@ -34,7 +34,8 @@ export class DetailPaymentProposalComponent implements OnInit {
   loading = signal<boolean>(false);
   proposalId = signal<string | null>(null);
   comment = signal<string>('');
-  canReview = this._UserService.hasPermission('payment-proposal.review');
+  canReview = this._UserService.hasPermission('payment-proposal.approve');
+  canCreateVoucher = this._UserService.hasPermission('phieuthuchi.create');
 
   constructor() {}
 
@@ -88,6 +89,20 @@ export class DetailPaymentProposalComponent implements OnInit {
     } catch (err: any) {
       this._snackBar.open(err.message || 'Lỗi khi từ chối đề xuất', 'Đóng', { duration: 3000, panelClass: ["snackbar-error"] });
     }
+  }
+
+  createVoucher(item: any) {
+    this._router.navigate(['/admin/phieuthuchi', 'new'], {
+      queryParams: {
+        paymentProposalSupplierId: item.id,
+        doiTuong: 'NHACUNGCAP',
+        doiTuongId: item.supplierId,
+        loai: 'CHI',
+        amount: item.amount,
+        customerName: item.supplier?.name,
+        maChungTu: this._PaymentProposalService.DetailProposal()?.maDeXuat
+      }
+    });
   }
 
   goBack() {

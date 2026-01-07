@@ -1122,6 +1122,18 @@ export class DonhangService {
                   continue;
                 }
 
+                // ERP Protection hard lock
+                if (
+                  donhang.soStatus === 'CHO_THU_TIEN' ||
+                  donhang.soStatus === 'DA_THU_TIEN'
+                ) {
+                  console.warn(
+                    `Đơn hàng ${donhang.madonhang} đã nằm trong luồng thu tiền hoặc đã hoàn thành, không thể đồng bộ lại giá.`,
+                  );
+                  errorCount++;
+                  continue;
+                }
+
                 // 2. Kiểm tra khách hàng có bảng giá không
                 if (!donhang.khachhang) {
                   console.warn(
@@ -2365,19 +2377,16 @@ export class DonhangService {
         },
       });
 
-      for (const sp of dto.sanpham) {
-        const incrementValue = parseFloat((sp.sldat ?? 0).toFixed(3));
-        await prisma.tonKho.upsert({
-          where: { sanphamId: sp.idSP || sp.id },
-          update: {
-            slchogiao: { increment: incrementValue },
-          },
-          create: {
-            sanphamId: sp.idSP || sp.id,
-            slchogiao: incrementValue,
-          },
-        });
-      }
+      // Update inventory using TonkhoManager
+      const tonkhoOps = dto.sanpham.map((sp: any) => ({
+        sanphamId: sp.idSP || sp.id,
+        operation: 'increment',
+        slchogiao: parseFloat((sp.sldat ?? 0).toFixed(3)),
+        reason: `Create Donhang: ${newDonhang.madonhang}`,
+      }));
+
+      await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps);
+
       return newDonhang;
     });
   }
@@ -2401,6 +2410,55 @@ export class DonhangService {
             : oldDonhang.ghichu,
         },
       });
+    });
+  }
+
+  async remove(id: string) {
+    const donhang = await this.prisma.donhang.findUnique({
+      where: { id },
+    });
+
+    if (!donhang) throw new NotFoundException('Đơn hàng không tồn tại');
+
+    // ERP Protection
+    if (
+      donhang.soStatus === 'CHO_THU_TIEN' ||
+      donhang.soStatus === 'DA_THU_TIEN'
+    ) {
+      throw new BadRequestException(
+        'Đơn hàng đã nằm trong luồng thu tiền hoặc đã hoàn thành, không thể xóa.',
+      );
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const dbDonhang = await tx.donhang.findUnique({
+        where: { id },
+        include: { sanpham: true },
+      });
+
+      if (!dbDonhang) throw new NotFoundException('Đơn hàng không tồn tại');
+
+      // ERP Protection
+      if (
+        dbDonhang.soStatus === 'CHO_THU_TIEN' ||
+        dbDonhang.soStatus === 'DA_THU_TIEN'
+      ) {
+        throw new BadRequestException(
+          'Đơn hàng đã nằm trong luồng thu tiền hoặc đã hoàn thành, không thể xóa.',
+        );
+      }
+
+      const tonkhoOps = dbDonhang.sanpham.map((sp: any) => ({
+        sanphamId: sp.idSP,
+        operation: 'decrement' as const,
+        slchogiao: parseFloat((sp.sldat ?? 0).toFixed(3)),
+        reason: `Remove Donhang: ${dbDonhang.madonhang}`,
+      }));
+
+      await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps as any);
+
+      await tx.donhangsanpham.deleteMany({ where: { donhangId: id } });
+      return tx.donhang.delete({ where: { id } });
     });
   }
 
@@ -2454,7 +2512,7 @@ export class DonhangService {
       totalVat = total * vatRate;
 
       // Cập nhật trạng thái đơn hàng và tổng tiền thực tế
-      return tx.donhang.update({
+      const updatedDonhang = await tx.donhang.update({
         where: { id },
         data: {
           soStatus: 'DA_DOI_CHIEU',
@@ -2466,6 +2524,18 @@ export class DonhangService {
         },
         include: { sanpham: true },
       });
+
+      // 🔥 TỔNG HỢP CÔNG NỢ: Tăng công nợ khách hàng
+      if (oldDonhang.khachhangId) {
+        await tx.khachhang.update({
+          where: { id: oldDonhang.khachhangId },
+          data: {
+            congNo: { increment: total + totalVat },
+          },
+        });
+      }
+
+      return updatedDonhang;
     });
   }
 
@@ -2676,13 +2746,20 @@ export class DonhangService {
 
       // 4. Chuyển sang 'dagiao'
       if (oldDonhang.status === 'dadat' && data.status === 'dagiao') {
+        // Fix inventory atomicly
+        const tonkhoOpsForDagiao: any[] = [];
         for (const sp of data.sanpham) {
           const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
-          await this.updateTonKhoSafe(prisma, sp.id, {
-            slchogiao: { decrement: decValue },
-            slton: { decrement: decValue },
+          tonkhoOpsForDagiao.push({
+            sanphamId: sp.id,
+            operation: 'decrement',
+            slchogiao: decValue,
+            slton: decValue,
+            reason: `DAGIAO for order ${oldDonhang.madonhang}`,
           });
         }
+        await this.tonkhoManager.updateTonkhoAtomic(tonkhoOpsForDagiao);
+
         const maphieuNew = `PX-${data.madonhang}`;
         const phieuPayload = {
           ngay: new Date(data.ngaygiao),
@@ -3611,115 +3688,53 @@ export class DonhangService {
     return { success: totalSuccess, fail: totalFail };
   }
 
-  async remove(id: string) {
-    // return this.prisma.$transaction(async (prisma) => {
-    //   // 1. Lấy đơn hàng bao gồm chi tiết sản phẩm
-    //   const donhang = await prisma.donhang.findUnique({
-    //     where: { id },
-    //     include: { sanpham: true },
-    //   });
-    //   if (!donhang) {
-    //     throw new NotFoundException('Đơn hàng không tồn tại');
-    //   }
-    //   // 2. Cập nhật TONKHO cho từng sản phẩm theo trạng thái đơn hàng
-    //   for (const sp of donhang.sanpham) {
-    //     const sldat = parseFloat((sp.sldat ?? 0).toFixed(3));
-    //     if (donhang.status === 'dagiao' || donhang.status === 'danhan') {
-    //       const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(3));
-    //       await prisma.tonKho.update({
-    //         where: { sanphamId: sp.idSP },
-    //         data: {
-    //           // Loại bỏ số lượng đơn hàng đã thêm ban đầu
-    //           slchogiao: { decrement: sldat },
-    //           // Cộng lại số lượng đã giao đã trừ khi xuất kho
-    //           slton: { increment: slgiao },
-    //         },
-    //       });
-    //     } else {
-    //       await prisma.tonKho.update({
-    //         where: { sanphamId: sp.idSP },
-    //         data: {
-    //           slchogiao: { decrement: sldat },
-    //         },
-    //       });
-    //     }
-    //   }
-    //   // 3. Xóa đơn hàng
-    //   return prisma.donhang.delete({ where: { id } });
-    // });
-  }
-
   async removeBulk(ids: string[]) {
-    return this.prisma.$transaction(async (prisma) => {
+    return this.prisma.$transaction(async (tx) => {
       let success = 0;
       let fail = 0;
       for (const id of ids) {
         try {
-          // 1. Lấy đơn hàng bao gồm chi tiết sản phẩm
-          const donhang = await prisma.donhang.findUnique({
+          // Re-use logic from refactored remove() but keep it within transaction
+          const donhang = await tx.donhang.findUnique({
             where: { id },
             include: { sanpham: true },
           });
+
           if (!donhang) {
             fail++;
             continue;
           }
 
-          // 2. Cập nhật TONKHO cho từng sản phẩm theo trạng thái đơn hàng
-          for (const sp of donhang.sanpham) {
-            const sldat = parseFloat((sp.sldat ?? 0).toFixed(3));
-            if (donhang.status === 'dagiao' || donhang.status === 'danhan') {
-              const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(3));
-              await prisma.tonKho.update({
-                where: { sanphamId: sp.idSP },
-                data: {
-                  slton: { increment: slgiao },
-                },
-              });
-            } else {
-              await prisma.tonKho.update({
-                where: { sanphamId: sp.idSP },
-                data: {
-                  slchogiao: { decrement: sldat },
-                },
-              });
-            }
+          // ERP Protection
+          if (
+            donhang.soStatus === 'CHO_THU_TIEN' ||
+            donhang.soStatus === 'DA_THU_TIEN'
+          ) {
+            fail++;
+            continue;
           }
 
-          // 3. Xóa phiếu kho liên quan nếu có
-          const maphieuXuat = `PX-${donhang.madonhang}-${this.formatDateForFilename()}`;
-          const maphieuNhap = `PN-${donhang.madonhang}-RET-${this.formatDateForFilename()}`;
-          // Xóa phiếu xuất kho
-          const phieuXuat = await prisma.phieuKho.findUnique({
-            where: { maphieu: maphieuXuat },
-          });
-          if (phieuXuat) {
-            await prisma.phieuKhoSanpham.deleteMany({
-              where: { phieuKhoId: phieuXuat.id },
-            });
-            await prisma.phieuKho.delete({ where: { maphieu: maphieuXuat } });
-          }
-          // Xóa phiếu nhập kho trả về (nếu có)
-          const phieuNhap = await prisma.phieuKho.findUnique({
-            where: { maphieu: maphieuNhap },
-          });
-          if (phieuNhap) {
-            await prisma.phieuKhoSanpham.deleteMany({
-              where: { phieuKhoId: phieuNhap.id },
-            });
-            await prisma.phieuKho.delete({ where: { maphieu: maphieuNhap } });
-          }
+          const removeOps = donhang.sanpham.map((sp: any) => ({
+            sanphamId: sp.idSP,
+            operation: 'decrement' as const,
+            slchogiao: parseFloat((sp.sldat ?? 0).toFixed(3)),
+            reason: `Remove Donhang (Bulk): ${donhang.madonhang}`,
+          }));
 
-          // 4. Xóa đơn hàng
-          await prisma.donhang.delete({ where: { id } });
+          await this.tonkhoManager.updateTonkhoAtomic(removeOps as any);
+
+          await tx.donhangsanpham.deleteMany({ where: { donhangId: id } });
+          await tx.donhang.delete({ where: { id } });
           success++;
         } catch (error) {
+          console.error(`Bulk remove failed for id ${id}:`, error);
           fail++;
         }
       }
       return { success, fail };
     });
   }
+
 
   async findByProductId(idSP: string) {
     const donhangs = await this.prisma.donhang.findMany({
@@ -3846,17 +3861,28 @@ export class DonhangService {
             },
           });
 
-          // 🎯 QUAN TRỌNG: Cập nhật TonKho - giảm slchogiao về 0
+          // 🎯 QUAN TRỌNG: Cập nhật TonKho using TonkhoManager
           const oldSlgiao = parseFloat((sp.slgiao || 0).toString());
-
-          // Nếu nhận đủ: slchogiao = 0
-          // Nếu nhận thiếu: hoàn lại phần thiếu vào slton
           const shortage = oldSlgiao - newSlnhan;
 
-          await this.updateTonKhoSafely(sp.idSP, {
-            slchogiao: { decrement: oldSlgiao }, // Giảm về 0
-            ...(shortage > 0 && { slton: { increment: shortage } }), // Hoàn lại nếu thiếu
-          });
+          await this.tonkhoManager.updateTonkhoAtomic([
+            {
+              sanphamId: sp.idSP,
+              operation: 'decrement',
+              slchogiao: oldSlgiao,
+              reason: `Complete order ${donhang.madonhang}`,
+            },
+            ...(shortage > 0
+              ? [
+                  {
+                    sanphamId: sp.idSP,
+                    operation: 'increment',
+                    slton: shortage,
+                    reason: `Shortage return for order ${donhang.madonhang}`,
+                  },
+                ]
+              : []),
+          ] as any);
         }
 
         // 🔥 Tính lại tổng tiền cho đơn hàng

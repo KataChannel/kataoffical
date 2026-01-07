@@ -1,16 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, OnInit, signal } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
 import {
     BadgeComponent,
     ButtonComponent,
-    CardComponent,
-    CardContentComponent,
-    CardHeaderComponent,
-    CardTitleComponent,
-    EmptyStateComponent,
-    ErrorStateComponent,
     SkeletonComponent,
 } from '../../../shared/ui';
 
@@ -51,142 +46,138 @@ const GET_DONHANG_CHO_XACNHAN = gql`
   standalone: true,
   imports: [
     CommonModule,
-    ButtonComponent,
-    CardComponent,
-    CardHeaderComponent,
-    CardTitleComponent,
-    CardContentComponent,
     BadgeComponent,
+    ButtonComponent,
     SkeletonComponent,
-    EmptyStateComponent,
-    ErrorStateComponent,
+    MatIconModule
   ],
   template: `
-    <ui-card class="h-full">
-      <ui-card-header>
-        <ui-card-title class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="text-lg">🔔 Đơn chờ xác nhận</span>
-            <ui-badge *ngIf="!loading() && !error()" [variant]="total() > 0 ? 'destructive' : 'secondary'">
-              {{ total() }}
-            </ui-badge>
+    <div class="h-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-md">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gradient-to-r from-gray-50/50 to-transparent">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 shadow-inner">
+            <span class="text-xl">📦</span>
           </div>
-          <ui-button variant="ghost" size="sm" (click)="refresh()">
-            <span class="text-sm">🔄</span>
-          </ui-button>
-        </ui-card-title>
-      </ui-card-header>
+          <div>
+            <h3 class="font-bold text-gray-900 text-base leading-tight">Đơn chờ xác nhận</h3>
+            <p class="text-xs text-gray-500 font-medium" *ngIf="!loading()">Bạn có {{ total() }} đơn hàng mới</p>
+          </div>
+        </div>
+        <button (click)="refresh()" class="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-blue-600">
+          <mat-icon class="text-lg w-5 h-5">refresh</mat-icon>
+        </button>
+      </div>
       
-      <ui-card-content>
+      <div class="p-4">
         <!-- Loading State -->
-        <div *ngIf="loading()" class="space-y-3">
-          <div *ngFor="let _ of [1,2,3]" class="flex items-center justify-between p-3 border border-border rounded-lg">
-            <div class="space-y-2 flex-1">
-              <ui-skeleton variant="text" width="40%"></ui-skeleton>
-              <ui-skeleton variant="text" width="60%"></ui-skeleton>
+        <div *ngIf="loading()" class="space-y-4">
+          <div *ngFor="let _ of [1,2,3]" class="p-4 border border-gray-50 rounded-xl space-y-3">
+            <div class="flex justify-between">
+              <ui-skeleton variant="text" width="30%"></ui-skeleton>
+              <ui-skeleton variant="text" width="20%"></ui-skeleton>
             </div>
-            <ui-skeleton variant="custom" width="80px" height="32px"></ui-skeleton>
+            <ui-skeleton variant="title" width="60%"></ui-skeleton>
+            <div class="flex gap-2">
+              <ui-skeleton variant="text" width="40%"></ui-skeleton>
+              <ui-skeleton variant="text" width="30%"></ui-skeleton>
+            </div>
           </div>
         </div>
 
         <!-- Error State -->
-        <ui-error-state
-          *ngIf="error()"
-          [message]="errorMessage()"
-          (retry)="refresh()"
-        ></ui-error-state>
+        <div *ngIf="error()" class="py-8 text-center">
+          <div class="text-4xl mb-3">⚠️</div>
+          <p class="text-sm text-gray-600 mb-4">{{ errorMessage() }}</p>
+          <ui-button variant="outline" size="sm" (click)="refresh()">Thử lại</ui-button>
+        </div>
 
         <!-- Empty State -->
-        <ui-empty-state
-          *ngIf="!loading() && !error() && total() === 0"
-          icon="✅"
-          title="Không có đơn chờ xác nhận"
-          description="Tất cả đơn hàng đã được xác nhận"
-        ></ui-empty-state>
+        <div *ngIf="!loading() && !error() && total() === 0" class="py-12 text-center">
+          <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+            ✅
+          </div>
+          <h4 class="font-bold text-gray-900 mb-1">Xong việc rồi!</h4>
+          <p class="text-sm text-gray-500">Tất cả đơn đã được xác nhận</p>
+        </div>
 
         <!-- Data List -->
-        <div *ngIf="!loading() && !error() && total() > 0" class="space-y-3 max-h-96 overflow-y-auto">
+        <div *ngIf="!loading() && !error() && total() > 0" class="space-y-3 max-h-[400px] overflow-y-auto pr-1">
           <div
             *ngFor="let donhang of list(); let i = index"
-            class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 border border-border rounded-lg hover:bg-accent/50 transition-colors"
+            class="group relative bg-white border border-gray-100 rounded-xl p-4 transition-all duration-300 hover:border-blue-200 hover:shadow-sm hover:-translate-y-0.5"
           >
-            <!-- Left: Order Info -->
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1">
-                <span class="font-semibold text-sm truncate">{{ donhang.madonhang }}</span>
-                <ui-badge 
-                  [variant]="getXacNhanBadge(donhang).variant"
-                  class="text-xs"
-                >
-                  {{ getXacNhanBadge(donhang).text }}
-                </ui-badge>
-              </div>
-              <p class="text-sm text-muted-foreground truncate">
-                {{ donhang.khachhang?.ten || 'Khách lẻ' }}
-              </p>
-              <div class="flex items-center gap-2 mt-1">
-                <span class="text-xs text-muted-foreground">
-                  {{ formatDate(donhang.createdAt) }}
-                </span>
-                <span class="text-sm font-medium text-primary">
-                  {{ formatCurrency(donhang.tongTien) }}
-                </span>
-              </div>
+            <!-- Status Sidebar Indicator -->
+            <div class="absolute left-0 top-4 bottom-4 w-1 rounded-r-full transition-colors"
+                 [ngClass]="{
+                   'bg-red-500': !donhang.xacNhanLan1 && !donhang.xacNhanLan2,
+                   'bg-yellow-500': donhang.xacNhanLan1 && !donhang.xacNhanLan2,
+                   'bg-green-500': donhang.xacNhanLan1 && donhang.xacNhanLan2
+                 }">
             </div>
 
-            <!-- Right: Actions -->
-            <div class="flex items-center gap-2">
-              <ui-button
-                variant="outline"
-                size="sm"
-                (click)="viewDetail(donhang.id)"
-                class="text-xs"
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">{{ donhang.madonhang }}</span>
+                <h4 class="font-bold text-gray-900 text-sm truncate max-w-[150px] mt-0.5">
+                  {{ donhang.khachhang?.ten || 'Khách lẻ' }}
+                </h4>
+              </div>
+              <ui-badge 
+                [variant]="getXacNhanBadge(donhang).variant"
+                class="text-[10px] px-2 py-0.5"
               >
-                Chi tiết
-              </ui-button>
-              <ui-button
-                *ngIf="donhang.confirmToken"
-                variant="default"
-                size="sm"
-                (click)="copyLink(donhang.confirmToken)"
-                class="text-xs"
-              >
-                📋 Link
-              </ui-button>
+                {{ getXacNhanBadge(donhang).text }}
+              </ui-badge>
+            </div>
+
+            <div class="flex items-end justify-between mt-3">
+              <div class="space-y-1">
+                <div class="flex items-center gap-1.5 text-gray-500">
+                  <mat-icon class="text-[14px] w-3.5 h-3.5">schedule</mat-icon>
+                  <span class="text-[11px] font-medium">{{ formatDate(donhang.createdAt) }}</span>
+                </div>
+                <div class="text-sm font-black text-gray-900">
+                  {{ donhang.tongTien | currency:'VND':'symbol':'1.0-0' }}
+                </div>
+              </div>
+              
+              <div class="flex items-center gap-2">
+                <button 
+                   (click)="confirmSingle(donhang.id)"
+                   class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                   matTooltip="Xác nhận nhanh"
+                >
+                  <mat-icon class="text-sm w-4 h-4 text-center">content_paste_search</mat-icon>
+                </button>
+                <button 
+                  (click)="viewDetail(donhang.id)"
+                  class="p-1 px-3 rounded-lg border border-gray-200 text-xs font-bold text-gray-500 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center gap-1"
+                >
+                  Chi tiết
+                  <mat-icon class="text-sm w-4 h-4">arrow_forward</mat-icon>
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- View All Button -->
-        <div *ngIf="!loading() && !error() && total() > 0" class="mt-4 pt-4 border-t border-border">
-          <ui-button
-            variant="ghost"
-            size="sm"
-            class="w-full"
-            (click)="viewAll()"
-          >
-            Xem tất cả {{ total() }} đơn →
-          </ui-button>
+        <!-- View All Footer -->
+        <div *ngIf="!loading() && !error() && total() > 0" class="mt-4 pt-3 border-t border-gray-50 text-center">
+          <button (click)="viewAll()" class="text-xs font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest px-4 py-2 rounded-lg hover:bg-blue-50 transition-all">
+            Xem toàn bộ danh sách
+          </button>
         </div>
-      </ui-card-content>
-    </ui-card>
+      </div>
+    </div>
   `,
-  styles: [`
-    :host {
-      display: block;
-    }
-  `]
 })
 export class DonhangChoXacNhanWidgetComponent implements OnInit {
-  loading = signal<boolean>(false);
-  error = signal<boolean>(false);
-  errorMessage = signal<string>('');
-  
-  data = signal<DonhangChoXacNhan[]>([]);
-  
-  // Computed values
-  list = computed(() => this.data().slice(0, 5)); // Show top 5
-  total = computed(() => this.data().length);
+  list = signal<DonhangChoXacNhan[]>([]);
+  loading = signal(true);
+  error = signal(false);
+  errorMessage = signal('');
+  total = computed(() => this.list().length);
 
   constructor(
     private apollo: Apollo,
@@ -197,85 +188,59 @@ export class DonhangChoXacNhanWidgetComponent implements OnInit {
     this.loadData();
   }
 
-  async loadData(): Promise<void> {
-    try {
-      this.loading.set(true);
-      this.error.set(false);
-      this.errorMessage.set('');
-
-      const result = await this.apollo.query<{ donhangChoXacNhan: DonhangChoXacNhan[] }>({
+  loadData(): void {
+    this.loading.set(true);
+    this.apollo
+      .query({
         query: GET_DONHANG_CHO_XACNHAN,
-        fetchPolicy: 'network-only'
-      }).toPromise();
-
-      if (result?.data?.donhangChoXacNhan) {
-        this.data.set(result.data.donhangChoXacNhan);
-      }
-    } catch (err: any) {
-      console.error('Error loading donhang cho xac nhan:', err);
-      this.error.set(true);
-      this.errorMessage.set(err.message || 'Không thể tải dữ liệu');
-    } finally {
-      this.loading.set(false);
-    }
+        fetchPolicy: 'network-only',
+      })
+      .subscribe({
+        next: (result: any) => {
+          this.list.set(result.data.donhangChoXacNhan || []);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(true);
+          this.errorMessage.set(err.message || 'Lỗi tải danh sách xác nhận');
+          this.loading.set(false);
+        },
+      });
   }
 
   refresh(): void {
     this.loadData();
   }
 
+  formatDate(dateStr: string): string {
+    return new Date(dateStr).toLocaleString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      day: '2-digit',
+      month: '2-digit',
+    });
+  }
+
+  getXacNhanBadge(donhang: DonhangChoXacNhan): { text: string; variant: any } {
+    if (!donhang.xacNhanLan1 && !donhang.xacNhanLan2) {
+      return { text: 'CHỜ XÁC NHẬN', variant: 'destructive' };
+    }
+    if (donhang.xacNhanLan1 && !donhang.xacNhanLan2) {
+      return { text: 'XÁC NHẬN LẦN 1', variant: 'warning' };
+    }
+    return { text: 'ĐÃ XÁC NHẬN', variant: 'success' };
+  }
+
+  viewAll(): void {
+    this.router.navigate(['/admin/donhang/cho-xac-nhan']);
+  }
+
   viewDetail(id: string): void {
     this.router.navigate(['/admin/donhang', id]);
   }
 
-  viewAll(): void {
-    this.router.navigate(['/admin/donhang'], {
-      queryParams: { filter: 'cho-xac-nhan' }
-    });
-  }
-
-  copyLink(token: string): void {
-    const link = `${window.location.origin}/confirm/${token}`;
-    navigator.clipboard.writeText(link).then(() => {
-      alert('✅ Đã copy link xác nhận!');
-    }).catch(() => {
-      alert('❌ Không thể copy link');
-    });
-  }
-
-  getXacNhanBadge(donhang: DonhangChoXacNhan): { variant: 'default' | 'secondary' | 'success' | 'warning' | 'destructive', text: string } {
-    if (donhang.xacNhanLan2) {
-      return { variant: 'success', text: 'XN 2/2' };
-    } else if (donhang.xacNhanLan1) {
-      return { variant: 'warning', text: 'XN 1/2' };
-    } else {
-      return { variant: 'destructive', text: 'Chưa XN' };
-    }
-  }
-
-  formatDate(dateStr: string): string {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 60) {
-      return `${diffMins} phút trước`;
-    } else if (diffHours < 24) {
-      return `${diffHours} giờ trước`;
-    } else if (diffDays < 7) {
-      return `${diffDays} ngày trước`;
-    } else {
-      return date.toLocaleDateString('vi-VN');
-    }
-  }
-
-  formatCurrency(value: number): string {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(value);
+  confirmSingle(id: string): void {
+    // Navigate to detail for confirmation UI or handle directly here
+    this.viewDetail(id);
   }
 }

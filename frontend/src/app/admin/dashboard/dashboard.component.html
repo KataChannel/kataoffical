@@ -38,126 +38,229 @@
   </div>
 
   <!-- Section 1: Key Metrics Overview -->
-  <div class="mb-8" *ngIf="!isLoading">
-    <div class="flex flex-wrap p-2 bg-white rounded-lg mb-4 overflow-auto gap-3">
-      <button mat-flat-button class="btn-premium btn-gradient-blue shadow-lg" (click)="ExportDoanhsoKhachTheongay()">
-        <mat-icon class="mr-2">download</mat-icon>
-        Doanh số theo ngày
-      </button>
-      <button mat-flat-button class="btn-premium btn-gradient-green shadow-lg" (click)="loadAllData()">
-        <mat-icon class="mr-2">refresh</mat-icon>
-        Làm mới dữ liệu
-      </button>
+  <div class="mb-10" *ngIf="!isLoading">
+    <div class="flex flex-wrap items-center justify-between mb-6 gap-4">
+      <div class="flex items-center gap-3">
+        <button (click)="loadAllData()" class="group flex items-center gap-2 px-4 py-2 bg-white rounded-xl shadow-sm border border-gray-100 hover:border-blue-400 hover:text-blue-600 transition-all duration-300">
+          <mat-icon class="text-lg group-hover:rotate-180 transition-transform duration-500">refresh</mat-icon>
+          <span class="text-sm font-bold">Làm mới dữ liệu</span>
+        </button>
+        <button (click)="ExportDoanhsoKhachTheongay()" class="flex items-center gap-2 px-4 py-2 bg-gray-900 border border-transparent rounded-xl shadow-lg text-white hover:bg-gray-800 transition-all">
+          <mat-icon class="text-lg">download</mat-icon>
+          <span class="text-sm font-bold">Xuất Excel</span>
+        </button>
+      </div>
+      <div class="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 py-1 bg-gray-100 rounded-full">
+        Real-time Analytics
+      </div>
     </div>
 
     <!-- MAIN KPIS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8" *ngIf="comprehensiveData">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10" *ngIf="comprehensiveData">
       <!-- Tổng Số Đơn Hàng -->
-      <mat-card class="card-premium card-summary border-l-4 border-blue-500">
-        <div class="flex items-center gap-4 mb-3">
-          <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-            <mat-icon class="text-blue-500">shopping_cart</mat-icon>
+      <div class="relative overflow-hidden group bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500">
+        <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-blue-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
+        <div class="relative z-10">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 shadow-inner">
+              <mat-icon>shopping_cart</mat-icon>
+            </div>
+            <div class="px-2 py-0.5 rounded-lg bg-green-50 text-green-600 text-[10px] font-black">+12.5%</div>
           </div>
-          <span class="text-secondary-demo font-medium uppercase text-xs tracking-wider">Đơn Hàng Trong Kỳ</span>
+          <h4 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Đơn Hàng Trong Kỳ</h4>
+          <div class="text-3xl font-black text-gray-900 tracking-tight">
+            {{ (comprehensiveData.summary.totalDonhang || 0) | number:'1.0-0' }}
+          </div>
         </div>
-        <div class="text-2xl font-bold mb-1">{{ (comprehensiveData.summary.totalDonhang || 0) | number:'1.0-0' }}</div>
-        <div class="text-xs text-green-500 flex items-center gap-1">
-          <mat-icon class="text-sm">trending_up</mat-icon> +12% vs tháng trước
-        </div>
-      </mat-card>
+      </div>
 
-      <!-- Tổng Doanh Thu (Doanh số) -->
-      <mat-card class="card-premium card-summary border-l-4 border-green-500">
-        <div class="flex items-center gap-4 mb-3">
-          <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-            <mat-icon class="text-green-500">payments</mat-icon>
+      <!-- Tổng Doanh Thu -->
+      <div class="relative overflow-hidden group bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500">
+        <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
+        <div class="relative z-10">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 shadow-inner">
+              <mat-icon>payments</mat-icon>
+            </div>
+            <div class="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-black">+8.2%</div>
           </div>
-          <span class="text-secondary-demo font-medium uppercase text-xs tracking-wider">Doanh Số (Tạm tính)</span>
+          <h4 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Doanh Số Tạm Tính</h4>
+          <div class="text-2xl font-black text-gray-900 tracking-tight">
+            {{ (comprehensiveData.summary.totalRevenue || 0) | currency:'VND':'':'1.0-0' }}<span class="text-sm ml-0.5">₫</span>
+          </div>
         </div>
-        <div class="text-2xl font-bold mb-1 text-gradient-green">{{ (comprehensiveData.summary.totalRevenue || 0) | currency:'VND':'symbol':'1.0-0' }}</div>
-        <div class="text-xs text-green-500 flex items-center gap-1">
-          <mat-icon class="text-sm">trending_up</mat-icon> +8% vs tháng trước
-        </div>
-      </mat-card>
+      </div>
 
       <!-- Lợi Nhuận Gộp -->
-      <mat-card class="card-premium card-summary border-l-4 border-orange-500">
-        <div class="flex items-center gap-4 mb-3">
-          <div class="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
-            <mat-icon class="text-orange-500">monetization_on</mat-icon>
+      <div class="relative overflow-hidden group bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500">
+        <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-amber-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
+        <div class="relative z-10">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 shadow-inner">
+              <mat-icon>monetization_on</mat-icon>
+            </div>
+            <div class="px-2 py-0.5 rounded-lg bg-red-50 text-red-600 text-[10px] font-black">-2.4%</div>
           </div>
-          <span class="text-secondary-demo font-medium uppercase text-xs tracking-wider">Lợi Nhuận Gộp</span>
+          <h4 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Lợi Nhuận Gộp</h4>
+          <div class="text-2xl font-black text-gray-900 tracking-tight">
+            {{ (comprehensiveData.summary.totalProfit || 0) | currency:'VND':'':'1.0-0' }}<span class="text-sm ml-0.5">₫</span>
+          </div>
         </div>
-        <div class="text-2xl font-bold mb-1 text-gradient-orange">{{ (comprehensiveData.summary.totalProfit || 0) | currency:'VND':'symbol':'1.0-0' }}</div>
-        <div class="text-xs text-orange-400 flex items-center gap-1">
-          <mat-icon class="text-sm">trending_up</mat-icon> +15% so với kỳ trước
-        </div>
-      </mat-card>
+      </div>
 
       <!-- Khách Hàng -->
-      <mat-card class="card-premium card-summary border-l-4 border-purple-500">
-        <div class="flex items-center gap-4 mb-3">
-          <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-            <mat-icon class="text-purple-500">group</mat-icon>
+      <div class="relative overflow-hidden group bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500">
+        <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
+        <div class="relative z-10">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 shadow-inner">
+              <mat-icon>group</mat-icon>
+            </div>
+            <div class="px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-600 text-[10px] font-black">Active</div>
           </div>
-          <span class="text-secondary-demo font-medium uppercase text-xs tracking-wider">Khách Hàng</span>
+          <h4 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Tổng Khách Hàng</h4>
+          <div class="text-3xl font-black text-gray-900 tracking-tight">
+            {{ (comprehensiveData.summary.totalKhachhang || 0) | number:'1.0-0' }}
+          </div>
         </div>
-        <div class="text-2xl font-bold mb-1">{{ (comprehensiveData.summary.totalKhachhang || 0) | number:'1.0-0' }}</div>
-        <div class="text-xs text-blue-400">Gồm {{ comprehensiveData.summary.totalKhachhang }} đối tác hoạt động</div>
-      </mat-card>
+      </div>
     </div>
 
-    <!-- FINANCIAL SUMMARY (AR/AP) - TIẾP CẬN TỪ DEMO -->
-    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-      <mat-icon class="text-blue-600">account_balance</mat-icon>
-      Tình hình tài chính chứng từ (AR/AP)
-    </h2>
+    <!-- FINANCIAL SUMMARY (AR/AP) -->
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-1 h-8 bg-blue-600 rounded-full"></div>
+      <div>
+        <h2 class="text-xl font-black text-gray-900 tracking-tight leading-tight">Sức khỏe tài chính</h2>
+        <p class="text-xs text-gray-500 font-medium">Báo cáo các khoản phải thu & phải trả (AR/AP)</p>
+      </div>
+    </div>
+
+    <!-- ALERTS SECTION -->
+    <div class="mb-8 space-y-3" *ngIf="financialSummary?.alerts?.length > 0">
+      <div *ngFor="let alert of financialSummary.alerts" 
+           class="group p-4 rounded-2xl flex items-start gap-4 transition-all duration-300 border backdrop-blur-sm"
+           [ngClass]="{
+             'bg-red-50/70 border-red-100 hover:bg-red-50': alert.type === 'danger',
+             'bg-amber-50/70 border-amber-100 hover:bg-amber-50': alert.type === 'warning',
+             'bg-blue-50/70 border-blue-100 hover:bg-blue-50': alert.type === 'info'
+           }">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-110"
+             [ngClass]="{
+               'bg-red-500 text-white': alert.type === 'danger',
+               'bg-amber-500 text-white': alert.type === 'warning',
+               'bg-blue-500 text-white': alert.type === 'info'
+             }">
+          <mat-icon class="text-lg w-5 h-5">
+            {{ alert.type === 'danger' ? 'error' : (alert.type === 'warning' ? 'warning' : 'info') }}
+          </mat-icon>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-black uppercase tracking-widest opacity-60"
+                  [ngClass]="{
+                    'text-red-700': alert.type === 'danger',
+                    'text-amber-700': alert.type === 'warning',
+                    'text-blue-700': alert.type === 'info'
+                  }">{{ alert.category }} SYSTEM ALERT</span>
+            <span class="text-[10px] font-medium text-gray-400">Vừa xong</span>
+          </div>
+          <p class="text-sm font-bold text-gray-800 leading-snug">{{ alert.message }}</p>
+        </div>
+      </div>
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8" *ngIf="financialSummary">
       <!-- AR: Tổng doanh số cần thu -->
-      <mat-card class="card-premium card-summary bg-gradient-to-br from-[#1e293b] to-[#0f172a]">
-        <div class="text-secondary-demo font-semibold text-xs mb-2 uppercase">AR: Công nợ cần thu</div>
-        <div class="text-2xl font-bold text-blue-400 mb-2">{{ financialSummary.ar.total | currency:'VND':'':'1.0-0' }}</div>
-        <div class="flex justify-between text-[10px] text-gray-400">
-            <span>Đã thu: {{ financialSummary.ar.paid | currency:'VND':'':'1.0-0' }}</span>
-            <span class="text-red-400">Cần thu: {{ (financialSummary.ar.total - financialSummary.ar.paid) | currency:'VND':'':'1.0-0' }}</span>
+      <div class="bg-gray-900 rounded-3xl p-6 shadow-xl border border-gray-800 hover:border-blue-500/50 transition-all duration-300">
+        <div class="text-blue-400 font-black text-[10px] mb-4 uppercase tracking-widest flex items-center gap-2">
+          <div class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></div>
+          AR: Phải thu khách hàng
         </div>
-      </mat-card>
+        <div class="text-3xl font-black text-white mb-6 tracking-tight">{{ financialSummary.ar.total | currency:'VND':'':'1.0-0' }}<span class="text-base font-normal text-gray-500 ml-1">₫</span></div>
+        
+        <div class="space-y-3">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-gray-400 font-medium">Đã thu hồi</span>
+            <span class="text-emerald-400 font-bold px-2 py-0.5 bg-emerald-400/10 rounded-lg">{{ financialSummary.ar.paid | currency:'VND':'':'1.0-0' }}₫</span>
+          </div>
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-gray-400 font-medium">Đang đợi thu</span>
+            <span class="text-amber-400 font-bold px-2 py-0.5 bg-amber-400/10 rounded-lg">{{ (financialSummary.ar.total - financialSummary.ar.paid) | currency:'VND':'':'1.0-0' }}₫</span>
+          </div>
+          <div class="pt-3 border-t border-gray-800 flex justify-between items-center" *ngIf="financialSummary.ar.overdue > 0">
+            <span class="text-red-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <mat-icon class="text-sm w-4 h-4">warning</mat-icon> Quá hạn
+            </span>
+            <span class="text-red-400 font-black text-sm">{{ financialSummary.ar.overdue | currency:'VND':'':'1.0-0' }}₫</span>
+          </div>
+        </div>
+      </div>
 
       <!-- AP: Tổng công nợ phải trả -->
-      <mat-card class="card-premium card-summary bg-gradient-to-br from-[#1e293b] to-[#0f172a]">
-        <div class="text-secondary-demo font-semibold text-xs mb-2 uppercase">AP: Công nợ phải trả</div>
-        <div class="text-2xl font-bold text-orange-400 mb-2">{{ financialSummary.ap.total | currency:'VND':'':'1.0-0' }}</div>
-        <div class="flex justify-between text-[10px] text-gray-400">
-            <span>Đã trả: {{ financialSummary.ap.paid | currency:'VND':'':'1.0-0' }}</span>
-            <span class="text-yellow-400">Chưa trả: {{ (financialSummary.ap.total - financialSummary.ap.paid) | currency:'VND':'':'1.0-0' }}</span>
+      <div class="bg-gray-900 rounded-3xl p-6 shadow-xl border border-gray-800 hover:border-orange-500/50 transition-all duration-300">
+        <div class="text-orange-400 font-black text-[10px] mb-4 uppercase tracking-widest flex items-center gap-2">
+          <div class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></div>
+          AP: Phải trả nhà cung cấp
         </div>
-      </mat-card>
+        <div class="text-3xl font-black text-white mb-6 tracking-tight">{{ financialSummary.ap.total | currency:'VND':'':'1.0-0' }}<span class="text-base font-normal text-gray-500 ml-1">₫</span></div>
+        
+        <div class="space-y-3">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-gray-400 font-medium">Đã quyết toán</span>
+            <span class="text-emerald-400 font-bold px-2 py-0.5 bg-emerald-400/10 rounded-lg">{{ financialSummary.ap.paid | currency:'VND':'':'1.0-0' }}₫</span>
+          </div>
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-gray-400 font-medium">Dư nợ NCC</span>
+            <span class="text-amber-400 font-bold px-2 py-0.5 bg-amber-400/10 rounded-lg">{{ (financialSummary.ap.total - financialSummary.ap.paid) | currency:'VND':'':'1.0-0' }}₫</span>
+          </div>
+          <div class="pt-3 border-t border-gray-800" *ngIf="financialSummary.ap.overdue > 0 || financialSummary.ap.upcoming > 0">
+            <div class="flex justify-between items-center" *ngIf="financialSummary.ap.overdue > 0">
+              <span class="text-red-400 text-[10px] font-black uppercase tracking-widest">Nợ quá hạn</span>
+              <span class="text-red-400 font-black text-sm">{{ financialSummary.ap.overdue | currency:'VND':'':'1.0-0' }}₫</span>
+            </div>
+            <div class="flex justify-between items-center mt-2" *ngIf="financialSummary.ap.upcoming > 0">
+              <span class="text-blue-400 text-[10px] font-black uppercase tracking-widest">Đến hạn (7d)</span>
+              <span class="text-blue-400 font-black text-sm">{{ financialSummary.ap.upcoming | currency:'VND':'':'1.0-0' }}₫</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Tỷ lệ thu hồi nợ (AR) -->
-      <mat-card class="card-premium card-summary">
-        <div class="text-secondary-demo font-semibold text-xs mb-4 uppercase">Tỷ lệ thu hồi nợ (AR)</div>
-        <div class="flex items-center gap-4">
-            <div class="text-3xl font-bold text-green-500">
-                {{ (financialSummary.ar.total > 0 ? (financialSummary.ar.paid / financialSummary.ar.total * 100) : 0) | number:'1.0-1' }}%
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-xl transition-all duration-500 group">
+        <div>
+          <h4 class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-4">Sức khỏe nợ AR</h4>
+          <div class="flex items-end gap-2 mb-4">
+            <div class="text-4xl font-black text-gray-900 leading-none">
+              {{ (financialSummary.ar.total > 0 ? (financialSummary.ar.paid / financialSummary.ar.total * 100) : 0) | number:'1.0-1' }}%
             </div>
-            <div class="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
-                <div class="h-full bg-green-500" [style.width.%]="(financialSummary.ar.total > 0 ? (financialSummary.ar.paid / financialSummary.ar.total * 100) : 0)"></div>
-            </div>
+            <span class="text-emerald-500 font-bold text-xs mb-1 flex items-center"><mat-icon class="text-sm w-4 h-4">trending_up</mat-icon> Tốt</span>
+          </div>
+          <div class="h-3 bg-gray-100 rounded-full overflow-hidden mb-2">
+            <div class="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full group-hover:shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all duration-1000" 
+                 [style.width.%]="(financialSummary.ar.total > 0 ? (financialSummary.ar.paid / financialSummary.ar.total * 100) : 0)"></div>
+          </div>
         </div>
-      </mat-card>
+        <p class="text-[10px] text-gray-400 font-medium italic">Tỉ lệ tiền mặt đã thu trên tổng doanh số nợ</p>
+      </div>
 
       <!-- Tỷ lệ thanh toán (AP) -->
-      <mat-card class="card-premium card-summary">
-        <div class="text-secondary-demo font-semibold text-xs mb-4 uppercase">Tỷ lệ thanh toán (AP)</div>
-        <div class="flex items-center gap-4">
-            <div class="text-3xl font-bold text-blue-500">
-                {{ (financialSummary.ap.total > 0 ? (financialSummary.ap.paid / financialSummary.ap.total * 100) : 0) | number:'1.0-1' }}%
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-xl transition-all duration-500 group">
+        <div>
+          <h4 class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-4">Tiến độ trả nợ AP</h4>
+          <div class="flex items-end gap-2 mb-4">
+            <div class="text-4xl font-black text-gray-900 leading-none">
+              {{ (financialSummary.ap.total > 0 ? (financialSummary.ap.paid / financialSummary.ap.total * 100) : 0) | number:'1.0-1' }}%
             </div>
-            <div class="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
-                <div class="h-full bg-blue-500" [style.width.%]="(financialSummary.ap.total > 0 ? (financialSummary.ap.paid / financialSummary.ap.total * 100) : 0)"></div>
-            </div>
+            <span class="text-blue-500 font-bold text-xs mb-1 flex items-center"><mat-icon class="text-sm w-4 h-4">check_circle</mat-icon> Tiến độ</span>
+          </div>
+          <div class="h-3 bg-gray-100 rounded-full overflow-hidden mb-2">
+            <div class="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full group-hover:shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-all duration-1000" 
+                 [style.width.%]="(financialSummary.ap.total > 0 ? (financialSummary.ap.paid / financialSummary.ap.total * 100) : 0)"></div>
+          </div>
         </div>
-      </mat-card>
+        <p class="text-[10px] text-gray-400 font-medium italic">Tình hình thanh toán cho Nhà cung cấp</p>
+      </div>
     </div>
   </div>
 
@@ -177,104 +280,121 @@
   </div>
 
   <!-- Section 2: Charts and Analytics -->
-  <div class="mb-8">
+  <div class="mb-12">
     <!-- Báo Cáo Đơn hàng Biểu đồ cột -->
-    <mat-card class="mb-6 rounded-xl shadow-lg">
-      <mat-card-header class="p-6 pb-0">
-        <div class="flex flex-col sm:flex-row justify-between items-start w-full gap-4">
-          <div class="flex-1">
-            <mat-card-title class="text-xl font-semibold text-gray-900 m-0">Báo Cáo Đơn Hàng</mat-card-title>
-            <mat-card-subtitle class="text-sm text-gray-600 mt-1 m-0">Thống kê đơn hàng theo thời gian</mat-card-subtitle>
+    <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden mb-8 transition-all hover:shadow-xl group">
+      <div class="p-8 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start gap-4 bg-gradient-to-r from-gray-50/50 to-transparent">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+            <h3 class="text-xl font-black text-gray-900 tracking-tight">Xu hướng kinh doanh</h3>
           </div>
-          <button mat-raised-button color="primary" (click)="viewMoreOrderReport()" class="rounded-lg font-medium">
-            <mat-icon class="mr-2">analytics</mat-icon>
-            Xem thêm
-          </button>
+          <p class="text-sm text-gray-500 font-medium">Phân tích lượng đơn hàng và doanh thu theo thời gian</p>
         </div>
-      </mat-card-header>
-      <mat-card-content class="p-6">
-        <div class="relative h-96 w-full">
+        <button (click)="viewMoreOrderReport()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-200 hover:bg-blue-700 hover:shadow-blue-300 transition-all font-bold text-sm flex items-center gap-2">
+          <mat-icon class="text-lg">analytics</mat-icon>
+          Chi tiết báo cáo
+        </button>
+      </div>
+      <div class="p-8">
+        <div class="relative h-[400px] w-full">
           <canvas #ordersChart id="ordersChart" *ngIf="hasOrderReportData()" class="max-w-full max-h-full"></canvas>
           
           <!-- No Data Overlay for Orders Chart -->
-          <div class="absolute inset-0 bg-white bg-opacity-95 rounded-xl shadow-lg flex flex-col items-center justify-center text-gray-500 z-10 min-w-[280px]" *ngIf="!hasOrderReportData()">
-            <mat-icon class="text-5xl w-12 h-12 text-gray-300 mb-3">show_chart</mat-icon>
-            <h4 class="text-lg font-semibold text-gray-700 mb-2">Không có dữ liệu báo cáo</h4>
-            <p class="text-sm mb-4 text-center leading-relaxed">Chưa có đơn hàng trong khoảng thời gian được chọn</p>
-            <button mat-stroked-button color="primary" (click)="refreshChartsData()" class="rounded-md items-center">
-              <mat-icon class="mr-1 text-base">refresh</mat-icon>
-              Tải lại
+          <div class="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center text-gray-400 z-10" *ngIf="!hasOrderReportData()">
+            <div class="w-16 h-16 rounded-3xl bg-gray-100 flex items-center justify-center mb-4">
+              <mat-icon class="text-3xl text-gray-300">bar_chart</mat-icon>
+            </div>
+            <h4 class="text-lg font-bold text-gray-900 mb-1">Chưa có dữ liệu giao dịch</h4>
+            <p class="text-sm text-gray-500 mb-6 text-center max-w-xs">Hệ thống chưa ghi nhận đơn hàng nào trong khoảng thời gian này.</p>
+            <button (click)="refreshChartsData()" class="px-6 py-2 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-gray-800 transition-all">
+              Thử tải lại
             </button>
           </div>
         </div>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
 
     <!-- Product Charts Row -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Top 10 sản phẩm số lượng nhiều nhất - Donut Chart -->
-      <mat-card class="rounded-xl shadow-lg">
-        <mat-card-header class="p-6 pb-0">
-          <div class="w-full">
-            <mat-card-title class="text-xl font-semibold text-gray-900 m-0">Top 10 Sản Phẩm Bán Chạy</mat-card-title>
-            <mat-card-subtitle class="text-sm text-gray-600 mt-1 m-0">Theo số lượng</mat-card-subtitle>
+      <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden transition-all hover:shadow-xl group">
+        <div class="p-8 border-b border-gray-50 bg-gradient-to-r from-gray-50/50 to-transparent">
+          <div class="flex items-center gap-2 mb-1">
+            <div class="w-2 h-2 rounded-full bg-indigo-500"></div>
+            <h3 class="text-xl font-black text-gray-900 tracking-tight">Cơ cấu sản lượng</h3>
           </div>
-        </mat-card-header>
-        <mat-card-content class="p-6">
-          <div class="relative h-80 w-full">
-            <canvas #donutChart width="400" height="400" *ngIf="hasProductQuantityData()" class="max-w-full max-h-full"></canvas>
-            <!-- No Data State for Donut Chart -->
-            <div class="absolute inset-0 bg-white bg-opacity-95 rounded-xl shadow-lg flex flex-col items-center justify-center text-gray-500 z-10 p-8" *ngIf="!hasProductQuantityData()">
-              <mat-icon class="text-5xl w-12 h-12 text-gray-300 mb-3">donut_large</mat-icon>
-              <h4 class="text-lg font-semibold text-gray-700 mb-2">Không có dữ liệu sản phẩm</h4>
-              <p class="text-sm mb-4 text-center leading-relaxed">Không có dữ liệu sản phẩm bán chạy trong khoảng thời gian được chọn</p>
-              <button mat-stroked-button color="primary" (click)="refreshChartsData()" class="rounded-md">
-                <mat-icon class="mr-1 text-base">refresh</mat-icon>
-                Tải lại
-              </button>
+          <p class="text-sm text-gray-500 font-medium">Top 10 sản phẩm bán chạy theo số lượng</p>
+        </div>
+        <div class="p-8 flex flex-col md:flex-row gap-8">
+          <div class="relative w-full md:w-1/2 flex items-center justify-center">
+            <div class="w-full aspect-square relative">
+              <canvas #donutChart *ngIf="hasProductQuantityData()" class="max-w-full max-h-full"></canvas>
+              <!-- Center Text for Donut -->
+              <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" *ngIf="hasProductQuantityData()">
+                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sản lượng</span>
+                <span class="text-2xl font-black text-gray-900">TOP 10</span>
+              </div>
+            </div>
+            <!-- Empty State -->
+            <div class="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center" *ngIf="!hasProductQuantityData()">
+              <mat-icon class="text-4xl text-gray-200 mb-2">donut_large</mat-icon>
+              <span class="text-xs font-bold text-gray-400">Không có dữ liệu</span>
             </div>
           </div>
-          <div class="mt-4 space-y-2" *ngIf="hasProductQuantityData()">
-            <div class="flex items-center gap-3 p-2 rounded-md bg-gray-50" *ngFor="let product of topProductsData?.byQuantity?.slice(0, 5); let i = index">
-              <div class="w-4 h-4 rounded flex-shrink-0" [style.background-color]="getChartColor(i)"></div>
-              <span class="flex-1 text-sm text-gray-700 font-medium">{{ product?.sanpham?.title || product?.sanpham?.masp }}</span>
-              <span class="text-sm text-gray-600 font-semibold">{{ product?.totalQuantity | number:'1.0-0' }}</span>
+          
+          <div class="flex-1 space-y-3" *ngIf="hasProductQuantityData()">
+            <div class="p-3 rounded-2xl bg-gray-50 flex items-center gap-3 transition-all hover:bg-white hover:shadow-md hover:scale-[1.02] cursor-default border border-transparent hover:border-indigo-100" 
+                 *ngFor="let product of topProductsData?.byQuantity?.slice(0, 5); let i = index">
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs" [style.background-color]="getChartColor(i) + '20'" [style.color]="getChartColor(i)">
+                #{{ i + 1 }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-xs font-bold text-gray-900 truncate">{{ product?.sanpham?.title || product?.sanpham?.masp }}</div>
+                <div class="text-[10px] text-gray-400 font-medium">Mã: {{ product?.sanpham?.masp }}</div>
+              </div>
+              <div class="text-sm font-black text-gray-900">{{ product?.totalQuantity | number:'1.0-0' }}</div>
             </div>
           </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
 
       <!-- Top 10 sản phẩm thành tiền bán nhiều nhất - Pie Chart -->
-      <mat-card class="rounded-xl shadow-lg">
-        <mat-card-header class="p-6 pb-0">
-          <div class="w-full">
-            <mat-card-title class="text-xl font-semibold text-gray-900 m-0">Top 10 Sản Phẩm Doanh Thu</mat-card-title>
-            <mat-card-subtitle class="text-sm text-gray-600 mt-1 m-0">Theo thành tiền</mat-card-subtitle>
+      <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden transition-all hover:shadow-xl group">
+        <div class="p-8 border-b border-gray-50 bg-gradient-to-r from-gray-50/50 to-transparent">
+          <div class="flex items-center gap-2 mb-1">
+            <div class="w-2 h-2 rounded-full bg-rose-500"></div>
+            <h3 class="text-xl font-black text-gray-900 tracking-tight">Cơ cấu doanh thu</h3>
           </div>
-        </mat-card-header>
-        <mat-card-content class="p-6">
-          <div class="relative h-80 w-full">
-            <canvas #pieChart width="400" height="400" *ngIf="hasProductValueData()" class="max-w-full max-h-full"></canvas>
-            <!-- No Data State for Pie Chart -->
-            <div class="absolute inset-0 bg-white bg-opacity-95 rounded-xl shadow-lg flex flex-col items-center justify-center text-gray-500 z-10 p-8" *ngIf="!hasProductValueData()">
-              <mat-icon class="text-5xl w-12 h-12 text-gray-300 mb-3">pie_chart</mat-icon>
-              <h4 class="text-lg font-semibold text-gray-700 mb-2">Không có dữ liệu doanh thu</h4>
-              <p class="text-sm mb-4 text-center leading-relaxed">Không có dữ liệu doanh thu sản phẩm trong khoảng thời gian được chọn</p>
-              <button mat-stroked-button color="primary" (click)="refreshChartsData()" class="rounded-md">
-                <mat-icon class="mr-1 text-base">refresh</mat-icon>
-                Tải lại
-              </button>
+          <p class="text-sm text-gray-500 font-medium">Top 10 sản phẩm đóng góp doanh thu lớn nhất</p>
+        </div>
+        <div class="p-8 flex flex-col md:flex-row gap-8">
+          <div class="relative w-full md:w-1/2 flex items-center justify-center">
+            <div class="w-full aspect-square">
+              <canvas #pieChart *ngIf="hasProductValueData()" class="max-w-full max-h-full"></canvas>
+            </div>
+            <!-- Empty State -->
+            <div class="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center" *ngIf="!hasProductValueData()">
+              <mat-icon class="text-4xl text-gray-200 mb-2">pie_chart</mat-icon>
+              <span class="text-xs font-bold text-gray-400">Không có dữ liệu</span>
             </div>
           </div>
-          <div class="mt-4 space-y-2" *ngIf="hasProductValueData()">
-            <div class="flex items-center gap-3 p-2 rounded-md bg-gray-50" *ngFor="let product of topProductsData?.byValue?.slice(0, 5); let i = index">
-              <div class="w-4 h-4 rounded flex-shrink-0" [style.background-color]="getChartColor(i)"></div>
-              <span class="flex-1 text-sm text-gray-700 font-medium">{{ product?.sanpham?.title || product?.sanpham?.masp }}</span>
-              <span class="text-sm text-gray-600 font-semibold">{{ product?.totalValue | currency:'VND':'symbol':'1.0-0' }}</span>
+          
+          <div class="flex-1 space-y-3" *ngIf="hasProductValueData()">
+            <div class="p-3 rounded-2xl bg-gray-50 flex items-center gap-3 transition-all hover:bg-white hover:shadow-md hover:scale-[1.02] cursor-default border border-transparent hover:border-rose-100" 
+                 *ngFor="let product of topProductsData?.byValue?.slice(0, 5); let i = index">
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs" [style.background-color]="getChartColor(i) + '20'" [style.color]="getChartColor(i)">
+                #{{ i + 1 }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-xs font-bold text-gray-900 truncate">{{ product?.sanpham?.title || product?.sanpham?.masp }}</div>
+                <div class="text-[10px] text-gray-400 font-medium">Mã: {{ product?.sanpham?.masp }}</div>
+              </div>
+              <div class="text-sm font-black text-gray-900">{{ product?.totalValue | currency:'VND':'':'1.0-0' }}₫</div>
             </div>
           </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
     </div>
   </div>
 

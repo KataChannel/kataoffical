@@ -8,7 +8,7 @@ import {
     Query,
     Resolver,
 } from '@nestjs/graphql';
-import GraphQLJSON from 'graphql-type-json';
+import { GraphQLJSON } from 'graphql-type-json';
 import { PrismaService } from 'prisma/prisma.service';
 
 // Define GraphQL types for code-first approach
@@ -78,6 +78,84 @@ export class TopProductItem {
   totalValue: number;
 }
 
+@ObjectType()
+export class DashboardKhachhangInfo {
+  @Field(() => String, { nullable: true })
+  ten?: string;
+
+  @Field(() => String, { nullable: true })
+  sdt?: string;
+}
+
+@ObjectType()
+export class DonhangChoXacNhanItem {
+  @Field(() => String)
+  id: string;
+
+  @Field(() => String)
+  madonhang: string;
+
+  @Field(() => Date)
+  createdAt: Date;
+
+  @Field(() => Float)
+  tongTien: number;
+
+  @Field(() => Boolean)
+  xacNhanLan1: boolean;
+
+  @Field(() => Boolean)
+  xacNhanLan2: boolean;
+
+  @Field(() => String, { nullable: true })
+  confirmToken?: string;
+
+  @Field(() => DashboardKhachhangInfo, { nullable: true })
+  khachhang?: DashboardKhachhangInfo;
+}
+
+@ObjectType()
+export class CongNoKhachHangItem {
+  @Field(() => String)
+  khachhangId: string;
+
+  @Field(() => String)
+  ten: string;
+
+  @Field(() => String, { nullable: true })
+  sdt?: string;
+
+  @Field(() => String, { nullable: true })
+  email?: string;
+
+  @Field(() => Float)
+  tongNo: number;
+
+  @Field(() => Int)
+  soDonNo: number;
+
+  @Field(() => Date, { nullable: true })
+  ngayMuaGanNhat?: Date;
+}
+
+@ObjectType()
+export class CongNoSummaryResult {
+  @Field(() => Float)
+  tongCongNo: number;
+
+  @Field(() => Int)
+  soKhachNo: number;
+
+  @Field(() => Int)
+  soKhachQuaHan: number;
+
+  @Field(() => Float)
+  trungBinhNo: number;
+
+  @Field(() => [CongNoKhachHangItem])
+  topKhachNo: CongNoKhachHangItem[];
+}
+
 @Injectable()
 @Resolver('Dashboard')
 export class DashboardResolver {
@@ -137,20 +215,17 @@ export class DashboardResolver {
 
     const count = await this.prisma.dathang.count({ where: processedWhere });
 
-    // Tính tổng từ Dathangsanpham
-    const sumQuery = await this.prisma.dathangsanpham.aggregate({
-      where: {
-        dathang: processedWhere,
-      },
+    const sum = await this.prisma.dathang.aggregate({
+      where: processedWhere,
       _sum: {
-        ttdat: true,
+        tongtien: true,
       },
     });
 
     return {
       _count: { _all: count },
       _sum: {
-        tongtien: sumQuery._sum?.ttdat ? Number(sumQuery._sum.ttdat) : 0,
+        tongtien: sum._sum?.tongtien ? Number(sum._sum.tongtien) : 0,
       },
     };
   }
@@ -329,8 +404,8 @@ export class DashboardResolver {
 
   // ==================== DASHBOARD WIDGETS ====================
 
-  @Query(() => GraphQLJSON, { name: 'donhangChoXacNhan' })
-  async donhangChoXacNhan() {
+  @Query(() => [DonhangChoXacNhanItem], { name: 'donhangChoXacNhan' })
+  async donhangChoXacNhan(): Promise<DonhangChoXacNhanItem[]> {
     // Find orders that need confirmation
     // xacNhanLan1 = false OR xacNhanLan2 = false
     const donhangs = await this.prisma.donhang.findMany({
@@ -361,16 +436,28 @@ export class DashboardResolver {
       take: 20,
     });
 
-    return donhangs;
+    return donhangs.map((d) => ({
+      ...d,
+      tongTien: Number(d.tongtien),
+      xacNhanLan1: !!d.xacNhanLan1,
+      xacNhanLan2: !!d.xacNhanLan2,
+      confirmToken: d.confirmToken || undefined,
+      khachhang: d.khachhang
+        ? {
+            ten: d.khachhang.name,
+            sdt: d.khachhang.sdt || undefined,
+          }
+        : undefined,
+    })) as any;
   }
 
-  @Query(() => GraphQLJSON, { name: 'congNoSummary' })
-  async congNoSummary() {
+  @Query(() => CongNoSummaryResult, { name: 'congNoSummary' })
+  async congNoSummary(): Promise<CongNoSummaryResult> {
     // Get all customers with debt
     const congNoData = await this.prisma.$queryRaw<
       Array<{
         khachhangId: string;
-        ten: string;
+        name: string;
         sdt: string | null;
         email: string | null;
         tongNo: number;
@@ -380,19 +467,18 @@ export class DashboardResolver {
     >`
       SELECT 
         k.id as "khachhangId",
-        k.ten,
+        k.name,
         k.sdt,
         k.email,
-        COALESCE(SUM(d."congNo"), 0) as "tongNo",
+        COALESCE(SUM(d."tongtien" - COALESCE((SELECT SUM("soTien") FROM "ThanhToan" tt WHERE tt."donhangId" = d.id AND tt."trangThai" = 'DA_THANH_TOAN'), 0)), 0) as "tongNo",
         COUNT(d.id) as "soDonNo",
         MAX(d."createdAt") as "ngayMuaGanNhat"
       FROM "Khachhang" k
       INNER JOIN "Donhang" d ON d."khachhangId" = k.id
-      WHERE d."congNo" > 0
-        AND d.trangthai NOT IN ('HUY')
-      GROUP BY k.id, k.ten, k.sdt, k.email
-      HAVING SUM(d."congNo") > 0
-      ORDER BY SUM(d."congNo") DESC
+      WHERE d.status NOT IN ('huy')
+      GROUP BY k.id, k.name, k.sdt, k.email
+      HAVING COALESCE(SUM(d."tongtien"), 0) > 0
+      ORDER BY "tongNo" DESC
       LIMIT 10
     `;
 
@@ -413,11 +499,15 @@ export class DashboardResolver {
 
     const trungBinhNo = soKhachNo > 0 ? tongCongNo / soKhachNo : 0;
 
-    // Convert bigint to number for soDonNo
-    const topKhachNo = congNoData.map((item) => ({
-      ...item,
+    // Convert bigint to number and handle nulls
+    const topKhachNo: CongNoKhachHangItem[] = congNoData.map((item) => ({
+      khachhangId: item.khachhangId,
+      ten: item.name,
+      sdt: item.sdt || undefined,
+      email: item.email || undefined,
       tongNo: Number(item.tongNo),
       soDonNo: Number(item.soDonNo),
+      ngayMuaGanNhat: item.ngayMuaGanNhat || undefined,
     }));
 
     return {
@@ -434,6 +524,10 @@ export class DashboardResolver {
     @Args('batdau', { nullable: true }) batdau?: string,
     @Args('ketthuc', { nullable: true }) ketthuc?: string,
   ) {
+    const now = new Date();
+    const next7Days = new Date();
+    next7Days.setDate(now.getDate() + 7);
+
     const where: any = {};
     if (batdau || ketthuc) {
       where.createdAt = {};
@@ -441,7 +535,7 @@ export class DashboardResolver {
       if (ketthuc) where.createdAt.lte = new Date(ketthuc);
     }
 
-    const [arStats, apStats] = await Promise.all([
+    const [arStats, apStats, arOverdue, apOverdue, apUpcoming] = await Promise.all([
       this.prisma.aRDocument.aggregate({
         where,
         _sum: {
@@ -458,19 +552,71 @@ export class DashboardResolver {
           remainingAmount: true,
         } as any,
       }),
+      // Nợ quá hạn khách hàng (AR Overdue)
+      this.prisma.aRDocument.aggregate({
+        where: { ...where, dueDate: { lt: now }, remainingAmount: { gt: 0 } },
+        _sum: { remainingAmount: true } as any,
+      }),
+      // Nợ quá hạn nhà cung cấp (AP Overdue)
+      this.prisma.paymentProposal.aggregate({
+        where: { ...where, dueDate: { lt: now }, remainingAmount: { gt: 0 } },
+        _sum: { remainingAmount: true } as any,
+      }),
+      // Nợ sắp đến hạn NCC (AP Upcoming - 7 days)
+      this.prisma.paymentProposal.aggregate({
+        where: { 
+          ...where, 
+          dueDate: { gte: now, lte: next7Days }, 
+          remainingAmount: { gt: 0 } 
+        },
+        _sum: { remainingAmount: true } as any,
+      }),
     ]);
+
+    const alerts: any[] = [];
+    const arOverdueAmt = Number((arOverdue._sum as any)?.remainingAmount) || 0;
+    const apOverdueAmt = Number((apOverdue._sum as any)?.remainingAmount) || 0;
+    const apUpcomingAmt = Number((apUpcoming._sum as any)?.remainingAmount) || 0;
+
+    if (arOverdueAmt > 0) {
+      alerts.push({
+        type: 'warning',
+        category: 'AR',
+        message: `Có ${arOverdueAmt.toLocaleString('vi-VN')} VNĐ nợ quá hạn từ khách hàng cần thu hồi.`,
+      });
+    }
+
+    if (apOverdueAmt > 0) {
+      alerts.push({
+        type: 'danger',
+        category: 'AP',
+        message: `Có ${apOverdueAmt.toLocaleString('vi-VN')} VNĐ nợ quá hạn NCC cần thanh toán ngay!`,
+      });
+    }
+
+    if (apUpcomingAmt > 0) {
+      alerts.push({
+        type: 'info',
+        category: 'AP',
+        message: `Có ${apUpcomingAmt.toLocaleString('vi-VN')} VNĐ nợ NCC sắp đến hạn trong 7 ngày tới.`,
+      });
+    }
 
     return {
       ar: {
         total: Number(arStats._sum?.totalAmount) || 0,
         paid: Number((arStats._sum as any)?.paidAmount) || 0,
         remaining: Number((arStats._sum as any)?.remainingAmount) || 0,
+        overdue: arOverdueAmt,
       },
       ap: {
         total: Number(apStats._sum?.totalAmount) || 0,
         paid: Number((apStats._sum as any)?.paidAmount) || 0,
         remaining: Number((apStats._sum as any)?.remainingAmount) || 0,
+        overdue: apOverdueAmt,
+        upcoming: apUpcomingAmt,
       },
+      alerts,
     };
   }
 }

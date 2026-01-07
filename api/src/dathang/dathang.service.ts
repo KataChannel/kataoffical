@@ -208,28 +208,39 @@ export class DathangService {
       }
 
       // Cập nhật từng sản phẩm
+      let total = 0;
       for (const sp of data.sanpham) {
         const item = await tx.dathangsanpham.findFirst({
           where: { dathangId: id, idSP: sp.idSP },
         });
+        const slnhan = parseFloat(Number(sp.slnhan || 0).toFixed(3));
+        const gianhap = parseFloat(Number(sp.gianhap || 0).toFixed(3));
+        const ttnhan = slnhan * gianhap;
+
         if (item) {
           await tx.dathangsanpham.update({
             where: { id: item.id },
             data: {
-              slnhan: parseFloat(Number(sp.slnhan).toFixed(3)),
-              gianhap: parseFloat(Number(sp.gianhap).toFixed(3)),
-              ttnhan: Number(sp.slnhan * sp.gianhap),
+              slnhan,
+              gianhap,
+              ttnhan,
               ghichu: sp.ghichu,
             },
           });
         }
+        total += ttnhan;
       }
 
-      // Cập nhật trạng thái đơn hàng
+      const vatRate = Number(oldDathang.vat) || 0;
+      const totalVat = total * vatRate;
+
+      // Cập nhật trạng thái đơn hàng và tổng tiền thực tế
       return tx.dathang.update({
         where: { id },
         data: {
           poStatus: 'DA_DOI_CHIEU',
+          tongtien: total + totalVat,
+          tongvat: totalVat,
           ghichu: data.ghichu
             ? `${oldDathang.ghichu || ''}\n[Đối chiếu]: ${data.ghichu}`
             : oldDathang.ghichu,
@@ -600,6 +611,31 @@ export class DathangService {
           throw new NotFoundException('Kho không tồn tại');
         }
       }
+
+      // Calculate totals
+      let total = 0;
+      const sanphamData = dto?.sanpham?.map((sp: any) => {
+        const slnhan = sp.slnhan || 0;
+        const gianhap = sp.gianhap || 0;
+        const ttnhan = Number(slnhan * gianhap);
+        total += ttnhan;
+        return {
+          idSP: sp.id,
+          ghichu: sp.ghichu,
+          sldat: sp.sldat || 0,
+          slgiao: sp.slgiao || 0,
+          slnhan: slnhan,
+          slhuy: sp.slhuy || 0,
+          ttdat: sp.ttdat || 0,
+          ttgiao: sp.ttgiao || 0,
+          ttnhan: ttnhan,
+          gianhap: gianhap,
+        };
+      });
+
+      const vatRate = dto.vat || nhacungcap.isshowvat ? 0.05 : 0; // Default or logic
+      const tongvat = total * vatRate;
+
       // Create the new order (đặt hàng) using the generated order code
       const newDathang = await prisma.dathang.create({
         data: {
@@ -612,37 +648,26 @@ export class DathangService {
           isActive: dto.isActive !== undefined ? dto.isActive : true,
           order: dto.order,
           ghichu: dto.ghichu,
+          tongtien: total + tongvat,
+          tongvat: tongvat,
+          vat: vatRate,
           sanpham: {
-            create: dto?.sanpham?.map((sp: any) => ({
-              idSP: sp.id,
-              ghichu: sp.ghichu,
-              sldat: sp.sldat || 0,
-              slgiao: sp.slgiao || 0,
-              slnhan: sp.slnhan || 0,
-              slhuy: sp.slhuy || 0,
-              ttdat: sp.ttdat || 0,
-              ttgiao: sp.ttgiao || 0,
-              ttnhan: Number(sp.slnhan * sp.gianhap) || 0,
-            })),
+            create: sanphamData,
           },
         },
         include: { sanpham: true },
       });
 
-      // Update warehouse inventory for dathang: upsert tonKho, increment slchogiao based on sldat
-      for (const sp of dto.sanpham) {
-        const incrementValue = parseFloat((sp.sldat ?? 0).toFixed(3));
-        await prisma.tonKho.upsert({
-          where: { sanphamId: sp.id },
-          update: {
-            slchonhap: { increment: incrementValue },
-          },
-          create: {
-            sanphamId: sp.id,
-            slchonhap: incrementValue,
-          },
-        });
-      }
+      // Update warehouse inventory using TonkhoManager
+      const tonkhoOps = dto.sanpham.map((sp: any) => ({
+        sanphamId: sp.id,
+        operation: 'increment' as const,
+        slchonhap: parseFloat((sp.sldat ?? 0).toFixed(3)),
+        reason: `New Dathang: ${madathang}`,
+      }));
+
+      await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps);
+
       return newDathang;
     });
   }
@@ -753,35 +778,51 @@ export class DathangService {
 
       // 2. Rollback từ 'dagiao' về 'dadat'
       if (oldDathang.status === 'dagiao' && data.status === 'dadat') {
-        for (const sp of oldDathang.sanpham) {
-          await prisma.tonKho.update({
-            where: { sanphamId: sp.idSP },
-            data: {
-              slchonhap: { increment: parseFloat((sp.slgiao ?? 0).toFixed(3)) },
-            },
-          });
-        }
+        const tonkhoOps = oldDathang.sanpham.map((sp: any) => ({
+          sanphamId: sp.idSP,
+          operation: 'increment' as const,
+          slchonhap: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+          reason: `Rollback DAGIAO→DADAT for ${oldDathang.madncc}`,
+        }));
+
+        await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps);
+
         await prisma.phieuKho.deleteMany({
           where: { maphieu: `PX-${oldDathang.madncc}` },
         });
+
+        // Calculate totals for update
+        let total = 0;
+        const sanphamUpdates = data.sanpham.map((sp: any) => {
+          const slnhan = parseFloat((sp.slnhan ?? 0).toFixed(3));
+          const gianhap = parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0;
+          const ttnhan = slnhan * gianhap;
+          total += ttnhan;
+          return {
+            where: { idSP: sp.idSP ?? sp.id },
+            data: {
+              ghichu: sp.ghichu,
+              sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+              slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+              slnhan: slnhan,
+              gianhap: gianhap,
+              ttnhan: ttnhan,
+            },
+          };
+        });
+
+        const vatRate = Number(oldDathang.vat) || 0;
+        const totalVat = total * vatRate;
 
         return prisma.dathang.update({
           where: { id },
           data: {
             ...this.getBasicUpdateData(data, khoId),
             status: 'dadat',
+            tongtien: total + totalVat,
+            tongvat: totalVat,
             sanpham: {
-              updateMany: data.sanpham.map((sp: any) => ({
-                where: { idSP: sp.idSP ?? sp.id },
-                data: {
-                  ghichu: sp.ghichu,
-                  sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                  slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-                  slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
-                  gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
-                  ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
-                },
-              })),
+              update: sanphamUpdates,
             },
           },
         });
@@ -836,13 +877,14 @@ export class DathangService {
 
       // 4. Chuyển sang 'dagiao' (xuất kho từ nhà cung cấp)
       if (data.status === 'dagiao') {
-        for (const sp of data.sanpham) {
-          const decValue = parseFloat((Number(sp.slgiao) ?? 0).toFixed(3));
-          await prisma.tonKho.update({
-            where: { sanphamId: sp.idSP ?? sp.id },
-            data: { slchonhap: { decrement: decValue } },
-          });
-        }
+        const tonkhoOps = data.sanpham.map((sp: any) => ({
+          sanphamId: sp.idSP ?? sp.id,
+          operation: 'decrement',
+          slchonhap: parseFloat((Number(sp.slgiao) ?? 0).toFixed(3)),
+          reason: `Switch DATHANG→DAGIAO for ${oldDathang.madncc}`,
+        }));
+
+        await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps as any);
 
         const maphieuNew = `PX-${oldDathang.madncc}-${this.formatDateForFilename()}`;
         const phieuPayload = {
@@ -889,14 +931,22 @@ export class DathangService {
 
       // 5. Chuyển sang 'danhan'
       if (data.status === 'danhan' && oldDathang.status === 'dagiao') {
+        const tonkhoOps: any[] = [];
         const shortageItems: any[] = [];
+        let total = 0;
+
         for (const item of data.sanpham) {
           const receivedQty = parseFloat((Number(item.slnhan) ?? 0).toFixed(3));
           const shippedQty = parseFloat((Number(item.slgiao) ?? 0).toFixed(3));
+          const gianhap = parseFloat((Number(item.gianhap) ?? 0).toFixed(3));
+          const ttnhan = receivedQty * gianhap;
+          total += ttnhan;
 
-          await prisma.tonKho.update({
-            where: { sanphamId: item.idSP ?? item.id },
-            data: { slton: { increment: receivedQty } },
+          tonkhoOps.push({
+            sanphamId: item.idSP ?? item.id,
+            operation: 'increment',
+            slton: receivedQty,
+            reason: `Receive DATHANG items for ${oldDathang.madncc}`,
           });
 
           if (receivedQty < shippedQty) {
@@ -909,6 +959,8 @@ export class DathangService {
             });
           }
         }
+
+        await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps);
 
         if (shortageItems.length > 0) {
           await prisma.phieuKho.create({
@@ -930,17 +982,23 @@ export class DathangService {
           });
         }
 
+        const vatRate = Number(oldDathang.vat) || 0;
+        const totalVat = total * vatRate;
+
         return prisma.dathang.update({
           where: { id },
           data: {
             ...this.getBasicUpdateData(data, khoId),
             status: 'danhan',
+            tongtien: total + totalVat,
+            tongvat: totalVat,
             sanpham: {
-              updateMany: data.sanpham.map((item: any) => ({
+              update: data.sanpham.map((item: any) => ({
                 where: { idSP: item.idSP ?? item.id },
                 data: {
                   ghichu: item.ghichu,
                   slnhan: parseFloat((Number(item.slnhan) ?? 0).toFixed(3)),
+                  ttnhan: parseFloat((Number(item.slnhan) ?? 0).toFixed(3)) * parseFloat((Number(item.gianhap) ?? 0).toFixed(3)),
                 },
               })),
             },
@@ -950,14 +1008,17 @@ export class DathangService {
 
       // 6. Chuyển sang 'huy'
       if (data.status === 'huy') {
-        for (const sp of oldDathang.sanpham) {
-          const sldat = parseFloat((sp.sldat ?? 0).toFixed(3));
-          if (sldat > 0) {
-            await prisma.tonKho.update({
-              where: { sanphamId: sp.idSP },
-              data: { slchonhap: { decrement: sldat } },
-            });
-          }
+        const tonkhoOps = oldDathang.sanpham
+          .filter((sp) => parseFloat((sp.sldat ?? 0).toFixed(3)) > 0)
+          .map((sp) => ({
+            sanphamId: sp.idSP,
+            operation: 'decrement' as const,
+            slchonhap: parseFloat((sp.sldat ?? 0).toFixed(3)),
+            reason: `Cancel DATHANG: ${oldDathang.madncc}`,
+          }));
+
+        if (tonkhoOps.length > 0) {
+          await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps);
         }
 
         await prisma.phieuKho.deleteMany({
@@ -969,14 +1030,16 @@ export class DathangService {
           data: {
             ...this.getBasicUpdateData(data, khoId),
             status: 'huy',
+            tongtien: 0,
+            tongvat: 0,
             sanpham: {
               updateMany: oldDathang.sanpham.map((sp: any) => ({
                 where: { idSP: sp.idSP },
                 data: {
+                  sldat: 0,
                   slgiao: 0,
                   slnhan: 0,
-                  slhuy: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                  ghichu: 'Hủy đơn đặt hàng',
+                  ttnhan: 0,
                 },
               })),
             },
@@ -1004,46 +1067,53 @@ export class DathangService {
   }
 
   async remove(id: string) {
-    return this.prisma.$transaction(async (prisma) => {
-      const dathang = await prisma.dathang.findUnique({
+    const dathang = await this.prisma.dathang.findUnique({
+      where: { id },
+    });
+
+    if (!dathang) throw new NotFoundException('Đơn hàng không tồn tại');
+
+    // ERP Protection
+    if (
+      dathang.poStatus === 'CHO_THANH_TOAN' ||
+      dathang.poStatus === 'DA_THANH_TOAN'
+    ) {
+      throw new BadRequestException(
+        'Đơn hàng đã nằm trong đề xuất thanh toán hoặc đã thanh toán, không thể xóa.',
+      );
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const dbDathang = await tx.dathang.findUnique({
         where: { id },
         include: { sanpham: true },
       });
-      if (!dathang) {
-        throw new NotFoundException('Đơn đặt hàng không tồn tại');
-      }
 
-      // ERP Protection: Restricted delete if already in payment process
-      if (
-        dathang.poStatus === 'CHO_THANH_TOAN' ||
-        dathang.poStatus === 'DA_THANH_TOAN'
-      ) {
-        throw new BadRequestException(
-          'Đơn hàng đã nằm trong đề xuất thanh toán hoặc đã thanh toán, không thể xóa.',
-        );
-      }
+      if (!dbDathang) throw new NotFoundException('Đơn hàng không tồn tại');
 
-      // Revert TONKHO updates based on the order's status
-      // For each product, undo the creation increment.
-      // If the order was already delivered ('dagiao'),
-      // first reverse the delivery decrement by incrementing slchonhap.
-      for (const sp of dathang.sanpham) {
-        const sldat = parseFloat((sp.sldat ?? 0).toFixed(3));
-        const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(3));
-        if (dathang.status === 'dagiao') {
-          await prisma.tonKho.update({
-            where: { sanphamId: sp.idSP },
-            data: { slchonhap: { increment: slgiao } },
-          });
-        }
-        await prisma.tonKho.update({
-          where: { sanphamId: sp.idSP },
-          data: { slchonhap: { decrement: sldat } },
+      const tonkhoOps = dbDathang.sanpham.map((sp: any) => ({
+        sanphamId: sp.idSP,
+        operation: 'decrement' as const,
+        slchonhap: parseFloat((sp.sldat ?? 0).toFixed(3)),
+        reason: `Remove Dathang: ${dbDathang.madncc}`,
+      }));
+
+      // If already delivered, rollback slchonhap as well
+      if (dbDathang.status === 'dagiao') {
+        dbDathang.sanpham.forEach((sp: any) => {
+          tonkhoOps.push({
+            sanphamId: sp.idSP,
+            operation: 'increment',
+            slchonhap: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+            reason: `Rollback delivery for Dathang removal: ${dbDathang.madncc}`,
+          } as any);
         });
       }
 
-      // Finally, delete the order
-      return prisma.dathang.delete({ where: { id } });
+      await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps);
+
+      await tx.dathangsanpham.deleteMany({ where: { dathangId: id } });
+      return tx.dathang.delete({ where: { id } });
     });
   }
 
@@ -1658,6 +1728,9 @@ export class DathangService {
         id: true,
         madncc: true,
         ngaynhan: true,
+        tongtien: true,
+        tongvat: true,
+        vat: true,
         poStatus: true,
         nhacungcap: {
           select: {

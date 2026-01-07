@@ -189,6 +189,7 @@ model Khachhang {
   isshowvat       Boolean          @default(true)
   machuyen        String?
   congNo          Decimal          @default(0) @postgres.Decimal(20, 3)
+  creditDays      Int?             @default(30)
   arDocumentItems ARDocumentItem[]
   donhang         Donhang[]
   banggia         Banggia?         @relation("Banggiakhachhang", fields: [banggiaId], references: [id])
@@ -383,23 +384,24 @@ model DonhangPriceAudit {
 }
 
 model Nhacungcap {
-  id        String    @id @default(uuid())
-  name      String?
-  mancc     String    @unique
-  manccold  String?
-  diachi    String?
-  email     String?
-  sdt       String?
-  ghichu    String?
-  isActive  Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isshowvat Boolean   @default(true)
-  tenfile   String?
-  congNo    Decimal   @default(0) @postgres.Decimal(20, 3)
-  dathang   Dathang[]
-  NhomNcc   NhomNcc[] @relation("NhacungcapNhom")
-  Sanpham   Sanpham[] @relation("NhacungcapToSanpham")
+  id         String    @id @default(uuid())
+  name       String?
+  mancc      String    @unique
+  manccold   String?
+  diachi     String?
+  email      String?
+  sdt        String?
+  ghichu     String?
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  isshowvat  Boolean   @default(true)
+  tenfile    String?
+  congNo     Decimal   @default(0) @postgres.Decimal(20, 3)
+  creditDays Int?      @default(30)
+  dathang    Dathang[]
+  NhomNcc    NhomNcc[] @relation("NhacungcapNhom")
+  Sanpham    Sanpham[] @relation("NhacungcapToSanpham")
 }
 
 model Dathang {
@@ -420,6 +422,9 @@ model Dathang {
   khoId          String?
   lydohuy        String?
   poStatus       POStatus?                      @default(MOI)
+  tongtien       Decimal                        @default(0) @postgres.Decimal(20, 3)
+  tongvat        Decimal                        @default(0) @postgres.Decimal(20, 3)
+  vat            Decimal                        @default(0) @postgres.Decimal(20, 3)
   kho            Kho?                           @relation(fields: [khoId], references: [id])
   nhacungcap     Nhacungcap?                    @relation(fields: [nhacungcapId], references: [id])
   sanpham        Dathangsanpham[]
@@ -948,19 +953,20 @@ model HoaDonDienTuDetail {
 }
 
 model PaymentProposal {
-  id          String                    @id @default(uuid())
-  maDeXuat    String                    @unique
-  ngayLap     DateTime                  @default(now())
-  status      String                    @default("MOI")
-  description String?
-  totalAmount Decimal                   @default(0) @postgres.Decimal(20, 3)
-  paidAmount  Decimal                   @default(0) @postgres.Decimal(20, 3)
-  remainingAmount Decimal               @default(0) @postgres.Decimal(20, 3)
-  comment     String?
-  tenant_id   String?
-  createdAt   DateTime                  @default(now())
-  updatedAt   DateTime                  @updatedAt
-  items       PaymentProposalSupplier[]
+  id              String                    @id @default(uuid())
+  maDeXuat        String                    @unique
+  ngayLap         DateTime                  @default(now())
+  status          String                    @default("MOI")
+  description     String?
+  totalAmount     Decimal                   @default(0) @postgres.Decimal(20, 3)
+  comment         String?
+  tenant_id       String?
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+  paidAmount      Decimal                   @default(0) @postgres.Decimal(20, 3)
+  remainingAmount Decimal                   @default(0) @postgres.Decimal(20, 3)
+  dueDate         DateTime?
+  items           PaymentProposalSupplier[]
 
   @@index([maDeXuat])
   @@index([status])
@@ -971,10 +977,10 @@ model PaymentProposalSupplier {
   proposalId       String
   supplierId       String
   amount           Decimal                        @default(0) @postgres.Decimal(20, 3)
-  paidAmount       Decimal                        @default(0) @postgres.Decimal(20, 3)
-  remainingAmount  Decimal                        @default(0) @postgres.Decimal(20, 3)
   status           String                         @default("CHO_THANH_TOAN")
   paymentVoucherId String?                        @unique
+  paidAmount       Decimal                        @default(0) @postgres.Decimal(20, 3)
+  remainingAmount  Decimal                        @default(0) @postgres.Decimal(20, 3)
   purchaseOrders   PaymentProposalPurchaseOrder[]
   paymentVoucher   PhieuThuChi?                   @relation(fields: [paymentVoucherId], references: [id])
   paymentProposal  PaymentProposal                @relation(fields: [proposalId], references: [id], onDelete: Cascade)
@@ -997,19 +1003,20 @@ model PaymentProposalPurchaseOrder {
 }
 
 model ARDocument {
-  id          String           @id @default(uuid())
-  maChungTu   String           @unique
-  ngayLap     DateTime         @default(now())
-  status      String           @default("MOI")
-  description String?
-  totalAmount Decimal          @default(0) @postgres.Decimal(20, 3)
-  paidAmount  Decimal          @default(0) @postgres.Decimal(20, 3)
-  remainingAmount Decimal      @default(0) @postgres.Decimal(20, 3)
-  comment     String?
-  tenant_id   String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  items       ARDocumentItem[]
+  id              String           @id @default(uuid())
+  maChungTu       String           @unique
+  ngayLap         DateTime         @default(now())
+  status          String           @default("MOI")
+  description     String?
+  totalAmount     Decimal          @default(0) @postgres.Decimal(20, 3)
+  comment         String?
+  tenant_id       String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  paidAmount      Decimal          @default(0) @postgres.Decimal(20, 3)
+  remainingAmount Decimal          @default(0) @postgres.Decimal(20, 3)
+  dueDate         DateTime?
+  items           ARDocumentItem[]
 
   @@index([maChungTu])
   @@index([status])
@@ -1020,10 +1027,10 @@ model ARDocumentItem {
   arDocumentId     String
   customerId       String
   amount           Decimal             @default(0) @postgres.Decimal(20, 3)
-  paidAmount       Decimal             @default(0) @postgres.Decimal(20, 3)
-  remainingAmount  Decimal             @default(0) @postgres.Decimal(20, 3)
   status           String              @default("CHO_THU_TIEN")
   receiptVoucherId String?             @unique
+  paidAmount       Decimal             @default(0) @postgres.Decimal(20, 3)
+  remainingAmount  Decimal             @default(0) @postgres.Decimal(20, 3)
   salesOrders      ARDocumentDonhang[]
   arDocument       ARDocument          @relation(fields: [arDocumentId], references: [id], onDelete: Cascade)
   customer         Khachhang           @relation(fields: [customerId], references: [id])

@@ -55,8 +55,9 @@ export class ARDocumentService {
     });
   }
 
-  async findOne(id: string) {
-    const doc = await this.prisma.aRDocument.findUnique({
+  async findOne(id: string, prismaClient?: any) {
+    const client = prismaClient || this.prisma;
+    const doc = await client.aRDocument.findUnique({
       where: { id },
       include: {
         items: {
@@ -141,7 +142,7 @@ export class ARDocumentService {
         }
       }
 
-      return this.findOne(doc.id);
+      return this.findOne(doc.id, tx);
     });
   }
 

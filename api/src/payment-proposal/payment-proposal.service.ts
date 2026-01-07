@@ -46,8 +46,9 @@ export class PaymentProposalService {
     });
   }
 
-  async findOne(id: string) {
-    const proposal = await this.prisma.paymentProposal.findUnique({
+  async findOne(id: string, prismaClient?: any) {
+    const client = prismaClient || this.prisma;
+    const proposal = await client.paymentProposal.findUnique({
       where: { id },
       include: {
         items: {
@@ -131,7 +132,7 @@ export class PaymentProposalService {
         }
       }
 
-      return this.findOne(proposal.id);
+      return this.findOne(proposal.id, tx);
     });
   }
 

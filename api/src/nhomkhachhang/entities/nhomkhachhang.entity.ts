@@ -1,5 +1,4 @@
-import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { GraphQLDateTime } from 'graphql-scalars';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 
 @ObjectType('Nhomkhachhang', { description: 'Nhóm khách hàng entity' })
 export class Nhomkhachhang {
@@ -12,10 +11,10 @@ export class Nhomkhachhang {
   @Field(() => String, { nullable: true, description: 'Mô tả nhóm khách hàng' })
   description?: string;
 
-  @Field(() => GraphQLDateTime, { description: 'Ngày tạo' })
+  @Field(() => Date, { description: 'Ngày tạo' })
   createdAt: Date;
 
-  @Field(() => GraphQLDateTime, { description: 'Ngày cập nhật' })
+  @Field(() => Date, { description: 'Ngày cập nhật' })
   updatedAt: Date;
 
   @Field(() => [KhachhangBasic], {

@@ -381,6 +381,16 @@ export class GraphqlService {
   }
 
   private trackError(error: any, operation: string): void {
+    console.group(`🔴 GraphQL Error in ${operation}`);
+    console.error('Message:', error.message);
+    if (error.graphQLErrors) {
+      console.table(error.graphQLErrors);
+    }
+    if (error.networkError) {
+      console.error('Network Error:', error.networkError);
+    }
+    console.groupEnd();
+
     const graphqlError: GraphQLError = {
       message: error.message || 'Unknown error',
       code: error.code || error.extensions?.code,

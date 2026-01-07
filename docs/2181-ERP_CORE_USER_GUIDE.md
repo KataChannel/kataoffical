@@ -9,74 +9,98 @@ Tài liệu này hướng dẫn chi tiết từng bước (Step-by-step) để t
 Dành cho bộ phận Kinh doanh và Kế toán Phải thu.
 
 ### Bước 1: Khởi tạo Đơn hàng (Sales Order - SO)
-- **Vị trí**: `Bán hàng` -> `Danh sách đơn hàng`.
-- **Thực hiện**: Tạo đơn hàng mới cho khách hàng. Trạng thái mặc định là `cho_xac_nhan` hoặc `da_xac_nhan`.
-- **Lưu ý**: Đây là lớp **Kinh doanh**, ghi nhận nhu cầu của khách hàng.
+- **Truy cập**: Tại thanh Menu xanh bên trái, chọn `Bán hàng` -> `Danh sách đơn hàng`.
+- **Thực hiện**: 
+    1. Nhấn nút **"+ Thêm mới"** (góc trên bên phải).
+    2. Chọn **Khách hàng** từ danh sách thả xuống.
+    3. Thêm **Sản phẩm** bằng cách gõ tên vào ô tìm kiếm hàng hóa, nhập **Số lượng** và **Đơn giá**.
+    4. Nhấn **"Lưu đơn hàng"**. Trạng thái mặc định sẽ là `cho_xac_nhan`.
+- **Ghi chú**: Đây là giai đoạn ghi nhận nhu cầu, chưa phát sinh công nợ.
 
-### Bước 2: Xác nhận Giao hàng ("da_nhan" - Công nợ tạm tính)
-- **Vị trí**: Chi tiết đơn hàng.
-- **Thực hiện**: Sau khi giao hàng thành công, cập nhật trạng thái đơn hàng thành `da_nhan`.
-- **Ý nghĩa**: Hệ thống ghi nhận **Công nợ tạm tính** (Estimated Debt). Số liệu lúc này dựa trên thực tế giao của kho/shipper, nhưng chưa được Kế toán chốt.
+### Bước 2: Xác nhận Giao hàng (Công nợ tạm tính)
+- **Truy cập**: Click trực tiếp vào **Mã đơn hàng** trong danh sách để mở màn hình chi tiết.
+- **Thực hiện**: 
+    1. Khi hàng bắt đầu đi: Nhấn nút trạng thái sang `Đang giao`.
+    2. Khi shipper xác nhận khách đã nhận: Nhấn chuyển sang `Đã giao`.
+- **Kết quả**: Hệ thống tự động đẩy trạng thái đơn về `da_nhan`. Lúc này số nợ được ghi nhận là "Tạm tính" dựa trên số lượng đặt ban đầu.
 
-### Bước 3: Đối chiếu Kế toán ("doi_chieu" - Chốt số liệu)
-- **Vị trí**: Chi tiết đơn hàng -> Tab **"Đối chiếu"**.
-- **Thực hiện**: Kế toán kiểm tra lại số thực giao và giá bán cuối cùng (có thể điều chỉnh `sldoichieu`). Nhấn nút **"Chốt đối chiếu"**.
-- **Kết quả**: 
-  - Đơn hàng chuyển sang trạng thái `doi_chieu`.
-  - Dữ liệu đơn hàng **BỊ KHÓA**, không thể sửa đổi.
-  - Đây là **Điều kiện bắt buộc** để được phép tạo Chứng từ công nợ (Bước 4).
+### Bước 3: Đối chiếu Kế toán (Chốt số liệu)
+- **Truy cập**: Tại màn hình chi tiết đơn hàng -> Tìm Tab **"Đối chiếu"** (bên cạnh tab Thông tin chung).
+- **Thực hiện**: 
+    1. Kế toán xác nhận lại số lượng thực tế khách nhận (có thể sửa đổi nếu khách trả lại hàng hoặc giao thiếu).
+    2. Nhấn nút xanh **"Chốt đối chiếu"**.
+- **Kết quả**: Đơn hàng chuyển sang trạng thái `doi_chieu`. Toàn bộ dữ liệu đơn hàng bị KHÓA, không thể chỉnh sửa thêm.
 
-### Bước 4: Khởi tạo Chứng từ công nợ (AR Document - Nợ chính thức)
-- **Vị trí**: `Kế toán` -> `Chứng từ công nợ (AR)`.
-- **Thực hiện**: Hệ thống chỉ hiển thị các đơn hàng đã ở trạng thái `doi_chieu`. Kế toán chọn các đơn này để gom vào một chứng từ.
-- **Mục đích**: Chuyển từ "Nợ tạm tính" sang **"Nợ chính thức"** (Recognized Debt). Đây là con số cuối cùng dùng để xuất hóa đơn và thu tiền.
-
-### Bước 5: Lập Phiếu Thu
-- **Vị trí**: Tại AR Document đã phê duyệt -> Nhấn nút **"Thu tiền"**.
-- **Thực hiện**: Hệ thống tự động đẩy dữ liệu sang `Phiếu Thu`. Chọn phương thức thanh toán (Tiền mặt/Chuyển khoản) và nhấn **"Lưu & Kế toán xác nhận"**.
-- **Kết quả (Cascade Update)**: 
-  - Hệ thống tự động cập nhật số tiền đã thu vào AR Document.
-  - Tự động cập nhật trạng thái các đơn hàng liên quan thành `hoan_thanh`.
-  - Ghi nhận vào **Báo cáo dòng tiền**.
-
----
-
-## 🟧 QUY TRÌNH 2: MUA HÀNG & THANH TOÁN NHÀ CUNG CẤP (AP)
-
-Dành cho bộ phận Thu mua và Kế toán Phải trả.
-
-### Bước 1: Tạo Đơn đặt hàng (Purchase Order - PO)
-- **Vị trí**: `Mua hàng` -> `Đặt hàng NCC`.
-- **Thực hiện**: Lập lệnh mua hàng gửi Nhà cung cấp.
-
-### Bước 2: Nhập kho & Đối chiếu
-- **Vị trí**: `Kho` -> `Nhập kho`.
-- **Thực hiện**: Xác nhận số lượng hàng thực tế nhập vào kho từ NCC.
-- **Kết quả**: Trạng thái đơn đặt hàng chuyển sang `danhan`.
-
-### Bước 3: Đề xuất Thanh toán (Payment Proposal - AP Doc)
-- **Vị trí**: `Kế toán` -> `Đề xuất thanh toán (AP)`.
-- **Thực hiện**: Kế toán lập đề xuất thanh toán cho các đơn hàng đã nhập kho thành công.
-- **Phê duyệt**: Quản lý nhấn **"Phê duyệt"** đề xuất này.
-
-### Bước 4: Lập Phiếu Chi
-- **Vị trí**: Tại Đề xuất thanh toán đã duyệt -> Nhấn nút **"Thanh toán"**.
-- **Thực hiện**: Hệ thống đẩy dữ liệu sang `Phiếu Chi`. Thủ quỹ thực hiện chi tiền và xác nhận.
-- **Kết quả (Cascade Update)**: 
-  - Đề xuất thanh toán chuyển trạng thái `DA_THANH_TOAN`.
-  - Các đơn hàng NCC liên quan tự động cập nhật trạng thái thanh toán.
+### Bước 4: Thu tiền (Lập Phiếu Thu)
+- **Truy cập**: Menu `Kế toán` -> `Phiếu Thu Chi`.
+- **Thực hiện**: 
+    1. Nhấn **"Tạo phiếu thu"**. 
+    2. Chọn loại: **"Thu tiền đơn hàng"**.
+    3. Tìm và chọn các đơn hàng đã `doi_chieu`.
+    4. Nhập số tiền thu thực tế và nhấn **"Xác nhận"**.
+- **Kết quả**: Đơn hàng tự động chuyển sang `hoan_thanh`, dòng tiền được ghi nhận vào báo cáo.
 
 ---
 
-## 📑 QUY TẮC VÀNG VỀ TÍNH TUÂN THỦ (COMPLIANCE)
+## 🟧 QUY TRÌNH 2: MUA HÀNG & THANH TOÁN NCC (AP)
 
-1.  **Tính Bất biến**: Dữ liệu sau khi **Đối chiếu** (Recon) sẽ không được sửa đổi. Mọi sai sót sau đối chiếu phải xử lý bằng nghiệp vụ điều chỉnh (Adjustment) hoặc hủy làm lại.
-2.  **Tính Tách bạch**: 
-    - Nhân viên kinh doanh chỉ thao tác trên Đơn hàng.
-    - Kế toán thao tác trên AR/AP Document.
-    - Thủ quỹ/Kế toán thanh toán thao tác trên Phiếu Thu/Chi.
-3.  **Hóa đơn điện tử**: Chỉ được xuất dựa trên dữ liệu đã qua **AR Document** (số liệu đã đối soát xong với khách hàng).
-4.  **Dòng tiền Real-time**: Báo cáo dòng tiền chỉ ghi nhận khi Phiếu Thu/Chi ở trạng thái **"Đã xác nhận"**.
+Quy trình ưu tiên trên dự án Demo để kiểm soát dòng tiền chi ra.
+
+### Bước 1: Tạo Đơn đặt hàng NCC (Purchase Order - PO)
+- **Truy cập**: Menu `Mua hàng` -> `Đặt hàng NCC`.
+- **Thực hiện**: 
+    1. Nhấn **"Thêm mới"**. Chọn **Nhà cung cấp**.
+    2. Nhập các mặt hàng cần mua từ NCC này và nhấn **"Lưu"**.
+
+### Bước 2: Nhập hàng & Đối chiếu công nợ
+- **Truy cập**: Menu `Kho` -> `Nhập kho`.
+- **Thực hiện**: 
+    1. Thủ kho chọn lệnh nhập khớp với PO vừa tạo.
+    2. Nhập số lượng thực tế xe hàng về. Nhấn **"Xác nhận nhập kho"**.
+    3. **QUAN TRỌNG**: Kế toán vào `Mua hàng` -> `Công nợ NCC`. Tại đây, kiểm tra các đơn hàng đã nhập kho, nhấn **"Xác nhận đối chiếu"** để chốt số tiền phải trả chính xác.
+
+### Bước 3: Lập Đề xuất Thanh toán (Payment Proposal)
+Đây là tính năng mới trên V3 để quản lý phê duyệt tập trung.
+- **Truy cập**: Menu `Kế toán` -> `Công nợ Nhà cung cấp`.
+- **Thực hiện Step-by-step**:
+    1. **Chọn ngày**: Sử dụng bộ lọc "Bắt đầu" - "Kết thúc" ở thanh trên cùng để tìm các đơn hàng trong kỳ.
+    2. **Chọn đơn**: Tích vào ô vuông đầu mỗi dòng đơn hàng (hoặc nhấn nút "Chọn tất cả" nếu muốn trả hết).
+    3. **Kích hoạt**: Nhấn nút **"Lập đề xuất"** (biểu tượng mũi tên xanh `send` xuất hiện ở góc trên khi có ít nhất 1 đơn được chọn).
+    4. **Nhập thông tin**: Hệ thống chuyển sang màn hình **Lập đề xuất mới**.
+        - Nhập **Mã đề xuất** (ví dụ: TToan_Thang01_2026).
+        - Nhập **Mô tả** lý do thanh toán.
+    5. **Kiểm tra**: Xem lại danh sách PO bên cột phải và Tổng tiền đề xuất bên cột trái.
+    6. **Gửi**: Nhấn nút **"Gửi phê duyệt"** (màu xanh Teal).
+
+### Bước 4: Phê duyệt & Thanh toán
+- **Người thực hiện**: Cấp quản lý/Kế toán trưởng.
+- **Thực hiện**: 
+    1. Truy cập `Kế toán` -> `Đề xuất thanh toán`.
+    2. Chọn đề xuất đang ở trạng thái `CHO_DUYET`.
+    3. Kiểm tra xong nhấn nút **"Duyệt"**.
+    4. Sau khi duyệt, Nhấn nút **"Thanh toán"**. Hệ thống sẽ tự động chuyển sang màn hình lập **Phiếu Chi** với đầy đủ thông tin đã được duyệt trước đó.
+
+---
+
+## ⚙️ QUẢN TRỊ HỆ THỐNG (ADMIN & TECHNICAL)
+
+### 1. Đồng bộ dữ liệu từ hệ thống cũ (Sync)
+- **Vị trí**: Menu `Hệ thống` -> `Quản lý Cron Jobs` (biểu tượng đồng hồ).
+- **Thực hiện**: 
+    - Nhấn vào job **"Đồng bộ Database"**.
+    - Nhấn nút **"Chạy ngay"**. Hệ thống sẽ kéo dữ liệu Đơn hàng, Sản phẩm, Khách hàng từ Database gốc sang V3 mà không làm mất dữ liệu Kế toán bạn đã tạo trên V3.
+
+### 2. Quản lý Quyền truy cập
+- **Vị trí**: `Thiết lập` -> `Phân quyền`.
+- **Thực hiện**: 
+    - Nếu một nhân viên không thấy menu "Đề xuất thanh toán", hãy vào mục này, tìm Member đó và tích chọn quyền `payment-proposal.view`.
+
+---
+
+## 📑 CÁC PHÍM TẮT & BIỂU TƯỢNG NHANH
+- 🔃 **Refresh**: Nút ở góc trên bên phải để cập nhật dữ liệu mới nhất mà không cần load lại trang.
+- 👁️ **Visibility**: Biểu tượng con mắt để xem chi tiết chứng từ.
+- ✅ **Check**: Các dòng màu xám nhẹ trong danh sách là các dòng bạn đã tích chọn.
 
 ---
 *Tài liệu hướng dẫn dựa trên hệ thống Rausach V3 - Phiên bản ERP Core 2026.*
