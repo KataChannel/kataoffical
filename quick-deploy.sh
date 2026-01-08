@@ -55,7 +55,7 @@ case $DEPLOY_TARGET in
         log_info "Deploying Frontend only..."
         
         # Build frontend locally
-        cd frontend && npm run build && cd ..
+        cd frontend && bun run build && cd ..
         
         # Build frontend image
         docker build -t ${FRONTEND_IMAGE}:latest ./frontend
@@ -77,7 +77,7 @@ case $DEPLOY_TARGET in
         
         # Build frontend
         log_info "Building Frontend..."
-        cd frontend && npm run build && cd ..
+        cd frontend && bun run build && cd ..
         
         # Build images
         log_info "Building Docker images..."

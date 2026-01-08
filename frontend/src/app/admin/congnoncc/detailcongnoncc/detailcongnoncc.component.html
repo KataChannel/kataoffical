@@ -9,20 +9,24 @@
         {{ DetailDonhang()?.madonhang || 'Đơn Hàng Mới' }}
       </h2>
     </div>
-    
+
     <div class="flex space-x-2">
-      <button mat-raised-button color="accent" (click)="toggleEdit()" 
-              *ngIf="!isEdit()">
-        <mat-icon>edit</mat-icon>
-        Chỉnh sửa
-      </button>
-      
-      <button mat-raised-button color="primary" (click)="saveDonhang()" 
-              *ngIf="isEdit()">
-        <mat-icon>save</mat-icon>
-        Lưu
-      </button>
-      
+      @if (!isEdit()) {
+        <button mat-raised-button color="accent" (click)="toggleEdit()"
+          >
+          <mat-icon>edit</mat-icon>
+          Chỉnh sửa
+        </button>
+      }
+
+      @if (isEdit()) {
+        <button mat-raised-button color="primary" (click)="saveDonhang()"
+          >
+          <mat-icon>save</mat-icon>
+          Lưu
+        </button>
+      }
+
       <button mat-stroked-button (click)="cancel()">
         <mat-icon>close</mat-icon>
         Hủy
@@ -40,16 +44,20 @@
     <mat-form-field appearance="outline">
       <mat-label>Ngày Giao</mat-label>
       <input matInput [matDatepicker]="picker" [(ngModel)]="DetailDonhang().ngaygiao" [readonly]="!isEdit()" />
-      <mat-datepicker-toggle matIconSuffix [for]="picker" *ngIf="isEdit()"></mat-datepicker-toggle>
+      @if (isEdit()) {
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      }
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Nhà Cung Cấp</mat-label>
       <mat-select [(ngModel)]="DetailDonhang().nhacungcapId" [disabled]="!isEdit()">
-        <mat-option *ngFor="let ncc of filterNhacungcap" [value]="ncc.id">
-          {{ncc.hovaten}} - {{ncc.sdt}}
-        </mat-option>
+        @for (ncc of filterNhacungcap; track ncc) {
+          <mat-option [value]="ncc.id">
+            {{ncc.hovaten}} - {{ncc.sdt}}
+          </mat-option>
+        }
       </mat-select>
     </mat-form-field>
 
@@ -66,17 +74,19 @@
         <h3 class="text-lg font-semibold text-gray-800">
           Danh sách sản phẩm ({{CountItem()}})
         </h3>
-        <button mat-raised-button color="primary" (click)="addSanpham()" 
-                *ngIf="isEdit()">
-          <mat-icon>add</mat-icon>
-          Thêm sản phẩm
-        </button>
+        @if (isEdit()) {
+          <button mat-raised-button color="primary" (click)="addSanpham()"
+            >
+            <mat-icon>add</mat-icon>
+            Thêm sản phẩm
+          </button>
+        }
       </div>
     </div>
 
     <div class="overflow-auto">
       <table mat-table [dataSource]="dataSource()" class="w-full">
-        
+
         <!-- Cột tên sản phẩm -->
         <ng-container matColumnDef="title">
           <th mat-header-cell *matHeaderCellDef>{{ColumnName['title']}}</th>
@@ -99,13 +109,17 @@
         <ng-container matColumnDef="giaban">
           <th mat-header-cell *matHeaderCellDef>{{ColumnName['giaban']}}</th>
           <td mat-cell *matCellDef="let element">
-            <span *ngIf="!isEdit()">
-              {{element.giaban | currency:'VND':'symbol':'1.0-0':'vi-VN'}}
-            </span>
-            <mat-form-field *ngIf="isEdit()" appearance="outline" class="w-full">
-              <input matInput type="number" [(ngModel)]="element.giaban" 
-                     (input)="updateSanphamData()" />
-            </mat-form-field>
+            @if (!isEdit()) {
+              <span>
+                {{element.giaban | currency:'VND':'symbol':'1.0-0':'vi-VN'}}
+              </span>
+            }
+            @if (isEdit()) {
+              <mat-form-field appearance="outline" class="w-full">
+                <input matInput type="number" [(ngModel)]="element.giaban"
+                  (input)="updateSanphamData()" />
+              </mat-form-field>
+            }
           </td>
         </ng-container>
 
@@ -113,11 +127,15 @@
         <ng-container matColumnDef="soluong">
           <th mat-header-cell *matHeaderCellDef>{{ColumnName['soluong']}}</th>
           <td mat-cell *matCellDef="let element">
-            <span *ngIf="!isEdit()">{{element.soluong | number}}</span>
-            <mat-form-field *ngIf="isEdit()" appearance="outline" class="w-full">
-              <input matInput type="number" [(ngModel)]="element.soluong" 
-                     (input)="updateSanphamData()" />
-            </mat-form-field>
+            @if (!isEdit()) {
+              <span>{{element.soluong | number}}</span>
+            }
+            @if (isEdit()) {
+              <mat-form-field appearance="outline" class="w-full">
+                <input matInput type="number" [(ngModel)]="element.soluong"
+                  (input)="updateSanphamData()" />
+              </mat-form-field>
+            }
           </td>
         </ng-container>
 
@@ -132,27 +150,31 @@
         </ng-container>
 
         <!-- Cột actions -->
-        <ng-container matColumnDef="actions" *ngIf="isEdit()">
-          <th mat-header-cell *matHeaderCellDef>Thao tác</th>
-          <td mat-cell *matCellDef="let element; let i = index">
-            <button mat-icon-button color="warn" (click)="removeSanpham(i)" 
-                    matTooltip="Xóa sản phẩm">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+        @if (isEdit()) {
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+            <td mat-cell *matCellDef="let element; let i = index">
+              <button mat-icon-button color="warn" (click)="removeSanpham(i)"
+                matTooltip="Xóa sản phẩm">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+        }
 
         <tr mat-header-row *matHeaderRowDef="displayColumnsWithActions"></tr>
         <tr mat-row *matRowDef="let row; columns: displayColumnsWithActions;"></tr>
       </table>
 
       <!-- Thông báo khi không có dữ liệu -->
-      <div *ngIf="dataSource().data.length === 0" 
-           class="flex flex-col items-center justify-center py-20 text-gray-500">
-        <mat-icon class="text-6xl mb-4">shopping_cart</mat-icon>
-        <h3 class="text-xl font-medium mb-2">Chưa có sản phẩm</h3>
-        <p>Thêm sản phẩm vào đặt hàng</p>
-      </div>
+      @if (dataSource().data.length === 0) {
+        <div
+          class="flex flex-col items-center justify-center py-20 text-gray-500">
+          <mat-icon class="text-6xl mb-4">shopping_cart</mat-icon>
+          <h3 class="text-xl font-medium mb-2">Chưa có sản phẩm</h3>
+          <p>Thêm sản phẩm vào đặt hàng</p>
+        </div>
+      }
     </div>
 
     <!-- Footer với tổng tiền -->
@@ -161,19 +183,19 @@
         <div class="text-right">
           <div class="text-lg font-semibold text-gray-800">
             Tổng tiền: <span class="text-green-600">
-              {{calculateTotal() | currency:'VND':'symbol':'1.0-0':'vi-VN'}}
-            </span>
-          </div>
+            {{calculateTotal() | currency:'VND':'symbol':'1.0-0':'vi-VN'}}
+          </span>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Phân trang -->
-  <mat-paginator 
-    [pageSizeOptions]="[10, 25, 50]" 
-    [pageSize]="10"
-    showFirstLastButtons
-    class="mt-4">
-  </mat-paginator>
+<!-- Phân trang -->
+<mat-paginator
+  [pageSizeOptions]="[10, 25, 50]"
+  [pageSize]="10"
+  showFirstLastButtons
+  class="mt-4">
+</mat-paginator>
 </div>

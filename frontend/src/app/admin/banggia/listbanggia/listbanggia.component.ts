@@ -1,35 +1,26 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, signal, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { BanggiaService } from '../banggia-graphql.service'; // Sử dụng GraphQL service
-import { MatMenuModule } from '@angular/material/menu';
-import { excelSerialDateToJSDate, readExcelFile, readExcelFileNoWorker, writeExcelFile, writeExcelFileSheets } from '../../../shared/utils/exceldrive.utils';
-import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { Router, RouterOutlet } from '@angular/router';
 import moment from 'moment';
-import { SanphamService } from '../../sanpham/sanpham.service';
-import { KhachhangService } from '../../khachhang/khachhang.service';
-import { BanggiaService as BanggiaGraphqlService } from '../banggia-graphql.service';
-import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
-import { DonhangService } from '../../donhang/donhang.service';
-import { DathangService } from '../../dathang/dathang.service';
 import { GraphqlService } from '../../../shared/services/graphql.service';
-import { _isNumberValue } from '@angular/cdk/coercion';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { signal } from '@angular/core';
+import { excelSerialDateToJSDate, readExcelFileNoWorker, writeExcelFileSheets } from '../../../shared/utils/exceldrive.utils';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { BanggiaService as BanggiaGraphqlService } from '../banggia-graphql.service';
 @Component({
   selector: 'app-listbanggia',
   templateUrl: './listbanggia.component.html',
@@ -79,9 +70,7 @@ export class ListBanggiaComponent {
     status: 'Tình Trạng',
     createdAt:'Ngày Tạo',
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('BanggiaColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -114,6 +103,9 @@ export class ListBanggiaComponent {
     }
   }
   async ngOnInit(): Promise<void> {    
+    if (typeof localStorage !== 'undefined') {
+      this.FilterColumns = JSON.parse(localStorage.getItem('BanggiaColFilter') || '[]');
+    }
     try {
       // Lấy tất cả bảng giá sử dụng GraphQL
       const banggiaData = await this._GraphqlService.findMany('banggia', {
@@ -230,8 +222,9 @@ export class ListBanggiaComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('BanggiaColFilter',JSON.stringify(this.FilterColumns)
-      );
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('BanggiaColFilter', JSON.stringify(this.FilterColumns));
+      }
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -330,8 +323,9 @@ export class ListBanggiaComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('BanggiaColFilter',JSON.stringify(this.FilterColumns)
-    );
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('BanggiaColFilter', JSON.stringify(this.FilterColumns));
+    }
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();

@@ -1,13 +1,12 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-breadscrumb',
   imports: [
-    RouterLink,
-    CommonModule
-  ],
+    RouterLink
+],
   templateUrl: './breadscrumb.component.html',
   styleUrl: './breadscrumb.component.scss'
 })

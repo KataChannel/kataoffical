@@ -5,20 +5,19 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-cancel-reason-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatIconModule,
     FormsModule
-  ],
+],
   template: `
     <h2 mat-dialog-title class="text-red-600 font-bold">
       <mat-icon class="align-middle mr-2">warning</mat-icon>
@@ -28,16 +27,16 @@ import { CommonModule } from '@angular/common';
     <mat-dialog-content class="mt-4">
       <div class="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700">
         <p class="text-sm">
-          <strong>Cảnh báo:</strong> Hành động này không thể hoàn tác. 
+          <strong>Cảnh báo:</strong> Hành động này không thể hoàn tác.
           {{ hasInventory ? 'Tồn kho sẽ được điều chỉnh tự động.' : '' }}
         </p>
       </div>
-
+    
       <mat-form-field class="w-full" appearance="outline">
         <mat-label>Lý do hủy đơn hàng</mat-label>
-        <textarea 
-          matInput 
-          [(ngModel)]="lydohuy" 
+        <textarea
+          matInput
+          [(ngModel)]="lydohuy"
           rows="5"
           placeholder="Vui lòng nhập lý do hủy đơn hàng (tối thiểu 10 ký tự)"
           required
@@ -50,26 +49,34 @@ import { CommonModule } from '@angular/common';
           </span>
         </mat-hint>
         <mat-hint align="end">{{ lydohuy.length }}/500</mat-hint>
-        <mat-error *ngIf="showError">Lý do hủy phải có ít nhất 10 ký tự</mat-error>
+        @if (showError) {
+          <mat-error>Lý do hủy phải có ít nhất 10 ký tự</mat-error>
+        }
       </mat-form-field>
-
-      <div *ngIf="orderInfo" class="mt-4 p-3 bg-gray-50 rounded">
-        <p class="text-sm text-gray-600 mb-2"><strong>Thông tin đơn hàng:</strong></p>
-        <div class="text-sm space-y-1">
-          <p><strong>Mã đơn:</strong> {{ orderInfo.madonhang || orderInfo.madncc }}</p>
-          <p *ngIf="orderInfo.khachhang">
-            <strong>Khách hàng:</strong> {{ orderInfo.khachhang.name }}
-          </p>
-          <p *ngIf="orderInfo.nhacungcap">
-            <strong>Nhà cung cấp:</strong> {{ orderInfo.nhacungcap.name }}
-          </p>
-          <p><strong>Trạng thái:</strong> 
+    
+      @if (orderInfo) {
+        <div class="mt-4 p-3 bg-gray-50 rounded">
+          <p class="text-sm text-gray-600 mb-2"><strong>Thông tin đơn hàng:</strong></p>
+          <div class="text-sm space-y-1">
+            <p><strong>Mã đơn:</strong> {{ orderInfo.madonhang || orderInfo.madncc }}</p>
+            @if (orderInfo.khachhang) {
+              <p>
+                <strong>Khách hàng:</strong> {{ orderInfo.khachhang.name }}
+              </p>
+            }
+            @if (orderInfo.nhacungcap) {
+              <p>
+                <strong>Nhà cung cấp:</strong> {{ orderInfo.nhacungcap.name }}
+              </p>
+            }
+            <p><strong>Trạng thái:</strong>
             <span class="px-2 py-1 rounded text-xs" [class]="getStatusClass(orderInfo.status)">
               {{ getStatusLabel(orderInfo.status) }}
             </span>
           </p>
         </div>
       </div>
+    }
     </mat-dialog-content>
     
     <mat-dialog-actions align="end" class="mt-4 gap-2">
@@ -77,9 +84,9 @@ import { CommonModule } from '@angular/common';
         <mat-icon>close</mat-icon>
         Hủy Bỏ
       </button>
-      <button 
-        mat-raised-button 
-        color="warn" 
+      <button
+        mat-raised-button
+        color="warn"
         [disabled]="!isValid()"
         (click)="onConfirm()"
         type="button">
@@ -87,7 +94,7 @@ import { CommonModule } from '@angular/common';
         Xác Nhận Hủy Đơn
       </button>
     </mat-dialog-actions>
-  `,
+    `,
   styles: [`
     :host {
       display: block;

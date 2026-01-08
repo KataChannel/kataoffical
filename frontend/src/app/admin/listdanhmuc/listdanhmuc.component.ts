@@ -1,5 +1,5 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { CommonModule } from '@angular/common';
+
 import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,19 +20,18 @@ import { DanhmucsService } from './listdanhmuc.service';
   templateUrl: './listdanhmuc.component.html',
   styleUrl: './listdanhmuc.component.scss',
   imports: [
-    MatFormFieldModule, 
-    MatInputModule, 
-    MatTableModule, 
-    MatSortModule, 
+    MatFormFieldModule,
+    MatInputModule,
+    MatTableModule,
+    MatSortModule,
     MatPaginatorModule,
     MatMenuModule,
     MatSidenavModule,
     RouterOutlet,
     MatIconModule,
     MatButtonModule,
-    FormsModule,
-    CommonModule
-  ],
+    FormsModule
+],
 })
 export class ListdanhmucComponent implements AfterViewInit {
   Detail:any={}

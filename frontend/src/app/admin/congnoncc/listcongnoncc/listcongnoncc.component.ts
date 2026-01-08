@@ -1,8 +1,10 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
     Component,
     inject,
+    Inject,
+    PLATFORM_ID,
     TemplateRef,
     ViewChild
 } from '@angular/core';
@@ -94,9 +96,7 @@ export class ListcongnonccComponent {
     tongtien: 'Tổng',
     poStatus: 'Trạng thái ERP',
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('CongnonccColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   exampleExport: any = {};
   Columns: any[] = [];
   isFilter: boolean = false;
@@ -136,7 +136,7 @@ export class ListcongnonccComponent {
   ];
   Chonthoigian: any = 'day';
   isSearch: boolean = false;
-  constructor() {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
@@ -190,6 +190,11 @@ export class ListcongnonccComponent {
   }
 
   async ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.FilterColumns = JSON.parse(
+        localStorage.getItem('CongnonccColFilter') || '[]'
+      );
+    }
     this.isLoading = true;
     try {
       this.initializeColumns();
@@ -654,10 +659,12 @@ export class ListcongnonccComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem(
-        'CongnonccColFilter',
-        JSON.stringify(this.FilterColumns)
-      );
+      if (isPlatformBrowser(this.platformId)) {
+        localStorage.setItem(
+          'CongnonccColFilter',
+          JSON.stringify(this.FilterColumns)
+        );
+      }
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -671,7 +678,7 @@ export class ListcongnonccComponent {
   private setupDrawer(): void {
     this._breakpointObserver
       .observe([Breakpoints.Handset])
-      .subscribe((result) => {
+      .subscribe((result: any) => {
         if (result.matches) {
           this.drawer.mode = 'over';
           this.paginator.hidePageSize = true;
@@ -689,10 +696,12 @@ export class ListcongnonccComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem(
-      'CongnonccColFilter',
-      JSON.stringify(this.FilterColumns)
-    );
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(
+        'CongnonccColFilter',
+        JSON.stringify(this.FilterColumns)
+      );
+    }
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();
@@ -1387,7 +1396,7 @@ export class ListcongnonccComponent {
     const element = document.getElementById('printContent');
     if (!element) return;
 
-    html2canvas(element, { scale: 2 }).then((canvas) => {
+    html2canvas(element, { scale: 2 }).then((canvas: any) => {
       const imageData = canvas.toDataURL('image/png');
 
       // Mở cửa sổ mới và in ảnh

@@ -1,11 +1,11 @@
-import { inject, Inject, Injectable, PLATFORM_ID, signal,Signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment.development';
-import { StorageService } from '../../shared/utils/storage.service';
 import { isPlatformBrowser } from '@angular/common';
-import { of, Observable, BehaviorSubject } from 'rxjs';
-import { AuthUtils } from '../../shared/utils/auth.utils';
+import { inject, Inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { environment } from '../../../environments/environment.development';
+import { AuthUtils } from '../../shared/utils/auth.utils';
+import { StorageService } from '../../shared/utils/storage.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -392,20 +392,28 @@ export class UserService {
 
 
   loginWithGoogle() {
-    window.location.href = `${this.BASE_URL}/google`; // Chuyển hướng đến Google OAuth
+    if (this.isBrowser) {
+      window.location.href = `${this.BASE_URL}/google`; // Chuyển hướng đến Google OAuth
+    }
   }
 
   loginWithFacebook() {
-    window.location.href = `${this.BASE_URL}/facebook`;
+    if (this.isBrowser) {
+      window.location.href = `${this.BASE_URL}/facebook`;
+    }
   }
 
   loginWithZalo() {
-    window.location.href = `${this.BASE_URL}/zalo`;
+    if (this.isBrowser) {
+      window.location.href = `${this.BASE_URL}/zalo`;
+    }
   }
 
   handleOAuthCallback(token: string) {
-    localStorage.setItem('access_token', token);
-    this.router.navigate(['/dashboard']);
+    if (this.isBrowser) {
+      localStorage.setItem('access_token', token);
+      this.router.navigate(['/dashboard']);
+    }
   }
 
   getToken() {

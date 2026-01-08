@@ -10,100 +10,118 @@
   </div>
 
   <mat-dialog-content>
-    <div class="product-info" *ngIf="data.sanphamTitle || data.banggiaTitle">
-      <p *ngIf="data.sanphamTitle"><strong>Sản phẩm:</strong> {{ data.sanphamTitle }}</p>
-      <p *ngIf="data.banggiaTitle"><strong>Bảng giá:</strong> {{ data.banggiaTitle }}</p>
-    </div>
+    @if (data.sanphamTitle || data.banggiaTitle) {
+      <div class="product-info">
+        @if (data.sanphamTitle) {
+          <p><strong>Sản phẩm:</strong> {{ data.sanphamTitle }}</p>
+        }
+        @if (data.banggiaTitle) {
+          <p><strong>Bảng giá:</strong> {{ data.banggiaTitle }}</p>
+        }
+      </div>
+    }
 
     <mat-divider></mat-divider>
 
     <!-- Loading State -->
-    <div *ngIf="loading()" class="loading-container">
-      <mat-spinner diameter="50"></mat-spinner>
-      <p>Đang tải lịch sử giá...</p>
-    </div>
+    @if (loading()) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Đang tải lịch sử giá...</p>
+      </div>
+    }
 
     <!-- Error State -->
-    <div *ngIf="error()" class="error-container">
-      <mat-icon color="warn">error</mat-icon>
-      <p>{{ error() }}</p>
-      <button mat-raised-button color="primary" (click)="loadPriceHistory()">
-        <mat-icon>refresh</mat-icon>
-        Thử lại
-      </button>
-    </div>
+    @if (error()) {
+      <div class="error-container">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error() }}</p>
+        <button mat-raised-button color="primary" (click)="loadPriceHistory()">
+          <mat-icon>refresh</mat-icon>
+          Thử lại
+        </button>
+      </div>
+    }
 
     <!-- Price History Timeline -->
-    <div *ngIf="!loading() && !error() && priceHistory()" class="price-history-timeline">
-      <div *ngIf="priceHistory().length === 0" class="no-history">
-        <mat-icon>info</mat-icon>
-        <p>Chưa có lịch sử thay đổi giá</p>
-      </div>
-
-      <div *ngIf="priceHistory().length > 0" class="timeline">
-        <div *ngFor="let change of priceHistory(); let first = first; let last = last"
-             class="timeline-item"
-             [class.first-item]="first">
-          
-          <!-- Timeline Icon -->
-          <div class="timeline-icon" [ngClass]="getPriceChangeClass(change)">
-            <mat-icon>{{ getPriceChangeIcon(change) }}</mat-icon>
+    @if (!loading() && !error() && priceHistory()) {
+      <div class="price-history-timeline">
+        @if (priceHistory().length === 0) {
+          <div class="no-history">
+            <mat-icon>info</mat-icon>
+            <p>Chưa có lịch sử thay đổi giá</p>
           </div>
-
-          <!-- Timeline Content -->
-          <mat-card class="timeline-content">
-            <mat-card-content>
-              <!-- Date & Time -->
-              <div class="change-header">
-                <span class="change-date">{{ formatDate(change.changedAt) }}</span>
-                <mat-chip [ngClass]="getPriceChangeClass(change)">
-                  {{ formatPercentage(change.percentChange) }}
-                </mat-chip>
-              </div>
-
-              <!-- Price Change Details -->
-              <div class="price-details">
-                <div class="price-row">
-                  <span class="label">Giá cũ:</span>
-                  <span class="old-price">{{ formatPrice(change.oldPrice) }}</span>
+        }
+        @if (priceHistory().length > 0) {
+          <div class="timeline">
+            @for (change of priceHistory(); track change; let first = $first; let last = $last) {
+              <div
+                class="timeline-item"
+                [class.first-item]="first">
+                <!-- Timeline Icon -->
+                <div class="timeline-icon" [ngClass]="getPriceChangeClass(change)">
+                  <mat-icon>{{ getPriceChangeIcon(change) }}</mat-icon>
                 </div>
-                <div class="arrow-icon">
-                  <mat-icon>arrow_forward</mat-icon>
-                </div>
-                <div class="price-row">
-                  <span class="label">Giá mới:</span>
-                  <span class="new-price" [ngClass]="getPriceChangeClass(change)">
-                    {{ formatPrice(change.newPrice) }}
-                  </span>
-                </div>
+                <!-- Timeline Content -->
+                <mat-card class="timeline-content">
+                  <mat-card-content>
+                    <!-- Date & Time -->
+                    <div class="change-header">
+                      <span class="change-date">{{ formatDate(change.changedAt) }}</span>
+                      <mat-chip [ngClass]="getPriceChangeClass(change)">
+                        {{ formatPercentage(change.percentChange) }}
+                      </mat-chip>
+                    </div>
+                    <!-- Price Change Details -->
+                    <div class="price-details">
+                      <div class="price-row">
+                        <span class="label">Giá cũ:</span>
+                        <span class="old-price">{{ formatPrice(change.oldPrice) }}</span>
+                      </div>
+                      <div class="arrow-icon">
+                        <mat-icon>arrow_forward</mat-icon>
+                      </div>
+                      <div class="price-row">
+                        <span class="label">Giá mới:</span>
+                        <span class="new-price" [ngClass]="getPriceChangeClass(change)">
+                          {{ formatPrice(change.newPrice) }}
+                        </span>
+                      </div>
+                    </div>
+                    <!-- Difference -->
+                    <div class="price-difference" [ngClass]="getPriceChangeClass(change)">
+                      <mat-icon>{{ getPriceChangeIcon(change) }}</mat-icon>
+                      <span>{{ formatPriceDifference(change.difference) }}</span>
+                    </div>
+                    <!-- Reason & User -->
+                    <div class="change-metadata">
+                      @if (change.reason) {
+                        <p class="reason">
+                          <mat-icon>description</mat-icon>
+                          {{ change.reason }}
+                        </p>
+                      }
+                      @if (change.changedBy) {
+                        <p class="user">
+                          <mat-icon>person</mat-icon>
+                          Người thay đổi: {{ change.changedByName || change.changedBy }}
+                        </p>
+                      }
+                      @if (change.sourceType) {
+                        <p class="source-type">
+                          <mat-icon>source</mat-icon>
+                          Nguồn: {{ change.sourceType }}
+                        </p>
+                      }
+                    </div>
+                  </mat-card-content>
+                </mat-card>
               </div>
-
-              <!-- Difference -->
-              <div class="price-difference" [ngClass]="getPriceChangeClass(change)">
-                <mat-icon>{{ getPriceChangeIcon(change) }}</mat-icon>
-                <span>{{ formatPriceDifference(change.difference) }}</span>
-              </div>
-
-              <!-- Reason & User -->
-              <div class="change-metadata">
-                <p *ngIf="change.reason" class="reason">
-                  <mat-icon>description</mat-icon>
-                  {{ change.reason }}
-                </p>
-                <p *ngIf="change.changedBy" class="user">
-                  <mat-icon>person</mat-icon>
-                  Người thay đổi: {{ change.changedByName || change.changedBy }}
-                </p>
-                <p *ngIf="change.sourceType" class="source-type">
-                  <mat-icon>source</mat-icon>
-                  Nguồn: {{ change.sourceType }}
-                </p>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        </div>
+            }
+          </div>
+        }
       </div>
-    </div>
+    }
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">

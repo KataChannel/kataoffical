@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 export interface InputUpdateConfig {
@@ -145,7 +146,10 @@ export class SharedInputService {
     }
   };
 
-  constructor(private snackBar: MatSnackBar) {}
+  constructor(
+    private snackBar: MatSnackBar,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   /**
    * Parse decimal value with support for both comma and dot
@@ -202,7 +206,7 @@ export class SharedInputService {
         
         // Use Range API for content editable elements
         setTimeout(() => {
-          if (document.createRange && window.getSelection) {
+          if (isPlatformBrowser(this.platformId) && document.createRange && window.getSelection) {
             const range = document.createRange();
             range.selectNodeContents(nextInput);
             const selection = window.getSelection();
@@ -221,7 +225,7 @@ export class SharedInputService {
     const target = event.target as HTMLElement;
     if (target && target.isContentEditable) {
       setTimeout(() => {
-        if (document.createRange && window.getSelection) {
+        if (isPlatformBrowser(this.platformId) && document.createRange && window.getSelection) {
           const range = document.createRange();
           range.selectNodeContents(target);
           const selection = window.getSelection();

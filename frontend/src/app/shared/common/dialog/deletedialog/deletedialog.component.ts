@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -8,12 +8,11 @@ import { MatInputModule } from '@angular/material/input';
     selector: 'app-deletedialog',
     standalone:true,
     imports: [
-        CommonModule,
-        MatFormFieldModule,
-        FormsModule,
-        MatInputModule,
-        MatDialogModule
-    ],
+    MatFormFieldModule,
+    FormsModule,
+    MatInputModule,
+    MatDialogModule
+],
     templateUrl: './deletedialog.component.html',
     styleUrl: './deletedialog.component.scss'
 })

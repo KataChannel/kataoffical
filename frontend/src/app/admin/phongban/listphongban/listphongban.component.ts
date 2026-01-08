@@ -6,7 +6,7 @@ import {
   signal, 
   computed 
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -40,7 +40,6 @@ import {
   selector: 'app-listphongban',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatTableModule,
     MatPaginatorModule,
@@ -56,7 +55,7 @@ import {
     MatProgressSpinnerModule,
     MatDialogModule,
     MatCardModule
-  ],
+],
   templateUrl: './listphongban.component.html',
   styleUrls: ['./listphongban.component.scss']
 })

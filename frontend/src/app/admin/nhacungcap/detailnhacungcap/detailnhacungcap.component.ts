@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ListNhacungcapComponent } from '../listnhacungcap/listnhacungcap';
 import { NhacungcapService } from '../nhacungcap.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -19,17 +19,16 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
   @Component({
     selector: 'app-detailnhacungcap',
     imports: [
-      MatFormFieldModule,
-      MatInputModule,
-      FormsModule,
-      MatIconModule,
-      MatButtonModule,
-      MatSelectModule,
-      MatDialogModule,
-      CommonModule,
-      MatSlideToggleModule,
-      MatMenuModule
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSlideToggleModule,
+    MatMenuModule
+],
     templateUrl: './detailnhacungcap.component.html',
     styleUrl: './detailnhacungcap.component.scss',
     changeDetection:ChangeDetectionStrategy.OnPush,

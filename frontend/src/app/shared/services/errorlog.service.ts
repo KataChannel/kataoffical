@@ -1,18 +1,26 @@
-import { Injectable } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ErrorLogService {
+  private platformId = inject(PLATFORM_ID);
+
   async logError(message: string, details?: any): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) {
+      console.error('Server error log:', message, details);
+      return;
+    }
+
     const logEntry = {
       timestamp: new Date().toISOString(),
       message,
       details: {
         ...details,
-        userAgent: navigator.userAgent, // Thêm thông tin client
-        url: window.location.href,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Server',
+        url: typeof window !== 'undefined' ? window.location.href : 'Server',
       },
     };
     try {
@@ -24,7 +32,9 @@ export class ErrorLogService {
     } catch (err) {
       console.error('Failed to send log to server:', err);
       // Lưu cục bộ nếu gửi thất bại
-      localStorage.setItem('errorLogs', JSON.stringify(logEntry));
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('errorLogs', JSON.stringify(logEntry));
+      }
     }
   }
   async ClearRedisCache(){

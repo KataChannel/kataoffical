@@ -1,30 +1,30 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal, TemplateRef, ViewChild } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal, TemplateRef, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { KhachhangGraphqlService } from '../khachhang-graphql.service';
-import { MatMenuModule } from '@angular/material/menu';
-import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
-import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
-import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
+import { Router, RouterOutlet } from '@angular/router';
 import { environment } from '../../../../environments/environment.development';
-import { memoize, Debounce } from '../../../shared/utils/decorators';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
+import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { Debounce, memoize } from '../../../shared/utils/decorators';
+import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
+import { ConvertDriveData } from '../../../shared/utils/shared.utils';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { KhachhangGraphqlService } from '../khachhang-graphql.service';
 
 @Component({
   selector: 'app-listkhachhang',
@@ -69,7 +69,7 @@ export class ListKhachhangComponent implements OnInit {
     isActive: 'Trạng Thái',
     createdAt: 'Ngày Tạo',
   };
-  FilterColumns: any[] = JSON.parse(localStorage.getItem('KhachhangColFilter') || '[]');
+  FilterColumns: any[] = [];
   Columns: any[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -160,6 +160,9 @@ export class ListKhachhangComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     // Initialize columns first
+    if (typeof localStorage !== 'undefined') {
+      this.FilterColumns = JSON.parse(localStorage.getItem('KhachhangColFilter') || '[]');
+    }
     this.initializeColumns();
     this.setupDrawer();
     
@@ -200,10 +203,13 @@ export class ListKhachhangComponent implements OnInit {
   private initializeColumns(): void {
     this.Columns = Object.entries(this.ColumnName).map(([key, value]) => ({ key, value, isShow: true }));
     this.FilterColumns = this.FilterColumns.length ? this.FilterColumns : this.Columns;
-    localStorage.setItem('KhachhangColFilter', JSON.stringify(this.FilterColumns));
     this.displayedColumns = this.FilterColumns.filter(col => col.isShow).map(col => col.key);
     this.ColumnName = this.FilterColumns.reduce((acc, { key, value, isShow }) => 
       isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
+    
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('KhachhangColFilter', JSON.stringify(this.FilterColumns));
+    }
   }
   @Debounce(300)
   async applyFilter(event: Event) {
@@ -387,7 +393,10 @@ export class ListKhachhangComponent implements OnInit {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('KhachhangColFilter', JSON.stringify(this.FilterColumns));
+    
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('KhachhangColFilter', JSON.stringify(this.FilterColumns));
+    }
   }
 
   doFilterColumns(event: any): void {

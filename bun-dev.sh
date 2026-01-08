@@ -106,7 +106,7 @@ stage_install_frontend() {
             log_warning "Xóa node_modules cũ..."
             rm -rf node_modules
         fi
-        npm install
+        bun install
         log_success "Frontend dependencies đã cài đặt"
     else
         log_info "Frontend node_modules đã tồn tại (skip)"
@@ -202,7 +202,7 @@ stage_start_full() {
     # Start Frontend server
     log_info "Khởi động Frontend server (port 4200)..."
     cd frontend
-    npm run start &
+    bun run start &
     FE_PID=$!
     cd ..
 

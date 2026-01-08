@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,7 +39,6 @@ interface BulkUpdateSummary {
   selector: 'app-bulk-price-update',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatCardModule,
@@ -53,7 +52,7 @@ interface BulkUpdateSummary {
     MatTooltipModule,
     MatSnackBarModule,
     MatDialogModule
-  ],
+],
   templateUrl: './bulk-price-update.component.html',
   styleUrls: ['./bulk-price-update.component.scss']
 })

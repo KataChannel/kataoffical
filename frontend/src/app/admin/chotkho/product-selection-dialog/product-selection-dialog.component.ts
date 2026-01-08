@@ -45,136 +45,142 @@ export interface ProductSelectionResult {
   template: `
     <div class="product-selection-dialog">
       <h2 mat-dialog-title>Chọn Sản Phẩm Kiểm Kho</h2>
-      
+    
       <mat-dialog-content class="dialog-content">
         <!-- Warehouse Selection -->
         <div class="warehouse-section">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Chọn Kho</mat-label>
-            <mat-select 
-              [(value)]="selectedWarehouseId" 
+            <mat-select
+              [(value)]="selectedWarehouseId"
               (selectionChange)="onWarehouseChange()"
               [disabled]="isLoadingWarehouses()">
-              <mat-option *ngFor="let warehouse of warehouses()" [value]="warehouse.id">
-                {{ warehouse.name }} - {{ warehouse.diachi }}
-              </mat-option>
+              @for (warehouse of warehouses(); track warehouse) {
+                <mat-option [value]="warehouse.id">
+                  {{ warehouse.name }} - {{ warehouse.diachi }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
         </div>
-
+    
         <!-- Search Products -->
-        <div class="search-section" *ngIf="selectedWarehouseId">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Tìm kiếm sản phẩm</mat-label>
-            <input 
-              matInput 
-              [(ngModel)]="searchTerm" 
-              (input)="onSearchChange()"
-              placeholder="Tìm theo mã hoặc tên sản phẩm...">
-            <mat-icon matSuffix>search</mat-icon>
-          </mat-form-field>
-        </div>
-
+        @if (selectedWarehouseId) {
+          <div class="search-section">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Tìm kiếm sản phẩm</mat-label>
+              <input
+                matInput
+                [(ngModel)]="searchTerm"
+                (input)="onSearchChange()"
+                placeholder="Tìm theo mã hoặc tên sản phẩm...">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+          </div>
+        }
+    
         <!-- Loading Spinner -->
-        <div class="loading-section" *ngIf="isLoadingProducts()">
-          <mat-spinner diameter="40"></mat-spinner>
-          <p>Đang tải danh sách sản phẩm...</p>
-        </div>
-
+        @if (isLoadingProducts()) {
+          <div class="loading-section">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Đang tải danh sách sản phẩm...</p>
+          </div>
+        }
+    
         <!-- Products Table -->
-        <div class="products-section" *ngIf="!isLoadingProducts() && filteredProducts().length > 0">
-          <table mat-table [dataSource]="filteredProducts()" class="products-table">
-            <!-- Checkbox Column -->
-            <ng-container matColumnDef="select">
-              <th mat-header-cell *matHeaderCellDef>
-                <mat-checkbox 
-                  (change)="toggleAllSelection($event.checked)"
-                  [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()">
-                </mat-checkbox>
-              </th>
-              <td mat-cell *matCellDef="let product">
-                <mat-checkbox 
-                  (click)="$event.stopPropagation()"
-                  (change)="toggleSelection(product)"
-                  [checked]="selection.isSelected(product)">
-                </mat-checkbox>
-              </td>
-            </ng-container>
-
-            <!-- Product Code Column -->
-            <ng-container matColumnDef="masp">
-              <th mat-header-cell *matHeaderCellDef>Mã SP</th>
-              <td mat-cell *matCellDef="let product">{{ product.masp }}</td>
-            </ng-container>
-
-            <!-- Product Name Column -->
-            <ng-container matColumnDef="title">
-              <th mat-header-cell *matHeaderCellDef>Tên Sản Phẩm</th>
-              <td mat-cell *matCellDef="let product">{{ product.title }}</td>
-            </ng-container>
-
-            <!-- Unit Column -->
-            <ng-container matColumnDef="dvt">
-              <th mat-header-cell *matHeaderCellDef>Đơn Vị</th>
-              <td mat-cell *matCellDef="let product">{{ product.dvt || '-' }}</td>
-            </ng-container>
-
-            <!-- Stock Quantity Column -->
-            <ng-container matColumnDef="tonkho">
-              <th mat-header-cell *matHeaderCellDef>Tồn Kho</th>
-              <td mat-cell *matCellDef="let product">
-                <span class="stock-info">
-                  <strong>{{ product.tonkho?.slton || 0 }}</strong>
-                  <br>
-                  <small class="text-muted">Thực tế: {{ product.tonkho?.sltinhthucte || 0 }}</small>
-                </span>
-              </td>
-            </ng-container>
-
-            <!-- Price Column -->
-            <ng-container matColumnDef="dongia">
-              <th mat-header-cell *matHeaderCellDef>Đơn Giá</th>
-              <td mat-cell *matCellDef="let product">
-                {{ (product.dongia || 0) | currency:'VND':'symbol':'1.0-0' }}
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr 
-              mat-row 
-              *matRowDef="let product; columns: displayedColumns;"
-              (click)="toggleSelection(product)"
-              [class.selected]="selection.isSelected(product)">
-            </tr>
-          </table>
-        </div>
-
-        <!-- No Products Message -->
-        <div class="no-products" *ngIf="!isLoadingProducts() && selectedWarehouseId && filteredProducts().length === 0">
-          <mat-icon>inventory_2</mat-icon>
-          <p>{{ products().length === 0 ? 'Không có sản phẩm nào trong kho này.' : 'Không tìm thấy sản phẩm phù hợp.' }}</p>
-        </div>
-
-        <!-- Selection Summary -->
-        <div class="selection-summary" *ngIf="selection.hasValue()">
-          <mat-icon>shopping_cart</mat-icon>
-          <span>Đã chọn {{ selection.selected.length }} sản phẩm</span>
-        </div>
-      </mat-dialog-content>
-
-      <mat-dialog-actions align="end">
-        <button mat-button (click)="onCancel()">Hủy</button>
-        <button 
-          mat-raised-button 
-          color="primary" 
-          (click)="onConfirm()"
-          [disabled]="!canConfirm()">
-          Xác Nhận ({{ selection.selected.length }})
-        </button>
-      </mat-dialog-actions>
-    </div>
-  `,
+        @if (!isLoadingProducts() && filteredProducts().length > 0) {
+          <div class="products-section">
+            <table mat-table [dataSource]="filteredProducts()" class="products-table">
+              <!-- Checkbox Column -->
+              <ng-container matColumnDef="select">
+                <th mat-header-cell *matHeaderCellDef>
+                  <mat-checkbox
+                    (change)="toggleAllSelection($event.checked)"
+                    [checked]="selection.hasValue() && isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected()">
+                  </mat-checkbox>
+                </th>
+                <td mat-cell *matCellDef="let product">
+                  <mat-checkbox
+                    (click)="$event.stopPropagation()"
+                    (change)="toggleSelection(product)"
+                    [checked]="selection.isSelected(product)">
+                  </mat-checkbox>
+                </td>
+              </ng-container>
+              <!-- Product Code Column -->
+              <ng-container matColumnDef="masp">
+                <th mat-header-cell *matHeaderCellDef>Mã SP</th>
+                <td mat-cell *matCellDef="let product">{{ product.masp }}</td>
+              </ng-container>
+              <!-- Product Name Column -->
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef>Tên Sản Phẩm</th>
+                <td mat-cell *matCellDef="let product">{{ product.title }}</td>
+              </ng-container>
+              <!-- Unit Column -->
+              <ng-container matColumnDef="dvt">
+                <th mat-header-cell *matHeaderCellDef>Đơn Vị</th>
+                <td mat-cell *matCellDef="let product">{{ product.dvt || '-' }}</td>
+              </ng-container>
+              <!-- Stock Quantity Column -->
+              <ng-container matColumnDef="tonkho">
+                <th mat-header-cell *matHeaderCellDef>Tồn Kho</th>
+                <td mat-cell *matCellDef="let product">
+                  <span class="stock-info">
+                    <strong>{{ product.tonkho?.slton || 0 }}</strong>
+                    <br>
+                      <small class="text-muted">Thực tế: {{ product.tonkho?.sltinhthucte || 0 }}</small>
+                    </span>
+                  </td>
+                </ng-container>
+                <!-- Price Column -->
+                <ng-container matColumnDef="dongia">
+                  <th mat-header-cell *matHeaderCellDef>Đơn Giá</th>
+                  <td mat-cell *matCellDef="let product">
+                    {{ (product.dongia || 0) | currency:'VND':'symbol':'1.0-0' }}
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr
+                  mat-row
+                  *matRowDef="let product; columns: displayedColumns;"
+                  (click)="toggleSelection(product)"
+                  [class.selected]="selection.isSelected(product)">
+                </tr>
+              </table>
+            </div>
+          }
+    
+          <!-- No Products Message -->
+          @if (!isLoadingProducts() && selectedWarehouseId && filteredProducts().length === 0) {
+            <div class="no-products">
+              <mat-icon>inventory_2</mat-icon>
+              <p>{{ products().length === 0 ? 'Không có sản phẩm nào trong kho này.' : 'Không tìm thấy sản phẩm phù hợp.' }}</p>
+            </div>
+          }
+    
+          <!-- Selection Summary -->
+          @if (selection.hasValue()) {
+            <div class="selection-summary">
+              <mat-icon>shopping_cart</mat-icon>
+              <span>Đã chọn {{ selection.selected.length }} sản phẩm</span>
+            </div>
+          }
+        </mat-dialog-content>
+    
+        <mat-dialog-actions align="end">
+          <button mat-button (click)="onCancel()">Hủy</button>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="onConfirm()"
+            [disabled]="!canConfirm()">
+            Xác Nhận ({{ selection.selected.length }})
+          </button>
+        </mat-dialog-actions>
+      </div>
+    `,
   styleUrls: ['./product-selection-dialog.component.scss']
 })
 export class ProductSelectionDialogComponent implements OnInit {

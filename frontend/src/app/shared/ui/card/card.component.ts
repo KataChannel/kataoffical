@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'ui-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div [class]="cardClasses">
       <ng-content></ng-content>
@@ -36,7 +36,7 @@ export class CardComponent {
 @Component({
   selector: 'ui-card-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="flex flex-col space-y-1.5 p-6">
       <ng-content></ng-content>
@@ -48,7 +48,7 @@ export class CardHeaderComponent {}
 @Component({
   selector: 'ui-card-title',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <h3 class="text-2xl font-semibold leading-none tracking-tight">
       <ng-content></ng-content>
@@ -60,7 +60,7 @@ export class CardTitleComponent {}
 @Component({
   selector: 'ui-card-description',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <p class="text-sm text-slate-500">
       <ng-content></ng-content>
@@ -72,7 +72,7 @@ export class CardDescriptionComponent {}
 @Component({
   selector: 'ui-card-content',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="p-6 pt-0">
       <ng-content></ng-content>
@@ -84,7 +84,7 @@ export class CardContentComponent {}
 @Component({
   selector: 'ui-card-footer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="flex items-center p-6 pt-0">
       <ng-content></ng-content>

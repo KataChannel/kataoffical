@@ -1,43 +1,36 @@
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  ViewChild,
+    ChangeDetectionStrategy,
+    Component,
+    inject,
+    ViewChild
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { SanphamService } from '../sanpham.service';
-import { MatMenuModule } from '@angular/material/menu';
+import { Router, RouterOutlet } from '@angular/router';
+import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import {
-  readExcelFile,
-  readExcelFileNoWorker,
-  writeExcelFile,
-  writeExcelMultiple,
+    readExcelFileNoWorker,
+    writeExcelMultiple
 } from '../../../shared/utils/exceldrive.utils';
 import {
-  ConvertDriveData,
-  convertToSlug,
-  GenId,
+    ConvertDriveData
 } from '../../../shared/utils/shared.utils';
-import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
+import { SanphamService } from '../sanpham.service';
 @Component({
   selector: 'app-listsanpham',
   templateUrl: './listsanpham.component.html',
@@ -86,9 +79,7 @@ export class ListSanphamComponent {
     ghichu: 'Ghi Chú',
     createdAt: 'Ngày Tạo',
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('SanphamColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -119,6 +110,9 @@ export class ListSanphamComponent {
     }
   }
   async ngOnInit(): Promise<void> {
+    if (typeof localStorage !== 'undefined') {
+      this.FilterColumns = JSON.parse(localStorage.getItem('SanphamColFilter') || '[]');
+    }
     await this._SanphamService.getAllSanpham();
     this.CountItem = this.Listsanpham().length;
     this.dataSource = new MatTableDataSource(this.Listsanpham());
@@ -177,10 +171,12 @@ export class ListSanphamComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem(
-        'SanphamColFilter',
-        JSON.stringify(this.FilterColumns)
-      );
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(
+          'SanphamColFilter',
+          JSON.stringify(this.FilterColumns)
+        );
+      }
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -284,10 +280,12 @@ export class ListSanphamComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem(
-      'SanphamColFilter',
-      JSON.stringify(this.FilterColumns)
-    );
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(
+        'SanphamColFilter',
+        JSON.stringify(this.FilterColumns)
+      );
+    }
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();

@@ -1,56 +1,49 @@
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
-  Component,
-  computed,
-  effect,
-  inject,
-  TemplateRef,
-  ViewChild,
+    ChangeDetectionStrategy,
+    Component,
+    effect,
+    inject,
+    TemplateRef,
+    ViewChild
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DathangService } from '../dathang.service';
-import { MatMenuModule } from '@angular/material/menu';
-import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { Router, RouterOutlet } from '@angular/router';
+import moment from 'moment';
+import * as XLSX from 'xlsx';
+import { CancelOrderService } from '../../../shared/services/cancel-order.service';
+import { TimezoneService } from '../../../shared/services/timezone.service';
+import { Debounce, memoize } from '../../../shared/utils/decorators';
+import {
+    readExcelFileNoWorker,
+    writeExcelFile
+} from '../../../shared/utils/exceldrive.utils';
+import { TrangThaiDon } from '../../../shared/utils/trangthai';
+import { BanggiaService } from '../../banggia/banggia.service';
+import { KhoService } from '../../kho/kho.service';
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
-import { BanggiaService } from '../../banggia/banggia.service';
-import { TrangThaiDon } from '../../../shared/utils/trangthai';
-import moment from 'moment';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
-import { Debounce, memoize } from '../../../shared/utils/decorators';
-import { ChangeDetectionStrategy } from '@angular/core';
-import {
-  readExcelFile,
-  readExcelFileNoWorker,
-  writeExcelFile,
-} from '../../../shared/utils/exceldrive.utils';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
-import { KhachhangService } from '../../khachhang/khachhang.service';
-import { GenId } from '../../../shared/utils/shared.utils';
-import * as XLSX from 'xlsx';
-import { KhoService } from '../../kho/kho.service';
-import { TimezoneService } from '../../../shared/services/timezone.service';
-import { CancelOrderService } from '../../../shared/services/cancel-order.service';
+import { DathangService } from '../dathang.service';
 @Component({
   selector: 'app-listdathang',
   templateUrl: './listdathang.component.html',
@@ -110,9 +103,7 @@ export class ListDathangComponent {
     actions: 'Thao Tác',
     lydohuy: 'Lý Do Hủy',
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('DathangColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   isFilter: boolean = false;
   Trangthaidon: any = TrangThaiDon;
@@ -214,6 +205,9 @@ export class ListDathangComponent {
     this.ngOnInit();
   }
   async ngOnInit(): Promise<void> {
+    if (typeof localStorage !== 'undefined') {
+      this.FilterColumns = JSON.parse(localStorage.getItem('DathangColFilter') || '[]');
+    }
     await this._DathangService.getDathangBy(this.searchParam);
     this.displayedColumns = Object.keys(this.ColumnName);
     this.dataSource = new MatTableDataSource(this.Listdathang());
@@ -241,10 +235,12 @@ export class ListDathangComponent {
     this.FilterColumns = this.FilterColumns.length
       ? this.FilterColumns
       : this.Columns;
-    localStorage.setItem(
-      'DathangColFilter',
-      JSON.stringify(this.FilterColumns)
-    );
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(
+        'DathangColFilter',
+        JSON.stringify(this.FilterColumns)
+      );
+    }
     this.displayedColumns = this.FilterColumns.filter((col) => col.isShow).map(
       (col) => col.key
     );
@@ -312,10 +308,12 @@ export class ListDathangComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem(
-      'DathangColFilter',
-      JSON.stringify(this.FilterColumns)
-    );
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(
+        'DathangColFilter',
+        JSON.stringify(this.FilterColumns)
+      );
+    }
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();

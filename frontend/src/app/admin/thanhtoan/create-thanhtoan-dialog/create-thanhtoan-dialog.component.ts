@@ -45,10 +45,10 @@ import { ThanhtoanService } from '../thanhtoan.service';
           <mat-icon>close</mat-icon>
         </button>
       </div>
-
+    
       <!-- Content -->
       <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
-        
+    
         <!-- Section 1: Thông tin chung -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div class="space-y-1">
@@ -68,7 +68,7 @@ import { ThanhtoanService } from '../thanhtoan.service';
               <mat-icon matSuffix class="text-slate-400">person_search</mat-icon>
             </mat-form-field>
           </div>
-
+    
           <div class="space-y-1">
             <label class="text-sm font-medium text-slate-700">Ngày Thanh Toán</label>
             <mat-form-field appearance="outline" class="w-full custom-mat-field" subscriptSizing="dynamic">
@@ -78,25 +78,25 @@ import { ThanhtoanService } from '../thanhtoan.service';
             </mat-form-field>
           </div>
         </div>
-
+    
         <!-- Section 2: Chi tiết thanh toán - Card Style -->
         <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-12">
-            
+    
             <div class="sm:col-span-5 space-y-1">
               <label class="text-sm font-medium text-slate-700">Tổng Tiền Thu</label>
               <div class="relative">
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   class="w-full h-11 pl-3 pr-10 text-right font-bold text-lg rounded-md border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
                   [ngModel]="totalPaymentAmount | number:'1.0-0'"
                   (ngModelChange)="updateTotalAmount($event)"
                   placeholder="0"
-                >
+                  >
                 <span class="absolute right-3 top-2.5 text-slate-500 font-medium">₫</span>
               </div>
             </div>
-
+    
             <div class="sm:col-span-4 space-y-1">
               <label class="text-sm font-medium text-slate-700">Phương Thức</label>
               <mat-form-field appearance="outline" class="w-full custom-mat-field" subscriptSizing="dynamic">
@@ -107,25 +107,25 @@ import { ThanhtoanService } from '../thanhtoan.service';
                 </mat-select>
               </mat-form-field>
             </div>
-
+    
             <div class="sm:col-span-3 flex items-end pb-1">
               <mat-checkbox [(ngModel)]="isAutoAllocate" (change)="autoAllocate()" color="primary" class="font-medium text-slate-700">
                 Tự động phân bổ
               </mat-checkbox>
             </div>
           </div>
-
+    
           <div class="mt-4 space-y-1">
-             <label class="text-sm font-medium text-slate-700">Ghi Chú</label>
-             <input 
-                type="text" 
-                class="w-full h-10 px-3 rounded-md border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
-                [(ngModel)]="commonNote"
-                placeholder="Nhập ghi chú cho đợt thanh toán này..."
-             >
+            <label class="text-sm font-medium text-slate-700">Ghi Chú</label>
+            <input
+              type="text"
+              class="w-full h-10 px-3 rounded-md border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
+              [(ngModel)]="commonNote"
+              placeholder="Nhập ghi chú cho đợt thanh toán này..."
+              >
           </div>
         </div>
-
+    
         <!-- Section 3: Danh sách đơn hàng -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
@@ -134,22 +134,26 @@ import { ThanhtoanService } from '../thanhtoan.service';
               {{orders.length}} đơn
             </span>
           </div>
-
+    
           <div class="border rounded-lg overflow-hidden bg-white relative min-h-[200px]">
             <!-- Loading State -->
-            <div *ngIf="isLoadingOrders" class="absolute inset-0 bg-white/80 z-10 flex items-center justify-center backdrop-blur-sm">
-               <div class="flex flex-col items-center gap-2">
-                 <mat-spinner diameter="30"></mat-spinner>
-                 <span class="text-sm text-slate-500">Đang tải đơn hàng...</span>
-               </div>
-            </div>
-
+            @if (isLoadingOrders) {
+              <div class="absolute inset-0 bg-white/80 z-10 flex items-center justify-center backdrop-blur-sm">
+                <div class="flex flex-col items-center gap-2">
+                  <mat-spinner diameter="30"></mat-spinner>
+                  <span class="text-sm text-slate-500">Đang tải đơn hàng...</span>
+                </div>
+              </div>
+            }
+    
             <!-- Empty State -->
-            <div *ngIf="!isLoadingOrders && orders.length === 0" class="flex flex-col items-center justify-center py-10 text-slate-400">
-               <mat-icon class="text-4xl w-10 h-10 mb-2">assignment_late</mat-icon>
-               <p>{{ selectedCustomer ? 'Khách hàng này không có đơn nợ' : 'Vui lòng chọn khách hàng' }}</p>
-            </div>
-
+            @if (!isLoadingOrders && orders.length === 0) {
+              <div class="flex flex-col items-center justify-center py-10 text-slate-400">
+                <mat-icon class="text-4xl w-10 h-10 mb-2">assignment_late</mat-icon>
+                <p>{{ selectedCustomer ? 'Khách hàng này không có đơn nợ' : 'Vui lòng chọn khách hàng' }}</p>
+              </div>
+            }
+    
             <!-- Desktop Table -->
             <div class="hidden sm:block overflow-auto max-h-[400px]">
               <table mat-table [dataSource]="dataSource" class="w-full">
@@ -157,138 +161,143 @@ import { ThanhtoanService } from '../thanhtoan.service';
                 <ng-container matColumnDef="select">
                   <th mat-header-cell *matHeaderCellDef class="w-10">
                     <mat-checkbox (change)="$event ? toggleAllRows() : null"
-                                  [checked]="selection.hasValue() && isAllSelected()"
-                                  [indeterminate]="selection.hasValue() && !isAllSelected()"
-                                  color="primary">
+                      [checked]="selection.hasValue() && isAllSelected()"
+                      [indeterminate]="selection.hasValue() && !isAllSelected()"
+                      color="primary">
                     </mat-checkbox>
                   </th>
                   <td mat-cell *matCellDef="let row">
                     <mat-checkbox (click)="$event.stopPropagation()"
-                                  (change)="$event ? selection.toggle(row) : null"
-                                  [checked]="selection.isSelected(row)"
-                                  color="primary">
+                      (change)="$event ? selection.toggle(row) : null"
+                      [checked]="selection.isSelected(row)"
+                      color="primary">
                     </mat-checkbox>
                   </td>
                 </ng-container>
-
+    
                 <ng-container matColumnDef="ngaygiao">
                   <th mat-header-cell *matHeaderCellDef> Ngày </th>
-                  <td mat-cell *matCellDef="let element" class="whitespace-nowrap"> 
+                  <td mat-cell *matCellDef="let element" class="whitespace-nowrap">
                     <span class="text-slate-600 font-medium">{{element.ngaygiao | date:'dd/MM/yy'}}</span>
                   </td>
                 </ng-container>
-
+    
                 <ng-container matColumnDef="madonhang">
                   <th mat-header-cell *matHeaderCellDef> Mã Đơn </th>
-                  <td mat-cell *matCellDef="let element"> 
+                  <td mat-cell *matCellDef="let element">
                     <span class="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-700">{{element.madonhang}}</span>
                   </td>
                 </ng-container>
-
+    
                 <ng-container matColumnDef="tongtien">
                   <th mat-header-cell *matHeaderCellDef class="text-right"> Tổng Tiền </th>
-                  <td mat-cell *matCellDef="let element" class="text-right text-slate-500"> 
-                    {{element.tongtien | number:'1.0-0'}} 
+                  <td mat-cell *matCellDef="let element" class="text-right text-slate-500">
+                    {{element.tongtien | number:'1.0-0'}}
                   </td>
                 </ng-container>
-
+    
                 <ng-container matColumnDef="dathanhtoan">
                   <th mat-header-cell *matHeaderCellDef class="text-right"> Đã Trả </th>
-                  <td mat-cell *matCellDef="let element" class="text-right text-green-600"> 
-                    {{element.dathanhtoan | number:'1.0-0'}} 
+                  <td mat-cell *matCellDef="let element" class="text-right text-green-600">
+                    {{element.dathanhtoan | number:'1.0-0'}}
                   </td>
                 </ng-container>
-
+    
                 <ng-container matColumnDef="conlai">
                   <th mat-header-cell *matHeaderCellDef class="text-right"> Còn Lại </th>
-                  <td mat-cell *matCellDef="let element" class="text-right font-medium text-red-600"> 
-                    {{element.remaining | number:'1.0-0'}} 
+                  <td mat-cell *matCellDef="let element" class="text-right font-medium text-red-600">
+                    {{element.remaining | number:'1.0-0'}}
                   </td>
                 </ng-container>
-
+    
                 <ng-container matColumnDef="thanhtoan">
                   <th mat-header-cell *matHeaderCellDef class="w-40"> Phân Bổ </th>
                   <td mat-cell *matCellDef="let element">
-                    <input type="text" 
-                           class="w-full text-right p-2 text-sm border-b border-slate-200 focus:border-primary outline-none bg-transparent font-medium text-blue-700"
-                           [ngModel]="element.allocation | number:'1.0-0'" 
-                           (ngModelChange)="updateRowAllocation(element, $event)"
-                           placeholder="0">
+                    <input type="text"
+                      class="w-full text-right p-2 text-sm border-b border-slate-200 focus:border-primary outline-none bg-transparent font-medium text-blue-700"
+                      [ngModel]="element.allocation | number:'1.0-0'"
+                      (ngModelChange)="updateRowAllocation(element, $event)"
+                      placeholder="0">
                   </td>
                 </ng-container>
-
+    
                 <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="bg-slate-50 h-10"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
-                    class="hover:bg-slate-50 h-12 transition-colors border-b last:border-0"
-                    [class.bg-blue-50]="row.allocation > 0"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                  class="hover:bg-slate-50 h-12 transition-colors border-b last:border-0"
+                [class.bg-blue-50]="row.allocation > 0"></tr>
               </table>
             </div>
-
+    
             <!-- Mobile List (Cards) -->
             <div class="sm:hidden max-h-[400px] overflow-y-auto p-2 space-y-2 bg-slate-50">
-               <div *ngFor="let item of orders" 
-                    class="bg-white p-3 rounded-lg shadow-sm border border-slate-200"
-                    [class.ring-1]="item.allocation > 0"
-                    [class.ring-blue-500]="item.allocation > 0">
-                 <div class="flex justify-between items-start mb-2">
-                   <div>
-                     <span class="font-mono text-xs font-bold bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 block mb-1 w-fit">{{item.madonhang}}</span>
-                     <span class="text-xs text-slate-500">{{item.ngaygiao | date:'dd/MM/yyyy'}}</span>
-                   </div>
-                   <div class="text-right">
-                     <div class="text-xs text-slate-500">Nợ: <span class="text-red-600 font-medium">{{item.remaining | number:'1.0-0'}}</span></div>
-                     <div class="text-xs text-slate-400">Tổng: {{item.tongtien | number:'1.0-0'}}</div>
-                   </div>
-                 </div>
-                 
-                 <div class="flex items-center gap-2 mt-3 pt-2 border-t border-slate-100">
-                   <label class="text-xs font-medium text-slate-700 whitespace-nowrap">Thanh toán:</label>
-                   <input type="text" 
-                          class="flex-1 text-right text-sm font-bold text-blue-700 p-1.5 rounded bg-blue-50/50 border-0 focus:ring-2 focus:ring-blue-500 outline-none"
-                          [ngModel]="item.allocation | number:'1.0-0'" 
-                          (ngModelChange)="updateRowAllocation(item, $event)"
-                          placeholder="0">
-                 </div>
-               </div>
+              @for (item of orders; track item) {
+                <div
+                  class="bg-white p-3 rounded-lg shadow-sm border border-slate-200"
+                  [class.ring-1]="item.allocation > 0"
+                  [class.ring-blue-500]="item.allocation > 0">
+                  <div class="flex justify-between items-start mb-2">
+                    <div>
+                      <span class="font-mono text-xs font-bold bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 block mb-1 w-fit">{{item.madonhang}}</span>
+                      <span class="text-xs text-slate-500">{{item.ngaygiao | date:'dd/MM/yyyy'}}</span>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-xs text-slate-500">Nợ: <span class="text-red-600 font-medium">{{item.remaining | number:'1.0-0'}}</span></div>
+                      <div class="text-xs text-slate-400">Tổng: {{item.tongtien | number:'1.0-0'}}</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 mt-3 pt-2 border-t border-slate-100">
+                    <label class="text-xs font-medium text-slate-700 whitespace-nowrap">Thanh toán:</label>
+                    <input type="text"
+                      class="flex-1 text-right text-sm font-bold text-blue-700 p-1.5 rounded bg-blue-50/50 border-0 focus:ring-2 focus:ring-blue-500 outline-none"
+                      [ngModel]="item.allocation | number:'1.0-0'"
+                      (ngModelChange)="updateRowAllocation(item, $event)"
+                      placeholder="0">
+                  </div>
+                </div>
+              }
             </div>
-            
+    
           </div>
         </div>
-
+    
       </div>
-
+    
       <!-- Footer -->
       <div class="border-t bg-slate-50 p-4 sm:px-6 z-10">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 text-sm w-full sm:w-auto">
-             <div class="flex justify-between w-full sm:w-auto sm:block">
-               <span class="text-slate-500">Đã chọn:</span>
-               <span class="font-medium ml-1">{{getSelectedCount()}} đơn</span>
-             </div>
-             <div class="flex justify-between w-full sm:w-auto sm:block">
-               <span class="text-slate-500">Đã phân bổ:</span>
-               <span class="font-bold text-blue-600 ml-1 text-base">{{totalAllocated | number:'1.0-0'}}</span>
-               <span class="text-slate-400 mx-1">/</span>
-               <span class="font-medium text-slate-600">{{totalPaymentAmount | number:'1.0-0'}}</span>
-             </div>
+            <div class="flex justify-between w-full sm:w-auto sm:block">
+              <span class="text-slate-500">Đã chọn:</span>
+              <span class="font-medium ml-1">{{getSelectedCount()}} đơn</span>
+            </div>
+            <div class="flex justify-between w-full sm:w-auto sm:block">
+              <span class="text-slate-500">Đã phân bổ:</span>
+              <span class="font-bold text-blue-600 ml-1 text-base">{{totalAllocated | number:'1.0-0'}}</span>
+              <span class="text-slate-400 mx-1">/</span>
+              <span class="font-medium text-slate-600">{{totalPaymentAmount | number:'1.0-0'}}</span>
+            </div>
           </div>
-
+    
           <div class="flex gap-3 w-full sm:w-auto">
-             <button mat-stroked-button color="warn" class="flex-1 sm:flex-none" (click)="close()">Huỷ</button>
-             <button mat-flat-button color="primary" class="flex-1 sm:flex-none" 
-                     [disabled]="isSubmitting() || totalAllocated === 0" 
-                     (click)="submit()">
-               <span *ngIf="!isSubmitting()">Lưu Thanh Toán</span>
-               <div *ngIf="isSubmitting()" class="flex items-center gap-2">
-                 <mat-spinner diameter="18" class="text-white-important"></mat-spinner>
-                 <span>Đang lưu...</span>
-               </div>
-             </button>
+            <button mat-stroked-button color="warn" class="flex-1 sm:flex-none" (click)="close()">Huỷ</button>
+            <button mat-flat-button color="primary" class="flex-1 sm:flex-none"
+              [disabled]="isSubmitting() || totalAllocated === 0"
+              (click)="submit()">
+              @if (!isSubmitting()) {
+                <span>Lưu Thanh Toán</span>
+              }
+              @if (isSubmitting()) {
+                <div class="flex items-center gap-2">
+                  <mat-spinner diameter="18" class="text-white-important"></mat-spinner>
+                  <span>Đang lưu...</span>
+                </div>
+              }
+            </button>
           </div>
         </div>
       </div>
     </div>
-  `,
+    `,
   styles: [`
     ::ng-deep .custom-mat-field .mat-mdc-text-field-wrapper {
       background-color: white !important;

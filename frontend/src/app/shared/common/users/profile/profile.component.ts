@@ -1,5 +1,5 @@
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,7 +16,6 @@ import { UploadService } from '../../../uploadfile/uploadfile.service';
   templateUrl: './profile.component.html',
   standalone: true,
   imports: [
-    CommonModule,
     MatInputModule,
     MatFormFieldModule,
     MatSelectModule,
@@ -25,7 +24,7 @@ import { UploadService } from '../../../uploadfile/uploadfile.service';
     RouterModule,
     NgxFileDropModule,
     MatSidenavModule
-  ],
+],
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {

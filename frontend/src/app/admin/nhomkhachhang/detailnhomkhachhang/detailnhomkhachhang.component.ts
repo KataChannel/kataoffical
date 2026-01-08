@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ListNhomkhachhangComponent } from '../listnhomkhachhang/listnhomkhachhang.component';
 import { NhomkhachhangService } from '../nhomkhachhang.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -21,18 +21,17 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
   @Component({
     selector: 'app-detailnhomkhachhang',
     imports: [
-      MatFormFieldModule,
-      MatInputModule,
-      FormsModule,
-      MatIconModule,
-      MatButtonModule,
-      MatSelectModule,
-      MatDialogModule,
-      CommonModule,
-      MatSlideToggleModule,
-      MatMenuModule,
-      MatProgressSpinnerModule
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSlideToggleModule,
+    MatMenuModule,
+    MatProgressSpinnerModule
+],
     templateUrl: './detailnhomkhachhang.component.html',
     styleUrl: './detailnhomkhachhang.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

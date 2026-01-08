@@ -1,6 +1,6 @@
 import moment from 'moment';
 // import * as XLSX from 'xlsx';
-import * as XLSX from 'xlsx-js-style'; 
+import * as XLSX from 'xlsx-js-style';
 
 
 export function writeExcelFileSheets(
@@ -288,14 +288,16 @@ export function UploadDathang(
 
 
 function saveAsExcelFile(buffer: any, fileName: string) {
-  const data: Blob = new Blob([buffer], { type: 'application/octet-stream' });
-  const url: string = window.URL.createObjectURL(data);
-  const link: HTMLAnchorElement = document.createElement('a');
-  link.href = url;
-  link.download = `${fileName}.xlsx`;
-  link.click();
-  window.URL.revokeObjectURL(url);
-  link.remove();
+  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    const data: Blob = new Blob([buffer], { type: 'application/octet-stream' });
+    const url: string = window.URL.createObjectURL(data);
+    const link: HTMLAnchorElement = document.createElement('a');
+    link.href = url;
+    link.download = `${fileName}.xlsx`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+    link.remove();
+  }
 }
 
 export function readExcelFile(event: any, sheetName?: any): Promise<any> {
@@ -371,7 +373,7 @@ export function readExcelFileNoWorker(event: any, sheetName?: string): Promise<a
           result = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
         } else {
           result = {};
-          workbook.SheetNames.forEach(name => {
+          workbook.SheetNames.forEach((name: string) => {
             result[name] = XLSX.utils.sheet_to_json(workbook.Sheets[name], { defval: '' });
           });
         }

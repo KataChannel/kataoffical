@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input } from '@angular/core';
 
 export type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning';
@@ -6,7 +6,7 @@ export type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline' |
 @Component({
   selector: 'ui-badge',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div [class]="badgeClasses">
       <ng-content></ng-content>

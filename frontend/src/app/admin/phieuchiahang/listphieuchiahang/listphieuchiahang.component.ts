@@ -1,55 +1,51 @@
-import {
-  AfterViewInit,
-  Component,
-  computed,
-  effect,
-  inject,
-  signal,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
+import {
+    Component,
+    computed,
+    inject,
+    signal,
+    TemplateRef,
+    ViewChild
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router, RouterOutlet } from '@angular/router';
+import moment from 'moment';
+import * as XLSX from 'xlsx';
+import { environment } from '../../../../environments/environment.development';
+import { Nhanvien, TrangThaiNhanvien } from '../../../models/nhanvien.model';
+import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { SearchService } from '../../../shared/services/search.service';
+import { DateHelpers } from '../../../shared/utils/date-helpers';
 import {
-  readExcelFile,
-  writeExcelFile,
+    readExcelFile,
+    writeExcelFile,
 } from '../../../shared/utils/exceldrive.utils';
 import {
-  ConvertDriveData,
-  convertToSlug,
-  GenId,
+    ConvertDriveData,
+    convertToSlug,
+    GenId,
 } from '../../../shared/utils/shared.utils';
-import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import moment from 'moment';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import html2canvas from 'html2canvas';
+import { StorageService } from '../../../shared/utils/storage.service';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import { DonhangService } from '../../donhang/donhang.service';
 import { NhanvienService } from '../../nhanvien/nhanvien.service';
-import { Nhanvien, TrangThaiNhanvien } from '../../../models/nhanvien.model';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
-import { environment } from '../../../../environments/environment.development';
-import { SearchService } from '../../../shared/services/search.service';
-import { StorageService } from '../../../shared/utils/storage.service';
-import { TrangThaiDon } from '../../../shared/utils/trangthai';
-import { DateHelpers } from '../../../shared/utils/date-helpers';
-import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-listphieuchiahang',
@@ -103,9 +99,7 @@ export class ListPhieuchiahangComponent {
     createdAt: 'Ngày Tạo',
     updatedAt: 'Ngày Cập Nhật',
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('DonhangColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   isFilter: boolean = false;
   Trangthaidon: any = TrangThaiDon;
@@ -245,6 +239,9 @@ export class ListPhieuchiahangComponent {
   }
   async ngOnInit(): Promise<void> {
     // 🔥 AUTO-LOAD: Tự động load dữ liệu trong ngày khi vào trang
+    if (typeof localStorage !== 'undefined') {
+      this.FilterColumns = JSON.parse(localStorage.getItem('DonhangColFilter') || '[]');
+    }
     this.initializeColumns();
     this.setupDrawer();
     
@@ -322,10 +319,12 @@ export class ListPhieuchiahangComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem(
-        'DonhangColFilter',
-        JSON.stringify(this.FilterColumns)
-      );
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(
+          'DonhangColFilter',
+          JSON.stringify(this.FilterColumns)
+        );
+      }
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -357,10 +356,12 @@ export class ListPhieuchiahangComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem(
-      'DonhangColFilter',
-      JSON.stringify(this.FilterColumns)
-    );
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(
+        'DonhangColFilter',
+        JSON.stringify(this.FilterColumns)
+      );
+    }
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();

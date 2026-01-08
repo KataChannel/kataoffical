@@ -9,47 +9,46 @@
       <p class="page-description">Quản lý thông tin nhân viên trong hệ thống</p>
     </div>
 
-    <div class="stats-cards" *ngIf="statistics()">
-      <div class="stat-card">
-        <div class="stat-icon">
-          <mat-icon>groups</mat-icon>
+    @if (statistics()) {
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <mat-icon>groups</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Tổng số</span>
+            <span class="stat-value">{{ statistics()?.total || 0 }}</span>
+          </div>
         </div>
-        <div class="stat-info">
-          <span class="stat-label">Tổng số</span>
-          <span class="stat-value">{{ statistics()?.total || 0 }}</span>
+        <div class="stat-card active">
+          <div class="stat-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Đang làm việc</span>
+            <span class="stat-value">{{ statistics()?.dangLamViec || 0 }}</span>
+          </div>
+        </div>
+        <div class="stat-card trial">
+          <div class="stat-icon">
+            <mat-icon>schedule</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Thử việc</span>
+            <span class="stat-value">{{ statistics()?.thuViec || 0 }}</span>
+          </div>
+        </div>
+        <div class="stat-card inactive">
+          <div class="stat-icon">
+            <mat-icon>person_off</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Đã nghỉ</span>
+            <span class="stat-value">{{ statistics()?.daNghiViec || 0 }}</span>
+          </div>
         </div>
       </div>
-
-      <div class="stat-card active">
-        <div class="stat-icon">
-          <mat-icon>check_circle</mat-icon>
-        </div>
-        <div class="stat-info">
-          <span class="stat-label">Đang làm việc</span>
-          <span class="stat-value">{{ statistics()?.dangLamViec || 0 }}</span>
-        </div>
-      </div>
-
-      <div class="stat-card trial">
-        <div class="stat-icon">
-          <mat-icon>schedule</mat-icon>
-        </div>
-        <div class="stat-info">
-          <span class="stat-label">Thử việc</span>
-          <span class="stat-value">{{ statistics()?.thuViec || 0 }}</span>
-        </div>
-      </div>
-
-      <div class="stat-card inactive">
-        <div class="stat-icon">
-          <mat-icon>person_off</mat-icon>
-        </div>
-        <div class="stat-info">
-          <span class="stat-label">Đã nghỉ</span>
-          <span class="stat-value">{{ statistics()?.daNghiViec || 0 }}</span>
-        </div>
-      </div>
-    </div>
+    }
   </div>
 
   <!-- Toolbar -->
@@ -58,8 +57,8 @@
       <!-- Search -->
       <mat-form-field appearance="outline" class="search-field">
         <mat-label>Tìm kiếm</mat-label>
-        <input 
-          matInput 
+        <input
+          matInput
           placeholder="Tìm theo tên, mã NV, SĐT, email..."
           [value]="searchTerm()"
           (input)="onSearch($event)">
@@ -69,32 +68,36 @@
       <!-- Phongban Filter -->
       <mat-form-field appearance="outline">
         <mat-label>Phòng ban</mat-label>
-        <mat-select 
+        <mat-select
           [value]="selectedPhongban()"
           (selectionChange)="onPhongbanFilter($event.value)">
           <mat-option [value]="null">Tất cả phòng ban</mat-option>
-          <mat-option *ngFor="let pb of phongbans()" [value]="pb.id">
-            {{ pb.ten }}
-          </mat-option>
+          @for (pb of phongbans(); track pb) {
+            <mat-option [value]="pb.id">
+              {{ pb.ten }}
+            </mat-option>
+          }
         </mat-select>
       </mat-form-field>
 
       <!-- Trang thai Filter -->
       <mat-form-field appearance="outline">
         <mat-label>Trạng thái</mat-label>
-        <mat-select 
+        <mat-select
           [value]="selectedTrangThai()"
           (selectionChange)="onTrangThaiFilter($event.value)">
           <mat-option [value]="null">Tất cả trạng thái</mat-option>
-          <mat-option *ngFor="let opt of trangThaiOptions" [value]="opt.value">
-            {{ opt.label }}
-          </mat-option>
+          @for (opt of trangThaiOptions; track opt) {
+            <mat-option [value]="opt.value">
+              {{ opt.label }}
+            </mat-option>
+          }
         </mat-select>
       </mat-form-field>
 
       <!-- Clear Filters -->
-      <button 
-        mat-icon-button 
+      <button
+        mat-icon-button
         matTooltip="Xóa bộ lọc"
         (click)="clearFilters()">
         <mat-icon>filter_alt_off</mat-icon>
@@ -103,16 +106,16 @@
       <div class="spacer"></div>
 
       <!-- Action Buttons -->
-      <button 
-        mat-raised-button 
+      <button
+        mat-raised-button
         (click)="exportExcel()"
         matTooltip="Xuất danh sách nhân viên ra Excel">
         <mat-icon>download</mat-icon>
         Export
       </button>
 
-      <button 
-        mat-raised-button 
+      <button
+        mat-raised-button
         [matMenuTriggerFor]="importMenu"
         matTooltip="Nhập dữ liệu từ Excel">
         <mat-icon>upload</mat-icon>
@@ -130,8 +133,8 @@
         </button>
       </mat-menu>
 
-      <button 
-        mat-raised-button 
+      <button
+        mat-raised-button
         color="primary"
         (click)="createNew()">
         <mat-icon>add</mat-icon>
@@ -142,146 +145,141 @@
 
   <!-- Table -->
   <div class="table-card">
-    <div class="table-container" *ngIf="!loading(); else loadingTemplate">
-      <table mat-table [dataSource]="dataSource" matSort class="nhanvien-table">
-        <!-- Mã NV Column -->
-        <ng-container matColumnDef="maNV">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Mã NV</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="badge-code">{{ row.maNV }}</span>
-          </td>
-        </ng-container>
-
-        <!-- Mã làm việc Column -->
-        <ng-container matColumnDef="maLamViec">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Mã làm việc</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="badge-code secondary">{{ row.maLamViec || '—' }}</span>
-          </td>
-        </ng-container>
-
-        <!-- Họ tên Column -->
-        <ng-container matColumnDef="hoTen">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Họ và tên</th>
-          <td mat-cell *matCellDef="let row">
-            <div class="employee-info">
-              <span class="employee-name">{{ row.hoTen }}</span>
-              <span class="employee-email" *ngIf="row.email">{{ row.email }}</span>
-            </div>
-          </td>
-        </ng-container>
-
-        <!-- Giới tính Column -->
-        <ng-container matColumnDef="gioiTinh">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Giới tính</th>
-          <td mat-cell *matCellDef="let row">
-            {{ getGioiTinhLabel(row.gioiTinh) }}
-          </td>
-        </ng-container>
-
-        <!-- Số điện thoại Column -->
-        <ng-container matColumnDef="soDienThoai">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Điện thoại</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="text-muted">{{ row.soDienThoai || '—' }}</span>
-          </td>
-        </ng-container>
-
-        <!-- Email Column -->
-        <ng-container matColumnDef="email">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="text-muted">{{ row.email || '—' }}</span>
-          </td>
-        </ng-container>
-
-        <!-- Phòng ban Column -->
-        <ng-container matColumnDef="phongban">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Phòng ban</th>
-          <td mat-cell *matCellDef="let row">
-            <span *ngIf="row.phongban?.ten" class="badge-department">{{ row.phongban.ten }}</span>
-            <span *ngIf="!row.phongban?.ten" class="text-muted">Chưa phân</span>
-          </td>
-        </ng-container>
-
-        <!-- Chức vụ Column -->
-        <ng-container matColumnDef="chucVu">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Chức vụ</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="text-muted">{{ row.chucVu || '—' }}</span>
-          </td>
-        </ng-container>
-
-        <!-- Vị trí Column -->
-        <ng-container matColumnDef="viTri">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Vị trí</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="text-muted">{{ row.viTri || '—' }}</span>
-          </td>
-        </ng-container>
-
-        <!-- Trạng thái Column -->
-        <ng-container matColumnDef="trangThai">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Trạng thái</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="status-badge" [attr.data-status]="row.trangThai">
-              {{ getTrangThaiLabel(row.trangThai) }}
-            </span>
-          </td>
-        </ng-container>
-
-        <!-- Actions Column -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let row">
-            <div class="action-buttons">
-              <button 
-                mat-icon-button 
-                color="primary"
-                matTooltip="Xem chi tiết"
-                (click)="viewDetail(row.id)">
-                <mat-icon>visibility</mat-icon>
-              </button>
-              <button 
-                mat-icon-button 
-                color="accent"
-                matTooltip="Chỉnh sửa"
-                (click)="editNhanvien(row.id)">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button 
-                mat-icon-button 
-                color="warn"
-                matTooltip="Xóa"
-                (click)="deleteNhanvien(row)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-        <!-- No data row -->
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
-            <div class="no-data-container">
-              <mat-icon>inbox</mat-icon>
-              <p>Không tìm thấy nhân viên nào</p>
-            </div>
-          </td>
-        </tr>
-      </table>
-    </div>
-
-    <!-- Loading Template -->
-    <ng-template #loadingTemplate>
+    @if (!loading()) {
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="nhanvien-table">
+          <!-- Mã NV Column -->
+          <ng-container matColumnDef="maNV">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Mã NV</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="badge-code">{{ row.maNV }}</span>
+            </td>
+          </ng-container>
+          <!-- Mã làm việc Column -->
+          <ng-container matColumnDef="maLamViec">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Mã làm việc</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="badge-code secondary">{{ row.maLamViec || '—' }}</span>
+            </td>
+          </ng-container>
+          <!-- Họ tên Column -->
+          <ng-container matColumnDef="hoTen">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Họ và tên</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="employee-info">
+                <span class="employee-name">{{ row.hoTen }}</span>
+                @if (row.email) {
+                  <span class="employee-email">{{ row.email }}</span>
+                }
+              </div>
+            </td>
+          </ng-container>
+          <!-- Giới tính Column -->
+          <ng-container matColumnDef="gioiTinh">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Giới tính</th>
+            <td mat-cell *matCellDef="let row">
+              {{ getGioiTinhLabel(row.gioiTinh) }}
+            </td>
+          </ng-container>
+          <!-- Số điện thoại Column -->
+          <ng-container matColumnDef="soDienThoai">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Điện thoại</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="text-muted">{{ row.soDienThoai || '—' }}</span>
+            </td>
+          </ng-container>
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="text-muted">{{ row.email || '—' }}</span>
+            </td>
+          </ng-container>
+          <!-- Phòng ban Column -->
+          <ng-container matColumnDef="phongban">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Phòng ban</th>
+            <td mat-cell *matCellDef="let row">
+              @if (row.phongban?.ten) {
+                <span class="badge-department">{{ row.phongban.ten }}</span>
+              }
+              @if (!row.phongban?.ten) {
+                <span class="text-muted">Chưa phân</span>
+              }
+            </td>
+          </ng-container>
+          <!-- Chức vụ Column -->
+          <ng-container matColumnDef="chucVu">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Chức vụ</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="text-muted">{{ row.chucVu || '—' }}</span>
+            </td>
+          </ng-container>
+          <!-- Vị trí Column -->
+          <ng-container matColumnDef="viTri">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Vị trí</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="text-muted">{{ row.viTri || '—' }}</span>
+            </td>
+          </ng-container>
+          <!-- Trạng thái Column -->
+          <ng-container matColumnDef="trangThai">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Trạng thái</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="status-badge" [attr.data-status]="row.trangThai">
+                {{ getTrangThaiLabel(row.trangThai) }}
+              </span>
+            </td>
+          </ng-container>
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+              <div class="action-buttons">
+                <button
+                  mat-icon-button
+                  color="primary"
+                  matTooltip="Xem chi tiết"
+                  (click)="viewDetail(row.id)">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="accent"
+                  matTooltip="Chỉnh sửa"
+                  (click)="editNhanvien(row.id)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  matTooltip="Xóa"
+                  (click)="deleteNhanvien(row)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <!-- No data row -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+              <div class="no-data-container">
+                <mat-icon>inbox</mat-icon>
+                <p>Không tìm thấy nhân viên nào</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    } @else {
       <div class="loading-container">
         <mat-spinner diameter="40"></mat-spinner>
         <p>Đang tải dữ liệu...</p>
       </div>
-    </ng-template>
+    }
+
+    <!-- Loading Template -->
 
     <!-- Paginator -->
     <mat-paginator

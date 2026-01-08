@@ -36,7 +36,7 @@ import { ARDocumentService } from '../ar-document.service';
           <mat-icon>add</mat-icon> Tạo chứng từ mới
         </button>
       </div>
-
+    
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm border">
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Trạng thái</mat-label>
@@ -48,73 +48,75 @@ import { ARDocumentService } from '../ar-document.service';
             <mat-option value="KHONG_DUYET">Không duyệt</mat-option>
           </mat-select>
         </mat-form-field>
-
+    
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Từ ngày</mat-label>
           <input matInput [matDatepicker]="picker1" [(ngModel)]="filters.tuNgay" (dateChange)="loadData()">
           <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
           <mat-datepicker #picker1></mat-datepicker>
         </mat-form-field>
-
+    
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Đến ngày</mat-label>
           <input matInput [matDatepicker]="picker2" [(ngModel)]="filters.denNgay" (dateChange)="loadData()">
           <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
           <mat-datepicker #picker2></mat-datepicker>
         </mat-form-field>
-        
+    
         <div class="flex items-center">
-            <button mat-stroked-button (click)="resetFilters()">Reset</button>
+          <button mat-stroked-button (click)="resetFilters()">Reset</button>
         </div>
       </div>
-
+    
       <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
         <table mat-table [dataSource]="arService.ListARDocuments()" class="w-full">
           <!-- Mã chứng từ -->
           <ng-container matColumnDef="maChungTu">
             <th mat-header-cell *matHeaderCellDef> Mã chứng từ </th>
-            <td mat-cell *matCellDef="let row" class="font-medium text-blue-600"> 
-               <a [routerLink]="[row.id]">{{row.maChungTu}}</a>
+            <td mat-cell *matCellDef="let row" class="font-medium text-blue-600">
+              <a [routerLink]="[row.id]">{{row.maChungTu}}</a>
             </td>
           </ng-container>
-
+    
           <!-- Khách hàng -->
           <ng-container matColumnDef="customer">
             <th mat-header-cell *matHeaderCellDef> Khách hàng </th>
-            <td mat-cell *matCellDef="let row"> 
-               {{ row.items[0]?.customer?.name || 'N/A' }}
-               <span *ngIf="row.items.length > 1" class="text-xs text-gray-400">(+{{row.items.length - 1}})</span>
+            <td mat-cell *matCellDef="let row">
+              {{ row.items[0]?.customer?.name || 'N/A' }}
+              @if (row.items.length > 1) {
+                <span class="text-xs text-gray-400">(+{{row.items.length - 1}})</span>
+              }
             </td>
           </ng-container>
-
+    
           <!-- Ngày lập -->
           <ng-container matColumnDef="ngayLap">
             <th mat-header-cell *matHeaderCellDef> Ngày lập </th>
             <td mat-cell *matCellDef="let row"> {{row.ngayLap | date:'dd/MM/yyyy'}} </td>
           </ng-container>
-
+    
           <!-- Tổng tiền -->
           <ng-container matColumnDef="totalAmount">
             <th mat-header-cell *matHeaderCellDef class="text-right"> Tổng tiền </th>
             <td mat-cell *matCellDef="let row" class="text-right font-bold text-green-600"> {{row.totalAmount | number}} </td>
           </ng-container>
-
+    
           <!-- Trạng thái -->
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef> Trạng thái </th>
-            <td mat-cell *matCellDef="let row"> 
-               <span class="px-2 py-1 rounded text-xs font-bold uppercase transition-colors"
+            <td mat-cell *matCellDef="let row">
+              <span class="px-2 py-1 rounded text-xs font-bold uppercase transition-colors"
                      [ngClass]="{
                        'bg-gray-100 text-gray-600': row.status === 'MOI',
                        'bg-blue-100 text-blue-600': row.status === 'CHO_THU_TIEN',
                        'bg-green-100 text-green-600': row.status === 'DA_THU_TIEN',
                        'bg-red-100 text-red-600': row.status === 'KHONG_DUYET'
                      }">
-                 {{ row.status === 'MOI' ? 'Mới' : (row.status === 'CHO_THU_TIEN' ? 'Chờ thu tiền' : (row.status === 'DA_THU_TIEN' ? 'Đã thu tiền' : 'Không duyệt')) }}
-               </span>
+                {{ row.status === 'MOI' ? 'Mới' : (row.status === 'CHO_THU_TIEN' ? 'Chờ thu tiền' : (row.status === 'DA_THU_TIEN' ? 'Đã thu tiền' : 'Không duyệt')) }}
+              </span>
             </td>
           </ng-container>
-
+    
           <!-- Thao tác -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef> Thao tác </th>
@@ -124,10 +126,10 @@ import { ARDocumentService } from '../ar-document.service';
               </button>
             </td>
           </ng-container>
-
+    
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-          
+    
           <tr class="mat-row" *matNoDataRow>
             <td class="mat-cell p-8 text-center" colspan="5">
               Không tìm thấy chứng từ nào
@@ -136,7 +138,7 @@ import { ARDocumentService } from '../ar-document.service';
         </table>
       </div>
     </div>
-  `
+    `
 })
 export class ListARDocumentComponent implements OnInit {
   arService = inject(ARDocumentService);

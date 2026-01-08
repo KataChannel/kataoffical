@@ -7,7 +7,7 @@ import {
   signal, 
   computed 
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -48,7 +48,6 @@ import { firstValueFrom } from 'rxjs';
   selector: 'app-listnhanvien',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatTableModule,
     MatPaginatorModule,
@@ -65,7 +64,7 @@ import { firstValueFrom } from 'rxjs';
     MatDialogModule,
     MatCardModule,
     MatDividerModule
-  ],
+],
   templateUrl: './listnhanvien.component.html',
   styleUrls: ['./listnhanvien.component.scss']
 })

@@ -14,7 +14,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ListKhachhangComponent } from '../listkhachhang/listkhachhang.component';
 import { KhachhangGraphqlService } from '../khachhang-graphql.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -35,12 +35,10 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatButtonModule,
     MatSelectModule,
     MatDialogModule,
-    CommonModule,
     MatSlideToggleModule,
     MatProgressSpinnerModule,
-    MatAutocompleteModule,
-    // SearchfilterComponent
-  ],
+    MatAutocompleteModule
+],
   templateUrl: './detailkhachhang.component.html',
   styleUrls: ['./detailkhachhang.component.scss'],
 })

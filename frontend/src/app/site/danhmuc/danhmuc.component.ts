@@ -1,16 +1,15 @@
-import { Component, inject } from '@angular/core';
-import { Danhmucs } from '../../shared/mockdata/danhmuc';
-import { ActivatedRoute, RouterOutlet } from '@angular/router';
-import { BreadscrumbComponent } from '../../shared/common/breadscrumb/breadscrumb.component';
-import { Sanphams } from '../../shared/mockdata/sanpham';
 import { CommonModule } from '@angular/common';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { ConvertDriveData } from '../../shared/utils/shared.utils';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { ActivatedRoute } from '@angular/router';
+import { BreadscrumbComponent } from '../../shared/common/breadscrumb/breadscrumb.component';
 import { GoogleSheetService } from '../../shared/googlesheets/googlesheets.service';
+import { Sanphams } from '../../shared/mockdata/sanpham';
+import { ConvertDriveData } from '../../shared/utils/shared.utils';
 
 @Component({
   selector: 'app-danhmuc',
@@ -52,16 +51,18 @@ export class DanhmucComponent {
       {name: 'Danh sách sản phẩm', link: '/listsanpham'},
     ]
     
-    const ListSheets = JSON.parse(localStorage.getItem('ListSheets') || '[]');
-    if (ListSheets.length > 0) {
-      const CheckSheet = ListSheets.find((v:any) => v.SheetName === 'Danhmuc');
-      if (CheckSheet) {
-        this._GoogleSheetService.getDrive(CheckSheet).then(result => {
-          if(result.values.length>0)
-          {
-            this.Danhmucs = ConvertDriveData(result.values).filter((v:any)=>v.Type=="sanpham");;
-          }
-        });
+    if (typeof localStorage !== 'undefined') {
+      const ListSheets = JSON.parse(localStorage.getItem('ListSheets') || '[]');
+      if (ListSheets.length > 0) {
+        const CheckSheet = ListSheets.find((v:any) => v.SheetName === 'Danhmuc');
+        if (CheckSheet) {
+          this._GoogleSheetService.getDrive(CheckSheet).then(result => {
+            if(result.values.length>0)
+            {
+              this.Danhmucs = ConvertDriveData(result.values).filter((v:any)=>v.Type=="sanpham");;
+            }
+          });
+        }
       }
     }
 

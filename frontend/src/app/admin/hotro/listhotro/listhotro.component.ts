@@ -1,26 +1,25 @@
-import { TemplateRef , Component, inject, ViewChild, Inject, PLATFORM_ID, ChangeDetectionStrategy, signal } from '@angular/core';
-import { isPlatformBrowser} from '@angular/common';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, Inject, PLATFORM_ID, signal, TemplateRef, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { Forms, ListHotro, ListType } from './listhotro';
-import { MatMenuModule } from '@angular/material/menu';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { HotrosService } from './listhotro.service';
-import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { AdminmainComponent } from '../../adminmain/adminmain.component';
-import { MatSnackBar} from '@angular/material/snack-bar';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AdminmainComponent } from '../../adminmain/adminmain.component';
 import { UserService } from '../../user/user.service';
+import { ListHotro, ListType } from './listhotro';
+import { HotrosService } from './listhotro.service';
 @Component({
   selector: 'app-listhotro',
   templateUrl: './listhotro.component.html',
@@ -68,7 +67,7 @@ export class ListHotroComponent {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     if (isPlatformBrowser(this.platformId)) {
-      this.FilterColumns = JSON.parse(localStorage.getItem('hotro_FilterColumns') || '[]');
+      // Move localStorage access to ngOnInit or initializeColumns
     }
     this._AdminmainComponent.drawer1.close();
     this._AdminmainComponent.drawer.close();
@@ -79,6 +78,9 @@ export class ListHotroComponent {
   private _AdminmainComponent: AdminmainComponent = inject(AdminmainComponent);
   private _snackBar: MatSnackBar = inject(MatSnackBar);
   async ngOnInit(): Promise<void> {
+    if (isPlatformBrowser(this.platformId)) {
+      this.FilterColumns = JSON.parse(localStorage.getItem('hotro_FilterColumns') || '[]');
+    }
     this.profile = await this._UserService.getProfile();    
     await this._hotrosService.getAllHotro();
     this.ListHotro = this._hotrosService.ListHotro;
@@ -98,7 +100,9 @@ export class ListHotroComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('hotro_FilterColumns', JSON.stringify(this.FilterColumns));
+      if (isPlatformBrowser(this.platformId)) {
+        localStorage.setItem('hotro_FilterColumns', JSON.stringify(this.FilterColumns));
+      }
     }
 
     this.displayedColumns = this.FilterColumns.filter(v => v.isShow).map(item => item.key);
@@ -154,7 +158,9 @@ export class ListHotroComponent {
       return obj;
     }, {} as Record<string, string>);
     this.setupDataSource();
-    localStorage.setItem('hotro_FilterColumns', JSON.stringify(this.FilterColumns));
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('hotro_FilterColumns', JSON.stringify(this.FilterColumns));
+    }
   }
 
   doFilterColumns(event: any): void {

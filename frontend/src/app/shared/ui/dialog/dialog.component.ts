@@ -1,33 +1,33 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'ui-dialog',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
-    <div 
-      *ngIf="isOpen" 
-      class="fixed inset-0 z-50 flex items-center justify-center"
-      [@dialogAnimation]
-    >
-      <!-- Backdrop -->
-      <div 
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm"
-        (click)="handleBackdropClick()"
-      ></div>
-      
-      <!-- Dialog Content -->
-      <div 
-        [class]="dialogClasses"
-        role="dialog"
-        aria-modal="true"
-      >
-        <ng-content></ng-content>
+    @if (isOpen) {
+      <div
+        class="fixed inset-0 z-50 flex items-center justify-center"
+        [@dialogAnimation]
+        >
+        <!-- Backdrop -->
+        <div
+          class="fixed inset-0 bg-black/50 backdrop-blur-sm"
+          (click)="handleBackdropClick()"
+        ></div>
+        <!-- Dialog Content -->
+        <div
+          [class]="dialogClasses"
+          role="dialog"
+          aria-modal="true"
+          >
+          <ng-content></ng-content>
+        </div>
       </div>
-    </div>
-  `,
+    }
+    `,
   animations: [
     trigger('dialogAnimation', [
       transition(':enter', [
@@ -82,7 +82,7 @@ export class DialogComponent {
 @Component({
   selector: 'ui-dialog-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="flex flex-col space-y-1.5 text-center sm:text-left mb-4">
       <ng-content></ng-content>
@@ -94,7 +94,7 @@ export class DialogHeaderComponent {}
 @Component({
   selector: 'ui-dialog-title',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <h2 class="text-lg font-semibold leading-none tracking-tight">
       <ng-content></ng-content>
@@ -106,7 +106,7 @@ export class DialogTitleComponent {}
 @Component({
   selector: 'ui-dialog-description',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <p class="text-sm text-slate-500">
       <ng-content></ng-content>
@@ -118,7 +118,7 @@ export class DialogDescriptionComponent {}
 @Component({
   selector: 'ui-dialog-footer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-6 gap-2">
       <ng-content></ng-content>

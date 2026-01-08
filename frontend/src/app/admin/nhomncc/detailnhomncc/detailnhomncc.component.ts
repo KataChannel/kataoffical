@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ListNhomnccComponent } from '../listnhomncc/listnhomncc.component';
 import { NhomnccService } from '../nhomncc.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -21,18 +21,17 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
   @Component({
     selector: 'app-detailnhomncc',
     imports: [
-      MatFormFieldModule,
-      MatInputModule,
-      FormsModule,
-      MatIconModule,
-      MatButtonModule,
-      MatSelectModule,
-      MatDialogModule,
-      CommonModule,
-      MatSlideToggleModule,
-      MatMenuModule,
-      MatProgressSpinnerModule
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSlideToggleModule,
+    MatMenuModule,
+    MatProgressSpinnerModule
+],
     templateUrl: './detailnhomncc.component.html',
     styleUrls: ['./detailnhomncc.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush

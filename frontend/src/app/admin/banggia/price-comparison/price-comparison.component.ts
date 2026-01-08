@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,7 +44,6 @@ interface TrendPrediction {
   selector: 'app-price-comparison',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatCardModule,
     MatButtonModule,
@@ -56,7 +55,7 @@ interface TrendPrediction {
     MatTooltipModule,
     MatTabsModule,
     MatCheckboxModule
-  ],
+],
   templateUrl: './price-comparison.component.html',
   styleUrls: ['./price-comparison.component.scss']
 })

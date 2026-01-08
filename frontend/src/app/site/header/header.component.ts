@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { CommonModule } from '@angular/common';
+
 import { StorageService } from '../../shared/utils/storage.service';
 import { Headerteamplate1Component } from './headerteamplate1/headerteamplate1.component';
 import { Headerteamplate2Component } from './headerteamplate2/headerteamplate2.component';
@@ -9,7 +9,6 @@ import { Headerteamplate3Component } from './headerteamplate3/headerteamplate3.c
 @Component({
   selector: 'app-header',
   imports: [
-    CommonModule,
     MatMenuModule,
     Headerteamplate1Component,
     Headerteamplate2Component,

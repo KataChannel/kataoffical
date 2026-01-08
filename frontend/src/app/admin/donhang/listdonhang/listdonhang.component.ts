@@ -1,47 +1,46 @@
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
 import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-  TemplateRef,
-  ViewChild,
+    ChangeDetectionStrategy,
+    Component,
+    inject,
+    signal,
+    TemplateRef,
+    ViewChild,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DonhangService } from '../donhang.service';
-import { MatMenuModule } from '@angular/material/menu';
+import { Router, RouterOutlet } from '@angular/router';
+import moment from 'moment';
+import { CancelOrderService } from '../../../shared/services/cancel-order.service';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 import {
-  readExcelFileNoWorker,
-  writeExcelFileWithSheets,
+    readExcelFileNoWorker,
+    writeExcelFileWithSheets,
 } from '../../../shared/utils/exceldrive.utils';
 import { GenId } from '../../../shared/utils/shared.utils';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import moment from 'moment';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { KhachhangService } from '../../khachhang/khachhang.service';
-import { BanggiaService } from '../../banggia/banggia.service';
-import { SanphamService } from '../../sanpham/sanpham.service';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
-import { SharepaginationComponent } from '../../../shared/common/sharepagination/sharepagination.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { GraphqlService } from '../../../shared/services/graphql.service';
-import { CancelOrderService } from '../../../shared/services/cancel-order.service';
+import { BanggiaService } from '../../banggia/banggia.service';
+import { KhachhangService } from '../../khachhang/khachhang.service';
+import { SanphamService } from '../../sanpham/sanpham.service';
+import { DonhangService } from '../donhang.service';
 @Component({
   selector: 'app-listdonhang',
   templateUrl: './listdonhang.component.html',
@@ -96,9 +95,7 @@ export class ListDonhangComponent {
     actions: 'Thao Tác',
     lydohuy: 'Lý Do Hủy',
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('DonhangColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   isLoading = signal<boolean>(false);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -427,6 +424,9 @@ export class ListDonhangComponent {
 
   async ngOnInit(): Promise<void> {
     this.isLoading.set(true);
+    if (typeof localStorage !== 'undefined') {
+      this.FilterColumns = JSON.parse(localStorage.getItem('DonhangColFilter') || '[]');
+    }
     try {
       this.initializeColumns();
       this.setupDrawer();
@@ -454,10 +454,12 @@ export class ListDonhangComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem(
-        'DonhangColFilter',
-        JSON.stringify(this.FilterColumns)
-      );
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(
+          'DonhangColFilter',
+          JSON.stringify(this.FilterColumns)
+        );
+      }
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -489,10 +491,12 @@ export class ListDonhangComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem(
-      'DonhangColFilter',
-      JSON.stringify(this.FilterColumns)
-    );
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(
+        'DonhangColFilter',
+        JSON.stringify(this.FilterColumns)
+      );
+    }
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();

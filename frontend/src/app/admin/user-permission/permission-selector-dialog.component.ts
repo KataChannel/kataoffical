@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -55,7 +55,6 @@ export interface PermissionSelectorResult {
   selector: 'app-permission-selector-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatDialogModule,
     MatButtonModule,
@@ -67,7 +66,7 @@ export interface PermissionSelectorResult {
     MatChipsModule,
     MatDividerModule,
     MatTooltipModule
-  ],
+],
   template: `
 <div mat-dialog-title class="w-full !flex !items-center !bg-gradient-to-r !from-blue-50 !to-indigo-50 !p-6 !rounded-t-lg">
    <mat-icon class="mr-3 text-blue-600 text-2xl">security</mat-icon>

@@ -164,9 +164,7 @@ export class NhucaudathangComponent {
   //   SLGiao: 'SL Giao (Khách)',
   //   goiy: 'Gợi Ý',
   // };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('NhucauColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
 
   // Pagination
@@ -238,13 +236,11 @@ export class NhucaudathangComponent {
   }
 
   async ngOnInit(): Promise<void> {
+    if (typeof localStorage !== 'undefined') {
+      this.FilterColumns = JSON.parse(localStorage.getItem('NhucauColFilter') || '[]');
+      this.loadTempEditsFromStorage();
+    }
     // ✅ Initialize date range to today
-    const today = new Date();
-    this.batdau = new Date(today);
-    this.ketthuc = new Date(today);
-
-    // Load temporary edits from localStorage
-    this.loadTempEditsFromStorage();
 
     this.updateDisplayData();
     this.loadDonhangWithRelations();
@@ -714,10 +710,12 @@ export class NhucaudathangComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem(
-        'NhucauColFilter',
-        JSON.stringify(this.FilterColumns)
-      );
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(
+          'NhucauColFilter',
+          JSON.stringify(this.FilterColumns)
+        );
+      }
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -843,7 +841,9 @@ export class NhucaudathangComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('NhucauColFilter', JSON.stringify(this.FilterColumns));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('NhucauColFilter', JSON.stringify(this.FilterColumns));
+    }
   }
 
   doFilterColumns(event: any): void {
@@ -2511,6 +2511,7 @@ export class NhucaudathangComponent {
    * Load temporary edits from localStorage
    */
   loadTempEditsFromStorage(): void {
+    if (typeof localStorage === 'undefined') return;
     try {
       const storedData = localStorage.getItem(this.STORAGE_KEY);
       if (storedData) {
@@ -2527,6 +2528,7 @@ export class NhucaudathangComponent {
    * Save temporary edits to localStorage
    */
   saveTempEditsToStorage(): void {
+    if (typeof localStorage === 'undefined') return;
     try {
       const dataToStore = Object.fromEntries(this.tempStorage);
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(dataToStore));

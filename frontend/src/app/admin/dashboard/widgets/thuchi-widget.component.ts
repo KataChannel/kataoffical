@@ -65,10 +65,12 @@ const GET_THUCHI_SUMMARY = gql`
           </div>
           <div>
             <h3 class="font-bold text-gray-900 text-base leading-tight">Quản lý Thu Chi</h3>
-            <p class="text-xs text-gray-500 font-medium" *ngIf="!loading()">Báo cáo dòng tiền tháng này</p>
+            @if (!loading()) {
+              <p class="text-xs text-gray-500 font-medium">Báo cáo dòng tiền tháng này</p>
+            }
           </div>
         </div>
-        
+    
         <div class="flex items-center gap-2">
           @if (!loading() && !error() && stats().choDuyet > 0) {
             <div class="flex items-center gap-1.5 px-2 py-1 bg-amber-50 rounded-full border border-amber-100 animate-pulse">
@@ -81,7 +83,7 @@ const GET_THUCHI_SUMMARY = gql`
           </button>
         </div>
       </div>
-      
+    
       <div class="p-4">
         <!-- Loading State -->
         @if (loading()) {
@@ -104,7 +106,7 @@ const GET_THUCHI_SUMMARY = gql`
             </div>
           </div>
         }
-
+    
         <!-- Error State -->
         @if (error()) {
           <div class="py-12 text-center">
@@ -113,7 +115,7 @@ const GET_THUCHI_SUMMARY = gql`
             <ui-button variant="outline" size="sm" (click)="refresh()">Thử lại</ui-button>
           </div>
         }
-
+    
         <!-- Content -->
         @if (!loading() && !error()) {
           <!-- Quick Stats -->
@@ -127,7 +129,7 @@ const GET_THUCHI_SUMMARY = gql`
               </div>
               <div class="absolute -right-2 -bottom-2 text-emerald-200/30 text-3xl opacity-0 group-hover:opacity-100 transition-opacity">📈</div>
             </div>
-            
+    
             <div class="relative overflow-hidden p-3 rounded-2xl bg-rose-50 border border-rose-100/50 group hover:shadow-sm transition-all">
               <div class="relative z-10">
                 <div class="text-[9px] uppercase font-black text-rose-400 tracking-wider mb-0.5">Tổng Chi</div>
@@ -137,46 +139,46 @@ const GET_THUCHI_SUMMARY = gql`
               </div>
               <div class="absolute -right-2 -bottom-2 text-rose-200/30 text-3xl opacity-0 group-hover:opacity-100 transition-opacity">📉</div>
             </div>
-            
-            <div class="relative overflow-hidden p-3 rounded-2xl border transition-all" 
-                 [class.bg-blue-50]="stats().chenhLech >= 0"
-                 [class.border-blue-100]="stats().chenhLech >= 0"
-                 [class.bg-amber-50]="stats().chenhLech < 0"
-                 [class.border-amber-100]="stats().chenhLech < 0">
+    
+            <div class="relative overflow-hidden p-3 rounded-2xl border transition-all"
+              [class.bg-blue-50]="stats().chenhLech >= 0"
+              [class.border-blue-100]="stats().chenhLech >= 0"
+              [class.bg-amber-50]="stats().chenhLech < 0"
+              [class.border-amber-100]="stats().chenhLech < 0">
               <div class="relative z-10">
                 <div class="text-[9px] uppercase font-black tracking-wider mb-0.5"
-                     [class.text-blue-400]="stats().chenhLech >= 0"
-                     [class.text-amber-400]="stats().chenhLech < 0">Dư cuối</div>
+                  [class.text-blue-400]="stats().chenhLech >= 0"
+                [class.text-amber-400]="stats().chenhLech < 0">Dư cuối</div>
                 <div class="text-xs font-black truncate"
-                     [class.text-blue-700]="stats().chenhLech >= 0"
-                     [class.text-amber-700]="stats().chenhLech < 0">
+                  [class.text-blue-700]="stats().chenhLech >= 0"
+                  [class.text-amber-700]="stats().chenhLech < 0">
                   {{ formatCurrency(stats().chenhLech) }}
                 </div>
               </div>
             </div>
           </div>
-
+    
           <!-- Empty State -->
           @if (list().length === 0) {
             <div class="py-12 text-center bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
-               <div class="w-16 h-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-4 text-2xl">
+              <div class="w-16 h-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-4 text-2xl">
                 📄
-               </div>
-               <h4 class="font-bold text-gray-900 text-sm mb-1">Chưa có giao dịch</h4>
-               <p class="text-xs text-gray-500">Dữ liệu thu chi tháng này đang trống</p>
+              </div>
+              <h4 class="font-bold text-gray-900 text-sm mb-1">Chưa có giao dịch</h4>
+              <p class="text-xs text-gray-500">Dữ liệu thu chi tháng này đang trống</p>
             </div>
           }
-
+    
           <!-- Recent Transactions -->
           @if (list().length > 0) {
             <div class="flex items-center justify-between mb-3 px-1">
               <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Giao dịch gần đây</h4>
               <button (click)="viewAll()" class="text-[10px] font-bold text-violet-600 hover:underline">Chi tiết</button>
             </div>
-            
+    
             <div class="space-y-2 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
               @for (phieu of list(); track phieu.id) {
-                <div 
+                <div
                   class="group flex items-center justify-between p-3.5 bg-white border border-gray-50 hover:border-violet-200 rounded-xl hover:bg-violet-50/30 transition-all duration-300 cursor-pointer"
                   (click)="viewDetail(phieu.id)">
                   <div class="flex-1 min-w-0">
@@ -203,7 +205,7 @@ const GET_THUCHI_SUMMARY = gql`
                     </div>
                   </div>
                   <div class="text-right">
-                    <div 
+                    <div
                       class="text-sm font-black tracking-tight"
                       [class.text-emerald-600]="phieu.loai === 'THU'"
                       [class.text-rose-600]="phieu.loai === 'CHI'">
@@ -213,10 +215,10 @@ const GET_THUCHI_SUMMARY = gql`
                 </div>
               }
             </div>
-
+    
             <!-- View All Bar -->
             <div class="mt-4 pt-2">
-              <button 
+              <button
                 (click)="viewAll()"
                 class="w-full py-2.5 rounded-xl border border-dashed border-gray-200 text-xs font-bold text-gray-500 hover:border-violet-400 hover:text-violet-600 hover:bg-violet-50/30 transition-all flex items-center justify-center gap-2">
                 <span>QUẢN LÝ TỔNG HỢP</span>
@@ -227,7 +229,7 @@ const GET_THUCHI_SUMMARY = gql`
         }
       </div>
     </div>
-  `,
+    `,
 })
 export class ThuchiWidgetComponent implements OnInit {
   loading = signal(true);

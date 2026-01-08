@@ -1,18 +1,18 @@
-import { Component, inject, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, inject, Inject, Input, PLATFORM_ID, SimpleChanges, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu'
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-dynamictable',
   templateUrl: './dynamictable.component.html',
@@ -39,9 +39,7 @@ export class DynamictableComponent {
   @Input() ColumnName:any = {};
 //   displayedColumns: string[] = [];
 //   ColumnName: any = {};
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('NhacungcapColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   isFilter: boolean = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -50,7 +48,7 @@ export class DynamictableComponent {
   filterValues: { [key: string]: string } = {};
   private _router: Router = inject(Router)
   dataSource = new MatTableDataSource([]);
-  constructor() {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
   ngOnChanges(changes: SimpleChanges) {
     console.log('Dữ liệu từ cha thay đổi:', changes['ListItem'].currentValue);
     this.ListItem = changes['ListItem'].currentValue
@@ -58,6 +56,11 @@ export class DynamictableComponent {
     console.log(this.dataSource.data);
   }
   async ngOnInit(): Promise<void> {   
+    if (isPlatformBrowser(this.platformId)) {
+      this.FilterColumns = JSON.parse(
+        localStorage.getItem('NhacungcapColFilter') || '[]'
+      );
+    }
     this.dataSource = new MatTableDataSource([]);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort
@@ -80,8 +83,9 @@ export class DynamictableComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('NhacungcapColFilter',JSON.stringify(this.FilterColumns)
-      );
+      if (isPlatformBrowser(this.platformId)) {
+        localStorage.setItem('NhacungcapColFilter',JSON.stringify(this.FilterColumns));
+      }
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -177,8 +181,9 @@ export class DynamictableComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('NhacungcapColFilter',JSON.stringify(this.FilterColumns)
-    );
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('NhacungcapColFilter',JSON.stringify(this.FilterColumns));
+    }
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();

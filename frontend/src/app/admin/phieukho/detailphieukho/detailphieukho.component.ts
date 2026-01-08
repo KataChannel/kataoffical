@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ListPhieukhoComponent } from '../listphieukho/listphieukho.component';
 import { PhieukhoService } from '../phieukho.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -24,17 +24,16 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
   @Component({
     selector: 'app-detailphieukho',
     imports: [
-      MatFormFieldModule,
-      MatInputModule,
-      FormsModule,
-      MatIconModule,
-      MatButtonModule,
-      MatSelectModule,
-      MatDialogModule,
-      CommonModule,
-      MatSlideToggleModule,
-      MatDatepickerModule
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSlideToggleModule,
+    MatDatepickerModule
+],
     // providers:[provideNativeDateAdapter()],
     templateUrl: './detailphieukho.component.html',
     styleUrl: './detailphieukho.component.scss'

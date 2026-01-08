@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,7 +14,6 @@ import { UserService } from '../../../../admin/user/user.service';
   selector: 'app-account',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormsModule,
     MatFormFieldModule,
@@ -27,7 +26,7 @@ import { UserService } from '../../../../admin/user/user.service';
     RouterOutlet,
     RouterLink,
     RouterLinkActive
-  ],
+],
   templateUrl: './account.component.html',
   styleUrls: ['./account.component.css']
 })

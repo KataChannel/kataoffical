@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { AfterViewInit, Component, Inject, OnInit, ViewChild, computed } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -29,7 +29,6 @@ interface ImportPreviewData {
   selector: 'app-import-preview-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
@@ -42,7 +41,7 @@ interface ImportPreviewData {
     MatChipsModule,
     MatExpansionModule,
     MatCardModule
-  ],
+],
   templateUrl: './import-preview-dialog.component.html',
   styleUrl: './import-preview-dialog.component.scss'
 })

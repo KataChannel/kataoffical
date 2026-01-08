@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -14,13 +14,12 @@ import {
   selector: 'app-confirm-order',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     CardComponent,
     CardContentComponent,
     SkeletonComponent,
-    ErrorStateComponent,
-  ],
+    ErrorStateComponent
+],
   templateUrl: './confirm-order.component.html',
   styleUrls: ['./confirm-order.component.scss']
 })

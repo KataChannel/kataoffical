@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BreadscrumbComponent } from '../../shared/common/breadscrumb/breadscrumb.component';
@@ -20,7 +20,6 @@ import { DateHelpers } from '../../shared/utils/date-helpers';
 @Component({
   selector: 'app-lienhe',
   imports: [
-    CommonModule,
     BreadscrumbComponent,
     MatTabsModule,
     MatExpansionModule,
@@ -30,7 +29,7 @@ import { DateHelpers } from '../../shared/utils/date-helpers';
     MatDatepickerModule,
     FormsModule,
     MatButtonModule
-  ],
+],
   // providers: [provideNativeDateAdapter()],
   templateUrl: './lienhe.component.html',
   styleUrl: './lienhe.component.scss'

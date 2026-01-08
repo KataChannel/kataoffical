@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -50,7 +50,6 @@ interface PriceChangeNotification {
   selector: 'app-price-alerts',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatCardModule,
@@ -66,7 +65,7 @@ interface PriceChangeNotification {
     MatSnackBarModule,
     MatDialogModule,
     MatExpansionModule
-  ],
+],
   templateUrl: './price-alerts.component.html',
   styleUrls: ['./price-alerts.component.scss']
 })

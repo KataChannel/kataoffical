@@ -45,9 +45,9 @@ import { PermissionGraphQLService, Permission } from '../permission/permission-g
       <div class="header mb-4">
         <div class="flex justify-between items-center">
           <h2 class="text-xl font-bold">Quản Lý Quyền Đặc Biệt</h2>
-          <button 
-            mat-raised-button 
-            color="primary" 
+          <button
+            mat-raised-button
+            color="primary"
             (click)="openAssignDialog()"
             [disabled]="!userId() || isLoading()">
             <mat-icon>add</mat-icon>
@@ -58,19 +58,19 @@ import { PermissionGraphQLService, Permission } from '../permission/permission-g
           Quản lý các quyền đặc biệt cho user này (sẽ ghi đè quyền từ roles)
         </p>
       </div>
-
+    
       <!-- Filters -->
       <div class="filters mb-4 p-4 bg-gray-50 rounded">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <mat-form-field appearance="outline">
             <mat-label>Tìm kiếm quyền</mat-label>
-            <input matInput 
+            <input matInput
               [(ngModel)]="searchTerm"
               (input)="onSearchChange()"
               placeholder="Tên quyền...">
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
-
+    
           <mat-form-field appearance="outline">
             <mat-label>Loại quyền</mat-label>
             <mat-select [(ngModel)]="selectedType" (selectionChange)="loadUserPermissions()">
@@ -79,7 +79,7 @@ import { PermissionGraphQLService, Permission } from '../permission/permission-g
               <mat-option value="denied">Bị từ chối</mat-option>
             </mat-select>
           </mat-form-field>
-
+    
           <mat-form-field appearance="outline">
             <mat-label>Trạng thái</mat-label>
             <mat-select [(ngModel)]="selectedStatus" (selectionChange)="loadUserPermissions()">
@@ -88,7 +88,7 @@ import { PermissionGraphQLService, Permission } from '../permission/permission-g
               <mat-option value="expired">Đã hết hạn</mat-option>
             </mat-select>
           </mat-form-field>
-
+    
           <div class="flex items-end">
             <button mat-stroked-button (click)="clearFilters()">
               <mat-icon>clear</mat-icon>
@@ -97,226 +97,235 @@ import { PermissionGraphQLService, Permission } from '../permission/permission-g
           </div>
         </div>
       </div>
-
+    
       <!-- Loading State -->
-      <div *ngIf="isLoading()" class="text-center py-8">
-        <mat-spinner class="mx-auto"></mat-spinner>
-        <p class="mt-4 text-gray-600">Đang tải dữ liệu...</p>
-      </div>
-
+      @if (isLoading()) {
+        <div class="text-center py-8">
+          <mat-spinner class="mx-auto"></mat-spinner>
+          <p class="mt-4 text-gray-600">Đang tải dữ liệu...</p>
+        </div>
+      }
+    
       <!-- Error State -->
-      <div *ngIf="error()" class="text-center py-8">
-        <mat-icon class="text-red-500 text-4xl">error</mat-icon>
-        <p class="mt-2 text-red-600">{{ error() }}</p>
-        <button mat-raised-button color="primary" (click)="loadUserPermissions()" class="mt-4">
-          Thử lại
-        </button>
-      </div>
-
+      @if (error()) {
+        <div class="text-center py-8">
+          <mat-icon class="text-red-500 text-4xl">error</mat-icon>
+          <p class="mt-2 text-red-600">{{ error() }}</p>
+          <button mat-raised-button color="primary" (click)="loadUserPermissions()" class="mt-4">
+            Thử lại
+          </button>
+        </div>
+      }
+    
       <!-- Data Table -->
-      <div *ngIf="!isLoading() && !error()" class="table-container">
-        <table mat-table [dataSource]="displayedPermissions()" matSort class="w-full">
-          <!-- Permission Name Column -->
-          <ng-container matColumnDef="permission">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="font-bold">Quyền</th>
-            <td mat-cell *matCellDef="let element" class="py-3">
-              <div class="flex flex-col">
-                <span class="font-medium">{{ element.permission?.name }}</span>
-                <span class="text-sm text-gray-500">{{ element.permission?.description }}</span>
-              </div>
-            </td>
-          </ng-container>
-
-          <!-- Type Column -->
-          <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef class="font-bold">Loại</th>
-            <td mat-cell *matCellDef="let element" class="py-3">
-              <span [class]="element.isGranted ? 'bg-green-100 text-green-800 px-2 py-1 rounded text-xs' : 'bg-red-100 text-red-800 px-2 py-1 rounded text-xs'">
-                {{ element.isGranted ? 'Được cấp' : 'Bị từ chối' }}
-              </span>
-            </td>
-          </ng-container>
-
-          <!-- Granted By Column -->
-          <ng-container matColumnDef="grantedBy">
-            <th mat-header-cell *matHeaderCellDef class="font-bold">Người cấp</th>
-            <td mat-cell *matCellDef="let element" class="py-3">
-              {{ element.grantedByUser?.name || element.grantedByUser?.email || 'N/A' }}
-            </td>
-          </ng-container>
-
-          <!-- Granted Date Column -->
-          <ng-container matColumnDef="grantedAt">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="font-bold">Ngày cấp</th>
-            <td mat-cell *matCellDef="let element" class="py-3">
-              {{ element.grantedAt | date:'dd/MM/yyyy HH:mm' }}
-            </td>
-          </ng-container>
-
-          <!-- Expires At Column -->
-          <ng-container matColumnDef="expiresAt">
-            <th mat-header-cell *matHeaderCellDef class="font-bold">Hết hạn</th>
-            <td mat-cell *matCellDef="let element" class="py-3">
-              <div *ngIf="element.expiresAt; else noExpiry">
-                <span [class]="isExpired(element.expiresAt) ? 'text-red-600 font-medium' : 'text-gray-700'">
-                  {{ element.expiresAt | date:'dd/MM/yyyy HH:mm' }}
+      @if (!isLoading() && !error()) {
+        <div class="table-container">
+          <table mat-table [dataSource]="displayedPermissions()" matSort class="w-full">
+            <!-- Permission Name Column -->
+            <ng-container matColumnDef="permission">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="font-bold">Quyền</th>
+              <td mat-cell *matCellDef="let element" class="py-3">
+                <div class="flex flex-col">
+                  <span class="font-medium">{{ element.permission?.name }}</span>
+                  <span class="text-sm text-gray-500">{{ element.permission?.description }}</span>
+                </div>
+              </td>
+            </ng-container>
+            <!-- Type Column -->
+            <ng-container matColumnDef="type">
+              <th mat-header-cell *matHeaderCellDef class="font-bold">Loại</th>
+              <td mat-cell *matCellDef="let element" class="py-3">
+                <span [class]="element.isGranted ? 'bg-green-100 text-green-800 px-2 py-1 rounded text-xs' : 'bg-red-100 text-red-800 px-2 py-1 rounded text-xs'">
+                  {{ element.isGranted ? 'Được cấp' : 'Bị từ chối' }}
                 </span>
-                <span *ngIf="isExpired(element.expiresAt)" class="block text-xs text-red-500">Đã hết hạn</span>
-              </div>
-              <ng-template #noExpiry>
-                <span class="text-green-600 text-sm">Vĩnh viễn</span>
-              </ng-template>
-            </td>
-          </ng-container>
-
-          <!-- Reason Column -->
-          <ng-container matColumnDef="reason">
-            <th mat-header-cell *matHeaderCellDef class="font-bold">Lý do</th>
-            <td mat-cell *matCellDef="let element" class="py-3 max-w-xs">
-              <span class="text-sm text-gray-700 line-clamp-2" [title]="element.reason">
-                {{ element.reason || 'Không có ghi chú' }}
-              </span>
-            </td>
-          </ng-container>
-
-          <!-- Actions Column -->
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef class="font-bold">Thao tác</th>
-            <td mat-cell *matCellDef="let element" class="py-3">
-              <button mat-icon-button 
-                [matMenuTriggerFor]="actionMenu"
-                [disabled]="processingPermission() === element.id">
-                <mat-icon *ngIf="processingPermission() !== element.id">more_vert</mat-icon>
-                <mat-spinner *ngIf="processingPermission() === element.id" diameter="20"></mat-spinner>
+              </td>
+            </ng-container>
+            <!-- Granted By Column -->
+            <ng-container matColumnDef="grantedBy">
+              <th mat-header-cell *matHeaderCellDef class="font-bold">Người cấp</th>
+              <td mat-cell *matCellDef="let element" class="py-3">
+                {{ element.grantedByUser?.name || element.grantedByUser?.email || 'N/A' }}
+              </td>
+            </ng-container>
+            <!-- Granted Date Column -->
+            <ng-container matColumnDef="grantedAt">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="font-bold">Ngày cấp</th>
+              <td mat-cell *matCellDef="let element" class="py-3">
+                {{ element.grantedAt | date:'dd/MM/yyyy HH:mm' }}
+              </td>
+            </ng-container>
+            <!-- Expires At Column -->
+            <ng-container matColumnDef="expiresAt">
+              <th mat-header-cell *matHeaderCellDef class="font-bold">Hết hạn</th>
+              <td mat-cell *matCellDef="let element" class="py-3">
+                @if (element.expiresAt) {
+                  <div>
+                    <span [class]="isExpired(element.expiresAt) ? 'text-red-600 font-medium' : 'text-gray-700'">
+                      {{ element.expiresAt | date:'dd/MM/yyyy HH:mm' }}
+                    </span>
+                    @if (isExpired(element.expiresAt)) {
+                      <span class="block text-xs text-red-500">Đã hết hạn</span>
+                    }
+                  </div>
+                } @else {
+                  <span class="text-green-600 text-sm">Vĩnh viễn</span>
+                }
+              </td>
+            </ng-container>
+            <!-- Reason Column -->
+            <ng-container matColumnDef="reason">
+              <th mat-header-cell *matHeaderCellDef class="font-bold">Lý do</th>
+              <td mat-cell *matCellDef="let element" class="py-3 max-w-xs">
+                <span class="text-sm text-gray-700 line-clamp-2" [title]="element.reason">
+                  {{ element.reason || 'Không có ghi chú' }}
+                </span>
+              </td>
+            </ng-container>
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="font-bold">Thao tác</th>
+              <td mat-cell *matCellDef="let element" class="py-3">
+                <button mat-icon-button
+                  [matMenuTriggerFor]="actionMenu"
+                  [disabled]="processingPermission() === element.id">
+                  @if (processingPermission() !== element.id) {
+                    <mat-icon>more_vert</mat-icon>
+                  }
+                  @if (processingPermission() === element.id) {
+                    <mat-spinner diameter="20"></mat-spinner>
+                  }
+                </button>
+                <mat-menu #actionMenu="matMenu">
+                  <button mat-menu-item (click)="editPermission(element)">
+                    <mat-icon>edit</mat-icon>
+                    Chỉnh sửa
+                  </button>
+                  <button mat-menu-item (click)="revokePermission(element)" class="text-red-600">
+                    <mat-icon>delete</mat-icon>
+                    Thu hồi quyền
+                  </button>
+                </mat-menu>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+            [class.opacity-50]="isExpired(row.expiresAt)"></tr>
+          </table>
+          <!-- No Data State -->
+          @if (displayedPermissions().length === 0) {
+            <div class="text-center py-8">
+              <mat-icon class="text-gray-400 text-4xl">assignment_ind</mat-icon>
+              <p class="mt-2 text-gray-600">Không có quyền đặc biệt nào được cấp</p>
+              <button mat-raised-button color="primary" (click)="openAssignDialog()" class="mt-4">
+                Thêm quyền đầu tiên
               </button>
-              
-              <mat-menu #actionMenu="matMenu">
-                <button mat-menu-item (click)="editPermission(element)">
-                  <mat-icon>edit</mat-icon>
-                  Chỉnh sửa
-                </button>
-                <button mat-menu-item (click)="revokePermission(element)" class="text-red-600">
-                  <mat-icon>delete</mat-icon>
-                  Thu hồi quyền
-                </button>
-              </mat-menu>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
-              [class.opacity-50]="isExpired(row.expiresAt)"></tr>
-        </table>
-
-        <!-- No Data State -->
-        <div *ngIf="displayedPermissions().length === 0" class="text-center py-8">
-          <mat-icon class="text-gray-400 text-4xl">assignment_ind</mat-icon>
-          <p class="mt-2 text-gray-600">Không có quyền đặc biệt nào được cấp</p>
-          <button mat-raised-button color="primary" (click)="openAssignDialog()" class="mt-4">
-            Thêm quyền đầu tiên
-          </button>
+            </div>
+          }
+          <!-- Pagination -->
+          @if (displayedPermissions().length > 0) {
+            <mat-paginator
+              [length]="totalCount()"
+              [pageSize]="pageSize()"
+              [pageSizeOptions]="[5, 10, 25, 50]"
+              (page)="onPageChange($event)"
+              showFirstLastButtons>
+            </mat-paginator>
+          }
         </div>
-
-        <!-- Pagination -->
-        <mat-paginator 
-          *ngIf="displayedPermissions().length > 0"
-          [length]="totalCount()"
-          [pageSize]="pageSize()"
-          [pageSizeOptions]="[5, 10, 25, 50]"
-          (page)="onPageChange($event)"
-          showFirstLastButtons>
-        </mat-paginator>
-      </div>
-
+      }
+    
       <!-- Statistics -->
-      <div *ngIf="!isLoading() && !error()" class="statistics mt-6 p-4 bg-blue-50 rounded">
-        <h3 class="font-semibold mb-2">Thống kê</h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div>
-            <span class="text-gray-600">Tổng quyền:</span>
-            <span class="font-semibold ml-1">{{ statistics().total }}</span>
-          </div>
-          <div>
-            <span class="text-gray-600">Được cấp:</span>
-            <span class="font-semibold ml-1 text-green-600">{{ statistics().granted }}</span>
-          </div>
-          <div>
-            <span class="text-gray-600">Bị từ chối:</span>
-            <span class="font-semibold ml-1 text-red-600">{{ statistics().denied }}</span>
-          </div>
-          <div>
-            <span class="text-gray-600">Đã hết hạn:</span>
-            <span class="font-semibold ml-1 text-orange-600">{{ statistics().expired }}</span>
+      @if (!isLoading() && !error()) {
+        <div class="statistics mt-6 p-4 bg-blue-50 rounded">
+          <h3 class="font-semibold mb-2">Thống kê</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div>
+              <span class="text-gray-600">Tổng quyền:</span>
+              <span class="font-semibold ml-1">{{ statistics().total }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">Được cấp:</span>
+              <span class="font-semibold ml-1 text-green-600">{{ statistics().granted }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">Bị từ chối:</span>
+              <span class="font-semibold ml-1 text-red-600">{{ statistics().denied }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">Đã hết hạn:</span>
+              <span class="font-semibold ml-1 text-orange-600">{{ statistics().expired }}</span>
+            </div>
           </div>
         </div>
-      </div>
+      }
     </div>
-
+    
     <!-- Assign Permission Dialog -->
-    <div *ngIf="showAssignDialog()" 
-         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-         (click)="closeAssignDialog()">
-      <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4" (click)="$event.stopPropagation()">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold">{{ editingPermission() ? 'Chỉnh sửa quyền' : 'Thêm quyền mới' }}</h3>
-          <button mat-icon-button (click)="closeAssignDialog()">
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
-
-        <form (ngSubmit)="handleAssignPermission()">
-          <div class="space-y-4">
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Chọn quyền</mat-label>
-              <mat-select [(ngModel)]="assignForm.permissionId" name="permissionId" required>
-                <mat-option value="">-- Chọn quyền --</mat-option>
-                <mat-option *ngFor="let permission of availablePermissions()" [value]="permission.id">
-                  {{ permission.name }} - {{ permission.description }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Loại quyền</mat-label>
-              <mat-select [(ngModel)]="assignForm.isGranted" name="isGranted" required>
-                <mat-option [value]="true">Cấp quyền</mat-option>
-                <mat-option [value]="false">Từ chối quyền</mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Ngày hết hạn (tùy chọn)</mat-label>
-              <input matInput [matDatepicker]="picker" [(ngModel)]="assignForm.expiresAt" name="expiresAt">
-              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Lý do</mat-label>
-              <textarea matInput 
-                [(ngModel)]="assignForm.reason" 
-                name="reason"
-                rows="3"
+    @if (showAssignDialog()) {
+      <div
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        (click)="closeAssignDialog()">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4" (click)="$event.stopPropagation()">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">{{ editingPermission() ? 'Chỉnh sửa quyền' : 'Thêm quyền mới' }}</h3>
+            <button mat-icon-button (click)="closeAssignDialog()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+          <form (ngSubmit)="handleAssignPermission()">
+            <div class="space-y-4">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Chọn quyền</mat-label>
+                <mat-select [(ngModel)]="assignForm.permissionId" name="permissionId" required>
+                  <mat-option value="">-- Chọn quyền --</mat-option>
+                  @for (permission of availablePermissions(); track permission) {
+                    <mat-option [value]="permission.id">
+                      {{ permission.name }} - {{ permission.description }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Loại quyền</mat-label>
+                <mat-select [(ngModel)]="assignForm.isGranted" name="isGranted" required>
+                  <mat-option [value]="true">Cấp quyền</mat-option>
+                  <mat-option [value]="false">Từ chối quyền</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Ngày hết hạn (tùy chọn)</mat-label>
+                <input matInput [matDatepicker]="picker" [(ngModel)]="assignForm.expiresAt" name="expiresAt">
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Lý do</mat-label>
+                <textarea matInput
+                  [(ngModel)]="assignForm.reason"
+                  name="reason"
+                  rows="3"
                 placeholder="Nhập lý do cấp/từ chối quyền này..."></textarea>
-            </mat-form-field>
-          </div>
-
-          <div class="flex justify-end space-x-2 mt-6">
-            <button type="button" mat-stroked-button (click)="closeAssignDialog()">
-              Hủy
-            </button>
-            <button type="submit" 
-              mat-raised-button 
-              color="primary"
-              [disabled]="!assignForm.permissionId || isAssigning()">
-              <mat-spinner *ngIf="isAssigning()" diameter="20" class="mr-2"></mat-spinner>
-              {{ editingPermission() ? 'Cập nhật' : 'Thêm quyền' }}
-            </button>
-          </div>
-        </form>
+              </mat-form-field>
+            </div>
+            <div class="flex justify-end space-x-2 mt-6">
+              <button type="button" mat-stroked-button (click)="closeAssignDialog()">
+                Hủy
+              </button>
+              <button type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="!assignForm.permissionId || isAssigning()">
+                @if (isAssigning()) {
+                  <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                }
+                {{ editingPermission() ? 'Cập nhật' : 'Thêm quyền' }}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
-  `,
+    }
+    `,
   styleUrls: []
 })
 export class UserPermissionManagementComponent {

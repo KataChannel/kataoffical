@@ -73,7 +73,7 @@ const GET_BAO_CAO_DONG_TIEN = gql`
           </ui-button>
         </div>
       </div>
-
+    
       <!-- Filters -->
       <ui-card class="mb-6">
         <ui-card-content>
@@ -85,7 +85,7 @@ const GET_BAO_CAO_DONG_TIEN = gql`
                 [(ngModel)]="tuNgay"
                 (change)="loadData()"
                 class="w-full h-10 rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-950"
-              />
+                />
             </div>
             <div>
               <label class="block text-sm font-medium mb-2">Đến ngày</label>
@@ -94,7 +94,7 @@ const GET_BAO_CAO_DONG_TIEN = gql`
                 [(ngModel)]="denNgay"
                 (change)="loadData()"
                 class="w-full h-10 rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-950"
-              />
+                />
             </div>
             <div>
               <label class="block text-sm font-medium mb-2">Nhóm theo</label>
@@ -102,7 +102,7 @@ const GET_BAO_CAO_DONG_TIEN = gql`
                 [(ngModel)]="groupBy"
                 (change)="loadData()"
                 class="w-full h-10 rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-950"
-              >
+                >
                 <option value="day">Ngày</option>
                 <option value="week">Tuần</option>
                 <option value="month">Tháng</option>
@@ -111,7 +111,7 @@ const GET_BAO_CAO_DONG_TIEN = gql`
           </div>
         </ui-card-content>
       </ui-card>
-
+    
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <ui-card>
@@ -120,26 +120,26 @@ const GET_BAO_CAO_DONG_TIEN = gql`
             <h3 class="text-3xl font-bold text-success mt-2">{{ formatCurrency(summary().tongThu) }}</h3>
           </ui-card-content>
         </ui-card>
-
+    
         <ui-card>
           <ui-card-content class="p-6">
             <p class="text-sm font-medium text-muted-foreground">Tổng chi</p>
             <h3 class="text-3xl font-bold text-destructive mt-2">{{ formatCurrency(summary().tongChi) }}</h3>
           </ui-card-content>
         </ui-card>
-
+    
         <ui-card>
           <ui-card-content class="p-6">
             <p class="text-sm font-medium text-muted-foreground">Chênh lệch</p>
             <h3 class="text-3xl font-bold mt-2"
-                [class.text-success]="summary().chenhLech >= 0"
-                [class.text-destructive]="summary().chenhLech < 0">
+              [class.text-success]="summary().chenhLech >= 0"
+              [class.text-destructive]="summary().chenhLech < 0">
               {{ formatCurrency(summary().chenhLech) }}
             </h3>
           </ui-card-content>
         </ui-card>
       </div>
-
+    
       <!-- Chart -->
       <ui-card class="mb-6">
         <ui-card-header>
@@ -147,32 +147,32 @@ const GET_BAO_CAO_DONG_TIEN = gql`
         </ui-card-header>
         <ui-card-content>
           <div class="h-64 sm:h-96 flex items-end justify-around gap-2 border-b border-l p-4">
-            <div *ngFor="let item of data()" class="flex-1 flex flex-col items-center gap-2">
-              <!-- Thu bar -->
-              <div class="w-full relative">
-                <div 
-                  class="w-full bg-success rounded-t transition-all duration-300"
-                  [style.height.px]="getBarHeight(item.thu)"
-                  [title]="'Thu: ' + formatCurrency(item.thu)"
-                ></div>
+            @for (item of data(); track item) {
+              <div class="flex-1 flex flex-col items-center gap-2">
+                <!-- Thu bar -->
+                <div class="w-full relative">
+                  <div
+                    class="w-full bg-success rounded-t transition-all duration-300"
+                    [style.height.px]="getBarHeight(item.thu)"
+                    [title]="'Thu: ' + formatCurrency(item.thu)"
+                  ></div>
+                </div>
+                <!-- Chi bar -->
+                <div class="w-full relative">
+                  <div
+                    class="w-full bg-destructive rounded-t transition-all duration-300"
+                    [style.height.px]="getBarHeight(item.chi)"
+                    [title]="'Chi: ' + formatCurrency(item.chi)"
+                  ></div>
+                </div>
+                <!-- Label -->
+                <span class="text-xs text-muted-foreground text-center">
+                  {{ formatDate(item.ngay) }}
+                </span>
               </div>
-              
-              <!-- Chi bar -->
-              <div class="w-full relative">
-                <div 
-                  class="w-full bg-destructive rounded-t transition-all duration-300"
-                  [style.height.px]="getBarHeight(item.chi)"
-                  [title]="'Chi: ' + formatCurrency(item.chi)"
-                ></div>
-              </div>
-              
-              <!-- Label -->
-              <span class="text-xs text-muted-foreground text-center">
-                {{ formatDate(item.ngay) }}
-              </span>
-            </div>
+            }
           </div>
-          
+    
           <!-- Legend -->
           <div class="flex justify-center gap-6 mt-4">
             <div class="flex items-center gap-2">
@@ -186,7 +186,7 @@ const GET_BAO_CAO_DONG_TIEN = gql`
           </div>
         </ui-card-content>
       </ui-card>
-
+    
       <!-- Table -->
       <ui-card>
         <ui-card-header>
@@ -195,29 +195,31 @@ const GET_BAO_CAO_DONG_TIEN = gql`
         <ui-card-content class="p-0">
           <!-- Mobile view -->
           <div class="md:hidden divide-y">
-            <div *ngFor="let item of data()" class="p-4">
-              <div class="font-medium mb-2">{{ formatDate(item.ngay) }}</div>
-              <div class="grid grid-cols-2 gap-2 text-sm">
-                <div>
-                  <span class="text-muted-foreground">Thu:</span>
-                  <span class="font-semibold text-success ml-2">{{ formatCurrency(item.thu) }}</span>
+            @for (item of data(); track item) {
+              <div class="p-4">
+                <div class="font-medium mb-2">{{ formatDate(item.ngay) }}</div>
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <span class="text-muted-foreground">Thu:</span>
+                    <span class="font-semibold text-success ml-2">{{ formatCurrency(item.thu) }}</span>
+                  </div>
+                  <div>
+                    <span class="text-muted-foreground">Chi:</span>
+                    <span class="font-semibold text-destructive ml-2">{{ formatCurrency(item.chi) }}</span>
+                  </div>
                 </div>
-                <div>
-                  <span class="text-muted-foreground">Chi:</span>
-                  <span class="font-semibold text-destructive ml-2">{{ formatCurrency(item.chi) }}</span>
+                <div class="mt-2 pt-2 border-t">
+                  <span class="text-muted-foreground text-sm">Chênh lệch:</span>
+                  <span class="font-bold ml-2"
+                    [class.text-success]="getChenhLech(item) >= 0"
+                    [class.text-destructive]="getChenhLech(item) < 0">
+                    {{ formatCurrency(getChenhLech(item)) }}
+                  </span>
                 </div>
               </div>
-              <div class="mt-2 pt-2 border-t">
-                <span class="text-muted-foreground text-sm">Chênh lệch:</span>
-                <span class="font-bold ml-2"
-                      [class.text-success]="getChenhLech(item) >= 0"
-                      [class.text-destructive]="getChenhLech(item) < 0">
-                  {{ formatCurrency(getChenhLech(item)) }}
-                </span>
-              </div>
-            </div>
+            }
           </div>
-
+    
           <!-- Desktop table -->
           <div class="hidden md:block overflow-x-auto">
             <table class="w-full">
@@ -231,26 +233,28 @@ const GET_BAO_CAO_DONG_TIEN = gql`
                 </tr>
               </thead>
               <tbody class="divide-y">
-                <tr *ngFor="let item of data()" class="hover:bg-slate-50">
-                  <td class="px-4 py-3 text-sm font-medium">{{ formatDate(item.ngay) }}</td>
-                  <td class="px-4 py-3 text-sm text-right text-success font-semibold">
-                    {{ formatCurrency(item.thu) }}
-                  </td>
-                  <td class="px-4 py-3 text-sm text-right text-destructive font-semibold">
-                    {{ formatCurrency(item.chi) }}
-                  </td>
-                  <td class="px-4 py-3 text-sm text-right font-bold"
+                @for (item of data(); track item) {
+                  <tr class="hover:bg-slate-50">
+                    <td class="px-4 py-3 text-sm font-medium">{{ formatDate(item.ngay) }}</td>
+                    <td class="px-4 py-3 text-sm text-right text-success font-semibold">
+                      {{ formatCurrency(item.thu) }}
+                    </td>
+                    <td class="px-4 py-3 text-sm text-right text-destructive font-semibold">
+                      {{ formatCurrency(item.chi) }}
+                    </td>
+                    <td class="px-4 py-3 text-sm text-right font-bold"
                       [class.text-success]="getChenhLech(item) >= 0"
                       [class.text-destructive]="getChenhLech(item) < 0">
-                    {{ formatCurrency(getChenhLech(item)) }}
-                  </td>
-                  <td class="px-4 py-3 text-sm text-center">
-                    <span class="inline-block px-2 py-1 rounded-full text-xs"
-                          [ngClass]="getRatioClass(item)">
-                      {{ getRatioText(item) }}
-                    </span>
-                  </td>
-                </tr>
+                      {{ formatCurrency(getChenhLech(item)) }}
+                    </td>
+                    <td class="px-4 py-3 text-sm text-center">
+                      <span class="inline-block px-2 py-1 rounded-full text-xs"
+                        [ngClass]="getRatioClass(item)">
+                        {{ getRatioText(item) }}
+                      </span>
+                    </td>
+                  </tr>
+                }
               </tbody>
               <tfoot class="border-t-2 bg-slate-50 font-semibold">
                 <tr>
@@ -262,8 +266,8 @@ const GET_BAO_CAO_DONG_TIEN = gql`
                     {{ formatCurrency(summary().tongChi) }}
                   </td>
                   <td class="px-4 py-3 text-sm text-right"
-                      [class.text-success]="summary().chenhLech >= 0"
-                      [class.text-destructive]="summary().chenhLech < 0">
+                    [class.text-success]="summary().chenhLech >= 0"
+                    [class.text-destructive]="summary().chenhLech < 0">
                     {{ formatCurrency(summary().chenhLech) }}
                   </td>
                   <td class="px-4 py-3"></td>
@@ -274,7 +278,7 @@ const GET_BAO_CAO_DONG_TIEN = gql`
         </ui-card-content>
       </ui-card>
     </div>
-  `
+    `
 })
 export class BaocaoDongtienComponent implements OnInit {
   loading = signal<boolean>(false);

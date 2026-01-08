@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 
 export interface ToastData {
@@ -13,7 +13,7 @@ export interface ToastData {
 @Component({
   selector: 'ui-toast',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   animations: [
     trigger('toastAnimation', [
       state('void', style({
@@ -29,33 +29,36 @@ export interface ToastData {
     ])
   ],
   template: `
-    <div 
-      *ngIf="show()"
-      @toastAnimation
-      [class]="toastClasses"
-      role="alert"
-    >
-      <div class="flex gap-3">
-        <div class="flex-shrink-0 text-xl">
-          {{ getIcon() }}
-        </div>
-        <div class="flex-1 min-w-0">
-          <h5 *ngIf="data.title" class="font-semibold text-sm mb-1">
-            {{ data.title }}
-          </h5>
-          <p class="text-sm opacity-90">
-            {{ data.description }}
-          </p>
-        </div>
-        <button 
-          (click)="close()"
-          class="flex-shrink-0 text-current opacity-70 hover:opacity-100 transition-opacity"
+    @if (show()) {
+      <div
+        @toastAnimation
+        [class]="toastClasses"
+        role="alert"
         >
-          ✕
-        </button>
+        <div class="flex gap-3">
+          <div class="flex-shrink-0 text-xl">
+            {{ getIcon() }}
+          </div>
+          <div class="flex-1 min-w-0">
+            @if (data.title) {
+              <h5 class="font-semibold text-sm mb-1">
+                {{ data.title }}
+              </h5>
+            }
+            <p class="text-sm opacity-90">
+              {{ data.description }}
+            </p>
+          </div>
+          <button
+            (click)="close()"
+            class="flex-shrink-0 text-current opacity-70 hover:opacity-100 transition-opacity"
+            >
+            ✕
+          </button>
+        </div>
       </div>
-    </div>
-  `,
+    }
+    `,
   styles: [`
     :host {
       display: block;
@@ -117,18 +120,19 @@ export class ToastComponent {
 @Component({
   selector: 'ui-toast-container',
   standalone: true,
-  imports: [CommonModule, ToastComponent],
+  imports: [ToastComponent],
   template: `
     <div class="fixed bottom-0 right-0 z-50 p-4 sm:p-6 max-w-full pointer-events-none">
       <div class="pointer-events-auto">
-        <ui-toast
-          *ngFor="let toast of toasts(); trackBy: trackByFn"
-          [data]="toast"
-          (closed)="removeToast(toast.id!)"
-        ></ui-toast>
+        @for (toast of toasts(); track trackByFn($index, toast)) {
+          <ui-toast
+            [data]="toast"
+            (closed)="removeToast(toast.id!)"
+          ></ui-toast>
+        }
       </div>
     </div>
-  `
+    `
 })
 export class ToastContainerComponent {
   toasts = signal<ToastData[]>([]);

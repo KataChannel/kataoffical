@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -10,13 +10,12 @@ import { convertToSlug } from '../../../utils/shared.utils';
     selector: 'app-updatedialog',
     standalone:true,
     imports: [
-        CommonModule,
-        MatFormFieldModule,
-        FormsModule,
-        MatInputModule,
-        MatDialogModule,
-        MatSelectModule
-    ],
+    MatFormFieldModule,
+    FormsModule,
+    MatInputModule,
+    MatDialogModule,
+    MatSelectModule
+],
     templateUrl: './updatedialog.component.html',
     styleUrl: './updatedialog.component.scss'
 })

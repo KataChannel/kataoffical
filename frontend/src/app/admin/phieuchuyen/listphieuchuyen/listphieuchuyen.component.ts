@@ -1,29 +1,28 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, TemplateRef, ViewChild } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, effect, inject, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
-import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
-import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
-import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { DonhangService } from '../../donhang/donhang.service';
+import { Router, RouterOutlet } from '@angular/router';
 import moment from 'moment';
-import { MatDatepickerModule } from '@angular/material/datepicker';
+import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { DateHelpers } from '../../../shared/utils/date-helpers';
+import { writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
+import { DonhangService } from '../../donhang/donhang.service';
 @Component({
   selector: 'app-listphieuchuyen',
   templateUrl: './listphieuchuyen.component.html',
@@ -86,9 +85,7 @@ export class ListPhieuchuyenComponent {
     giove: 'Giờ về',
     kynhan: 'Ký nhận',
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('PhieuchuyenColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   Trangthaidon: any = TrangThaiDon;
   //pagination
@@ -147,6 +144,9 @@ export class ListPhieuchuyenComponent {
   }
   
   async ngOnInit(): Promise<void> {    
+    if (typeof localStorage !== 'undefined') {
+      this.FilterColumns = JSON.parse(localStorage.getItem('PhieuchuyenColFilter') || '[]');
+    }
     // 🔥 AUTO-LOAD: Tự động load dữ liệu trong ngày khi vào trang
     this.updateDisplayData();
     this.initializeColumns();
@@ -185,8 +185,9 @@ export class ListPhieuchuyenComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('PhieuchuyenColFilter',JSON.stringify(this.FilterColumns)
-      );
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('PhieuchuyenColFilter',JSON.stringify(this.FilterColumns));
+      }
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -284,8 +285,9 @@ export class ListPhieuchuyenComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('PhieuchuyenColFilter',JSON.stringify(this.FilterColumns)
-    );
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('PhieuchuyenColFilter', JSON.stringify(this.FilterColumns));
+    }
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();

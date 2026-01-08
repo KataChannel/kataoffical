@@ -8,9 +8,10 @@
     <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>
     </button>
-    
+
     <!-- ERP Status Badge -->
-    <div *ngIf="DetailDonhang()?.soStatus" class="px-2 py-1 rounded text-xs font-bold uppercase"
+    @if (DetailDonhang()?.soStatus) {
+      <div class="px-2 py-1 rounded text-xs font-bold uppercase"
          [ngClass]="{
            'bg-gray-100 text-gray-600': DetailDonhang().soStatus === 'MOI',
            'bg-blue-100 text-blue-600': DetailDonhang().soStatus === 'DA_GIAO_THUC_TE',
@@ -18,63 +19,72 @@
            'bg-amber-100 text-amber-600': DetailDonhang().soStatus === 'CHO_THU_TIEN',
            'bg-emerald-100 text-emerald-600': DetailDonhang().soStatus === 'DA_THU_TIEN'
          }">
-      {{ DetailDonhang().soStatus }}
-    </div>
+        {{ DetailDonhang().soStatus }}
+      </div>
+    }
 
     <!-- ERP Action Buttons -->
-    <ng-container *ngIf="!isEdit() && DetailDonhang()?.id">
-       <!-- 1. Confirm Delivery (MOI -> DA_GIAO_THUC_TE) -->
-       <button mat-flat-button color="primary" 
-               *ngIf="!DetailDonhang().soStatus || DetailDonhang().soStatus === 'MOI'"
-               [disabled]="isERPActionLoading()"
-               (click)="xacNhanGiaoThucTe()">
-         Xác nhận giao
-       </button>
-
-       <!-- 2. Reconcile (DA_GIAO_THUC_TE -> DA_DOI_CHIEU) -->
-       <button mat-flat-button color="accent" 
-               *ngIf="DetailDonhang().soStatus === 'DA_GIAO_THUC_TE'"
-               [disabled]="isERPActionLoading()"
-               (click)="doiChieu()">
-         Đối chiếu (Kế toán)
-       </button>
-    </ng-container>
+    @if (!isEdit() && DetailDonhang()?.id) {
+      <!-- 1. Confirm Delivery (MOI -> DA_GIAO_THUC_TE) -->
+      @if (!DetailDonhang().soStatus || DetailDonhang().soStatus === 'MOI') {
+        <button mat-flat-button color="primary"
+          [disabled]="isERPActionLoading()"
+          (click)="xacNhanGiaoThucTe()">
+          Xác nhận giao
+        </button>
+      }
+      <!-- 2. Reconcile (DA_GIAO_THUC_TE -> DA_DOI_CHIEU) -->
+      @if (DetailDonhang().soStatus === 'DA_GIAO_THUC_TE') {
+        <button mat-flat-button color="accent"
+          [disabled]="isERPActionLoading()"
+          (click)="doiChieu()">
+          Đối chiếu (Kế toán)
+        </button>
+      }
+    }
     <!-- Invoice Buttons -->
-    <ng-container *ngIf="!isEdit() && DetailDonhang()?.id">
+    @if (!isEdit() && DetailDonhang()?.id) {
       <!-- If already exported, show view button -->
-      <button mat-icon-button color="primary" *ngIf="DetailDonhang()?.xuatHoaDon"
-              (click)="goToInvoice()"
-              matTooltip="Xem hóa đơn điện tử">
-        <mat-icon class="text-green-600">description</mat-icon>
-      </button>
-      
+      @if (DetailDonhang()?.xuatHoaDon) {
+        <button mat-icon-button color="primary"
+          (click)="goToInvoice()"
+          matTooltip="Xem hóa đơn điện tử">
+          <mat-icon class="text-green-600">description</mat-icon>
+        </button>
+      }
       <!-- If not exported yet, show export button -->
-      <button mat-icon-button color="accent" *ngIf="!DetailDonhang()?.xuatHoaDon"
-              [disabled]="DetailDonhang().soStatus !== 'DA_DOI_CHIEU' && DetailDonhang().soStatus !== 'CHO_THU_TIEN' && DetailDonhang().soStatus !== 'DA_THU_TIEN'"
-              (click)="xuatHoaDon()" 
-              [matTooltip]="(DetailDonhang().soStatus === 'DA_DOI_CHIEU' || DetailDonhang().soStatus === 'CHO_THU_TIEN' || DetailDonhang().soStatus === 'DA_THU_TIEN') ? 'Xuất hóa đơn điện tử' : 'Vui lòng ĐỐI CHIẾU trước khi xuất hóa đơn'">
-        <mat-icon [class.opacity-30]="DetailDonhang().soStatus !== 'DA_DOI_CHIEU' && DetailDonhang().soStatus !== 'CHO_THU_TIEN' && DetailDonhang().soStatus !== 'DA_THU_TIEN'">receipt_long</mat-icon>
-      </button>
-    </ng-container>
+      @if (!DetailDonhang()?.xuatHoaDon) {
+        <button mat-icon-button color="accent"
+          [disabled]="DetailDonhang().soStatus !== 'DA_DOI_CHIEU' && DetailDonhang().soStatus !== 'CHO_THU_TIEN' && DetailDonhang().soStatus !== 'DA_THU_TIEN'"
+          (click)="xuatHoaDon()"
+          [matTooltip]="(DetailDonhang().soStatus === 'DA_DOI_CHIEU' || DetailDonhang().soStatus === 'CHO_THU_TIEN' || DetailDonhang().soStatus === 'DA_THU_TIEN') ? 'Xuất hóa đơn điện tử' : 'Vui lòng ĐỐI CHIẾU trước khi xuất hóa đơn'">
+          <mat-icon [class.opacity-30]="DetailDonhang().soStatus !== 'DA_DOI_CHIEU' && DetailDonhang().soStatus !== 'CHO_THU_TIEN' && DetailDonhang().soStatus !== 'DA_THU_TIEN'">receipt_long</mat-icon>
+        </button>
+      }
+    }
     <!-- <button mat-icon-button color="primary" (click)="printContent()">
-      <mat-icon>print</mat-icon>
-    </button> -->
-    <!-- @if(!DetailDonhang().status || DetailDonhang().status === 'dadat' || DetailDonhang().status === 'dagiao') { -->
-    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleDonhangAction()">
+    <mat-icon>print</mat-icon>
+  </button> -->
+  <!-- @if(!DetailDonhang().status || DetailDonhang().status === 'dadat' || DetailDonhang().status === 'dagiao') { -->
+  @if (isEdit()) {
+    <button mat-icon-button color="primary" (click)="handleDonhangAction()">
       <mat-icon>save</mat-icon>
     </button>
-    <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
+  }
+  @if (!isEdit()) {
+    <button mat-icon-button color="primary" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
-    <!-- <button mat-icon-button color="warn" *ngIf="!isEdit()" (click)="toggleDelete()">
-      <mat-icon>delete</mat-icon>
-    </button> -->
-    <!-- } -->
-  </div>
+  }
+  <!-- <button mat-icon-button color="warn" *ngIf="!isEdit()" (click)="toggleDelete()">
+  <mat-icon>delete</mat-icon>
+</button> -->
+<!-- } -->
+</div>
 </div>
 
 <div class="relative flex flex-col w-full p-4 overflow-auto">
-  <ng-container *ngIf="isDelete()">
+  @if (isDelete()) {
     <div class="flex flex-col space-y-4 items-center justify-center">
       <div class="font-bold text-2xl">Bạn chắc chắn muốn xoá không?</div>
       <div class="flex flex-row space-x-2 items-center justify-center">
@@ -82,285 +92,303 @@
         <button mat-flat-button color="warn" (click)="toggleDelete()">Huỷ Bỏ</button>
       </div>
     </div>
-  </ng-container>
-  <ng-container *ngIf="!isDelete()">
+  }
+  @if (!isDelete()) {
     <div id="printContent" class="min-w-[800px] flex flex-col space-y-6 items-center p-2 border rounded-lg">
       <div class="w-full flex flex-col space-y-4 items-center justify-center">
-        <div *ngIf="!isEdit()" class="w-full flex flex-row space-x-2 items-center justify-between">
-          <img src="/images/logo.svg" class="h-20 mx-auto">
-          <div class="w-2/3 flex flex-col space-y-2">
-            <div class="font-bold text-[18px]">CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA</div>
-            <div>Hợp tác xã: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An</div>
-            <div>Văn phòng: Tòa nhà An Phú Plaza, 117-119 Lý Chính Thắng, P.7, Q.3, TP.HCM</div>
-            <div>Kho sơ chế: 30 Kha Vạn Cân, P. Hiệp Bình Chánh, TP. Thủ Đức, TP.HCM</div>
-            <div>Website: http://rausachtrangia.com - Hotline: 090.245.8081</div>
-          </div>
-        </div>
-
-        <div class="font-bold text-[18px] uppercase">Bảng Sao Kê Hàng Ngày</div>
-        <div class="font-bold text-[18px] uppercase {{DetailDonhang()?.khachhangId?'':'text-red-700 italic'}}">
-          {{DetailDonhang()?.khachhang?.name||"Chưa Chọn Khách Hàng"}}</div>
-        <div *ngIf="isEdit() && DetailDonhang()?.khachhang?.ghichu" class="p-2 rounded-lg border text-red-600"
-          [innerHTML]="DetailDonhang().khachhang.ghichu"></div>
-        <div *ngIf="isEdit()" class="grid lg:grid-cols-3 grid-cols-1 gap-4">
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Khách Hàng</mat-label>
-            <mat-select [(ngModel)]="DetailDonhang().khachhangId" [ngModelOptions]="{ standalone: true }"
-              (selectionChange)="SelectKhachhang($event)">
-              <div class="w-full flex flex-col">
-                <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
-                  <input matInput (input)="DoFindKhachhang($event)" placeholder="Tìm Kiếm"
-                    [disabled]="isLoadingKhachhang()" />
-                </mat-form-field>
-                <div class="overflow-y-auto max-h-44" *ngIf="!isLoadingKhachhang()">
-                  @for (item of filterKhachhang; track item.id) {
-                  <mat-option [value]="item.id">{{item.name}}</mat-option>
-                  }
-                  @empty {
-                  <mat-option disabled>Không có dữ liệu</mat-option>
-                  }
-                </div>
-              </div>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Bảng Giá</mat-label>
-            <mat-select [(ngModel)]="DetailDonhang().banggiaId" [ngModelOptions]="{ standalone: true }"
-              (selectionChange)="SelectBanggia($event)">
-              <div class="w-full flex flex-col">
-                <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
-                  <input matInput (input)="DoFindBanggia($event)" placeholder="Tìm Kiếm" />
-                </mat-form-field>
-                <div class="overflow-y-auto max-h-44">
-                  @for (item of filterBanggia; track item.id) {
-                  <mat-option [value]="item.id">
-                    {{item.title}}
-                  </mat-option>
-                  }
-                </div>
-              </div>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-            <mat-label>Ngày Giao Hàng</mat-label>
-            <input matInput [matDatepicker]="datepicker" [(ngModel)]="DetailDonhang().ngaygiao"
-              [ngModelOptions]="{ standalone: true }" />
-            <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
-            <mat-datepicker #datepicker></mat-datepicker>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-full lg:col-span-3" subscriptSizing="dynamic">
-            <mat-label>Ghi Chú Đơn Hàng</mat-label>
-            <textarea matInput [(ngModel)]="DetailDonhang().ghichu" [ngModelOptions]="{ standalone: true }"
-              placeholder="Vui lòng Nhập Ghi Chú"></textarea>
-          </mat-form-field>
-        </div>
-
-        <div class="w-full flex items-start"><strong>Địa Chỉ : </strong> {{DetailDonhang()?.khachhang?.diachi}}</div>
-        <div class="w-full flex items-start"><strong>Ghi Chú : </strong> {{DetailDonhang()?.ghichu}}</div>
-        <div class="w-full flex items-start"><strong>Số Điện Thoại : </strong> {{DetailDonhang()?.khachhang?.sdt}}</div>
-        <div class="w-full flex items-start"><strong>Tổng khối lượng :
-            {{TinhTong(DetailDonhang().sanpham,'slgiao')|number:'1.0-2'}}</strong> </div>
-
-        <div *ngIf="isEdit()" class="w-full flex flex-col overflow-y-auto">
-          @defer () {
-          <div
-            class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
-            <div class="w-full flex flex-row space-x-2 items-center">
-              <button mat-flat-button color="primary" [disabled]="!isEdit()" [matMenuTriggerFor]="menu"
-                #menuTrigger="matMenuTrigger">
-                <mat-icon>shopping_cart</mat-icon>
-                {{ListFilter.length}} Sản Phẩm Đã Chọn
-              </button>
-              <mat-menu #menu="matMenu">
-                <div (click)="$event.stopPropagation()" class="cursor-pointer flex flex-col space-y-4 p-3">
-                  <div class="bg-blue-50 p-2 rounded-lg">
-                    <div class="text-sm font-medium text-blue-800">Tình trạng sản phẩm:</div>
-                    <div class="text-xs text-blue-600">
-                      • {{ListFilter.length}} sản phẩm đã chọn
-                      • {{ListSanpham.length - ListFilter.length}} sản phẩm khả dụng
-                      • {{ListSanpham.length}} tổng sản phẩm
-                    </div>
-                  </div>
-                  <div class="relative w-full">
-                    <input type="text" placeholder="Tìm Kiếm..." (keyup)="doFilterSanpham($event)" #searchInput
-                      class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <span class="material-symbols-outlined text-gray-500">search</span>
-                    </div>
-                  </div>
-                  <div class="flex flex-row space-x-2 items-center justify-between">
-                    <div class="flex flex-row space-x-2 items-center">
-                      <span class="text-xs text-blue-600 underline" (click)="ChosenAll(ListSanpham)">Chọn Tất Cả
-                        ({{ListSanpham.length - ListFilter.length}} sản phẩm khả dụng)</span>
-                      <span class="text-xs text-red-600 underline" (click)="EmptyFiter()">Xoá Tất Cả</span>
-                    </div>
-
-                    <span class="text-xs text-green-600 underline" (click)="ResetFilter()">Làm Mới</span>
-                  </div>
-                  <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
-                    <div *ngFor="let item of getFilteredSanpham(); trackBy:trackByFn" (click)="ChosenItem(item)"
-                      class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100 cursor-pointer">
-                      <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-green-600">check_box</span>
-                      <span *ngIf="!CheckItem(item)" class="material-symbols-outlined text-gray-400">check_box_outline_blank</span>
-                      <div class="flex flex-col flex-1">
-                        <span class="font-medium">{{item.title || 'Chưa Có Tên'}}</span>
-                        <span class="text-xs text-gray-500">Mã: {{item.masp}} - ĐVT: {{item.dvt}}</span>
-                      </div>
-                    </div>
-                    <div *ngIf="ListSanpham.length === 0" class="text-center text-gray-500 p-4">
-                      Không có sản phẩm khả dụng
-                    </div>
-                  </div>
-                  <div class="flex flex-row space-x-2 items-end justify-end">
-                    <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
-                    <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)">Áp Dụng</button>
-                  </div>
-                </div>
-              </mat-menu>
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                <mat-label>Tìm Kiếm</mat-label>
-                <input matInput (keyup)="applyFilter($event)" placeholder="Tìm Kiếm" />
-              </mat-form-field>
-              <button [disabled]="!isEdit()" matTooltip="Làm Trống Giỏ Hàng" (click)="EmptyCart()" color="warn"
-                mat-icon-button>
-                <mat-icon>delete</mat-icon>
-              </button>
-
+        @if (!isEdit()) {
+          <div class="w-full flex flex-row space-x-2 items-center justify-between">
+            <img src="/images/logo.svg" class="h-20 mx-auto">
+            <div class="w-2/3 flex flex-col space-y-2">
+              <div class="font-bold text-[18px]">CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA</div>
+              <div>Hợp tác xã: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An</div>
+              <div>Văn phòng: Tòa nhà An Phú Plaza, 117-119 Lý Chính Thắng, P.7, Q.3, TP.HCM</div>
+              <div>Kho sơ chế: 30 Kha Vạn Cân, P. Hiệp Bình Chánh, TP. Thủ Đức, TP.HCM</div>
+              <div>Website: http://rausachtrangia.com - Hotline: 090.245.8081</div>
             </div>
           </div>
-          <div class="w-full overflow-auto">
-            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource()">
-              @for (column of displayedColumns; track column) {
-              <ng-container [matColumnDef]="column">
-                <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef>
-                  <span class="line-clamp-4 me-4">
-                    {{ ColumnName[column] }}
-                  </span>
-                </th>
-                <td mat-cell *matCellDef="let row; let idx = index">
-                  @switch (column) {
-                  @case ('STT') {
-                  <span class="max-w-20 line-clamp-4 flex flex-row items-center">
-                    <span>{{ idx + 1 }} </span>
-                    <button mat-icon-button color="warn"
-                      (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
-                  </span>
+        }
+        <div class="font-bold text-[18px] uppercase">Bảng Sao Kê Hàng Ngày</div>
+        <div class="font-bold text-[18px] uppercase {{DetailDonhang()?.khachhangId?'':'text-red-700 italic'}}">
+        {{DetailDonhang()?.khachhang?.name||"Chưa Chọn Khách Hàng"}}</div>
+        @if (isEdit() && DetailDonhang()?.khachhang?.ghichu) {
+          <div class="p-2 rounded-lg border text-red-600"
+          [innerHTML]="DetailDonhang().khachhang.ghichu"></div>
+        }
+        @if (isEdit()) {
+          <div class="grid lg:grid-cols-3 grid-cols-1 gap-4">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Khách Hàng</mat-label>
+              <mat-select [(ngModel)]="DetailDonhang().khachhangId" [ngModelOptions]="{ standalone: true }"
+                (selectionChange)="SelectKhachhang($event)">
+                <div class="w-full flex flex-col">
+                  <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
+                    <input matInput (input)="DoFindKhachhang($event)" placeholder="Tìm Kiếm"
+                      [disabled]="isLoadingKhachhang()" />
+                    </mat-form-field>
+                    @if (!isLoadingKhachhang()) {
+                      <div class="overflow-y-auto max-h-44">
+                        @for (item of filterKhachhang; track item.id) {
+                          <mat-option [value]="item.id">{{item.name}}</mat-option>
+                        }
+                        @empty {
+                        <mat-option disabled>Không có dữ liệu</mat-option>
+                      }
+                    </div>
                   }
-                  @case ('sldat') { @if(permissions?.includes('donhang.sldat')) {
-                  <div [contentEditable]="true" (focus)="onInputFocus($event)"
-                    (blur)="updateBlurValue($event,idx, row, 'sldat','number')"
-                    (keydown.enter)="updateValue($event,idx, row, 'sldat','number')"
-                    (keydown)="validateKeyInput($event, 'number')"
-                    class="sldat-input p-2 min-w-28 text-end bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
-                    {{ row[column]||0|number:'1.0-2' }}
+                </div>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Bảng Giá</mat-label>
+              <mat-select [(ngModel)]="DetailDonhang().banggiaId" [ngModelOptions]="{ standalone: true }"
+                (selectionChange)="SelectBanggia($event)">
+                <div class="w-full flex flex-col">
+                  <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
+                    <input matInput (input)="DoFindBanggia($event)" placeholder="Tìm Kiếm" />
+                  </mat-form-field>
+                  <div class="overflow-y-auto max-h-44">
+                    @for (item of filterBanggia; track item.id) {
+                      <mat-option [value]="item.id">
+                        {{item.title}}
+                      </mat-option>
+                    }
                   </div>
-                  } @else {
-                  <div class="text-end">{{ row[column]||0|number:'1.0-2' }}</div>
-                  }
-                  }
-                  @case ('slgiao') {
-                  <div class="text-end">{{ row[column]||0|number:'1.0-2' }}</div>
-                  }
-                  @case ('slnhan') {
-                  <div class="text-end">{{ row[column]||0|number:'1.0-2' }}</div>
-                  }
-                  @case ('ghichu') { <div [contentEditable]="true" (focus)="onInputFocus($event)"
-                    (blur)="updateBlurValue($event,idx, row, 'ghichu','string')"
-                    (keydown.enter)="updateValue($event,idx, row, 'ghichu','string')"
-                    (keydown)="validateKeyInput($event, 'string')"
-                    class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
-                    {{ row[column]||'' }}
-                  </div>
-                  }
-                  @default {
-                  <span class="max-w-40 line-clamp-4">
-                    {{ row[column] }}
-                  </span>
-                  }
-                  }
-                </td>
-              </ng-container>
-              }
-              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-              <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
-              </tr>
-            </table>
-            <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100,dataSource().data.length]" [pageSize]="dataSource().data.length"></mat-paginator> -->
-          </div>
+                </div>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+              <mat-label>Ngày Giao Hàng</mat-label>
+              <input matInput [matDatepicker]="datepicker" [(ngModel)]="DetailDonhang().ngaygiao"
+                [ngModelOptions]="{ standalone: true }" />
+                <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
+                <mat-datepicker #datepicker></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="w-full lg:col-span-3" subscriptSizing="dynamic">
+                <mat-label>Ghi Chú Đơn Hàng</mat-label>
+                <textarea matInput [(ngModel)]="DetailDonhang().ghichu" [ngModelOptions]="{ standalone: true }"
+                placeholder="Vui lòng Nhập Ghi Chú"></textarea>
+              </mat-form-field>
+            </div>
           }
-        </div>
-
-        <table *ngIf="!isEdit()" class="w-full border-collapse border mt-4">
-          <thead>
-            <tr class="border">
-              <th class="border p-2">STT</th>
-              <th class="border p-2">Tên sản phẩm</th>
-              <th class="border p-2">ĐVT</th>
-              <th class="border p-2">Giá Bán</th>
-              <th class="border p-2 max-w-10">SL Đặt</th>
-              <th class="border p-2 max-w-10">SL Giao</th>
-              <th class="border p-2 max-w-10">SL Nhận</th>
-              <th class="border p-2">Ghi chú</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (item of DetailDonhang().sanpham; track item.id; let idx = $index) {
-            <tr class="border">
-              <td class="border p-2 text-center">{{idx+1}}</td>
-              <td class="border p-2">{{item.title}}</td>
-              <td class="border p-2 text-center">{{item.dvt}}</td>
-              <td class="border p-2 text-center">
-                <ng-container *ngIf="DetailDonhang().soStatus === 'DA_GIAO_THUC_TE'; else viewGiaban">
-                  <input type="number" [(ngModel)]="item.giaban" class="w-20 text-end border p-1 rounded">
-                </ng-container>
-                <ng-template #viewGiaban>{{item.giaban|number:'1.0-2'}}</ng-template>
-              </td>
-              <td class="border p-2 text-end max-w-10">{{item.sldat|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-">{{item.slgiao|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-10">
-                <ng-container *ngIf="DetailDonhang().soStatus === 'DA_GIAO_THUC_TE'; else viewSlnhan">
-                  <input type="number" [(ngModel)]="item.slnhan" class="w-20 text-end border p-1 rounded">
-                </ng-container>
-                <ng-template #viewSlnhan>{{item.slnhan|number:'1.0-2'}}</ng-template>
-              </td>
-              <td class="border p-2">{{item.ghichu}}</td>
-            </tr>
+          <div class="w-full flex items-start"><strong>Địa Chỉ : </strong> {{DetailDonhang()?.khachhang?.diachi}}</div>
+          <div class="w-full flex items-start"><strong>Ghi Chú : </strong> {{DetailDonhang()?.ghichu}}</div>
+          <div class="w-full flex items-start"><strong>Số Điện Thoại : </strong> {{DetailDonhang()?.khachhang?.sdt}}</div>
+          <div class="w-full flex items-start"><strong>Tổng khối lượng :
+          {{TinhTong(DetailDonhang().sanpham,'slgiao')|number:'1.0-2'}}</strong> </div>
+          @if (isEdit()) {
+            <div class="w-full flex flex-col overflow-y-auto">
+              @defer () {
+              <div
+                class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
+                <div class="w-full flex flex-row space-x-2 items-center">
+                  <button mat-flat-button color="primary" [disabled]="!isEdit()" [matMenuTriggerFor]="menu"
+                    #menuTrigger="matMenuTrigger">
+                    <mat-icon>shopping_cart</mat-icon>
+                    {{ListFilter.length}} Sản Phẩm Đã Chọn
+                  </button>
+                  <mat-menu #menu="matMenu">
+                    <div (click)="$event.stopPropagation()" class="cursor-pointer flex flex-col space-y-4 p-3">
+                      <div class="bg-blue-50 p-2 rounded-lg">
+                        <div class="text-sm font-medium text-blue-800">Tình trạng sản phẩm:</div>
+                        <div class="text-xs text-blue-600">
+                          • {{ListFilter.length}} sản phẩm đã chọn
+                          • {{ListSanpham.length - ListFilter.length}} sản phẩm khả dụng
+                          • {{ListSanpham.length}} tổng sản phẩm
+                        </div>
+                      </div>
+                      <div class="relative w-full">
+                        <input type="text" placeholder="Tìm Kiếm..." (keyup)="doFilterSanpham($event)" #searchInput
+                          class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <span class="material-symbols-outlined text-gray-500">search</span>
+                          </div>
+                        </div>
+                        <div class="flex flex-row space-x-2 items-center justify-between">
+                          <div class="flex flex-row space-x-2 items-center">
+                            <span class="text-xs text-blue-600 underline" (click)="ChosenAll(ListSanpham)">Chọn Tất Cả
+                            ({{ListSanpham.length - ListFilter.length}} sản phẩm khả dụng)</span>
+                            <span class="text-xs text-red-600 underline" (click)="EmptyFiter()">Xoá Tất Cả</span>
+                          </div>
+                          <span class="text-xs text-green-600 underline" (click)="ResetFilter()">Làm Mới</span>
+                        </div>
+                        <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
+                          @for (item of getFilteredSanpham(); track trackByFn($index, item)) {
+                            <div (click)="ChosenItem(item)"
+                              class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100 cursor-pointer">
+                              @if (CheckItem(item)) {
+                                <span class="material-symbols-outlined text-green-600">check_box</span>
+                              }
+                              @if (!CheckItem(item)) {
+                                <span class="material-symbols-outlined text-gray-400">check_box_outline_blank</span>
+                              }
+                              <div class="flex flex-col flex-1">
+                                <span class="font-medium">{{item.title || 'Chưa Có Tên'}}</span>
+                                <span class="text-xs text-gray-500">Mã: {{item.masp}} - ĐVT: {{item.dvt}}</span>
+                              </div>
+                            </div>
+                          }
+                          @if (ListSanpham.length === 0) {
+                            <div class="text-center text-gray-500 p-4">
+                              Không có sản phẩm khả dụng
+                            </div>
+                          }
+                        </div>
+                        <div class="flex flex-row space-x-2 items-end justify-end">
+                          <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
+                          <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)">Áp Dụng</button>
+                        </div>
+                      </div>
+                    </mat-menu>
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                      <mat-label>Tìm Kiếm</mat-label>
+                      <input matInput (keyup)="applyFilter($event)" placeholder="Tìm Kiếm" />
+                    </mat-form-field>
+                    <button [disabled]="!isEdit()" matTooltip="Làm Trống Giỏ Hàng" (click)="EmptyCart()" color="warn"
+                      mat-icon-button>
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="w-full overflow-auto">
+                  <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource()">
+                    @for (column of displayedColumns; track column) {
+                      <ng-container [matColumnDef]="column">
+                        <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef>
+                          <span class="line-clamp-4 me-4">
+                            {{ ColumnName[column] }}
+                          </span>
+                        </th>
+                        <td mat-cell *matCellDef="let row; let idx = index">
+                          @switch (column) {
+                            @case ('STT') {
+                              <span class="max-w-20 line-clamp-4 flex flex-row items-center">
+                                <span>{{ idx + 1 }} </span>
+                                <button mat-icon-button color="warn"
+                                  (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
+                                </span>
+                              }
+                              @case ('sldat') { @if(permissions?.includes('donhang.sldat')) {
+                                <div [contentEditable]="true" (focus)="onInputFocus($event)"
+                                  (blur)="updateBlurValue($event,idx, row, 'sldat','number')"
+                                  (keydown.enter)="updateValue($event,idx, row, 'sldat','number')"
+                                  (keydown)="validateKeyInput($event, 'number')"
+                                  class="sldat-input p-2 min-w-28 text-end bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
+                                  {{ row[column]||0|number:'1.0-2' }}
+                                </div>
+                              } @else {
+                                <div class="text-end">{{ row[column]||0|number:'1.0-2' }}</div>
+                              }
+                            }
+                            @case ('slgiao') {
+                              <div class="text-end">{{ row[column]||0|number:'1.0-2' }}</div>
+                            }
+                            @case ('slnhan') {
+                              <div class="text-end">{{ row[column]||0|number:'1.0-2' }}</div>
+                            }
+                            @case ('ghichu') { <div [contentEditable]="true" (focus)="onInputFocus($event)"
+                              (blur)="updateBlurValue($event,idx, row, 'ghichu','string')"
+                              (keydown.enter)="updateValue($event,idx, row, 'ghichu','string')"
+                              (keydown)="validateKeyInput($event, 'string')"
+                              class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
+                              {{ row[column]||'' }}
+                            </div>
+                          }
+                          @default {
+                            <span class="max-w-40 line-clamp-4">
+                              {{ row[column] }}
+                            </span>
+                          }
+                        }
+                      </td>
+                    </ng-container>
+                  }
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                  <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
+                  </tr>
+                </table>
+                <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100,dataSource().data.length]" [pageSize]="dataSource().data.length"></mat-paginator> -->
+              </div>
             }
-            <tr class="border">
-              <td colspan="3" class="border p-2 text-start">Tổng:</td>
-              <td class="border p-2 text-end font-bold"></td>
-              <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'sldat')|number:'1.0-2'}}
-              </td>
-              <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'slgiao')|number:'1.0-2'}}
-              </td>
-              <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'slnhan')|number:'1.0-2'}}
-              </td>
-              <td class="border p-2 text-end"></td>
-            </tr>
-          </tbody>
-        </table>
-        <div *ngIf="!isEdit()" class="w-full text-end font-bold p-2">Ngày In:</div>
-        <div *ngIf="!isEdit()" class="w-full flex justify-between items-center text-center mt-6 p-2">
-          <p><strong>Người vận chuyển</strong></p>
-          <p><strong>Người nhận hàng</strong></p>
-          <p><strong>Thủ kho</strong></p>
-          <p><strong>Người lập</strong></p>
-        </div>
+          </div>
+        }
+        @if (!isEdit()) {
+          <table class="w-full border-collapse border mt-4">
+            <thead>
+              <tr class="border">
+                <th class="border p-2">STT</th>
+                <th class="border p-2">Tên sản phẩm</th>
+                <th class="border p-2">ĐVT</th>
+                <th class="border p-2">Giá Bán</th>
+                <th class="border p-2 max-w-10">SL Đặt</th>
+                <th class="border p-2 max-w-10">SL Giao</th>
+                <th class="border p-2 max-w-10">SL Nhận</th>
+                <th class="border p-2">Ghi chú</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of DetailDonhang().sanpham; track item.id; let idx = $index) {
+                <tr class="border">
+                  <td class="border p-2 text-center">{{idx+1}}</td>
+                  <td class="border p-2">{{item.title}}</td>
+                  <td class="border p-2 text-center">{{item.dvt}}</td>
+                  <td class="border p-2 text-center">
+                    @if (DetailDonhang().soStatus === 'DA_GIAO_THUC_TE') {
+                      <input type="number" [(ngModel)]="item.giaban" class="w-20 text-end border p-1 rounded">
+                    } @else {
+                      {{item.giaban|number:'1.0-2'}}
+                    }
+                    <ng-template #viewGiaban>{{item.giaban|number:'1.0-2'}}</ng-template>
+                  </td>
+                  <td class="border p-2 text-end max-w-10">{{item.sldat|number:'1.0-2'}}</td>
+                  <td class="border p-2 text-end max-w-">{{item.slgiao|number:'1.0-2'}}</td>
+                  <td class="border p-2 text-end max-w-10">
+                    @if (DetailDonhang().soStatus === 'DA_GIAO_THUC_TE') {
+                      <input type="number" [(ngModel)]="item.slnhan" class="w-20 text-end border p-1 rounded">
+                    } @else {
+                      {{item.slnhan|number:'1.0-2'}}
+                    }
+                    <ng-template #viewSlnhan>{{item.slnhan|number:'1.0-2'}}</ng-template>
+                  </td>
+                  <td class="border p-2">{{item.ghichu}}</td>
+                </tr>
+              }
+              <tr class="border">
+                <td colspan="3" class="border p-2 text-start">Tổng:</td>
+                <td class="border p-2 text-end font-bold"></td>
+                <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'sldat')|number:'1.0-2'}}
+                </td>
+                <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'slgiao')|number:'1.0-2'}}
+                </td>
+                <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'slnhan')|number:'1.0-2'}}
+                </td>
+                <td class="border p-2 text-end"></td>
+              </tr>
+            </tbody>
+          </table>
+        }
+        @if (!isEdit()) {
+          <div class="w-full text-end font-bold p-2">Ngày In:</div>
+        }
+        @if (!isEdit()) {
+          <div class="w-full flex justify-between items-center text-center mt-6 p-2">
+            <p><strong>Người vận chuyển</strong></p>
+            <p><strong>Người nhận hàng</strong></p>
+            <p><strong>Thủ kho</strong></p>
+            <p><strong>Người lập</strong></p>
+          </div>
+        }
         <!-- <div class="w-full flex justify-between items-center text-center !mt-20 p-2">
         <p><strong>Nguyễn Văn A</strong></p>
         <p><strong>Nguyễn Thị B</strong></p>
         <p><strong>Lê Văn C</strong></p>
         <p><strong>Ngô Thị D</strong></p>
       </div> -->
-
-      </div>
     </div>
-  </ng-container>
+  </div>
+}
 </div>
 
 
@@ -382,22 +410,24 @@
       <mat-icon class="text-amber-500 text-3xl">warning</mat-icon>
       <div class="text-lg font-medium">Xác nhận xóa sản phẩm</div>
     </div>
-    
+
     <div class="text-center">
       <div class="text-gray-700">Bạn có chắc chắn muốn xóa sản phẩm</div>
-      <div class="font-bold text-blue-600 mt-2" *ngIf="itemToRemove">
-        "{{ itemToRemove?.title || 'Không có tên' }}"
-      </div>
+      @if (itemToRemove) {
+        <div class="font-bold text-blue-600 mt-2">
+          "{{ itemToRemove?.title || 'Không có tên' }}"
+        </div>
+      }
       <div class="text-gray-700 mt-2">khỏi đơn hàng này?</div>
     </div>
-    
+
     <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
       <div class="text-sm text-yellow-800">
         <mat-icon class="text-yellow-600 text-sm mr-1">info</mat-icon>
         Hành động này sẽ xóa sản phẩm khỏi đơn hàng hiện tại và có thể được hoàn tác bằng cách thêm lại sản phẩm.
       </div>
     </div>
-    
+
     <div class="flex flex-row space-x-3 items-center justify-center">
       <button mat-flat-button color="warn" mat-dialog-close="confirm">
         <mat-icon>delete</mat-icon>

@@ -61,44 +61,45 @@
 
   <div class="bg-white border rounded p-4 mt-4">
     <h2 class="text-lg font-semibold mb-2">Changed Fields</h2>
-    <ng-container *ngIf="DetailAuditlog()?.changedFields?.length; else noChangedFields">
+    @if (DetailAuditlog()?.changedFields?.length) {
       <ul class="list-disc pl-5">
-        <li *ngFor="let field of DetailAuditlog()?.changedFields">{{ field }}</li>
+        @for (field of DetailAuditlog()?.changedFields; track field) {
+          <li>{{ field }}</li>
+        }
       </ul>
-    </ng-container>
-    <ng-template #noChangedFields>
+    } @else {
       <span class="text-gray-500">No changed fields</span>
-    </ng-template>
+    }
   </div>
 
   <div class="bg-white border rounded p-4 mt-4">
     <h2 class="text-lg font-semibold mb-2">Old Values</h2>
-    <ng-container *ngIf="DetailAuditlog()?.oldValues; else noOldValues">
+    @if (DetailAuditlog()?.oldValues) {
       <pre class="whitespace-pre-wrap">{{ DetailAuditlog()?.oldValues | json }}</pre>
-    </ng-container>
-    <ng-template #noOldValues>
+    } @else {
       <span class="text-gray-500">No old values</span>
-    </ng-template>
+    }
   </div>
 
   <div class="bg-white border rounded p-4 mt-4">
     <h2 class="text-lg font-semibold mb-2">New Values</h2>
-    <ng-container *ngIf="DetailAuditlog()?.newValues; else noNewValues">
+    @if (DetailAuditlog()?.newValues) {
       <pre class="whitespace-pre-wrap">{{ DetailAuditlog()?.newValues | json }}</pre>
-    </ng-container>
-    <ng-template #noNewValues>
+    } @else {
       <span class="text-gray-500">No new values</span>
-    </ng-template>
+    }
   </div>
 
-  <div *ngIf="DetailAuditlog()?.status === 'ERROR'" class="bg-red-50 border border-red-200 rounded p-4 mt-4">
-    <h2 class="text-lg font-semibold mb-2 text-red-700">Error Details</h2>
-    <div>
-      <strong>Message:</strong> {{ DetailAuditlog()?.errorDetails?.message || 'N/A' }}
+  @if (DetailAuditlog()?.status === 'ERROR') {
+    <div class="bg-red-50 border border-red-200 rounded p-4 mt-4">
+      <h2 class="text-lg font-semibold mb-2 text-red-700">Error Details</h2>
+      <div>
+        <strong>Message:</strong> {{ DetailAuditlog()?.errorDetails?.message || 'N/A' }}
+      </div>
+      <div>
+        <strong>Status Code:</strong> {{ DetailAuditlog()?.errorDetails?.statusCode || 'N/A' }}
+      </div>
     </div>
-    <div>
-      <strong>Status Code:</strong> {{ DetailAuditlog()?.errorDetails?.statusCode || 'N/A' }}
-    </div>
-  </div>
+  }
 
 </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,14 +20,13 @@ import {
   selector: 'app-detailnhanvien',
   standalone: true,
   imports: [
-    CommonModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
     MatDividerModule,
     MatProgressSpinnerModule
-  ],
+],
   templateUrl: './detailnhanvien.component.html',
   styleUrls: ['./detailnhanvien.component.scss']
 })

@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, HostBinding, Input } from '@angular/core';
 
 @Component({
   selector: 'ui-skeleton',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="skeleton" [class]="additionalClasses"></div>
   `,

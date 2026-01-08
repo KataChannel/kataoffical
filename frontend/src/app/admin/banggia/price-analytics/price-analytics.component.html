@@ -26,9 +26,11 @@
         <mat-form-field appearance="outline">
           <mat-label>Bảng giá</mat-label>
           <mat-select [(ngModel)]="selectedBanggiaId" (ngModelChange)="loadAnalytics()">
-            <mat-option *ngFor="let banggia of banggiaList()" [value]="banggia.id">
-              {{ banggia.title }}
-            </mat-option>
+            @for (banggia of banggiaList(); track banggia) {
+              <mat-option [value]="banggia.id">
+                {{ banggia.title }}
+              </mat-option>
+            }
           </mat-select>
           <mat-icon matPrefix>list</mat-icon>
         </mat-form-field>
@@ -45,19 +47,23 @@
           <mat-icon matPrefix>date_range</mat-icon>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" *ngIf="selectedPeriod() === 'custom'">
-          <mat-label>Từ ngày</mat-label>
-          <input matInput [matDatepicker]="pickerFrom" [(ngModel)]="dateFrom" (ngModelChange)="onCustomDateChange()">
-          <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
-          <mat-datepicker #pickerFrom></mat-datepicker>
-        </mat-form-field>
+        @if (selectedPeriod() === 'custom') {
+          <mat-form-field appearance="outline">
+            <mat-label>Từ ngày</mat-label>
+            <input matInput [matDatepicker]="pickerFrom" [(ngModel)]="dateFrom" (ngModelChange)="onCustomDateChange()">
+            <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFrom></mat-datepicker>
+          </mat-form-field>
+        }
 
-        <mat-form-field appearance="outline" *ngIf="selectedPeriod() === 'custom'">
-          <mat-label>Đến ngày</mat-label>
-          <input matInput [matDatepicker]="pickerTo" [(ngModel)]="dateTo" (ngModelChange)="onCustomDateChange()">
-          <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
-          <mat-datepicker #pickerTo></mat-datepicker>
-        </mat-form-field>
+        @if (selectedPeriod() === 'custom') {
+          <mat-form-field appearance="outline">
+            <mat-label>Đến ngày</mat-label>
+            <input matInput [matDatepicker]="pickerTo" [(ngModel)]="dateTo" (ngModelChange)="onCustomDateChange()">
+            <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+            <mat-datepicker #pickerTo></mat-datepicker>
+          </mat-form-field>
+        }
       </div>
     </mat-card-content>
   </mat-card>
@@ -98,10 +104,12 @@
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <div class="insights-box" *ngIf="summaryStats().mostVolatileProduct">
-        <mat-icon>lightbulb</mat-icon>
-        <span>Sản phẩm biến động nhất: <strong>{{ summaryStats().mostVolatileProduct }}</strong></span>
-      </div>
+      @if (summaryStats().mostVolatileProduct) {
+        <div class="insights-box">
+          <mat-icon>lightbulb</mat-icon>
+          <span>Sản phẩm biến động nhất: <strong>{{ summaryStats().mostVolatileProduct }}</strong></span>
+        </div>
+      }
 
       <div class="table-container">
         <table mat-table [dataSource]="volatilityData()" class="analytics-table">
@@ -175,10 +183,12 @@
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <div class="insights-box" *ngIf="summaryStats().highestImpactOrder">
-        <mat-icon>lightbulb</mat-icon>
-        <span>Đơn hàng ảnh hưởng lớn nhất: <strong>{{ summaryStats().highestImpactOrder }}</strong></span>
-      </div>
+      @if (summaryStats().highestImpactOrder) {
+        <div class="insights-box">
+          <mat-icon>lightbulb</mat-icon>
+          <span>Đơn hàng ảnh hưởng lớn nhất: <strong>{{ summaryStats().highestImpactOrder }}</strong></span>
+        </div>
+      }
 
       <div class="table-container">
         <table mat-table [dataSource]="orderImpacts()" class="analytics-table">

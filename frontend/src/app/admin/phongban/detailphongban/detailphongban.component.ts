@@ -23,154 +23,169 @@ import { Phongban } from '../../../models/phongban.model';
   template: `
     <div class="container">
       <!-- Loading State -->
-      <mat-card *ngIf="loading()">
-        <mat-card-content class="loading-container">
-          <mat-spinner diameter="40"></mat-spinner>
-          <p>Đang tải dữ liệu...</p>
-        </mat-card-content>
-      </mat-card>
-
+      @if (loading()) {
+        <mat-card>
+          <mat-card-content class="loading-container">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Đang tải dữ liệu...</p>
+          </mat-card-content>
+        </mat-card>
+      }
+    
       <!-- Main Content -->
-      <mat-card *ngIf="!loading() && phongban()">
-        <mat-card-header>
-          <div class="header-content">
-            <div class="title-section">
-              <mat-icon class="header-icon">business</mat-icon>
-              <div>
-                <mat-card-title>{{ phongban()?.ten }}</mat-card-title>
-                <mat-card-subtitle>{{ phongban()?.ma }}</mat-card-subtitle>
-              </div>
-            </div>
-            <mat-chip [style.background-color]="getLoaiColor(phongban()?.loai || '')">
-              {{ getLoaiLabel(phongban()?.loai || '') }}
-            </mat-chip>
-          </div>
-        </mat-card-header>
-
-        <mat-card-content>
-          <!-- Statistics Cards -->
-          <div class="stats-grid">
-            <div class="stat-card">
-              <mat-icon>layers</mat-icon>
-              <div class="stat-content">
-                <span class="stat-label">Cấp</span>
-                <span class="stat-value">{{ phongban()?.level }}</span>
-              </div>
-            </div>
-            <div class="stat-card">
-              <mat-icon>people</mat-icon>
-              <div class="stat-content">
-                <span class="stat-label">Nhân viên</span>
-                <span class="stat-value">{{ phongban()?.nhanviens?.length || 0 }}</span>
-              </div>
-            </div>
-            <div class="stat-card" *ngIf="phongban()?.parentId">
-              <mat-icon>account_tree</mat-icon>
-              <div class="stat-content">
-                <span class="stat-label">Thuộc</span>
-                <span class="stat-value">{{ phongban()?.parent?.ten || 'N/A' }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Detail Information -->
-          <div class="detail-section">
-            <h3>
-              <mat-icon>info</mat-icon>
-              Thông tin chi tiết
-            </h3>
-            <div class="detail-grid">
-              <div class="detail-item">
-                <label>Mã phòng ban:</label>
-                <span>{{ phongban()?.ma }}</span>
-              </div>
-              <div class="detail-item">
-                <label>Tên phòng ban:</label>
-                <span>{{ phongban()?.ten }}</span>
-              </div>
-              <div class="detail-item">
-                <label>Loại:</label>
-                <span>{{ getLoaiLabel(phongban()?.loai || '') }}</span>
-              </div>
-              <div class="detail-item">
-                <label>Cấp:</label>
-                <span>Cấp {{ phongban()?.level }}</span>
-              </div>
-              <div class="detail-item" *ngIf="phongban()?.parent">
-                <label>Phòng ban cha:</label>
-                <span>{{ phongban()?.parent?.ma }} - {{ phongban()?.parent?.ten }}</span>
-              </div>
-              <div class="detail-item">
-                <label>Số nhân viên:</label>
-                <span>{{ phongban()?.nhanviens?.length || 0 }} người</span>
-              </div>
-              <div class="detail-item full-width" *ngIf="phongban()?.moTa">
-                <label>Mô tả:</label>
-                <span>{{ phongban()?.moTa }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Employees List -->
-          <div class="detail-section" *ngIf="phongban()?.nhanviens && (phongban()?.nhanviens?.length || 0) > 0">
-            <h3>
-              <mat-icon>people</mat-icon>
-              Danh sách nhân viên ({{ phongban()?.nhanviens?.length || 0 }})
-            </h3>
-            <div class="employees-list">
-              <div class="employee-item" *ngFor="let nv of phongban()?.nhanviens">
-                <mat-icon>person</mat-icon>
-                <div class="employee-info">
-                  <span class="employee-name">{{ nv['ten'] || nv['hoTen'] || 'N/A' }}</span>
-                  <span class="employee-details">{{ nv['email'] || 'Chưa có email' }}</span>
+      @if (!loading() && phongban()) {
+        <mat-card>
+          <mat-card-header>
+            <div class="header-content">
+              <div class="title-section">
+                <mat-icon class="header-icon">business</mat-icon>
+                <div>
+                  <mat-card-title>{{ phongban()?.ten }}</mat-card-title>
+                  <mat-card-subtitle>{{ phongban()?.ma }}</mat-card-subtitle>
                 </div>
               </div>
+              <mat-chip [style.background-color]="getLoaiColor(phongban()?.loai || '')">
+                {{ getLoaiLabel(phongban()?.loai || '') }}
+              </mat-chip>
             </div>
-          </div>
-
-          <!-- Metadata -->
-          <div class="metadata">
-            <div class="metadata-item" *ngIf="phongban()?.createdAt">
-              <mat-icon>schedule</mat-icon>
-              <span>Tạo lúc: {{ phongban()?.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </mat-card-header>
+          <mat-card-content>
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+              <div class="stat-card">
+                <mat-icon>layers</mat-icon>
+                <div class="stat-content">
+                  <span class="stat-label">Cấp</span>
+                  <span class="stat-value">{{ phongban()?.level }}</span>
+                </div>
+              </div>
+              <div class="stat-card">
+                <mat-icon>people</mat-icon>
+                <div class="stat-content">
+                  <span class="stat-label">Nhân viên</span>
+                  <span class="stat-value">{{ phongban()?.nhanviens?.length || 0 }}</span>
+                </div>
+              </div>
+              @if (phongban()?.parentId) {
+                <div class="stat-card">
+                  <mat-icon>account_tree</mat-icon>
+                  <div class="stat-content">
+                    <span class="stat-label">Thuộc</span>
+                    <span class="stat-value">{{ phongban()?.parent?.ten || 'N/A' }}</span>
+                  </div>
+                </div>
+              }
             </div>
-            <div class="metadata-item" *ngIf="phongban()?.updatedAt">
-              <mat-icon>update</mat-icon>
-              <span>Cập nhật: {{ phongban()?.updatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            <!-- Detail Information -->
+            <div class="detail-section">
+              <h3>
+                <mat-icon>info</mat-icon>
+                Thông tin chi tiết
+              </h3>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <label>Mã phòng ban:</label>
+                  <span>{{ phongban()?.ma }}</span>
+                </div>
+                <div class="detail-item">
+                  <label>Tên phòng ban:</label>
+                  <span>{{ phongban()?.ten }}</span>
+                </div>
+                <div class="detail-item">
+                  <label>Loại:</label>
+                  <span>{{ getLoaiLabel(phongban()?.loai || '') }}</span>
+                </div>
+                <div class="detail-item">
+                  <label>Cấp:</label>
+                  <span>Cấp {{ phongban()?.level }}</span>
+                </div>
+                @if (phongban()?.parent) {
+                  <div class="detail-item">
+                    <label>Phòng ban cha:</label>
+                    <span>{{ phongban()?.parent?.ma }} - {{ phongban()?.parent?.ten }}</span>
+                  </div>
+                }
+                <div class="detail-item">
+                  <label>Số nhân viên:</label>
+                  <span>{{ phongban()?.nhanviens?.length || 0 }} người</span>
+                </div>
+                @if (phongban()?.moTa) {
+                  <div class="detail-item full-width">
+                    <label>Mô tả:</label>
+                    <span>{{ phongban()?.moTa }}</span>
+                  </div>
+                }
+              </div>
             </div>
-          </div>
-        </mat-card-content>
-
-        <mat-card-actions>
-          <button mat-raised-button (click)="goBack()">
-            <mat-icon>arrow_back</mat-icon>
-            Quay lại
-          </button>
-          <button mat-raised-button color="accent" (click)="edit()">
-            <mat-icon>edit</mat-icon>
-            Chỉnh sửa
-          </button>
-          <button mat-raised-button color="warn" (click)="confirmDelete()">
-            <mat-icon>delete</mat-icon>
-            Xóa
-          </button>
-        </mat-card-actions>
-      </mat-card>
-
+            <!-- Employees List -->
+            @if (phongban()?.nhanviens && (phongban()?.nhanviens?.length || 0) > 0) {
+              <div class="detail-section">
+                <h3>
+                  <mat-icon>people</mat-icon>
+                  Danh sách nhân viên ({{ phongban()?.nhanviens?.length || 0 }})
+                </h3>
+                <div class="employees-list">
+                  @for (nv of phongban()?.nhanviens; track nv) {
+                    <div class="employee-item">
+                      <mat-icon>person</mat-icon>
+                      <div class="employee-info">
+                        <span class="employee-name">{{ nv['ten'] || nv['hoTen'] || 'N/A' }}</span>
+                        <span class="employee-details">{{ nv['email'] || 'Chưa có email' }}</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+            <!-- Metadata -->
+            <div class="metadata">
+              @if (phongban()?.createdAt) {
+                <div class="metadata-item">
+                  <mat-icon>schedule</mat-icon>
+                  <span>Tạo lúc: {{ phongban()?.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+              }
+              @if (phongban()?.updatedAt) {
+                <div class="metadata-item">
+                  <mat-icon>update</mat-icon>
+                  <span>Cập nhật: {{ phongban()?.updatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+              }
+            </div>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button (click)="goBack()">
+              <mat-icon>arrow_back</mat-icon>
+              Quay lại
+            </button>
+            <button mat-raised-button color="accent" (click)="edit()">
+              <mat-icon>edit</mat-icon>
+              Chỉnh sửa
+            </button>
+            <button mat-raised-button color="warn" (click)="confirmDelete()">
+              <mat-icon>delete</mat-icon>
+              Xóa
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    
       <!-- Error State -->
-      <mat-card *ngIf="!loading() && !phongban()">
-        <mat-card-content class="error-container">
-          <mat-icon>error</mat-icon>
-          <h2>Không tìm thấy phòng ban</h2>
-          <p>ID: {{ id }}</p>
-          <button mat-raised-button color="primary" (click)="goBack()">
-            <mat-icon>arrow_back</mat-icon>
-            Quay lại danh sách
-          </button>
-        </mat-card-content>
-      </mat-card>
+      @if (!loading() && !phongban()) {
+        <mat-card>
+          <mat-card-content class="error-container">
+            <mat-icon>error</mat-icon>
+            <h2>Không tìm thấy phòng ban</h2>
+            <p>ID: {{ id }}</p>
+            <button mat-raised-button color="primary" (click)="goBack()">
+              <mat-icon>arrow_back</mat-icon>
+              Quay lại danh sách
+            </button>
+          </mat-card-content>
+        </mat-card>
+      }
     </div>
-  `,
+    `,
   styles: [`
     .container {
       padding: 24px;

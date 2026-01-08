@@ -1,32 +1,32 @@
-import { AfterViewInit, Component, computed, effect, inject, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { DonhangGraphqlService } from '../donhang-graphql.service';
-import { DonhangService } from '../donhang.service';
-import { readExcelFile, readExcelFileNoWorker, readExcelFileNoWorkerArray, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
-import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
-import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { Router, RouterOutlet } from '@angular/router';
 import moment from 'moment';
+import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { DateHelpers } from '../../../shared/utils/date-helpers';
+import { readExcelFile, readExcelFileNoWorkerArray, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
+import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
-import { DateHelpers } from '../../../shared/utils/date-helpers';
+import { DonhangGraphqlService } from '../donhang-graphql.service';
+import { DonhangService } from '../donhang.service';
 @Component({
   selector: 'app-vandon',
   templateUrl: './vandon.component.html',
@@ -95,9 +95,7 @@ export class VandonComponent {
     giove: 'Giờ Về',
     kynhan: 'Ký Nhận'
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('VandonColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   Trangthaidon: any = TrangThaiDon;
   isFilter: boolean = false;
@@ -197,6 +195,9 @@ export class VandonComponent {
   
   async ngOnInit(): Promise<void> {    
     // 🔥 AUTO-LOAD: Tự động load dữ liệu trong ngày khi vào trang
+    if (typeof localStorage !== 'undefined') {
+      this.FilterColumns = JSON.parse(localStorage.getItem('VandonColFilter') || '[]');
+    }
     this.initializeColumns();
     this.setupDrawer();
     
@@ -260,7 +261,9 @@ export class VandonComponent {
     } else {
       // Lọc FilterColumns chỉ giữ các columns được phép
       this.FilterColumns = this.FilterColumns.filter(col => allowedColumns.includes(col.key));
-      localStorage.setItem('VandonColFilter',JSON.stringify(this.FilterColumns));
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('VandonColFilter', JSON.stringify(this.FilterColumns));
+      }
     }
     
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -299,8 +302,9 @@ export class VandonComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('VandonColFilter',JSON.stringify(this.FilterColumns)
-    );
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('VandonColFilter', JSON.stringify(this.FilterColumns));
+    }
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();

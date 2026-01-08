@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
@@ -23,21 +23,20 @@ import { UserPermissionOverviewComponent } from '../../user-permission/user-perm
   @Component({
     selector: 'app-detailuser',
     imports: [
-      MatFormFieldModule,
-      MatInputModule,
-      FormsModule,
-      MatIconModule,
-      MatButtonModule,
-      MatSelectModule,
-      MatDialogModule,
-      CommonModule,
-      MatSlideToggleModule,
-      MatMenuModule,
-      MatCardModule,
-      MatDividerModule,
-      MatChipsModule,
-      UserPermissionOverviewComponent
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSlideToggleModule,
+    MatMenuModule,
+    MatCardModule,
+    MatDividerModule,
+    MatChipsModule,
+    UserPermissionOverviewComponent
+],
     templateUrl: './detailuser.component.html',
   styles: [`
     .permission-management {

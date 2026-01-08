@@ -1,25 +1,28 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
-import { StorageService } from '../../utils/storage.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSelectModule } from '@angular/material/select';
+import { StorageService } from '../../utils/storage.service';
 
 @Component({
   selector: 'app-changeteamplate',
+  standalone: true,
   imports: [
-    CommonModule,
     MatSelectModule,
     FormsModule,
     MatMenuModule,
     MatButtonModule
-  ],
+],
   templateUrl: './changeteamplate.component.html',
   styleUrl: './changeteamplate.component.scss'
 })
 export class ChangeteamplateComponent {
-  constructor(private storageService: StorageService) {}
+  constructor(
+    private storageService: StorageService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
   teamplate:any=1
   ListTeamplate:any[]=[
     {id:1,Title:"Teamplate 1"},
@@ -33,6 +36,8 @@ export class ChangeteamplateComponent {
   ChangeTeamplate(item:any)
   {
       this.storageService.setItem('teamplate', item.id);
-      window.location.reload();
+      if (isPlatformBrowser(this.platformId)) {
+        window.location.reload();
+      }
   }
 }

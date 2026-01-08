@@ -1,31 +1,30 @@
-import { ChangeDetectionStrategy, Component, inject, signal, ViewChild, ViewEncapsulation } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Config, User } from './adminmain';
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { MatTreeModule, MatTreeFlattener, MatTreeFlatDataSource } from '@angular/material/tree';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatListModule } from '@angular/material/list';
-import { CommonModule } from '@angular/common';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MenuService } from '../menu/menu/menu.service';
+import { FlatTreeControl } from '@angular/cdk/tree';
+
+import { Component, inject, signal, ViewChild } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTreeFlatDataSource, MatTreeFlattener, MatTreeModule } from '@angular/material/tree';
+import { RouterLink, RouterOutlet } from '@angular/router';
+import { AdvancedSearchDialogComponent } from '../../components/advanced-search-dialog/advanced-search-dialog.component';
 import { TreemenuComponent } from '../../shared/common/treemenu/treemenu.component';
-import { UserService } from '../user/user.service';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { StorageService } from '../../shared/utils/storage.service';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatStepperModule } from '@angular/material/stepper';
 import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
-import { CommonuserguideComponent } from '../userguide/commonuserguide/commonuserguide.component';
+import { MenuService } from '../menu/menu/menu.service';
+import { UserService } from '../user/user.service';
 import { UserguideService } from '../userguide/userguide.service';
-import { MatDialog } from '@angular/material/dialog';
-import { AdvancedSearchDialogComponent } from '../../components/advanced-search-dialog/advanced-search-dialog.component';
+import { Config } from './adminmain';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -38,14 +37,12 @@ import { AdvancedSearchDialogComponent } from '../../components/advanced-search-
     MatTabsModule,
     MatDividerModule,
     MatListModule,
-    CommonModule,
     RouterLink,
-    // RouterLinkActive,
     TreemenuComponent,
     MatInputModule,
     MatFormFieldModule,
-    MatStepperModule,
-  ],
+    MatStepperModule
+],
   templateUrl: './adminmain.component.html',
   styleUrls: ['./adminmain.component.scss']
 })
@@ -122,7 +119,9 @@ export class AdminmainComponent {
     this._UserService.logout().then((res: any) => {
       if (res) {
         setTimeout(() => {
-          window.location.reload();
+          if (typeof window !== 'undefined') {
+            window.location.reload();
+          }
         }, 100);
       }
     });

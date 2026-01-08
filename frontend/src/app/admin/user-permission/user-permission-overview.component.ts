@@ -1,5 +1,5 @@
 import { Component, input, signal, computed, inject, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -35,7 +35,6 @@ interface PermissionSummary {
   selector: 'app-user-permission-overview',
   standalone: true,
   imports: [
-    CommonModule,
     MatCardModule,
     MatIconModule,
     MatChipsModule,
@@ -46,7 +45,7 @@ interface PermissionSummary {
     MatTabsModule,
     MatDialogModule,
     UserRolesInfoComponent
-  ],
+],
   template: `
     <div class="permission-overview">
       <!-- Main Card -->
@@ -63,7 +62,7 @@ interface PermissionSummary {
             Tóm tắt và quản lý quyền chi tiết cho người dùng
           </mat-card-subtitle>
         </mat-card-header>
-        
+    
         <mat-card-content>
           @if (isLoading()) {
             <div class="text-center py-8">
@@ -74,9 +73,9 @@ interface PermissionSummary {
             <div class="text-center py-8 text-red-500">
               <mat-icon class="text-4xl text-red-400">error</mat-icon>
               <p class="mt-2 font-medium">{{ error() }}</p>
-              <button 
-                mat-raised-button 
-                color="primary" 
+              <button
+                mat-raised-button
+                color="primary"
                 class="mt-4"
                 (click)="loadPermissionData()">
                 <mat-icon>refresh</mat-icon>
@@ -93,13 +92,15 @@ interface PermissionSummary {
                   Roles & Nhóm Quyền
                 </ng-template>
                 <div class="py-4">
-                  <app-user-roles-info 
-                    [user]="user()" 
-                    *ngIf="user()">
-                  </app-user-roles-info>
+                  @if (user()) {
+                    <app-user-roles-info
+                      [user]="user()"
+                      >
+                    </app-user-roles-info>
+                  }
                 </div>
               </mat-tab>
-
+    
               <!-- Summary Tab -->
               <mat-tab>
                 <ng-template mat-tab-label>
@@ -126,7 +127,7 @@ interface PermissionSummary {
                       <div class="text-sm text-purple-800 font-medium">Cuối Cùng</div>
                     </div>
                   </div>
-
+    
                   <!-- Permission Breakdown -->
                   <div class="space-y-6">
                     <!-- Role Permissions -->
@@ -141,8 +142,8 @@ interface PermissionSummary {
                         @if (currentSummary()!.rolePermissions.length > 0) {
                           <div class="flex flex-wrap gap-2">
                             @for (perm of currentSummary()!.rolePermissions; track perm.id) {
-                              <span class="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full border border-blue-200" 
-                                    [title]="perm.description || perm.name">
+                              <span class="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full border border-blue-200"
+                                [title]="perm.description || perm.name">
                                 {{ perm.name }}
                               </span>
                             }
@@ -152,7 +153,7 @@ interface PermissionSummary {
                         }
                       </div>
                     </mat-expansion-panel>
-
+    
                     <!-- Effective Permissions -->
                     <mat-expansion-panel class="permission-section">
                       <mat-expansion-panel-header>
@@ -165,8 +166,8 @@ interface PermissionSummary {
                         @if (currentSummary()!.effectivePermissions.length > 0) {
                           <div class="flex flex-wrap gap-2">
                             @for (perm of currentSummary()!.effectivePermissions; track perm.id) {
-                              <span class="px-3 py-1 text-sm bg-purple-100 text-purple-800 rounded-full border border-purple-200 font-medium" 
-                                    [title]="perm.description || perm.name">
+                              <span class="px-3 py-1 text-sm bg-purple-100 text-purple-800 rounded-full border border-purple-200 font-medium"
+                                [title]="perm.description || perm.name">
                                 {{ perm.name }}
                               </span>
                             }
@@ -182,7 +183,7 @@ interface PermissionSummary {
                   </div>
                 </div>
               </mat-tab>
-
+    
               <!-- Management Tab -->
               <mat-tab>
                 <ng-template mat-tab-label>
@@ -207,9 +208,9 @@ interface PermissionSummary {
                           @for (up of currentSummary()!.userGranted; track up.id) {
                             <div class="flex items-center bg-white rounded-lg px-3 py-2 border border-green-300">
                               <span class="text-sm text-green-800 font-medium">{{ up.permission.name }}</span>
-                              <button 
-                                mat-icon-button 
-                                class="ml-2 w-6 h-6" 
+                              <button
+                                mat-icon-button
+                                class="ml-2 w-6 h-6"
                                 color="warn"
                                 [disabled]="isUpdatingPermission()"
                                 (click)="revokePermission(up)"
@@ -223,7 +224,7 @@ interface PermissionSummary {
                         <p class="text-green-700 text-center py-4">Chưa có quyền nào được cấp riêng</p>
                       }
                     </div>
-
+    
                     <!-- Denied Permissions Section -->
                     <div class="bg-red-50 rounded-lg p-4 border border-red-200">
                       <div class="flex items-center justify-between mb-4">
@@ -240,9 +241,9 @@ interface PermissionSummary {
                           @for (up of currentSummary()!.userDenied; track up.id) {
                             <div class="flex items-center bg-white rounded-lg px-3 py-2 border border-red-300">
                               <span class="text-sm text-red-800 font-medium">{{ up.permission.name }}</span>
-                              <button 
-                                mat-icon-button 
-                                class="ml-2 w-6 h-6" 
+                              <button
+                                mat-icon-button
+                                class="ml-2 w-6 h-6"
                                 color="primary"
                                 [disabled]="isUpdatingPermission()"
                                 (click)="restorePermission(up)"
@@ -256,7 +257,7 @@ interface PermissionSummary {
                         <p class="text-red-700 text-center py-4">Không có quyền nào bị từ chối</p>
                       }
                     </div>
-
+    
                     <!-- Add New Permission Section -->
                     <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                       <div class="flex items-center mb-4">
@@ -266,9 +267,9 @@ interface PermissionSummary {
                       <div class="space-y-3">
                         <p class="text-sm text-gray-600">Chọn quyền để cấp riêng cho người dùng này (override quyền từ roles)</p>
                         <!-- This would be a permission selector - simplified for now -->
-                        <button 
-                          mat-raised-button 
-                          color="primary" 
+                        <button
+                          mat-raised-button
+                          color="primary"
                           [disabled]="isUpdatingPermission()"
                           (click)="openPermissionSelector()">
                           <mat-icon>add</mat-icon>
@@ -289,7 +290,7 @@ interface PermissionSummary {
         </mat-card-content>
       </mat-card>
     </div>
-  `,
+    `,
   styles: [`
     .permission-overview {
       width: 100%;

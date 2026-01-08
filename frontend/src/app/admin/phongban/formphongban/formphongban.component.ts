@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -17,7 +17,6 @@ import { Phongban, LoaiPhongban, LoaiPhongbanLabels } from '../../../models/phon
   selector: 'app-formphongban',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
@@ -26,7 +25,7 @@ import { Phongban, LoaiPhongban, LoaiPhongbanLabels } from '../../../models/phon
     MatInputModule,
     MatSelectModule,
     MatProgressSpinnerModule
-  ],
+],
   template: `
     <div class="container">
       <mat-card>
@@ -36,119 +35,142 @@ import { Phongban, LoaiPhongban, LoaiPhongbanLabels } from '../../../models/phon
             {{ mode === 'create' ? 'Thêm Phòng Ban Mới' : 'Chỉnh Sửa Phòng Ban' }}
           </mat-card-title>
         </mat-card-header>
-
+    
         <mat-card-content>
-          <div *ngIf="loading()" class="loading-container">
-            <mat-spinner diameter="40"></mat-spinner>
-            <p>Đang tải dữ liệu...</p>
-          </div>
-
-          <form [formGroup]="phongbanForm" *ngIf="!loading()">
-            <div class="form-grid">
-              <!-- Mã phòng ban -->
-              <mat-form-field appearance="outline">
-                <mat-label>Mã phòng ban</mat-label>
-                <input matInput formControlName="ma" placeholder="VD: PB01">
-                <mat-icon matPrefix>tag</mat-icon>
-                <mat-error *ngIf="phongbanForm.get('ma')?.hasError('required')">
-                  Mã phòng ban là bắt buộc
-                </mat-error>
-                <mat-error *ngIf="phongbanForm.get('ma')?.hasError('maxlength')">
-                  Tối đa 20 ký tự
-                </mat-error>
-              </mat-form-field>
-
-              <!-- Tên phòng ban -->
-              <mat-form-field appearance="outline">
-                <mat-label>Tên phòng ban</mat-label>
-                <input matInput formControlName="ten" placeholder="VD: Phòng Kinh Doanh">
-                <mat-icon matPrefix>business</mat-icon>
-                <mat-error *ngIf="phongbanForm.get('ten')?.hasError('required')">
-                  Tên phòng ban là bắt buộc
-                </mat-error>
-                <mat-error *ngIf="phongbanForm.get('ten')?.hasError('maxlength')">
-                  Tối đa 200 ký tự
-                </mat-error>
-              </mat-form-field>
-
-              <!-- Loại phòng ban -->
-              <mat-form-field appearance="outline">
-                <mat-label>Loại phòng ban</mat-label>
-                <mat-select formControlName="loai">
-                  <mat-option *ngFor="let loai of loaiOptions" [value]="loai.value">
-                    {{ loai.label }}
-                  </mat-option>
-                </mat-select>
-                <mat-icon matPrefix>category</mat-icon>
-                <mat-error *ngIf="phongbanForm.get('loai')?.hasError('required')">
-                  Loại phòng ban là bắt buộc
-                </mat-error>
-              </mat-form-field>
-
-              <!-- Cấp -->
-              <mat-form-field appearance="outline">
-                <mat-label>Cấp</mat-label>
-                <mat-select formControlName="level">
-                  <mat-option [value]="1">Cấp 1</mat-option>
-                  <mat-option [value]="2">Cấp 2</mat-option>
-                  <mat-option [value]="3">Cấp 3</mat-option>
-                </mat-select>
-                <mat-icon matPrefix>layers</mat-icon>
-                <mat-error *ngIf="phongbanForm.get('level')?.hasError('required')">
-                  Cấp là bắt buộc
-                </mat-error>
-              </mat-form-field>
-
-              <!-- Phòng ban cha -->
-              <mat-form-field appearance="outline" *ngIf="phongbanForm.get('level')?.value > 1">
-                <mat-label>Phòng ban cha</mat-label>
-                <mat-select formControlName="parentId">
-                  <mat-option [value]="null">-- Không có --</mat-option>
-                  <mat-option *ngFor="let pb of parentPhongbans()" [value]="pb.id">
-                    {{ pb.ma }} - {{ pb.ten }}
-                  </mat-option>
-                </mat-select>
-                <mat-icon matPrefix>account_tree</mat-icon>
-              </mat-form-field>
-
-              <!-- Mô tả (full width) -->
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Mô tả</mat-label>
-                <textarea 
-                  matInput 
-                  formControlName="moTa" 
-                  rows="4"
-                  placeholder="Nhập mô tả về phòng ban..."></textarea>
-                <mat-icon matPrefix>description</mat-icon>
-                <mat-error *ngIf="phongbanForm.get('moTa')?.hasError('maxlength')">
-                  Tối đa 1000 ký tự
-                </mat-error>
-              </mat-form-field>
+          @if (loading()) {
+            <div class="loading-container">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Đang tải dữ liệu...</p>
             </div>
-          </form>
+          }
+    
+          @if (!loading()) {
+            <form [formGroup]="phongbanForm">
+              <div class="form-grid">
+                <!-- Mã phòng ban -->
+                <mat-form-field appearance="outline">
+                  <mat-label>Mã phòng ban</mat-label>
+                  <input matInput formControlName="ma" placeholder="VD: PB01">
+                  <mat-icon matPrefix>tag</mat-icon>
+                  @if (phongbanForm.get('ma')?.hasError('required')) {
+                    <mat-error>
+                      Mã phòng ban là bắt buộc
+                    </mat-error>
+                  }
+                  @if (phongbanForm.get('ma')?.hasError('maxlength')) {
+                    <mat-error>
+                      Tối đa 20 ký tự
+                    </mat-error>
+                  }
+                </mat-form-field>
+                <!-- Tên phòng ban -->
+                <mat-form-field appearance="outline">
+                  <mat-label>Tên phòng ban</mat-label>
+                  <input matInput formControlName="ten" placeholder="VD: Phòng Kinh Doanh">
+                  <mat-icon matPrefix>business</mat-icon>
+                  @if (phongbanForm.get('ten')?.hasError('required')) {
+                    <mat-error>
+                      Tên phòng ban là bắt buộc
+                    </mat-error>
+                  }
+                  @if (phongbanForm.get('ten')?.hasError('maxlength')) {
+                    <mat-error>
+                      Tối đa 200 ký tự
+                    </mat-error>
+                  }
+                </mat-form-field>
+                <!-- Loại phòng ban -->
+                <mat-form-field appearance="outline">
+                  <mat-label>Loại phòng ban</mat-label>
+                  <mat-select formControlName="loai">
+                    @for (loai of loaiOptions; track loai) {
+                      <mat-option [value]="loai.value">
+                        {{ loai.label }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                  <mat-icon matPrefix>category</mat-icon>
+                  @if (phongbanForm.get('loai')?.hasError('required')) {
+                    <mat-error>
+                      Loại phòng ban là bắt buộc
+                    </mat-error>
+                  }
+                </mat-form-field>
+                <!-- Cấp -->
+                <mat-form-field appearance="outline">
+                  <mat-label>Cấp</mat-label>
+                  <mat-select formControlName="level">
+                    <mat-option [value]="1">Cấp 1</mat-option>
+                    <mat-option [value]="2">Cấp 2</mat-option>
+                    <mat-option [value]="3">Cấp 3</mat-option>
+                  </mat-select>
+                  <mat-icon matPrefix>layers</mat-icon>
+                  @if (phongbanForm.get('level')?.hasError('required')) {
+                    <mat-error>
+                      Cấp là bắt buộc
+                    </mat-error>
+                  }
+                </mat-form-field>
+                <!-- Phòng ban cha -->
+                @if (phongbanForm.get('level')?.value > 1) {
+                  <mat-form-field appearance="outline">
+                    <mat-label>Phòng ban cha</mat-label>
+                    <mat-select formControlName="parentId">
+                      <mat-option [value]="null">-- Không có --</mat-option>
+                      @for (pb of parentPhongbans(); track pb) {
+                        <mat-option [value]="pb.id">
+                          {{ pb.ma }} - {{ pb.ten }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                    <mat-icon matPrefix>account_tree</mat-icon>
+                  </mat-form-field>
+                }
+                <!-- Mô tả (full width) -->
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Mô tả</mat-label>
+                  <textarea
+                    matInput
+                    formControlName="moTa"
+                    rows="4"
+                  placeholder="Nhập mô tả về phòng ban..."></textarea>
+                  <mat-icon matPrefix>description</mat-icon>
+                  @if (phongbanForm.get('moTa')?.hasError('maxlength')) {
+                    <mat-error>
+                      Tối đa 1000 ký tự
+                    </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </form>
+          }
         </mat-card-content>
-
+    
         <mat-card-actions>
-          <button 
-            mat-raised-button 
+          <button
+            mat-raised-button
             (click)="goBack()"
             [disabled]="submitting()">
             <mat-icon>arrow_back</mat-icon>
             Hủy
           </button>
-          <button 
-            mat-raised-button 
+          <button
+            mat-raised-button
             color="primary"
             (click)="onSubmit()"
             [disabled]="!phongbanForm.valid || submitting()">
-            <mat-spinner diameter="20" *ngIf="submitting()" style="display: inline-block; margin-right: 8px;"></mat-spinner>
-            <mat-icon *ngIf="!submitting()">save</mat-icon>
+            @if (submitting()) {
+              <mat-spinner diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+            }
+            @if (!submitting()) {
+              <mat-icon>save</mat-icon>
+            }
             {{ submitting() ? 'Đang lưu...' : 'Lưu' }}
           </button>
         </mat-card-actions>
       </mat-card>
     </div>
-  `,
+    `,
   styles: [`
     .container {
       padding: 24px;

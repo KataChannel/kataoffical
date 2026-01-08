@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -45,7 +45,6 @@ interface ModuleTest {
   selector: 'app-testing',
   standalone: true,
   imports: [
-    CommonModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -54,7 +53,7 @@ interface ModuleTest {
     MatExpansionModule,
     MatTableModule,
     MatTooltipModule
-  ],
+],
   templateUrl: './testing.component.html',
   styleUrls: [],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { HttpClient, HttpEventType } from '@angular/common/http';
@@ -26,10 +26,9 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     MatButtonModule,
     MatSelectModule,
     MatDialogModule,
-    CommonModule,
     MatSlideToggleModule,
-    MatProgressBarModule,
-  ],
+    MatProgressBarModule
+],
   templateUrl: './detailuserguide.component.html',
   styleUrl: './detailuserguide.component.scss',
 })

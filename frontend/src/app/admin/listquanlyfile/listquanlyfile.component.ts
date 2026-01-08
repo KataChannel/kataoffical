@@ -1,5 +1,5 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { CommonModule } from '@angular/common';
+
 import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,18 +17,17 @@ import { QuanlyfilesService } from './listquanlyfile.service';
     templateUrl: './listquanlyfile.component.html',
     styleUrl: './listquanlyfile.component.scss',
     imports: [
-      MatFormFieldModule, 
-      MatInputModule, 
-      MatTableModule, 
-      MatSortModule, 
-      MatPaginatorModule,
-      MatMenuModule,
-      MatSidenavModule,
-      RouterOutlet,
-      MatIconModule,
-      MatButtonModule,
-      CommonModule
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatMenuModule,
+    MatSidenavModule,
+    RouterOutlet,
+    MatIconModule,
+    MatButtonModule
+],
   })
   export class ListquanlyfileComponent implements AfterViewInit {
     Detail:any={}

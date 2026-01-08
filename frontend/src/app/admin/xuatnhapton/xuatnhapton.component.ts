@@ -1,25 +1,26 @@
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 import { CommonModule } from "@angular/common";
-import { Component, ViewChild, inject, TemplateRef, EventEmitter, Output, OnDestroy } from "@angular/core";
+import { Component, EventEmitter, inject, OnDestroy, Output, TemplateRef, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDatepickerModule } from "@angular/material/datepicker";
-import { MatDialogModule, MatDialog } from "@angular/material/dialog";
+import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatMenuModule } from "@angular/material/menu";
-import { MatPaginatorModule, MatPaginator } from "@angular/material/paginator";
+import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { MatSelectModule } from "@angular/material/select";
-import { MatSidenavModule, MatDrawer } from "@angular/material/sidenav";
+import { MatDrawer, MatSidenavModule } from "@angular/material/sidenav";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { MatSortModule, MatSort } from "@angular/material/sort";
-import { MatTableModule, MatTableDataSource } from "@angular/material/table";
+import { MatSort, MatSortModule } from "@angular/material/sort";
+import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { RouterOutlet } from "@angular/router";
+import { GraphqlService } from "../../shared/services/graphql.service";
 import { DateHelpers } from "../../shared/utils/date-helpers";
-import { memoize, Debounce } from "../../shared/utils/decorators";
-import { writeExcelMultiple, readExcelFileNoWorker } from "../../shared/utils/exceldrive.utils";
+import { Debounce, memoize } from "../../shared/utils/decorators";
+import { readExcelFileNoWorker, writeExcelMultiple } from "../../shared/utils/exceldrive.utils";
 import { removeVietnameseAccents } from "../../shared/utils/texttransfer.utils";
 import { TrangThaiDon } from "../../shared/utils/trangthai";
 import { DathangService } from "../dathang/dathang.service";
@@ -27,7 +28,6 @@ import { DonhangService } from "../donhang/donhang.service";
 import { KhoService } from "../kho/kho.service";
 import { PhieukhoService } from "../phieukho/phieukho.service";
 import { SanphamService } from "../sanpham/sanpham.service";
-import { GraphqlService } from "../../shared/services/graphql.service";
 @Component({
   selector: 'app-xuatnhapton',
   templateUrl: './xuatnhapton.component.html',
@@ -70,9 +70,7 @@ export class XuatnhaptonComponent implements OnDestroy {
     slton: 'SL tồn',
     sltontt: 'Tồn thực tế Cuối Ngày',
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('TonkhoColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   isFilter: boolean = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -154,6 +152,9 @@ export class XuatnhaptonComponent implements OnDestroy {
 
 
   async ngOnInit(): Promise<void> {    
+    if (typeof localStorage !== 'undefined') {
+      this.FilterColumns = JSON.parse(localStorage.getItem('TonkhoColFilter') || '[]');
+    }
     // await this._SanphamService.getAllSanpham() 
     this.LoadXuatnhapton();
     this._KhoService.getTonKho('1', '99999').then((res) => {
@@ -193,8 +194,9 @@ export class XuatnhaptonComponent implements OnDestroy {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('TonkhoColFilter',JSON.stringify(this.FilterColumns)
-      );
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('TonkhoColFilter', JSON.stringify(this.FilterColumns));
+      }
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -232,8 +234,9 @@ export class XuatnhaptonComponent implements OnDestroy {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('TonkhoColFilter',JSON.stringify(this.FilterColumns)
-    );
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('TonkhoColFilter', JSON.stringify(this.FilterColumns));
+    }
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();

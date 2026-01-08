@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, AfterViewInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import Swiper from 'swiper';
@@ -7,9 +7,8 @@ Swiper.use([Navigation, Pagination, Autoplay]); // Khai báo các module đã im
 @Component({
   selector: 'app-swiper',
   imports: [
-    MatIconModule,
-    CommonModule
-  ],
+    MatIconModule
+],
   templateUrl: './swiper.component.html',
   styleUrl: './swiper.component.scss'
 })

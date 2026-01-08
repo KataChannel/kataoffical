@@ -61,25 +61,27 @@ export class ListbaivietComponent implements AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-        const ListSheets = JSON.parse(localStorage.getItem('ListSheets') || '[]');
-        console.log(ListSheets);
-        if (ListSheets.length > 0) {
-          const CheckSheet = ListSheets.find((v:any) => v.SheetName === 'Baiviet');
-          if (CheckSheet) {
-            this._GoogleSheetService.getDrive(CheckSheet).then(result => {
-              if(result.values.length>0)
-              {
-                this.displayedColumns = result.values[0].map((item:any)=>item)
-                this.ColumnName = ConvertDriveColumnName(result.values)      
-                this.dataSource = new MatTableDataSource(ConvertDriveData(result.values));
-                this.ListBaiviet = ConvertDriveData(result.values);
-                console.log(this.ListBaiviet);
-                this.dataSource.paginator = this.paginator;
-                this.dataSource.sort = this.sort;
-              }
-            });
-          }
+        if (typeof localStorage !== 'undefined') {
+      const ListSheets = JSON.parse(localStorage.getItem('ListSheets') || '[]');
+      console.log(ListSheets);
+      if (ListSheets.length > 0) {
+        const CheckSheet = ListSheets.find((v:any) => v.SheetName === 'Baiviet');
+        if (CheckSheet) {
+          this._GoogleSheetService.getDrive(CheckSheet).then(result => {
+            if(result.values.length>0)
+            {
+              this.displayedColumns = result.values[0].map((item:any)=>item)
+              this.ColumnName = ConvertDriveColumnName(result.values)      
+              this.dataSource = new MatTableDataSource(ConvertDriveData(result.values));
+              this.ListBaiviet = ConvertDriveData(result.values);
+              console.log(this.ListBaiviet);
+              this.dataSource.paginator = this.paginator;
+              this.dataSource.sort = this.sort;
+            }
+          });
         }
+      }
+    }
     // this.dataSource = new MatTableDataSource(ListBaiviet); 
     // this.dataSource.paginator = this.paginator;
     // this.dataSource.sort = this.sort;

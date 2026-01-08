@@ -22,14 +22,15 @@
           Chọn bảng giá để so sánh
         </h3>
         <div class="banggia-selection">
-          <mat-checkbox 
-            *ngFor="let banggia of banggiaList()" 
-            [checked]="selectedBanggiaIds().includes(banggia.id)"
-            (change)="toggleBanggiaSelection(banggia.id, $event.checked)">
-            <span class="banggia-checkbox-label" [style.color]="banggia.color">
-              {{ banggia.title }}
-            </span>
-          </mat-checkbox>
+          @for (banggia of banggiaList(); track banggia) {
+            <mat-checkbox
+              [checked]="selectedBanggiaIds().includes(banggia.id)"
+              (change)="toggleBanggiaSelection(banggia.id, $event.checked)">
+              <span class="banggia-checkbox-label" [style.color]="banggia.color">
+                {{ banggia.title }}
+              </span>
+            </mat-checkbox>
+          }
         </div>
       </div>
 
@@ -41,9 +42,11 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Sản phẩm</mat-label>
           <mat-select [(ngModel)]="selectedSanphamIds" multiple (ngModelChange)="onSanphamSelectionChange()">
-            <mat-option *ngFor="let sanpham of sanphamList()" [value]="sanpham.id">
-              {{ sanpham.title }}
-            </mat-option>
+            @for (sanpham of sanphamList(); track sanpham) {
+              <mat-option [value]="sanpham.id">
+                {{ sanpham.title }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </div>
@@ -72,16 +75,18 @@
               </ng-container>
 
               <!-- Dynamic Banggia Columns -->
-              <ng-container *ngFor="let banggiaId of selectedBanggiaIds()" [matColumnDef]="'price_' + banggiaId">
-                <th mat-header-cell *matHeaderCellDef [style.color]="getBanggiaColor(banggiaId)">
-                  {{ getBanggiaTitle(banggiaId) }}
-                </th>
-                <td mat-cell *matCellDef="let row">
-                  <span [class]="getPriceComparisonClass(row.banggiaPrice[banggiaId], row)">
-                    {{ formatCurrency(row.banggiaPrice[banggiaId] || 0) }}
-                  </span>
-                </td>
-              </ng-container>
+              @for (banggiaId of selectedBanggiaIds(); track banggiaId) {
+                <ng-container [matColumnDef]="'price_' + banggiaId">
+                  <th mat-header-cell *matHeaderCellDef [style.color]="getBanggiaColor(banggiaId)">
+                    {{ getBanggiaTitle(banggiaId) }}
+                  </th>
+                  <td mat-cell *matCellDef="let row">
+                    <span [class]="getPriceComparisonClass(row.banggiaPrice[banggiaId], row)">
+                      {{ formatCurrency(row.banggiaPrice[banggiaId] || 0) }}
+                    </span>
+                  </td>
+                </ng-container>
+              }
 
               <!-- Min Price -->
               <ng-container matColumnDef="minPrice">

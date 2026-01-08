@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,14 +12,13 @@ import { SupportService } from '../support.service';
   selector: 'app-support-create',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     RouterModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
-  ],
+    MatSnackBarModule
+],
   template: `
     <div class="min-h-screen bg-slate-50">
       <!-- Sticky Header -->

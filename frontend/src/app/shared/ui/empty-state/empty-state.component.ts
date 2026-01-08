@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'ui-empty-state',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
       <div class="text-6xl mb-4">{{ icon }}</div>

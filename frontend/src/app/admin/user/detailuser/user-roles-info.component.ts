@@ -1,5 +1,5 @@
 import { Component, input, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -9,17 +9,18 @@ import { MatButtonModule } from '@angular/material/button';
   selector: 'app-user-roles-info',
   standalone: true,
   imports: [
-    CommonModule,
     MatCardModule,
     MatIconModule,
     MatChipsModule,
     MatButtonModule
-  ],
+],
   template: `
     <!-- Simple fallback to ensure component renders -->
-    <div class="mb-2 p-2 bg-blue-50 border border-blue-200 rounded" *ngIf="user()">
-      <small class="text-blue-700">✅ UserRolesInfoComponent loaded - User: {{ user()?.email || user()?.name || user()?.id }}</small>
-    </div>
+    @if (user()) {
+      <div class="mb-2 p-2 bg-blue-50 border border-blue-200 rounded">
+        <small class="text-blue-700">✅ UserRolesInfoComponent loaded - User: {{ user()?.email || user()?.name || user()?.id }}</small>
+      </div>
+    }
     
     <mat-card class="roles-info">
       <mat-card-header>
@@ -31,7 +32,7 @@ import { MatButtonModule } from '@angular/material/button';
           {{ user()?.roles?.length || 0 }} vai trò được gán
         </mat-card-subtitle>
       </mat-card-header>
-      
+    
       <mat-card-content>
         @if (user()?.roles && user().roles.length > 0) {
           <div class="space-y-4">
@@ -54,7 +55,7 @@ import { MatButtonModule } from '@angular/material/button';
                       }
                     </div>
                   </div>
-                  
+    
                   <!-- Permission count badge -->
                   @if (getRolePermissions(userRole).length > 0) {
                     <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
@@ -62,26 +63,26 @@ import { MatButtonModule } from '@angular/material/button';
                     </span>
                   }
                 </div>
-                
+    
                 <!-- Role Permissions -->
                 @if (getRolePermissions(userRole).length > 0) {
                   <div class="mt-2">
                     <div class="flex flex-wrap gap-1">
                       @for (permission of getRolePermissions(userRole).slice(0, showAllPermissions[userRole.id || userRole.roleId] ? getRolePermissions(userRole).length : 4); track permission.id || permission.name) {
-                        <span 
+                        <span
                           class="px-2 py-1 text-xs bg-white border border-blue-200 text-blue-700 rounded"
                           [title]="permission.description || permission.name">
                           {{ permission.permission.name }}
                         </span>
                       }
                       @if (getRolePermissions(userRole).length > 4) {
-                        <button 
-                          mat-button 
+                        <button
+                          mat-button
                           class="!text-xs !p-1 !min-w-0 text-blue-600"
                           (click)="toggleShowPermissions(userRole.id || userRole.roleId)">
-                          {{ showAllPermissions[userRole.id || userRole.roleId] 
-                            ? 'Thu gọn' 
-                            : '...' + (getRolePermissions(userRole).length - 4) + ' nữa' 
+                          {{ showAllPermissions[userRole.id || userRole.roleId]
+                          ? 'Thu gọn'
+                          : '...' + (getRolePermissions(userRole).length - 4) + ' nữa'
                           }}
                         </button>
                       }
@@ -93,7 +94,7 @@ import { MatButtonModule } from '@angular/material/button';
                     <p>Không có quyền</p>
                   </div>
                 }
-                
+    
                 <!-- Role assignment info -->
                 @if (userRole.assignedAt || userRole.createdAt) {
                   <div class="flex items-center mt-2 pt-2 border-t border-gray-200">
@@ -115,7 +116,7 @@ import { MatButtonModule } from '@angular/material/button';
         }
       </mat-card-content>
     </mat-card>
-  `,
+    `,
   styles: [`
     .roles-info {
       border-left: 4px solid #2196f3;

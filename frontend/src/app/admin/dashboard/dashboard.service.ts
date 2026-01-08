@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import moment from 'moment';
 import { Observable, map } from 'rxjs';
@@ -137,11 +138,15 @@ export class DashboardService {
   constructor(
     private apollo: Apollo,
     private timezoneService: TimezoneService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   private getHeaders() {
     // Simple token from localStorage for now
-    const token = localStorage.getItem('token') || '';
+    let token = '';
+    if (isPlatformBrowser(this.platformId)) {
+      token = localStorage.getItem('token') || '';
+    }
     return {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'

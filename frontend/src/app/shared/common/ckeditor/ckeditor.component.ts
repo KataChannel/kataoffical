@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+
 import { Component, EventEmitter, Input, Output, ViewEncapsulation } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
@@ -9,10 +9,9 @@ import { UploadService } from "../../uploadfile/uploadfile.service";
   selector: 'app-ckeditor',
   standalone: true,
   imports: [
-    CommonModule, 
     FormsModule,
     CKEditorModule
-  ],
+],
   templateUrl: './ckeditor.component.html',
   styleUrl: './ckeditor.component.scss',
   encapsulation: ViewEncapsulation.None

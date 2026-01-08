@@ -1,26 +1,26 @@
-import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, inject, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { NhomkhachhangService } from '../nhomkhachhang.service';
-import { MatMenuModule } from '@angular/material/menu';
-import { readExcelFile, readExcelFileNoWorkerArray, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
-import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
+import { Router, RouterOutlet } from '@angular/router';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { GraphqlService } from '../../../shared/services/graphql.service';
+import { readExcelFileNoWorkerArray, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
+import { ConvertDriveData } from '../../../shared/utils/shared.utils';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { NhomkhachhangService } from '../nhomkhachhang.service';
 @Component({
   selector: 'app-listnhomkhachhang',
   templateUrl: './listnhomkhachhang.component.html',
@@ -57,9 +57,7 @@ export class ListNhomkhachhangComponent {
     createdAt:'Ngày Tạo',
     updatedAt:'Ngày Cập Nhật'
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('NhomkhachhangColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   isFilter: boolean = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -76,7 +74,7 @@ export class ListNhomkhachhangComponent {
   nhomkhachhangId:any = this._NhomkhachhangService.nhomkhachhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
-  constructor() {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
     });
@@ -98,6 +96,11 @@ export class ListNhomkhachhangComponent {
     this.dataSource.filter = JSON.stringify(this.filterValues);
   }
   async ngOnInit(): Promise<void> {    
+    if (isPlatformBrowser(this.platformId)) {
+      this.FilterColumns = JSON.parse(
+        localStorage.getItem('NhomkhachhangColFilter') || '[]'
+      );
+    }
     await this._NhomkhachhangService.getAllNhomkhachhang();
     this.CountItem = this.Listnhomkhachhang().length;
     this.dataSource = new MatTableDataSource(this.Listnhomkhachhang());
@@ -124,8 +127,9 @@ export class ListNhomkhachhangComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('NhomkhachhangColFilter',JSON.stringify(this.FilterColumns)
-      );
+      if (isPlatformBrowser(this.platformId)) {
+        localStorage.setItem('NhomkhachhangColFilter',JSON.stringify(this.FilterColumns));
+      }
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -139,7 +143,7 @@ export class ListNhomkhachhangComponent {
   private setupDrawer(): void {
     this._breakpointObserver
       .observe([Breakpoints.Handset])
-      .subscribe((result) => {
+      .subscribe((result: any) => {
         if (result.matches) {
           this.drawer.mode = 'over';
           this.paginator.hidePageSize = true;
@@ -225,8 +229,9 @@ export class ListNhomkhachhangComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('NhomkhachhangColFilter',JSON.stringify(this.FilterColumns)
-    );
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('NhomkhachhangColFilter',JSON.stringify(this.FilterColumns));
+    }
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();
@@ -438,9 +443,11 @@ export class ListNhomkhachhangComponent {
         panelClass: ['snackbar-success'],
       });
       
-      setTimeout(() => {
-        window.location.reload();
-      }, 300);
+      if (isPlatformBrowser(this.platformId)) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 300);
+      }
 
     } catch (error: any) {
       console.error('Import error:', error);

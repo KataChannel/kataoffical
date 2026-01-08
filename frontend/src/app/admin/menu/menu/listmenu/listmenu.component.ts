@@ -1,27 +1,26 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MenuService } from '../menu.service';
-import { MatMenuModule } from '@angular/material/menu';
+import { Router, RouterOutlet } from '@angular/router';
 import { GoogleSheetService } from '../../../../shared/googlesheets/googlesheets.service';
 import { readExcelFile, writeExcelFile } from '../../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData } from '../../../../shared/utils/shared.utils';
 import { removeVietnameseAccents } from '../../../../shared/utils/texttransfer.utils';
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import {DragDropModule} from '@angular/cdk/drag-drop';
+import { MenuService } from '../menu.service';
 @Component({
   selector: 'app-listmenu',
   templateUrl: './listmenu.component.html',
@@ -65,9 +64,7 @@ export class ListMenuComponent {
     createdAt:'Ngày Tạo',
     updatedAt:'Ngày Cập Nhật'
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('MenuColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -96,6 +93,9 @@ export class ListMenuComponent {
     }
   }
   async ngOnInit(): Promise<void> {    
+    if (typeof localStorage !== 'undefined') {
+      this.FilterColumns = JSON.parse(localStorage.getItem('MenuColFilter') || '[]');
+    }
     await this._MenuService.getAllMenu();
     this.CountItem = this.Listmenu().length;
     this.dataSource = new MatTableDataSource(this.Listmenu());
@@ -121,8 +121,9 @@ export class ListMenuComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('MenuColFilter',JSON.stringify(this.FilterColumns)
-      );
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('MenuColFilter', JSON.stringify(this.FilterColumns));
+      }
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -233,8 +234,9 @@ export class ListMenuComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('MenuColFilter',JSON.stringify(this.FilterColumns)
-    );
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('MenuColFilter', JSON.stringify(this.FilterColumns));
+    }
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();

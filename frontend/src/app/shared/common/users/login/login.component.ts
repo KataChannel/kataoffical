@@ -1,16 +1,16 @@
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { Component, inject, OnInit, Inject, PLATFORM_ID, HostListener } from '@angular/core';
-import * as Auth from 'firebase/auth';
 import { isPlatformBrowser } from '@angular/common';
+import { Component, HostListener, inject, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { FormsModule } from '@angular/forms';
-import {MatInputModule} from '@angular/material/input';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import { Config } from './login';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { ActivatedRoute, Router } from '@angular/router';
+import * as Auth from 'firebase/auth';
 import { UserService } from '../../../../admin/user/user.service';
 import { StorageService } from '../../../utils/storage.service';
+import { Config } from './login';
 
 @Component({
   selector: 'app-login',
@@ -96,7 +96,9 @@ export class LoginComponent implements OnInit {
         if(res){
           if(res.permissions>0){
             console.log(res);
-            window.location.reload(); // Reload the page
+            if (isPlatformBrowser(this.platformId)) {
+              window.location.reload(); // Reload the page
+            }
           }
           else {
             this.router.navigate(['/admin/lienheadmin']);
@@ -119,7 +121,9 @@ export class LoginComponent implements OnInit {
           
           if (data[0]) {
             setTimeout(() => {
-                window.location.reload();
+                if (isPlatformBrowser(this.platformId)) {
+                  window.location.reload();
+                }
               }, 100); 
           //  console.log(data);
             // this.postMessage(data[1]);

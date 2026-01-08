@@ -1,49 +1,48 @@
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  signal,
-  ViewChild,
-  OnDestroy,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    inject,
+    Inject,
+    OnDestroy,
+    PLATFORM_ID,
+    signal,
+    ViewChild
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
-import {
-  readExcelFile,
-  writeExcelFile,
-} from '../../../shared/utils/exceldrive.utils';
-import {
-  ConvertDriveData,
-} from '../../../shared/utils/shared.utils';
-import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { DonhangService } from '../../donhang/donhang.service';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { DateHelpers } from '../../../shared/utils/date-helpers';
+import { Router, RouterOutlet } from '@angular/router';
 import moment from 'moment';
+import { SharepaginationComponent } from '../../../shared/common/sharepagination/sharepagination.component';
+import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { GraphqlService } from '../../../shared/services/graphql.service';
+import {
+    readExcelFile,
+    writeExcelFile,
+} from '../../../shared/utils/exceldrive.utils';
+import { LoadingUtils } from '../../../shared/utils/loading.utils';
+import {
+    ConvertDriveData,
+} from '../../../shared/utils/shared.utils';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
-import { SharepaginationComponent } from '../../../shared/common/sharepagination/sharepagination.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { GraphqlService } from '../../../shared/services/graphql.service';
-import { LoadingUtils } from '../../../shared/utils/loading.utils';
+import { DonhangService } from '../../donhang/donhang.service';
 @Component({
   selector: 'app-listphieugiaohang',
   templateUrl: './listphieugiaohang.component.html',
@@ -97,9 +96,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     createdAt: 'Ngày Tạo',
     updatedAt: 'Ngày Cập Nhật',
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('PhieugiaohangColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   isFilter: boolean = false;
   isLoading = signal<boolean>(false);
@@ -142,7 +139,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     { id: 4, Title: '1 Năm', value: 'year' },
   ];
   Chonthoigian: any = 'day';
-  constructor() {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
@@ -175,6 +172,11 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     return Number(row.tongtien) + Number(row.tongvat) || 0;
   }
   async ngOnInit(): Promise<void> {
+    if (isPlatformBrowser(this.platformId)) {
+      this.FilterColumns = JSON.parse(
+        localStorage.getItem('PhieugiaohangColFilter') || '[]'
+      );
+    }
     // 🔥 AUTO-LOAD: Tự động load dữ liệu trong ngày khi vào trang
     this.initializeColumns();
     this.setupDrawer();
@@ -448,7 +450,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
   private setupDrawer(): void {
     this._breakpointObserver
       .observe([Breakpoints.Handset])
-      .subscribe((result) => {
+      .subscribe((result: any) => {
         if (result.matches) {
           this.drawer.mode = 'over';
           // this.paginator.hidePageSize = true;
@@ -767,10 +769,12 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem(
-      'PhieugiaohangColFilter',
-      JSON.stringify(this.FilterColumns)
-    );
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(
+        'PhieugiaohangColFilter',
+        JSON.stringify(this.FilterColumns)
+      );
+    }
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();
@@ -786,12 +790,14 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     this._DonhangService.setDonhangId(item.id);
     // this.drawer.open();
     // this._router.navigate(['admin/phieugiaohang', item.id], { queryParams: { openInNewTab: true } });
-    window.open(
-      this._router.serializeUrl(
-        this._router.createUrlTree(['admin/phieugiaohang', item.id])
-      ),
-      '_blank'
-    );
+    if (isPlatformBrowser(this.platformId)) {
+      window.open(
+        this._router.serializeUrl(
+          this._router.createUrlTree(['admin/phieugiaohang', item.id])
+        ),
+        '_blank'
+      );
+    }
   }
   async LoadDrive() {
     this.isImporting.set(true);

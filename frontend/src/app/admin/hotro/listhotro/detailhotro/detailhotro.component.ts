@@ -1,45 +1,39 @@
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
-  Component,
-  inject,
-  ViewChild,
-  Inject,
-  PLATFORM_ID,
-  signal,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  ElementRef,
-  Renderer2,
-  HostListener,
-  QueryList,
-  ViewChildren,
+    Component,
+    ElementRef,
+    HostListener,
+    inject,
+    Inject,
+    PLATFORM_ID,
+    QueryList,
+    Renderer2,
+    ViewChild,
+    ViewChildren
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatMenuModule } from '@angular/material/menu';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { conver, ListHotro, ListType } from '../listhotro';
-import { HotrosService } from '../listhotro.service';
-import { EditorjsComponent } from '../../../../shared/common/editorjs/editorjs.component';
-import { ListHotroComponent } from '../listhotro.component';
+import { ActivatedRoute, Router } from '@angular/router';
 import html2canvas from 'html2canvas';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { FormsModule } from '@angular/forms';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { toVietnameseWords } from '../../../../shared/utils/tiente.utils';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NgxFileDropModule } from 'ngx-file-drop';
 import { UploadService } from '../../../../shared/uploadfile/uploadfile.service';
-import {  NgxFileDropModule } from 'ngx-file-drop';
+import { toVietnameseWords } from '../../../../shared/utils/tiente.utils';
 import { UserService } from '../../../user/user.service';
+import { conver, ListHotro, ListType } from '../listhotro';
+import { ListHotroComponent } from '../listhotro.component';
+import { HotrosService } from '../listhotro.service';
 @Component({
   selector: 'app-detailhotro',
   templateUrl: './detailhotro.component.html',
@@ -209,31 +203,33 @@ export class DetailHotroComponent {
     const element = document.getElementById('printContent');
     if (!element) return;
 
-    html2canvas(element, { scale: 2 }).then((canvas) => {
+    html2canvas(element, { scale: 2 }).then((canvas: any) => {
       const imageData = canvas.toDataURL('image/png');
 
       // Mở cửa sổ mới và in ảnh
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) return;
+      if (isPlatformBrowser(this.platformId)) {
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) return;
 
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>${this.Detail?.Title}</title>
-          </head>
-          <body style="text-align: center;">
-            <img src="${imageData}" style="max-width: 100%;"/>
-            <script>
-              window.onload = function() {
-                window.print();
-                window.onafterprint = function() { window.close(); };
-              };
-            </script>
-          </body>
-        </html>
-      `);
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>${this.Detail?.Title}</title>
+            </head>
+            <body style="text-align: center;">
+              <img src="${imageData}" style="max-width: 100%;"/>
+              <script>
+                window.onload = function() {
+                  window.print();
+                  window.onafterprint = function() { window.close(); };
+                };
+              </script>
+            </body>
+          </html>
+        `);
 
-      printWindow.document.close();
+        printWindow.document.close();
+      }
     });
   }
   CopyContent() {
@@ -293,7 +289,7 @@ export class DetailHotroComponent {
   private setupDrawer(): void {
     this._breakpointObserver
       .observe([Breakpoints.Handset])
-      .subscribe((result) => {
+      .subscribe((result: any) => {
         if (result.matches) {
           this.drawer.mode = 'side';
         } else {
@@ -434,6 +430,7 @@ export class DetailHotroComponent {
 
   handlePaste(event: ClipboardEvent) {
     event.preventDefault();
+    if (!isPlatformBrowser(this.platformId)) return;
     const clipboardData = event.clipboardData || (window as any).clipboardData;
     const items = clipboardData.items;
     const target = event.target as HTMLDivElement;
@@ -489,6 +486,7 @@ export class DetailHotroComponent {
   }
 
   moveCursorToEnd(element: HTMLDivElement) {
+    if (!isPlatformBrowser(this.platformId)) return;
     const range = document.createRange();
     const selection = window.getSelection();
     range.selectNodeContents(element);
