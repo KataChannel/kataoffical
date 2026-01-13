@@ -19,6 +19,11 @@ SERVER_HOST="116.118.49.243"
 SERVER_PATH="/opt/rausachv3"
 API_IMAGE="rausach-backend:latest"
 FRONTEND_IMAGE="rausach-frontend:latest"
+SSH_KEY="/home/it/.ssh/default"
+
+# SSH ControlMaster to reuse connections (Fixes: Connection reset by peer)
+CONTROL_PATH="/tmp/ssh-control-v3-%r@%h:%p"
+SSH_OPTS="-i $SSH_KEY -o ControlMaster=auto -o ControlPath=$CONTROL_PATH -o ControlPersist=5m -o ConnectTimeout=10 -o ServerAliveInterval=30 -o BatchMode=yes"
 
 # Print colored message
 print_msg() {
@@ -60,11 +65,11 @@ build_frontend() {
     print_header "Building Frontend Image"
     cd frontend
     
-    print_msg "Installing dependencies..." "$YELLOW"
-    npm install --legacy-peer-deps
+    print_msg "Installing dependencies (using Bun)..." "$YELLOW"
+    bun install
     
-    print_msg "Building frontend..." "$YELLOW"
-    npm run build
+    print_msg "Building frontend (using Bun)..." "$YELLOW"
+    bun run build
     
     print_msg "Building Docker image..." "$YELLOW"
     docker build -t $FRONTEND_IMAGE .
@@ -92,17 +97,21 @@ save_images() {
 upload_to_server() {
     print_header "Uploading to Server"
     
+    # Establish master connection
+    print_msg "Establishing persistent SSH connection..." "$YELLOW"
+    ssh $SSH_OPTS -fNM $SERVER_USER@$SERVER_HOST || true
+
     print_msg "Creating directory on server..." "$YELLOW"
-    ssh $SERVER_USER@$SERVER_HOST "mkdir -p $SERVER_PATH/docker-images"
+    ssh $SSH_OPTS $SERVER_USER@$SERVER_HOST "mkdir -p $SERVER_PATH/docker-images"
     
     print_msg "Uploading docker-compose file..." "$YELLOW"
-    scp docker-compose.v3.yml $SERVER_USER@$SERVER_HOST:$SERVER_PATH/docker-compose.yml
+    scp $SSH_OPTS docker-compose.v3.yml $SERVER_USER@$SERVER_HOST:$SERVER_PATH/docker-compose.yml
     
-    print_msg "Uploading API image..." "$YELLOW"
-    scp ./docker-images/rausach-backend.tar.gz $SERVER_USER@$SERVER_HOST:$SERVER_PATH/docker-images/
+    print_msg "Uploading API image (using rsync for better stability)..." "$YELLOW"
+    rsync -avz --progress -e "ssh $SSH_OPTS" ./docker-images/rausach-backend.tar.gz $SERVER_USER@$SERVER_HOST:$SERVER_PATH/docker-images/
     
-    print_msg "Uploading Frontend image..." "$YELLOW"
-    scp ./docker-images/rausach-frontend.tar.gz $SERVER_USER@$SERVER_HOST:$SERVER_PATH/docker-images/
+    print_msg "Uploading Frontend image (using rsync for better stability)..." "$YELLOW"
+    rsync -avz --progress -e "ssh $SSH_OPTS" ./docker-images/rausach-frontend.tar.gz $SERVER_USER@$SERVER_HOST:$SERVER_PATH/docker-images/
     
     print_msg "✓ Files uploaded successfully!" "$GREEN"
 }
@@ -111,7 +120,7 @@ upload_to_server() {
 deploy_on_server() {
     print_header "Deploying on Server"
     
-    ssh $SERVER_USER@$SERVER_HOST << 'ENDSSH'
+    ssh $SSH_OPTS $SERVER_USER@$SERVER_HOST << 'ENDSSH'
         cd /opt/rausachv3
         
         echo "Loading API image..."
@@ -133,6 +142,9 @@ deploy_on_server() {
         docker-compose ps
 ENDSSH
     
+    # Close master connection
+    ssh -O exit -o ControlPath=$CONTROL_PATH $SERVER_USER@$SERVER_HOST 2>/dev/null || true
+    
     print_msg "✓ Deployment completed successfully!" "$GREEN"
 }
 
@@ -149,6 +161,9 @@ show_info() {
 main() {
     print_header "Rausach V3 - Build & Deploy"
     
+    # Cleanup on exit
+    trap "ssh -O exit -o ControlPath=$CONTROL_PATH $SERVER_USER@$SERVER_HOST 2>/dev/null || true" EXIT
+
     case "${1:-all}" in
         api)
             build_api

@@ -54,6 +54,7 @@ show_menu() {
     echo -e "  ${GREEN}10)${NC} 📋 Mở Menu chính (menu.sh)"
     echo -e "  ${GREEN}11)${NC} 🔍 Check TypeScript Errors (toàn dự án)"
     echo -e "  ${GREEN}12)${NC} 🔄 Sync Database Optimized (Source -> Target)"
+    echo -e "  ${GREEN}13)${NC} 🛠  Check Stack Versions (Bun, Angular, NestJS, etc.)"
     echo ""
     echo -e "  ${RED}0)${NC} ❌ Thoát"
     echo ""
@@ -342,6 +343,43 @@ sync_database_optimized() {
 }
 
 # ============================================
+# CHECK STACK VERSIONS
+# ============================================
+check_versions() {
+    log_stage "INFO" "KIỂM TRA STACK VERSIONS"
+    
+    echo -e "${CYAN}--- Hệ thống & Runtime ---${NC}"
+    if command -v bun &> /dev/null; then echo -e "Bun:        $(bun --version)"; else echo -e "Bun:        ${RED}Not installed${NC}"; fi
+    if command -v node &> /dev/null; then echo -e "Node.js:    $(node --version)"; else echo -e "Node.js:    ${RED}Not installed${NC}"; fi
+    
+    echo -e "\n${CYAN}--- Frontend (Angular 21) ---${NC}"
+    cd frontend
+    if [[ -f "./node_modules/.bin/ng" ]]; then
+        ./node_modules/.bin/ng version | grep "Angular CLI\|Angular:\|Node:\|OS:" | sed 's/^/  /'
+    else
+        log_warning "Angular CLI không tìm thấy trong node_modules"
+    fi
+    cd ..
+    
+    echo -e "\n${CYAN}--- Backend (NestJS & Prisma) ---${NC}"
+    cd api
+    NEST_VER=$(grep '"@nestjs/core":' package.json | awk -F'"' '{print $4}')
+    echo -e "NestJS Core: ${NEST_VER:-N/A}"
+    if command -v bun &> /dev/null; then 
+        echo -en "Prisma:      "
+        bun prisma version | grep "prisma-client-js" | head -n 1
+    fi
+    cd ..
+
+    echo -e "\n${CYAN}--- Công cụ & Build ---${NC}"
+    if command -v docker &> /dev/null; then echo -e "Docker:     $(docker --version)"; fi
+    if command -v docker-compose &> /dev/null; then echo -e "Compose:    $(docker-compose --version)"; fi
+    if command -v git &> /dev/null; then echo -e "Git:        $(git --version)"; fi
+    
+    log_success "Kiểm tra phiên bản hoàn tất!"
+}
+
+# ============================================
 # MAIN LOGIC
 # ============================================
 
@@ -376,6 +414,9 @@ elif [[ "$1" == "--generate" ]]; then
     exit 0
 elif [[ "$1" == "--sync" ]]; then
     sync_database_optimized
+    exit 0
+elif [[ "$1" == "--version-check" ]]; then
+    check_versions
     exit 0
 fi
 
@@ -438,6 +479,11 @@ while true; do
             ;;
         12)
             sync_database_optimized
+            echo ""
+            read -p "Nhấn Enter để tiếp tục..."
+            ;;
+        13)
+            check_versions
             echo ""
             read -p "Nhấn Enter để tiếp tục..."
             ;;

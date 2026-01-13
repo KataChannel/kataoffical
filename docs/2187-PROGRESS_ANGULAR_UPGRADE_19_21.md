@@ -17,6 +17,7 @@ Dự án đã hoàn tất lộ trình nâng cấp từ Angular 19 lên Angular 2
 - **Cập nhật mới nhất**: Toàn bộ core packages đạt phiên bản **21.0.7**.
 - **Build System**: Chuyển đổi thành công sang **Application Builder** mới nhất của Angular (Vite + ESBuild), thay thế hoàn toàn Webpack, giúp tốc độ build nhanh hơn ~50%.
 - **Bun Runtime Implementation**: Thay thế toàn bộ quy trình `npm` bằng `Bun`. Tốc độ cài đặt thư viện (`bun install`) và khởi chạy dự án (`bun run start`) tăng gấp 3-4 lần.
+- **Stack Version Check Tool**: Tích hợp công cụ kiểm tra phiên bản toàn bộ stack (Option `13` trong `bun-dev.sh` hoặc `./bun-dev.sh --version-check`), giúp theo dõi phiên bản Bun, Node, Angular CLI, NestJS, Prisma và Docker.
 
 ### 2. Tối ưu hóa Database & Payload (Unused Libraries Removal)
 - Đã loại bỏ hoàn toàn các thư viện Editor không sử dụng để giảm kích thước bundle:
