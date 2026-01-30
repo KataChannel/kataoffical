@@ -1066,21 +1066,14 @@ export class ListcongnonccComponent {
       console.log('Exporting Excel with table format...');
 
       // Prepare data for client-side export
-      let exportData: any[] = [];
-
+      let rawData: any[] = [];
       if (this.editDathang.length > 0) {
-        exportData = this.editDathang.flatMap((order: any) => {   
-          const result = this.convertFlatData(order);
-          return result
-        });
-        console.log(exportData);    
+        rawData = await this.ChuyendoiExport(this.editDathang);
       } else {
-        // Use all current data
-        exportData = data.flatMap((order: any) => {
-          console.log(order);
-          return this.convertFlatData(order);
-        });
+        rawData = await this.ChuyendoiExport(data);
       }
+      let exportData: any[] = [];
+      exportData = rawData.flatMap((order: any) => this.convertFlatData(order));
 
       // Generate Excel file with exporttable format
       await this.generateExcelWithTableFormat(exportData, title);
@@ -1114,18 +1107,79 @@ export class ListcongnonccComponent {
     }
   }
 
+  async ChuyendoiExport(item: any) {
+    const where: any = {
+      ngaynhan: { gte: moment(this.SearchParams.Batdau).startOf('day').toDate(), lte: moment(this.SearchParams.Ketthuc).endOf('day').toDate() },
+    };
+
+    if (item && item.length > 0) {
+      where.id = { in: item.map((v: any) => v.id) };
+    } else if (this.SearchParams.congnonccIds?.length > 0) {
+      where.nhacungcapId = { in: this.SearchParams.congnonccIds };
+    }
+
+    const Dathangs = await this._GraphqlService.findAll('dathang', {
+      take: 999999,
+      where: where,
+      select: {
+        id: true,
+        ngaynhan: true,
+        madncc: true,
+        nhacungcap: {
+          select: {
+            id: true,
+            name: true,
+            mancc: true,
+            nhomncc: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        sanpham: {
+          select: {
+            sanpham: {
+              select: {
+                id: true,
+                title: true,
+                masp: true,
+                dvt: true,
+              },
+            },
+            sldat: true,
+            slgiao: true,
+            slnhan: true,
+            gianhap: true,
+          },
+        },
+      },
+    });
+
+    return Dathangs.data.map((v: any) => ({
+      ...v,
+      tongtien: Number(
+        v.sanpham.reduce(
+          (total: any, item: any) =>
+            total + (Number(item.slnhan) * Number(item.gianhap) || 0),
+          0
+        )
+      ),
+    }));
+  }
+
   // Method for exporting Excel with two sheets (Summary and Details) with high-fidelity styling
   async ExportExcelTwoSheets(data: any, title: any) {
     this.isExporting = true;
     try {
       console.log('Exporting Excel with two sheets (Formatted NCC)...');
-      
+
       // 1. Prepare data
       let rawData: any[] = [];
       if (this.editDathang.length > 0) {
-        rawData = this.editDathang;
+        rawData = await this.ChuyendoiExport(this.editDathang);
       } else {
-        rawData = this.ListCongno;
+        rawData = await this.ChuyendoiExport(data);
       }
 
       if (!rawData || rawData.length === 0) {
@@ -1219,7 +1273,9 @@ export class ListcongnonccComponent {
         const supplierId = order.nhacungcap?.id || 'unknown';
         if (!supplierGroupsMap.has(supplierId)) {
           supplierGroupsMap.set(supplierId, {
-            groupName: order.nhacungcap?.nhomncc?.name || 'Chưa phân nhóm',
+            groupName: (order.nhacungcap?.nhomncc && order.nhacungcap.nhomncc.length > 0)
+              ? order.nhacungcap.nhomncc[0].name
+              : 'Chưa phân nhóm',
             supplierName: order.nhacungcap?.name || 'Chưa tên',
             mancc: order.nhacungcap?.mancc || '',
             increase: 0,

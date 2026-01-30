@@ -1184,7 +1184,9 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
         const customerId = order.khachhang?.id || 'unknown';
         if (!customerGroupsMap.has(customerId)) {
           customerGroupsMap.set(customerId, {
-            groupName: order.khachhang?.nhomkhachhang?.name || 'Chưa phân nhóm',
+            groupName: (order.khachhang?.nhomkhachhang && order.khachhang.nhomkhachhang.length > 0) 
+              ? order.khachhang.nhomkhachhang[0].name 
+              : 'Chưa phân nhóm',
             customerName: order.khachhang?.name || 'Chưa tên',
             makh: order.khachhang?.makh || '',
             increase: 0,
