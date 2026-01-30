@@ -26,6 +26,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import {
   readExcelFile,
   writeExcelFile,
+  writeExcelFileSheets,
 } from '../../../shared/utils/exceldrive.utils';
 import {
   ConvertDriveData,
@@ -772,45 +773,53 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
     }));
   }
 
-  async ChuyendoiExport(item:any){
-   const Donhangs =  await this._GraphqlService.findAll('donhang',
-    {
-      aggressiveCache: true,
-      enableStreaming: true,
-      where:{
-        id:{in:item.map((v:any)=>v.id)},
-        ngaygiao:{gte:moment(this.SearchParams.Batdau).startOf('day').toDate(),lte:moment(this.SearchParams.Ketthuc).endOf('day').toDate()},
-        status:{in:this.SearchParams.Status},
-        // khachhangId:{in:this.SearchParams.khachhangIds.length>0?this.SearchParams.khachhangIds:undefined}
-      },
-      select: {
-        id: true,
-        madonhang: true,
-        ngaygiao: true,
-        sanpham:{
-          select:{
-            slnhan:true,
-            ttnhan:true,
-            giaban:true,
-            ghichu:true,
-            sanpham:{
-              select:{
-                masp:true,
-                title:true,
-                dvt:true,
+  async ChuyendoiExport(item: any) {
+    const where: any = {
+      ngaygiao: { gte: moment(this.SearchParams.Batdau).startOf('day').toDate(), lte: moment(this.SearchParams.Ketthuc).endOf('day').toDate() },
+      status: { in: this.SearchParams.Status },
+    };
+
+    if (item && item.length > 0) {
+      where.id = { in: item.map((v: any) => v.id) };
+    } else if (this.SearchParams.khachhangIds?.length > 0) {
+      where.khachhangId = { in: this.SearchParams.khachhangIds };
+    }
+
+    const Donhangs = await this._GraphqlService.findAll('donhang',
+      {
+        aggressiveCache: true,
+        enableStreaming: true,
+        take: 999999,
+        where: where,
+        select: {
+          id: true,
+          madonhang: true,
+          ngaygiao: true,
+          sanpham: {
+            select: {
+              slnhan: true,
+              ttnhan: true,
+              giaban: true,
+              ghichu: true,
+              sanpham: {
+                select: {
+                  masp: true,
+                  title: true,
+                  dvt: true,
+                }
+              }
             }
+          },
+          khachhang: {
+            select: {
+              makh: true,
+              name: true,
+              diachi: true,
+              email: true,
             }
-        }},
-        khachhang:{
-          select:{
-            makh:true,
-            name:true,
-            diachi:true,
-            email:true,
           }
         }
-      }        
-    })
+      })
     return Donhangs.data;
   }
 
@@ -1051,6 +1060,111 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
       
       // Show error message
       this._snackBar.open('Lỗi khi xuất file Excel (định dạng bảng)!', 'Đóng', {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+    } finally {
+      this.isExporting = false;
+    }
+  }
+
+  // Method for exporting Excel with two sheets (Summary and Details)
+  async ExportExcelTwoSheets(data: any, title: any) {
+    this.isExporting = true;
+    try {
+      console.log('Exporting Excel with two sheets...');
+      
+      // 1. Prepare data
+      let rawData: any[] = [];
+      if (this.editDonhang.length > 0) {
+        rawData = await this.ChuyendoiExport(this.editDonhang);
+      } else {
+        rawData = await this.ChuyendoiExport(data);
+      }
+
+      // 2. Prepare Sheet 1: Summary (Tong hop)
+      const summaryData = rawData.map((item: any) => ({
+        ngaygiao: moment(item.ngaygiao).format('DD/MM/YYYY'),
+        madonhang: item.madonhang,
+        makh: item.khachhang?.makh,
+        name: item.khachhang?.name,
+        soluong: item.sanpham?.reduce((sum: number, sp: any) => sum + (Number(sp.slnhan) || 0), 0) || 0,
+        tongtien: item.sanpham?.reduce((sum: number, sp: any) => sum + (Number(sp.ttnhan) || 0), 0) || 0,
+      }));
+
+      const summaryMapping: any = {
+        ngaygiao: 'Ngày Giao',
+        madonhang: 'Mã Đơn Hàng',
+        makh: 'Mã Khách Hàng',
+        name: 'Tên Khách Hàng',
+        soluong: 'Tổng Số Lượng',
+        tongtien: 'Tổng Tiền (Sau VAT)',
+      };
+
+      // 3. Prepare Sheet 2: Detail (Chi tiet)
+      const detailData = rawData.flatMap((order: any) => {
+        return (order.sanpham || [])
+          .filter((item: any) => Number(item.slnhan) > 0)
+          .map((item: any) => ({
+            ngaygiao: moment(order.ngaygiao).format('DD/MM/YYYY'),
+            madonhang: order.madonhang,
+            makh: order.khachhang?.makh,
+            tenkh: order.khachhang?.name,
+            masp: item.sanpham?.masp,
+            tensp: item.sanpham?.title,
+            dvt: item.sanpham?.dvt,
+            slnhan: Number(item.slnhan) || 0,
+            giaban: Number(item.giaban) || 0,
+            ttnhan: Number(item.ttnhan) || 0,
+            ghichu: item.ghichu || ''
+          }));
+      });
+
+      const detailMapping: any = {
+        ngaygiao: 'Ngày Giao',
+        madonhang: 'Mã Đơn Hàng',
+        makh: 'Mã Khách Hàng',
+        tenkh: 'Tên Khách Hàng',
+        masp: 'Mã Sản Phẩm',
+        tensp: 'Tên Sản Phẩm',
+        dvt: 'ĐVT',
+        slnhan: 'Số Lượng',
+        giaban: 'Đơn Giá',
+        ttnhan: 'Thành Tiền',
+        ghichu: 'Ghi Chú'
+      };
+
+      // 4. Combine into sheetsData
+      const sheetsData = {
+        'Tổng Hợp': {
+          data: summaryData,
+          headers: Object.values(summaryMapping) as string[],
+          mapping: summaryMapping,
+        },
+        'Chi Tiết': {
+          data: detailData,
+          headers: Object.values(detailMapping) as string[],
+          mapping: detailMapping,
+        },
+      };
+
+      // 5. Export
+      writeExcelFileSheets(sheetsData, title);
+
+      // Clear selection and show success
+      this.editDonhang = [];
+      this._snackBar.open('Xuất file Excel 2 sheet thành công!', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+
+    } catch (error) {
+      console.error('Error exporting Excel with two sheets:', error);
+      this._snackBar.open('Lỗi khi xuất file Excel 2 sheet!', 'Đóng', {
         duration: 5000,
         horizontalPosition: 'center',
         verticalPosition: 'top',
