@@ -10,12 +10,46 @@ import { GraphQLResolveInfo } from 'graphql';
 export class FieldSelectionService {
   
   /**
+   * Field name mapping to handle differences between GraphQL names and Prisma names
+   * Maps lowercase or camelCase GraphQL names to the exact casing used in Prisma schema
+   */
+  private readonly globalFieldMapping: Record<string, string> = {
+    'nhomncc': 'NhomNcc',
+    'phieukho': 'PhieuKho',
+    'sanphamkho': 'SanphamKho',
+    'tonkho': 'TonKho',
+    'phieukhosanpham': 'PhieuKhoSanpham',
+    'donhangsanpham': 'Donhangsanpham',
+    'dathangsanpham': 'Dathangsanpham',
+    'banggiasanpham': 'Banggiasanpham',
+    'chotkhodetail': 'chotkhodetail',
+    'auditlog': 'AuditLog',
+  };
+
+  /**
+   * Model-specific field mapping to avoid global conflicts
+   */
+  private readonly modelFieldMapping: Record<string, Record<string, string>> = {
+    'nhacungcap': {
+      'sanpham': 'Sanpham',
+      'nhomncc': 'NhomNcc',
+    },
+    'sanpham': {
+      'nhacungcap': 'Nhacungcap',
+      'sanphamkho': 'SanphamKho',
+      'tonkho': 'TonKho',
+      'donhangsanpham': 'Donhangsanpham',
+      'dathangsanpham': 'Dathangsanpham',
+    }
+  };
+
+  /**
    * Extract field selections from GraphQL info and convert to Prisma select object
    */
-  getFieldSelection(info: GraphQLResolveInfo): any {
+  getFieldSelection(info: GraphQLResolveInfo, modelName?: string): any {
     try {
       const fields = graphqlFields(info);
-      return this.convertFieldsToPrismaSelect(fields);
+      return this.convertFieldsToPrismaSelect(fields, modelName);
     } catch (error) {
       console.warn('⚠️ Field selection parsing failed, using default:', error.message);
       return undefined;
@@ -23,15 +57,68 @@ export class FieldSelectionService {
   }
 
   /**
+   * Public method to normalize a selection object (select or include)
+   */
+  normalizeSelection(selection: any, modelName?: string): any {
+    if (!selection || typeof selection !== 'object') return selection;
+    
+    // We can reuse convertFieldsToPrismaSelect logic by pretending the input is graphql-fields output
+    // But we need to handle the fact that selection might already be a Prisma-like object ({ select: ... } or { field: true })
+    
+    return this.convertPrismaObjectToNormalizedPrismaObject(selection, modelName);
+  }
+
+  /**
+   * Helper to normalize an existing Prisma select/include object
+   */
+  private convertPrismaObjectToNormalizedPrismaObject(obj: any, modelName?: string): any {
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return obj;
+    
+    const normalized: any = {};
+    const normalizedModelName = modelName?.toLowerCase();
+    
+    for (let [key, value] of Object.entries(obj)) {
+      let mappedKey = key;
+      const normalizedKey = key.toLowerCase();
+      
+      // Apply mapping
+      if (normalizedModelName && this.modelFieldMapping[normalizedModelName]?.[normalizedKey]) {
+        mappedKey = this.modelFieldMapping[normalizedModelName][normalizedKey];
+      } else if (this.globalFieldMapping[normalizedKey]) {
+        mappedKey = this.globalFieldMapping[normalizedKey];
+      }
+      
+      if (typeof value === 'object' && value !== null) {
+        // Recursively normalize nested objects (could be { select: ... } or { include: ... } or just nested fields)
+        normalized[mappedKey] = this.convertPrismaObjectToNormalizedPrismaObject(value);
+        // Note: For now we lose modelName context in deep nesting unless we track relation targets
+      } else {
+        normalized[mappedKey] = value;
+      }
+    }
+    
+    return normalized;
+  }
+
+  /**
    * Convert GraphQL fields to Prisma select object
    */
-  private convertFieldsToPrismaSelect(fields: any): any {
+  private convertFieldsToPrismaSelect(fields: any, modelName?: string): any {
     const select: any = {};
     const include: any = {};
     let hasRelations = false;
     let hasScalarFields = false;
+    const normalizedModelName = modelName?.toLowerCase();
 
-    for (const [fieldName, fieldValue] of Object.entries(fields)) {
+    for (let [fieldName, fieldValue] of Object.entries(fields)) {
+      // ✅ Map field name if a mapping exists
+      const normalizedFieldName = fieldName.toLowerCase();
+      if (normalizedModelName && this.modelFieldMapping[normalizedModelName]?.[normalizedFieldName]) {
+        fieldName = this.modelFieldMapping[normalizedModelName][normalizedFieldName];
+      } else if (this.globalFieldMapping[normalizedFieldName]) {
+        fieldName = this.globalFieldMapping[normalizedFieldName];
+      }
+
       if (this.isScalarField(fieldName)) {
         select[fieldName] = true;
         hasScalarFields = true;

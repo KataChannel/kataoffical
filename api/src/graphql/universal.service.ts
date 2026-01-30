@@ -9,6 +9,17 @@ export class UniversalService { // Fix: Rename to avoid conflict
   /**
    * ✅ Map lowercase model names to PascalCase Prisma model names
    */
+  private readonly fieldMapping: Record<string, string> = {
+    'nhomncc': 'NhomNcc',
+    'phieukho': 'PhieuKho',
+    'sanphamkho': 'SanphamKho',
+    'tonkho': 'TonKho',
+    'phieukhosanpham': 'PhieuKhoSanpham',
+    'donhangsanpham': 'Donhangsanpham',
+    'dathangsanpham': 'Dathangsanpham',
+    'banggiasanpham': 'Banggiasanpham',
+  };
+
   private mapModelName(model: string): string {
     const modelMap: { [key: string]: string } = {
       'tonkho': 'tonKho',           // TonKho -> tonKho in client
@@ -30,6 +41,26 @@ export class UniversalService { // Fix: Rename to avoid conflict
     };
 
     return modelMap[model.toLowerCase()] || model;
+  }
+
+  /**
+   * ✅ Normalize selection/include object keys
+   */
+  private normalizeSelection(obj: any): any {
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return obj;
+    
+    const normalized: any = {};
+    for (const [key, value] of Object.entries(obj)) {
+      const normalizedKey = key.toLowerCase();
+      const mappedKey = this.fieldMapping[normalizedKey] || key;
+      
+      if (value && typeof value === 'object') {
+        normalized[mappedKey] = this.normalizeSelection(value);
+      } else {
+        normalized[mappedKey] = value;
+      }
+    }
+    return normalized;
   }
 
   /**
@@ -128,9 +159,9 @@ async findMany(modelName: string, options: {
 
     // ✅ PRIORITIZE SELECT OVER INCLUDE
     if (select) {
-      queryArgs.select = select;
+      queryArgs.select = this.normalizeSelection(select);
     } else if (include) {
-      queryArgs.include = include;
+      queryArgs.include = this.normalizeSelection(include);
     }
 
     // Execute queries
@@ -170,9 +201,9 @@ async findMany(modelName: string, options: {
 
       // ✅ PRIORITIZE SELECT OVER INCLUDE
       if (select) {
-        queryArgs.select = select;
+        queryArgs.select = this.normalizeSelection(select); // ✅ SELECT SUPPORT
       } else if (include) {
-        queryArgs.include = include;
+        queryArgs.include = this.normalizeSelection(include);
       }
 
       const result = await (this.prisma as any)[modelName].findUnique(queryArgs);

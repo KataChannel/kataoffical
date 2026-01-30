@@ -487,11 +487,11 @@ export class EnhancedUniversalService {
     
     // Priority: Custom select/include > GraphQL field selection > Default
     if (args.select || args.include) {
-      if (args.select) queryOptions.select = args.select;
-      if (args.include) queryOptions.include = args.include;
+      if (args.select) queryOptions.select = this.fieldSelection.normalizeSelection(args.select, modelName);
+      if (args.include) queryOptions.include = this.fieldSelection.normalizeSelection(args.include, modelName);
     } else if (info) {
       // Extract field selection from GraphQL info
-      fieldSelection = this.fieldSelection.getFieldSelection(info);
+      fieldSelection = this.fieldSelection.getFieldSelection(info, modelName);
       if (fieldSelection) {
         // Optimize for specific model
         fieldSelection = this.fieldSelection.optimizeForModel(modelName, fieldSelection);
