@@ -59,9 +59,9 @@ export declare class AuthService {
                     createdAt: Date;
                     updatedAt: Date;
                     name: string;
+                    description: string | null;
                     codeId: string | null;
                     group: string | null;
-                    description: string | null;
                 };
             } & {
                 id: string;

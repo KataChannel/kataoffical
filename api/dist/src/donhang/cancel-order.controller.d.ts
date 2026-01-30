@@ -55,7 +55,7 @@ export declare class CancelOrderController {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
-            email: string | null;
+            isshowvat: boolean;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -64,6 +64,7 @@ export declare class CancelOrderController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
+            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -71,7 +72,6 @@ export declare class CancelOrderController {
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
-            isshowvat: boolean;
             machuyen: string | null;
         } | null;
     } & {
@@ -86,10 +86,11 @@ export declare class CancelOrderController {
         updatedAt: Date;
         banggiaId: string | null;
         vat: import("@prisma/client/runtime/library").Decimal;
-        isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        khachhangId: string | null;
         printCount: number | null;
+        isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
@@ -99,7 +100,6 @@ export declare class CancelOrderController {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
-        khachhangId: string | null;
     })[] | ({
         sanpham: ({
             sanpham: {
@@ -147,11 +147,11 @@ export declare class CancelOrderController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            email: string | null;
+            isshowvat: boolean;
             diachi: string | null;
             sdt: string | null;
+            email: string | null;
             tenfile: string | null;
-            isshowvat: boolean;
             mancc: string;
             manccold: string | null;
         } | null;
@@ -224,7 +224,7 @@ export declare class CancelOrderController {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
-            email: string | null;
+            isshowvat: boolean;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -233,6 +233,7 @@ export declare class CancelOrderController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
+            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -240,7 +241,6 @@ export declare class CancelOrderController {
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
-            isshowvat: boolean;
             machuyen: string | null;
         } | null;
     } & {
@@ -255,10 +255,11 @@ export declare class CancelOrderController {
         updatedAt: Date;
         banggiaId: string | null;
         vat: import("@prisma/client/runtime/library").Decimal;
-        isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        khachhangId: string | null;
         printCount: number | null;
+        isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
@@ -268,7 +269,6 @@ export declare class CancelOrderController {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
-        khachhangId: string | null;
     })[] | ({
         sanpham: ({
             sanpham: {
@@ -316,11 +316,11 @@ export declare class CancelOrderController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            email: string | null;
+            isshowvat: boolean;
             diachi: string | null;
             sdt: string | null;
+            email: string | null;
             tenfile: string | null;
-            isshowvat: boolean;
             mancc: string;
             manccold: string | null;
         } | null;

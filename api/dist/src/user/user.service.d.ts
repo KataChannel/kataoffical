@@ -50,9 +50,9 @@ export declare class UserService {
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            description: string | null;
             codeId: string | null;
             group: string | null;
-            description: string | null;
         }[];
         id: string;
         isActive: boolean;

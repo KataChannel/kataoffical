@@ -69,7 +69,7 @@ export declare class CancelOrderService {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
-            email: string | null;
+            isshowvat: boolean;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -78,6 +78,7 @@ export declare class CancelOrderService {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
+            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -85,7 +86,6 @@ export declare class CancelOrderService {
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
-            isshowvat: boolean;
             machuyen: string | null;
         } | null;
     } & {
@@ -100,10 +100,11 @@ export declare class CancelOrderService {
         updatedAt: Date;
         banggiaId: string | null;
         vat: Prisma.Decimal;
-        isshowvat: boolean;
         madonhang: string;
         ngaygiao: Date | null;
+        khachhangId: string | null;
         printCount: number | null;
+        isshowvat: boolean;
         tongtien: Prisma.Decimal;
         tongvat: Prisma.Decimal;
         lydohuy: string | null;
@@ -113,7 +114,6 @@ export declare class CancelOrderService {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
-        khachhangId: string | null;
     })[] | ({
         sanpham: ({
             sanpham: {
@@ -161,11 +161,11 @@ export declare class CancelOrderService {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            email: string | null;
+            isshowvat: boolean;
             diachi: string | null;
             sdt: string | null;
+            email: string | null;
             tenfile: string | null;
-            isshowvat: boolean;
             mancc: string;
             manccold: string | null;
         } | null;

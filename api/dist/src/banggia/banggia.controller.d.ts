@@ -127,7 +127,7 @@ export declare class BanggiaController {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
-            email: string | null;
+            isshowvat: boolean;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -136,6 +136,7 @@ export declare class BanggiaController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
+            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -143,7 +144,6 @@ export declare class BanggiaController {
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
-            isshowvat: boolean;
             machuyen: string | null;
         }[];
         id: string;

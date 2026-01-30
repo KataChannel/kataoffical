@@ -9,8 +9,8 @@ export declare class NhanvienController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         email: string | null;
+        userId: string | null;
         ten: string | null;
         maNV: string;
         maLamViec: string | null;
@@ -80,8 +80,8 @@ export declare class NhanvienController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         email: string | null;
+        userId: string | null;
         ten: string | null;
         maNV: string;
         maLamViec: string | null;
@@ -128,8 +128,8 @@ export declare class NhanvienController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         email: string | null;
+        userId: string | null;
         ten: string | null;
         maNV: string;
         maLamViec: string | null;
@@ -176,8 +176,8 @@ export declare class NhanvienController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         email: string | null;
+        userId: string | null;
         ten: string | null;
         maNV: string;
         maLamViec: string | null;
@@ -227,8 +227,8 @@ export declare class NhanvienController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         email: string | null;
+        userId: string | null;
         ten: string | null;
         maNV: string;
         maLamViec: string | null;
@@ -275,8 +275,8 @@ export declare class NhanvienController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         email: string | null;
+        userId: string | null;
         ten: string | null;
         maNV: string;
         maLamViec: string | null;

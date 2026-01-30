@@ -14,7 +14,7 @@ export declare class KhachhangController {
         name: string | null;
         banggiaId: string | null;
         subtitle: string | null;
-        email: string | null;
+        isshowvat: boolean;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -23,6 +23,7 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
+        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
@@ -30,7 +31,6 @@ export declare class KhachhangController {
         istitle2: boolean;
         tenfile: string | null;
         tenkh: string | null;
-        isshowvat: boolean;
         machuyen: string | null;
     }>;
     import(data: any): Promise<{
@@ -62,7 +62,7 @@ export declare class KhachhangController {
         name: string | null;
         banggiaId: string | null;
         subtitle: string | null;
-        email: string | null;
+        isshowvat: boolean;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -71,6 +71,7 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
+        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
@@ -78,7 +79,6 @@ export declare class KhachhangController {
         istitle2: boolean;
         tenfile: string | null;
         tenkh: string | null;
-        isshowvat: boolean;
         machuyen: string | null;
     }) | {
         data: ({
@@ -106,7 +106,7 @@ export declare class KhachhangController {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
-            email: string | null;
+            isshowvat: boolean;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -115,6 +115,7 @@ export declare class KhachhangController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
+            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -122,7 +123,6 @@ export declare class KhachhangController {
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
-            isshowvat: boolean;
             machuyen: string | null;
         })[];
         page: any;
@@ -155,7 +155,7 @@ export declare class KhachhangController {
         name: string | null;
         banggiaId: string | null;
         subtitle: string | null;
-        email: string | null;
+        isshowvat: boolean;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -164,6 +164,7 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
+        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
@@ -171,7 +172,6 @@ export declare class KhachhangController {
         istitle2: boolean;
         tenfile: string | null;
         tenkh: string | null;
-        isshowvat: boolean;
         machuyen: string | null;
     }>;
     findAllForSelect(): Promise<{
@@ -214,7 +214,7 @@ export declare class KhachhangController {
             name: string | null;
             banggiaId: string | null;
             subtitle: string | null;
-            email: string | null;
+            isshowvat: boolean;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -223,6 +223,7 @@ export declare class KhachhangController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
+            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
@@ -230,7 +231,6 @@ export declare class KhachhangController {
             istitle2: boolean;
             tenfile: string | null;
             tenkh: string | null;
-            isshowvat: boolean;
             machuyen: string | null;
         })[];
         total: number;
@@ -263,7 +263,7 @@ export declare class KhachhangController {
         name: string | null;
         banggiaId: string | null;
         subtitle: string | null;
-        email: string | null;
+        isshowvat: boolean;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -272,6 +272,7 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
+        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
@@ -279,7 +280,6 @@ export declare class KhachhangController {
         istitle2: boolean;
         tenfile: string | null;
         tenkh: string | null;
-        isshowvat: boolean;
         machuyen: string | null;
     }>;
     update(id: string, updateKhachhangDto: any): Promise<{
@@ -307,7 +307,7 @@ export declare class KhachhangController {
         name: string | null;
         banggiaId: string | null;
         subtitle: string | null;
-        email: string | null;
+        isshowvat: boolean;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -316,6 +316,7 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
+        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
@@ -323,7 +324,6 @@ export declare class KhachhangController {
         istitle2: boolean;
         tenfile: string | null;
         tenkh: string | null;
-        isshowvat: boolean;
         machuyen: string | null;
     }>;
     remove(id: string): Promise<{
@@ -335,7 +335,7 @@ export declare class KhachhangController {
         name: string | null;
         banggiaId: string | null;
         subtitle: string | null;
-        email: string | null;
+        isshowvat: boolean;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -344,6 +344,7 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
+        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
@@ -351,7 +352,6 @@ export declare class KhachhangController {
         istitle2: boolean;
         tenfile: string | null;
         tenkh: string | null;
-        isshowvat: boolean;
         machuyen: string | null;
     }>;
 }

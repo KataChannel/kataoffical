@@ -8,8 +8,8 @@ export declare class UserguideController {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        codeId: string | null;
         description: string | null;
+        codeId: string | null;
         time: string | null;
     }>;
     findby(param: any): Promise<{
@@ -22,8 +22,8 @@ export declare class UserguideController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                codeId: string | null;
                 description: string | null;
+                codeId: string | null;
                 listItems: string | null;
                 imageUrl: string | null;
                 imageAlt: string | null;
@@ -37,8 +37,8 @@ export declare class UserguideController {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            codeId: string | null;
             description: string | null;
+            codeId: string | null;
             time: string | null;
         })[];
         total: number;
@@ -55,8 +55,8 @@ export declare class UserguideController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                codeId: string | null;
                 description: string | null;
+                codeId: string | null;
                 listItems: string | null;
                 imageUrl: string | null;
                 imageAlt: string | null;
@@ -70,8 +70,8 @@ export declare class UserguideController {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            codeId: string | null;
             description: string | null;
+            codeId: string | null;
             time: string | null;
         })[];
         total: number;
@@ -87,8 +87,8 @@ export declare class UserguideController {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        codeId: string | null;
         description: string | null;
+        codeId: string | null;
         time: string | null;
     }>;
     update(id: string, data: any): Promise<{
@@ -97,8 +97,8 @@ export declare class UserguideController {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        codeId: string | null;
         description: string | null;
+        codeId: string | null;
         time: string | null;
     }>;
     remove(id: string): Promise<{
@@ -107,8 +107,8 @@ export declare class UserguideController {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        codeId: string | null;
         description: string | null;
+        codeId: string | null;
         time: string | null;
     }>;
     reorder(body: {

@@ -48,9 +48,9 @@ export declare class UserPermissionController {
         permission: {
             id: string;
             name: string;
+            description: string | null;
             codeId: string | null;
             group: string | null;
-            description: string | null;
         };
     } & {
         id: string;
@@ -71,9 +71,9 @@ export declare class UserPermissionController {
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            description: string | null;
             codeId: string | null;
             group: string | null;
-            description: string | null;
         };
     } & {
         id: string;
@@ -94,9 +94,9 @@ export declare class UserPermissionController {
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            description: string | null;
             codeId: string | null;
             group: string | null;
-            description: string | null;
         };
     } & {
         id: string;
@@ -120,8 +120,8 @@ export declare class UserPermissionController {
             permission: {
                 id: string;
                 name: string;
-                codeId: string | null;
                 description: string | null;
+                codeId: string | null;
             };
         } & {
             id: string;
