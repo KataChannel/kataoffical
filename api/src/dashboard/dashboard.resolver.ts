@@ -83,12 +83,12 @@ export class DashboardResolver {
     let processedWhere: any = {};
     
     if (batdau || ketthuc) {
-      processedWhere.createdAt = {};
+      processedWhere.ngaygiao = {};
       if (batdau) {
-        processedWhere.createdAt.gte = new Date(batdau);
+        processedWhere.ngaygiao.gte = new Date(batdau);
       }
       if (ketthuc) {
-        processedWhere.createdAt.lte = new Date(ketthuc);
+        processedWhere.ngaygiao.lte = new Date(ketthuc);
       }
     }
 
@@ -118,12 +118,12 @@ export class DashboardResolver {
     let processedWhere: any = {};
     
     if (batdau || ketthuc) {
-      processedWhere.createdAt = {};
+      processedWhere.ngaynhan = {};
       if (batdau) {
-        processedWhere.createdAt.gte = new Date(batdau);
+        processedWhere.ngaynhan.gte = new Date(batdau);
       }
       if (ketthuc) {
-        processedWhere.createdAt.lte = new Date(ketthuc);
+        processedWhere.ngaynhan.lte = new Date(ketthuc);
       }
     }
 
@@ -186,23 +186,23 @@ export class DashboardResolver {
 
     switch (groupBy) {
       case 'day':
-        selectFormat = `DATE("createdAt") as period`;
-        groupByFormat = `DATE("createdAt")`;
+        selectFormat = `DATE("ngaygiao") as period`;
+        groupByFormat = `DATE("ngaygiao")`;
         orderBy = 'period';
         break;
       case 'month':
-        selectFormat = `TO_CHAR("createdAt", 'YYYY-MM') as period`;
-        groupByFormat = `TO_CHAR("createdAt", 'YYYY-MM')`;
+        selectFormat = `TO_CHAR("ngaygiao", 'YYYY-MM') as period`;
+        groupByFormat = `TO_CHAR("ngaygiao", 'YYYY-MM')`;
         orderBy = 'period';
         break;
       case 'year':
-        selectFormat = `EXTRACT(YEAR FROM "createdAt")::text as period`;
-        groupByFormat = `EXTRACT(YEAR FROM "createdAt")`;
+        selectFormat = `EXTRACT(YEAR FROM "ngaygiao")::text as period`;
+        groupByFormat = `EXTRACT(YEAR FROM "ngaygiao")`;
         orderBy = 'period';
         break;
       default:
-        selectFormat = `DATE("createdAt")::text as period`;
-        groupByFormat = `DATE("createdAt")`;
+        selectFormat = `DATE("ngaygiao")::text as period`;
+        groupByFormat = `DATE("ngaygiao")`;
         orderBy = 'period';
     }
 
@@ -213,7 +213,7 @@ export class DashboardResolver {
         COALESCE(SUM("tongtien"), 0)::numeric as total_revenue,
         COALESCE(SUM("tongtien"), 0)::numeric as total_profit
       FROM "Donhang" 
-      WHERE "createdAt" >= $1 AND "createdAt" <= $2
+      WHERE "ngaygiao" >= $1 AND "ngaygiao" <= $2
       GROUP BY ${groupByFormat}
       ORDER BY ${orderBy}
     `;
@@ -252,7 +252,7 @@ export class DashboardResolver {
       FROM "Donhangsanpham" dsp
       INNER JOIN "Sanpham" sp ON dsp."idSP" = sp.id
       INNER JOIN "Donhang" dh ON dsp."donhangId" = dh.id
-      WHERE dh."createdAt" >= $1 AND dh."createdAt" <= $2
+      WHERE dh."ngaygiao" >= $1 AND dh."ngaygiao" <= $2
       GROUP BY sp.id, sp.title, sp.masp
       ORDER BY totalQuantity DESC
       LIMIT $3
@@ -295,7 +295,7 @@ export class DashboardResolver {
       FROM "Donhangsanpham" dsp
       INNER JOIN "Sanpham" sp ON dsp."idSP" = sp.id
       INNER JOIN "Donhang" dh ON dsp."donhangId" = dh.id
-      WHERE dh."createdAt" >= $1 AND dh."createdAt" <= $2
+      WHERE dh."ngaygiao" >= $1 AND dh."ngaygiao" <= $2
       GROUP BY sp.id, sp.title, sp.masp
       ORDER BY totalValue DESC
       LIMIT $3
