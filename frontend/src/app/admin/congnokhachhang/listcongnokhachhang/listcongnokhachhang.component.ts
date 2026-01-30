@@ -795,11 +795,14 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
           id: true,
           madonhang: true,
           ngaygiao: true,
+          tongtien: true,
+          tongvat: true,
           sanpham: {
             select: {
               slnhan: true,
               ttnhan: true,
               giaban: true,
+              vat: true,
               ghichu: true,
               sanpham: {
                 select: {
@@ -812,10 +815,16 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
           },
           khachhang: {
             select: {
+              id: true,
               makh: true,
               name: true,
               diachi: true,
               email: true,
+              nhomkhachhang: {
+                select: {
+                  name: true
+                }
+              }
             }
           }
         }
@@ -1070,11 +1079,11 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
     }
   }
 
-  // Method for exporting Excel with two sheets (Summary and Details)
+  // Method for exporting Excel with two sheets (Summary and Details) with high-fidelity styling
   async ExportExcelTwoSheets(data: any, title: any) {
     this.isExporting = true;
     try {
-      console.log('Exporting Excel with two sheets...');
+      console.log('Exporting Excel with two sheets (Formatted)...');
       
       // 1. Prepare data
       let rawData: any[] = [];
@@ -1084,92 +1093,274 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
         rawData = await this.ChuyendoiExport(data);
       }
 
-      // 2. Prepare Sheet 1: Summary (Tong hop)
-      const summaryData = rawData.map((item: any) => ({
-        ngaygiao: moment(item.ngaygiao).format('DD/MM/YYYY'),
-        madonhang: item.madonhang,
-        makh: item.khachhang?.makh,
-        name: item.khachhang?.name,
-        soluong: item.sanpham?.reduce((sum: number, sp: any) => sum + (Number(sp.slnhan) || 0), 0) || 0,
-        tongtien: item.sanpham?.reduce((sum: number, sp: any) => sum + (Number(sp.ttnhan) || 0), 0) || 0,
-      }));
+      if (!rawData || rawData.length === 0) {
+        this._snackBar.open('Không có dữ liệu để xuất!', 'Đóng', { duration: 3000 });
+        return;
+      }
 
-      const summaryMapping: any = {
-        ngaygiao: 'Ngày Giao',
-        madonhang: 'Mã Đơn Hàng',
-        makh: 'Mã Khách Hàng',
-        name: 'Tên Khách Hàng',
-        soluong: 'Tổng Số Lượng',
-        tongtien: 'Tổng Tiền (Sau VAT)',
+      const workbook = XLSX.utils.book_new();
+
+      // --- STYLES ---
+      const borderThin = {
+        top: { style: 'thin' },
+        bottom: { style: 'thin' },
+        left: { style: 'thin' },
+        right: { style: 'thin' }
       };
 
-      // 3. Prepare Sheet 2: Detail (Chi tiet)
-      const detailData = rawData.flatMap((order: any) => {
-        return (order.sanpham || [])
-          .filter((item: any) => Number(item.slnhan) > 0)
-          .map((item: any) => ({
-            ngaygiao: moment(order.ngaygiao).format('DD/MM/YYYY'),
-            madonhang: order.madonhang,
-            makh: order.khachhang?.makh,
-            tenkh: order.khachhang?.name,
-            masp: item.sanpham?.masp,
-            tensp: item.sanpham?.title,
-            dvt: item.sanpham?.dvt,
-            slnhan: Number(item.slnhan) || 0,
-            giaban: Number(item.giaban) || 0,
-            ttnhan: Number(item.ttnhan) || 0,
-            ghichu: item.ghichu || ''
-          }));
+      const styleHeaderYellow = {
+        fill: { fgColor: { rgb: 'FFFF00' } },
+        font: { bold: true, name: 'Calibri' },
+        alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+        border: borderThin
+      };
+
+      const styleHeaderGray = {
+        fill: { fgColor: { rgb: 'D9D9D9' } },
+        font: { bold: true, name: 'Calibri' },
+        alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+        border: borderThin
+      };
+
+      const styleHeaderBlue = {
+        fill: { fgColor: { rgb: '1F4E78' } },
+        font: { bold: true, color: { rgb: 'FFFFFF' }, name: 'Calibri' },
+        alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+        border: borderThin
+      };
+
+      const styleData = {
+        font: { name: 'Calibri' },
+        alignment: { vertical: 'center' },
+        border: borderThin
+      };
+
+      const styleNumber = {
+        ...styleData,
+        alignment: { horizontal: 'right', vertical: 'center' },
+        numFmt: '#,##0.00'
+      };
+
+      const styleTitle = {
+        font: { bold: true, size: 16, name: 'Calibri' },
+        alignment: { horizontal: 'center', vertical: 'center' }
+      };
+
+      const styleSubTitle = {
+        font: { bold: true, italic: true, name: 'Calibri' },
+        alignment: { horizontal: 'center', vertical: 'center' }
+      };
+
+      // ==========================================
+      // SHEET 1: TỔNG HỢP
+      // ==========================================
+      const summaryRows: any[][] = [];
+      
+      // Row 1: Title
+      summaryRows.push(['TỔNG HỢP CÔNG NỢ PHẢI THU KHÁCH HÀNG']);
+      // Row 2: Subtitles
+      summaryRows.push(['Tài khoản: 131', '', '', '', '', '', 'Từ ngày ' + moment(this.SearchParams.Batdau).format('DD/MM/YYYY') + ' Đến ngày ' + moment(this.SearchParams.Ketthuc).format('DD/MM/YYYY')]);
+      // Row 3: Headers Line 1
+      summaryRows.push(['NHÓM KHÁCH HÀNG', 'Tên khách hàng', 'TK công nợ', 'Số dư đầu kỳ', 'Phát sinh tăng\n(DOANH SỐ TỔNG-VAT)', 'Phát sinh giảm', 'Số dư cuối kỳ', 'Trong đó', '']);
+      // Row 4: Headers Line 2 (sub-header for "Trong đó")
+      summaryRows.push(['', '', '', '', '', '', '', 'Tháng ' + moment(this.SearchParams.Ketthuc).format('MM/YYYY'), '']);
+
+      const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
+      
+      // Styling Title
+      summarySheet['A1'].s = styleTitle;
+      // Styling Subtitles
+      summarySheet['A2'].s = styleSubTitle;
+      summarySheet['G2'].s = styleSubTitle;
+
+      // Styling Headers
+      ['A3', 'B3', 'E3'].forEach(c => summarySheet[c].s = styleHeaderYellow);
+      ['C3', 'D3', 'F3', 'G3', 'H3', 'I3'].forEach(c => summarySheet[c].s = styleHeaderGray);
+      ['H4', 'I4'].forEach(c => summarySheet[c].s = styleHeaderGray);
+
+      // Group by Customer and Group
+      const customerGroupsMap = new Map();
+      rawData.forEach(order => {
+        const customerId = order.khachhang?.id || 'unknown';
+        if (!customerGroupsMap.has(customerId)) {
+          customerGroupsMap.set(customerId, {
+            groupName: order.khachhang?.nhomkhachhang?.name || 'Chưa phân nhóm',
+            customerName: order.khachhang?.name || 'Chưa tên',
+            makh: order.khachhang?.makh || '',
+            increase: 0,
+            decrease: 0,
+          });
+        }
+        const group = customerGroupsMap.get(customerId);
+        group.increase += Number(order.tongtien) || 0;
       });
 
-      const detailMapping: any = {
-        ngaygiao: 'Ngày Giao',
-        madonhang: 'Mã Đơn Hàng',
-        makh: 'Mã Khách Hàng',
-        tenkh: 'Tên Khách Hàng',
-        masp: 'Mã Sản Phẩm',
-        tensp: 'Tên Sản Phẩm',
-        dvt: 'ĐVT',
-        slnhan: 'Số Lượng',
-        giaban: 'Đơn Giá',
-        ttnhan: 'Thành Tiền',
-        ghichu: 'Ghi Chú'
-      };
+      // Data Rows
+      let currentRowIdx = 4;
+      const sortedCustomers = Array.from(customerGroupsMap.values()).sort((a, b) => a.groupName.localeCompare(b.groupName));
+      
+      const mergesSummary: any[] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }, // Title merge
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 5 } }, // Tài khoản merge
+        { s: { r: 1, c: 6 }, e: { r: 1, c: 8 } }, // Từ ngày merge
+        { s: { r: 2, c: 0 }, e: { r: 3, c: 0 } }, // Nhóm KH merge vertically
+        { s: { r: 2, c: 1 }, e: { r: 3, c: 1 } }, // Tên KH merge vertically
+        { s: { r: 2, c: 2 }, e: { r: 3, c: 2 } }, // TK công nợ merge vertically
+        { s: { r: 2, c: 3 }, e: { r: 3, c: 3 } }, // Số dư đầu kỳ merge vertically
+        { s: { r: 2, c: 4 }, e: { r: 3, c: 4 } }, // Phát sinh tăng merge vertically
+        { s: { r: 2, c: 5 }, e: { r: 3, c: 5 } }, // Phát sinh giảm merge vertically
+        { s: { r: 2, c: 6 }, e: { r: 3, c: 6 } }, // Số dư cuối kỳ merge vertically
+        { s: { r: 2, c: 7 }, e: { r: 2, c: 8 } }, // "Trong đó" horizontal merge
+      ];
 
-      // 4. Combine into sheetsData
-      const sheetsData = {
-        'Tổng Hợp': {
-          data: summaryData,
-          headers: Object.values(summaryMapping) as string[],
-          mapping: summaryMapping,
-        },
-        'Chi Tiết': {
-          data: detailData,
-          headers: Object.values(detailMapping) as string[],
-          mapping: detailMapping,
-        },
-      };
+      let lastGroupName = '';
+      let groupStartRow = currentRowIdx;
 
-      // 5. Export
-      writeExcelFileSheets(sheetsData, title);
+      sortedCustomers.forEach((cust, idx) => {
+        const row = [
+          cust.groupName,
+          cust.customerName,
+          '131',
+          0,
+          cust.increase,
+          0,
+          cust.increase,
+          cust.increase,
+          ''
+        ];
+        XLSX.utils.sheet_add_aoa(summarySheet, [row], { origin: currentRowIdx });
+        
+        // Apply styles to data row
+        for (let c = 0; c <= 8; c++) {
+          const cellRef = XLSX.utils.encode_cell({ r: currentRowIdx, c: c });
+          summarySheet[cellRef].s = (c >= 3) ? styleNumber : styleData;
+        }
 
-      // Clear selection and show success
+        // Row merging for identical groups
+        if (cust.groupName !== lastGroupName) {
+          if (idx > 0 && currentRowIdx - groupStartRow > 1) {
+            mergesSummary.push({ s: { r: groupStartRow, c: 0 }, e: { r: currentRowIdx - 1, c: 0 } });
+          }
+          lastGroupName = cust.groupName;
+          groupStartRow = currentRowIdx;
+        }
+
+        currentRowIdx++;
+      });
+      // Final merge for the last group
+      if (currentRowIdx - groupStartRow > 1) {
+        mergesSummary.push({ s: { r: groupStartRow, c: 0 }, e: { r: currentRowIdx - 1, c: 0 } });
+      }
+
+      summarySheet['!merges'] = mergesSummary;
+      summarySheet['!cols'] = [
+        { wch: 15 }, { wch: 35 }, { wch: 10 }, { wch: 15 }, { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }
+      ];
+      XLSX.utils.book_append_sheet(workbook, summarySheet, 'Tổng Hợp');
+
+      // ==========================================
+      // SHEET 2: CHI TIẾT
+      // ==========================================
+      const detailHeaders = [
+        'Ngày Giao', 'Mã Khách Hàng', 'Tên Khách Hàng', 'Mã Đơn Hàng', 'Mã Hàng', 'Tên Hàng', 'ĐVT', 
+        'Số Lượng', 'Đơn Giá', 'Thành Tiền Trước VAT', 'Ghi Chú', 'VAT (%)', 'Đơn Giá VAT', 'Thành Tiền Sau VAT', 
+        'Tổng Tiền Sau Thuế', 'Tổng Tiền Trước Thuế', 'Tổng Cộng Khách Hàng'
+      ];
+
+      const detailRows: any[][] = [detailHeaders];
+      const detailSheet = XLSX.utils.aoa_to_sheet(detailRows);
+
+      // Styling Headers
+      for (let c = 0; c < detailHeaders.length; c++) {
+        const cellRef = XLSX.utils.encode_cell({ r: 0, c: c });
+        detailSheet[cellRef].s = styleHeaderBlue;
+      }
+
+      let detailRowIdx = 1;
+      const mergesDetail: any[] = [];
+      
+      // Group by Customer for "Tổng Cộng Khách Hàng"
+      const customerGrandTotals = new Map();
+      rawData.forEach(order => {
+        const custId = order.khachhang?.id;
+        customerGrandTotals.set(custId, (customerGrandTotals.get(custId) || 0) + (Number(order.tongtien) || 0));
+      });
+
+      rawData.forEach(order => {
+        const items = (order.sanpham || []).filter((it: any) => Number(it.slnhan) > 0);
+        if (items.length === 0) return;
+
+        const startRow = detailRowIdx;
+        const custId = order.khachhang?.id;
+
+        items.forEach((item: any, idx: number) => {
+          const vatVal = Number(item.vat) || 0;
+          const giabanPreVat = Number(item.giaban) || 0;
+          const ttPreVat = (Number(item.slnhan) || 0) * giabanPreVat;
+          const ttAfterVat = Number(item.ttnhan) || ttPreVat * (1 + vatVal / 100);
+
+          const rowDataArr = [
+            moment(order.ngaygiao).format('DD/MM/YYYY'),
+            order.khachhang?.makh || '',
+            order.khachhang?.name || '',
+            order.madonhang || '',
+            item.sanpham?.masp || '',
+            item.sanpham?.title || '',
+            item.sanpham?.dvt || '',
+            Number(item.slnhan) || 0,
+            giabanPreVat,
+            ttPreVat,
+            item.ghichu || '',
+            vatVal + '%',
+            giabanPreVat * (1 + vatVal / 100),
+            ttAfterVat,
+            idx === 0 ? Number(order.tongtien) || 0 : '',
+            idx === 0 ? (Number(order.tongtien) || 0) - (Number(order.tongvat) || 0) : '',
+            idx === 0 ? customerGrandTotals.get(custId) : ''
+          ];
+
+          XLSX.utils.sheet_add_aoa(detailSheet, [rowDataArr], { origin: detailRowIdx });
+
+          // Styling data cells
+          for (let c = 0; c < rowDataArr.length; c++) {
+            const cellRef = XLSX.utils.encode_cell({ r: detailRowIdx, c: c });
+            const isNumber = [7, 8, 9, 12, 13, 14, 15, 16].includes(c);
+            detailSheet[cellRef].s = isNumber ? styleNumber : styleData;
+          }
+          detailRowIdx++;
+        });
+
+        // Merges for same order
+        if (items.length > 1) {
+          [0, 1, 2, 3, 14, 15, 16].forEach(c => {
+            mergesDetail.push({ s: { r: startRow, c }, e: { r: detailRowIdx - 1, c } });
+          });
+        }
+      });
+
+      detailSheet['!merges'] = mergesDetail;
+      detailSheet['!cols'] = detailHeaders.map(() => ({ wch: 15 }));
+      XLSX.utils.book_append_sheet(workbook, detailSheet, 'Chi Tiết');
+
+      // 5. Write and Download
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const finalFileName = `${title}_${moment().format('DD_MM_YYYY')}.xlsx`;
+      
+      const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = finalFileName;
+      link.click();
+      window.URL.revokeObjectURL(url);
+
+      // Reset
       this.editDonhang = [];
-      this._snackBar.open('Xuất file Excel 2 sheet thành công!', 'Đóng', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success']
-      });
+      this._snackBar.open('Xuất file Excel thành công!', 'Đóng', { duration: 3000, context: 'success' } as any);
 
     } catch (error) {
-      console.error('Error exporting Excel with two sheets:', error);
-      this._snackBar.open('Lỗi khi xuất file Excel 2 sheet!', 'Đóng', {
-        duration: 5000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error']
-      });
+      console.error('Error exporting Excel:', error);
+      this._snackBar.open('Lỗi khi xuất file Excel!', 'Đóng', { duration: 5000 });
     } finally {
       this.isExporting = false;
     }

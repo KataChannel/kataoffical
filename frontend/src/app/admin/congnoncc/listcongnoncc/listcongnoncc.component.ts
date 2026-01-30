@@ -610,6 +610,11 @@ export class ListcongnonccComponent {
             id: true,
             name: true,
             mancc: true,
+            nhomncc: {
+              select: {
+                name: true
+              }
+            }
           },
         },
         sanpham: {
@@ -1109,107 +1114,274 @@ export class ListcongnonccComponent {
     }
   }
 
-  // Method for exporting Excel with two sheets (Summary and Details)
+  // Method for exporting Excel with two sheets (Summary and Details) with high-fidelity styling
   async ExportExcelTwoSheets(data: any, title: any) {
     this.isExporting = true;
     try {
-      console.log('Exporting Excel with two sheets...');
+      console.log('Exporting Excel with two sheets (Formatted NCC)...');
       
       // 1. Prepare data
       let rawData: any[] = [];
       if (this.editDathang.length > 0) {
         rawData = this.editDathang;
       } else {
-        rawData = data;
+        rawData = this.ListCongno;
       }
 
-      // 2. Prepare Sheet 1: Summary (Tong hop)
-      const summaryData = rawData.map((item: any) => ({
-        ngaynhan: moment(item.ngaynhan).format('DD/MM/YYYY'),
-        madncc: item.madncc,
-        mancc: item.nhacungcap?.mancc || item.mancc,
-        name: item.nhacungcap?.name || item.name,
-        soluong: item.sanpham?.reduce((sum: number, sp: any) => sum + (Number(sp.slnhan) || 0), 0) || 0,
-        tongtien: item.sanpham?.reduce((sum: number, sp: any) => sum + (Number(sp.slnhan) * Number(sp.gianhap) || 0), 0) || 0,
-      }));
+      if (!rawData || rawData.length === 0) {
+        this._snackBar.open('Không có dữ liệu để xuất!', 'Đóng', { duration: 3000 });
+        return;
+      }
 
-      const summaryMapping: any = {
-        ngaynhan: 'Ngày Nhận',
-        madncc: 'Mã Đơn Nhận Hàng',
-        mancc: 'Mã Nhà Cung Cấp',
-        name: 'Tên Nhà Cung Cấp',
-        soluong: 'Tổng Số Lượng',
-        tongtien: 'Tổng Tiền',
+      const workbook = XLSX.utils.book_new();
+
+      // --- STYLES ---
+      const borderThin = {
+        top: { style: 'thin' },
+        bottom: { style: 'thin' },
+        left: { style: 'thin' },
+        right: { style: 'thin' }
       };
 
-      // 3. Prepare Sheet 2: Detail (Chi tiet)
-      const detailData = rawData.flatMap((order: any) => {
-        return (order.sanpham || [])
-          .map((item: any) => ({
-            ngaynhan: moment(order.ngaynhan).format('DD/MM/YYYY'),
-            madncc: order.madncc,
-            mancc: order.nhacungcap?.mancc || order.mancc,
-            name: order.nhacungcap?.name || order.name,
-            masp: item.sanpham?.masp || item.masp,
-            tensp: item.sanpham?.title || item.tensp,
-            dvt: item.sanpham?.dvt || item.dvt,
-            sldat: Number(item.sldat) || 0,
-            slnhan: Number(item.slnhan) || 0,
-            slconlai: (Number(item.sldat) || 0) - (Number(item.slnhan) || 0),
-            gianhap: Number(item.gianhap) || 0,
-            thanhtien: (Number(item.slnhan) || 0) * (Number(item.gianhap) || 0),
-          }));
+      const styleHeaderYellow = {
+        fill: { fgColor: { rgb: 'FFFF00' } },
+        font: { bold: true, name: 'Calibri' },
+        alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+        border: borderThin
+      };
+
+      const styleHeaderGray = {
+        fill: { fgColor: { rgb: 'D9D9D9' } },
+        font: { bold: true, name: 'Calibri' },
+        alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+        border: borderThin
+      };
+
+      const styleHeaderBlue = {
+        fill: { fgColor: { rgb: '1F4E78' } },
+        font: { bold: true, color: { rgb: 'FFFFFF' }, name: 'Calibri' },
+        alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+        border: borderThin
+      };
+
+      const styleData = {
+        font: { name: 'Calibri' },
+        alignment: { vertical: 'center' },
+        border: borderThin
+      };
+
+      const styleNumber = {
+        ...styleData,
+        alignment: { horizontal: 'right', vertical: 'center' },
+        numFmt: '#,##0.00'
+      };
+
+      const styleTitle = {
+        font: { bold: true, size: 16, name: 'Calibri' },
+        alignment: { horizontal: 'center', vertical: 'center' }
+      };
+
+      const styleSubTitle = {
+        font: { bold: true, italic: true, name: 'Calibri' },
+        alignment: { horizontal: 'center', vertical: 'center' }
+      };
+
+      // ==========================================
+      // SHEET 1: TỔNG HỢP (NCC)
+      // ==========================================
+      const summaryRows: any[][] = [];
+      
+      // Row 1: Title
+      summaryRows.push(['TỔNG HỢP CÔNG NỢ PHẢI TRẢ NHÀ CUNG CẤP']);
+      // Row 2: Subtitles
+      summaryRows.push(['Tài khoản: 331', '', '', '', '', '', 'Từ ngày ' + moment(this.SearchParams.Batdau).format('DD/MM/YYYY') + ' Đến ngày ' + moment(this.SearchParams.Ketthuc).format('DD/MM/YYYY')]);
+      // Row 3: Headers Line 1
+      summaryRows.push(['NHÓM NHÀ CUNG CẤP', 'Tên nhà cung cấp', 'TK công nợ', 'Số dư đầu kỳ', 'Phát sinh tăng\n(DOANH SỐ TỔNG-VAT)', 'Phát sinh giảm', 'Số dư cuối kỳ', 'Trong đó', '']);
+      // Row 4: Headers Line 2 (sub-header for "Trong đó")
+      summaryRows.push(['', '', '', '', '', '', '', 'Tháng ' + moment(this.SearchParams.Ketthuc).format('MM/YYYY'), '']);
+
+      const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
+      
+      // Styling Title
+      summarySheet['A1'].s = styleTitle;
+      // Styling Subtitles
+      summarySheet['A2'].s = styleSubTitle;
+      summarySheet['G2'].s = styleSubTitle;
+
+      // Styling Headers
+      ['A3', 'B3', 'E3'].forEach(c => summarySheet[c].s = styleHeaderYellow);
+      ['C3', 'D3', 'F3', 'G3', 'H3', 'I3'].forEach(c => summarySheet[c].s = styleHeaderGray);
+      ['H4', 'I4'].forEach(c => summarySheet[c].s = styleHeaderGray);
+
+      // Group by Supplier
+      const supplierGroupsMap = new Map();
+      rawData.forEach(order => {
+        const supplierId = order.nhacungcap?.id || 'unknown';
+        if (!supplierGroupsMap.has(supplierId)) {
+          supplierGroupsMap.set(supplierId, {
+            groupName: order.nhacungcap?.nhomncc?.name || 'Chưa phân nhóm',
+            supplierName: order.nhacungcap?.name || 'Chưa tên',
+            mancc: order.nhacungcap?.mancc || '',
+            increase: 0,
+            decrease: 0,
+          });
+        }
+        const group = supplierGroupsMap.get(supplierId);
+        group.increase += Number(order.tongtien) || 0;
       });
 
-      const detailMapping: any = {
-        ngaynhan: 'Ngày Nhận',
-        madncc: 'Mã Đơn Nhận Hàng',
-        mancc: 'Mã Nhà Cung Cấp',
-        name: 'Tên Nhà Cung Cấp',
-        masp: 'Mã Sản Phẩm',
-        tensp: 'Tên Sản Phẩm',
-        dvt: 'ĐVT',
-        sldat: 'Số Lượng Đặt',
-        slnhan: 'Số Lượng Thực Nhận',
-        slconlai: 'Số Lượng Còn Lại',
-        gianhap: 'Đơn Giá',
-        thanhtien: 'Thành Tiền',
-      };
+      // Data Rows
+      let currentRowIdx = 4;
+      const sortedSuppliers = Array.from(supplierGroupsMap.values()).sort((a, b) => a.groupName.localeCompare(b.groupName));
+      
+      const mergesSummary: any[] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }, // Title merge
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 5 } }, // Tài khoản merge
+        { s: { r: 1, c: 6 }, e: { r: 1, c: 8 } }, // Từ ngày merge
+        { s: { r: 2, c: 0 }, e: { r: 3, c: 0 } }, // Nhóm NCC merge vertically
+        { s: { r: 2, c: 1 }, e: { r: 3, c: 1 } }, // Tên NCC merge vertically
+        { s: { r: 2, c: 2 }, e: { r: 3, c: 2 } }, // TK công nợ merge vertically
+        { s: { r: 2, c: 3 }, e: { r: 3, c: 3 } }, // Số dư đầu kỳ merge vertically
+        { s: { r: 2, c: 4 }, e: { r: 3, c: 4 } }, // Phát sinh tăng merge vertically
+        { s: { r: 2, c: 5 }, e: { r: 3, c: 5 } }, // Phát sinh giảm merge vertically
+        { s: { r: 2, c: 6 }, e: { r: 3, c: 6 } }, // Số dư cuối kỳ merge vertically
+        { s: { r: 2, c: 7 }, e: { r: 2, c: 8 } }, // "Trong đó" horizontal merge
+      ];
 
-      // 4. Combine into sheetsData
-      const sheetsData = {
-        'Tổng Hợp': {
-          data: summaryData,
-          headers: Object.values(summaryMapping) as string[],
-          mapping: summaryMapping,
-        },
-        'Chi Tiết': {
-          data: detailData,
-          headers: Object.values(detailMapping) as string[],
-          mapping: detailMapping,
-        },
-      };
+      let lastGroupName = '';
+      let groupStartRow = currentRowIdx;
 
-      // 5. Export
-      writeExcelFileSheets(sheetsData, title);
+      sortedSuppliers.forEach((sup, idx) => {
+        const row = [
+          sup.groupName,
+          sup.supplierName,
+          '331',
+          0,
+          sup.increase,
+          0,
+          sup.increase,
+          sup.increase,
+          ''
+        ];
+        XLSX.utils.sheet_add_aoa(summarySheet, [row], { origin: currentRowIdx });
+        
+        // Apply styles to data row
+        for (let c = 0; c <= 8; c++) {
+          const cellRef = XLSX.utils.encode_cell({ r: currentRowIdx, c: c });
+          summarySheet[cellRef].s = (c >= 3) ? styleNumber : styleData;
+        }
 
-      // Clear selection and show success
+        if (sup.groupName !== lastGroupName) {
+          if (idx > 0 && currentRowIdx - groupStartRow > 1) {
+            mergesSummary.push({ s: { r: groupStartRow, c: 0 }, e: { r: currentRowIdx - 1, c: 0 } });
+          }
+          lastGroupName = sup.groupName;
+          groupStartRow = currentRowIdx;
+        }
+        currentRowIdx++;
+      });
+      if (currentRowIdx - groupStartRow > 1) {
+        mergesSummary.push({ s: { r: groupStartRow, c: 0 }, e: { r: currentRowIdx - 1, c: 0 } });
+      }
+
+      summarySheet['!merges'] = mergesSummary;
+      summarySheet['!cols'] = [
+        { wch: 15 }, { wch: 35 }, { wch: 10 }, { wch: 15 }, { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }
+      ];
+      XLSX.utils.book_append_sheet(workbook, summarySheet, 'Tổng Hợp');
+
+      // ==========================================
+      // SHEET 2: CHI TIẾT (NCC)
+      // ==========================================
+      const detailHeaders = [
+        'Ngày Nhận', 'Mã Đơn Nhận', 'Mã Nhà CC', 'Tên Nhà Cung Cấp', 'Mã Hàng', 'Tên Hàng', 'ĐVT', 
+        'Số Lượng Đặt', 'Số Lượng Thực Nhận', 'Số Lượng Còn Lại', 'Đơn Giá', 'Thành Tiền', 
+        'Tổng Tiền Đơn', 'Tổng Cộng NCC'
+      ];
+
+      const detailRows: any[][] = [detailHeaders];
+      const detailSheet = XLSX.utils.aoa_to_sheet(detailRows);
+
+      for (let c = 0; c < detailHeaders.length; c++) {
+        const cellRef = XLSX.utils.encode_cell({ r: 0, c: c });
+        detailSheet[cellRef].s = styleHeaderBlue;
+      }
+
+      let detailRowIdx = 1;
+      const mergesDetail: any[] = [];
+      
+      const supplierGrandTotals = new Map();
+      rawData.forEach(order => {
+        const supId = order.nhacungcap?.id;
+        supplierGrandTotals.set(supId, (supplierGrandTotals.get(supId) || 0) + (Number(order.tongtien) || 0));
+      });
+
+      rawData.forEach(order => {
+        const items = order.sanpham || [];
+        if (items.length === 0) return;
+
+        const startRow = detailRowIdx;
+        const supId = order.nhacungcap?.id;
+
+        items.forEach((item: any, idx: number) => {
+          const tt = (Number(item.slnhan) || 0) * (Number(item.gianhap) || 0);
+          
+          const rowDataArr = [
+            moment(order.ngaynhan).format('DD/MM/YYYY'),
+            order.madncc || '',
+            order.nhacungcap?.mancc || '',
+            order.nhacungcap?.name || '',
+            item.sanpham?.masp || '',
+            item.sanpham?.title || '',
+            item.sanpham?.dvt || '',
+            Number(item.sldat) || 0,
+            Number(item.slnhan) || 0,
+            (Number(item.sldat) || 0) - (Number(item.slnhan) || 0),
+            Number(item.gianhap) || 0,
+            tt,
+            idx === 0 ? Number(order.tongtien) || 0 : '',
+            idx === 0 ? supplierGrandTotals.get(supId) : ''
+          ];
+
+          XLSX.utils.sheet_add_aoa(detailSheet, [rowDataArr], { origin: detailRowIdx });
+
+          for (let c = 0; c < rowDataArr.length; c++) {
+            const cellRef = XLSX.utils.encode_cell({ r: detailRowIdx, c: c });
+            const isNumber = [7, 8, 9, 10, 11, 12, 13].includes(c);
+            detailSheet[cellRef].s = isNumber ? styleNumber : styleData;
+          }
+          detailRowIdx++;
+        });
+
+        if (items.length > 1) {
+          [0, 1, 2, 3, 12, 13].forEach(c => {
+            mergesDetail.push({ s: { r: startRow, c }, e: { r: detailRowIdx - 1, c } });
+          });
+        }
+      });
+
+      detailSheet['!merges'] = mergesDetail;
+      detailSheet['!cols'] = detailHeaders.map(() => ({ wch: 15 }));
+      XLSX.utils.book_append_sheet(workbook, detailSheet, 'Chi Tiết');
+
+      // 5. Write and Download
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const finalFileName = `${title}_${moment().format('DD_MM_YYYY')}.xlsx`;
+      
+      const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = finalFileName;
+      link.click();
+      window.URL.revokeObjectURL(url);
+
       this.editDathang = [];
-      this._snackBar.open('Xuất file Excel 2 sheet thành công!', 'Đóng', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success']
-      });
+      this._snackBar.open('Xuất file Excel thành công!', 'Đóng', { duration: 3000 });
 
     } catch (error) {
-      console.error('Error exporting Excel with two sheets:', error);
-      this._snackBar.open('Lỗi khi xuất file Excel 2 sheet!', 'Đóng', {
-        duration: 5000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error']
-      });
+      console.error('Error exporting Excel:', error);
+      this._snackBar.open('Lỗi khi xuất file Excel!', 'Đóng', { duration: 5000 });
     } finally {
       this.isExporting = false;
     }
