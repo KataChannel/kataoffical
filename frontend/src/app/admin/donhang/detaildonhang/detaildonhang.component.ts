@@ -551,8 +551,12 @@ export class DetailDonhangComponent {
 
   private calculateTotalVat(): number {
     // tongvat = tong * donhang.vat
+    // 🔥 BUGFIX: Respect isshowvat flag
+    if (!this.DetailDonhang()?.isshowvat) {
+      return 0;
+    }
     const tong = this.calculateTotal();
-    const vatRate = parseFloat(this.DetailDonhang().vat?.toString() || '0.05'); // Default 10% if not set
+    const vatRate = parseFloat(this.DetailDonhang().vat?.toString() || '0.05'); // Default 5% if not set
     return tong * vatRate;
   }
 

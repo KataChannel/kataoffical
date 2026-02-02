@@ -791,12 +791,18 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
         enableStreaming: true,
         take: 999999,
         where: where,
+        orderBy: [
+          { khachhang: { name: 'asc' } },
+          { ngaygiao: 'asc' }
+        ],
         select: {
           id: true,
           madonhang: true,
           ngaygiao: true,
           tongtien: true,
           tongvat: true,
+          isshowvat: true,
+          vat: true,
           sanpham: {
             select: {
               slnhan: true,
@@ -1194,7 +1200,22 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
           });
         }
         const group = customerGroupsMap.get(customerId);
-        group.increase += Number(order.tongtien) || 0;
+        
+        // Recalculate total with respect to isshowvat to fix existing data discrepancies
+        let orderTotal = 0;
+        const totalBaseAmount = order.sanpham?.reduce((sum: number, sp: any) => sum + (Number(sp.ttnhan) || 0), 0) || 0;
+        
+        if (order.isshowvat) {
+          // If isshowvat is true, use tongtien from DB or recalculate if needed
+          // To be safe and consistent with backend recalculation logic:
+          const vatRate = Number(order.vat) || 0;
+          orderTotal = totalBaseAmount * (1 + vatRate);
+        } else {
+          // If isshowvat is false, only use base amount
+          orderTotal = totalBaseAmount;
+        }
+        
+        group.increase += orderTotal;
       });
 
       // Data Rows
@@ -1296,10 +1317,15 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
         const custId = order.khachhang?.id;
 
         items.forEach((item: any, idx: number) => {
-          const vatVal = Number(item.vat) || 0;
+          // 🔥 BUGFIX: Respect isshowvat and fix 0.05 vs 5% logic
+          const isShowVat = order.isshowvat === true;
+          const vatRate = isShowVat ? (Number(item.vat) || 0) : 0; // Use 0 if not showing VAT
+          
           const giabanPreVat = Number(item.giaban) || 0;
           const ttPreVat = (Number(item.slnhan) || 0) * giabanPreVat;
-          const ttAfterVat = Number(item.ttnhan) || ttPreVat * (1 + vatVal / 100);
+          
+          // vatRate is decimal (0.05), so we don't divide by 100 here
+          const ttAfterVat = ttPreVat * (1 + vatRate);
 
           const rowDataArr = [
             moment(order.ngaygiao).format('DD/MM/YYYY'),
@@ -1313,11 +1339,11 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
             giabanPreVat,
             ttPreVat,
             item.ghichu || '',
-            vatVal + '%',
-            giabanPreVat * (1 + vatVal / 100),
+            (vatRate * 100) + '%', // Convert 0.05 to 5%
+            giabanPreVat * (1 + vatRate),
             ttAfterVat,
-            idx === 0 ? Number(order.tongtien) || 0 : '',
-            idx === 0 ? (Number(order.tongtien) || 0) - (Number(order.tongvat) || 0) : '',
+            idx === 0 ? (isShowVat ? Number(order.tongtien) : ttPreVat) : '', // Total for order
+            idx === 0 ? (isShowVat ? (Number(order.tongtien) - Number(order.tongvat)) : ttPreVat) : '',
             idx === 0 ? customerGrandTotals.get(custId) : ''
           ];
 

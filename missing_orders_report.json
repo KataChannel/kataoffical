@@ -1,0 +1,3168 @@
+{
+  "summary": {
+    "totalCount": 395,
+    "totalValue": 757864125
+  },
+  "details": [
+    {
+      "madonhang": "TG-AA20865",
+      "ngaygiao": "2026-01-01T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 3922100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA20841",
+      "ngaygiao": "2026-01-01T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 7913300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21458",
+      "ngaygiao": "2026-01-05T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 1441900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21465",
+      "ngaygiao": "2026-01-05T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 2889700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21474",
+      "ngaygiao": "2026-01-05T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 2127400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23360",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (BAR)",
+      "makh": "TG-KS00085",
+      "tongtien": 396700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23358",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3 (NV)",
+      "makh": "TG-KS00067",
+      "tongtien": 221000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23357",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "Bò Tơ Bếp Trung Tâm",
+      "makh": "TG-KS00347",
+      "tongtien": 11406150,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23359",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 2556550,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23356",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (BAR)",
+      "makh": "TG-KS00291",
+      "tongtien": 212100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23366",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 2",
+      "makh": "TG-KS01258",
+      "tongtien": 391100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23367",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "G-MASTER NƯỚNG",
+      "makh": "TG-KS01254",
+      "tongtien": 1203510,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23381",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 2686100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23362",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 1778090,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23364",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (NV)",
+      "makh": "TG-KS00157",
+      "tongtien": 41450,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23373",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "LONGWANG 11",
+      "makh": "TG-KS00546",
+      "tongtien": 2379900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23363",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (BAR)",
+      "makh": "TG-KS00158",
+      "tongtien": 334800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23382",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 2197100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25123",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "TIANLONG 07",
+      "makh": "TG-KS01259",
+      "tongtien": 1668900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21597",
+      "ngaygiao": "2026-01-06T00:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 314580,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25128",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 4046350,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25122",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 1884700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25100",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "Bò Tơ Bếp Trung Tâm",
+      "makh": "TG-KS00347",
+      "tongtien": 6706000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23390",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 2949500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25107",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 3",
+      "makh": "TG-KS01276",
+      "tongtien": 563900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23387",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 4002900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23383",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "TIANLONG 07",
+      "makh": "TG-KS01259",
+      "tongtien": 2130500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23384",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "TIANLONG 08",
+      "makh": "TG-KS01269",
+      "tongtien": 4944900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23391",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 3975780,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23386",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 3150000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23389",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 5849200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23385",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "TIANLONG 09",
+      "makh": "TG-KS01266",
+      "tongtien": 2078300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23388",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 3",
+      "makh": "TG-KS01276",
+      "tongtien": 126700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21627",
+      "ngaygiao": "2026-01-06T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 1216400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21645",
+      "ngaygiao": "2026-01-06T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 2039800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21646",
+      "ngaygiao": "2026-01-08T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 504000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21630",
+      "ngaygiao": "2026-01-06T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 2827000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21775",
+      "ngaygiao": "2026-01-07T00:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 183750,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23412",
+      "ngaygiao": "2026-01-16T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 45360,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23414",
+      "ngaygiao": "2026-01-16T00:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 727545,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23415",
+      "ngaygiao": "2026-01-16T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 19950,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23407",
+      "ngaygiao": "2026-01-16T00:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 195930,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23408",
+      "ngaygiao": "2026-01-16T00:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 681135,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21766",
+      "ngaygiao": "2026-01-07T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 189000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23361",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (NV)",
+      "makh": "TG-KS00066",
+      "tongtien": 316920,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23374",
+      "ngaygiao": "2026-01-15T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 2014050,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23417",
+      "ngaygiao": "2026-01-16T00:00:00.000Z",
+      "khachhang": "TIANLONG 07",
+      "makh": "TG-KS01259",
+      "tongtien": 33600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21838",
+      "ngaygiao": "2026-01-07T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 1870100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21851",
+      "ngaygiao": "2026-01-07T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 2307300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21850",
+      "ngaygiao": "2026-01-07T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 1657200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23466",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 2",
+      "makh": "TG-KS01258",
+      "tongtien": 410450,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23479",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 3694000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23476",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 5674200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23461",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (BAR)",
+      "makh": "TG-KS00085",
+      "tongtien": 386000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23462",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (NV)",
+      "makh": "TG-KS00066",
+      "tongtien": 341100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23460",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3 (NV)",
+      "makh": "TG-KS00067",
+      "tongtien": 303400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23463",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 1958470,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23464",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (BAR)",
+      "makh": "TG-KS00158",
+      "tongtien": 166000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23458",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (NV)",
+      "makh": "TG-KS00198",
+      "tongtien": 34500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23478",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "LONGWANG 11",
+      "makh": "TG-KS00546",
+      "tongtien": 4080500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23459",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "Bò Tơ Bếp Trung Tâm",
+      "makh": "TG-KS00347",
+      "tongtien": 4639000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23468",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "G-MASTER NƯỚNG",
+      "makh": "TG-KS01254",
+      "tongtien": 2325890,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23489",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 4040400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23487",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "TIANLONG 09",
+      "makh": "TG-KS01266",
+      "tongtien": 2907900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23491",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 5692050,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23485",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 2538900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23490",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 3521750,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23488",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 3143700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23486",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "TIANLONG 08",
+      "makh": "TG-KS01269",
+      "tongtien": 4389900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23493",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 4980200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23494",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "TIANLONG 07",
+      "makh": "TG-KS01259",
+      "tongtien": 3276700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21347",
+      "ngaygiao": "2026-01-04T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 3401100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21960",
+      "ngaygiao": "2026-01-08T00:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 29925,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23593",
+      "ngaygiao": "2026-01-17T00:00:00.000Z",
+      "khachhang": "LONGWANG 11",
+      "makh": "TG-KS00546",
+      "tongtien": 102375,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23457",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (BAR)",
+      "makh": "TG-KS00291",
+      "tongtien": 174600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23600",
+      "ngaygiao": "2026-01-17T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 146370,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23601",
+      "ngaygiao": "2026-01-17T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 80850,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23599",
+      "ngaygiao": "2026-01-17T00:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 853860,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23602",
+      "ngaygiao": "2026-01-17T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 193200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23604",
+      "ngaygiao": "2026-01-17T00:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 202650,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23605",
+      "ngaygiao": "2026-01-17T00:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 267960,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23606",
+      "ngaygiao": "2026-01-17T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 18900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23607",
+      "ngaygiao": "2026-01-17T00:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 102375,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23475",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 4604500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23467",
+      "ngaygiao": "2026-01-16T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 3",
+      "makh": "TG-KS01276",
+      "tongtien": 208000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22119",
+      "ngaygiao": "2026-01-08T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 3286100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22120",
+      "ngaygiao": "2026-01-08T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 3368420,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22107",
+      "ngaygiao": "2026-01-08T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 3970500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22142",
+      "ngaygiao": "2026-01-09T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 79170,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22144",
+      "ngaygiao": "2026-01-09T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 79170,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23724",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (BAR)",
+      "makh": "TG-KS00085",
+      "tongtien": 296900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23727",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (NV)",
+      "makh": "TG-KS00157",
+      "tongtien": 30200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23725",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (NV)",
+      "makh": "TG-KS00066",
+      "tongtien": 90000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23731",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "G-MASTER NƯỚNG",
+      "makh": "TG-KS01254",
+      "tongtien": 2253000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23721",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (BAR)",
+      "makh": "TG-KS00291",
+      "tongtien": 54500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23723",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3 (NV)",
+      "makh": "TG-KS00067",
+      "tongtien": 25000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23752",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 3399550,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23757",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 3742700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23747",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "TIANLONG 07",
+      "makh": "TG-KS01259",
+      "tongtien": 3861600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23745",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 3301600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23748",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "TIANLONG 08",
+      "makh": "TG-KS01269",
+      "tongtien": 4248400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23756",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 5509700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23760",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "LONGWANG 11",
+      "makh": "TG-KS00546",
+      "tongtien": 3491000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23754",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 2684500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23758",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 6903200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23746",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 3955800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23761",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 3114550,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22302",
+      "ngaygiao": "2026-01-09T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 3071600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22309",
+      "ngaygiao": "2026-01-09T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 6939700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22311",
+      "ngaygiao": "2026-01-09T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 3763600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23768",
+      "ngaygiao": "2026-01-18T00:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 102060,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23769",
+      "ngaygiao": "2026-01-18T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 158865,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23771",
+      "ngaygiao": "2026-01-18T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 30030,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23772",
+      "ngaygiao": "2026-01-18T00:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 444465,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22330",
+      "ngaygiao": "2026-01-10T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 306075,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23775",
+      "ngaygiao": "2026-01-18T00:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 438270,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23726",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (BAR)",
+      "makh": "TG-KS00158",
+      "tongtien": 252200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23730",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 3",
+      "makh": "TG-KS01276",
+      "tongtien": 208800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23722",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (NV)",
+      "makh": "TG-KS00198",
+      "tongtien": 270500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23729",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 2",
+      "makh": "TG-KS01258",
+      "tongtien": 417400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23753",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 4472800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23755",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 1090800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23749",
+      "ngaygiao": "2026-01-17T17:00:00.000Z",
+      "khachhang": "TIANLONG 09",
+      "makh": "TG-KS01266",
+      "tongtien": 2953600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22394",
+      "ngaygiao": "2026-01-10T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 4031500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22387",
+      "ngaygiao": "2026-01-10T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 3724500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22406",
+      "ngaygiao": "2026-01-10T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 3570600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23817",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (BAR)",
+      "makh": "TG-KS00291",
+      "tongtien": 342000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23816",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 1142500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23832",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 2036300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23831",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "LONGWANG 11",
+      "makh": "TG-KS00546",
+      "tongtien": 2968100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23825",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 3",
+      "makh": "TG-KS01276",
+      "tongtien": 109600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23820",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3 (NV)",
+      "makh": "TG-KS00067",
+      "tongtien": 146100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23822",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 950590,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23826",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "G-MASTER NƯỚNG",
+      "makh": "TG-KS01254",
+      "tongtien": 1401200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23819",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "Bò Tơ Bếp Trung Tâm",
+      "makh": "TG-KS00347",
+      "tongtien": 5986600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23840",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 2150600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23839",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 2612600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23845",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 2630000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23844",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 3654900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23841",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "TIANLONG 07",
+      "makh": "TG-KS01259",
+      "tongtien": 2152600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23842",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "TIANLONG 08",
+      "makh": "TG-KS01269",
+      "tongtien": 3968400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23848",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 5273800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23843",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "TIANLONG 09",
+      "makh": "TG-KS01266",
+      "tongtien": 2193700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23850",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 2196800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23849",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 2734700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23934",
+      "ngaygiao": "2026-01-19T00:00:00.000Z",
+      "khachhang": "G-MASTER NƯỚNG",
+      "makh": "TG-KS01254",
+      "tongtien": 131775,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23940",
+      "ngaygiao": "2026-01-19T00:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 3",
+      "makh": "TG-KS01276",
+      "tongtien": 15750,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23941",
+      "ngaygiao": "2026-01-19T00:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 363300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22496",
+      "ngaygiao": "2026-01-11T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 118755,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23942",
+      "ngaygiao": "2026-01-19T00:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 490350,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23938",
+      "ngaygiao": "2026-01-19T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 34125,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22498",
+      "ngaygiao": "2026-01-11T00:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 171150,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23818",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (NV)",
+      "makh": "TG-KS00198",
+      "tongtien": 45000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23823",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (BAR)",
+      "makh": "TG-KS00158",
+      "tongtien": 93500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23824",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 2",
+      "makh": "TG-KS01258",
+      "tongtien": 517000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23821",
+      "ngaygiao": "2026-01-18T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (BAR)",
+      "makh": "TG-KS00085",
+      "tongtien": 441800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22500",
+      "ngaygiao": "2026-01-10T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 103950,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22560",
+      "ngaygiao": "2026-01-11T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 3495700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22567",
+      "ngaygiao": "2026-01-11T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 3367530,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22569",
+      "ngaygiao": "2026-01-11T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 3870100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23984",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 2688900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23983",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3 (NV)",
+      "makh": "TG-KS00067",
+      "tongtien": 276000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23988",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (BAR)",
+      "makh": "TG-KS00158",
+      "tongtien": 158500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23986",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (NV)",
+      "makh": "TG-KS00066",
+      "tongtien": 322200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23980",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (NV)",
+      "makh": "TG-KS00198",
+      "tongtien": 219660,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23979",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (BAR)",
+      "makh": "TG-KS00291",
+      "tongtien": 72200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23985",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (BAR)",
+      "makh": "TG-KS00085",
+      "tongtien": 373900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23997",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "LONGWANG 11",
+      "makh": "TG-KS00546",
+      "tongtien": 2404000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24005",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 1262850,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23995",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 1941500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24004",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 2785450,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23994",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 2347000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23998",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 1424900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24008",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "TIANLONG 09",
+      "makh": "TG-KS01266",
+      "tongtien": 1439100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24010",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 1462320,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24012",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 3",
+      "makh": "TG-KS01276",
+      "tongtien": 194400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24015",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 2844200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24007",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "TIANLONG 08",
+      "makh": "TG-KS01269",
+      "tongtien": 3970300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24013",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "G-MASTER NƯỚNG",
+      "makh": "TG-KS01254",
+      "tongtien": 1028300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24011",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 3521300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24106",
+      "ngaygiao": "2026-01-20T00:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 192654,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24107",
+      "ngaygiao": "2026-01-20T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 20475,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24109",
+      "ngaygiao": "2026-01-20T00:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 570150,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24110",
+      "ngaygiao": "2026-01-20T00:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 255780,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24097",
+      "ngaygiao": "2026-01-20T00:00:00.000Z",
+      "khachhang": "Bò Tơ Bếp Trung Tâm",
+      "makh": "TG-KS00347",
+      "tongtien": 273525,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24111",
+      "ngaygiao": "2026-01-20T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 28350,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23990",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 2",
+      "makh": "TG-KS01258",
+      "tongtien": 69800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23987",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 1863350,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23981",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "Bò Tơ Bếp Trung Tâm",
+      "makh": "TG-KS00347",
+      "tongtien": 8758000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24006",
+      "ngaygiao": "2026-01-19T17:00:00.000Z",
+      "khachhang": "TIANLONG 07",
+      "makh": "TG-KS01259",
+      "tongtien": 1282600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24100",
+      "ngaygiao": "2026-01-20T00:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 19950,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24101",
+      "ngaygiao": "2026-01-20T00:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 88200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24104",
+      "ngaygiao": "2026-01-20T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 31080,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21326",
+      "ngaygiao": "2026-01-04T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 2624850,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22676",
+      "ngaygiao": "2026-01-12T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 69300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22678",
+      "ngaygiao": "2026-01-12T00:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 551250,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24167",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "G-MASTER NƯỚNG",
+      "makh": "TG-KS01254",
+      "tongtien": 1700100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24180",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "TIANLONG 09",
+      "makh": "TG-KS01266",
+      "tongtien": 1726600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24174",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "TIANLONG 08",
+      "makh": "TG-KS01269",
+      "tongtien": 4155800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24172",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (BAR)",
+      "makh": "TG-KS00085",
+      "tongtien": 231000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24165",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 2743500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24173",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (NV)",
+      "makh": "TG-KS00066",
+      "tongtien": 387500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24181",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (NV)",
+      "makh": "TG-KS00198",
+      "tongtien": 224000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24168",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 2524500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24176",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (BAR)",
+      "makh": "TG-KS00158",
+      "tongtien": 281000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24175",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 2",
+      "makh": "TG-KS01258",
+      "tongtien": 168400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24200",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 2251500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24201",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 2008300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24199",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 3582500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24204",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 2657445,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24203",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 2977900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24202",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 1654800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24209",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "Bò Tơ Bếp Trung Tâm",
+      "makh": "TG-KS00347",
+      "tongtien": 8889000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22746",
+      "ngaygiao": "2026-01-12T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 2366000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22760",
+      "ngaygiao": "2026-01-12T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 2008350,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22761",
+      "ngaygiao": "2026-01-12T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 2177000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24274",
+      "ngaygiao": "2026-01-21T00:00:00.000Z",
+      "khachhang": "TIANLONG 07",
+      "makh": "TG-KS01259",
+      "tongtien": 63000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24276",
+      "ngaygiao": "2026-01-21T00:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 15750,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24277",
+      "ngaygiao": "2026-01-21T00:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 130200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24278",
+      "ngaygiao": "2026-01-21T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 15750,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24279",
+      "ngaygiao": "2026-01-21T00:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 111405,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24280",
+      "ngaygiao": "2026-01-21T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 351855,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24281",
+      "ngaygiao": "2026-01-21T00:00:00.000Z",
+      "khachhang": "Bò Tơ Bếp Trung Tâm",
+      "makh": "TG-KS00347",
+      "tongtien": 1033200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22864",
+      "ngaygiao": "2026-01-13T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 78750,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24282",
+      "ngaygiao": "2026-01-21T00:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 207900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22866",
+      "ngaygiao": "2026-01-13T00:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 623700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24171",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "TIANLONG 07",
+      "makh": "TG-KS01259",
+      "tongtien": 2083300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24179",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "LONGWANG 11",
+      "makh": "TG-KS00546",
+      "tongtien": 2527300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24177",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (NV)",
+      "makh": "TG-KS00157",
+      "tongtien": 76200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24166",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 3",
+      "makh": "TG-KS01276",
+      "tongtien": 100700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24208",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 1433800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24205",
+      "ngaygiao": "2026-01-20T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 1675100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22936",
+      "ngaygiao": "2026-01-13T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 2830800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22944",
+      "ngaygiao": "2026-01-13T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 2102550,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA22945",
+      "ngaygiao": "2026-01-13T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 1368200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24403",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (BAR)",
+      "makh": "TG-KS00291",
+      "tongtien": 83000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24411",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (NV)",
+      "makh": "TG-KS00157",
+      "tongtien": 213600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24405",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 3210400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24418",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 2143100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24409",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 1919520,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24404",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (NV)",
+      "makh": "TG-KS00198",
+      "tongtien": 221400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24407",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (BAR)",
+      "makh": "TG-KS00085",
+      "tongtien": 272500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24408",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (NV)",
+      "makh": "TG-KS00066",
+      "tongtien": 48800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24413",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "G-MASTER NƯỚNG",
+      "makh": "TG-KS01254",
+      "tongtien": 1009400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24433",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 2433400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24439",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 2574400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24438",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 1458800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24435",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 5264500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24440",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "TIANLONG 07",
+      "makh": "TG-KS01259",
+      "tongtien": 1466560,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24428",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "TIANLONG 09",
+      "makh": "TG-KS01266",
+      "tongtien": 1072000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24426",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 1818500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24432",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "Bò Tơ Bếp Trung Tâm",
+      "makh": "TG-KS00347",
+      "tongtien": 8805500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24427",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "TIANLONG 08",
+      "makh": "TG-KS01269",
+      "tongtien": 3051600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24436",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 3483700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24431",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 1646150,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24444",
+      "ngaygiao": "2026-01-22T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 92610,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24448",
+      "ngaygiao": "2026-01-22T00:00:00.000Z",
+      "khachhang": "Bò Tơ Bếp Trung Tâm",
+      "makh": "TG-KS00347",
+      "tongtien": 949200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24450",
+      "ngaygiao": "2026-01-22T00:00:00.000Z",
+      "khachhang": "G-MASTER NƯỚNG",
+      "makh": "TG-KS01254",
+      "tongtien": 162645,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24451",
+      "ngaygiao": "2026-01-22T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 227430,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24454",
+      "ngaygiao": "2026-01-22T00:00:00.000Z",
+      "khachhang": "TIANLONG 09",
+      "makh": "TG-KS01266",
+      "tongtien": 230580,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24455",
+      "ngaygiao": "2026-01-22T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 176400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24457",
+      "ngaygiao": "2026-01-22T00:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 742560,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24460",
+      "ngaygiao": "2026-01-22T00:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 169155,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24461",
+      "ngaygiao": "2026-01-22T00:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 3",
+      "makh": "TG-KS01276",
+      "tongtien": 303345,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23125",
+      "ngaygiao": "2026-01-14T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 3115690,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23122",
+      "ngaygiao": "2026-01-14T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 2355300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24419",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "LONGWANG 11",
+      "makh": "TG-KS00546",
+      "tongtien": 2814600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24410",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (BAR)",
+      "makh": "TG-KS00158",
+      "tongtien": 187500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24406",
+      "ngaygiao": "2026-01-21T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3 (NV)",
+      "makh": "TG-KS00067",
+      "tongtien": 86000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23226",
+      "ngaygiao": "2026-01-15T00:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 240240,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA23131",
+      "ngaygiao": "2026-01-14T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 3474700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24523",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 3396900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24529",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 2222500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24504",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (NV)",
+      "makh": "TG-KS00066",
+      "tongtien": 138500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24508",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 2",
+      "makh": "TG-KS01258",
+      "tongtien": 459300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24525",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "TIANLONG 07",
+      "makh": "TG-KS01259",
+      "tongtien": 1929300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24505",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (BAR)",
+      "makh": "TG-KS00158",
+      "tongtien": 470400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24515",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 3929900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24502",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3 (NV)",
+      "makh": "TG-KS00067",
+      "tongtien": 276300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24526",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "TIANLONG 08",
+      "makh": "TG-KS01269",
+      "tongtien": 3384700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24516",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "LONGWANG 11",
+      "makh": "TG-KS00546",
+      "tongtien": 2781700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24501",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (BAR)",
+      "makh": "TG-KS00291",
+      "tongtien": 189200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24524",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 2418100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24530",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "Bò Tơ Bếp Trung Tâm",
+      "makh": "TG-KS00347",
+      "tongtien": 7864000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24531",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 3997500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24533",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 2153800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24535",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "G-MASTER NƯỚNG",
+      "makh": "TG-KS01254",
+      "tongtien": 1464900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24539",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 2401400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24540",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "TIANLONG 09",
+      "makh": "TG-KS01266",
+      "tongtien": 2664700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24537",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 5043900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24534",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 3",
+      "makh": "TG-KS01276",
+      "tongtien": 255600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24532",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 3292430,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24629",
+      "ngaygiao": "2026-01-23T00:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 104895,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24630",
+      "ngaygiao": "2026-01-23T00:00:00.000Z",
+      "khachhang": "TIANLONG 09",
+      "makh": "TG-KS01266",
+      "tongtien": 468300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24626",
+      "ngaygiao": "2026-01-23T00:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 123742.5,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24633",
+      "ngaygiao": "2026-01-23T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 26880,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24634",
+      "ngaygiao": "2026-01-23T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 295890,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24635",
+      "ngaygiao": "2026-01-23T00:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 445620,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24639",
+      "ngaygiao": "2026-01-23T00:00:00.000Z",
+      "khachhang": "LONGWANG 11",
+      "makh": "TG-KS00546",
+      "tongtien": 400365,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24641",
+      "ngaygiao": "2026-01-23T00:00:00.000Z",
+      "khachhang": "Bò Tơ Bếp Trung Tâm",
+      "makh": "TG-KS00347",
+      "tongtien": 840000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24642",
+      "ngaygiao": "2026-01-23T00:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 2",
+      "makh": "TG-KS01258",
+      "tongtien": 47250,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24643",
+      "ngaygiao": "2026-01-23T00:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 477750,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24506",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (NV)",
+      "makh": "TG-KS00157",
+      "tongtien": 31800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24503",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (BAR)",
+      "makh": "TG-KS00085",
+      "tongtien": 477200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24514",
+      "ngaygiao": "2026-01-22T17:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 4174450,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24736",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 3",
+      "makh": "TG-KS01276",
+      "tongtien": 245600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24731",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (NV)",
+      "makh": "TG-KS00066",
+      "tongtien": 325600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24749",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 4031500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24748",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 3982800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24728",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (BAR)",
+      "makh": "TG-KS00291",
+      "tongtien": 470000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24732",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 2098700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24733",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (BAR)",
+      "makh": "TG-KS00158",
+      "tongtien": 118500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24756",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 2413900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24751",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "TIANLONG 08",
+      "makh": "TG-KS01269",
+      "tongtien": 4579500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24734",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (NV)",
+      "makh": "TG-KS00157",
+      "tongtien": 294300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24755",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "Bò Tơ Bếp Trung Tâm",
+      "makh": "TG-KS00347",
+      "tongtien": 17501000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24754",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 2792800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24760",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 4962400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24765",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "TIANLONG 09",
+      "makh": "TG-KS01266",
+      "tongtien": 3422400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24764",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 3218450,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24763",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "LONGWANG 11",
+      "makh": "TG-KS00546",
+      "tongtien": 3298100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24761",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 5477650,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24759",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 6460200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24757",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 2",
+      "makh": "TG-KS01258",
+      "tongtien": 525000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24853",
+      "ngaygiao": "2026-01-24T00:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 314160,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24854",
+      "ngaygiao": "2026-01-24T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 256725,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24855",
+      "ngaygiao": "2026-01-24T00:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 3",
+      "makh": "TG-KS01276",
+      "tongtien": 26250,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24856",
+      "ngaygiao": "2026-01-24T00:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 467775,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24859",
+      "ngaygiao": "2026-01-24T00:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 425775,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24737",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "G-MASTER NƯỚNG",
+      "makh": "TG-KS01254",
+      "tongtien": 2529180,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24729",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 4750200,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24750",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "TIANLONG 07",
+      "makh": "TG-KS01259",
+      "tongtien": 2763400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24730",
+      "ngaygiao": "2026-01-23T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (BAR)",
+      "makh": "TG-KS00085",
+      "tongtien": 528100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24874",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (NV)",
+      "makh": "TG-KS00066",
+      "tongtien": 64500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24875",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 1794350,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24876",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (BAR)",
+      "makh": "TG-KS00158",
+      "tongtien": 220500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24873",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (BAR)",
+      "makh": "TG-KS00085",
+      "tongtien": 315600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24869",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (BAR)",
+      "makh": "TG-KS00291",
+      "tongtien": 113100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24880",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "G-MASTER NƯỚNG",
+      "makh": "TG-KS01254",
+      "tongtien": 2943800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24877",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10 (NV)",
+      "makh": "TG-KS00157",
+      "tongtien": 77000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24887",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 6353300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24889",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "LONGWANG 11",
+      "makh": "TG-KS00546",
+      "tongtien": 3254700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24896",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 4252100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24902",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 2510900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24906",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 2600400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24904",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 5736900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24897",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "TIANLONG 06",
+      "makh": "TG-KS01261",
+      "tongtien": 3750700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24905",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 4887100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24900",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "TIANLONG 09",
+      "makh": "TG-KS01266",
+      "tongtien": 3375700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24903",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 3",
+      "makh": "TG-KS01276",
+      "tongtien": 82700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24898",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "TIANLONG 07",
+      "makh": "TG-KS01259",
+      "tongtien": 2861000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25010",
+      "ngaygiao": "2026-01-25T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 93450,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25016",
+      "ngaygiao": "2026-01-25T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 239400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25018",
+      "ngaygiao": "2026-01-25T00:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 19950,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25017",
+      "ngaygiao": "2026-01-25T00:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 487515,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25019",
+      "ngaygiao": "2026-01-25T00:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 376425,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25020",
+      "ngaygiao": "2026-01-25T00:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 103656,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24879",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 2",
+      "makh": "TG-KS01258",
+      "tongtien": 570600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24872",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 3387600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24870",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3",
+      "makh": "TG-KS00058",
+      "tongtien": 4408400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24871",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3 (NV)",
+      "makh": "TG-KS00067",
+      "tongtien": 262500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA24899",
+      "ngaygiao": "2026-01-24T17:00:00.000Z",
+      "khachhang": "TIANLONG 08",
+      "makh": "TG-KS01269",
+      "tongtien": 3895700,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25106",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "Cơm niêu Hải Sư 2",
+      "makh": "TG-KS01258",
+      "tongtien": 465900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25102",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (BAR)",
+      "makh": "TG-KS00085",
+      "tongtien": 21000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25104",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q10",
+      "makh": "TG-KS00156",
+      "tongtien": 360500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25127",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH",
+      "makh": "TG-KS00197",
+      "tongtien": 1833400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25133",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 2902720,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25112",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "LONGWANG 3",
+      "makh": "TG-KS00286",
+      "tongtien": 2532100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25124",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "TIANLONG 08",
+      "makh": "TG-KS01269",
+      "tongtien": 3995300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25108",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "G-MASTER NƯỚNG",
+      "makh": "TG-KS01254",
+      "tongtien": 920440,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25125",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "TIANLONG 09",
+      "makh": "TG-KS01266",
+      "tongtien": 1841100,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25134",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 2066520,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25129",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7",
+      "makh": "TG-KS00056",
+      "tongtien": 2130300,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25099",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (NV)",
+      "makh": "TG-KS00198",
+      "tongtien": 39000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25103",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q7 (NV)",
+      "makh": "TG-KS00066",
+      "tongtien": 274600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25132",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "LONGWANG 1",
+      "makh": "TG-KS00333",
+      "tongtien": 5122000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25101",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "BÒ TƠ Q3 (NV)",
+      "makh": "TG-KS00067",
+      "tongtien": 75000,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25098",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "BÒ TƠ BÌNH THẠNH (BAR)",
+      "makh": "TG-KS00291",
+      "tongtien": 251900,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25114",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "LONGWANG 11",
+      "makh": "TG-KS00546",
+      "tongtien": 1981400,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA25121",
+      "ngaygiao": "2026-01-25T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 2546500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21210",
+      "ngaygiao": "2026-01-03T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 3273585,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA20750",
+      "ngaygiao": "2026-01-01T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 34650,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA20918",
+      "ngaygiao": "2026-01-02T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 180600,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA20921",
+      "ngaygiao": "2026-01-02T00:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 225330,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA20850",
+      "ngaygiao": "2026-01-01T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 3936450,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA20971",
+      "ngaygiao": "2026-01-02T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 4621050,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA20969",
+      "ngaygiao": "2026-01-02T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 8937075,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21101",
+      "ngaygiao": "2026-01-03T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 352800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA20957",
+      "ngaygiao": "2026-01-02T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 5103800,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21189",
+      "ngaygiao": "2026-01-03T17:00:00.000Z",
+      "khachhang": "LONGWANG 7",
+      "makh": "TG-KS00392",
+      "tongtien": 5405150,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21269",
+      "ngaygiao": "2026-01-04T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 16170,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21268",
+      "ngaygiao": "2026-01-04T00:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 756735,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21198",
+      "ngaygiao": "2026-01-03T17:00:00.000Z",
+      "khachhang": "TIANLONG 01",
+      "makh": "TG-KS01163",
+      "tongtien": 3431500,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21346",
+      "ngaygiao": "2026-01-04T17:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 3583597.5,
+      "status": "danhan"
+    },
+    {
+      "madonhang": "TG-AA21436",
+      "ngaygiao": "2026-01-05T00:00:00.000Z",
+      "khachhang": "LONGWANG 18",
+      "makh": "TG-KS01263",
+      "tongtien": 55860,
+      "status": "danhan"
+    }
+  ]
+}
