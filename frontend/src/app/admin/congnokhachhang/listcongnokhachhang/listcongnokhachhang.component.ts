@@ -1184,6 +1184,31 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
       ['C3', 'D3', 'F3', 'G3', 'H3', 'I3'].forEach(c => summarySheet[c].s = styleHeaderGray);
       ['H4', 'I4'].forEach(c => summarySheet[c].s = styleHeaderGray);
 
+      // Recalculate all order totals to ensure consistency and fix discrepancies
+      rawData.forEach(order => {
+        const orderItems = (order.sanpham || []).filter((it: any) => Number(it.slnhan) > 0);
+        const isShowVat = order.isshowvat === true;
+        
+        let orderTotalBeforeVat = 0;
+        let orderTotalAfterVat = 0;
+        let orderTotalVat = 0;
+        
+        orderItems.forEach((item: any) => {
+          const vatRate = isShowVat ? (Number(item.vat) || 0) : 0;
+          const ttPreVat = (Number(item.slnhan) || 0) * (Number(item.giaban) || 0);
+          const ttAfterVat = ttPreVat * (1 + vatRate);
+          
+          orderTotalBeforeVat += ttPreVat;
+          orderTotalAfterVat += ttAfterVat;
+          orderTotalVat += (ttAfterVat - ttPreVat);
+        });
+        
+        // Store calculated totals back into order object for use in both sheets
+        order.calculatedTotalBeforeVat = orderTotalBeforeVat;
+        order.calculatedTotalAfterVat = orderTotalAfterVat;
+        order.calculatedTotalVat = orderTotalVat;
+      });
+
       // Group by Customer and Group
       const customerGroupsMap = new Map();
       rawData.forEach(order => {
@@ -1200,22 +1225,7 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
           });
         }
         const group = customerGroupsMap.get(customerId);
-        
-        // Recalculate total with respect to isshowvat to fix existing data discrepancies
-        let orderTotal = 0;
-        const totalBaseAmount = order.sanpham?.reduce((sum: number, sp: any) => sum + (Number(sp.ttnhan) || 0), 0) || 0;
-        
-        if (order.isshowvat) {
-          // If isshowvat is true, use tongtien from DB or recalculate if needed
-          // To be safe and consistent with backend recalculation logic:
-          const vatRate = Number(order.vat) || 0;
-          orderTotal = totalBaseAmount * (1 + vatRate);
-        } else {
-          // If isshowvat is false, only use base amount
-          orderTotal = totalBaseAmount;
-        }
-        
-        group.increase += orderTotal;
+        group.increase += order.calculatedTotalAfterVat;
       });
 
       // Data Rows
@@ -1306,7 +1316,7 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
       const customerGrandTotals = new Map();
       rawData.forEach(order => {
         const custId = order.khachhang?.id;
-        customerGrandTotals.set(custId, (customerGrandTotals.get(custId) || 0) + (Number(order.tongtien) || 0));
+        customerGrandTotals.set(custId, (customerGrandTotals.get(custId) || 0) + order.calculatedTotalAfterVat);
       });
 
       rawData.forEach(order => {
@@ -1342,8 +1352,8 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
             (vatRate * 100) + '%', // Convert 0.05 to 5%
             giabanPreVat * (1 + vatRate),
             ttAfterVat,
-            idx === 0 ? (isShowVat ? Number(order.tongtien) : ttPreVat) : '', // Total for order
-            idx === 0 ? (isShowVat ? (Number(order.tongtien) - Number(order.tongvat)) : ttPreVat) : '',
+            idx === 0 ? order.calculatedTotalAfterVat : '', // Total for order
+            idx === 0 ? order.calculatedTotalBeforeVat : '',
             idx === 0 ? customerGrandTotals.get(custId) : ''
           ];
 
