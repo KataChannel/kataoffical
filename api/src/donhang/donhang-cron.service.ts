@@ -27,7 +27,7 @@ export class DonhangCronService {
       const startOfDay =  moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
       const endOfDay =  moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
 
-      this.logger.log(`Processing orders from ${startOfDay} to ${endOfDay}`);
+      this.logger.log(`Processing all pending orders with delivery date up to ${endOfDay}`);
 
       // Tìm các đơn hàng có status 'dagiao' trong ngày hôm nay
       const ordersToUpdate = await this.prisma.donhang.findMany({
@@ -36,7 +36,6 @@ export class DonhangCronService {
             in: ['dagiao']
           },
           ngaygiao: {
-            gte: startOfDay,
             lte: endOfDay,
           },
         },
@@ -251,13 +250,12 @@ export class DonhangCronService {
       
       const vietnamDateString = this.convertToVietnamTime(targetDate);
 
-      this.logger.log(`Manual auto-complete for date: ${vietnamDateString} (${startOfDay.toISOString()} to ${endOfDay.toISOString()})`);
+      this.logger.log(`Manual auto-complete for delivery date up to: ${vietnamDateString} (<= ${endOfDay.toISOString()})`);
 
       const ordersToUpdate = await this.prisma.donhang.findMany({
         where: {
           status: 'dagiao',
           ngaygiao: {
-            gte: startOfDay,
             lte: endOfDay,
           },
         },
