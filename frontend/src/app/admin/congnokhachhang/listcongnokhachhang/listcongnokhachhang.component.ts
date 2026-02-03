@@ -1104,6 +1104,9 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
         return;
       }
 
+      // Clone data to avoid "object is not extensible" error
+      rawData = JSON.parse(JSON.stringify(rawData));
+
       const workbook = XLSX.utils.book_new();
 
       // --- STYLES ---

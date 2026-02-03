@@ -20,9 +20,11 @@ export class LienheadminComponent {
    console.log(JSON.parse(permission));
    const target = JSON.parse(permission)[0]
    console.log(target);
-    if(target !==null ){
-      this._route.navigate(['admin/', target.split('.')[0]]);
-      
+    if(target !== null){
+      const path = typeof target === 'string' ? target : (target.name || target.path || '');
+      if (path && typeof path === 'string') {
+        this._route.navigate(['admin/', path.split('.')[0]]);
+      }
     }
 }
 }
