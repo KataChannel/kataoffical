@@ -32,6 +32,7 @@ export class SanphamService {
           method:'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
           },
           body: JSON.stringify(dulieu),
         };
@@ -55,6 +56,7 @@ export class SanphamService {
           method:'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
           },
           body: JSON.stringify(dulieu),
         };
@@ -78,6 +80,7 @@ export class SanphamService {
           method:'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
           },
           body: JSON.stringify(dulieu),
         };
@@ -199,7 +202,7 @@ export class SanphamService {
         message = 'Lỗi máy chủ, vui lòng thử lại sau';
         break;
     }
-    this._snackBar.open('Cập Nhật Thành Công', '', {
+    this._snackBar.open(message, '', {
       duration: 3000,
       horizontalPosition: "end",
       verticalPosition: "top",
@@ -241,6 +244,7 @@ export class SanphamService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
       const response = await fetch(`${environment.APIURL}/sanpham/findid/${id}`, options);      

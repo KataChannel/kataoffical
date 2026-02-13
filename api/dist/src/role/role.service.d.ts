@@ -1,0 +1,77 @@
+import { PrismaService } from 'prisma/prisma.service';
+export declare class RoleService {
+    private prisma;
+    constructor(prisma: PrismaService);
+    create(data: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+    }>;
+    findAll(): Promise<({
+        permissions: {
+            id: string;
+            permissionId: string;
+            roleId: string;
+        }[];
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+    })[]>;
+    findOne(id: string): Promise<({
+        permissions: {
+            id: string;
+            permissionId: string;
+            roleId: string;
+        }[];
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+    }) | null>;
+    update(id: string, data: {
+        name?: string;
+        permissionIds?: string[];
+    }): Promise<{
+        permissions: ({
+            permission: {
+                id: string;
+                order: number | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                description: string | null;
+                codeId: string | null;
+                group: string | null;
+            };
+        } & {
+            id: string;
+            permissionId: string;
+            roleId: string;
+        })[];
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+    }>;
+    remove(id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+    }>;
+    assignPermissionToRole(data: any): Promise<{
+        id: string;
+        permissionId: string;
+        roleId: string;
+    }>;
+    removePermissionFromRole(data: any): Promise<{
+        id: string;
+        permissionId: string;
+        roleId: string;
+    }>;
+}

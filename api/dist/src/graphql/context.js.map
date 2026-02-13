@@ -1,0 +1,1 @@
+{"version":3,"file":"context.js","sourceRoot":"","sources":["../../../src/graphql/context.ts"],"names":[],"mappings":";;AAqBA,sCAWC;AAXD,SAAgB,aAAa,CAAC,QAK7B;IACC,OAAO,CAAC,GAAQ,EAAE,EAAE,CAAC,CAAC;QACpB,GAAG,QAAQ;QACX,OAAO,EAAE,GAAG;QACZ,IAAI,EAAE,GAAG,CAAC,IAAI;KACf,CAAC,CAAC;AACL,CAAC"}

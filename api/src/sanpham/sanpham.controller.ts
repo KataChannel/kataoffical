@@ -38,6 +38,7 @@ export class SanphamController {
     return this.sanphamService.banggiamacdinh(data);
   }
   @Post('findby')
+  @UseGuards(JwtAuthGuard)
   async findby(@Body() param: any) {
     const result = await this.sanphamService.findby(param);
     return result;
