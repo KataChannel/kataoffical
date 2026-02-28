@@ -1321,6 +1321,7 @@ export class NhucaudathangComponent {
       select: {
         id: true,
         masp: true,
+        title: true,
         TonKho: {
           select: {
             slton: true,
