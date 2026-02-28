@@ -1,0 +1,337 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NhacungcapService = void 0;
+const common_1 = require("@nestjs/common");
+const prisma_service_1 = require("../../prisma/prisma.service");
+const importdata_service_1 = require("../importdata/importdata.service");
+let NhacungcapService = class NhacungcapService {
+    constructor(prisma, _ImportdataService) {
+        this.prisma = prisma;
+        this._ImportdataService = _ImportdataService;
+    }
+    formatDateForFilename() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        return `${year}${month}${day}_${hours}${minutes}${seconds}`;
+    }
+    async getLastUpdatedNhacungcap() {
+        try {
+            const lastUpdated = await this.prisma.nhacungcap.aggregate({
+                _max: { updatedAt: true },
+            });
+            return {
+                updatedAt: lastUpdated._max.updatedAt
+                    ? new Date(lastUpdated._max.updatedAt).getTime()
+                    : 0,
+            };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async generateMancc() {
+        try {
+            let isUnique = false;
+            let mancc = '';
+            let attempts = 0;
+            const maxAttempts = 100;
+            while (!isUnique && attempts < maxAttempts) {
+                const latest = await this.prisma.nhacungcap.findFirst({
+                    orderBy: { mancc: 'desc' },
+                });
+                let nextNumber = 1;
+                if (latest) {
+                    const match = latest.mancc.match(/TG-NCC(\d+)/);
+                    if (match) {
+                        nextNumber = parseInt(match[1]) + 1 + attempts;
+                    }
+                }
+                mancc = `TG-NCC${nextNumber.toString().padStart(5, '0')}`;
+                const existing = await this.prisma.nhacungcap.findUnique({
+                    where: { mancc },
+                });
+                if (!existing) {
+                    isUnique = true;
+                }
+                else {
+                    attempts++;
+                }
+            }
+            if (!isUnique) {
+                throw new common_1.InternalServerErrorException('Không thể tạo mã nhà cung cấp duy nhất');
+            }
+            return mancc;
+        }
+        catch (error) {
+            console.log('Error generating mancc:', error);
+            throw new common_1.InternalServerErrorException('Lỗi khi tạo mã nhà cung cấp');
+        }
+    }
+    async create(data) {
+        try {
+            if (data.mancc && data.mancc.trim() !== '') {
+                const existing = await this.prisma.nhacungcap.findUnique({
+                    where: { mancc: data.mancc },
+                });
+                if (existing) {
+                    console.log(`Mã nhà cung cấp ${data.mancc} đã tồn tại`);
+                    throw new common_1.BadRequestException('Mã nhà cung cấp đã tồn tại');
+                }
+            }
+            const mancc = data.mancc && data.mancc.trim() !== ''
+                ? data.mancc
+                : await this.generateMancc();
+            console.log(`Generated mancc: ${mancc}`);
+            const { Sanpham, ...rest } = data;
+            const result = await this.prisma.nhacungcap.create({
+                data: {
+                    mancc,
+                    ...rest,
+                    Sanpham: {
+                        connect: Sanpham?.map((sp) => ({ id: sp.id })) || [],
+                    },
+                },
+            });
+            this.getLastUpdatedNhacungcap();
+            return result;
+        }
+        catch (error) {
+            if (error instanceof common_1.BadRequestException)
+                throw error;
+            console.log('Error creating nhacungcap:', error);
+            throw new common_1.InternalServerErrorException('Lỗi khi tạo nhà cung cấp');
+        }
+    }
+    async import(data) {
+        try {
+            for (const supplier of data) {
+                if (!supplier.mancc) {
+                    await this.create(supplier);
+                }
+                else {
+                    const existingSupplier = await this.prisma.nhacungcap.findFirst({
+                        where: { mancc: supplier.mancc },
+                        select: { id: true },
+                    });
+                    if (existingSupplier) {
+                        await this.update(existingSupplier.id, supplier);
+                    }
+                    else {
+                        await this.create(supplier);
+                    }
+                }
+            }
+            this.getLastUpdatedNhacungcap();
+            return { message: 'Import completed' };
+        }
+        catch (error) {
+            await this._ImportdataService.create({
+                caseDetail: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                    additionalInfo: 'Error during import process',
+                },
+                order: 1,
+                createdBy: 'system',
+                title: `Import Nhà Cung Cấp ${new Date().toLocaleString('vi-VN')} `,
+                type: 'nhacungcap',
+            });
+            throw new common_1.InternalServerErrorException('Lỗi khi nhập khẩu nhà cung cấp');
+        }
+    }
+    async findAll(query) {
+        console.log('findAllNhacungcap query:', query);
+        try {
+            const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category, } = query;
+            const numericPage = Number(page);
+            const numericPageSize = Number(pageSize);
+            const skip = (numericPage - 1) * numericPageSize;
+            const take = numericPageSize;
+            const where = {};
+            if (search) {
+                where.OR = [
+                    { title: { contains: search, mode: 'insensitive' } },
+                    { description: { contains: search, mode: 'insensitive' } },
+                ];
+            }
+            if (category) {
+                where.category = { equals: category, mode: 'insensitive' };
+            }
+            if (priceMin || priceMax) {
+                where.price = {};
+                if (priceMin) {
+                    where.price.gte = priceMin;
+                }
+                if (priceMax) {
+                    where.price.lte = priceMax;
+                }
+            }
+            const orderBy = {};
+            if (sortBy && sortOrder) {
+                orderBy[sortBy] = sortOrder;
+            }
+            else {
+                orderBy.createdAt = 'desc';
+            }
+            const [nhacungcaps, total] = await this.prisma.$transaction([
+                this.prisma.nhacungcap.findMany({
+                    where,
+                    skip,
+                    take,
+                    orderBy,
+                }),
+                this.prisma.nhacungcap.count({ where }),
+            ]);
+            return {
+                data: nhacungcaps,
+                total: Number(total),
+                page: numericPage,
+                pageSize: numericPageSize,
+                totalPages: Math.ceil(Number(total) / numericPageSize),
+            };
+        }
+        catch (error) {
+            console.log('Error in findAllNhacungcap:', error);
+            throw error;
+        }
+    }
+    async findBy(param) {
+        try {
+            const { isOne, page = 1, pageSize = 20, ...where } = param;
+            const whereClause = {};
+            if (where.id || where.subtitle || where.name) {
+                whereClause.OR = [];
+                if (where.id) {
+                    whereClause.OR.push({ id: where.id });
+                }
+                if (where.subtitle) {
+                    whereClause.OR.push({
+                        subtitle: { contains: where.subtitle, mode: 'insensitive' },
+                    });
+                }
+                if (where.name) {
+                    whereClause.OR.push({
+                        name: { contains: where.name, mode: 'insensitive' },
+                    });
+                }
+            }
+            if (isOne) {
+                const result = await this.prisma.nhacungcap.findFirst({
+                    where,
+                    orderBy: { createdAt: 'desc' },
+                });
+                return result;
+            }
+            const skip = (page - 1) * pageSize;
+            const [data, total] = await Promise.all([
+                this.prisma.nhacungcap.findMany({
+                    where,
+                    skip,
+                    take: pageSize,
+                    orderBy: { createdAt: 'desc' },
+                }),
+                this.prisma.nhacungcap.count({ where }),
+            ]);
+            return {
+                data,
+                total,
+                page,
+                pageCount: Math.ceil(total / pageSize),
+            };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async findOne(id) {
+        try {
+            const nhacungcap = await this.prisma.nhacungcap.findUnique({
+                where: { id },
+                include: {
+                    Sanpham: true,
+                },
+            });
+            if (!nhacungcap)
+                throw new common_1.NotFoundException('Nhacungcap not found');
+            return nhacungcap;
+        }
+        catch (error) {
+            if (error instanceof common_1.NotFoundException)
+                throw error;
+            throw new common_1.InternalServerErrorException('Lỗi khi lấy nhà cung cấp');
+        }
+    }
+    async update(id, data) {
+        try {
+            const { Sanpham, ...rest } = data;
+            const updatedNhacc = await this.prisma.nhacungcap.update({
+                where: { id },
+                data: {
+                    ...rest,
+                    Sanpham: {
+                        set: Sanpham?.map((sp) => ({ id: sp.id })) || [],
+                    },
+                },
+            });
+            this.getLastUpdatedNhacungcap();
+            return updatedNhacc;
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Lỗi khi cập nhật nhà cung cấp');
+        }
+    }
+    async remove(id) {
+        try {
+            const result = await this.prisma.nhacungcap.delete({ where: { id } });
+            this.getLastUpdatedNhacungcap();
+            return result;
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Lỗi khi xóa nhà cung cấp');
+        }
+    }
+    async findByProductIds(productIds) {
+        try {
+            if (!productIds || productIds.length === 0) {
+                return [];
+            }
+            const suppliers = await this.prisma.nhacungcap.findMany({
+                where: {
+                    Sanpham: {
+                        some: {
+                            id: { in: productIds },
+                        },
+                    },
+                },
+                include: {
+                    Sanpham: true,
+                },
+            });
+            return suppliers;
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Lỗi khi tìm nhà cung cấp theo sản phẩm');
+        }
+    }
+};
+exports.NhacungcapService = NhacungcapService;
+exports.NhacungcapService = NhacungcapService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        importdata_service_1.ImportdataService])
+], NhacungcapService);
+//# sourceMappingURL=nhacungcap.service.js.map
