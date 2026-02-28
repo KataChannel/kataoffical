@@ -218,10 +218,14 @@ let PhieukhoService = class PhieukhoService {
                         if (data.type === 'nhap') {
                             await prisma.tonKho.upsert({
                                 where: { sanphamId: sp.sanphamId },
-                                update: { slton: { increment: soluong } },
+                                update: {
+                                    slton: { increment: soluong },
+                                    ...(data.isChotkho && { sltontt: { increment: soluong } })
+                                },
                                 create: {
                                     sanphamId: sp.sanphamId,
                                     slton: soluong,
+                                    sltontt: data.isChotkho ? soluong : 0,
                                     slchogiao: 0,
                                     slchonhap: 0
                                 }
@@ -230,10 +234,14 @@ let PhieukhoService = class PhieukhoService {
                         else if (data.type === 'xuat') {
                             await prisma.tonKho.upsert({
                                 where: { sanphamId: sp.sanphamId },
-                                update: { slton: { decrement: soluong } },
+                                update: {
+                                    slton: { decrement: soluong },
+                                    ...(data.isChotkho && { sltontt: { decrement: soluong } })
+                                },
                                 create: {
                                     sanphamId: sp.sanphamId,
                                     slton: -soluong,
+                                    sltontt: data.isChotkho ? -soluong : 0,
                                     slchogiao: 0,
                                     slchonhap: 0
                                 }

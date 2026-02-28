@@ -115,9 +115,9 @@ export class NhucaudathangComponent {
     // 'SLGiao',
     'khachdat',
     'khachgiao',
-    // 'sltontt',
-    'tongkho',
+    'slton',
     'sltontt',
+    'tongkho',
     'kho1',
     'kho2',
     'kho3',
@@ -143,9 +143,9 @@ export class NhucaudathangComponent {
     // SLGiao: 'SL Giao (Khách)',
     khachdat: 'TỔNG SL KHÁCH ĐẶT',
     khachgiao: 'TỔNG SL BÁN',
-    // sltontt: 'Tồn Kho (Thực Tế)',
-    tongkho: 'Tổng Kho',
-    sltontt: 'Tồn Kho tt',
+    slton: 'Tồn Hệ Thống',
+    sltontt: 'Tồn Thực Tế',
+    tongkho: 'Tổng Tổng Kho',
     kho1: 'TG-LONG AN',
     kho2: 'Bổ Sung',
     kho3: 'TG-ĐÀ LẠT',
@@ -1233,20 +1233,22 @@ export class NhucaudathangComponent {
 
         if (phieuNhapDetails.length > 0) {
           await this._PhieukhoService.CreatePhieukho({
-            title: `Điều Chỉnh Kho Tự Động Từ Excel Ngày ${DateHelpers.format(DateHelpers.now(), 'DD/MM/YYYY ')}`, 
+            title: `ĐIỀU CHỈNH CHỐT KHO (TĂNG) TỰ ĐỘNG [EXCEL]`, 
             type: 'nhap',
+            isChotkho: true,
             sanpham: phieuNhapDetails, 
-            ghichu: `Điều chỉnh tăng tồn kho khớp với Excel lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
+            ghichu: `Điều chỉnh tăng tồn kho chốt từ Excel lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
             ngay: DateHelpers.now()
           });
         }
 
         if (phieuXuatDetails.length > 0) {
           await this._PhieukhoService.CreatePhieukho({
-            title: `Điều Chỉnh Kho Tự Động Từ Excel Ngày ${DateHelpers.format(DateHelpers.now(), 'DD/MM/YYYY ')}`, 
+            title: `ĐIỀU CHỈNH CHỐT KHO (GIẢM) TỰ ĐỘNG [EXCEL]`, 
             type: 'xuat',
+            isChotkho: true,
             sanpham: phieuXuatDetails, 
-            ghichu: `Điều chỉnh giảm tồn kho khớp với Excel lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
+            ghichu: `Điều chỉnh giảm tồn kho chốt từ Excel lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
             ngay: DateHelpers.now()
           });
         }
