@@ -14,12 +14,14 @@ echo "======================================================"
 
 echo "=> 1. Đang yêu cầu server tạo file backup (PostgreSQL, Redis, MinIO, App Config)..."
 ssh $SERVER << EOF
-    # Tạo folder chứa tạm
+    # Tạo folder chứa tạm trên Host
     mkdir -p /tmp/rausach_backup_$TIMESTAMP
     
     # 1. Backup Database PostgreSQL
     echo "   -> Trích xuất database PostgreSQL..."
-    docker exec rausach-postgres pg_dump -U AWois79wFA1bxMK -d rausachfinal -F c -f /tmp/rausach_backup_$TIMESTAMP/rausachfinal_db.dump || echo "      Lỗi: Không tìm thấy PostgreSQL container hoặc sai tên DB"
+    # Không thể ghi trực tiếp volume sang Host từ bên trong container nếu folder chưa được map. 
+    # Nên dùng stdout ra rồi >> vào file bên ngoài Host.
+    docker exec rausach-postgres pg_dump -U AWois79wFA1bxMK -d rausachfinal -F c > /tmp/rausach_backup_$TIMESTAMP/rausachfinal_db.dump || echo "      Lỗi: Không tìm thấy PostgreSQL container hoặc sai tên DB"
     
     # 2. Backup Redis
     echo "   -> Backup Redis dump.rdb..."
@@ -41,7 +43,7 @@ ssh $SERVER << EOF
     # 5. Nén toàn bộ
     echo "   -> Đang nén file..."
     cd /tmp
-    tar -czf rausach_backup_$TIMESTAMP.tar.gz rausach_backup_$TIMESTAMP
+    tar -czf rausach_backup_$TIMESTAMP.tar.gz rausach_backup_$TIMESTAMP 2>/dev/null
     
     # Dọn dẹp thư mục tạm
     rm -rf /tmp/rausach_backup_$TIMESTAMP

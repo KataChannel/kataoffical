@@ -6,9 +6,10 @@ echo "1. Chạy môi trường Dev (Frontend + Backend)"
 echo "2. Backup dữ liệu (DB & Cấu hình) từ VPS"
 echo "3. Thực hiện cả hai (Backup xong rồi chạy Dev)"
 echo "4. Nhân bản Database (Copy từ rausachfinal -> testdata trên Server)"
+echo "5. Phục hồi (Restore) dữ liệu Backup từ máy lên Docker Local"
 echo "0. Thoát"
 echo "-----------------------------------"
-read -p "Vui lòng chọn chức năng (0-4): " choice
+read -p "Vui lòng chọn chức năng (0-5): " choice
 
 case $choice in
     1)
@@ -29,6 +30,12 @@ case $choice in
         echo "=> Tiến hành Nhân bản Database (Clone DB) trên Server..."
         bash scripts/clone_db.sh
         echo "🎉 Đã hoàn tất Clone Data! Thoát chương trình."
+        exit 0
+        ;;
+    5)
+        echo "=> Khởi chạy trình Phục hồi Restore bằng file thiết lập local..."
+        bash scripts/fast_restore.sh
+        echo "🎉 Đã Restore xong! Thoát chương trình."
         exit 0
         ;;
     0)

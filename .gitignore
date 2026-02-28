@@ -4,6 +4,7 @@
 /tmp
 /out-tsc
 /bazel-out
+api/dist/
 
 # Node
 /node_modules
@@ -77,3 +78,6 @@ Thumbs.db
 
 # Docker
 docker-compose.override.yml
+
+# Backup
+backup/

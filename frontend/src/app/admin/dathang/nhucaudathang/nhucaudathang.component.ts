@@ -48,6 +48,8 @@ import { GenId } from '../../../shared/utils/shared.utils';
 import { TimezoneService } from '../../../shared/services/timezone.service';
 import { DathangService } from '../dathang.service';
 import { DonhangService } from '../../donhang/donhang.service';
+import { DateHelpers } from '../../../shared/utils/date-helpers';
+import { PhieukhoService } from '../../phieukho/phieukho.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 import {
   NestedDataDialogComponent,
@@ -190,6 +192,7 @@ export class NhucaudathangComponent {
   private _timezoneService = inject(TimezoneService);
   private _DathangService = inject(DathangService);
   private _DonhangService = inject(DonhangService);
+  private _PhieukhoService = inject(PhieukhoService);
   _snackBar = inject(MatSnackBar);
 
   Listsanpham: any = this._SanphamService.ListSanpham;
@@ -1200,79 +1203,65 @@ export class NhucaudathangComponent {
         );
         const sanphamMap = new Map(allSanpham.map((sp: any) => [sp.masp, sp]));
 
-        let updatedCount = 0;
-        let createdCount = 0;
         const processErrors: string[] = [];
-
-        // Process each item từ Excel file
-        // Create a map for quick lookup of validData by masp
         const validDataMap = new Map(validData.map(item => [item.masp, item.slton]));
-        // Loop through all existing TonKho records
-        for (const tonkho of allTonkho) {
-          try {
-            const masp = tonkho.sanpham?.masp;
-            if (!masp) {
-              continue; // Skip if no masp
-            }
 
-            let newSltontt = 0;
-            
-            // Check if this product exists in validData
-            if (validDataMap.has(masp)) {
-              newSltontt = validDataMap.get(masp) || 0;
-              validDataMap.delete(masp); // Remove from map to track processed items
-            }
-          // Update existing TonKho record
-           const result = await this._GraphqlService.updateOne('tonkho',
-            { id: tonkho.id },
-            { sltontt: newSltontt, slton: newSltontt }
-            );
+        const phieuNhapDetails: any[] = [];
+        const phieuXuatDetails: any[] = [];
+        let unchangedCount = 0;
 
-            console.log('Update result:', result);
+        for (const [masp, slton] of validDataMap.entries()) {
+          const tonkho = tonkhoMap.get(masp);
+          const sanpham = sanphamMap.get(masp);
+          
+          if (!sanpham) {
+            processErrors.push(`Không tìm thấy sản phẩm với mã: ${masp}`);
+            continue;
+          }
 
-            updatedCount++;
-            console.log(`Updated TonKho for ${masp}: sltontt = ${newSltontt}`);
-          } catch (error: any) {
-            processErrors.push(`Lỗi cập nhật ${tonkho.sanpham?.masp || 'unknown'}: ${error.message}`);
+          const currentSltontt = tonkho ? (tonkho.sltontt || 0) : 0;
+
+          if (slton > currentSltontt) {
+            phieuNhapDetails.push({
+              sanphamId: sanpham.id,
+              soluong: slton - currentSltontt,
+            });
+          } else if (slton < currentSltontt) {
+            phieuXuatDetails.push({
+              sanphamId: sanpham.id,
+              soluong: currentSltontt - slton,
+            });
+          } else {
+            unchangedCount++;
           }
         }
 
-        // Create new TonKho records for products that exist in validData but not in allTonkho
-        for (const [masp, slton] of validDataMap.entries()) {
-          try {
-            const sanpham = sanphamMap.get(masp);
-            if (!sanpham) {
-              processErrors.push(
-          `Không tìm thấy sản phẩm với mã: ${masp}`
-              );
-              continue;
-            }
+        if (phieuNhapDetails.length > 0) {
+          await this._PhieukhoService.CreatePhieukho({
+            title: `Điều Chỉnh Kho Tự Động Từ Excel Ngày ${DateHelpers.format(DateHelpers.now(), 'DD/MM/YYYY ')}`, 
+            type: 'nhap',
+            sanpham: phieuNhapDetails, 
+            ghichu: `Điều chỉnh tăng tồn kho khớp với Excel lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
+            ngay: DateHelpers.now()
+          });
+        }
 
-            // Create new TonKho record
-            await this._GraphqlService.createOne('tonkho', {
-              sanphamId: sanpham.id,
-              slton: 0,
-              sltontt: slton,
-              slchogiao: 0,
-              slchonhap: 0,
-            });
-            
-            createdCount++;
-            console.log(
-              `Created new TonKho for ${masp}: sltontt = ${slton}`
-            );
-          } catch (error: any) {
-            processErrors.push(`Lỗi tạo mới ${masp}: ${error.message}`);
-          }
+        if (phieuXuatDetails.length > 0) {
+          await this._PhieukhoService.CreatePhieukho({
+            title: `Điều Chỉnh Kho Tự Động Từ Excel Ngày ${DateHelpers.format(DateHelpers.now(), 'DD/MM/YYYY ')}`, 
+            type: 'xuat',
+            sanpham: phieuXuatDetails, 
+            ghichu: `Điều chỉnh giảm tồn kho khớp với Excel lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
+            ngay: DateHelpers.now()
+          });
         }
 
         this._snackBar.dismiss();
 
-        // Show results
         if (processErrors.length > 0) {
           console.error('Process errors:', processErrors);
           this._snackBar.open(
-            `Hoàn thành với ${processErrors.length} lỗi. Xem console để biết chi tiết.`,
+            `Hoàn thành với ${processErrors.length} lỗi. ${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm, ${unchangedCount} giữ nguyên. Xem console.`,
             'Đóng',
             {
               duration: 5000,
@@ -1283,7 +1272,7 @@ export class NhucaudathangComponent {
           );
         } else {
           this._snackBar.open(
-            `Cập nhật TonKho thành công: ${updatedCount} cập nhật, ${createdCount} tạo mới (bao gồm cả slton = 0)`,
+            `Cập nhật TonKho thành công: ${phieuNhapDetails.length} sản phẩm tăng, ${phieuXuatDetails.length} sản phẩm giảm, ${unchangedCount} giữ nguyên.`,
             'Đóng',
             {
               duration: 4000,
@@ -1291,9 +1280,6 @@ export class NhucaudathangComponent {
               verticalPosition: 'top',
               panelClass: ['snackbar-success'],
             }
-          );
-          console.log(
-            `TonKho update summary: Updated ${updatedCount}, Created ${createdCount}`
           );
         }
 
