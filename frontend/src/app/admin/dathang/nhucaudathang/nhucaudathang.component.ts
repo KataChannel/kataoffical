@@ -831,13 +831,8 @@ export class NhucaudathangComponent {
   }
 
   ApplyFilterColum(menu: MatMenuTrigger) {
-    const currentData =
-      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
-    this.dataSource.data = currentData.filter((v: any) =>
-      this.ListFilter.some((v1) => v1.masp === v.masp)
-    );
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.currentPage = 1;
+    this.updateDisplayData();
     menu.closeMenu();
   }
 
@@ -1644,8 +1639,48 @@ export class NhucaudathangComponent {
   }
 
   updateDisplayData() {
-    const currentData =
+    let currentData =
       this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+
+    // 1. Column Filter (ListFilter)
+    if (this.ListFilter && this.ListFilter.length > 0 && this.ListFilter.length < (this.TonghopsFinal.length || this.Listsanpham().length)) {
+      currentData = currentData.filter((v: any) =>
+        this.ListFilter.some((v1: any) => v1.masp === v.masp || v1.id === v.id)
+      );
+    }
+
+    // 2. Quick Filter
+    if (this.quickFilter && this.quickFilter !== 'all') {
+      switch (this.quickFilter) {
+        case 'lowStock':
+          currentData = currentData.filter((item: any) => (item.slton || 0) <= 10);
+          break;
+        case 'needOrder':
+          currentData = currentData.filter((item: any) => {
+            const suggestion = parseFloat(this.GetGoiy(item));
+            return suggestion > 0;
+          });
+          break;
+        case 'pendingDelivery':
+          currentData = currentData.filter((item: any) => (item.slchogiao || 0) > 0);
+          break;
+      }
+    }
+
+    // 3. Global Filter (Search Box)
+    if (this.dataSource.filter) {
+      currentData = this.applyGlobalFilterToData(currentData, this.dataSource.filter);
+    }
+
+    // Update pagination stats
+    this.totalItems = currentData.length;
+    this.calculateTotalPages();
+
+    // Reset to first page if current page exceeds new total pages
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = 1;
+    }
+
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     const pageData = currentData.slice(startIndex, endIndex);
@@ -1674,53 +1709,15 @@ export class NhucaudathangComponent {
 
   applyQuickFilter(filterType: string) {
     this.quickFilter = filterType;
-    let filteredData =
-      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
-
-    switch (filterType) {
-      case 'lowStock':
-        filteredData = filteredData.filter(
-          (item: any) => (item.slton || 0) <= 10
-        );
-        break;
-      case 'needOrder':
-        filteredData = filteredData.filter((item: any) => {
-          const suggestion = parseFloat(this.GetGoiy(item));
-          return suggestion > 0;
-        });
-        break;
-      case 'pendingDelivery':
-        filteredData = filteredData.filter(
-          (item: any) => (item.slchogiao || 0) > 0
-        );
-        break;
-      case 'all':
-      default:
-        // No additional filtering for 'all'
-        break;
-    }
-
-    // Apply global filter if exists
-    if (this.globalFilterValue) {
-      filteredData = this.applyGlobalFilterToData(
-        filteredData,
-        this.globalFilterValue
-      );
-    }
-
-    this.dataSource.data = filteredData;
-    this.totalItems = filteredData.length;
-    this.calculateTotalPages();
     this.currentPage = 1;
     this.updateDisplayData();
   }
   applyGlobalFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+    this.globalFilterValue = filterValue;
+    this.currentPage = 1;
+    this.updateDisplayData();
   }
   // applyGlobalFilter(event: Event) {
   //   const filterValue = (event.target as HTMLInputElement).value;
@@ -1806,12 +1803,8 @@ export class NhucaudathangComponent {
   clearAllFilters() {
     this.quickFilter = 'all';
     this.globalFilterValue = '';
+    this.dataSource.filter = '';
     this.ListFilter = [];
-    const currentData =
-      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
-    this.dataSource.data = currentData;
-    this.totalItems = currentData.length;
-    this.calculateTotalPages();
     this.currentPage = 1;
     this.updateDisplayData();
 
