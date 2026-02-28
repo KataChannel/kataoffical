@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/admin/donhang/listdonhang/listdonhang.component.scss"],
-  "sourcesContent": ["/* Loading Animations */\n.animate-spin {\n  animation: spin 1s linear infinite;\n}\n\n@keyframes spin {\n  from {\n    transform: rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg);\n  }\n}\n\n/* Loading overlay transition */\n.loading-overlay {\n  transition: opacity 0.3s ease-in-out;\n}\n\n/* Disabled state for form elements during loading */\n.mat-form-field.mat-disabled .mat-form-field-underline {\n  background-color: rgba(0, 0, 0, 0.12);\n}\n\n/* Table loading state */\n.mat-table {\n  transition: opacity 0.2s ease-in-out;\n}\n\n.mat-table.loading {\n  opacity: 0.6;\n  pointer-events: none;\n}"],
-  "mappings": ";AACA,CAAA;AACE,aAAA,KAAA,GAAA,OAAA;;AAGF,WAHE;AAIA;AACE,eAAA,OAAA;;AAEF;AACE,eAAA,OAAA;;;AAKJ,CAAA;AACE,cAAA,QAAA,KAAA;;AAIF,CAAA,cAAA,CAAA,aAAA,CAAA;AACE,oBAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;;AAIF,CAAA;AACE,cAAA,QAAA,KAAA;;AAGF,CAJA,SAIA,CAAA;AACE,WAAA;AACA,kBAAA;;",
-  "names": []
-}

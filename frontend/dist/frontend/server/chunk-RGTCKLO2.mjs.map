@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/shared/utils/texttransfer.utils.ts"],
-  "sourcesContent": ["export function removeVietnameseAccents(text:any) {\r\n    if (!text) {\r\n        return \"\"; // Xử lý trường hợp đầu vào rỗng hoặc null\r\n      }\r\n      return text\r\n        .replace(/đ/g, \"d\")\r\n        .normalize(\"NFD\") // Chuẩn hóa chuỗi về dạng NFD để tách dấu\r\n        .replace(/[\\u0300-\\u036f]/g, \"\") // Loại bỏ các dấu thanh\r\n        .replace(/[^a-zA-Z0-9]/g, \"\") // Loại bỏ tất cả ký tự không phải chữ cái hoặc số\r\n        .toLowerCase(); // Chuyển đổi thành chữ thường\r\n}\r\nexport function toSnakeCase(text:any) {\r\n    return removeVietnameseAccents(text)\r\n        .replace(/([a-z])([A-Z])/g, \"$1_$2\")\r\n        .replace(/\\W+/g, \"_\")\r\n        .toLowerCase();\r\n}\r\nexport function toKebabCase(text:any) {\r\n    return removeVietnameseAccents(text)\r\n        .replace(/\\s+/g, \"-\")\r\n        .toLowerCase();\r\n}"],
-  "mappings": ";;;AAAM,SAAU,wBAAwB,MAAQ;AAC5C,MAAI,CAAC,MAAM;AACP,WAAO;EACT;AACA,SAAO,KACJ,QAAQ,MAAM,GAAG,EACjB,UAAU,KAAK,EACf,QAAQ,oBAAoB,EAAE,EAC9B,QAAQ,iBAAiB,EAAE,EAC3B,YAAW;AACpB;",
-  "names": []
-}
