@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/admin/thongke/thongke.route.ts"],
+  "sourcesContent": ["import { Routes } from '@angular/router';\n\nexport const THONGKE_ROUTES: Routes = [\n  {\n    path: '',\n    loadComponent: () => import('./khoiluong-khachhang/khoiluong-khachhang.component').then(m => m.KhoiluongKhachhangComponent),\n    title: 'Thống kê khối lượng SP theo KH'\n  },\n  {\n    path: 'khoiluong-khachhang',\n    loadComponent: () => import('./khoiluong-khachhang/khoiluong-khachhang.component').then(m => m.KhoiluongKhachhangComponent),\n    title: 'Thống kê khối lượng SP theo KH'\n  }\n];\n"],
+  "mappings": ";;;;;AAEO,IAAM,iBAAyB;EACpC;IACE,MAAM;IACN,eAAe,MAAM,OAAO,qBAAqD,EAAE,KAAK,OAAK,EAAE,2BAA2B;IAC1H,OAAO;;EAET;IACE,MAAM;IACN,eAAe,MAAM,OAAO,qBAAqD,EAAE,KAAK,OAAK,EAAE,2BAA2B;IAC1H,OAAO;;;",
+  "names": []
+}

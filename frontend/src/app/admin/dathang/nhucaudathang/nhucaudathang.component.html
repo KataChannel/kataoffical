@@ -225,9 +225,14 @@
                             <span></span>
                         } @else {
                         <div class="flex items-center justify-between">
-                            <span class="max-w-32 line-clamp-2 me-2">
-                                {{ ColumnName[column] }}
-                            </span>
+                            <div class="flex flex-col">
+                                <span class="max-w-32 line-clamp-2 me-2">
+                                    {{ ColumnName[column] }}
+                                </span>
+                                @if (ColumnSubtitle[column]) {
+                                    <span class="text-[9px] text-gray-400 font-normal leading-tight max-w-32 whitespace-nowrap">{{ ColumnSubtitle[column] }}</span>
+                                }
+                            </div>
                             <span class="z-10 material-symbols-outlined text-gray-500 cursor-pointer" 
                                   [matMenuTriggerFor]="filterMenu"  #menuTrigger="matMenuTrigger" matTooltip="Filter {{ColumnName[column]}}">
                                 filter_alt
@@ -342,11 +347,14 @@
                                 </span>
                             }
                             @case ('slton') {
-                                <span class="max-w-20 line-clamp-1 text-end font-semibold" 
-                                      [class.text-red-600]="row[column] <= 0"
-                                      [class.text-green-600]="row[column] > 0">
-                                    {{ row[column]|number:'1.0-0' }}
-                                </span>
+                                <div class="flex flex-col items-end">
+                                    <span class="max-w-20 line-clamp-1 text-end font-semibold" 
+                                          [class.text-red-600]="row[column] <= 0"
+                                          [class.text-green-600]="row[column] > 0">
+                                        {{ row[column]|number:'1.0-0' }}
+                                    </span>
+                                    <span class="text-[9px] text-gray-400">tồn tự động</span>
+                                </div>
                             }
                             @case ('slchogiao') {
                                 <span class="max-w-20 line-clamp-1 text-end text-orange-600 font-semibold">
@@ -377,16 +385,25 @@
                             } -->
                            @case ('goiy') {
                                  @if(row[column] > 0) {
-                                  <span class="text-red-600 font-bold" matTooltip="Cần nhập thêm hàng">{{row[column]|number:'1.0-1'}}</span> 
+                                  <div class="flex flex-col">
+                                      <span class="text-red-600 font-bold" matTooltip="Cần nhập thêm hàng">{{row[column]|number:'1.0-1'}}</span>
+                                      <span class="text-[9px] text-gray-400 whitespace-nowrap">{{row['khachdat']|number:'1.0-0'}}+{{row['slhaohut']|number:'1.0-1'}}-{{row['tongkho']|number:'1.0-0'}}</span>
+                                  </div>
                               } @else if(row[column] < -100) {
-                                  <div class="flex items-center space-x-1 text-orange-600 font-bold" matTooltip="Cảnh báo: Tồn kho quá cao so với nhu cầu">
-                                      <mat-icon class="text-sm w-4 h-4">warning</mat-icon>
-                                      <span>({{GetAbs(row[column])|number:'1.0-1'}})</span>
+                                  <div class="flex flex-col">
+                                      <div class="flex items-center space-x-1 text-orange-600 font-bold" matTooltip="Cảnh báo: Tồn kho quá cao so với nhu cầu">
+                                          <mat-icon class="text-sm w-4 h-4">warning</mat-icon>
+                                          <span>({{GetAbs(row[column])|number:'1.0-1'}})</span>
+                                      </div>
+                                      <span class="text-[9px] text-orange-400 whitespace-nowrap">Dư {{GetAbs(row[column])|number:'1.0-0'}}</span>
                                   </div>
                               } @else if(row[column] < 0) {
-                                  <span class="text-green-600 font-bold">({{GetAbs(row[column])|number:'1.0-1'}})</span> 
+                                  <div class="flex flex-col">
+                                      <span class="text-green-600 font-bold">({{GetAbs(row[column])|number:'1.0-1'}})</span>
+                                      <span class="text-[9px] text-green-500">Đủ hàng</span>
+                                  </div>
                               } @else {
-                                  <span class="text-gray-400 font-bold">{{GetAbs(row[column])|number:'1.0-1'}}</span> 
+                                  <span class="text-gray-400 font-bold">{{GetAbs(row[column])|number:'1.0-1'}}</span>
                               }
                            }
                            @case ('sltontt') {
@@ -476,6 +493,52 @@
                                                 <mat-icon class="text-orange-500 text-sm absolute -top-1 -right-1">edit</mat-icon>
                                             }
                                         </div>
+                                    }
+                                </div>
+                            }
+                            @case ('khachdat') {
+                                <div class="flex flex-col items-end">
+                                    <span class="max-w-20 line-clamp-1 text-end text-blue-700 font-semibold">
+                                        {{ row[column]|number:'1.0-0' }}
+                                    </span>
+                                    <span class="text-[9px] text-gray-400">đơn chưa giao</span>
+                                </div>
+                            }
+                            @case ('khachgiao') {
+                                <div class="flex flex-col items-end">
+                                    <span class="max-w-20 line-clamp-1 text-end text-teal-600 font-semibold">
+                                        {{ row[column]|number:'1.0-0' }}
+                                    </span>
+                                    <span class="text-[9px] text-gray-400">đã giao</span>
+                                </div>
+                            }
+                            @case ('tongkho') {
+                                <div class="flex flex-col items-end">
+                                    <span class="max-w-20 line-clamp-1 text-end font-bold text-gray-800">
+                                        {{ row[column]|number:'1.0-1' }}
+                                    </span>
+                                    <span class="text-[9px] text-gray-400 whitespace-nowrap">
+                                        {{row['sltontt']|number:'1.0-0'}} + Σkho
+                                    </span>
+                                </div>
+                            }
+                            @case ('haohut') {
+                                <div class="flex flex-col items-end">
+                                    <span class="max-w-20 line-clamp-1 text-end text-amber-600 font-semibold">
+                                        {{ row[column] }}%
+                                    </span>
+                                    <span class="text-[9px] text-gray-400">tỉ lệ hỏng</span>
+                                </div>
+                            }
+                            @case ('slhaohut') {
+                                <div class="flex flex-col items-end">
+                                    <span class="max-w-20 line-clamp-1 text-end text-amber-600 font-semibold">
+                                        {{ row[column]|number:'1.0-1' }}
+                                    </span>
+                                    @if (row[column] > 0) {
+                                        <span class="text-[9px] text-gray-400 whitespace-nowrap">
+                                            {{row['khachdat']|number:'1.0-0'}}×{{row['haohut']}}%
+                                        </span>
                                     }
                                 </div>
                             }

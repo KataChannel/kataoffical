@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["formphongban.component.ts"],
+  "sourcesContent": ["\n    .container {\n      padding: 24px;\n      max-width: 1200px;\n      margin: 0 auto;\n    }\n    \n    .loading-container {\n      text-align: center;\n      padding: 60px 20px;\n    }\n    \n    .loading-container mat-spinner {\n      margin: 0 auto 20px;\n    }\n    \n    .form-grid {\n      display: grid;\n      grid-template-columns: repeat(2, 1fr);\n      gap: 16px;\n      padding: 20px 0;\n    }\n    \n    .form-grid mat-form-field {\n      width: 100%;\n    }\n    \n    .form-grid mat-form-field.full-width {\n      grid-column: 1 / -1;\n    }\n    \n    @media (max-width: 768px) {\n      .form-grid {\n        grid-template-columns: 1fr;\n      }\n    }\n    \n    mat-card-actions {\n      padding: 16px;\n      display: flex;\n      gap: 12px;\n      justify-content: flex-end;\n    }\n  "],
+  "mappings": ";AACI,CAAA;AACE,WAAA;AACA,aAAA;AACA,UAAA,EAAA;;AAGF,CAAA;AACE,cAAA;AACA,WAAA,KAAA;;AAGF,CALA,kBAKA;AACE,UAAA,EAAA,KAAA;;AAGF,CAAA;AACE,WAAA;AACA,yBAAA,OAAA,CAAA,EAAA;AACA,OAAA;AACA,WAAA,KAAA;;AAGF,CAPA,UAOA;AACE,SAAA;;AAGF,CAXA,UAWA,cAAA,CAAA;AACE,eAAA,CAAA,CAAA;;AAGF,OAAA,CAAA,SAAA,EAAA;AACE,GAhBF;AAiBI,2BAAA;;;AAIJ;AACE,WAAA;AACA,WAAA;AACA,OAAA;AACA,mBAAA;;",
+  "names": []
+}

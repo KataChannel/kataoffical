@@ -1,69 +1,103 @@
 # 📊 Hướng Dẫn Phân Tích Chỉ Số Nhu Cầu Đặt Hàng & Review Sản Phẩm
 
-Tài liệu này tổng hợp ý nghĩa các chỉ số trong hệ thống **Nhu cầu đặt hàng** (Ordering Demand) và đánh giá chi tiết cho các mã sản phẩm cụ thể.
+> **Cập nhật:** 28/02/2026 - Đã fix tất cả bug logic tính toán
 
 ---
 
 ## I. Giải Thích Các Cột & Công Thức Tính Toán
 
-Hệ thống giúp tối ưu hóa việc nhập hàng bằng cách tính toán nhu cầu thực tế dựa trên các chỉ số sau:
-
 ### 1. Chỉ số Nhu cầu (Đầu ra)
-*   **🛒 TỔNG ĐẶT (KHÁCH) (`khachdat`):** Tổng số lượng khách hàng đã đặt (trạng thái đơn hàng là `Đã đặt`) nhưng chưa xử lý giao.
-*   **📦 TỔNG BÁN (GIAO) (`khachgiao`):** Tổng số lượng thực tế đã thực hiện giao hàng thành công hoặc đang vận chuyển.
+| Cột | Tên | Ý nghĩa | Nguồn dữ liệu |
+|:----|:----|:--------|:---------------|
+| `khachdat` | TỔNG ĐẶT (KHÁCH) | Đơn status = `dadat` (chưa xử lý giao) | `Donhang` where `status = 'dadat'` |
+| `khachgiao` | TỔNG BÁN (GIAO) | Đã giao + nhận + hoàn thành | `Donhang` where `status IN ('dagiao','danhan','hoanthanh')` |
+
+> ⚠️ **LƯU Ý:** Enum `StatusDonhang` chỉ có 5 giá trị: `dadat`, `dagiao`, `danhan`, `huy`, `hoanthanh`.
+> Đơn `huy` được loại bỏ hoàn toàn khỏi tính toán.
 
 ### 2. Chỉ số Tồn kho (Đầu vào)
-*   **💻 Tồn Hệ Thống (`slton`):** Số lượng tồn kho lý thuyết được ghi nhận trên phần mềm qua các nghiệp vụ nhập/xuất/bán.
-*   **✅ Tồn Chốt Kho (`sltontt`):** Số lượng thực tế kiểm kê được tại lần chốt kho gần nhất. Đây là con số tin cậy nhất.
-*   **🏢 Tồn Kho Nhánh (`kho1` -> `kho6`):** Số lượng hàng đang được đặt hoặc luân chuyển tại các kho phụ (Long An, Đà Lạt, HCM, SG1, SG2...).
-*   **🏗️ TỔNG TỒN HIỆN CÓ (`tongkho`):** Tổng hợp tất cả nguồn hàng đang có sẵn hoặc sắp nhập về.
-    *   **Công thức:** `tongkho = (∑ kho1...kho6) + sltontt`
+| Cột | Tên | Ý nghĩa | Nguồn dữ liệu |
+|:----|:----|:--------|:---------------|
+| `slton` | Tồn Hệ Thống | Tồn kho tự động, cập nhật qua phiếu nhập/xuất kho | `TonKho.slton` |
+| `sltontt` | Tồn Chốt Kho | Số lượng kiểm kê vật lý lần cuối | `TonKho.sltontt` |
+| `kho1→kho6` | Tồn kho nhánh | SL hàng đặt từ NCC cho từng kho | Tổng `Dathang.sldat` theo `makho` |
+| `tongkho` | TỔNG TỒN | Tổng hàng có sẵn để bán | **Công thức:** `Σkho + sltontt` |
 
 ### 3. Chỉ số Hao hụt & Gợi ý
-*   **📉 Tỉ Lệ Hao Hụt (`haohut`):** Phần trăm dự kiến hàng bị hỏng, bay hơi hoặc thất thoát (theo đặc thù từng loại sản phẩm).
-*   **⚠️ SL Hao Hụt (`slhaohut`):** Lượng hàng bù đắp cho phần hao hụt dựa trên đơn khách.
-    *   **Công thức:** `slhaohut = khachdat * (haohut / 100)`
-*   **💡 SL CẦN ĐẶT (GỢI Ý) (`goiy`):** Con số quyết định lượng hàng cần nhập từ Nhà cung cấp (NCC).
-    *   **Công thức:** `goiy = khachdat + slhaohut - tongkho`
+| Cột | Tên | Công thức |
+|:----|:----|:----------|
+| `haohut` | Tỉ Lệ Hao Hụt | % dự kiến hỏng (từ `TonKho.haohut` hoặc `Sanpham.haohut`) |
+| `slhaohut` | SL Hao Hụt | `khachdat × (haohut / 100)` |
+| `goiy` | SL CẦN ĐẶT (Gợi Ý) | `khachdat + slhaohut - tongkho` |
 
 ---
 
-## II. Review Chi Tiết 3 Sản Phẩm Mục Tiêu
+## II. Luồng Dữ Liệu Chi Tiết
 
-Dựa trên cấu trúc dữ liệu, dưới đây là phân tích cho 3 mã sản phẩm yêu cầu:
-
-### 1. 🟢 Bánh Canh Bột Gạo (Mã: `I100248`)
-*   **Thông tin:** ĐVT: `Kg` | Giá gốc: 15,000đ.
-*   **Đặc tính:** Hàng thực phẩm tươi, hạn sử dụng ngắn.
-*   **Phân tích:** 
-    *   Yêu cầu độ chính xác cao về thời gian nhập hàng.
-    *   Màu sắc **Gợi ý**: Nếu hiện màu đỏ (>0), cần nhập ngay để đóng gói đơn hàng trong ngày.
-    *   Hao hụt thường thấp, ưu tiên kiểm soát tồn thực tế (`sltontt`) để tránh hàng cũ.
-
-### 2. 🍉 Dưa hấu (Mã: `I100479`)
-*   **Thông tin:** ĐVT: `Kg` | Giá gốc: 12,000đ.
-*   **Đặc tính:** Trọng lượng lớn, dễ dập vỡ, hao hụt cao khi để lâu.
-*   **Phân tích:**
-    *   Cần đặc biệt chú ý cột **Tỉ Lệ Hao Hụt**. Nếu đang mùa nắng nóng, cần chỉnh tỉ lệ này cao hơn để hệ thống gợi ý nhập dôi dư hàng, đảm bảo đủ quả đạt chất lượng giao khách.
-    *   Kiểm tra kỹ **Tổng tồn các kho** để tránh nhập chồng chéo khi kho nhánh vẫn còn hàng.
-
-### 3. 🥚 Trứng vịt muối (Mã: `I100275`)
-*   **Thông tin:** ĐVT: `Quả` | Giá gốc: 3,600đ.
-*   **Đặc tính:** Hàng khô/đóng gói, bảo quản lâu dài.
-*   **Phân tích:**
-    *   Đơn vị tính là `Quả`, cần kiểm kê số lượng lẻ chính xác.
-    *   Nếu **Gợi ý** hiện số âm (màu xanh/xám), nghĩa là kho đang dư nhiều, tuyệt đối không nhập thêm để tránh đọng vốn.
-    *   Ít chịu ảnh hưởng bởi hao hụt biến động hàng ngày.
+```
+API Query → Donhang (theo ngày) + Dathang (theo ngày) + TonKho + Sanpham
+    ↓
+DonhangsTranfer: flat map mỗi đơn → { masp, sldat, slgiao, slnhan, status }
+DathangsTranfer: flat map mỗi đơn NCC → { masp, sldat, makho, mancc }
+TonkhosTranfer:  map → { masp, slton, sltontt, slchogiao, slchonhap }
+    ↓
+transformFinalData():
+  - Gắn NCC, kho vào sản phẩm
+  - Phân khachdat (status=dadat) và khachgiao (dagiao/danhan/hoanthanh)
+  - Phân bổ SL đặt NCC vào kho1-kho6 theo makho
+    ↓
+TonghopsFinal.forEach():
+  - tongkho = Σkho + sltontt
+  - slhaohut = GetSLHaohut(item)
+  - goiy = GetGoiy(item)
+    ↓
+Sort by goiy DESC → Hiển thị bảng
+```
 
 ---
 
-## III. Hướng Dẫn Vận Hành Nhanh
+## III. Ví dụ Tính Toán Thực Tế
 
-| Màu sắc chỉ số Gợi ý | Ý nghĩa | Hành động đề xuất |
-| :--- | :--- | :--- |
-| **Đỏ rực (Số dương)** | **THIẾU HÀNG** | Tạo đơn đặt NCC ngay lập tức đúng số lượng gợi ý. |
-| **Xanh/Xám (Số âm)** | **DƯ HÀNG** | Không nhập thêm. Kiểm tra hạn sử dụng để đẩy bán sớm. |
-| **Cảnh báo (Warning)** | **TỒN QUÁ CAO** | Tồn kho thực tế vượt xa nhu cầu khách đặt. Cần xả hàng hoặc chuyển kho. |
+### I100883 - Đậu hủ trứng CP 220gr
+| Chỉ số | Giá trị | Giải thích |
+|:-------|:--------|:-----------|
+| khachdat | 5 | 5 cây được đặt (status=dadat) |
+| khachgiao | 0 | Chưa giao đơn nào |
+| slton | -36 | ⚠️ Âm! Có lỗi trong lịch sử phiếu kho |
+| sltontt | 0 | Kiểm kê lúc 11:54 28/02 = 0 cây |
+| kho1→kho6 | 0 | Không có hàng đang về từ NCC |
+| **tongkho** | **0** | = 0 + 0 = 0 |
+| haohut | 0% | Không tính hao hụt |
+| slhaohut | 0 | = 5 × 0% = 0 |
+| **goiy** | **5** | = 5 + 0 - 0 = **Cần đặt 5 cây** |
 
 ---
-*Tài liệu được tổng hợp tự động dựa trên cấu trúc hệ thống Rausach Final - 2026.*
+
+## IV. Các Bug Đã Fix (28/02/2026)
+
+### Bug 1: Filter status dùng giá trị SAI
+- **Trước:** Filter `khachgiao` dùng `completed`, `processed`, `done` → **KHÔNG TỒN TẠI** trong DB
+- **Sau:** Dùng `dagiao`, `danhan`, `hoanthanh` → **khớp 100% với enum `StatusDonhang`**
+- **Hậu quả cũ:** `khachgiao` luôn = 0 cho mọi sản phẩm
+
+### Bug 2: tongkho tính sai
+- **Trước:** `tongkho = Σkho + slton + khachdat` → Cộng cả tồn tự động (có thể âm) + nhu cầu khách
+- **Sau:** `tongkho = Σkho + sltontt` → Chỉ dựa trên kiểm kê thực tế + hàng đang về NCC
+- **Hậu quả cũ:** tongkho = -31 cho I100883 (phải là 0), goiy = 36 (phải là 5)
+
+### Bug 3: Thứ tự tính slhaohut & goiy
+- **Trước:** Tính `goiy` trước `slhaohut` → goiy không bao gồm hao hụt
+- **Sau:** Tính `slhaohut` trước, rồi mới tính `goiy` → Chính xác
+
+---
+
+## V. Hướng Dẫn Vận Hành Nhanh
+
+| Màu sắc Gợi ý | Ý nghĩa | Hành động |
+|:--------------|:---------|:----------|
+| 🔴 Đỏ (>0) | **THIẾU HÀNG** | Đặt NCC ngay theo số gợi ý |
+| 🟢 Xanh (<0) | **ĐỦ HÀNG** | Không cần đặt thêm |
+| 🟠 Cam (<-100) + ⚠️ | **DƯ NHIỀU** | Kiểm tra hạn sử dụng, cân nhắc xả hàng |
+
+---
+*Tài liệu cập nhật: 28/02/2026 16:28 - Hệ thống Rausach Final*

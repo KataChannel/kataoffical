@@ -56,6 +56,7 @@ import {
   NestedDataDialogData,
 } from './nested-data-dialog/nested-data-dialog.component';
 import moment from 'moment';
+import { StockWarningDialogComponent, StockWarningItem, StockWarningData } from './stock-warning-dialog.component';
 
 @Component({
   selector: 'app-nhucaudathang',
@@ -154,6 +155,17 @@ export class NhucaudathangComponent {
     kho6: 'SG2',
     haohut: 'Tỉ Lệ Hao Hụt',
     slhaohut: 'SL Hao Hụt',
+  };
+  ColumnSubtitle: any = {
+    khachdat: 'Đơn chưa giao',
+    khachgiao: 'Đã giao xong',
+    slton: 'Tồn trên phần mềm',
+    sltontt: 'Kiểm kê lần cuối',
+    tongkho: 'Chốt kho + Σ Kho NCC',
+    goiy: 'Đặt + HaoHụt - TồnKho',
+    haohut: '% dự kiến hỏng',
+    slhaohut: 'Đặt × HaoHụt%',
+    xSLDat: 'SL nhập cho NCC',
   };
   // ColumnName: any = {
   //   title: 'Tên Sản Phẩm',
@@ -627,8 +639,9 @@ export class NhucaudathangComponent {
       //console.log('this.TonghopsFinal', this.TonghopsFinal);
 
       this.TonghopsFinal.forEach((item) => {
-        // tongkho = Tồn hệ thống + Hàng đang về từ NCC + Nhu cầu hiện tại (để ra tồn vật lý thực tế)
-        // Tuy nhiên để chuẩn nhất cho việc gợi ý, ta tính dựa trên Tồn hệ thống (có sẵn để bán)
+        // tongkho = Hàng đang về từ NCC (các kho nhánh) + Tồn chốt kho thực tế (sltontt)
+        // sltontt = số lượng kiểm kê vật lý lần cuối - là con số tin cậy nhất
+        // KHÔNG sử dụng slton (tồn tự động) vì có thể bị âm hoặc lệch do lỗi đồng bộ
         const incomingStock = (
           (Number(item.kho1) || 0) +
           (Number(item.kho2) || 0) +
@@ -638,7 +651,7 @@ export class NhucaudathangComponent {
           (Number(item.kho6) || 0)
         );
         
-        item.tongkho = parseFloat((incomingStock + Number(item.slton || 0) + Number(item.khachdat || 0)).toFixed(3));
+        item.tongkho = parseFloat((incomingStock + Number(item.sltontt || 0)).toFixed(3));
         item.slhaohut = this.GetSLHaohut(item);
         item.goiy = this.GetGoiy(item);
       });
@@ -1077,6 +1090,66 @@ export class NhucaudathangComponent {
   }
 
   // Cập nhật tồn kho từ file Excel
+  // ================================================================
+  // CẢNH BÁO BẤT THƯỜNG CHỐT KHO
+  // ================================================================
+  private detectStockAnomalies(
+    masp: string,
+    title: string,
+    sltonMoi: number,
+    sltonCu: number
+  ): StockWarningItem | null {
+    const chenhLech = Math.abs(sltonMoi - sltonCu);
+    const loaiDieuChinh: 'tang' | 'giam' = sltonMoi > sltonCu ? 'tang' : 'giam';
+
+    // Rule 1: Số lượng mới > 1000 khi cũ = 0 (nhập đột biến)
+    if (sltonCu === 0 && sltonMoi >= 1000) {
+      return {
+        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
+        mucDoNghiemTrong: 'cao',
+        lyDoCanhBao: `Tồn cũ = 0 nhưng nhập mới ${sltonMoi.toLocaleString()} → kiểm tra lại số liệu gốc`
+      };
+    }
+
+    // Rule 2: Giá trị cực lớn > 5000 (bất kể cũ bao nhiêu)
+    if (sltonMoi >= 5000) {
+      return {
+        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
+        mucDoNghiemTrong: 'cao',
+        lyDoCanhBao: `Số lượng ${sltonMoi.toLocaleString()} rất lớn → có thể nhập nhầm đơn vị (cây vs thùng)`
+      };
+    }
+
+    // Rule 3: Thay đổi > 500% so với giá trị cũ
+    if (sltonCu > 0 && chenhLech / sltonCu > 5) {
+      return {
+        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
+        mucDoNghiemTrong: 'trung_binh',
+        lyDoCanhBao: `Chênh lệch ${(chenhLech / sltonCu * 100).toFixed(0)}% so với tồn cũ → xác nhận lại`
+      };
+    }
+
+    // Rule 4: Giảm tồn > 500 đơn vị
+    if (loaiDieuChinh === 'giam' && chenhLech >= 500) {
+      return {
+        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
+        mucDoNghiemTrong: 'trung_binh',
+        lyDoCanhBao: `Giảm ${chenhLech.toLocaleString()} đơn vị → kiểm tra phiếu xuất kho`
+      };
+    }
+
+    // Rule 5: Tăng đột biến > 500 khi cũ < 50
+    if (sltonCu < 50 && sltonMoi > 500) {
+      return {
+        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
+        mucDoNghiemTrong: 'thap',
+        lyDoCanhBao: `Tồn cũ chỉ ${sltonCu} nhưng nhập ${sltonMoi.toLocaleString()} → xác nhận lại`
+      };
+    }
+
+    return null;
+  }
+
   async Capnhattonkho() {
     this.isUpdatingStock = true;
 
@@ -1212,6 +1285,11 @@ export class NhucaudathangComponent {
         const phieuXuatDetails: any[] = [];
         let unchangedCount = 0;
 
+        // ================================================================
+        // BƯỚC MỚI: Phát hiện bất thường
+        // ================================================================
+        const danhSachCanhBao: StockWarningItem[] = [];
+
         for (const [masp, slton] of validDataMap.entries()) {
           const tonkho = tonkhoMap.get(masp);
           const sanpham = sanphamMap.get(masp);
@@ -1221,7 +1299,7 @@ export class NhucaudathangComponent {
             continue;
           }
 
-          const currentSltontt = tonkho ? (tonkho.sltontt || 0) : 0;
+          const currentSltontt = Number(tonkho ? (tonkho.sltontt || 0) : 0);
 
           if (slton > currentSltontt) {
             phieuNhapDetails.push({
@@ -1236,7 +1314,67 @@ export class NhucaudathangComponent {
           } else {
             unchangedCount++;
           }
+
+          // Kiểm tra bất thường (chỉ khi có thay đổi)
+          if (slton !== currentSltontt) {
+            const warning = this.detectStockAnomalies(
+              masp, 
+              sanpham.title || masp, 
+              slton, 
+              currentSltontt
+            );
+            if (warning) {
+              danhSachCanhBao.push(warning);
+            }
+          }
         }
+
+        this._snackBar.dismiss();
+
+        // ================================================================
+        // BƯỚC MỚI: Hiển thị dialog xác nhận trước khi lưu
+        // ================================================================
+        const spBinhThuong = (phieuNhapDetails.length + phieuXuatDetails.length) - danhSachCanhBao.length;
+
+        const dialogData: StockWarningData = {
+          title: '⚠️ Xác Nhận Cập Nhật Chốt Kho',
+          tongSanPham: validDataMap.size,
+          spBinhThuong: Math.max(0, spBinhThuong),
+          spKhongThayDoi: unchangedCount,
+          danhSachCanhBao,
+          danhSachNhap: phieuNhapDetails,
+          danhSachXuat: phieuXuatDetails,
+        };
+
+        const dialogRef = this._dialog.open(StockWarningDialogComponent, {
+          width: '700px',
+          maxHeight: '90vh',
+          disableClose: true,
+          data: dialogData
+        });
+
+        const confirmed = await dialogRef.afterClosed().toPromise();
+
+        if (!confirmed) {
+          this._snackBar.open('Đã hủy cập nhật chốt kho.', 'Đóng', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-info'],
+          });
+          this.isUpdatingStock = false;
+          return;
+        }
+
+        // ================================================================
+        // BƯỚC XỬ LÝ: Chỉ lưu khi đã xác nhận
+        // ================================================================
+        this._snackBar.open('Đang lưu dữ liệu chốt kho...', '', {
+          duration: 0,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-info'],
+        });
 
         if (phieuNhapDetails.length > 0) {
           await this._PhieukhoService.CreatePhieukho({
@@ -1276,7 +1414,7 @@ export class NhucaudathangComponent {
           );
         } else {
           this._snackBar.open(
-            `Cập nhật TonKho thành công: ${phieuNhapDetails.length} sản phẩm tăng, ${phieuXuatDetails.length} sản phẩm giảm, ${unchangedCount} giữ nguyên.`,
+            `✅ Cập nhật TonKho thành công: ${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm, ${unchangedCount} giữ nguyên.`,
             'Đóng',
             {
               duration: 4000,
@@ -1450,7 +1588,9 @@ export class NhucaudathangComponent {
         });
       }
 
-      const khachdat = Donhangs.filter((v: any) => v.status === 'dadat' || v.status === 'pending' || v.status === 'dangxuly').reduce(
+      // ⚠️ QUAN TRỌNG: Enum StatusDonhang trong database chỉ có: dadat, dagiao, danhan, huy, hoanthanh
+      // khachdat = Đơn đã đặt, chưa xử lý giao -> cần chuẩn bị hàng
+      const khachdat = Donhangs.filter((v: any) => v.status === 'dadat').reduce(
         (acc: number, curr: any) => {
           return Number((acc + Number(curr.sldat || 0)).toFixed(3)) || 0;
         },
@@ -1458,8 +1598,9 @@ export class NhucaudathangComponent {
       );
       // console.log('Donhangs', Donhangs);
       
+      // khachgiao = Đơn đã giao + đã nhận + hoàn thành -> đã xong
       const khachgiao = Donhangs.filter(
-        (v: any) => v.status === 'completed' || v.status === 'processed' || v.status === 'done'
+        (v: any) => v.status === 'dagiao' || v.status === 'danhan' || v.status === 'hoanthanh'
       ).reduce((acc: number, curr: any) => {
         return Number((acc + Number(curr.sldat || 0)).toFixed(2)) || 0;
       }, 0);
