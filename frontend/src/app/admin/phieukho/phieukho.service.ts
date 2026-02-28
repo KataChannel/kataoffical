@@ -28,6 +28,7 @@ export class PhieukhoService {
           method:'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this._StorageService.getItem('token')
           },
           body: JSON.stringify(dulieu),
         };
@@ -70,6 +71,7 @@ export class PhieukhoService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
         },
       };
       const response = await fetch(`${environment.APIURL}/phieukho/findid/${id}`, options);      
@@ -103,6 +105,7 @@ export class PhieukhoService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
         },
         body: JSON.stringify(query),
       };
