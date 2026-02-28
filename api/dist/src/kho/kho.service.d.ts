@@ -14,6 +14,8 @@ export declare class khoService {
             haohut: import("@prisma/client/runtime/library").Decimal;
             goiy: number;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             sanphamId: string;
             sltontt: import("@prisma/client/runtime/library").Decimal;
         }[];

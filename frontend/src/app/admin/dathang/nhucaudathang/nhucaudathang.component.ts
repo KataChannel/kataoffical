@@ -141,11 +141,11 @@ export class NhucaudathangComponent {
     goiy: 'SL Cần Đặt (Gợi Ý)',
     // slchogiao: 'SL Bán (Chờ Giao)',
     // SLGiao: 'SL Giao (Khách)',
-    khachdat: 'TỔNG SL KHÁCH ĐẶT',
-    khachgiao: 'TỔNG SL BÁN',
+    khachdat: 'TỔNG ĐẶT (KHÁCH)',
+    khachgiao: 'TỔNG BÁN (GIAO)',
     slton: 'Tồn Hệ Thống',
-    sltontt: 'Tồn Thực Tế',
-    tongkho: 'Tổng Tổng Kho',
+    sltontt: 'Tồn Chốt Kho (Thực Tế)',
+    tongkho: 'TỔNG TỒN (CÁC KHO)',
     kho1: 'TG-LONG AN',
     kho2: 'Bổ Sung',
     kho3: 'TG-ĐÀ LẠT',
@@ -179,6 +179,7 @@ export class NhucaudathangComponent {
   pageSize = 50;
   currentPage = 1;
   totalPages = 1;
+  currentSort: { active: string; direction: string } = { active: '', direction: '' };
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -304,13 +305,13 @@ export class NhucaudathangComponent {
     //   );
     //   return suggestion.toFixed(0);
     // }
-    // else {
-    //   return '0';
     // }
   }
-  GetAbs(value: any) {
-    return Math.abs(Number(value) || 0).toFixed(3);
+
+  GetAbs(val: any) {
+    return Math.abs(Number(val)) || 0;
   }
+
   GetSLHaohut(item: any) {
     // if(item.SLGiao > item.SLDat) {
     //   const demand = item.SLGiao - item.SLDat;
@@ -435,6 +436,7 @@ export class NhucaudathangComponent {
             sltontt: true,
             slchogiao: true,
             slchonhap: true,
+            updatedAt: true,
             sanpham: {
               select: {
                 title: true,
@@ -506,6 +508,7 @@ export class NhucaudathangComponent {
         sltontt: Number(sp.sltontt) || 0,
         slchogiao: Number(sp.slchogiao) || 0,
         slchonhap: Number(sp.slchonhap) || 0,
+        updatedAt: sp.updatedAt,
       }));
       const tonghopMap = new Map<string, any>();
       TonkhosTranfer.forEach((tonkho: any) => {
@@ -585,14 +588,15 @@ export class NhucaudathangComponent {
           sltontt: tonkho?.sltontt || 0,
           slchogiao: tonkho?.slchogiao || 0,
           slchonhap: tonkho?.slchonhap || 0,
+          updatedAt: tonkho?.updatedAt || null,
           haohut: tonkho?.haohut || sp.haohut || 0,
           slhaohut: 0,
           Dathangs: DathangsTranfer.filter((dh: any) => dh.masp === sp.masp),
           Donhangs: DonhangsTranfer.filter((dh: any) => dh.masp === sp.masp),
         };
         // Calculate suggestion immediately
-        transformedItem.goiy = this.GetGoiy(transformedItem);
         transformedItem.slhaohut = this.GetSLHaohut(transformedItem);
+        transformedItem.goiy = this.GetGoiy(transformedItem);
         return transformedItem;
       })
         .filter((sp) => sp.masp)
@@ -623,17 +627,20 @@ export class NhucaudathangComponent {
       //console.log('this.TonghopsFinal', this.TonghopsFinal);
 
       this.TonghopsFinal.forEach((item) => {
-        item.tongkho = parseFloat((
+        // tongkho = Tồn hệ thống + Hàng đang về từ NCC + Nhu cầu hiện tại (để ra tồn vật lý thực tế)
+        // Tuy nhiên để chuẩn nhất cho việc gợi ý, ta tính dựa trên Tồn hệ thống (có sẵn để bán)
+        const incomingStock = (
           (Number(item.kho1) || 0) +
           (Number(item.kho2) || 0) +
           (Number(item.kho3) || 0) +
           (Number(item.kho4) || 0) +
           (Number(item.kho5) || 0) +
-          (Number(item.kho6) || 0) +
-          (Number(item.sltontt) || 0)
-        ).toFixed(3));
-        item.goiy = this.GetGoiy(item);
+          (Number(item.kho6) || 0)
+        );
+        
+        item.tongkho = parseFloat((incomingStock + Number(item.slton || 0) + Number(item.khachdat || 0)).toFixed(3));
         item.slhaohut = this.GetSLHaohut(item);
+        item.goiy = this.GetGoiy(item);
       });
 
       // Sort by goiy from large to small
@@ -1443,7 +1450,7 @@ export class NhucaudathangComponent {
         });
       }
 
-      const khachdat = Donhangs.filter((v: any) => v.status === 'dadat').reduce(
+      const khachdat = Donhangs.filter((v: any) => v.status === 'dadat' || v.status === 'pending' || v.status === 'dangxuly').reduce(
         (acc: number, curr: any) => {
           return Number((acc + Number(curr.sldat || 0)).toFixed(3)) || 0;
         },
@@ -1452,7 +1459,7 @@ export class NhucaudathangComponent {
       // console.log('Donhangs', Donhangs);
       
       const khachgiao = Donhangs.filter(
-        (v: any) => v.status !== 'dadat'
+        (v: any) => v.status === 'completed' || v.status === 'processed' || v.status === 'done'
       ).reduce((acc: number, curr: any) => {
         return Number((acc + Number(curr.sldat || 0)).toFixed(2)) || 0;
       }, 0);
@@ -1674,6 +1681,11 @@ export class NhucaudathangComponent {
       currentData = this.applyGlobalFilterToData(currentData, this.dataSource.filter);
     }
 
+    // 4. Global Sorting
+    if (this.currentSort.active && this.currentSort.direction !== '') {
+      currentData = this.applySortingToData(currentData, this.currentSort);
+    }
+
     // Update pagination stats
     this.totalItems = currentData.length;
     this.calculateTotalPages();
@@ -1687,6 +1699,48 @@ export class NhucaudathangComponent {
     const endIndex = startIndex + this.pageSize;
     const pageData = currentData.slice(startIndex, endIndex);
     this.dataSource.data = pageData;
+  }
+
+  private applySortingToData(data: any[], sort: { active: string; direction: string }): any[] {
+    return data.sort((a: any, b: any) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'title':
+        case 'masp':
+        case 'mancc':
+        case 'name':
+        case 'dvt':
+          return this.compareStrings(a[sort.active] || '', b[sort.active] || '', isAsc);
+        case 'slton':
+        case 'sltontt':
+        case 'tongkho':
+        case 'khachdat':
+        case 'khachgiao':
+        case 'slchogiao':
+        case 'slchonhap':
+        case 'SLDat':
+        case 'SLGiao':
+        case 'kho1':
+        case 'kho2':
+        case 'kho3':
+        case 'kho4':
+        case 'kho5':
+        case 'kho6':
+          return this.compareNumbers(
+            Number(a[sort.active]) || 0,
+            Number(b[sort.active]) || 0,
+            isAsc
+          );
+        case 'goiy':
+          return this.compareNumbers(
+            parseFloat(this.GetGoiy(a)),
+            parseFloat(this.GetGoiy(b)),
+            isAsc
+          );
+        default:
+          return 0;
+      }
+    });
   }
 
   getCurrentFilteredData(column: string): any[] {
@@ -1759,38 +1813,8 @@ export class NhucaudathangComponent {
 
   // Enhanced sorting methods
   sortData(sort: any) {
-    const data = this.dataSource.data.slice();
-    if (!sort.active || sort.direction === '') {
-      this.dataSource.data = data;
-      return;
-    }
-
-    this.dataSource.data = data.sort((a: any, b: any) => {
-      const isAsc = sort.direction === 'asc';
-      switch (sort.active) {
-        case 'title':
-        case 'masp':
-          return this.compareStrings(a[sort.active], b[sort.active], isAsc);
-        case 'slton':
-        case 'slchogiao':
-        case 'slchonhap':
-        case 'SLDat':
-        case 'SLGiao':
-          return this.compareNumbers(
-            Number(a[sort.active]) || 0,
-            Number(b[sort.active]) || 0,
-            isAsc
-          );
-        case 'goiy':
-          return this.compareNumbers(
-            parseFloat(this.GetGoiy(a)),
-            parseFloat(this.GetGoiy(b)),
-            isAsc
-          );
-        default:
-          return this.compareStrings(a[sort.active], b[sort.active], isAsc);
-      }
-    });
+    this.currentSort = { active: sort.active, direction: sort.direction };
+    this.updateDisplayData();
   }
 
   private compareStrings(a: string, b: string, isAsc: boolean): number {
