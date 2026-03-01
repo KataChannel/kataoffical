@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["user-permission-overview.component.ts"],
+  "sourcesContent": ["\n    .permission-overview {\n      width: 100%;\n    }\n    \n    .permission-main-card {\n      border-left: 4px solid #4f46e5;\n      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);\n    }\n    \n    .permission-section {\n      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n    }\n    \n    .permission-section mat-expansion-panel-header {\n      background-color: #f8fafc;\n    }\n    \n    ::ng-deep .mat-mdc-tab-group {\n      .mat-mdc-tab-header {\n        border-bottom: 2px solid #e2e8f0;\n      }\n    }\n  "],
+  "mappings": ";AACI,CAAA;AACE,SAAA;;AAGF,CAAA;AACE,eAAA,IAAA,MAAA;AACA,cAAA,EAAA,IAAA,IAAA,KAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;;AAGF,CAAA;AACE,cAAA,EAAA,IAAA,IAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;;AAGF,CAJA,mBAIA;AACE,oBAAA;;AAIA,UAAA,CAAA,kBAAA,CAAA;AACE,iBAAA,IAAA,MAAA;;",
+  "names": []
+}

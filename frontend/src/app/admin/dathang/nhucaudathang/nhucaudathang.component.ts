@@ -161,14 +161,20 @@ export class NhucaudathangComponent {
   ColumnSubtitle: any = {
     khachdat: 'Đơn chưa giao',
     khachgiao: 'Đã giao xong',
-    slton: 'Tồn trên phần mềm',
-    sltontt: 'Kiểm kê lần cuối',
-    chenhlech: 'HT - Chốt kho',
-    tongkho: 'Chốt kho + Σ Kho NCC',
-    goiy: 'Đặt + HaoHụt - TồnKho',
+    slton: 'Sổ sách hiện tại',
+    sltontt: 'Kiểm kê thực tế',
+    chenhlech: 'Lệch Sổ - Thực',
+    tongkho: 'Thực tế + Hàng đang về',
+    goiy: 'SL nên đặt thêm NCC',
     haohut: '% dự kiến hỏng',
-    slhaohut: 'Đặt × HaoHụt%',
-    xSLDat: 'SL nhập cho NCC',
+    slhaohut: 'Lượng hàng bù hỏng',
+    xSLDat: 'Sửa số lượng đặt',
+    kho1: 'Hàng đang về từ Long An',
+    kho2: 'Hàng đang về từ Bổ Sung',
+    kho3: 'Hàng đang về từ Đà Lạt',
+    kho4: 'Hàng đang về từ Kho Tổng',
+    kho5: 'Hàng đang về từ SG1',
+    kho6: 'Hàng đang về từ SG2',
   };
   // ColumnName: any = {
   //   title: 'Tên Sản Phẩm',
@@ -330,11 +336,6 @@ export class NhucaudathangComponent {
   }
 
   GetSLHaohut(item: any) {
-    // if(item.SLGiao > item.SLDat) {
-    //   const demand = item.SLGiao - item.SLDat;
-    //   const wastageAmount = demand * (item.haohut || 0) / 100;
-    //   return wastageAmount.toFixed(0);
-    // }
     if (item.khachdat > 0) {
       const wastageAmount = (item.khachdat * (item.haohut || 0)) / 100;
       return wastageAmount.toFixed(3);
@@ -342,6 +343,51 @@ export class NhucaudathangComponent {
       return 0;
     }
   }
+
+  // ✅ Kiểm tra đơn hàng NCC bị "treo" quá 48h (Zombie Orders)
+  checkStaleOrder(row: any, khoValueKey: string | null = null): { isStale: boolean, days: number, oldestDate: Date | null } {
+    if (!row.Dathangs || row.Dathangs.length === 0) return { isStale: false, days: 0, oldestDate: null };
+    
+    let relevantOrders = row.Dathangs;
+    if (khoValueKey) {
+      const khoMetadata = this.KhoMetadata.find(k => k.value === khoValueKey);
+      if (khoMetadata) {
+        relevantOrders = row.Dathangs.filter((dh: any) => dh.makho === khoMetadata.makho);
+      }
+    }
+
+    if (relevantOrders.length === 0) return { isStale: false, days: 0, oldestDate: null };
+
+    const now = new Date();
+    let oldestDate: Date | null = null;
+
+    relevantOrders.forEach((dh: any) => {
+      const orderDate = new Date(dh.ngaynhan);
+      if (!oldestDate || orderDate < oldestDate) oldestDate = orderDate;
+    });
+
+    if (!oldestDate) return { isStale: false, days: 0, oldestDate: null };
+
+    const oldest: Date = oldestDate;
+    const diffTime = Math.abs(now.getTime() - oldest.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return {
+      isStale: diffDays >= 2, // Cảnh báo nếu quá 2 ngày
+      days: diffDays,
+      oldestDate: oldestDate
+    };
+  }
+
+  KhoMetadata = [
+    { value: 'kho1', name: 'TG-LONG AN', makho: 'TG-LA' },
+    { value: 'kho2', name: 'Bổ Sung', makho: 'TG-BS' },
+    { value: 'kho3', name: 'TG-ĐÀ LẠT', makho: 'TG-ĐL' },
+    { value: 'kho4', name: 'KHO TỔNG - HCM', makho: 'TG-HCM' },
+    { value: 'kho5', name: 'SG1', makho: 'TG-SG1' },
+    { value: 'kho6', name: 'SG2', makho: 'TG-SG2' },
+  ];
+
 
   async loadDonhangWithRelations() {
     try {
@@ -2163,6 +2209,7 @@ export class NhucaudathangComponent {
    * @returns Formatted string theo timezone local
    */
   formatDateForDisplay(utcDate: any, format: string = 'DD/MM/YYYY'): string {
+    if (!utcDate) return '---';
     return this._timezoneService.formatForDisplay(utcDate, format);
   }
 

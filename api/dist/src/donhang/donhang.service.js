@@ -1803,10 +1803,12 @@ let DonhangService = class DonhangService {
                 await prisma.tonKho.upsert({
                     where: { sanphamId: sp.idSP || sp.id },
                     update: {
+                        slton: { decrement: incrementValue },
                         slchogiao: { increment: incrementValue },
                     },
                     create: {
                         sanphamId: sp.idSP || sp.id,
+                        slton: -incrementValue,
                         slchogiao: incrementValue,
                     },
                 });
@@ -1837,7 +1839,6 @@ let DonhangService = class DonhangService {
                         sanphamId: sp.idSP,
                         operation: 'increment',
                         slchogiao: incValue,
-                        slton: incValue,
                         reason: `Rollback DAGIAO→DADAT for order ${oldDonhang.madonhang}`
                     });
                 }
@@ -1917,6 +1918,9 @@ let DonhangService = class DonhangService {
                             await prisma.tonKho.update({
                                 where: { sanphamId: sp.id },
                                 data: {
+                                    slton: difference > 0
+                                        ? { decrement: difference }
+                                        : { increment: Math.abs(difference) },
                                     slchogiao: difference > 0
                                         ? { increment: difference }
                                         : { decrement: Math.abs(difference) },
@@ -1928,6 +1932,7 @@ let DonhangService = class DonhangService {
                         await prisma.tonKho.update({
                             where: { sanphamId: sp.id },
                             data: {
+                                slton: { decrement: newSldat },
                                 slchogiao: { increment: newSldat },
                             },
                         });
@@ -1940,6 +1945,7 @@ let DonhangService = class DonhangService {
                         await prisma.tonKho.update({
                             where: { sanphamId: oldItem.idSP },
                             data: {
+                                slton: { increment: oldSldat },
                                 slchogiao: { decrement: oldSldat },
                             },
                         });
@@ -1983,7 +1989,6 @@ let DonhangService = class DonhangService {
                     const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
                     await this.updateTonKhoSafe(prisma, sp.id, {
                         slchogiao: { decrement: decValue },
-                        slton: { decrement: decValue },
                     });
                 }
                 const maphieuNew = `PX-${data.madonhang}`;

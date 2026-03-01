@@ -152,21 +152,39 @@ export class PhieukhoService {
 
 
   async findAll() {
+    // 🚀 OPTIMIZATION: Limited to 100 most recent records to prevent "High memory usage" (3.9GB)
+    // and "Very slow request" (57s) as seen in logs.
     const phieuKhos = await this.prisma.phieuKho.findMany({
-      where: {},
+      take: 100, // Chỉ lấy 100 phiếu gần nhất
+      where: {
+        isActive: true
+      },
       include: {
-      sanpham: { include: { sanpham: true } },
-      kho: true,
+        sanpham: { 
+          select: {
+            id: true,
+            soluong: true,
+            ghichu: true,
+            sanpham: {
+              select: {
+                id: true,
+                masp: true,
+                title: true
+              }
+            }
+          }
+        },
+        kho: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
-    return phieuKhos.map((phieuKho) => ({
-      ...phieuKho,
-      sanpham: phieuKho.sanpham.map((item) => ({
-        ...item,
-        sanpham: item.sanpham,
-      })),
-    }));
+    
+    return phieuKhos;
   }
 
   async findOne(id: string) {

@@ -188,6 +188,26 @@
                     }
                 </span>
                 <span (click)="downloadTonkhoTemplate()" class="whitespace-nowrap p-2 border hover:bg-slate-50 rounded-lg cursor-pointer" matTooltip="Tải file Excel mẫu để cập nhật tồn kho">📄 Mẫu Excel</span>
+                
+                <!-- ✅ BẢNG CHÚ GIẢI (LEGEND) - Đặt ở thanh công cụ cho chuyên nghiệp -->
+                <div class="hidden xl:flex items-center space-x-3 ml-4 border-l pl-4 py-1">
+                    <div class="flex items-center space-x-1" matTooltip="Số lượng tồn hệ thống bị âm hoặc hết hàng vật lý">
+                        <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                        <span class="text-[10px] text-gray-600 font-medium">Hết hàng / Nợ</span>
+                    </div>
+                    <div class="flex items-center space-x-1" matTooltip="Đơn NCC treo quá 48h hoặc lệch số liệu Sổ-Thực">
+                        <div class="w-2.5 h-2.5 rounded-full bg-orange-400"></div>
+                        <span class="text-[10px] text-gray-600 font-medium">Treo hàng / Lệch</span>
+                    </div>
+                    <div class="flex items-center space-x-1" matTooltip="Hàng đang nằm trong phiếu Đặt NCC (chưa nhập kho)">
+                        <div class="w-2.5 h-2.5 rounded-full bg-blue-600"></div>
+                        <span class="text-[10px] text-gray-600 font-medium">Đang về (NCC)</span>
+                    </div>
+                    <div class="flex items-center space-x-1" matTooltip="Số lượng máy tính toán cần mua thêm để đủ đơn khách">
+                        <div class="w-2.5 h-2.5 rounded-full bg-purple-600"></div>
+                        <span class="text-[10px] text-gray-600 font-medium">Gợi ý cần mua</span>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -579,6 +599,25 @@
                                     }
                                 </div>
                             }
+                            <!-- ✅ Hiển thị các kho nhánh với cảnh báo hàng "treo" -->
+                            @case ('kho1') {
+                                <ng-container *ngTemplateOutlet="khoTemplate; context: { $implicit: row, column: column }"></ng-container>
+                            }
+                            @case ('kho2') {
+                                <ng-container *ngTemplateOutlet="khoTemplate; context: { $implicit: row, column: column }"></ng-container>
+                            }
+                            @case ('kho3') {
+                                <ng-container *ngTemplateOutlet="khoTemplate; context: { $implicit: row, column: column }"></ng-container>
+                            }
+                            @case ('kho4') {
+                                <ng-container *ngTemplateOutlet="khoTemplate; context: { $implicit: row, column: column }"></ng-container>
+                            }
+                            @case ('kho5') {
+                                <ng-container *ngTemplateOutlet="khoTemplate; context: { $implicit: row, column: column }"></ng-container>
+                            }
+                            @case ('kho6') {
+                                <ng-container *ngTemplateOutlet="khoTemplate; context: { $implicit: row, column: column }"></ng-container>
+                            }
                             @default {
                                 <span class="max-w-32 line-clamp-2" [matTooltip]="row[column]">
                                     {{ row[column] }}
@@ -622,9 +661,15 @@
                   <button mat-icon-button color="primary" [disabled]="currentPage === 1" (click)="onPreviousPage()">
                     <mat-icon>keyboard_arrow_left</mat-icon>
                   </button>
-                  <button mat-icon-button color="primary" [disabled]="currentPage === totalPages" (click)="onNextPage()">
+                  <button mat-icon-button color="primary" (disabled)="currentPage === totalPages" (click)="onNextPage()">
                     <mat-icon>keyboard_arrow_right</mat-icon>
                   </button>
+                  <button mat-icon-button color="primary" (click)="refresh()" [disabled]="isLoading" matTooltip="Làm mới dữ liệu">
+                    <mat-icon [class.animate-spin]="isLoading">refresh</mat-icon>
+                </button>
+                <div class="px-2 py-1 bg-gray-100 rounded text-sm font-semibold text-gray-700">
+                    {{ totalItems }} Sản Phẩm
+                </div>
                 </div>
              </div>
             </div>
@@ -664,6 +709,23 @@
     </mat-dialog-content>
   </ng-template> -->
 
-
-
-
+<!-- Kho Template for reuse across kho1-kho6 cases -->
+<ng-template #khoTemplate let-row let-column="column">
+    <div class="flex flex-col items-end min-w-[60px]" [matTooltip]="ColumnSubtitle[column]">
+        @let stale = checkStaleOrder(row, column);
+        <div class="flex items-center space-x-1">
+            <span class="font-semibold tabular-nums" [class.text-blue-600]="row[column] > 0">
+                {{ row[column]|number:'1.0-2' }}
+            </span>
+            @if (row[column] > 0 && stale.isStale) {
+                <mat-icon class="text-orange-400 !text-[12px] !w-[12px] !h-[12px] animate-pulse" 
+                          [matTooltip]="'Cảnh báo: Hàng treo quá ' + stale.days + ' ngày (từ ' + formatDateForDisplay(stale.oldestDate) + '). Kiểm tra nhân viên chưa xác nhận đã nhận!'">
+                    history
+                </mat-icon>
+            }
+        </div>
+        @if (row[column] > 0) {
+            <span class="text-[9px] text-gray-400">đang về</span>
+        }
+    </div>
+</ng-template>

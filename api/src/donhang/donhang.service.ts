@@ -2282,10 +2282,13 @@ export class DonhangService {
         await prisma.tonKho.upsert({
           where: { sanphamId: sp.idSP || sp.id },
           update: {
+            // ✅ HIỆU CHỈNH: Trừ tồn thực tế ngay khi vừa đặt hàng (dadat)
+            slton: { decrement: incrementValue },
             slchogiao: { increment: incrementValue },
           },
           create: {
             sanphamId: sp.idSP || sp.id,
+            slton: -incrementValue,
             slchogiao: incrementValue,
           },
         });
@@ -2333,7 +2336,8 @@ export class DonhangService {
             sanphamId: sp.idSP,
             operation: 'increment',
             slchogiao: incValue,
-            slton: incValue,
+            // ❌ Không cộng lại slton ở đây vì khi rollback từ DAGIAO về DADAT, 
+            // số tồn vẫn phải giữ nguyên trạng thái bị trừ (vì trạng thái DADAT giờ cũng đã trừ tồn).
             reason: `Rollback DAGIAO→DADAT for order ${oldDonhang.madonhang}`
           });
         }
@@ -2400,6 +2404,7 @@ export class DonhangService {
                   difference > 0
                     ? { decrement: difference }
                     : { increment: -difference },
+                // ✅ Luôn cập nhật slton tương ứng với slchogiao ở trạng thái DADAT/DAGIAO
                 slton:
                   difference > 0
                     ? { decrement: difference }
@@ -2424,6 +2429,10 @@ export class DonhangService {
               await prisma.tonKho.update({
                 where: { sanphamId: sp.id },
                 data: {
+                  slton:
+                    difference > 0
+                      ? { decrement: difference }
+                      : { increment: Math.abs(difference) },
                   slchogiao:
                     difference > 0
                       ? { increment: difference }
@@ -2435,6 +2444,7 @@ export class DonhangService {
             await prisma.tonKho.update({
               where: { sanphamId: sp.id },
               data: {
+                slton: { decrement: newSldat },
                 slchogiao: { increment: newSldat },
               },
             });
@@ -2448,6 +2458,7 @@ export class DonhangService {
             await prisma.tonKho.update({
               where: { sanphamId: oldItem.idSP },
               data: {
+                slton: { increment: oldSldat },
                 slchogiao: { decrement: oldSldat },
               },
             });
@@ -2493,7 +2504,7 @@ export class DonhangService {
           const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
           await this.updateTonKhoSafe(prisma, sp.id, {
             slchogiao: { decrement: decValue },
-            slton: { decrement: decValue },
+            // ❌ KHÔNG trừ slton ở đây nữa vì đã trừ khi ở trạng thái DADAT (Xác nhận)
           });
         }
         const maphieuNew = `PX-${data.madonhang}`;

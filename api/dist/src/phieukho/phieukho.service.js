@@ -128,20 +128,35 @@ let PhieukhoService = class PhieukhoService {
     }
     async findAll() {
         const phieuKhos = await this.prisma.phieuKho.findMany({
-            where: {},
+            take: 100,
+            where: {
+                isActive: true
+            },
             include: {
-                sanpham: { include: { sanpham: true } },
-                kho: true,
+                sanpham: {
+                    select: {
+                        id: true,
+                        soluong: true,
+                        ghichu: true,
+                        sanpham: {
+                            select: {
+                                id: true,
+                                masp: true,
+                                title: true
+                            }
+                        }
+                    }
+                },
+                kho: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
             },
             orderBy: { createdAt: 'desc' },
         });
-        return phieuKhos.map((phieuKho) => ({
-            ...phieuKho,
-            sanpham: phieuKho.sanpham.map((item) => ({
-                ...item,
-                sanpham: item.sanpham,
-            })),
-        }));
+        return phieuKhos;
     }
     async findOne(id) {
         const phieuKho = await this.prisma.phieuKho.findUnique({
