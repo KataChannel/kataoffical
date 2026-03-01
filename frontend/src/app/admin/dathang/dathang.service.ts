@@ -504,4 +504,33 @@ export class DathangService {
       throw error;
     }
   }
+
+  /**
+   * Tự động xác nhận nhận hàng hàng loạt cho nhiều sản phẩm
+   * @param sanphamIds Danh sách ID sản phẩm
+   */
+  async confirmReceiptBulk(sanphamIds: string[]): Promise<any> {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + (this._StorageService.getItem('token') || '')
+        },
+        body: JSON.stringify({ sanphamIds })
+      };
+      
+      const response = await fetch(`${environment.APIURL}/dathang/complete-pending-receipts-bulk`, options);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error: any) {
+      console.error('Lỗi khi xác nhận nhận hàng hàng loạt:', error);
+      throw error;
+    }
+  }
 }

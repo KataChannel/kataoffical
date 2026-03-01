@@ -8,7 +8,7 @@ Dựa trên phân tích tại `danhgia_dulieu_inventory.md`, chúng tôi đã ti
 | :--- | :--- | :--- | :--- |
 | **Hệ thống Snapshot thông minh** | Tự động ghi lại điểm chốt. `Tồn = [Số chốt] + [Biến động sau chốt]`. | **100%** | ✅ Hoàn thành |
 | **Smart Alert (Đếm lặp)** | Cảnh báo khi user chốt kho "quá tay" (đếm lặp cả hàng chưa nhấn nhận). | **100%** | ✅ Đã code xong |
-| **Tính năng "NHẬN & CHỐT"** | Hợp nhất thao tác 'Đã nhận' đơn hàng NCC vào quy trình chốt kho thực tế. | **100%** | ✅ Đã tích hợp UI |
+| **Tính năng "NHẬN & CHỐT"** | Hợp nhất thao tác 'Đã nhận' đơn hàng NCC vào quy trình chốt kho thực tế. | **100%** | ✅ Premium Dialog & Always Visible |
 | **Auto-Adjustment Backend** | Tự động cân bằng phiếu nhập/xuất để triệt tiêu chênh lệch ảo. | **100%** | ✅ Đã có API hỗ trợ |
 
 ---

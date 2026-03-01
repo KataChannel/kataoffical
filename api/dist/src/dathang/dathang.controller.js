@@ -79,6 +79,19 @@ let DathangController = class DathangController {
     deletebulk(data) {
         return this.dathangService.deletebulk(data);
     }
+    async completePendingReceiptsBulk(body) {
+        try {
+            const result = await this.dathangService.completePendingReceiptsBulk(body.sanphamIds);
+            return result;
+        }
+        catch (error) {
+            return {
+                success: false,
+                message: 'Failed to complete pending receipts bulk',
+                error: error.message
+            };
+        }
+    }
     async completePendingReceipts(sanphamId) {
         try {
             const result = await this.dathangService.completePendingReceiptsForProduct(sanphamId);
@@ -222,6 +235,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DathangController.prototype, "deletebulk", null);
+__decorate([
+    (0, common_1.Post)('complete-pending-receipts-bulk'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, audit_decorator_1.Audit)({ entity: 'Bulk Complete Pending Receipts', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DathangController.prototype, "completePendingReceiptsBulk", null);
 __decorate([
     (0, common_1.Post)('complete-pending-receipts/:sanphamId'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

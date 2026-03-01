@@ -179,36 +179,6 @@ body {
   // font-family: 'Poppins', sans-serif !important;
 }
 
-.mat-mdc-snack-bar-container .mat-mdc-snackbar-surface {
-  // color: var(--mdc-snackbar-supporting-text-color, var(--mat-sys-inverse-on-surface));
-  // border-radius: var(--mdc-snackbar-container-shape, var(--mat-sys-corner-extra-small));
-  background-color: transparent !important
-}
-
-/* Custom styles for MatSnackBar */
-.snackbar-success {
-  background-color: #3f51b5; /* Green */
-  color: white;
-  border-radius: 5px;
-}
-
-.snackbar-warning {
-  background-color: #ff9800; /* Orange */
-  color: white;
-  border-radius: 5px;
-}
-
-.snackbar-info {
-  background-color: #2196f3; /* Blue */
-  color: white;
-  border-radius: 5px;
-}
-
-.snackbar-error {
-  background-color: #f44336; /* Red */
-  color: white;
-  border-radius: 5px;
-}
 .mat-drawer.mat-drawer-side
 {
   z-index: 1 !important;
@@ -265,28 +235,34 @@ body {
 
 
 .mat-mdc-snack-bar-container .mat-mdc-snackbar-surface {
-  // color: var(--mdc-snackbar-supporting-text-color, var(--mat-sys-inverse-on-surface));
-  // border-radius: var(--mdc-snackbar-container-shape, var(--mat-sys-corner-extra-small));
-  background-color: transparent !important
+  background-color: inherit !important;
+  border-radius: 8px !important;
+}
+
+.mat-mdc-snackbar-surface .mdc-snackbar__label {
+  color: inherit !important;
+  font-weight: 500 !important;
 }
 
 /* Custom styles for MatSnackBar */
 .snackbar-success {
-  background-color: #3f51b5; /* Green */
-  color: white;
-  border-radius: 5px;
+  background-color: #3f51b5 !important;
+  color: white !important;
 }
 
 .snackbar-warning {
-  background-color: #ff9800; /* Orange */
-  color: white;
-  border-radius: 5px;
+  background-color: #ff9800 !important;
+  color: white !important;
+}
+
+.snackbar-info {
+  background-color: #2196f3 !important;
+  color: white !important;
 }
 
 .snackbar-error {
-  background-color: #f44336; /* Red */
-  color: white;
-  border-radius: 5px;
+  background-color: #f44336 !important;
+  color: white !important;
 }
 // .danger .mdc-snackbar__surface{
 //   color: white !important;

@@ -1614,21 +1614,14 @@ async deletebulk(data: any) {
    */
   async completePendingReceiptsForProduct(sanphamId: string): Promise<{ success: boolean; count: number; message?: string }> {
     try {
-      // First, find all pending orders without transaction to avoid timeout
+      // Find all pending orders that contain this product
       const pendingOrders = await this.prisma.dathang.findMany({
         where: {
           status: { in: ['dadat', 'dagiao'] },
-          sanpham: {
-            some: {
-              idSP: sanphamId,
-              slgiao: { gt: 0 } // slgiao trong dathang tương đương slchonhap
-            }
-          }
+          sanpham: { some: { idSP: sanphamId } }
         },
         include: {
-          sanpham: {
-            where: { idSP: sanphamId }
-          }
+          sanpham: true // Fetch ALL items in these orders
         }
       });
 
@@ -1640,72 +1633,70 @@ async deletebulk(data: any) {
         };
       }
 
-      // Process in smaller batches to avoid transaction timeout
-      const batchSize = 10;
-      let totalCompleted = 0;
+      // Process in batches to avoid transaction timeout and reduce roundtrips
+      const batchSize = 25;
+      let totalCompletedItems = 0;
 
       for (let i = 0; i < pendingOrders.length; i += batchSize) {
         const batch = pendingOrders.slice(i, i + batchSize);
         
-        const batchResult = await this.prisma.$transaction(async (prisma) => {
-          let batchCount = 0;
-          
+        await this.prisma.$transaction(async (tx) => {
           for (const order of batch) {
-            // Collect all sanpham updates for this order
-            const sanphamUpdates = order.sanpham.map(sp => ({
-              id: sp.id,
-              slnhan: parseFloat(sp.slgiao.toString()),
-              ghichu: (sp.ghichu || '') + ' | Auto-completed for inventory close'
-            }));
-
-            // Update order status
-            await prisma.dathang.update({
+            // 1. Update order status to 'danhan'
+            await tx.dathang.update({
               where: { id: order.id },
               data: {
                 status: 'danhan',
-                ghichu: (order.ghichu || '') + ' | Tự động hoàn tất trước chốt kho',
+                ghichu: (order.ghichu || '') + ' | Hoàn tất chờ nhập (Tự động)',
                 updatedAt: new Date()
               }
             });
 
-            // Batch update all sanpham for this order
-            for (const update of sanphamUpdates) {
-              await prisma.dathangsanpham.update({
-                where: { id: update.id },
-                data: {
-                  slnhan: update.slnhan,
-                  ghichu: update.ghichu
-                }
-              });
-            }
-
-            // Update TonKho using atomic operations
+            // 2. Update EVERY product in this order to be received
             for (const sp of order.sanpham) {
-              const slgiaoValue = parseFloat(sp.slgiao.toString());
-              await this.tonkhoManager.updateTonkhoAtomic([{
-                sanphamId: sp.idSP,
-                operation: 'increment',
-                slton: slgiaoValue,
-                slchonhap: -slgiaoValue, // Decrease slchonhap
-                reason: `Auto-complete pending receipt for order ${order.madncc}`
-              }]);
+              const sldat = parseFloat(sp.sldat.toString()) || 0;
+              const slgiao = parseFloat(sp.slgiao.toString()) || 0;
+              
+              // If slgiao is 0 but sldat > 0, we assume they are receiving what was ordered
+              const qtyToReceive = slgiao > 0 ? slgiao : sldat;
+              
+              if (qtyToReceive > 0) {
+                await tx.dathangsanpham.update({
+                  where: { id: sp.id },
+                  data: {
+                    slnhan: qtyToReceive,
+                    ghichu: (sp.ghichu || '') + ' | Tự động khớp lệnh'
+                  }
+                });
+
+                // Update TonKho atomically
+                await tx.tonKho.upsert({
+                  where: { sanphamId: sp.idSP },
+                  create: {
+                    sanphamId: sp.idSP,
+                    slton: qtyToReceive,
+                    slchonhap: 0,
+                    slchogiao: 0
+                  },
+                  update: {
+                    slton: { increment: qtyToReceive },
+                    slchonhap: { decrement: sldat } // Use sldat as that's what frontend counts as incoming
+                  }
+                });
+                
+                totalCompletedItems++;
+              }
             }
-
-            batchCount += order.sanpham.length;
           }
-          
-          return batchCount;
         }, {
-          timeout: 30000 // Increase timeout to 30 seconds
+          timeout: 40000 // Increased timeout for per-product updates
         });
-
-        totalCompleted += batchResult;
       }
 
       return {
         success: true,
-        count: totalCompleted,
-        message: `Đã hoàn tất ${totalCompleted} đặt hàng chờ nhập`
+        count: totalCompletedItems,
+        message: `Đã hoàn tất ${totalCompletedItems} mục hàng`
       };
     } catch (error) {
       console.error('Error completing pending receipts:', error);
@@ -1714,6 +1705,82 @@ async deletebulk(data: any) {
         count: 0,
         message: error.message || 'Lỗi khi hoàn tất đặt hàng chờ nhập'
       };
+    }
+  }
+
+  /**
+   * Hoàn tất hàng chờ nhập cho danh sách nhiều sản phẩm (Bulk Processing)
+   */
+  async completePendingReceiptsBulk(sanphamIds: string[]): Promise<{ success: boolean; count: number; totalProducts: number }> {
+    try {
+      // 1. Fetch all pending orders that involve ANY of these products
+      const orders = await this.prisma.dathang.findMany({
+        where: {
+          status: { in: ['dadat', 'dagiao'] },
+          sanpham: { some: { idSP: { in: sanphamIds } } }
+        },
+        include: {
+          sanpham: true // Fetch ALL items in these orders
+        }
+      });
+      
+      if (orders.length === 0) return { success: true, count: 0, totalProducts: 0 };
+
+      const batchSize = 15; // Smaller batch due to multiple updates per order
+      let totalItems = 0;
+      const uniqueProducts = new Set<string>();
+
+      for (let i = 0; i < orders.length; i += batchSize) {
+        const batch = orders.slice(i, i + batchSize);
+        
+        await this.prisma.$transaction(async (tx) => {
+          for (const order of batch) {
+            await tx.dathang.update({
+              where: { id: order.id },
+              data: {
+                status: 'danhan',
+                ghichu: (order.ghichu || '') + ' | Bulk match process',
+                updatedAt: new Date()
+              }
+            });
+
+            for (const sp of order.sanpham) {
+              const sldat = parseFloat(sp.sldat.toString()) || 0;
+              const slgiao = parseFloat(sp.slgiao.toString()) || 0;
+              const qtyToReceive = slgiao > 0 ? slgiao : sldat;
+
+              if (qtyToReceive > 0) {
+                await tx.dathangsanpham.update({
+                  where: { id: sp.id },
+                  data: { slnhan: qtyToReceive, ghichu: (sp.ghichu || '') + ' | Bulk match' }
+                });
+                
+                // Update TonKho atomically for EVERY product
+                await tx.tonKho.upsert({
+                  where: { sanphamId: sp.idSP },
+                  create: { sanphamId: sp.idSP, slton: qtyToReceive, slchonhap: 0, slchogiao: 0 },
+                  update: {
+                    slton: { increment: qtyToReceive },
+                    slchonhap: { decrement: sldat }
+                  }
+                });
+
+                uniqueProducts.add(sp.idSP);
+                totalItems++;
+              }
+            }
+          }
+        }, { timeout: 60000 });
+      }
+
+      return {
+        success: true,
+        count: totalItems,
+        totalProducts: uniqueProducts.size
+      };
+    } catch (error) {
+      console.error('Error in completePendingReceiptsBulk:', error);
+      throw error;
     }
   }
 

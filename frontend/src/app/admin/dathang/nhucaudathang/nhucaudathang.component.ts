@@ -57,6 +57,12 @@ import {
 } from './nested-data-dialog/nested-data-dialog.component';
 import moment from 'moment';
 import { StockWarningDialogComponent, StockWarningItem, StockWarningData } from './stock-warning-dialog.component';
+import { MagicConfirmDialogComponent } from './magic-confirm-dialog.component';
+import { firstValueFrom } from 'rxjs';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MagicProgressDialogComponent } from './magic-progress-dialog.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-nhucaudathang',
@@ -97,10 +103,13 @@ import { StockWarningDialogComponent, StockWarningItem, StockWarningData } from 
     MatSlideToggleModule,
     MatExpansionModule,
     MatProgressSpinnerModule,
+    MatCheckboxModule,
+    MatProgressBarModule,
   ],
 })
 export class NhucaudathangComponent {
   displayedColumns: string[] = [
+    'select', // Checkbox column
     'expand', // Add expansion column
     'title',
     'masp',
@@ -130,6 +139,7 @@ export class NhucaudathangComponent {
     'slhaohut',
   ];
   ColumnName: any = {
+    select: '',
     expand: '', // No header for expansion column
     title: 'Tên Sản Phẩm',
     masp: 'Mã Sản Phẩm',
@@ -245,6 +255,51 @@ export class NhucaudathangComponent {
   isRefreshing = false;
   loadingMessage = '';
   progressPercentage = 0;
+
+  selection = new SelectionModel<any>(true, []);
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.filteredData.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  toggleAllRows() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+      return;
+    }
+
+    this.selection.select(...this.dataSource.filteredData);
+  }
+
+  async bulkMagicButton(): Promise<void> {
+    const selectedItems = this.selection.selected.filter(item => (item.incomingStock || 0) > 0);
+    
+    if (selectedItems.length === 0) {
+      this._snackBar.open('Vui lòng chọn ít nhất một sản phẩm có hàng đang về!', '', { duration: 3000 });
+      return;
+    }
+
+    const dialogRef = this._dialog.open(MagicProgressDialogComponent, {
+      width: '450px',
+      disableClose: true,
+      data: { items: selectedItems }
+    });
+
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    
+    if (result && result.completedCount > 0) {
+      this._snackBar.open(`✅ Đã xử lý tối ưu thành công ${result.completedCount} sản phẩm!`, '', {
+        duration: 4000,
+        panelClass: ['snackbar-success']
+      });
+      this.selection.clear();
+      await this.loadDonhangWithRelations(true);
+    }
+  }
 
   // Date range properties
   batdau: Date = new Date(); // Start date
@@ -389,7 +444,7 @@ export class NhucaudathangComponent {
   ];
 
 
-  async loadDonhangWithRelations() {
+  async loadDonhangWithRelations(forceRefresh: boolean = false) {
     try {
       this.isLoading = false;
       this.loadingMessage = 'Đang tải dữ liệu đơn hàng...';
@@ -423,7 +478,7 @@ export class NhucaudathangComponent {
           enableParallelFetch: true,
           batchSize: 1000,
           take: 999999,
-          aggressiveCache: true,
+          aggressiveCache: !forceRefresh,
           orderBy: { createdAt: 'desc' },
           where: {
             ngaygiao: {
@@ -453,7 +508,7 @@ export class NhucaudathangComponent {
           enableParallelFetch: true,
           batchSize: 1000,
           take: 999999,
-          aggressiveCache: true,
+          aggressiveCache: !forceRefresh,
           orderBy: { createdAt: 'desc' },
           where: {
             OR: [
@@ -502,7 +557,7 @@ export class NhucaudathangComponent {
 
         this._GraphqlService.findAll('tonkho', {
           enableParallelFetch: true,
-          aggressiveCache: true,
+          aggressiveCache: !forceRefresh,
           batchSize: 1000,
           take: 999999,
           select: {
@@ -526,7 +581,7 @@ export class NhucaudathangComponent {
 
         this._GraphqlService.findAll('sanpham', {
           enableParallelFetch: true,
-          aggressiveCache: true,
+          aggressiveCache: !forceRefresh,
           batchSize: 1000,
           take: 999999,
           select: {
@@ -692,7 +747,7 @@ export class NhucaudathangComponent {
         enableParallelFetch: true,
         batchSize: 1000,
         take: 999999,
-        aggressiveCache: true,
+        aggressiveCache: !forceRefresh,
         orderBy: { createdAt: 'desc' },
         select: {
           id: true,
@@ -3069,30 +3124,48 @@ export class NhucaudathangComponent {
    */
   async autoReceiveAndSnapshot(row: any): Promise<void> {
     const incomingStock = Number(row.incomingStock || 0);
-    if (incomingStock === 0) {
-      this._snackBar.open('Không có hàng đang về cho sản phẩm này', '', { duration: 2000 });
+    
+    // Luôn hiển thị nút nhưng nếu không có hàng đang về thì báo lỗi khi nhấn
+    if (incomingStock <= 0) {
+      this._snackBar.open('Không có hàng đang về để khớp lệnh cho sản phẩm này', '', {
+        duration: 3000,
+        panelClass: ['snackbar-info'],
+      });
       return;
     }
 
-    if (!confirm(`Bạn có chắc muốn tự động xác nhận NHẬN ${incomingStock} kg hàng đang về cho sản phẩm [${row.masp}] không?\n\nHệ thống sẽ tự động cập nhật số tồn mới vào quy trình tính toán.`)) {
-      return;
-    }
+    // ✅ CHUYỂN CONFIRM SANG DIALOG CAO CẤP
+    const dialogRef = this._dialog.open(MagicConfirmDialogComponent, {
+      width: '450px',
+      data: {
+        masp: row.masp,
+        title: row.title,
+        incomingStock: incomingStock
+      }
+    });
+
+    const confirmed = await firstValueFrom(dialogRef.afterClosed());
+    
+    if (!confirmed) return;
 
     try {
-      this._snackBar.open('Đang xử lý khớp lệnh...', '', { duration: 3000 });
+      this._snackBar.open('🚀 Đang xử lý khớp lệnh thông minh...', '', { 
+        duration: 3000,
+        panelClass: ['snackbar-info']
+      });
       
       const result = await this._DathangService.confirmReceiptByProduct(row.id);
       
       if (result.success !== false) {
-        this._snackBar.open(`✅ Khớp lệnh thành công! Đã nhập thêm ${incomingStock} kg.`, '', {
-          duration: 3000,
+        this._snackBar.open(`✅ Khớp lệnh thành công! Đã nhập thực ${incomingStock} kg vào kho.`, '', {
+          duration: 4000,
           panelClass: ['snackbar-success']
         });
         
-        // Reload data to see changes in tongkho
-        await this.loadDonhangWithRelations();
+        // Reload dữ liệu và bypass cache để thấy ngay kết quả mới
+        await this.loadDonhangWithRelations(true);
       } else {
-        throw new Error(result.message || 'Lỗi từ server');
+        throw new Error(result.message || 'Lỗi từ máy chủ');
       }
     } catch (error: any) {
       console.error('Error in autoReceiveAndSnapshot:', error);

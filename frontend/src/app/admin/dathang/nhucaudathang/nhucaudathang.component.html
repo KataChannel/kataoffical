@@ -12,6 +12,20 @@
                         <span class="material-symbols-outlined text-gray-500">search</span>
                     </div>
                 </div>
+
+                <div class="flex items-center gap-2">
+                    <button mat-raised-button color="primary" class="!bg-blue-600 !text-white !h-[38px]" 
+                            [disabled]="selection.selected.length === 0"
+                            (click)="bulkMagicButton()">
+                        <mat-icon class="mr-1">auto_fix_high</mat-icon>
+                        Tối ưu chọn ({{ selection.selected.length }})
+                    </button>
+                    <button mat-stroked-button color="primary" class="!h-[38px] !text-blue-600" 
+                            (click)="toggleAllRows(); bulkMagicButton()">
+                        <mat-icon class="mr-1">magic_button</mat-icon>
+                        Tối ưu tất cả ({{ dataSource.data.length }})
+                    </button>
+                </div>
                 
                 <!-- Temp Storage Management Buttons -->
                 <div class="flex space-x-2 items-center">
@@ -240,91 +254,79 @@
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
                     <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
-                        @if (column === 'expand') {
-                            <!-- Empty header for expand column -->
-                            <span></span>
-                        } @else {
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-col">
-                                <span class="max-w-32 line-clamp-2 me-2">
-                                    {{ ColumnName[column] }}
-                                </span>
-                                @if (ColumnSubtitle[column]) {
-                                    <span class="text-[9px] text-gray-400 font-normal leading-tight max-w-32 whitespace-nowrap">{{ ColumnSubtitle[column] }}</span>
-                                }
-                            </div>
-                            <span class="z-10 material-symbols-outlined text-gray-500 cursor-pointer" 
-                                  [matMenuTriggerFor]="filterMenu"  #menuTrigger="matMenuTrigger" matTooltip="Filter {{ColumnName[column]}}">
-                                filter_alt
-                            </span>
-                        </div>
-                        }
-                        <mat-menu #filterMenu="matMenu" class="filter-menu">
-                            <div (click)="$event.stopPropagation()" class="cursor-pointer flex flex-col space-y-4 p-3">                                        
-                                <div class="relative w-full">
-                                    <input type="text"
-                                        placeholder="Tìm kiếm {{ColumnName[column]}}..." 
-                                        (keyup)="doFilterHederColumn($event,column)"
-                                        class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <span class="material-symbols-outlined text-gray-500">search</span>
-                                    </div>
-                                </div>
-                                <div class="flex flex-row space-x-2 items-center justify-between">
-                                    <div class="flex flex-row space-x-2 items-center">
-                                        <span class="text-xs text-blue-600 underline cursor-pointer" 
-                                              (click)="ChosenAll(getCurrentFilteredData(column))">
-                                            Chọn Tất Cả ({{getCurrentFilteredData(column).length||0}})
+                        @switch (column) {
+                            @case ('select') {
+                                <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                                              [checked]="selection.hasValue() && isAllSelected()"
+                                              [indeterminate]="selection.hasValue() && !isAllSelected()"
+                                              color="primary">
+                                </mat-checkbox>
+                            }
+                            @case ('expand') {
+                                <span></span>
+                            }
+                            @default {
+                                <div class="flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <span class="max-w-32 line-clamp-2 me-2">
+                                            {{ ColumnName[column] }}
                                         </span>
-                                        <span class="text-xs text-blue-600 underline cursor-pointer" (click)="EmptyFiter()">Xoá</span>
+                                        @if (ColumnSubtitle[column]) {
+                                            <span class="text-[9px] text-gray-400 font-normal leading-tight max-w-32 whitespace-nowrap">{{ ColumnSubtitle[column] }}</span>
+                                        }
                                     </div>
-                                    <span class="text-xs text-blue-600 underline cursor-pointer" (click)="ResetFilter()">Reset</span>
+                                    <span class="z-10 material-symbols-outlined text-gray-500 cursor-pointer" 
+                                          [matMenuTriggerFor]="filterMenu"  #menuTrigger="matMenuTrigger" matTooltip="Filter {{ColumnName[column]}}">
+                                        filter_alt
+                                    </span>
                                 </div>
-                                <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
-                                    <div *ngFor="let item of getCurrentFilteredData(column); trackBy:trackByFn" 
-                                         (click)="ChosenItem(item,column)" 
-                                         class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100 cursor-pointer">
-                                        <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>
-                                        <span *ngIf="!CheckItem(item)" class="w-6"></span>
-                                        @switch (column) {
-                                            @case ('createdAt') {
-                                                <span>{{formatDateForDisplay(item[column], 'DD/MM/YYYY')}}</span> 
-                                            }
-                                            @case ('updatedAt') {
-                                                <span>{{formatDateForDisplay(item[column], 'DD/MM/YYYY')}}</span> 
-                                            }
-                                            @case ('ngaynhan') {
-                                                <span>{{formatDateForDisplay(item[column], 'DD/MM/YYYY')}}</span> 
-                                            }
-                                            @case ('slton') {
-                                                <span>{{item[column]|number:'1.0-0'}}</span> 
-                                            }
-                                            @case ('slchogiao') {
-                                                <span>{{item[column]|number:'1.0-0'}}</span> 
-                                            }
-                                            @case ('slchonhap') {
-                                                <span>{{item[column]|number:'1.0-0'}}</span> 
-                                            }
-                                            @case ('SLDat') {
-                                                <span>{{item[column]|number:'1.0-0'}}</span> 
-                                            }
-                                            @case ('SLGiao') {
-                                                <span>{{item[column]|number:'1.0-0'}}</span> 
-                                            }
-                                            @default {
-                                                <span>{{item[column]||'Trống'}}</span>
-                                            }
-                                        }                                    
+                                <mat-menu #filterMenu="matMenu" class="filter-menu">
+                                    <div (click)="$event.stopPropagation()" class="cursor-pointer flex flex-col space-y-4 p-3">                                        
+                                        <div class="relative w-full">
+                                            <input type="text"
+                                                placeholder="Tìm kiếm {{ColumnName[column]}}..." 
+                                                (keyup)="doFilterHederColumn($event,column)"
+                                                class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <span class="material-symbols-outlined text-gray-500">search</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-row space-x-2 items-center justify-between">
+                                            <div class="flex flex-row space-x-2 items-center">
+                                                <span class="text-xs text-blue-600 underline cursor-pointer" 
+                                                      (click)="ChosenAll(getCurrentFilteredData(column))">
+                                                    Chọn Tất Cả ({{getCurrentFilteredData(column).length||0}})
+                                                </span>
+                                                <span class="text-xs text-blue-600 underline cursor-pointer" (click)="EmptyFiter()">Xoá</span>
+                                            </div>
+                                            <span class="text-xs text-blue-600 underline cursor-pointer" (click)="ResetFilter()">Reset</span>
+                                        </div>
+                                        <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
+                                            <div *ngFor="let item of getCurrentFilteredData(column); trackBy:trackByFn" 
+                                                 (click)="ChosenItem(item,column)" 
+                                                 class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100 cursor-pointer">
+                                                <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>
+                                                <span *ngIf="!CheckItem(item)" class="w-6"></span>
+                                                <span>{{item[column]||'Trống'}}</span>                                 
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-row space-x-2 items-end justify-end">
+                                            <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)">Áp Dụng</button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="flex flex-row space-x-2 items-end justify-end">
-                                    <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)">Áp Dụng</button>
-                                </div>
-                            </div>
-                        </mat-menu>
+                                </mat-menu>
+                            }
+                        }
                     </th>
                     <td mat-cell *matCellDef="let row; let idx = index" class="cursor-pointer">
                         @switch (column) {
+                            @case ('select') {
+                                <mat-checkbox (click)="$event.stopPropagation()"
+                                              (change)="$event ? selection.toggle(row) : null"
+                                              [checked]="selection.isSelected(row)"
+                                              color="primary">
+                                </mat-checkbox>
+                            }
                             @case ('expand') {
                                 <div class="flex items-center space-x-2">
                                     <button mat-icon-button color="primary"
@@ -576,17 +578,18 @@
                                            [class.text-gray-800]="row['receivedAfterCount'] === 0">
                                          {{ row[column]|number:'1.0-2' }}
                                      </span>
-                                     <div class="flex items-center gap-1">
-                                         @if (row['incomingStock'] > 0) {
-                                             <button mat-icon-button class="h-4 w-4 min-w-4 p-0 text-blue-500 hover:text-blue-700" 
-                                                     (click)="$event.stopPropagation(); autoReceiveAndSnapshot(row)"
-                                                     matTooltip="Tối ưu ngay: Nhận hàng & Khớp số">
-                                                 <mat-icon class="text-[14px]">auto_fix_high</mat-icon>
-                                             </button>
-                                         }
+                                     <div class="flex items-center gap-1 mt-1 justify-end">
                                          <span class="text-[9px] text-gray-400 whitespace-nowrap">
                                              {{row['sltontt']|number:'1.0-2'}} + Biến động
                                          </span>
+                                         <button mat-icon-button class="h-5 w-5 min-w-5 p-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors" 
+                                                 (click)="$event.stopPropagation(); autoReceiveAndSnapshot(row)"
+                                                 [matTooltip]="row['incomingStock'] > 0 ? 'Tối ưu ngay: Nhận hàng & Khớp số' : 'Không có hàng đang về'">
+                                             <mat-icon class="text-[16px]" 
+                                                      [style.color]="row['incomingStock'] > 0 ? '#3b82f6' : '#d1d5db'">
+                                                 auto_fix_high
+                                             </mat-icon>
+                                         </button>
                                      </div>
                                  </div>
                              }

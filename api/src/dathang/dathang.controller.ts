@@ -100,6 +100,22 @@ export class DathangController {
     return this.dathangService.deletebulk(data);
   }
 
+  @Post('complete-pending-receipts-bulk')
+  @UseGuards(JwtAuthGuard)
+  @Audit({entity: 'Bulk Complete Pending Receipts', action: AuditAction.UPDATE, includeResponse: true})
+  async completePendingReceiptsBulk(@Body() body: { sanphamIds: string[] }) {
+    try {
+      const result = await this.dathangService.completePendingReceiptsBulk(body.sanphamIds);
+      return result;
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to complete pending receipts bulk',
+        error: error.message
+      };
+    }
+  }
+
   @Post('complete-pending-receipts/:sanphamId')
   @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Complete Pending Receipts', action: AuditAction.UPDATE, includeResponse: true})
