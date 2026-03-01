@@ -226,8 +226,10 @@ export class NhucaudathangComponent {
   expandedElementId: string | null = null;
   dathangDataMap: Map<string, any[]> = new Map();
   donhangDataMap: Map<string, any[]> = new Map();
+  phieukhoDataMap: Map<string, any[]> = new Map();
   loadingDathang: Set<string> = new Set();
   loadingDonhang: Set<string> = new Set();
+  loadingPhieukho: Set<string> = new Set();
 
   // Loading states
   isLoading = false;
@@ -2206,6 +2208,7 @@ export class NhucaudathangComponent {
       product: element,
       dathangData: [],
       donhangData: [],
+      phieukhoData: [], // Thêm lịch sử phiếu kho
       loading: true,
     };
 
@@ -2228,6 +2231,7 @@ export class NhucaudathangComponent {
       // Update dialog data
       dialogData.dathangData = this.getDathangData(element.masp);
       dialogData.donhangData = this.getDonhangData(element.masp);
+      dialogData.phieukhoData = this.getPhieukhoData(element.masp); // Lấy dữ liệu phiếu kho
       dialogData.loading = false;
 
       // Trigger change detection in dialog component
@@ -2263,8 +2267,12 @@ export class NhucaudathangComponent {
       return;
     }
 
-    // Load both dathang and donhang data in parallel
-    await Promise.all([this.loadDathangData(masp), this.loadDonhangData(masp)]);
+    // Load dathang, donhang and phieukho data in parallel
+    await Promise.all([
+      this.loadDathangData(masp),
+      this.loadDonhangData(masp),
+      this.loadPhieukhoData(masp)
+    ]);
   }
 
   /**
@@ -2561,6 +2569,94 @@ export class NhucaudathangComponent {
       this.loadingDonhang.delete(masp);
     }
   }
+  /**
+   * Load phieukho (inventory transaction) data for a specific product using GraphQL
+   * Shows ALL history to allow tracking cumulative stock debt
+   */
+  async loadPhieukhoData(masp: string): Promise<void> {
+    if (this.phieukhoDataMap.has(masp) || this.loadingPhieukho.has(masp)) {
+      return;
+    }
+
+    this.loadingPhieukho.add(masp);
+
+    try {
+      // For phieukho, we load ALL history to explain the cumulative slton (-250)
+      const phieukhoResult = await this._GraphqlService.findAll('phieukho', {
+        enableParallelFetch: true,
+        batchSize: 500,
+        take: 999999,
+        aggressiveCache: true,
+        orderBy: { ngay: 'desc' },
+        where: {
+          sanpham: {
+            some: {
+              sanpham: {
+                masp: { equals: masp },
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+          maphieu: true,
+          ngay: true,
+          type: true,
+          title: true,
+          ghichu: true,
+          isChotkho: true,
+          sanpham: {
+            where: {
+              sanpham: {
+                masp: { equals: masp },
+              },
+            },
+            select: {
+              soluong: true,
+              ghichu: true,
+            },
+          },
+        },
+      });
+
+      const transformedData = phieukhoResult.data.map((pk: any) => ({
+        id: pk.id,
+        maphieu: pk.maphieu,
+        ngay: pk.ngay,
+        type: pk.type,
+        title: pk.title,
+        ghichu: pk.ghichu,
+        isChotkho: pk.isChotkho,
+        soluong: pk.sanpham[0]?.soluong || 0,
+        itemGhichu: pk.sanpham[0]?.ghichu || '',
+      }));
+
+      this.phieukhoDataMap.set(masp, transformedData);
+    } catch (error) {
+      console.error('Error loading phieukho data:', error);
+      this.phieukhoDataMap.set(masp, []);
+    } finally {
+      this.loadingPhieukho.delete(masp);
+    }
+  }
+
+  /**
+   * Get phieukho data for a specific product
+   */
+  getPhieukhoData(masp: string): any[] {
+    return this.phieukhoDataMap.get(masp) || [];
+  }
+
+  /**
+   * Get total count of all nested records (dathang, donhang, phieukho)
+   */
+  getTotalNestedDataCount(masp: string): number {
+    return (
+      (this.dathangDataMap.get(masp)?.length || 0) +
+      (this.donhangDataMap.get(masp)?.length || 0) +
+      (this.phieukhoDataMap.get(masp)?.length || 0)
+    );
+  }
 
   /**
    * Get dathang data for a specific product
@@ -2596,8 +2692,10 @@ export class NhucaudathangComponent {
   clearNestedData(): void {
     this.dathangDataMap.clear();
     this.donhangDataMap.clear();
+    this.phieukhoDataMap.clear();
     this.loadingDathang.clear();
     this.loadingDonhang.clear();
+    this.loadingPhieukho.clear(); // Added this line
     this.expandedElementId = null;
     // Note: Dialogs are closed automatically when user dismisses them
   }
@@ -2644,12 +2742,7 @@ export class NhucaudathangComponent {
     return this.isDathangLoading(masp) || this.isDonhangLoading(masp);
   }
 
-  /**
-   * Get total count of all nested data for a product
-   */
-  getTotalNestedDataCount(masp: string): number {
-    return this.getDathangData(masp).length + this.getDonhangData(masp).length;
-  }
+
 
   /**
    * Check if nested data exists for a product

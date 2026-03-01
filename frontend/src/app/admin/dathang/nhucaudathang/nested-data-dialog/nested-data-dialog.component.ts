@@ -11,6 +11,7 @@ export interface NestedDataDialogData {
   product: any;
   dathangData: any[];
   donhangData: any[];
+  phieukhoData: any[];
   loading: boolean;
   triggerChangeDetection?: () => void; // Add callback for triggering change detection
 }
@@ -110,5 +111,24 @@ export class NestedDataDialogComponent implements OnInit {
       'cancelled': 'Đã hủy'
     };
     return statusMap[status] || status || 'Không xác định';
+  }
+
+  /**
+   * Get type text for phieukho
+   */
+  getPhieukhoTypeText(pk: any): string {
+    if (pk.isChotkho) return 'Chốt kho (Cân bằng)';
+    return pk.type === 'nhap' ? 'Nhập kho' : 'Xuất kho';
+  }
+
+  /**
+   * Get CSS class for phieukho type
+   */
+  getPhieukhoTypeClass(pk: any): { [key: string]: boolean } {
+    if (pk.isChotkho) return { 'bg-purple-100 text-purple-800': true };
+    return {
+      'bg-blue-100 text-blue-800': pk.type === 'nhap',
+      'bg-red-100 text-red-800': pk.type === 'xuat'
+    };
   }
 }
