@@ -1626,10 +1626,12 @@ async deletebulk(data: any) {
       });
 
       if (pendingOrders.length === 0) {
+        // ✅ Still sync stock to reality even if no orders found, to fix discrepancies!
+        await this.tonkhoManager.syncStockToReality(sanphamId);
         return {
           success: true,
           count: 0,
-          message: 'Không có đặt hàng chờ nhập nào'
+          message: 'Đã hoàn tất đồng bộ tồn kho thực tế'
         };
       }
 
@@ -1688,6 +1690,10 @@ async deletebulk(data: any) {
               }
             }
           }
+
+          // ✅ AUTO-SNAPSHOT: Sync system stock to reality for this product
+          await this.tonkhoManager.syncStockToReality(sanphamId, tx);
+
         }, {
           timeout: 40000 // Increased timeout for per-product updates
         });
@@ -1724,7 +1730,13 @@ async deletebulk(data: any) {
         }
       });
       
-      if (orders.length === 0) return { success: true, count: 0, totalProducts: 0 };
+      if (orders.length === 0) {
+        // ✅ Still sync all requested products to fix discrepancies!
+        for (const id of sanphamIds) {
+          await this.tonkhoManager.syncStockToReality(id);
+        }
+        return { success: true, count: 0, totalProducts: sanphamIds.length };
+      }
 
       const batchSize = 15; // Smaller batch due to multiple updates per order
       let totalItems = 0;
@@ -1734,6 +1746,8 @@ async deletebulk(data: any) {
         const batch = orders.slice(i, i + batchSize);
         
         await this.prisma.$transaction(async (tx) => {
+          const batchProducts = new Set<string>();
+
           for (const order of batch) {
             await tx.dathang.update({
               where: { id: order.id },
@@ -1765,12 +1779,25 @@ async deletebulk(data: any) {
                   }
                 });
 
+                batchProducts.add(sp.idSP);
                 uniqueProducts.add(sp.idSP);
                 totalItems++;
               }
             }
           }
+
+          // ✅ AUTO-SNAPSHOT: Sync ONLY touched products IN THIS BATCH
+          for (const prodId of Array.from(batchProducts)) {
+             await this.tonkhoManager.syncStockToReality(prodId, tx);
+          }
         }, { timeout: 60000 });
+      }
+
+      // 3. Final safety sync: Ensure ALL requested products are synced 
+      // (in case some products didn't have orders and weren't in any batch)
+      const unsyncedIds = sanphamIds.filter(id => !uniqueProducts.has(id));
+      for (const id of unsyncedIds) {
+        await this.tonkhoManager.syncStockToReality(id);
       }
 
       return {

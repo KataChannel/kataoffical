@@ -81,27 +81,29 @@ export class MagicProgressDialogComponent implements OnInit {
 
   async startProcessing() {
     const itemsToProcess = [...this.data.items];
-    const concurrencyLimit = 3;
-    let index = 0;
+    const batchSize = 10; // Process in chunks via Bulk API
+    const ids = itemsToProcess.map(it => it.id);
+    
+    for (let i = 0; i < ids.length && !this.isCancelled; i += batchSize) {
+      const currentBatchIds = ids.slice(i, i + batchSize);
+      
+      // Update UI for current batch
+      const firstItem = itemsToProcess[i];
+      const count = currentBatchIds.length;
+      this.currentItem = count > 1 
+        ? { masp: `Nhóm ${i/batchSize + 1}`, title: `${count} sản phẩm...` }
+        : firstItem;
 
-    const workers = Array(concurrencyLimit).fill(null).map(async () => {
-      while (index < itemsToProcess.length && !this.isCancelled) {
-        const i = index++;
-        const item = itemsToProcess[i];
-        this.currentItem = item;
-        
-        try {
-          await this._DathangService.confirmReceiptByProduct(item.id);
-          this.completedCount++;
-        } catch (error) {
-          console.error(`Error processing ${item.masp}:`, error);
-        }
-        
-        this.progress = Math.round((this.completedCount / this.totalCount) * 100);
+      try {
+        // ✅ DÙNG BULK API CỦA BACKEND CHO NHANH
+        await this._DathangService.confirmReceiptBulk(currentBatchIds);
+        this.completedCount += count;
+      } catch (error) {
+        console.error(`Error processing batch:`, error);
       }
-    });
-
-    await Promise.all(workers);
+      
+      this.progress = Math.round((this.completedCount / this.totalCount) * 100);
+    }
 
     this.progress = 100;
     this.isFinished = true;

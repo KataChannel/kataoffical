@@ -276,10 +276,10 @@ export class NhucaudathangComponent {
   }
 
   async bulkMagicButton(): Promise<void> {
-    const selectedItems = this.selection.selected.filter(item => (item.incomingStock || 0) > 0);
+    const selectedItems = this.selection.selected;
     
     if (selectedItems.length === 0) {
-      this._snackBar.open('Vui lòng chọn ít nhất một sản phẩm có hàng đang về!', '', { duration: 3000 });
+      this._snackBar.open('Vui lòng chọn ít nhất một sản phẩm để tối ưu!', '', { duration: 3000 });
       return;
     }
 
@@ -3125,14 +3125,10 @@ export class NhucaudathangComponent {
   async autoReceiveAndSnapshot(row: any): Promise<void> {
     const incomingStock = Number(row.incomingStock || 0);
     
-    // Luôn hiển thị nút nhưng nếu không có hàng đang về thì báo lỗi khi nhấn
-    if (incomingStock <= 0) {
-      this._snackBar.open('Không có hàng đang về để khớp lệnh cho sản phẩm này', '', {
-        duration: 3000,
-        panelClass: ['snackbar-info'],
-      });
-      return;
-    }
+    // Create descriptive message
+    const msg = incomingStock > 0 
+      ? `Xác nhận khớp lệnh nhập ${incomingStock} kg và đồng bộ tồn kho?`
+      : `Sản phẩm này hiện KHÔNG có hàng đang về. Bạn có muốn thực hiện ĐỒNG BỘ lại sổ sách với thực tế để xóa chênh lệch không?`;
 
     // ✅ CHUYỂN CONFIRM SANG DIALOG CAO CẤP
     const dialogRef = this._dialog.open(MagicConfirmDialogComponent, {
@@ -3140,7 +3136,8 @@ export class NhucaudathangComponent {
       data: {
         masp: row.masp,
         title: row.title,
-        incomingStock: incomingStock
+        incomingStock: incomingStock,
+        customMessage: msg
       }
     });
 
@@ -3157,7 +3154,11 @@ export class NhucaudathangComponent {
       const result = await this._DathangService.confirmReceiptByProduct(row.id);
       
       if (result.success !== false) {
-        this._snackBar.open(`✅ Khớp lệnh thành công! Đã nhập thực ${incomingStock} kg vào kho.`, '', {
+        const successMsg = incomingStock > 0 
+          ? `✅ Khớp lệnh thành công! Đã nhập thực ${incomingStock} kg và đồng bộ tồn kho.`
+          : `✅ Đã đồng bộ tồn kho thực tế và xóa chênh lệch thành công cho sản phẩm!`;
+
+        this._snackBar.open(successMsg, '', {
           duration: 4000,
           panelClass: ['snackbar-success']
         });

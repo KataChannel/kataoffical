@@ -1256,10 +1256,11 @@ let DathangService = class DathangService {
                 }
             });
             if (pendingOrders.length === 0) {
+                await this.tonkhoManager.syncStockToReality(sanphamId);
                 return {
                     success: true,
                     count: 0,
-                    message: 'Không có đặt hàng chờ nhập nào'
+                    message: 'Đã hoàn tất đồng bộ tồn kho thực tế'
                 };
             }
             const batchSize = 25;
@@ -1305,6 +1306,7 @@ let DathangService = class DathangService {
                             }
                         }
                     }
+                    await this.tonkhoManager.syncStockToReality(sanphamId, tx);
                 }, {
                     timeout: 40000
                 });
@@ -1335,14 +1337,19 @@ let DathangService = class DathangService {
                     sanpham: true
                 }
             });
-            if (orders.length === 0)
-                return { success: true, count: 0, totalProducts: 0 };
+            if (orders.length === 0) {
+                for (const id of sanphamIds) {
+                    await this.tonkhoManager.syncStockToReality(id);
+                }
+                return { success: true, count: 0, totalProducts: sanphamIds.length };
+            }
             const batchSize = 15;
             let totalItems = 0;
             const uniqueProducts = new Set();
             for (let i = 0; i < orders.length; i += batchSize) {
                 const batch = orders.slice(i, i + batchSize);
                 await this.prisma.$transaction(async (tx) => {
+                    const batchProducts = new Set();
                     for (const order of batch) {
                         await tx.dathang.update({
                             where: { id: order.id },
@@ -1369,12 +1376,20 @@ let DathangService = class DathangService {
                                         slchonhap: { decrement: sldat }
                                     }
                                 });
+                                batchProducts.add(sp.idSP);
                                 uniqueProducts.add(sp.idSP);
                                 totalItems++;
                             }
                         }
                     }
+                    for (const prodId of Array.from(batchProducts)) {
+                        await this.tonkhoManager.syncStockToReality(prodId, tx);
+                    }
                 }, { timeout: 60000 });
+            }
+            const unsyncedIds = sanphamIds.filter(id => !uniqueProducts.has(id));
+            for (const id of unsyncedIds) {
+                await this.tonkhoManager.syncStockToReality(id);
             }
             return {
                 success: true,

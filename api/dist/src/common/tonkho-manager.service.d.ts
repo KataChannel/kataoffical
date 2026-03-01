@@ -22,4 +22,5 @@ export declare class TonkhoManagerService {
         fixed: number;
         errors: string[];
     }>;
+    syncStockToReality(sanphamId: string, tx?: any): Promise<void>;
 }

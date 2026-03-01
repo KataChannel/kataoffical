@@ -310,4 +310,76 @@ export class TonkhoManagerService {
       return { fixed, errors };
     }
   }
+
+  /**
+   * Đồng bộ Sổ sách với Thực tế (Quick Snapshot/Sync)
+   * Giúp Chênh lệch về 0 bằng cách cân bằng slton và sltontt theo tính toán tin cậy
+   */
+  async syncStockToReality(sanphamId: string, tx?: any): Promise<void> {
+    const prisma = tx || this.prisma;
+    
+    // 1. Lấy trạng thái hiện tại và các đơn hàng liên quan kể từ lần chốt gần nhất
+    const tk = await prisma.tonKho.findUnique({
+      where: { sanphamId },
+      include: {
+        sanpham: {
+          include: {
+            Donhangsanpham: {
+              where: {
+                donhang: { status: { in: ['dagiao', 'danhan', 'hoanthanh'] } }
+              }
+            },
+            Dathangsanpham: {
+              where: {
+                dathang: { status: 'danhan' }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!tk) return;
+
+    // 2. Sử dụng Aggregate để tính tổng nhanh từ DB thay vì kéo hàng nghìn record về memory
+    const [receivedAgg, deliveredAgg] = await Promise.all([
+      prisma.dathangsanpham.aggregate({
+        where: {
+          idSP: sanphamId,
+          dathang: {
+            updatedAt: { gt: tk.updatedAt },
+            status: 'danhan'
+          }
+        },
+        _sum: { slnhan: true }
+      }),
+      prisma.donhangsanpham.aggregate({
+        where: {
+          idSP: sanphamId,
+          donhang: {
+            updatedAt: { gt: tk.updatedAt },
+            status: { in: ['dagiao', 'danhan', 'hoanthanh'] }
+          }
+        },
+        _sum: { slnhan: true, sldat: true }
+      })
+    ]);
+
+    const received = Number(receivedAgg._sum?.slnhan || 0);
+    // Ưu tiên slnhan, nếu chưa có thì dùng sldat (cho đơn hàng đang giao/hoàn thành)
+    const delivered = Number(deliveredAgg._sum?.slnhan || deliveredAgg._sum?.sldat || 0);
+    
+    // Công thức hội tụ: Tồn chốt cũ + Biến động = Tồn thực tế hiện tại
+    const reliableTotal = Number(tk.sltontt || 0) + received - delivered;
+
+    // 3. Cập nhật đồng bộ
+    await prisma.tonKho.update({
+      where: { sanphamId },
+      data: {
+        slton: reliableTotal,
+        sltontt: reliableTotal,
+        updatedAt: new Date() // Reset thời điểm chốt về hiện tại
+      }
+    });
+  }
 }

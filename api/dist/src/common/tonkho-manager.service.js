@@ -254,6 +254,63 @@ let TonkhoManagerService = class TonkhoManagerService {
             return { fixed, errors };
         }
     }
+    async syncStockToReality(sanphamId, tx) {
+        const prisma = tx || this.prisma;
+        const tk = await prisma.tonKho.findUnique({
+            where: { sanphamId },
+            include: {
+                sanpham: {
+                    include: {
+                        Donhangsanpham: {
+                            where: {
+                                donhang: { status: { in: ['dagiao', 'danhan', 'hoanthanh'] } }
+                            }
+                        },
+                        Dathangsanpham: {
+                            where: {
+                                dathang: { status: 'danhan' }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        if (!tk)
+            return;
+        const [receivedAgg, deliveredAgg] = await Promise.all([
+            prisma.dathangsanpham.aggregate({
+                where: {
+                    idSP: sanphamId,
+                    dathang: {
+                        updatedAt: { gt: tk.updatedAt },
+                        status: 'danhan'
+                    }
+                },
+                _sum: { slnhan: true }
+            }),
+            prisma.donhangsanpham.aggregate({
+                where: {
+                    idSP: sanphamId,
+                    donhang: {
+                        updatedAt: { gt: tk.updatedAt },
+                        status: { in: ['dagiao', 'danhan', 'hoanthanh'] }
+                    }
+                },
+                _sum: { slnhan: true, sldat: true }
+            })
+        ]);
+        const received = Number(receivedAgg._sum?.slnhan || 0);
+        const delivered = Number(deliveredAgg._sum?.slnhan || deliveredAgg._sum?.sldat || 0);
+        const reliableTotal = Number(tk.sltontt || 0) + received - delivered;
+        await prisma.tonKho.update({
+            where: { sanphamId },
+            data: {
+                slton: reliableTotal,
+                sltontt: reliableTotal,
+                updatedAt: new Date()
+            }
+        });
+    }
 };
 exports.TonkhoManagerService = TonkhoManagerService;
 exports.TonkhoManagerService = TonkhoManagerService = __decorate([
