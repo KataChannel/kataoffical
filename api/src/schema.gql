@@ -225,7 +225,7 @@ type Query {
     skip: Float = 0
 
     """Maximum records to return (max 100000)"""
-    take: Float = 500
+    take: Float = 100000
 
     """Relations to include"""
     include: JSON

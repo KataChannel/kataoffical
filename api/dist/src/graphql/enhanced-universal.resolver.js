@@ -28,7 +28,7 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
             where,
             orderBy,
             skip: Math.max(0, skip || 0),
-            take: Math.min(100000, Math.max(1, take || 500)),
+            take: Math.min(100000, Math.max(1, take || 100000)),
             include,
             select,
         });
@@ -271,7 +271,7 @@ __decorate([
     __param(5, (0, graphql_1.Args)('take', {
         type: () => Number,
         nullable: true,
-        defaultValue: 500,
+        defaultValue: 100000,
         description: 'Maximum records to return (max 100000)',
     })),
     __param(6, (0, graphql_1.Args)('include', {

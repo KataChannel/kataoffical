@@ -1045,7 +1045,8 @@ export class GraphqlService {
     // First, get total count
     const countResult = await this.findMany<{ id: any }>(modelName, {
       ...options,
-      select: { id: true }
+      select: { id: true },
+      take: 100000 // Ensure we count all existing records within the safe limit
     });
     const totalCount = countResult.length;
 

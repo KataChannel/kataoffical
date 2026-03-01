@@ -464,6 +464,7 @@ export class NhucaudathangComponent {
             id: true,
             madncc: true,
             ngaynhan: true,
+            status: true,
             nhacungcap: {
               select: {
                 name: true,
@@ -557,6 +558,7 @@ export class NhucaudathangComponent {
           slgiao: Number(sp.slgiao) || 0,
           slnhan: Number(sp.slnhan) || 0,
 
+          status: order.status,
           makho: order.kho.makho,
           namekho: order.kho.name,
         }));
@@ -1635,14 +1637,17 @@ export class NhucaudathangComponent {
       const ngaynhan =
         Dathangs && Dathangs.length > 0 ? Dathangs[0].ngaynhan : null;
 
-      // Sum sldat by makho
+      // Sum sldat (incoming) by makho - only count if NOT received/cancelled
       if (Dathangs) {
         Dathangs.forEach((dathang: any) => {
           const matchingKho = ListKho.find(
             (kho: any) => kho.makho === dathang.makho
           );
           if (matchingKho) {
-            khoValues[matchingKho.value] += dathang.sldat;
+            // Only count as "incoming" (đang về) if the order status is 'dadat' or 'dagiao'
+            if (dathang.status === 'dadat' || dathang.status === 'dagiao') {
+              khoValues[matchingKho.value] += dathang.sldat;
+            }
           }
         });
       }

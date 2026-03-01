@@ -56,7 +56,7 @@ export class EnhancedUniversalResolver {
     @Args('take', {
       type: () => Number,
       nullable: true,
-      defaultValue: 500,
+      defaultValue: 100000,
       description: 'Maximum records to return (max 100000)',
     })
     take?: number,
@@ -80,7 +80,7 @@ export class EnhancedUniversalResolver {
       where,
       orderBy,
       skip: Math.max(0, skip || 0),
-      take: Math.min(100000, Math.max(1, take || 500)),
+      take: Math.min(100000, Math.max(1, take || 100000)),
       include,
       select,
     });
