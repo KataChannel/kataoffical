@@ -347,13 +347,26 @@
                                 </span>
                             }
                             @case ('slton') {
-                                <div class="flex flex-col items-end">
-                                    <span class="max-w-20 line-clamp-1 text-end font-semibold" 
-                                          [class.text-red-600]="row[column] <= 0"
-                                          [class.text-green-600]="row[column] > 0">
-                                        {{ row[column]|number:'1.0-2' }}
-                                    </span>
-                                    <span class="text-[9px] text-gray-400">Tồn máy (đã trừ xuất bán)</span>
+                                <div class="flex flex-col items-end space-y-1">
+                                    <!-- Lũy kế / Nợ phiếu -->
+                                    <div class="flex flex-col items-end">
+                                        <span class="text-[10px] text-gray-400 leading-none">Nợ phiếu (Lũy kế)</span>
+                                        <span class="font-semibold" 
+                                              [class.text-red-600]="row[column] <= 0"
+                                              [class.text-green-600]="row[column] > 0">
+                                            {{ row[column]|number:'1.0-2' }}
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Thực tế Phiên (Chu chuyển) -->
+                                    <div class="flex flex-col items-end pt-1 border-t border-dashed border-gray-300 w-full"
+                                         [matTooltip]="'Tính toán: ' + (row['tongkho']|number:'1.0-2') + ' (Tồn khả dụng) - ' + (row['khachgiao']|number:'1.0-2') + ' (Đã giao)'">
+                                        <span class="text-[10px] text-blue-500 font-medium leading-none">Đúng thực tế (Phiên)</span>
+                                        @let tt = (row['tongkho'] || 0) - (row['khachgiao'] || 0);
+                                        <span class="font-bold" [class.text-red-500]="tt < 0" [class.text-green-600]="tt >= 0">
+                                            {{ tt | number:'1.0-2' }}
+                                        </span>
+                                    </div>
                                 </div>
                             }
                             @case ('slchogiao') {

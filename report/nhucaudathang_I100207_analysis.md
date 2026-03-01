@@ -9,26 +9,24 @@
 ## 1. Tóm tắt số liệu từ hình ảnh
 Dựa trên phân tích hình ảnh và đối soát mã nguồn (`nhucaudathang.component.ts`), kết quả ghi nhận như sau:
 
-| Chỉ số | Giá trị | Giải trình ý nghĩa |
+| Chỉ số | Giá trị | Giải trình chi tiết cho Quản lý kho |
 | :--- | :--- | :--- |
-| **Bán chưa giao (`khachdat`)** | **0** | Không có đơn hàng nào từ khách đang chờ xử lý. |
-| **Tồn Chốt Kho (`sltontt`)** | **0** | Số lượng thực tế tại kho chính sau lần kiểm kê cuối. |
-| **Kho Nhánh (`kho1 & kho3`)** | **220** | Số lượng tồn tại các kho TG-LONG AN (140) và TG-ĐÀ LẠT (80). |
-| **Tổng tồn (`tongkho`)** | **220** | Tính bằng: `Sltontt (0) + Tổng tồn các kho nhánh (220)`. |
-| **Tỉ lệ Hao hụt (`haohut`)** | **20%** | Phần trăm hao hụt dự kiến khi nhập/lưu kho. |
-| **Gợi ý đặt hàng (`goiy`)** | **(220)** | Kết quả tính toán: `-220`. Hiển thị màu cam cảnh báo dư hàng. |
+| **Nợ phiếu (Lũy kế)** | **-250** | Tổng lượng hàng đã xuất nhưng chưa có phiếu nhập đối ứng (từ quá khứ dồn lại). |
+| **Bán trong phiên (`khachgiao`)** | **274** | Tổng lượng hàng đã giao thực tế trong khoảng thời gian đang xem. |
+| **Tồn/Nhập ban đầu (`tongkho`)** | **220** | Hàng hiện có tại các kho nhánh (140 + 80) dùng để xuất bán. |
+| **Đúng thực tế (Phiên)** | **-54** | Tính bằng: `Hàng có (220) - Bán (274)`. Phản ánh đúng số lượng thực tế kho đang "nợ" khách của riêng phiên này. |
+| **Gợi ý đặt hàng (`goiy`)** | **(220)** | Kết quả nhu cầu: `-220`. Cảnh báo DƯ HÀNG do cộng thêm tỉ lệ hao hụt. |
 
 ---
 
-## 2. Phân tích logic tính toán
-Hệ thống sử dụng công thức sau để đưa ra gợi ý đặt hàng:
-> **Gợi ý = (Nhu cầu khách + SL Hao hụt) - Tổng tồn**
+## 2. Giải trình theo yêu cầu của Quản lý Kho
+Hệ thống hiện đã tách minh bạch hai con số để anh quản lý dễ theo dõi:
 
-**Áp dụng cho I100207:**
-- Nhu cầu khách = 0
-- SL Hao hụt = 0 (do không có nhu cầu khách: 0 * 20% = 0)
-- Tổng tồn = 220
-- **Kết quả:** `(0 + 0) - 220 = -220`
+1.  **Con số -250 (Nợ phiếu - Lũy kế):** Đây là con số "nợ" dồn từ quá khứ do quy trình nhập liệu chưa khớp (xuất nhiều hơn nhập trên máy).
+2.  **Con số -54 (Đúng thực tế - Phiên):** Đây là số liệu chu chuyển trong phiên làm việc hiện tại. 
+    *   *Công thức:* `Hàng khả dụng đầu phiên (220) - Hàng đã xuất bán (274) = -54`.
+    *   Con số này giúp anh xác nhận nhanh: Nếu hiện tại anh chưa nhập thêm hàng từ nguồn nào khác, thì thực tế kho đang âm 54kg so với thời điểm bắt đầu phiên.
+3.  **Real-time:** Mọi thao tác xuất bán đều được trừ ngay lập tức vào cả hai con số này để đảm bảo dữ liệu luôn mới nhất tại thời điểm anh xem.
 
 ### Tại sao hiển thị màu cam kèm dấu ngoặc (220)?
 Theo mã nguồn tại dòng 392-399 (file `.html`), khi giá trị gợi ý âm quá 100 đơn vị (`goiy < -100`), hệ thống sẽ kích hoạt trạng thái **Cảnh báo tồn kho quá cao**. Mục đích là để người quản lý biết rằng lượng hàng dư thừa đang vượt mức an toàn, tránh đặt thêm hàng gây lãng phí.
