@@ -302,26 +302,8 @@ export class BanggiaService {
       const options = {
         where: {},
         orderBy: { order: 'asc' },
+        take: 500,
         include: {
-          sanpham: {
-            include: {
-              sanpham: {
-                select: {
-                  id: true,
-                  title: true,
-                  masp: true,
-                  dvt: true
-                }
-              }
-            }
-          },
-          khachhang: {
-            select: {
-              id: true,
-              name: true,
-              makh: true
-            }
-          },
           _count: {
             select: {
               sanpham: true,
@@ -380,7 +362,7 @@ export class BanggiaService {
               }
             },
             orderBy: { order: 'asc' },
-            take: 99999
+            take: 5000
           },
           khachhang: {
             select: {
@@ -393,7 +375,7 @@ export class BanggiaService {
               loaikh: true,
               isActive: true
             },
-            take: 99999
+            take: 5000
           },
         }
       };
@@ -561,7 +543,8 @@ export class BanggiaService {
             }
           }
         },
-        orderBy: { order: 'asc' }
+        orderBy: { order: 'asc' },
+        take: 100000
       };
 
       return await this._GraphqlService.findMany('banggiasanpham', options);
@@ -590,7 +573,8 @@ export class BanggiaService {
             }
           }
         },
-        orderBy: { name: 'asc' }
+        orderBy: { name: 'asc' },
+        take: 100000
       };
 
       return await this._GraphqlService.findMany('khachhang', options);

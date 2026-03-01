@@ -28892,7 +28892,7 @@ var routes = [
         path: "nhucaudathang",
         canActivate: [PermissionGuard],
         data: { permission: "nhucaudathang.view" },
-        loadComponent: () => import("./chunk-23TPOEHO.mjs").then((c) => c.NhucaudathangComponent)
+        loadComponent: () => import("./chunk-LY5RKU2T.mjs").then((c) => c.NhucaudathangComponent)
       },
       {
         path: "donhang",

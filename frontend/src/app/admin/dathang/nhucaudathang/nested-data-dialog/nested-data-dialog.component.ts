@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 import { TimezoneService } from '../../../../shared/services/timezone.service';
 
 export interface NestedDataDialogData {
@@ -34,6 +35,7 @@ export class NestedDataDialogComponent implements OnInit {
 
   private timezoneService = inject(TimezoneService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   constructor(
     private dialogRef: MatDialogRef<NestedDataDialogComponent>,
@@ -64,6 +66,20 @@ export class NestedDataDialogComponent implements OnInit {
    */
   closeDialog(): void {
     this.dialogRef.close();
+  }
+
+  /**
+   * Navigate to dathang detail page (new tab)
+   */
+  goToDathang(dathang: any): void {
+    window.open(`/admin/dathang/${dathang.id}`, '_blank');
+  }
+
+  /**
+   * Navigate to donhang detail page (new tab)
+   */
+  goToDonhang(donhang: any): void {
+    window.open(`/admin/donhang/${donhang.id}`, '_blank');
   }
 
   /**

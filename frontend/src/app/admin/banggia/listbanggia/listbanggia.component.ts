@@ -118,19 +118,21 @@ export class ListBanggiaComponent {
       // Lấy tất cả bảng giá sử dụng GraphQL
       const banggiaData = await this._GraphqlService.findMany('banggia', {
         include: {
-          khachhang: {select : { id: true, name: true }},
-          sanpham: {
-            select : { id: true, sanphamId: true }
-          },
+          _count: {
+            select: {
+              sanpham: true,
+              khachhang: true
+            }
+          }
         },
-        take:99999,
+        take: 5000,
         orderBy: { createdAt: 'desc' }
       });
-      const result = banggiaData.map((v)=>{
+      const result = banggiaData.map((v: any) => {
         return {
           ...v,
-          sanpham: v.sanpham.length,
-          khachhang: v.khachhang.length
+          sanpham: v._count?.sanpham ?? 0,
+          khachhang: v._count?.khachhang ?? 0
         }
       })  
       this.CountItem = result.length;
@@ -146,29 +148,30 @@ export class ListBanggiaComponent {
   }
   async refresh() {
     try {
-      // Lấy tất cả bảng giá sử dụng GraphQL
+      // Lấy tất cả bảng giá sử dụng GraphQL tối ưu với _count
       const banggiaData = await this._GraphqlService.findMany('banggia', {
         include: {
-          banggiaKhachhang: {
-            include: {
-              khachhang: {
-                select: { id: true, title: true, ma: true }
-              }
-            }
-          },
-          banggiaSanpham: {
-            include: {
-              sanpham: {
-                select: { id: true, title: true, masp: true }
-              }
+          _count: {
+            select: {
+              sanpham: true,
+              khachhang: true
             }
           }
         },
+        take: 5000,
         orderBy: { createdAt: 'desc' }
       });
 
-      this.dataSource.data = banggiaData;
-      this.CountItem = banggiaData.length;
+      const result = banggiaData.map((v: any) => {
+        return {
+          ...v,
+          sanpham: v._count?.sanpham ?? 0,
+          khachhang: v._count?.khachhang ?? 0
+        }
+      });
+      
+      this.dataSource.data = result;
+      this.CountItem = result.length;
 
     } catch (error) {
       console.error('Lỗi làm mới danh sách bảng giá:', error);
@@ -189,7 +192,8 @@ export class ListBanggiaComponent {
           sanpham: {
             select: { id: true, masp: true, title: true }
           }
-        }
+        },
+        take: 100000
       });
 
       // Batch update giá bán cho tất cả sản phẩm
@@ -463,7 +467,8 @@ convertDataToData1(
     try {
       // Lấy tất cả sản phẩm sử dụng GraphQL
       const ListSP = await this._GraphqlService.findMany('sanpham', {
-        select: { id: true, masp: true, title: true, giaban: true }
+        select: { id: true, masp: true, title: true, giaban: true },
+        take: 100000
       });
 
       const result = this.convertToData3(data, ListSP);
@@ -478,7 +483,8 @@ convertDataToData1(
               }
             }
           }
-        }
+        },
+        take: 100000
       });
 
       const ListKH = Banggia.reduce((acc: any[], v: any) => {

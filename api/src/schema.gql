@@ -224,8 +224,8 @@ type Query {
     """Records to skip for pagination"""
     skip: Float = 0
 
-    """Maximum records to return (max 999999)"""
-    take: Float = 999999
+    """Maximum records to return (max 100000)"""
+    take: Float = 500
 
     """Relations to include"""
     include: JSON

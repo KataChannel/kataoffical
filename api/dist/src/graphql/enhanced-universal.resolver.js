@@ -28,7 +28,7 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
             where,
             orderBy,
             skip: Math.max(0, skip || 0),
-            take: Math.min(99999, Math.max(1, take || 999999)),
+            take: Math.min(100000, Math.max(1, take || 500)),
             include,
             select,
         });
@@ -214,7 +214,7 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
             sanitized.skip = args.skip;
         }
         if (typeof args.take === 'number' && args.take > 0) {
-            sanitized.take = Math.min(999999, args.take);
+            sanitized.take = Math.min(100000, args.take);
         }
         if (args.include)
             sanitized.include = args.include;
@@ -271,8 +271,8 @@ __decorate([
     __param(5, (0, graphql_1.Args)('take', {
         type: () => Number,
         nullable: true,
-        defaultValue: 999999,
-        description: 'Maximum records to return (max 999999)',
+        defaultValue: 500,
+        description: 'Maximum records to return (max 100000)',
     })),
     __param(6, (0, graphql_1.Args)('include', {
         type: () => graphql_type_json_1.GraphQLJSON,

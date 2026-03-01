@@ -1,92 +1,66 @@
+import './polyfills.server.mjs';
 import {
   DateHelpers
-} from "./chunk-CU6ECT62.js";
+} from "./chunk-EL3N5X44.mjs";
 import {
   PhieukhoService
-} from "./chunk-QBADE6I6.js";
+} from "./chunk-3BFDZXX3.mjs";
 import {
   DathangService
-} from "./chunk-23TLPLBD.js";
+} from "./chunk-3PYZ6K7Q.mjs";
 import {
   DonhangService
-} from "./chunk-5Z2QWFRS.js";
+} from "./chunk-JL4WQNZB.mjs";
 import {
   SanphamService
-} from "./chunk-LEINIWDA.js";
+} from "./chunk-PEEAI7OM.mjs";
 import {
   MatPaginator,
   MatPaginatorModule
-} from "./chunk-YK4IEOL5.js";
+} from "./chunk-NV7NCVB6.mjs";
 import {
   MatSort,
   MatSortHeader,
   MatSortModule
-} from "./chunk-TVYI4UUP.js";
+} from "./chunk-QGE5RGZP.mjs";
 import {
   TimezoneService
-} from "./chunk-JWBKJV3R.js";
+} from "./chunk-V5JTJVVY.mjs";
 import {
   readExcelFileNoWorker,
   readExcelFileNoWorkerArray,
   writeExcelFile,
   writeExcelFileSheets
-} from "./chunk-DOJR6IHP.js";
-import "./chunk-TF67DZTX.js";
+} from "./chunk-XQWRZCE6.mjs";
+import "./chunk-WJ6GNNQZ.mjs";
 import {
   require_moment
-} from "./chunk-LIKOVN7R.js";
-import "./chunk-R5HFYA7U.js";
+} from "./chunk-TEMMKMG5.mjs";
+import "./chunk-CXFG5YDN.mjs";
 import {
   GenId
-} from "./chunk-EMT3PHD4.js";
+} from "./chunk-OLFDOXYK.mjs";
 import {
   MatDrawer,
   MatDrawerContainer,
   MatSidenavModule
-} from "./chunk-XY2N6Z76.js";
+} from "./chunk-BKIOO2IQ.mjs";
 import {
   MatMenu,
   MatMenuItem,
   MatMenuModule,
   MatMenuTrigger
-} from "./chunk-RUSDLITN.js";
-import {
-  Router,
-  RouterOutlet
-} from "./chunk-AGKEHWOL.js";
-import {
-  MatProgressSpinner,
-  MatProgressSpinnerModule
-} from "./chunk-NOVTUKZ4.js";
-import "./chunk-SSKGL4JO.js";
-import "./chunk-5F4VG3UZ.js";
-import {
-  MatExpansionModule
-} from "./chunk-BYC3TDNG.js";
-import {
-  MatSlideToggleModule
-} from "./chunk-EWUH5CQR.js";
-import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogClose,
-  MatDialogContent,
-  MatDialogModule,
-  MatDialogRef
-} from "./chunk-FL27G2EY.js";
-import {
-  MatSnackBar
-} from "./chunk-43IDDEVP.js";
+} from "./chunk-UASPM37G.mjs";
 import {
   MatDatepicker,
   MatDatepickerInput,
   MatDatepickerModule,
   MatDatepickerToggle
-} from "./chunk-Z46IZ3PI.js";
+} from "./chunk-7FHKYRY5.mjs";
 import {
-  GraphqlService
-} from "./chunk-Y4MVQOE5.js";
-import "./chunk-IABB4NTX.js";
+  Router,
+  RouterOutlet
+} from "./chunk-XXHMETOB.mjs";
 import {
   MatCell,
   MatCellDef,
@@ -101,18 +75,42 @@ import {
   MatTable,
   MatTableDataSource,
   MatTableModule
-} from "./chunk-TUEMV45J.js";
+} from "./chunk-LXPCAAVO.mjs";
+import {
+  GraphqlService
+} from "./chunk-MECBLMI6.mjs";
+import {
+  MatProgressSpinner,
+  MatProgressSpinnerModule
+} from "./chunk-XEJ7KODZ.mjs";
+import "./chunk-2BTDEHR6.mjs";
+import "./chunk-BKGWM7TB.mjs";
+import "./chunk-UYYJQ6OX.mjs";
+import {
+  MatExpansionModule
+} from "./chunk-SI2YIUBM.mjs";
+import {
+  MatSlideToggleModule
+} from "./chunk-OBYVUVCN.mjs";
 import {
   MatTooltip,
   MatTooltipModule
-} from "./chunk-E3N2TZ4N.js";
+} from "./chunk-G5Q3EA6K.mjs";
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogModule,
+  MatDialogRef
+} from "./chunk-AJSGP2QM.mjs";
 import {
   MatSelectModule
-} from "./chunk-JNSSVLJO.js";
+} from "./chunk-WVX3EDL3.mjs";
 import {
   MatInput,
   MatInputModule
-} from "./chunk-65RDCWJI.js";
+} from "./chunk-AQETVGJS.mjs";
 import {
   DefaultValueAccessor,
   FormsModule,
@@ -123,32 +121,35 @@ import {
   MatSuffix,
   NgControlStatus,
   NgModel
-} from "./chunk-XDPJU2GK.js";
-import "./chunk-SOPKJ4GV.js";
+} from "./chunk-5444DBJD.mjs";
+import "./chunk-IU3FX4W2.mjs";
 import {
   MatIcon,
   MatIconModule
-} from "./chunk-ZRMLZ234.js";
-import "./chunk-4ERWVCO4.js";
-import "./chunk-U5KYXYKC.js";
+} from "./chunk-DV7552T6.mjs";
+import {
+  MatSnackBar
+} from "./chunk-WUOSISWE.mjs";
+import "./chunk-SPQ4ZDSL.mjs";
+import "./chunk-K2LNKYXW.mjs";
+import {
+  MatButton,
+  MatButtonModule,
+  MatIconButton
+} from "./chunk-7RV546X3.mjs";
+import {
+  BreakpointObserver,
+  Breakpoints,
+  MatNativeDateModule
+} from "./chunk-IKKFEUUM.mjs";
 import {
   animate,
   state,
   style,
   transition,
   trigger
-} from "./chunk-FZT2LBIG.js";
-import {
-  MatButton,
-  MatButtonModule,
-  MatIconButton
-} from "./chunk-BRETK2KI.js";
-import {
-  BreakpointObserver,
-  Breakpoints,
-  MatNativeDateModule
-} from "./chunk-EMBYIBW3.js";
-import "./chunk-HCACJZKN.js";
+} from "./chunk-DRZ4ITVR.mjs";
+import "./chunk-2JIL42JL.mjs";
 import {
   CommonModule,
   DecimalPipe,
@@ -156,7 +157,7 @@ import {
   NgForOf,
   NgIf,
   NgTemplateOutlet
-} from "./chunk-RKTFENMZ.js";
+} from "./chunk-WGGH2PUJ.mjs";
 import {
   ChangeDetectorRef,
   effect,
@@ -206,17 +207,17 @@ import {
   ɵɵtwoWayListener,
   ɵɵtwoWayProperty,
   ɵɵviewQuery
-} from "./chunk-RBDY2J7V.js";
+} from "./chunk-ADMXANIA.mjs";
 import {
   __decorate
-} from "./chunk-E3MB3462.js";
+} from "./chunk-QS2IQGEQ.mjs";
 import {
   __async,
   __objRest,
   __spreadProps,
   __spreadValues,
   __toESM
-} from "./chunk-SXK72SKC.js";
+} from "./chunk-FMEBT56H.mjs";
 
 // src/app/admin/dathang/nhucaudathang/nested-data-dialog/nested-data-dialog.component.ts
 var _forTrack0 = ($index, $item) => $item.id || $index;
@@ -321,45 +322,52 @@ function NestedDataDialogComponent_Conditional_17_Conditional_23_Template(rf, ct
 }
 function NestedDataDialogComponent_Conditional_17_Conditional_24_For_11_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "tr", 40)(1, "td", 31)(2, "div", 41)(3, "span", 42);
+    const _r3 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "tr", 41);
+    \u0275\u0275listener("click", function NestedDataDialogComponent_Conditional_17_Conditional_24_For_11_Template_tr_click_0_listener() {
+      const dathang_r4 = \u0275\u0275restoreView(_r3).$implicit;
+      const ctx_r1 = \u0275\u0275nextContext(3);
+      return \u0275\u0275resetView(ctx_r1.goToDathang(dathang_r4));
+    });
+    \u0275\u0275elementStart(1, "td", 31)(2, "div", 42)(3, "span", 43);
     \u0275\u0275text(4);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "span", 43);
+    \u0275\u0275elementStart(5, "span", 44);
     \u0275\u0275text(6);
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(7, "td", 44)(8, "div", 45)(9, "div", 46)(10, "span", 47);
+    \u0275\u0275elementStart(7, "td", 45)(8, "div", 46)(9, "div", 47)(10, "span", 48);
     \u0275\u0275text(11, "\u0110\u1EB7t:");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(12, "span", 48);
+    \u0275\u0275elementStart(12, "span", 49);
     \u0275\u0275text(13);
     \u0275\u0275pipe(14, "number");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(15, "div", 49)(16, "span", 47);
+    \u0275\u0275elementStart(15, "div", 50)(16, "span", 48);
     \u0275\u0275text(17, "Nh\u1EADn:");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(18, "span", 50);
+    \u0275\u0275elementStart(18, "span", 51);
     \u0275\u0275text(19);
     \u0275\u0275pipe(20, "number");
     \u0275\u0275elementEnd()()()();
-    \u0275\u0275elementStart(21, "td", 51)(22, "span", 52);
+    \u0275\u0275elementStart(21, "td", 52)(22, "span", 53);
     \u0275\u0275text(23);
     \u0275\u0275elementEnd()()();
   }
   if (rf & 2) {
-    const dathang_r3 = ctx.$implicit;
+    const dathang_r4 = ctx.$implicit;
     const ctx_r1 = \u0275\u0275nextContext(3);
     \u0275\u0275advance(4);
-    \u0275\u0275textInterpolate(dathang_r3.mancc || "... ");
+    \u0275\u0275textInterpolate(dathang_r4.madncc || "... ");
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx_r1.formatDateForDisplay(dathang_r3.ngaydat || dathang_r3.createdAt, "DD/MM/YYYY"));
+    \u0275\u0275textInterpolate(ctx_r1.formatDateForDisplay(dathang_r4.ngaydat || dathang_r4.createdAt, "DD/MM/YYYY"));
     \u0275\u0275advance(7);
-    \u0275\u0275textInterpolate(\u0275\u0275pipeBind2(14, 6, dathang_r3.sldat || 0, "1.0-2"));
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind2(14, 6, dathang_r4.sldat || 0, "1.0-2"));
     \u0275\u0275advance(6);
-    \u0275\u0275textInterpolate(\u0275\u0275pipeBind2(20, 9, dathang_r3.slnhan || 0, "1.0-2"));
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind2(20, 9, dathang_r4.slnhan || 0, "1.0-2"));
     \u0275\u0275advance(3);
-    \u0275\u0275property("ngClass", ctx_r1.getDathangStatusClass(dathang_r3.status));
+    \u0275\u0275property("ngClass", ctx_r1.getDathangStatusClass(dathang_r4.status));
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate1(" ", ctx_r1.getStatusText(dathang_r3.status), " ");
+    \u0275\u0275textInterpolate1(" ", ctx_r1.getStatusText(dathang_r4.status), " ");
   }
 }
 function NestedDataDialogComponent_Conditional_17_Conditional_24_Template(rf, ctx) {
@@ -395,45 +403,52 @@ function NestedDataDialogComponent_Conditional_17_Conditional_35_Template(rf, ct
 }
 function NestedDataDialogComponent_Conditional_17_Conditional_36_For_11_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "tr", 40)(1, "td", 31)(2, "div", 41)(3, "span", 42);
+    const _r5 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "tr", 55);
+    \u0275\u0275listener("click", function NestedDataDialogComponent_Conditional_17_Conditional_36_For_11_Template_tr_click_0_listener() {
+      const donhang_r6 = \u0275\u0275restoreView(_r5).$implicit;
+      const ctx_r1 = \u0275\u0275nextContext(3);
+      return \u0275\u0275resetView(ctx_r1.goToDonhang(donhang_r6));
+    });
+    \u0275\u0275elementStart(1, "td", 31)(2, "div", 42)(3, "span", 43);
     \u0275\u0275text(4);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "span", 43);
+    \u0275\u0275elementStart(5, "span", 44);
     \u0275\u0275text(6);
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(7, "td", 44)(8, "div", 45)(9, "div", 46)(10, "span", 47);
+    \u0275\u0275elementStart(7, "td", 45)(8, "div", 46)(9, "div", 47)(10, "span", 48);
     \u0275\u0275text(11, "\u0110\u1EB7t:");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(12, "span", 48);
+    \u0275\u0275elementStart(12, "span", 49);
     \u0275\u0275text(13);
     \u0275\u0275pipe(14, "number");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(15, "div", 49)(16, "span", 47);
+    \u0275\u0275elementStart(15, "div", 50)(16, "span", 48);
     \u0275\u0275text(17, "Giao:");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(18, "span", 50);
+    \u0275\u0275elementStart(18, "span", 51);
     \u0275\u0275text(19);
     \u0275\u0275pipe(20, "number");
     \u0275\u0275elementEnd()()()();
-    \u0275\u0275elementStart(21, "td", 51)(22, "span", 52);
+    \u0275\u0275elementStart(21, "td", 52)(22, "span", 53);
     \u0275\u0275text(23);
     \u0275\u0275elementEnd()()();
   }
   if (rf & 2) {
-    const donhang_r4 = ctx.$implicit;
+    const donhang_r6 = ctx.$implicit;
     const ctx_r1 = \u0275\u0275nextContext(3);
     \u0275\u0275advance(4);
-    \u0275\u0275textInterpolate(donhang_r4.madonhang || "...");
+    \u0275\u0275textInterpolate(donhang_r6.madonhang || "...");
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx_r1.formatDateForDisplay(donhang_r4.ngaygiao, "DD/MM/YYYY"));
+    \u0275\u0275textInterpolate(ctx_r1.formatDateForDisplay(donhang_r6.ngaygiao, "DD/MM/YYYY"));
     \u0275\u0275advance(7);
-    \u0275\u0275textInterpolate(\u0275\u0275pipeBind2(14, 6, donhang_r4.sldat || 0, "1.0-2"));
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind2(14, 6, donhang_r6.sldat || 0, "1.0-2"));
     \u0275\u0275advance(6);
-    \u0275\u0275textInterpolate(\u0275\u0275pipeBind2(20, 9, donhang_r4.slgiao || 0, "1.0-2"));
+    \u0275\u0275textInterpolate(\u0275\u0275pipeBind2(20, 9, donhang_r6.slgiao || 0, "1.0-2"));
     \u0275\u0275advance(3);
-    \u0275\u0275property("ngClass", ctx_r1.getDonhangStatusClass(donhang_r4.status));
+    \u0275\u0275property("ngClass", ctx_r1.getDonhangStatusClass(donhang_r6.status));
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate1(" ", ctx_r1.getStatusText(donhang_r4.status), " ");
+    \u0275\u0275textInterpolate1(" ", ctx_r1.getStatusText(donhang_r6.status), " ");
   }
 }
 function NestedDataDialogComponent_Conditional_17_Conditional_36_Template(rf, ctx) {
@@ -448,7 +463,7 @@ function NestedDataDialogComponent_Conditional_17_Conditional_36_Template(rf, ct
     \u0275\u0275text(8, "Tr\u1EA1ng Th\xE1i");
     \u0275\u0275elementEnd()()();
     \u0275\u0275elementStart(9, "tbody", 29);
-    \u0275\u0275repeaterCreate(10, NestedDataDialogComponent_Conditional_17_Conditional_36_For_11_Template, 24, 12, "tr", 40, _forTrack0);
+    \u0275\u0275repeaterCreate(10, NestedDataDialogComponent_Conditional_17_Conditional_36_For_11_Template, 24, 12, "tr", 54, _forTrack0);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
@@ -517,6 +532,7 @@ var NestedDataDialogComponent = class _NestedDataDialogComponent {
   data;
   timezoneService = inject(TimezoneService);
   cdr = inject(ChangeDetectorRef);
+  router = inject(Router);
   constructor(dialogRef, data) {
     this.dialogRef = dialogRef;
     this.data = data;
@@ -541,6 +557,20 @@ var NestedDataDialogComponent = class _NestedDataDialogComponent {
    */
   closeDialog() {
     this.dialogRef.close();
+  }
+  /**
+   * Navigate to dathang detail page
+   */
+  goToDathang(dathang) {
+    this.dialogRef.close();
+    this.router.navigate(["/admin/dathang", dathang.id]);
+  }
+  /**
+   * Navigate to donhang detail page
+   */
+  goToDonhang(donhang) {
+    this.dialogRef.close();
+    this.router.navigate(["/admin/donhang", donhang.id]);
   }
   /**
    * Format date for display
@@ -607,7 +637,7 @@ var NestedDataDialogComponent = class _NestedDataDialogComponent {
   static \u0275fac = function NestedDataDialogComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _NestedDataDialogComponent)(\u0275\u0275directiveInject(MatDialogRef), \u0275\u0275directiveInject(MAT_DIALOG_DATA));
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _NestedDataDialogComponent, selectors: [["app-nested-data-dialog"]], decls: 21, vars: 3, consts: [[1, "flex", "items-center", "justify-between", "px-6", "py-5", "border-b", "border-gray-100", "bg-white"], [1, "flex", "flex-col", "gap-1", "sm:flex-row", "sm:items-center", "sm:gap-4"], [1, "hidden", "sm:flex", "items-center", "justify-center", "w-10", "h-10", "rounded-full", "bg-gray-50", "border", "border-gray-200", "shadow-sm"], [1, "text-gray-600"], [1, "text-lg", "font-semibold", "tracking-tight", "text-gray-900", "m-0"], [1, "text-sm", "text-gray-500", "m-0", "mt-0.5"], [1, "font-mono", "bg-gray-50", "text-gray-800", "px-1.5", "py-0.5", "rounded-md", "border", "border-gray-200"], ["mat-icon-button", "", "matTooltip", "\u0110\xF3ng", 1, "text-gray-400", "hover:text-gray-700", "hover:bg-gray-100", "rounded-full", "transition-colors", "shrink-0", 3, "click"], [1, "mat-typography", "!p-6", "bg-gray-50/50"], [1, "flex", "flex-col", "items-center", "justify-center", "py-24"], [1, "grid", "grid-cols-1", "lg:grid-cols-2", "xl:grid-cols-3", "gap-6"], [1, "px-6", "py-4", "border-t", "border-gray-100", "bg-white", "flex", "justify-end"], ["mat-dialog-close", "", 1, "rounded-md", "px-6", "py-2", "bg-gray-900", "text-white", "font-medium", "text-sm", "hover:bg-gray-800", "transition-colors", "focus:ring-2", "focus:ring-offset-2", "focus:ring-gray-900", "outline-none"], ["diameter", "40", 1, "mb-4", "text-gray-300"], [1, "text-gray-500", "text-sm", "font-medium", "animate-pulse"], [1, "bg-white", "rounded-xl", "border", "border-gray-200", "shadow-sm", "overflow-hidden", "flex", "flex-col", "h-full"], [1, "px-5", "py-4", "border-b", "border-gray-100", "flex", "items-center", "justify-between", "bg-white"], [1, "flex", "items-center", "space-x-2.5"], [1, "text-gray-400", "text-[20px]", "w-[20px]", "h-[20px]"], [1, "font-semibold", "text-gray-900", "text-sm", "!m-0", "tracking-tight"], [1, "bg-gray-50", "text-gray-600", "px-2", "py-0.5", "rounded-md", "text-xs", "font-semibold", "border", "border-gray-200", "shadow-sm"], [1, "p-0", "flex-grow", "overflow-y-auto", "max-h-[500px]"], [1, "text-center", "py-16", "flex", "flex-col", "items-center"], [1, "w-full", "text-sm"], [1, "text-4xl", "text-gray-200", "mb-3"], [1, "text-gray-500", "text-sm", "font-medium", "tracking-tight"], [1, "sticky", "top-0", "bg-white/95", "backdrop-blur-sm", "z-10", "border-b", "border-gray-100", "shadow-sm"], [1, "text-left", "px-5", "py-3", "text-[10px]", "font-semibold", "text-gray-500", "uppercase", "tracking-wider"], [1, "text-right", "px-5", "py-3", "text-[10px]", "font-semibold", "text-gray-500", "uppercase", "tracking-wider"], [1, "divide-y", "divide-gray-100/60"], [1, "hover:bg-gray-50/80", "transition-colors", "group"], [1, "px-5", "py-3.5", "align-top"], [1, "flex", "flex-col", "items-start", "gap-1.5"], [1, "font-mono", "text-[11px]", "text-gray-600", "font-medium"], [1, "px-1.5", "py-0.5", "w-fit", "rounded-md", "text-[10px]", "font-medium", "border", 3, "ngClass"], [1, "text-[11px]", "text-gray-400", "leading-snug", "max-w-[140px]", "italic"], [1, "px-5", "py-3.5", "text-[11px]", "font-medium", "text-gray-500", "align-top", "pt-[18px]"], [1, "px-5", "py-3.5", "text-right", "align-top", "pt-[16px]"], [1, "font-semibold", "text-sm", "tabular-nums"], [1, "text-center", "px-5", "py-3", "text-[10px]", "font-semibold", "text-gray-500", "uppercase", "tracking-wider"], [1, "hover:bg-gray-50/80", "transition-colors"], [1, "flex", "flex-col", "gap-1"], [1, "font-mono", "text-[11px]", "text-gray-700", "font-medium"], [1, "text-[10px]", "text-gray-400", "font-medium", "mt-0.5"], [1, "px-5", "py-3.5", "text-right", "align-top"], [1, "flex", "flex-col", "gap-1", "inline-flex", "p-1", "px-2", "border", "rounded", "border-gray-100", "shadow-sm"], [1, "flex", "justify-between", "gap-4"], [1, "text-[10px]", "text-gray-400", "font-medium"], [1, "text-[12px]", "font-medium", "text-gray-600", "tabular-nums"], [1, "flex", "justify-between", "gap-4", "border-t", "border-gray-100", "pt-1"], [1, "text-[12px]", "font-semibold", "text-gray-900", "tabular-nums"], [1, "px-5", "py-3.5", "text-center", "align-top", "pt-5"], [1, "px-2", "py-0.5", "rounded-md", "text-[10px]", "font-medium", "tracking-tight", "border", "shadow-sm", 3, "ngClass"]], template: function NestedDataDialogComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _NestedDataDialogComponent, selectors: [["app-nested-data-dialog"]], decls: 21, vars: 3, consts: [[1, "flex", "items-center", "justify-between", "px-6", "py-5", "border-b", "border-gray-100", "bg-white"], [1, "flex", "flex-col", "gap-1", "sm:flex-row", "sm:items-center", "sm:gap-4"], [1, "hidden", "sm:flex", "items-center", "justify-center", "w-10", "h-10", "rounded-full", "bg-gray-50", "border", "border-gray-200", "shadow-sm"], [1, "text-gray-600"], [1, "text-lg", "font-semibold", "tracking-tight", "text-gray-900", "m-0"], [1, "text-sm", "text-gray-500", "m-0", "mt-0.5"], [1, "font-mono", "bg-gray-50", "text-gray-800", "px-1.5", "py-0.5", "rounded-md", "border", "border-gray-200"], ["mat-icon-button", "", "matTooltip", "\u0110\xF3ng", 1, "text-gray-400", "hover:text-gray-700", "hover:bg-gray-100", "rounded-full", "transition-colors", "shrink-0", 3, "click"], [1, "mat-typography", "!p-6", "bg-gray-50/50"], [1, "flex", "flex-col", "items-center", "justify-center", "py-24"], [1, "grid", "grid-cols-1", "lg:grid-cols-2", "xl:grid-cols-3", "gap-6"], [1, "px-6", "py-4", "border-t", "border-gray-100", "bg-white", "flex", "justify-end"], ["mat-dialog-close", "", 1, "rounded-md", "px-6", "py-2", "bg-gray-900", "text-white", "font-medium", "text-sm", "hover:bg-gray-800", "transition-colors", "focus:ring-2", "focus:ring-offset-2", "focus:ring-gray-900", "outline-none"], ["diameter", "40", 1, "mb-4", "text-gray-300"], [1, "text-gray-500", "text-sm", "font-medium", "animate-pulse"], [1, "bg-white", "rounded-xl", "border", "border-gray-200", "shadow-sm", "overflow-hidden", "flex", "flex-col", "h-full"], [1, "px-5", "py-4", "border-b", "border-gray-100", "flex", "items-center", "justify-between", "bg-white"], [1, "flex", "items-center", "space-x-2.5"], [1, "text-gray-400", "text-[20px]", "w-[20px]", "h-[20px]"], [1, "font-semibold", "text-gray-900", "text-sm", "!m-0", "tracking-tight"], [1, "bg-gray-50", "text-gray-600", "px-2", "py-0.5", "rounded-md", "text-xs", "font-semibold", "border", "border-gray-200", "shadow-sm"], [1, "p-0", "flex-grow", "overflow-y-auto", "max-h-[500px]"], [1, "text-center", "py-16", "flex", "flex-col", "items-center"], [1, "w-full", "text-sm"], [1, "text-4xl", "text-gray-200", "mb-3"], [1, "text-gray-500", "text-sm", "font-medium", "tracking-tight"], [1, "sticky", "top-0", "bg-white/95", "backdrop-blur-sm", "z-10", "border-b", "border-gray-100", "shadow-sm"], [1, "text-left", "px-5", "py-3", "text-[10px]", "font-semibold", "text-gray-500", "uppercase", "tracking-wider"], [1, "text-right", "px-5", "py-3", "text-[10px]", "font-semibold", "text-gray-500", "uppercase", "tracking-wider"], [1, "divide-y", "divide-gray-100/60"], [1, "hover:bg-gray-50/80", "transition-colors", "group"], [1, "px-5", "py-3.5", "align-top"], [1, "flex", "flex-col", "items-start", "gap-1.5"], [1, "font-mono", "text-[11px]", "text-gray-600", "font-medium"], [1, "px-1.5", "py-0.5", "w-fit", "rounded-md", "text-[10px]", "font-medium", "border", 3, "ngClass"], [1, "text-[11px]", "text-gray-400", "leading-snug", "max-w-[140px]", "italic"], [1, "px-5", "py-3.5", "text-[11px]", "font-medium", "text-gray-500", "align-top", "pt-[18px]"], [1, "px-5", "py-3.5", "text-right", "align-top", "pt-[16px]"], [1, "font-semibold", "text-sm", "tabular-nums"], [1, "text-center", "px-5", "py-3", "text-[10px]", "font-semibold", "text-gray-500", "uppercase", "tracking-wider"], ["matTooltip", "Click \u0111\u1EC3 xem chi ti\u1EBFt \u0111\u01A1n mua", 1, "hover:bg-blue-50/80", "transition-colors", "cursor-pointer", "group"], ["matTooltip", "Click \u0111\u1EC3 xem chi ti\u1EBFt \u0111\u01A1n mua", 1, "hover:bg-blue-50/80", "transition-colors", "cursor-pointer", "group", 3, "click"], [1, "flex", "flex-col", "gap-1"], [1, "font-mono", "text-[11px]", "text-blue-600", "font-medium", "group-hover:underline"], [1, "text-[10px]", "text-gray-400", "font-medium", "mt-0.5"], [1, "px-5", "py-3.5", "text-right", "align-top"], [1, "flex", "flex-col", "gap-1", "inline-flex", "p-1", "px-2", "border", "rounded", "border-gray-100", "shadow-sm"], [1, "flex", "justify-between", "gap-4"], [1, "text-[10px]", "text-gray-400", "font-medium"], [1, "text-[12px]", "font-medium", "text-gray-600", "tabular-nums"], [1, "flex", "justify-between", "gap-4", "border-t", "border-gray-100", "pt-1"], [1, "text-[12px]", "font-semibold", "text-gray-900", "tabular-nums"], [1, "px-5", "py-3.5", "text-center", "align-top", "pt-5"], [1, "px-2", "py-0.5", "rounded-md", "text-[10px]", "font-medium", "tracking-tight", "border", "shadow-sm", 3, "ngClass"], ["matTooltip", "Click \u0111\u1EC3 xem chi ti\u1EBFt \u0111\u01A1n b\xE1n", 1, "hover:bg-blue-50/80", "transition-colors", "cursor-pointer", "group"], ["matTooltip", "Click \u0111\u1EC3 xem chi ti\u1EBFt \u0111\u01A1n b\xE1n", 1, "hover:bg-blue-50/80", "transition-colors", "cursor-pointer", "group", 3, "click"]], template: function NestedDataDialogComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 0)(1, "div", 1)(2, "div", 2)(3, "mat-icon", 3);
       \u0275\u0275text(4, "inventory_2");
@@ -645,7 +675,7 @@ var NestedDataDialogComponent = class _NestedDataDialogComponent {
   }, dependencies: [CommonModule, NgClass, DecimalPipe, MatDialogModule, MatDialogClose, MatDialogContent, MatButtonModule, MatIconButton, MatIconModule, MatIcon, MatProgressSpinnerModule, MatProgressSpinner, MatTooltipModule, MatTooltip], styles: ["\n\n.mat-mdc-dialog-container[_ngcontent-%COMP%] {\n  max-width: 95vw !important;\n  max-height: 95vh !important;\n}\n.p-4.max-h-96.overflow-y-auto[_ngcontent-%COMP%]::-webkit-scrollbar {\n  width: 6px;\n}\n.p-4.max-h-96.overflow-y-auto[_ngcontent-%COMP%]::-webkit-scrollbar-track {\n  background: rgba(0, 0, 0, 0.1);\n  border-radius: 3px;\n}\n.p-4.max-h-96.overflow-y-auto[_ngcontent-%COMP%]::-webkit-scrollbar-thumb {\n  background: rgba(0, 0, 0, 0.3);\n  border-radius: 3px;\n}\n.p-4.max-h-96.overflow-y-auto[_ngcontent-%COMP%]::-webkit-scrollbar-thumb:hover {\n  background: rgba(0, 0, 0, 0.5);\n}\n.border-b.hover\\:bg-blue-50[_ngcontent-%COMP%]:hover {\n  background-color: rgba(59, 130, 246, 0.05) !important;\n}\n.border-b.hover\\:bg-green-50[_ngcontent-%COMP%]:hover {\n  background-color: rgba(34, 197, 94, 0.05) !important;\n}\n.mat-mdc-dialog-content[_ngcontent-%COMP%] {\n  padding: 0 24px !important;\n}\n.bg-gradient-to-r.from-blue-600.to-blue-700[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #2563eb 0%,\n      #1d4ed8 100%);\n}\n.animate-pulse[_ngcontent-%COMP%] {\n  animation: _ngcontent-%COMP%_pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;\n}\n@keyframes _ngcontent-%COMP%_pulse {\n  0%, 100% {\n    opacity: 1;\n  }\n  50% {\n    opacity: 0.5;\n  }\n}\n.px-2.py-1.rounded-full.text-xs.font-medium[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 60px;\n  text-align: center;\n  font-weight: 600;\n  letter-spacing: 0.025em;\n}\n@media (max-width: 1024px) {\n  .grid.grid-cols-1.lg\\:grid-cols-2[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n  }\n  .mat-mdc-dialog-container[_ngcontent-%COMP%] {\n    max-width: 98vw !important;\n    margin: 8px;\n  }\n}\n.text-4xl.text-blue-300[_ngcontent-%COMP%], \n.text-4xl.text-green-300[_ngcontent-%COMP%] {\n  font-size: 3rem;\n  opacity: 0.6;\n}\n/*# sourceMappingURL=nested-data-dialog.component.css.map */"], changeDetection: 0 });
 };
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(NestedDataDialogComponent, { className: "NestedDataDialogComponent", filePath: "src/app/admin/dathang/nhucaudathang/nested-data-dialog/nested-data-dialog.component.ts", lineNumber: 33 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(NestedDataDialogComponent, { className: "NestedDataDialogComponent", filePath: "src/app/admin/dathang/nhucaudathang/nested-data-dialog/nested-data-dialog.component.ts", lineNumber: 34 });
 })();
 
 // src/app/admin/dathang/nhucaudathang/nhucaudathang.component.ts
@@ -5139,4 +5169,4 @@ function Debounce(delay = 300) {
 export {
   NhucaudathangComponent
 };
-//# sourceMappingURL=chunk-SML4EF5P.js.map
+//# sourceMappingURL=chunk-LY5RKU2T.mjs.map
