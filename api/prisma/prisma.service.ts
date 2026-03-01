@@ -1,9 +1,12 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { RedisService } from '../src/redis/redis.service';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-  constructor() {
+  private readonly logger = new Logger(PrismaService.name);
+
+  constructor(private readonly redisService: RedisService) {
     super({
       log: ['error', 'warn'],
     });
@@ -11,6 +14,56 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   async onModuleInit() {
     await this.$connect();
+
+    // ✅ Dynamic Global Cache Invalidation
+    // Instead of deprecated $use, we proxy the model delegates directly.
+    // This catches ALL write operations from ANY service in the project.
+    const writeActions = [
+      'create', 'update', 'delete', 
+      'updateMany', 'deleteMany', 'createMany', 
+      'upsert'
+    ];
+
+    // Get all model names from the Prisma client
+    // In NestJS, when extending PrismaClient, model properties are usually enumerable
+    const propertyNames = Object.getOwnPropertyNames(this);
+    const modelNames = propertyNames.filter(prop => 
+      !prop.startsWith('$') && 
+      !prop.startsWith('_') && 
+      typeof this[prop] === 'object' && 
+      this[prop] !== null &&
+      // Check if it looks like a Prisma model delegate
+      typeof (this[prop] as any).findMany === 'function'
+    );
+
+    this.logger.log(`🚀 [GlobalCache] Initializing auto-invalidation for ${modelNames.length} models`);
+
+    for (const modelName of modelNames) {
+      const originalModel = this[modelName];
+      
+      this[modelName] = new Proxy(originalModel, {
+        get: (target, prop) => {
+          const value = target[prop];
+          
+          if (typeof value === 'function' && writeActions.includes(prop as string)) {
+            return async (...args: any[]) => {
+              // Execute the original database operation
+              const result = await value.apply(target, args);
+              
+              // After success, invalidate the cache
+              this.logger.debug(`[GlobalCache] Action '${prop.toString()}' detected on ${modelName}, invalidating cache...`);
+              this.redisService.invalidateModelCache(modelName).catch(err => 
+                this.logger.error(`[GlobalCache] Invalidation fail for ${modelName}: ${err.message}`)
+              );
+              
+              return result;
+            };
+          }
+          
+          return value;
+        }
+      });
+    }
   }
 
   async onModuleDestroy() {

@@ -10,15 +10,15 @@ export declare class PhongbanResolver {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
-        parentId: string | null;
-        ma: string;
         ten: string;
+        ma: string;
         loai: import(".prisma/client").$Enums.LoaiPhongban;
         level: number;
         moTa: string | null;
         dienThoai: string | null;
         diaChi: string | null;
         truongPhongId: string | null;
+        parentId: string | null;
     }>;
     findAll(level?: number, loai?: string, parentId?: string, includeChildren?: boolean): Promise<{
         id: string;
@@ -27,15 +27,15 @@ export declare class PhongbanResolver {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
-        parentId: string | null;
-        ma: string;
         ten: string;
+        ma: string;
         loai: import(".prisma/client").$Enums.LoaiPhongban;
         level: number;
         moTa: string | null;
         dienThoai: string | null;
         diaChi: string | null;
         truongPhongId: string | null;
+        parentId: string | null;
     }[]>;
     getTree(): Promise<{
         id: string;
@@ -44,15 +44,15 @@ export declare class PhongbanResolver {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
-        parentId: string | null;
-        ma: string;
         ten: string;
+        ma: string;
         loai: import(".prisma/client").$Enums.LoaiPhongban;
         level: number;
         moTa: string | null;
         dienThoai: string | null;
         diaChi: string | null;
         truongPhongId: string | null;
+        parentId: string | null;
     }[]>;
     getStatistics(): Promise<{
         total: number;
@@ -76,15 +76,15 @@ export declare class PhongbanResolver {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
-        parentId: string | null;
-        ma: string;
         ten: string;
+        ma: string;
         loai: import(".prisma/client").$Enums.LoaiPhongban;
         level: number;
         moTa: string | null;
         dienThoai: string | null;
         diaChi: string | null;
         truongPhongId: string | null;
+        parentId: string | null;
     }>;
     findByMa(ma: string): Promise<{
         id: string;
@@ -93,15 +93,15 @@ export declare class PhongbanResolver {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
-        parentId: string | null;
-        ma: string;
         ten: string;
+        ma: string;
         loai: import(".prisma/client").$Enums.LoaiPhongban;
         level: number;
         moTa: string | null;
         dienThoai: string | null;
         diaChi: string | null;
         truongPhongId: string | null;
+        parentId: string | null;
     }>;
     update(id: string, updatePhongbanDto: UpdatePhongbanDto): Promise<{
         id: string;
@@ -110,15 +110,15 @@ export declare class PhongbanResolver {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
-        parentId: string | null;
-        ma: string;
         ten: string;
+        ma: string;
         loai: import(".prisma/client").$Enums.LoaiPhongban;
         level: number;
         moTa: string | null;
         dienThoai: string | null;
         diaChi: string | null;
         truongPhongId: string | null;
+        parentId: string | null;
     }>;
     remove(id: string): Promise<{
         message: string;

@@ -10,8 +10,8 @@ export declare class MenuController {
         createdAt: Date;
         updatedAt: Date;
         slug: string | null;
-        icon: string | null;
         parentId: string | null;
+        icon: string | null;
     }>;
     findAll(): Promise<({
         children: {
@@ -22,8 +22,8 @@ export declare class MenuController {
             createdAt: Date;
             updatedAt: Date;
             slug: string | null;
-            icon: string | null;
             parentId: string | null;
+            icon: string | null;
         }[];
     } & {
         id: string;
@@ -33,8 +33,8 @@ export declare class MenuController {
         createdAt: Date;
         updatedAt: Date;
         slug: string | null;
-        icon: string | null;
         parentId: string | null;
+        icon: string | null;
     })[]>;
     getTree(data: any): Promise<any>;
     reorder(banggiaIds: string[]): Promise<boolean>;
@@ -47,8 +47,8 @@ export declare class MenuController {
             createdAt: Date;
             updatedAt: Date;
             slug: string | null;
-            icon: string | null;
             parentId: string | null;
+            icon: string | null;
         }[];
     } & {
         id: string;
@@ -58,8 +58,8 @@ export declare class MenuController {
         createdAt: Date;
         updatedAt: Date;
         slug: string | null;
-        icon: string | null;
         parentId: string | null;
+        icon: string | null;
     }) | null>;
     update(id: string, updateMenuDto: any): Promise<{
         id: string;
@@ -69,8 +69,8 @@ export declare class MenuController {
         createdAt: Date;
         updatedAt: Date;
         slug: string | null;
-        icon: string | null;
         parentId: string | null;
+        icon: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -80,7 +80,7 @@ export declare class MenuController {
         createdAt: Date;
         updatedAt: Date;
         slug: string | null;
-        icon: string | null;
         parentId: string | null;
+        icon: string | null;
     }>;
 }

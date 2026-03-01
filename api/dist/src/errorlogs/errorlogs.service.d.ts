@@ -7,40 +7,40 @@ export declare class ErrorlogsService {
         id: string;
         createdAt: Date;
         message: string;
-        timestamp: Date;
         details: import("@prisma/client/runtime/library").JsonValue | null;
+        timestamp: Date;
         source: string;
     }>;
     findAll(): Promise<{
         id: string;
         createdAt: Date;
         message: string;
-        timestamp: Date;
         details: import("@prisma/client/runtime/library").JsonValue | null;
+        timestamp: Date;
         source: string;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
         createdAt: Date;
         message: string;
-        timestamp: Date;
         details: import("@prisma/client/runtime/library").JsonValue | null;
+        timestamp: Date;
         source: string;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
         createdAt: Date;
         message: string;
-        timestamp: Date;
         details: import("@prisma/client/runtime/library").JsonValue | null;
+        timestamp: Date;
         source: string;
     }>;
     remove(id: string): Promise<{
         id: string;
         createdAt: Date;
         message: string;
-        timestamp: Date;
         details: import("@prisma/client/runtime/library").JsonValue | null;
+        timestamp: Date;
         source: string;
     }>;
 }

@@ -551,7 +551,7 @@ let EnhancedUniversalService = class EnhancedUniversalService {
     }
     generateCacheKey(operation, modelName, args) {
         const argsHash = JSON.stringify(args);
-        return this.redisService.generateKey('graphql', operation, modelName, argsHash);
+        return this.redisService.generateKey('graphql', operation, modelName.toLowerCase(), argsHash);
     }
     isWriteOperation(args) {
         return !!(args.where?.id || args.where?.createdAt || args.where?.updatedAt);
@@ -570,9 +570,7 @@ let EnhancedUniversalService = class EnhancedUniversalService {
         return cacheConfig[modelName.toLowerCase()] || 600;
     }
     async invalidateCache(modelName) {
-        const pattern = this.redisService.generateKey('graphql', '*', modelName, '*');
-        await this.redisService.deletePattern(pattern);
-        console.log(`🗑️ Invalidated GraphQL cache for ${modelName}`);
+        await this.redisService.invalidateModelCache(modelName);
     }
     normalizeRelationFieldsForModel(modelName, data) {
         if (!data || typeof data !== 'object')

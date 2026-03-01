@@ -176,7 +176,6 @@ export declare class KhachhangController {
     }>;
     findAllForSelect(): Promise<{
         data: {
-            id: string;
             banggia: {
                 id: string;
                 title: string | null;
@@ -184,6 +183,7 @@ export declare class KhachhangController {
                 batdau: Date | null;
                 ketthuc: Date | null;
             } | null;
+            id: string;
             name: string | null;
             makh: string;
         }[];

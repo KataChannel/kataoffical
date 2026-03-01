@@ -8,18 +8,51 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var PrismaService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PrismaService = void 0;
 const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
-let PrismaService = class PrismaService extends client_1.PrismaClient {
-    constructor() {
+const redis_service_1 = require("../src/redis/redis.service");
+let PrismaService = PrismaService_1 = class PrismaService extends client_1.PrismaClient {
+    constructor(redisService) {
         super({
             log: ['error', 'warn'],
         });
+        this.redisService = redisService;
+        this.logger = new common_1.Logger(PrismaService_1.name);
     }
     async onModuleInit() {
         await this.$connect();
+        const writeActions = [
+            'create', 'update', 'delete',
+            'updateMany', 'deleteMany', 'createMany',
+            'upsert'
+        ];
+        const propertyNames = Object.getOwnPropertyNames(this);
+        const modelNames = propertyNames.filter(prop => !prop.startsWith('$') &&
+            !prop.startsWith('_') &&
+            typeof this[prop] === 'object' &&
+            this[prop] !== null &&
+            typeof this[prop].findMany === 'function');
+        this.logger.log(`🚀 [GlobalCache] Initializing auto-invalidation for ${modelNames.length} models`);
+        for (const modelName of modelNames) {
+            const originalModel = this[modelName];
+            this[modelName] = new Proxy(originalModel, {
+                get: (target, prop) => {
+                    const value = target[prop];
+                    if (typeof value === 'function' && writeActions.includes(prop)) {
+                        return async (...args) => {
+                            const result = await value.apply(target, args);
+                            this.logger.debug(`[GlobalCache] Action '${prop.toString()}' detected on ${modelName}, invalidating cache...`);
+                            this.redisService.invalidateModelCache(modelName).catch(err => this.logger.error(`[GlobalCache] Invalidation fail for ${modelName}: ${err.message}`));
+                            return result;
+                        };
+                    }
+                    return value;
+                }
+            });
+        }
     }
     async onModuleDestroy() {
         await this.$disconnect();
@@ -56,8 +89,8 @@ let PrismaService = class PrismaService extends client_1.PrismaClient {
     }
 };
 exports.PrismaService = PrismaService;
-exports.PrismaService = PrismaService = __decorate([
+exports.PrismaService = PrismaService = PrismaService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [redis_service_1.RedisService])
 ], PrismaService);
 //# sourceMappingURL=prisma.service.js.map

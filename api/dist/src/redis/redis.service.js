@@ -181,6 +181,43 @@ let RedisService = RedisService_1 = class RedisService {
     generateKey(prefix, ...parts) {
         return `${prefix}:${parts.join(':')}`;
     }
+    async invalidateModelCache(modelName) {
+        if (!modelName)
+            return;
+        const normalized = modelName.toLowerCase();
+        this.logger.log(`🗑️ Starting cache invalidation for model: ${modelName}`);
+        try {
+            const gqlPattern1 = this.generateKey('graphql', '*', normalized, '*');
+            const gqlPattern2 = this.generateKey('graphql', '*', modelName, '*');
+            await this.deletePattern(gqlPattern1);
+            if (normalized !== modelName) {
+                await this.deletePattern(gqlPattern2);
+            }
+            await this.deletePattern(`*${normalized}*`);
+            const relatedModels = {
+                'donhangsanpham': ['donhang'],
+                'dathangsanpham': ['dathang'],
+                'phieukhosanpham': ['phieukho'],
+                'banggiasanpham': ['banggia'],
+                'khachhang': ['nhomkhachhang'],
+                'sanpham': ['donhang', 'dathang', 'phieukho', 'tonkho', 'banggia'],
+                'tonkho': ['sanpham'],
+            };
+            const dependents = relatedModels[normalized];
+            if (dependents) {
+                for (const dep of dependents) {
+                    this.logger.debug(`🔗 Triggering cascade invalidation for dependent model: ${dep}`);
+                    const depPattern = this.generateKey('graphql', '*', dep.toLowerCase(), '*');
+                    await this.deletePattern(depPattern);
+                    await this.deletePattern(`*${dep.toLowerCase()}*`);
+                }
+            }
+            this.logger.log(`✅ Cache invalidation completed for model: ${modelName}`);
+        }
+        catch (error) {
+            this.logger.error(`❌ Failed to invalidate cache for ${modelName}:`, error.message);
+        }
+    }
 };
 exports.RedisService = RedisService;
 exports.RedisService = RedisService = RedisService_1 = __decorate([

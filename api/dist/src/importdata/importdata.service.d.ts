@@ -19,9 +19,9 @@ export declare class ImportdataService {
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
+        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         importTime: Date;
         createdBy: string | null;
-        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     findBy(param: any): Promise<{
         id: string;
@@ -32,9 +32,9 @@ export declare class ImportdataService {
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
+        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         importTime: Date;
         createdBy: string | null;
-        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
     } | {
         data: {
             id: string;
@@ -45,9 +45,9 @@ export declare class ImportdataService {
             createdAt: Date;
             updatedAt: Date;
             codeId: string | null;
+            caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
             importTime: Date;
             createdBy: string | null;
-            caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
         total: number;
         page: any;
@@ -63,9 +63,9 @@ export declare class ImportdataService {
             createdAt: Date;
             updatedAt: Date;
             codeId: string | null;
+            caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
             importTime: Date;
             createdBy: string | null;
-            caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
         total: number;
         page: number;
@@ -80,9 +80,9 @@ export declare class ImportdataService {
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
+        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         importTime: Date;
         createdBy: string | null;
-        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
@@ -94,9 +94,9 @@ export declare class ImportdataService {
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
+        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         importTime: Date;
         createdBy: string | null;
-        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     reorderImportdatas(importdataIds: string[]): Promise<{
         status: string;

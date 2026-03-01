@@ -183,4 +183,56 @@ export class RedisService implements OnModuleDestroy {
   generateKey(prefix: string, ...parts: string[]): string {
     return `${prefix}:${parts.join(':')}`;
   }
+
+  /**
+   * Centralized model cache invalidator
+   * Deletes all keys related to a specific model in both GraphQL and API caches
+   */
+  async invalidateModelCache(modelName: string) {
+    if (!modelName) return;
+    
+    const normalized = modelName.toLowerCase();
+    this.logger.log(`🗑️ Starting cache invalidation for model: ${modelName}`);
+
+    try {
+      // 1. Invalidate GraphQL cache keys: graphql:*:modelName:*
+      // We try both original and lowercase to be safe
+      const gqlPattern1 = this.generateKey('graphql', '*', normalized, '*');
+      const gqlPattern2 = this.generateKey('graphql', '*', modelName, '*');
+      
+      await this.deletePattern(gqlPattern1);
+      if (normalized !== modelName) {
+        await this.deletePattern(gqlPattern2);
+      }
+
+      // 2. Invalidate API cache keys (CacheInterceptor): *modelName*
+      // This is broad but effective for REST routes like /api/donhang
+      await this.deletePattern(`*${normalized}*`);
+      
+      // 3. Handle related models (Cascade invalidation)
+      const relatedModels: Record<string, string[]> = {
+        'donhangsanpham': ['donhang'],
+        'dathangsanpham': ['dathang'],
+        'phieukhosanpham': ['phieukho'],
+        'banggiasanpham': ['banggia'],
+        'khachhang': ['nhomkhachhang'],
+        'sanpham': ['donhang', 'dathang', 'phieukho', 'tonkho', 'banggia'],
+        'tonkho': ['sanpham'],
+      };
+
+      const dependents = relatedModels[normalized];
+      if (dependents) {
+        for (const dep of dependents) {
+          this.logger.debug(`🔗 Triggering cascade invalidation for dependent model: ${dep}`);
+          const depPattern = this.generateKey('graphql', '*', dep.toLowerCase(), '*');
+          await this.deletePattern(depPattern);
+          await this.deletePattern(`*${dep.toLowerCase()}*`);
+        }
+      }
+
+      this.logger.log(`✅ Cache invalidation completed for model: ${modelName}`);
+    } catch (error) {
+      this.logger.error(`❌ Failed to invalidate cache for ${modelName}:`, error.message);
+    }
+  }
 }

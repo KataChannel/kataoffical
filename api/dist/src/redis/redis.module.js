@@ -14,6 +14,7 @@ let RedisModule = class RedisModule {
 };
 exports.RedisModule = RedisModule;
 exports.RedisModule = RedisModule = __decorate([
+    (0, common_1.Global)(),
     (0, common_1.Module)({
         controllers: [redis_controller_1.RedisController],
         providers: [redis_service_1.RedisService],

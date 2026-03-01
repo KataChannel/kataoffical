@@ -16,4 +16,5 @@ export declare class RedisService implements OnModuleDestroy {
     showAll(): Promise<{}>;
     cacheOrFetch<T>(key: string, fetchFn: () => Promise<T>, ttl?: number): Promise<T>;
     generateKey(prefix: string, ...parts: string[]): string;
+    invalidateModelCache(modelName: string): Promise<void>;
 }

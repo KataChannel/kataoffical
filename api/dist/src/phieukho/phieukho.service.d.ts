@@ -21,13 +21,13 @@ export declare class PhieukhoService {
     }[]>;
     findAll(): Promise<({
         sanpham: {
-            id: string;
-            ghichu: string | null;
             sanpham: {
                 id: string;
                 title: string;
                 masp: string;
             };
+            id: string;
+            ghichu: string | null;
             soluong: import("@prisma/client/runtime/library").Decimal;
         }[];
         kho: {
@@ -56,8 +56,8 @@ export declare class PhieukhoService {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            sanphamId: string;
             soluong: import("@prisma/client/runtime/library").Decimal;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
         kho: {
@@ -94,8 +94,8 @@ export declare class PhieukhoService {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            sanphamId: string;
             soluong: import("@prisma/client/runtime/library").Decimal;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {
@@ -120,8 +120,8 @@ export declare class PhieukhoService {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            sanphamId: string;
             soluong: import("@prisma/client/runtime/library").Decimal;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {

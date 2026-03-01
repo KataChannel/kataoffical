@@ -7,11 +7,11 @@ export declare class ChotkhoController {
         message: string;
         data: ({
             user: {
-                id: string;
-                email: string | null;
                 profile: {
                     name: string;
                 } | null;
+                id: string;
+                email: string | null;
             } | null;
             kho: {
                 id: string;
@@ -31,8 +31,8 @@ export declare class ChotkhoController {
                 order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                sanphamId: string | null;
                 slhuy: import("@prisma/client/runtime/library").Decimal;
+                sanphamId: string | null;
                 userId: string | null;
                 ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
@@ -48,20 +48,20 @@ export declare class ChotkhoController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            khoId: string | null;
             userId: string | null;
             codeId: string | null;
-            khoId: string | null;
             ngaychot: Date;
         }) | null;
     }>;
     getAllProductsByKho(khoId: string): Promise<any[]>;
     findOne(id: string): Promise<({
         user: {
-            id: string;
-            email: string | null;
             profile: {
                 name: string;
             } | null;
+            id: string;
+            email: string | null;
         } | null;
         kho: {
             id: string;
@@ -81,8 +81,8 @@ export declare class ChotkhoController {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            sanphamId: string | null;
             slhuy: import("@prisma/client/runtime/library").Decimal;
+            sanphamId: string | null;
             userId: string | null;
             ngaychot: Date;
             sltonhethong: import("@prisma/client/runtime/library").Decimal;
@@ -98,19 +98,19 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        khoId: string | null;
         userId: string | null;
         codeId: string | null;
-        khoId: string | null;
         ngaychot: Date;
     }) | null>;
     findAll(page?: string, limit?: string): Promise<{
         data: ({
             user: {
-                id: string;
-                email: string | null;
                 profile: {
                     name: string;
                 } | null;
+                id: string;
+                email: string | null;
             } | null;
             kho: {
                 id: string;
@@ -130,8 +130,8 @@ export declare class ChotkhoController {
                 order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                sanphamId: string | null;
                 slhuy: import("@prisma/client/runtime/library").Decimal;
+                sanphamId: string | null;
                 userId: string | null;
                 ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
@@ -147,9 +147,9 @@ export declare class ChotkhoController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            khoId: string | null;
             userId: string | null;
             codeId: string | null;
-            khoId: string | null;
             ngaychot: Date;
         })[];
         pagination: {
@@ -161,11 +161,11 @@ export declare class ChotkhoController {
     }>;
     updateWithDetails(id: string, data: any): Promise<({
         user: {
-            id: string;
-            email: string | null;
             profile: {
                 name: string;
             } | null;
+            id: string;
+            email: string | null;
         } | null;
         details: ({
             sanpham: {
@@ -180,8 +180,8 @@ export declare class ChotkhoController {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            sanphamId: string | null;
             slhuy: import("@prisma/client/runtime/library").Decimal;
+            sanphamId: string | null;
             userId: string | null;
             ngaychot: Date;
             sltonhethong: import("@prisma/client/runtime/library").Decimal;
@@ -197,9 +197,9 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        khoId: string | null;
         userId: string | null;
         codeId: string | null;
-        khoId: string | null;
         ngaychot: Date;
     }) | null>;
     update(id: string, data: any): Promise<{
@@ -210,9 +210,9 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        khoId: string | null;
         userId: string | null;
         codeId: string | null;
-        khoId: string | null;
         ngaychot: Date;
     }>;
     remove(id: string): Promise<{
@@ -223,9 +223,9 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        khoId: string | null;
         userId: string | null;
         codeId: string | null;
-        khoId: string | null;
         ngaychot: Date;
     }>;
 }

@@ -857,7 +857,7 @@ export class EnhancedUniversalService {
   // ✅ Redis Cache Helper Methods
   private generateCacheKey(operation: string, modelName: string, args: any): string {
     const argsHash = JSON.stringify(args);
-    return this.redisService.generateKey('graphql', operation, modelName, argsHash);
+    return this.redisService.generateKey('graphql', operation, modelName.toLowerCase(), argsHash);
   }
 
   private isWriteOperation(args: any): boolean {
@@ -882,9 +882,7 @@ export class EnhancedUniversalService {
   }
 
   async invalidateCache(modelName: string) {
-    const pattern = this.redisService.generateKey('graphql', '*', modelName, '*');
-    await this.redisService.deletePattern(pattern);
-    console.log(`🗑️ Invalidated GraphQL cache for ${modelName}`);
+    await this.redisService.invalidateModelCache(modelName);
   }
 
   /**
