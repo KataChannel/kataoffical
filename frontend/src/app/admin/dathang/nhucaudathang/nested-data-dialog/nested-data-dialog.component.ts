@@ -78,10 +78,10 @@ export class NestedDataDialogComponent implements OnInit {
    */
   getDathangStatusClass(status: string): { [key: string]: boolean } {
     return {
-      'bg-green-100 text-green-800': status === 'completed',
-      'bg-yellow-100 text-yellow-800': status === 'pending',
-      'bg-blue-100 text-blue-800': status === 'processing',
-      'bg-gray-100 text-gray-800': !status || status === 'unknown'
+      'bg-green-50 text-green-700 border-green-200': status === 'completed',
+      'bg-yellow-50 text-yellow-700 border-yellow-200': status === 'pending',
+      'bg-blue-50 text-blue-700 border-blue-200': status === 'processing',
+      'bg-gray-50 text-gray-700 border-gray-200': !status || status === 'unknown'
     };
   }
 
@@ -90,11 +90,11 @@ export class NestedDataDialogComponent implements OnInit {
    */
   getDonhangStatusClass(status: string): { [key: string]: boolean } {
     return {
-      'bg-green-100 text-green-800': status === 'delivered',
-      'bg-blue-100 text-blue-800': status === 'shipping',
-      'bg-yellow-100 text-yellow-800': status === 'pending',
-      'bg-orange-100 text-orange-800': status === 'processing',
-      'bg-gray-100 text-gray-800': !status || status === 'unknown'
+      'bg-green-50 text-green-700 border-green-200': status === 'delivered',
+      'bg-blue-50 text-blue-700 border-blue-200': status === 'shipping',
+      'bg-yellow-50 text-yellow-700 border-yellow-200': status === 'pending',
+      'bg-orange-50 text-orange-700 border-orange-200': status === 'processing',
+      'bg-gray-50 text-gray-700 border-gray-200': !status || status === 'unknown'
     };
   }
 
@@ -125,10 +125,10 @@ export class NestedDataDialogComponent implements OnInit {
    * Get CSS class for phieukho type
    */
   getPhieukhoTypeClass(pk: any): { [key: string]: boolean } {
-    if (pk.isChotkho) return { 'bg-purple-100 text-purple-800': true };
+    if (pk.isChotkho) return { 'bg-purple-50 text-purple-700 border-purple-200': true };
     return {
-      'bg-blue-100 text-blue-800': pk.type === 'nhap',
-      'bg-red-100 text-red-800': pk.type === 'xuat'
+      'bg-blue-50 text-blue-700 border-blue-200': pk.type === 'nhap',
+      'bg-red-50 text-red-700 border-red-200': pk.type === 'xuat'
     };
   }
 }

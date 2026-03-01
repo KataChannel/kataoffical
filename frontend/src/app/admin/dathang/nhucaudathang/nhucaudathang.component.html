@@ -347,25 +347,34 @@
                                 </span>
                             }
                             @case ('slton') {
-                                <div class="flex flex-col items-end space-y-1">
-                                    <!-- Lũy kế / Nợ phiếu -->
-                                    <div class="flex flex-col items-end">
-                                        <span class="text-[10px] text-gray-400 leading-none">Nợ phiếu (Lũy kế)</span>
-                                        <span class="font-semibold" 
-                                              [class.text-red-600]="row[column] <= 0"
-                                              [class.text-green-600]="row[column] > 0">
-                                            {{ row[column]|number:'1.0-2' }}
-                                        </span>
-                                    </div>
+                                <div class="flex flex-col items-end min-w-[70px]">
+                                    @let tt = (row['tongkho'] || 0) - (row['khachgiao'] || 0);
                                     
-                                    <!-- Thực tế Phiên (Chu chuyển) -->
-                                    <div class="flex flex-col items-end pt-1 border-t border-dashed border-gray-300 w-full"
-                                         [matTooltip]="'Tính toán: ' + (row['tongkho']|number:'1.0-2') + ' (Tồn khả dụng) - ' + (row['khachgiao']|number:'1.0-2') + ' (Đã giao)'">
-                                        <span class="text-[10px] text-blue-500 font-medium leading-none">Đúng thực tế (Phiên)</span>
-                                        @let tt = (row['tongkho'] || 0) - (row['khachgiao'] || 0);
-                                        <span class="font-bold" [class.text-red-500]="tt < 0" [class.text-green-600]="tt >= 0">
+                                    <!-- Số Đúng Thực tế (Phiên) và Icon -->
+                                    <div class="flex items-center space-x-1.5">
+                                        <span class="font-semibold text-[14px] tabular-nums" 
+                                              [class.text-red-600]="tt < 0" 
+                                              [class.text-gray-900]="tt >= 0">
                                             {{ tt | number:'1.0-2' }}
                                         </span>
+                                        
+                                        @if (row[column] !== tt && row[column] < 0) {
+                                            <mat-icon class="text-red-500 !text-[14px] !w-[14px] !h-[14px] leading-none">warning</mat-icon>
+                                        } @else if (row[column] !== tt) {
+                                            <mat-icon class="text-orange-400 !text-[14px] !w-[14px] !h-[14px] leading-none">info</mat-icon>
+                                        }
+                                    </div>
+                                    
+                                    <!-- Mô tả lũy kế chi tiết dưới dạng txt nhỏ -->
+                                    <div class="flex flex-col items-end mt-0.5">
+                                        <span class="text-[11px] text-gray-500 whitespace-nowrap">
+                                            Lũy kế: <strong [class.text-red-600]="row[column] < 0" [class.text-gray-700]="row[column] >= 0" class="font-bold ml-0.5">{{ row[column] | number:'1.0-2' }}</strong>
+                                        </span>
+                                        @if (row[column] < 0) {
+                                            <span class="text-[9px] text-red-400 text-right leading-tight max-w-[120px] bg-red-50 px-1 py-0.5 rounded mt-0.5 border border-red-100 italic">
+                                                *Chưa làm phiếu Nhập hoặc chưa Chốt kho
+                                            </span>
+                                        }
                                     </div>
                                 </div>
                             }
