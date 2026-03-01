@@ -260,38 +260,46 @@ export class PhieukhoService {
         for (const sp of data.sanpham) {
           const soluong = Number(sp.soluong) || 0;
           if (soluong > 0) {
-            if (data.type === 'nhap') {
-              // Tăng tồn kho
+            // Find current stock to handle "Checkout Reset" logic
+            const currentTonKho = await prisma.tonKho.findUnique({
+              where: { sanphamId: sp.sanphamId }
+            });
+
+            const currentSltontt = currentTonKho ? (Number(currentTonKho.sltontt) || 0) : 0;
+            const targetStock = data.type === 'nhap' ? currentSltontt + soluong : currentSltontt - soluong;
+
+            if (data.isChotkho) {
+              // 🚀 SPECIAL CHECKOUT LOGIC: Align Cumulative (slton) with Actual (sltontt)
+              // This resets any historical negative balance (Debt) to the real physical count
               await prisma.tonKho.upsert({
                 where: { sanphamId: sp.sanphamId },
                 update: { 
-                  slton: { increment: soluong },
-                  ...(data.isChotkho && { sltontt: { increment: soluong } })
+                  slton: targetStock, // Force alignment
+                  sltontt: targetStock
                 },
                 create: { 
                   sanphamId: sp.sanphamId, 
-                  slton: soluong,
-                  sltontt: data.isChotkho ? soluong : 0,
+                  slton: targetStock,
+                  sltontt: targetStock,
                   slchogiao: 0,
                   slchonhap: 0
                 }
               });
-            } else if (data.type === 'xuat') {
-              // Giảm tồn kho
-              await prisma.tonKho.upsert({
-                where: { sanphamId: sp.sanphamId },
-                update: { 
-                  slton: { decrement: soluong },
-                  ...(data.isChotkho && { sltontt: { decrement: soluong } })
-                },
-                create: { 
-                  sanphamId: sp.sanphamId, 
-                  slton: -soluong,
-                  sltontt: data.isChotkho ? -soluong : 0,
-                  slchogiao: 0,
-                  slchonhap: 0
-                }
-              });
+            } else {
+              // Regular Inventory movement (Import/Export)
+              if (data.type === 'nhap') {
+                await prisma.tonKho.upsert({
+                  where: { sanphamId: sp.sanphamId },
+                  update: { slton: { increment: soluong } },
+                  create: { sanphamId: sp.sanphamId, slton: soluong, slchogiao: 0, slchonhap: 0 }
+                });
+              } else if (data.type === 'xuat') {
+                await prisma.tonKho.upsert({
+                  where: { sanphamId: sp.sanphamId },
+                  update: { slton: { decrement: soluong } },
+                  create: { sanphamId: sp.sanphamId, slton: -soluong, slchogiao: 0, slchonhap: 0 }
+                });
+              }
             }
           }
         }
