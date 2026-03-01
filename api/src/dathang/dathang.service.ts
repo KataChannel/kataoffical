@@ -643,9 +643,9 @@ async convertDathangImportToTransfer(
       // 1.1. Validate status transition if status is changing
       if (data.status && data.status !== oldDathang.status) {
         const transition = this.statusMachine.validateTransition(
+          'dathang',
           oldDathang.status as any,
           data.status as any,
-          'dathang'
         );
         if (!transition.isValid) {
           throw new Error(`Invalid status transition: ${transition.reason}`);

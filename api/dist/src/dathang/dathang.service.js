@@ -559,7 +559,7 @@ let DathangService = class DathangService {
                 throw new common_1.NotFoundException('Đơn đặt hàng không tồn tại');
             }
             if (data.status && data.status !== oldDathang.status) {
-                const transition = this.statusMachine.validateTransition(oldDathang.status, data.status, 'dathang');
+                const transition = this.statusMachine.validateTransition('dathang', oldDathang.status, data.status);
                 if (!transition.isValid) {
                     throw new Error(`Invalid status transition: ${transition.reason}`);
                 }
