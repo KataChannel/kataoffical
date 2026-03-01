@@ -476,4 +476,32 @@ export class DathangService {
       throw error;
     }
   }
+
+  /**
+   * Tự động xác nhận nhận hàng cho toàn bộ sản phẩm đang chờ nhập
+   * @param sanphamId ID sản phẩm
+   */
+  async confirmReceiptByProduct(sanphamId: string): Promise<any> {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+      };
+      
+      const response = await fetch(`${environment.APIURL}/dathang/complete-pending-receipts/${sanphamId}`, options);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error: any) {
+      console.error('Lỗi khi xác nhận nhận hàng hàng loạt:', error);
+      throw error;
+    }
+  }
 }

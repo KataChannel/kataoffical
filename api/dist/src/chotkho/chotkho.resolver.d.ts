@@ -5,11 +5,11 @@ export declare class ChotkhoResolver {
     findMany(page?: number, limit?: number): Promise<{
         data: ({
             user: {
+                id: string;
+                email: string | null;
                 profile: {
                     name: string;
                 } | null;
-                id: string;
-                email: string | null;
             } | null;
             kho: {
                 id: string;
@@ -29,8 +29,8 @@ export declare class ChotkhoResolver {
                 order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                slhuy: import("@prisma/client/runtime/library").Decimal;
                 sanphamId: string | null;
+                slhuy: import("@prisma/client/runtime/library").Decimal;
                 userId: string | null;
                 ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
@@ -46,9 +46,9 @@ export declare class ChotkhoResolver {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            khoId: string | null;
             ngaychot: Date;
         })[];
         pagination: {
@@ -60,11 +60,11 @@ export declare class ChotkhoResolver {
     }>;
     findOne(id: string): Promise<({
         user: {
+            id: string;
+            email: string | null;
             profile: {
                 name: string;
             } | null;
-            id: string;
-            email: string | null;
         } | null;
         kho: {
             id: string;
@@ -84,8 +84,8 @@ export declare class ChotkhoResolver {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            slhuy: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string | null;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
             userId: string | null;
             ngaychot: Date;
             sltonhethong: import("@prisma/client/runtime/library").Decimal;
@@ -101,9 +101,9 @@ export declare class ChotkhoResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        khoId: string | null;
         ngaychot: Date;
     }) | null>;
     getProductsByWarehouse(khoId: string): Promise<any[]>;
@@ -127,11 +127,11 @@ export declare class ChotkhoResolver {
         message: string;
         data: ({
             user: {
+                id: string;
+                email: string | null;
                 profile: {
                     name: string;
                 } | null;
-                id: string;
-                email: string | null;
             } | null;
             kho: {
                 id: string;
@@ -151,8 +151,8 @@ export declare class ChotkhoResolver {
                 order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                slhuy: import("@prisma/client/runtime/library").Decimal;
                 sanphamId: string | null;
+                slhuy: import("@prisma/client/runtime/library").Decimal;
                 userId: string | null;
                 ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
@@ -168,9 +168,9 @@ export declare class ChotkhoResolver {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            khoId: string | null;
             ngaychot: Date;
         }) | null;
     }>;
@@ -182,9 +182,9 @@ export declare class ChotkhoResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        khoId: string | null;
         ngaychot: Date;
     }>;
     remove(id: string): Promise<{
@@ -195,9 +195,9 @@ export declare class ChotkhoResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        khoId: string | null;
         ngaychot: Date;
     }>;
     search(filters?: {
@@ -210,11 +210,11 @@ export declare class ChotkhoResolver {
     }): Promise<{
         data: ({
             user: {
+                id: string;
+                email: string | null;
                 profile: {
                     name: string;
                 } | null;
-                id: string;
-                email: string | null;
             } | null;
             kho: {
                 id: string;
@@ -234,8 +234,8 @@ export declare class ChotkhoResolver {
                 order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                slhuy: import("@prisma/client/runtime/library").Decimal;
                 sanphamId: string | null;
+                slhuy: import("@prisma/client/runtime/library").Decimal;
                 userId: string | null;
                 ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
@@ -251,9 +251,9 @@ export declare class ChotkhoResolver {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            khoId: string | null;
             ngaychot: Date;
         })[];
         pagination: {

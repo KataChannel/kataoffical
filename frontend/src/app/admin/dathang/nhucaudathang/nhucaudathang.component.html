@@ -570,15 +570,26 @@
                                 </div>
                             }
                             @case ('tongkho') {
-                                <div class="flex flex-col items-end">
-                                    <span class="max-w-20 line-clamp-1 text-end font-bold text-gray-800">
-                                        {{ row[column]|number:'1.0-2' }}
-                                    </span>
-                                    <span class="text-[9px] text-gray-400 whitespace-nowrap">
-                                        {{row['sltontt']|number:'1.0-2'}} + Σkho
-                                    </span>
-                                </div>
-                            }
+                                <div class="flex flex-col items-end group relative" [matTooltip]="'CT: ' + (row['sltontt']|number:'1.0-2') + ' (chốt) + ' + (row['receivedAfterCount']|number:'1.0-2') + ' (nhập mới) - ' + (row['deliveredAfterCount']|number:'1.0-2') + ' (đã giao) + ' + (row['incomingStock']|number:'1.0-2') + ' (đang về)'">
+                                     <span class="max-w-20 line-clamp-1 text-end font-bold" 
+                                           [class.text-blue-700]="row['receivedAfterCount'] > 0"
+                                           [class.text-gray-800]="row['receivedAfterCount'] === 0">
+                                         {{ row[column]|number:'1.0-2' }}
+                                     </span>
+                                     <div class="flex items-center gap-1">
+                                         @if (row['incomingStock'] > 0) {
+                                             <button mat-icon-button class="h-4 w-4 min-w-4 p-0 text-blue-500 hover:text-blue-700" 
+                                                     (click)="$event.stopPropagation(); autoReceiveAndSnapshot(row)"
+                                                     matTooltip="Tối ưu ngay: Nhận hàng & Khớp số">
+                                                 <mat-icon class="text-[14px]">auto_fix_high</mat-icon>
+                                             </button>
+                                         }
+                                         <span class="text-[9px] text-gray-400 whitespace-nowrap">
+                                             {{row['sltontt']|number:'1.0-2'}} + Biến động
+                                         </span>
+                                     </div>
+                                 </div>
+                             }
                             @case ('haohut') {
                                 <div class="flex flex-col items-end">
                                     <span class="max-w-20 line-clamp-1 text-end text-amber-600 font-semibold">

@@ -76,6 +76,7 @@ export declare class CancelOrderService {
             order: number | null;
             isActive: boolean | null;
             vat: Prisma.Decimal;
+            giaban: Prisma.Decimal;
             idSP: string;
             sldat: Prisma.Decimal;
             slgiao: Prisma.Decimal;
@@ -85,7 +86,6 @@ export declare class CancelOrderService {
             ttgiao: Prisma.Decimal;
             ttnhan: Prisma.Decimal;
             donhangId: string;
-            giaban: Prisma.Decimal;
             ttsauvat: Prisma.Decimal;
         })[];
     } & {

@@ -10,11 +10,12 @@ export declare class NhanvienResolver {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
+        userId: string | null;
+        ten: string | null;
         maNV: string;
         maLamViec: string | null;
         hoTen: string;
         hoTenDem: string | null;
-        ten: string | null;
         gioiTinh: import(".prisma/client").$Enums.GioiTinh | null;
         ngaySinh: Date | null;
         soDienThoai: string | null;
@@ -49,7 +50,6 @@ export declare class NhanvienResolver {
         quanHeKhanCap: string | null;
         ghiChu: string | null;
         avatar: string | null;
-        userId: string | null;
     }>;
     findAll(phongbanId?: string, trangThai?: string, chucVu?: string, search?: string, page?: number, limit?: number): Promise<{
         data: import(".prisma/client").Nhanvien[];
@@ -81,11 +81,12 @@ export declare class NhanvienResolver {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
+        userId: string | null;
+        ten: string | null;
         maNV: string;
         maLamViec: string | null;
         hoTen: string;
         hoTenDem: string | null;
-        ten: string | null;
         gioiTinh: import(".prisma/client").$Enums.GioiTinh | null;
         ngaySinh: Date | null;
         soDienThoai: string | null;
@@ -120,7 +121,6 @@ export declare class NhanvienResolver {
         quanHeKhanCap: string | null;
         ghiChu: string | null;
         avatar: string | null;
-        userId: string | null;
     }>;
     findByMaNV(maNV: string): Promise<{
         id: string;
@@ -129,11 +129,12 @@ export declare class NhanvienResolver {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
+        userId: string | null;
+        ten: string | null;
         maNV: string;
         maLamViec: string | null;
         hoTen: string;
         hoTenDem: string | null;
-        ten: string | null;
         gioiTinh: import(".prisma/client").$Enums.GioiTinh | null;
         ngaySinh: Date | null;
         soDienThoai: string | null;
@@ -168,7 +169,6 @@ export declare class NhanvienResolver {
         quanHeKhanCap: string | null;
         ghiChu: string | null;
         avatar: string | null;
-        userId: string | null;
     }>;
     update(id: string, updateNhanvienDto: UpdateNhanvienDto): Promise<{
         id: string;
@@ -177,11 +177,12 @@ export declare class NhanvienResolver {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
+        userId: string | null;
+        ten: string | null;
         maNV: string;
         maLamViec: string | null;
         hoTen: string;
         hoTenDem: string | null;
-        ten: string | null;
         gioiTinh: import(".prisma/client").$Enums.GioiTinh | null;
         ngaySinh: Date | null;
         soDienThoai: string | null;
@@ -216,7 +217,6 @@ export declare class NhanvienResolver {
         quanHeKhanCap: string | null;
         ghiChu: string | null;
         avatar: string | null;
-        userId: string | null;
     }>;
     remove(id: string): Promise<{
         message: string;
@@ -228,11 +228,12 @@ export declare class NhanvienResolver {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
+        userId: string | null;
+        ten: string | null;
         maNV: string;
         maLamViec: string | null;
         hoTen: string;
         hoTenDem: string | null;
-        ten: string | null;
         gioiTinh: import(".prisma/client").$Enums.GioiTinh | null;
         ngaySinh: Date | null;
         soDienThoai: string | null;
@@ -267,7 +268,6 @@ export declare class NhanvienResolver {
         quanHeKhanCap: string | null;
         ghiChu: string | null;
         avatar: string | null;
-        userId: string | null;
     }>;
     unlinkFromUser(nhanvienId: string): Promise<{
         id: string;
@@ -276,11 +276,12 @@ export declare class NhanvienResolver {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
+        userId: string | null;
+        ten: string | null;
         maNV: string;
         maLamViec: string | null;
         hoTen: string;
         hoTenDem: string | null;
-        ten: string | null;
         gioiTinh: import(".prisma/client").$Enums.GioiTinh | null;
         ngaySinh: Date | null;
         soDienThoai: string | null;
@@ -315,6 +316,5 @@ export declare class NhanvienResolver {
         quanHeKhanCap: string | null;
         ghiChu: string | null;
         avatar: string | null;
-        userId: string | null;
     }>;
 }

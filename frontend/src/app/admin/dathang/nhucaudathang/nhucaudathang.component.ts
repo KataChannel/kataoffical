@@ -436,6 +436,7 @@ export class NhucaudathangComponent {
             madonhang: true,
             ngaygiao: true,
             status:true,
+            updatedAt: true,
             sanpham: {
               select: {
                 giaban: true,
@@ -455,16 +456,27 @@ export class NhucaudathangComponent {
           aggressiveCache: true,
           orderBy: { createdAt: 'desc' },
           where: {
-            ngaynhan: {
-              gte: startDate,
-              lte: endDate,
-            },
+            OR: [
+              {
+                ngaynhan: {
+                  gte: startDate,
+                  lte: endDate,
+                },
+              },
+              {
+                status: { in: ['dadat', 'dagiao'] }
+              },
+              {
+                updatedAt: { gte: startDate } // Also get recently received
+              }
+            ]
           },
           select: {
             id: true,
             madncc: true,
             ngaynhan: true,
             status: true,
+            updatedAt: true,
             nhacungcap: {
               select: {
                 name: true,
@@ -543,6 +555,7 @@ export class NhucaudathangComponent {
           sldat: Number(sp.sldat) || 0,
           slgiao: Number(sp.slgiao) || 0,
           slnhan: Number(sp.slnhan) || 0,
+          updatedAt: order.updatedAt,
         }))
       );
       const DathangsTranfer = Dathangs.data.flatMap((order: any) => {
@@ -559,6 +572,7 @@ export class NhucaudathangComponent {
           slnhan: Number(sp.slnhan) || 0,
 
           status: order.status,
+          updatedAt: order.updatedAt,
           makho: order.kho.makho,
           namekho: order.kho.name,
         }));
@@ -692,9 +706,24 @@ export class NhucaudathangComponent {
       //console.log('this.TonghopsFinal', this.TonghopsFinal);
 
       this.TonghopsFinal.forEach((item) => {
-        // tongkho = Hàng đang về từ NCC (các kho nhánh) + Tồn chốt kho thực tế (sltontt)
-        // sltontt = số lượng kiểm kê vật lý lần cuối - là con số tin cậy nhất
-        // KHÔNG sử dụng slton (tồn tự động) vì có thể bị âm hoặc lệch do lỗi đồng bộ
+        // ✅ CÔNG THỨC TỒN CHUẨN (RELIABLE STOCK):
+        // tongkho = [Tồn chốt thực tế] + [Nhập mới sau chốt] - [Xuất mới sau chốt] + [Hàng đang về]
+
+        const lastCountTime = item.updatedAt ? new Date(item.updatedAt).getTime() : 0;
+
+        // 1. Tính lượng hàng NHẬP MỚI sau thời điểm chốt kho gần nhất
+        const receivedAfterCount = (item.Dathangs || [])
+          .filter((dh: any) => dh.status === 'danhan' && dh.updatedAt && new Date(dh.updatedAt).getTime() > lastCountTime)
+          .reduce((sum: number, dh: any) => sum + (Number(dh.slnhan) || 0), 0);
+
+        // 2. Tính lượng hàng XUẤT MỚI (Giao khách) sau thời điểm chốt kho gần nhất
+        // Lưu ý: Đơn hàng khách 'dagiao' hoặc 'hoanthanh' mới làm giảm tồn thực tế
+        const deliveredAfterCount = (item.Donhangs || [])
+          .filter((dh: any) => (dh.status === 'dagiao' || dh.status === 'danhan' || dh.status === 'hoanthanh') && 
+                  dh.updatedAt && new Date(dh.updatedAt).getTime() > lastCountTime)
+          .reduce((sum: number, dh: any) => sum + (Number(dh.slnhan) || 0), 0);
+
+        // 3. Hàng đang về từ NCC (chưa nhận)
         const incomingStock = (
           (Number(item.kho1) || 0) +
           (Number(item.kho2) || 0) +
@@ -704,7 +733,13 @@ export class NhucaudathangComponent {
           (Number(item.kho6) || 0)
         );
         
-        item.tongkho = parseFloat((incomingStock + Number(item.sltontt || 0)).toFixed(3));
+        item.receivedAfterCount = receivedAfterCount;
+        item.deliveredAfterCount = deliveredAfterCount;
+        item.incomingStock = incomingStock;
+
+        // Công thức hội tụ: Tồn chốt + Biến động sau chốt + Hàng sắp về
+        item.tongkho = parseFloat((Number(item.sltontt || 0) + receivedAfterCount - deliveredAfterCount + incomingStock).toFixed(3));
+        
         item.slhaohut = this.GetSLHaohut(item);
         item.goiy = this.GetGoiy(item);
       });
@@ -1387,6 +1422,34 @@ export class NhucaudathangComponent {
             if (warning) {
               danhSachCanhBao.push(warning);
             }
+
+            // ✅ SMART ALERT: Kiểm tra nếu chốt kho khi vẫn còn "Hàng đang về"
+            const slchonhap = Number(tonkho?.slchonhap || 0);
+            if (slchonhap > 0 && slton >= (currentSltontt + slchonhap * 0.8)) {
+              // Nếu số mới chốt xấp xỉ hoặc lớn hơn (cũ + đang về) -> Nghi ngờ đếm lặp
+              danhSachCanhBao.push({
+                masp,
+                title: sanpham.title || sanpham.masp,
+                sltonCu: currentSltontt,
+                sltonMoi: slton,
+                chenhLech: slton - currentSltontt,
+                loaiDieuChinh: 'tang',
+                mucDoNghiemTrong: 'cao',
+                lyDoCanhBao: `CẢNH BÁO ĐẾM LẶP: Bạn chốt ${slton} kg trong khi có ${slchonhap} kg 'Hàng đang về' chưa nhấn 'Đã nhận'. Có phải bạn đã đếm cả hàng mới về này không?`
+              });
+            } else if (slchonhap > 0) {
+              // Cảnh báo thông thường về hàng đang treo
+              danhSachCanhBao.push({
+                masp,
+                title: sanpham.title || sanpham.masp,
+                sltonCu: currentSltontt,
+                sltonMoi: slton,
+                chenhLech: Math.abs(slton - currentSltontt),
+                loaiDieuChinh: slton > currentSltontt ? 'tang' : 'giam',
+                mucDoNghiemTrong: 'trung_binh',
+                lyDoCanhBao: `Lưu ý: Sản phẩm còn ${slchonhap} kg 'Hàng đang về' chưa xác nhận nhập kho hệ thống.`
+              });
+            }
           }
         }
 
@@ -1673,6 +1736,8 @@ export class NhucaudathangComponent {
         khachdat,
         khachgiao,
         ...baseItem,
+        Dathangs, // Giữ lại để tính toán Reliable Stock sau này
+        Donhangs, // Giữ lại để tính toán Reliable Stock sau này
         ...(ngaynhan && { ngaynhan }),
         ...khoValues,
       };
@@ -2994,6 +3059,46 @@ export class NhucaudathangComponent {
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+  /**
+   * Phương án Tối ưu: Tự động hoàn tất các đơn hàng đang về và Snapshot tồn thực tế
+   * (The Best Solution: Auto-receive pending POs and reconcile)
+   */
+  async autoReceiveAndSnapshot(row: any): Promise<void> {
+    const incomingStock = Number(row.incomingStock || 0);
+    if (incomingStock === 0) {
+      this._snackBar.open('Không có hàng đang về cho sản phẩm này', '', { duration: 2000 });
+      return;
+    }
+
+    if (!confirm(`Bạn có chắc muốn tự động xác nhận NHẬN ${incomingStock} kg hàng đang về cho sản phẩm [${row.masp}] không?\n\nHệ thống sẽ tự động cập nhật số tồn mới vào quy trình tính toán.`)) {
+      return;
+    }
+
+    try {
+      this._snackBar.open('Đang xử lý khớp lệnh...', '', { duration: 3000 });
+      
+      const result = await this._DathangService.confirmReceiptByProduct(row.id);
+      
+      if (result.success !== false) {
+        this._snackBar.open(`✅ Khớp lệnh thành công! Đã nhập thêm ${incomingStock} kg.`, '', {
+          duration: 3000,
+          panelClass: ['snackbar-success']
+        });
+        
+        // Reload data to see changes in tongkho
+        await this.loadDonhangWithRelations();
+      } else {
+        throw new Error(result.message || 'Lỗi từ server');
+      }
+    } catch (error: any) {
+      console.error('Error in autoReceiveAndSnapshot:', error);
+      this._snackBar.open(`❌ Thất bại: ${error.message}`, '', {
+        duration: 4000,
+        panelClass: ['snackbar-error']
       });
     }
   }

@@ -43,6 +43,7 @@ export declare class KhachhangService {
     }>;
     findAllForSelect(): Promise<{
         data: {
+            id: string;
             banggia: {
                 id: string;
                 title: string | null;
@@ -50,7 +51,6 @@ export declare class KhachhangService {
                 batdau: Date | null;
                 ketthuc: Date | null;
             } | null;
-            id: string;
             name: string | null;
             makh: string;
         }[];

@@ -10,8 +10,8 @@ export declare class MenuService {
         createdAt: Date;
         updatedAt: Date;
         slug: string | null;
-        parentId: string | null;
         icon: string | null;
+        parentId: string | null;
     }>;
     findAll(): Promise<({
         children: {
@@ -22,8 +22,8 @@ export declare class MenuService {
             createdAt: Date;
             updatedAt: Date;
             slug: string | null;
-            parentId: string | null;
             icon: string | null;
+            parentId: string | null;
         }[];
     } & {
         id: string;
@@ -33,8 +33,8 @@ export declare class MenuService {
         createdAt: Date;
         updatedAt: Date;
         slug: string | null;
-        parentId: string | null;
         icon: string | null;
+        parentId: string | null;
     })[]>;
     findOne(id: string): Promise<({
         children: {
@@ -45,8 +45,8 @@ export declare class MenuService {
             createdAt: Date;
             updatedAt: Date;
             slug: string | null;
-            parentId: string | null;
             icon: string | null;
+            parentId: string | null;
         }[];
     } & {
         id: string;
@@ -56,8 +56,8 @@ export declare class MenuService {
         createdAt: Date;
         updatedAt: Date;
         slug: string | null;
-        parentId: string | null;
         icon: string | null;
+        parentId: string | null;
     }) | null>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -67,8 +67,8 @@ export declare class MenuService {
         createdAt: Date;
         updatedAt: Date;
         slug: string | null;
-        parentId: string | null;
         icon: string | null;
+        parentId: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -78,8 +78,8 @@ export declare class MenuService {
         createdAt: Date;
         updatedAt: Date;
         slug: string | null;
-        parentId: string | null;
         icon: string | null;
+        parentId: string | null;
     }>;
     getTree(data: any): Promise<any>;
     private buildTree;

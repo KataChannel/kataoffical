@@ -8,8 +8,8 @@ export declare class PhieukhoController {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             phieuKhoId: string;
         }[];
     } & {
@@ -30,13 +30,13 @@ export declare class PhieukhoController {
     }>;
     findAll(): Promise<({
         sanpham: {
+            id: string;
+            ghichu: string | null;
             sanpham: {
                 id: string;
                 title: string;
                 masp: string;
             };
-            id: string;
-            ghichu: string | null;
             soluong: import("@prisma/client/runtime/library").Decimal;
         }[];
         kho: {
@@ -88,8 +88,8 @@ export declare class PhieukhoController {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             phieuKhoId: string;
         }[];
         kho: {
@@ -126,8 +126,8 @@ export declare class PhieukhoController {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             sanphamId: string;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             phieuKhoId: string;
         }[];
     } & {
