@@ -131,4 +131,23 @@ export class DathangController {
       };
     }
   }
+
+  /**
+   * 🔧 Endpoint nội bộ: Tối ưu hóa TẤT CẢ sản phẩm
+   * Không yêu cầu auth - chỉ dành cho script chạy local (run_dev.sh option 6)
+   * Tự lấy tất cả sản phẩm ID và xử lý bulk theo batch
+   */
+  @Post('optimize-all-internal')
+  async optimizeAllInternal() {
+    try {
+      const result = await this.dathangService.optimizeAllProducts();
+      return result;
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to optimize all products',
+        error: error.message
+      };
+    }
+  }
 }

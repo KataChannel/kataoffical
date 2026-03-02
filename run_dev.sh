@@ -7,9 +7,10 @@ echo "2. Backup dữ liệu (DB & Cấu hình) từ VPS"
 echo "3. Thực hiện cả hai (Backup xong rồi chạy Dev)"
 echo "4. Nhân bản Database (Copy từ rausachfinal -> testdata trên Server)"
 echo "5. Phục hồi (Restore) dữ liệu Backup từ máy lên Docker Local"
+echo "6. ⚡ Tối ưu hóa Tất cả Sản phẩm (Khớp lệnh hàng loạt)"
 echo "0. Thoát"
 echo "-----------------------------------"
-read -p "Vui lòng chọn chức năng (0-5): " choice
+read -p "Vui lòng chọn chức năng (0-6): " choice
 
 case $choice in
     1)
@@ -36,6 +37,12 @@ case $choice in
         echo "=> Khởi chạy trình Phục hồi Restore bằng file thiết lập local..."
         bash scripts/fast_restore.sh
         echo "🎉 Đã Restore xong! Thoát chương trình."
+        exit 0
+        ;;
+    6)
+        echo "=> ⚡ Tiến hành Tối ưu hóa Tất cả Sản phẩm..."
+        bash scripts/optimize_all.sh
+        echo "🎉 Đã hoàn tất Tối ưu! Thoát chương trình."
         exit 0
         ;;
     0)

@@ -2186,4 +2186,79 @@ async deletebulk(data: any) {
     return XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
   }
 
+  /**
+   * 🔧 Tối ưu hóa TẤT CẢ sản phẩm - dành cho script nội bộ
+   * Tự lấy danh sách sản phẩm và xử lý bulk theo batch
+   */
+  async optimizeAllProducts(): Promise<{
+    success: boolean;
+    totalProducts: number;
+    processedBatches: number;
+    totalOptimized: number;
+    errors: string[];
+  }> {
+    console.log('🔧 [OPTIMIZE ALL] Bắt đầu tối ưu hóa tất cả sản phẩm...');
+    const startTime = Date.now();
+    
+    try {
+      // 1. Lấy tất cả sản phẩm ID
+      const allProducts = await this.prisma.sanpham.findMany({
+        select: { id: true },
+      });
+      
+      const allIds = allProducts.map(p => p.id);
+      const totalProducts = allIds.length;
+      console.log(`📦 Tìm thấy ${totalProducts} sản phẩm`);
+      
+      if (totalProducts === 0) {
+        return {
+          success: true,
+          totalProducts: 0,
+          processedBatches: 0,
+          totalOptimized: 0,
+          errors: [],
+        };
+      }
+
+      // 2. Xử lý theo batch
+      const BATCH_SIZE = 100;
+      let processedBatches = 0;
+      let totalOptimized = 0;
+      const errors: string[] = [];
+
+      for (let i = 0; i < allIds.length; i += BATCH_SIZE) {
+        const batchIds = allIds.slice(i, i + BATCH_SIZE);
+        const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+        const totalBatches = Math.ceil(allIds.length / BATCH_SIZE);
+        
+        console.log(`  🔄 [${batchNum}/${totalBatches}] Đang xử lý ${batchIds.length} sản phẩm...`);
+        
+        try {
+          const result = await this.completePendingReceiptsBulk(batchIds);
+          totalOptimized += result.count;
+          processedBatches++;
+          console.log(`  ✅ [${batchNum}/${totalBatches}] Hoàn tất: ${result.count} mục khớp lệnh, ${result.totalProducts} sản phẩm sync`);
+        } catch (error) {
+          const errMsg = `Batch ${batchNum} (${i}-${i + batchIds.length}): ${error.message}`;
+          errors.push(errMsg);
+          console.error(`  ❌ [${batchNum}/${totalBatches}] Lỗi:`, error.message);
+        }
+      }
+
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+      console.log(`🎉 [OPTIMIZE ALL] Hoàn tất trong ${elapsed}s: ${totalOptimized} mục khớp lệnh từ ${totalProducts} sản phẩm`);
+
+      return {
+        success: errors.length === 0,
+        totalProducts,
+        processedBatches,
+        totalOptimized,
+        errors,
+      };
+    } catch (error) {
+      console.error('❌ [OPTIMIZE ALL] Lỗi:', error);
+      throw error;
+    }
+  }
+
 }

@@ -105,6 +105,19 @@ let DathangController = class DathangController {
             };
         }
     }
+    async optimizeAllInternal() {
+        try {
+            const result = await this.dathangService.optimizeAllProducts();
+            return result;
+        }
+        catch (error) {
+            return {
+                success: false,
+                message: 'Failed to optimize all products',
+                error: error.message
+            };
+        }
+    }
 };
 exports.DathangController = DathangController;
 __decorate([
@@ -253,6 +266,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], DathangController.prototype, "completePendingReceipts", null);
+__decorate([
+    (0, common_1.Post)('optimize-all-internal'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], DathangController.prototype, "optimizeAllInternal", null);
 exports.DathangController = DathangController = __decorate([
     (0, common_1.Controller)('dathang'),
     __metadata("design:paramtypes", [dathang_service_1.DathangService])
