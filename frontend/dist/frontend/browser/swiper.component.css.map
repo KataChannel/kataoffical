@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/shared/common/swiper/swiper.component.scss"],
-  "sourcesContent": [".swiper-button-next, .swiper-button-prev {\r\n    /* Change color, size, background, etc. */\r\n    background-color: #333;\r\n    color: white;\r\n    padding: 10px 20px;\r\n    border-radius: 5px;\r\n  }\r\n  \r\n  .swiper-button-prev::after {\r\n    font-family: 'Material Icons';\r\n    content: 'chevron_left'; \r\n  }\r\n  \r\n  .swiper-button-next::after {\r\n    font-family: 'Material Icons';\r\n    content: 'chevron_right';\r\n  }\r\n\r\n  .swiper-pagination {\r\n    /* Position, size, etc. of the overall pagination container */\r\n    bottom: 20px; \r\n  }\r\n  .swiper-pagination-bullet-active {\r\n    opacity: var(--swiper-pagination-bullet-opacity, 1);\r\n    background: white !important;\r\n  }"],
-  "mappings": ";AAAA,CAAA;AAAA,CAAA;AAEI,oBAAA;AACA,SAAA;AACA,WAAA,KAAA;AACA,iBAAA;;AAGF,CARF,kBAQE;AACE,eAAA;AACA,WAAA;;AAGF,CAbF,kBAaE;AACE,eAAA;AACA,WAAA;;AAGF,CAAA;AAEE,UAAA;;AAEF,CAAA;AACE,WAAA,IAAA,kCAAA,EAAA;AACA,cAAA;;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/admin/adminmain/adminmain.component.scss"],
-  "sourcesContent": ["// Admin Main Component Styles\n\n// Search dialog container\n::ng-deep .advanced-search-dialog-container {\n  .mat-mdc-dialog-container {\n    padding: 0;\n    border-radius: 12px;\n    overflow: hidden;\n  }\n  \n  .mat-mdc-dialog-content {\n    padding: 0;\n    margin: 0;\n    max-height: none;\n  }\n}\n\n// Main layout improvements\n.primary {\n  background-color: #f5f5f5;\n}\n\n// Header styling - using attribute selector for Tailwind classes\n[class*=\"bg-[#57A345]\"] {\n  box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n}\n\n// Drawer content\nmat-drawer {\n  .mat-drawer-inner-container {\n    overflow-x: hidden;\n  }\n}\n\n// Search input styling in header\n.search-input-container {\n  position: relative;\n  \n  input {\n    transition: all 0.3s ease;\n    \n    &:focus {\n      transform: scale(1.02);\n      box-shadow: 0 4px 8px rgba(0,0,0,0.1);\n    }\n  }\n  \n  &:hover {\n    cursor: pointer;\n    \n    input {\n      background-color: #f9f9f9;\n    }\n  }\n}"],
-  "mappings": ";AAIE,UAAA,CAAA,iCAAA,CAAA;AACE,WAAA;AACA,iBAAA;AACA,YAAA;;AAGF,UAAA,CANA,iCAMA,CAAA;AACE,WAAA;AACA,UAAA;AACA,cAAA;;AAKJ,CAAA;AACE,oBAAA;;AAIF,CAAA;AACE,cAAA,EAAA,IAAA,IAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;;AAKA,WAAA,CAAA;AACE,cAAA;;AAKJ,CAAA;AACE,YAAA;;AAEA,CAHF,uBAGE;AACE,cAAA,IAAA,KAAA;;AAEA,CANJ,uBAMI,KAAA;AACE,aAAA,MAAA;AACA,cAAA,EAAA,IAAA,IAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;;AAIJ,CAZF,sBAYE;AACE,UAAA;;AAEA,CAfJ,sBAeI,OAAA;AACE,oBAAA;;",
-  "names": []
-}
