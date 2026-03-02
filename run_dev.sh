@@ -8,9 +8,10 @@ echo "3. Thực hiện cả hai (Backup xong rồi chạy Dev)"
 echo "4. Nhân bản Database (Copy từ rausachfinal -> testdata trên Server)"
 echo "5. Phục hồi (Restore) dữ liệu Backup từ máy lên Docker Local"
 echo "6. ⚡ Tối ưu hóa Tất cả Sản phẩm (Khớp lệnh hàng loạt)"
+echo "7. 🧹 Dọn dẹp Database (Xóa Log & Tối ưu lưu trữ)"
 echo "0. Thoát"
 echo "-----------------------------------"
-read -p "Vui lòng chọn chức năng (0-6): " choice
+read -p "Vui lòng chọn chức năng (0-7): " choice
 
 case $choice in
     1)
@@ -43,6 +44,12 @@ case $choice in
         echo "=> ⚡ Tiến hành Tối ưu hóa Tất cả Sản phẩm..."
         bash scripts/optimize_all.sh
         echo "🎉 Đã hoàn tất Tối ưu! Thoát chương trình."
+        exit 0
+        ;;
+    7)
+        echo "=> 🧹 Tiến hành Dọn dẹp Database..."
+        bash scripts/cleanup_database.sh
+        echo "🎉 Đã dọn dẹp xong! Thoát chương trình."
         exit 0
         ;;
     0)
