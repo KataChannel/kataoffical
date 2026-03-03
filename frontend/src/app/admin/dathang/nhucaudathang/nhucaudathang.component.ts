@@ -823,32 +823,38 @@ export class NhucaudathangComponent {
   async ExportExcel(data: any, title: any) {
     try {
       this.isExportingExcel = true;
+      const toNum = (v: any) => {
+        if (v === null || v === undefined) return 0;
+        const n = Number(v);
+        return isNaN(n) ? 0 : parseFloat(n.toFixed(3));
+      };
+
       const dulieu = this.TonghopsFinal.map((v: any) => ({
         title: v.title || '',
         masp: v.masp || '',
         dvt: v.dvt || '',
         ghichu: v.ghichu || '',
-        haohut: Number(v.haohut || 0),
-        xSLDat: Number(v.xSLDat) || 0,
+        haohut: toNum(v.haohut),
+        xSLDat: toNum(v.xSLDat),
         // SLDat: v.SLDat || 0,
-        // SLGiao: Number(v.SLGiao || 0),
-        slton: Number(v.slton || 0),
-        sltontt: Number(v.sltontt || 0),
-        chenhlech: Number(v.slton || 0) - Number(v.sltontt || 0),
-        ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
+        // SLGiao: toNum(v.SLGiao),
+        slton: toNum(v.slton),
+        sltontt: toNum(v.sltontt),
+        chenhlech: parseFloat((toNum(v.slton) - toNum(v.sltontt)).toFixed(3)),
+        ngaynhan: v.ngaynhan ? moment(v.ngaynhan).format('YYYY-MM-DD') : '',
         mancc: v.mancc || '',
         name: v.name || '',
-        goiy: Number(v.goiy) || 0,
-        khachdat: Number(v.khachdat || 0),
-        khachgiao: Number(v.khachgiao || 0),
-        tongkho: Number(v.tongkho || 0),
-        kho1: Number(v.kho1 || 0),
-        kho2: Number(v.kho2 || 0),
-        kho3: Number(v.kho3 || 0),
-        kho4: Number(v.kho4 || 0),
-        kho5: Number(v.kho5 || 0),
-        kho6: Number(v.kho6 || 0),
-        slhaohut: Number(v.slhaohut || 0),
+        goiy: toNum(v.goiy),
+        khachdat: toNum(v.khachdat),
+        khachgiao: toNum(v.khachgiao),
+        tongkho: toNum(v.tongkho),
+        kho1: toNum(v.kho1),
+        kho2: toNum(v.kho2),
+        kho3: toNum(v.kho3),
+        kho4: toNum(v.kho4),
+        kho5: toNum(v.kho5),
+        kho6: toNum(v.kho6),
+        slhaohut: toNum(v.slhaohut),
       }));
       const mapping: any = {
         ngaynhan: 'NGÀY',
@@ -882,24 +888,24 @@ export class NhucaudathangComponent {
         title: v.title || '',
         masp: v.masp || '',
         dvt: v.dvt || '',
-        haohut: v.haohut || 0,
-        sldat: v.sldat || 0,
-        SLDat: v.SLDat || 0,
-        SLGiao: v.SLGiao || 0,
-        slton: Number(v.slton || 0),
-        sltontt: Number(v.sltontt || 0),
-        chenhlech: Number(v.slton || 0) - Number(v.sltontt || 0),
+        haohut: toNum(v.haohut),
+        sldat: toNum(v.sldat),
+        SLDat: toNum(v.SLDat),
+        SLGiao: toNum(v.SLGiao),
+        slton: toNum(v.slton),
+        sltontt: toNum(v.sltontt),
+        chenhlech: parseFloat((toNum(v.slton) - toNum(v.sltontt)).toFixed(3)),
         mancc: v.mancc || '',
         name: v.name || '',
-        ngaynhan: moment(v.ngaynhan).format('YYYY-MM-DD') || '',
-        goiy: v.goiy || 0,
-        kho1: v.kho1 || 0,
-        kho2: v.kho2 || 0,
-        kho3: v.kho3 || 0,
-        kho4: v.kho4 || 0,
-        kho5: v.kho5 || 0,
-        kho6: v.kho6 || 0,
-        slhaohut: v.slhaohut || 0,
+        ngaynhan: v.ngaynhan ? moment(v.ngaynhan).format('YYYY-MM-DD') : '',
+        goiy: toNum(v.goiy),
+        kho1: toNum(v.kho1),
+        kho2: toNum(v.kho2),
+        kho3: toNum(v.kho3),
+        kho4: toNum(v.kho4),
+        kho5: toNum(v.kho5),
+        kho6: toNum(v.kho6),
+        slhaohut: toNum(v.slhaohut),
       }));
 
       const mapping2: any = {
@@ -1409,9 +1415,9 @@ export class NhucaudathangComponent {
       // Create a new object with all original fields
       const newItem = { ...item };
 
-      // Initialize all warehouse fields with 0
+      // Initialize all warehouse fields with 0 (number, not string!)
       warehouses.forEach((warehouse) => {
-        newItem[warehouse.name] = '0';
+        newItem[warehouse.name] = 0;
       });
 
       // Find the matching warehouse by label and set the value
@@ -1420,7 +1426,7 @@ export class NhucaudathangComponent {
       );
 
       if (matchingWarehouse) {
-        newItem[matchingWarehouse.name] = item.sldat || '0';
+        newItem[matchingWarehouse.name] = Number(item.sldat) || 0;
       }
       return newItem;
     });

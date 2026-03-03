@@ -2,6 +2,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 export declare class NhuCauDatHangResolver {
     private readonly prisma;
     constructor(prisma: PrismaService);
+    private toNum;
     getNhuCauDatHang(startDate: string, endDate: string): Promise<{
         data: {
             id: string;

@@ -23,6 +23,23 @@ import { Prisma } from '@prisma/client';
 export class NhuCauDatHangResolver {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Safely convert Prisma Decimal/BigInt/string to plain JS number.
+   * Prevents "very large numbers" or Decimal objects leaking into JSON.
+   */
+  private toNum(val: any): number {
+    if (val === null || val === undefined) return 0;
+    // Handle BigInt
+    if (typeof val === 'bigint') return Number(val);
+    // Handle Prisma Decimal (has toNumber method)
+    if (typeof val === 'object' && typeof val.toNumber === 'function') {
+      return val.toNumber();
+    }
+    // Handle string or number
+    const n = Number(val);
+    return isNaN(n) ? 0 : parseFloat(n.toFixed(3));
+  }
+
   @Query(() => GraphQLJSON, {
     name: 'getNhuCauDatHang',
     description:
@@ -90,23 +107,17 @@ export class NhuCauDatHangResolver {
       }),
     ]);
 
-    // Qualifying Dathang IDs:
-    // 1. For summary column: strictly in range
-    // 2. For detail list: in range OR outstanding
-    const qualifyingDathang = await this.prisma.dathang.findMany({
+    // Dathang summary based on date range
+    const summaryDathangs = await this.prisma.dathang.findMany({
       where: {
-        OR: [
-          { ngaynhan: { gte: start, lte: end } },
-          { status: { in: ['dadat', 'dagiao'] as any[] } },
-        ],
+        ngaynhan: { gte: start, lte: end },
+        isActive: true,
       },
-      select: { id: true, ngaynhan: true, status: true },
+      select: { id: true, status: true },
     });
+    const summaryDathangIds = summaryDathangs.map((d) => d.id);
 
-    const qualifyingDathangIds = qualifyingDathang.map((d) => d.id);
-    const summaryDathangIds = qualifyingDathang
-      .filter((d) => d.ngaynhan && d.ngaynhan >= start && d.ngaynhan <= end)
-      .map((d) => d.id);
+    const qualifyingDathangIds = [...summaryDathangIds];
 
     // Qualifying Donhang IDs:
     // Strictly for the summary columns (Pending vs Delivered)
@@ -128,12 +139,14 @@ export class NhuCauDatHangResolver {
     // ============================================================
     // Step 2: Parallel aggregation queries using raw SQL
     // ============================================================
+    // ⚡ FIX: Cast SUM results to float8 to get plain JS numbers instead of Prisma Decimal objects
+    // This prevents "very large numbers" or string serialization issues in the JSON response
     const [dathangSumRaw, donhangPendingRaw, donhangDeliveredRaw] =
       await Promise.all([
         // NCC order totals for this range
         summaryDathangIds.length > 0
           ? this.prisma.$queryRaw<{ idSP: string; total: number }[]>`
-              SELECT "idSP", SUM("sldat"::numeric) as total
+              SELECT "idSP", CAST(COALESCE(SUM("sldat"::numeric), 0) AS float8) as total
               FROM "Dathangsanpham"
               WHERE "dathangId" = ANY(${summaryDathangIds})
               GROUP BY "idSP"
@@ -143,7 +156,7 @@ export class NhuCauDatHangResolver {
         // Customer PENDING totals for this range
         pendingDonhangIds.length > 0
           ? this.prisma.$queryRaw<{ idSP: string; total: number }[]>`
-              SELECT "idSP", SUM("sldat"::numeric) as total
+              SELECT "idSP", CAST(COALESCE(SUM("sldat"::numeric), 0) AS float8) as total
               FROM "Donhangsanpham"
               WHERE "donhangId" = ANY(${pendingDonhangIds})
               GROUP BY "idSP"
@@ -153,7 +166,7 @@ export class NhuCauDatHangResolver {
         // Customer DELIVERED totals for this range
         deliveredDonhangIds.length > 0
           ? this.prisma.$queryRaw<{ idSP: string; total: number }[]>`
-              SELECT "idSP", SUM("slnhan"::numeric) as total
+              SELECT "idSP", CAST(COALESCE(SUM("slnhan"::numeric), 0) AS float8) as total
               FROM "Donhangsanpham"
               WHERE "donhangId" = ANY(${deliveredDonhangIds})
               GROUP BY "idSP"
@@ -198,23 +211,23 @@ export class NhuCauDatHangResolver {
     const spKhoMap = new Map<string, Map<string, number>>();
     sanphamKhos.forEach((sk) => {
       const entry = spKhoMap.get(sk.sanphamId) || new Map<string, number>();
-      entry.set(sk.khoId, Number(sk.soluong) || 0);
+      entry.set(sk.khoId, this.toNum(sk.soluong));
       spKhoMap.set(sk.sanphamId, entry);
     });
 
     const dathangSumMap = new Map<string, number>();
     (dathangSumRaw as any[]).forEach((d) =>
-      dathangSumMap.set(d.idSP, Number(d.total) || 0),
+      dathangSumMap.set(d.idSP, this.toNum(d.total)),
     );
 
     const khachDatMap = new Map<string, number>();
     (donhangPendingRaw as any[]).forEach((d) =>
-      khachDatMap.set(d.idSP, Number(d.total) || 0),
+      khachDatMap.set(d.idSP, this.toNum(d.total)),
     );
 
     const khachGiaoMap = new Map<string, number>();
     (donhangDeliveredRaw as any[]).forEach((d) =>
-      khachGiaoMap.set(d.idSP, Number(d.total) || 0),
+      khachGiaoMap.set(d.idSP, this.toNum(d.total)),
     );
 
     const dathangsByProduct = new Map<string, any[]>();
@@ -231,9 +244,9 @@ export class NhuCauDatHangResolver {
           namekho: dh.kho?.name,
           mancc: dh.nhacungcap?.mancc,
           name: dh.nhacungcap?.name,
-          sldat: Number(sp.sldat) || 0,
-          slgiao: Number(sp.slgiao) || 0,
-          slnhan: Number(sp.slnhan) || 0,
+          sldat: this.toNum(sp.sldat),
+          slgiao: this.toNum(sp.slgiao),
+          slnhan: this.toNum(sp.slnhan),
         });
         dathangsByProduct.set(sp.idSP, arr);
       });
@@ -265,18 +278,18 @@ export class NhuCauDatHangResolver {
           masp: sp.masp,
           title: sp.title,
           dvt: sp.dvt,
-          haohut: Number(sp.haohut) || 0,
+          haohut: this.toNum(sp.haohut),
           mancc: sp.Nhacungcap?.[0]?.mancc || '',
           name: sp.Nhacungcap?.[0]?.name || '',
 
-          // Inventory
-          slton: Number(tonkho?.slton) || 0,
-          sltontt: Number(tonkho?.sltontt) || 0,
-          slchogiao: Number(tonkho?.slchogiao) || 0,
-          slchonhap: Number(tonkho?.slchonhap) || 0,
+          // Inventory (ensure plain numbers, not Prisma Decimal)
+          slton: this.toNum(tonkho?.slton),
+          sltontt: this.toNum(tonkho?.sltontt),
+          slchogiao: this.toNum(tonkho?.slchogiao),
+          slchonhap: this.toNum(tonkho?.slchonhap),
           updatedAt: tonkho?.updatedAt || null,
 
-          // Aggregated orders
+          // Aggregated orders (already plain numbers from toNum in maps)
           SLDat: slDatNCC,
           xSLDat: slDatNCC,
           khachdat: slKhachDat,

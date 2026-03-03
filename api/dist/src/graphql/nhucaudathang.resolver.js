@@ -21,6 +21,17 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    toNum(val) {
+        if (val === null || val === undefined)
+            return 0;
+        if (typeof val === 'bigint')
+            return Number(val);
+        if (typeof val === 'object' && typeof val.toNumber === 'function') {
+            return val.toNumber();
+        }
+        const n = Number(val);
+        return isNaN(n) ? 0 : parseFloat(n.toFixed(3));
+    }
     async getNhuCauDatHang(startDate, endDate) {
         const start = new Date(startDate);
         const end = new Date(endDate);
@@ -59,19 +70,15 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
                 },
             }),
         ]);
-        const qualifyingDathang = await this.prisma.dathang.findMany({
+        const summaryDathangs = await this.prisma.dathang.findMany({
             where: {
-                OR: [
-                    { ngaynhan: { gte: start, lte: end } },
-                    { status: { in: ['dadat', 'dagiao'] } },
-                ],
+                ngaynhan: { gte: start, lte: end },
+                isActive: true,
             },
-            select: { id: true, ngaynhan: true, status: true },
+            select: { id: true, status: true },
         });
-        const qualifyingDathangIds = qualifyingDathang.map((d) => d.id);
-        const summaryDathangIds = qualifyingDathang
-            .filter((d) => d.ngaynhan && d.ngaynhan >= start && d.ngaynhan <= end)
-            .map((d) => d.id);
+        const summaryDathangIds = summaryDathangs.map((d) => d.id);
+        const qualifyingDathangIds = [...summaryDathangIds];
         const qualifyingDonhangs = await this.prisma.donhang.findMany({
             where: {
                 ngaygiao: { gte: start, lte: end },
@@ -87,7 +94,7 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
         const [dathangSumRaw, donhangPendingRaw, donhangDeliveredRaw] = await Promise.all([
             summaryDathangIds.length > 0
                 ? this.prisma.$queryRaw `
-              SELECT "idSP", SUM("sldat"::numeric) as total
+              SELECT "idSP", CAST(COALESCE(SUM("sldat"::numeric), 0) AS float8) as total
               FROM "Dathangsanpham"
               WHERE "dathangId" = ANY(${summaryDathangIds})
               GROUP BY "idSP"
@@ -95,7 +102,7 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
                 : Promise.resolve([]),
             pendingDonhangIds.length > 0
                 ? this.prisma.$queryRaw `
-              SELECT "idSP", SUM("sldat"::numeric) as total
+              SELECT "idSP", CAST(COALESCE(SUM("sldat"::numeric), 0) AS float8) as total
               FROM "Donhangsanpham"
               WHERE "donhangId" = ANY(${pendingDonhangIds})
               GROUP BY "idSP"
@@ -103,7 +110,7 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
                 : Promise.resolve([]),
             deliveredDonhangIds.length > 0
                 ? this.prisma.$queryRaw `
-              SELECT "idSP", SUM("slnhan"::numeric) as total
+              SELECT "idSP", CAST(COALESCE(SUM("slnhan"::numeric), 0) AS float8) as total
               FROM "Donhangsanpham"
               WHERE "donhangId" = ANY(${deliveredDonhangIds})
               GROUP BY "idSP"
@@ -138,15 +145,15 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
         const spKhoMap = new Map();
         sanphamKhos.forEach((sk) => {
             const entry = spKhoMap.get(sk.sanphamId) || new Map();
-            entry.set(sk.khoId, Number(sk.soluong) || 0);
+            entry.set(sk.khoId, this.toNum(sk.soluong));
             spKhoMap.set(sk.sanphamId, entry);
         });
         const dathangSumMap = new Map();
-        dathangSumRaw.forEach((d) => dathangSumMap.set(d.idSP, Number(d.total) || 0));
+        dathangSumRaw.forEach((d) => dathangSumMap.set(d.idSP, this.toNum(d.total)));
         const khachDatMap = new Map();
-        donhangPendingRaw.forEach((d) => khachDatMap.set(d.idSP, Number(d.total) || 0));
+        donhangPendingRaw.forEach((d) => khachDatMap.set(d.idSP, this.toNum(d.total)));
         const khachGiaoMap = new Map();
-        donhangDeliveredRaw.forEach((d) => khachGiaoMap.set(d.idSP, Number(d.total) || 0));
+        donhangDeliveredRaw.forEach((d) => khachGiaoMap.set(d.idSP, this.toNum(d.total)));
         const dathangsByProduct = new Map();
         recentDathangs.forEach((dh) => {
             dh.sanpham.forEach((sp) => {
@@ -161,9 +168,9 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
                     namekho: dh.kho?.name,
                     mancc: dh.nhacungcap?.mancc,
                     name: dh.nhacungcap?.name,
-                    sldat: Number(sp.sldat) || 0,
-                    slgiao: Number(sp.slgiao) || 0,
-                    slnhan: Number(sp.slnhan) || 0,
+                    sldat: this.toNum(sp.sldat),
+                    slgiao: this.toNum(sp.slgiao),
+                    slnhan: this.toNum(sp.slnhan),
                 });
                 dathangsByProduct.set(sp.idSP, arr);
             });
@@ -188,13 +195,13 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
                 masp: sp.masp,
                 title: sp.title,
                 dvt: sp.dvt,
-                haohut: Number(sp.haohut) || 0,
+                haohut: this.toNum(sp.haohut),
                 mancc: sp.Nhacungcap?.[0]?.mancc || '',
                 name: sp.Nhacungcap?.[0]?.name || '',
-                slton: Number(tonkho?.slton) || 0,
-                sltontt: Number(tonkho?.sltontt) || 0,
-                slchogiao: Number(tonkho?.slchogiao) || 0,
-                slchonhap: Number(tonkho?.slchonhap) || 0,
+                slton: this.toNum(tonkho?.slton),
+                sltontt: this.toNum(tonkho?.sltontt),
+                slchogiao: this.toNum(tonkho?.slchogiao),
+                slchonhap: this.toNum(tonkho?.slchonhap),
                 updatedAt: tonkho?.updatedAt || null,
                 SLDat: slDatNCC,
                 xSLDat: slDatNCC,
