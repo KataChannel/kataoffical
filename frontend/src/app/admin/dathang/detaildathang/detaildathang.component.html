@@ -4,28 +4,31 @@
   </button>
   <div class="font-bold truncate">{{DetailDathang().madncc||'Không có mã đặt hàng'}} </div>
   <div class="flex flex-row space-x-2 items-center">
-    <!-- <button *ngIf="DetailDathang().status=='dadat'" mat-flat-button color="primary" [disabled]="DetailDathang().status=='dagiao'" (click)="GiaoDonhang()"> Đã Giao</button> -->
-    <button *ngIf="DetailDathang().status=='danhan'" mat-flat-button color="primary" (click)="Dathang()"> Về  Đặt</button>
-    <button *ngIf="DetailDathang().status=='dadat'" mat-flat-button color="primary" [disabled]="DetailDathang().status=='danhan'" (click)="Danhanhang()"> Đã Nhận</button>
-    <button mat-icon-button color="primary" (click)="PrintDathang()"><mat-icon>image</mat-icon></button>
+    <button mat-flat-button color="warn" *ngIf="!isEdit() && DetailDathang()?.status !== 'huy'" (click)="toggleEdit()">
+      <mat-icon>edit</mat-icon> SỬA ĐƠN
+    </button>
+
+    @if (isEdit()) {
+      <button mat-flat-button color="warn" (click)="handleDathangAction()">
+        <mat-icon>save</mat-icon> Lưu
+      </button>
+    }
+
+    <button mat-icon-button color="primary" (click)="PrintDathang()">
+      <mat-icon>image</mat-icon>
+    </button>
     <button mat-icon-button color="primary" (click)="printContent()">
       <mat-icon>print</mat-icon>
     </button>
-    @if(DetailDathang().status!=='danhan') {
-    <!-- <mat-slide-toggle [(ngModel)]="DetailDathang().isActive" [disabled]="!isEdit()">{{DetailDathang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle> -->
-    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleDathangAction()">
-      <mat-icon>save</mat-icon>
-    </button>
-    <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
-      <mat-icon>edit</mat-icon>
-    </button>
-    <!-- <button mat-icon-button color="warn" (click)="toggleDelete()">
-      <mat-icon>delete</mat-icon>
-    </button> -->
+
+    @if (DetailDathang()?.status === 'danhan' && !isEdit()) {
+      <button mat-flat-button color="primary" (click)="Dathang()">Về Đặt</button>
+      <button mat-flat-button color="primary" disabled>Đã Nhận</button>
+    } @else if (DetailDathang()?.status === 'dadat' && !isEdit()) {
+      <button mat-flat-button color="primary" (click)="Danhanhang()">Đã Nhận</button>
     }
-    @else {
-     <button mat-flat-button color="primary" [disabled]="DetailDathang().status=='danhan'"> Đã Nhận</button>
-    }
+
+
   </div>
 </div>
 
@@ -238,7 +241,7 @@
                      </div>
                     }
                     @case ('slnhan') {
-                    <div *ngIf="DetailDathang().status === 'dadat' && canEditSlnhan()"
+                    <div *ngIf="(DetailDathang().status === 'dadat' || DetailDathang().status === 'danhan') && canEditSlnhan()"
                       [contentEditable]="true"
                       [tabindex]="getTabIndex('slnhan', idx)"
                       (focus)="onInputFocus($event)"
@@ -251,13 +254,13 @@
                     >
                     {{ row[column]||0 }}
                      </div>
-                    <div class="text-end" *ngIf="!canEditSlnhan() || DetailDathang().status !== 'dadat'">
+                    <div class="text-end" *ngIf="!canEditSlnhan() || (DetailDathang().status !== 'dadat' && DetailDathang().status !== 'danhan')">
                        {{ row[column]||0|number:'1.0-2' }}
                        <!-- <span *ngIf="!canEditSlnhan()" class="text-xs text-gray-500 ml-1">(Chỉ xem)</span> -->
                      </div>
                     }
                     @case ('gianhap') {
-                    <div *ngIf="DetailDathang().status === 'dadat' && canEditGianhap()"
+                    <div *ngIf="(DetailDathang().status === 'dadat' || DetailDathang().status === 'danhan') && canEditGianhap()"
                       [contentEditable]="true"
                       [tabindex]="getTabIndex('gianhap', idx)"
                       (focus)="onInputFocus($event)"
@@ -270,7 +273,7 @@
                     >
                     {{ row[column]||0 }}
                      </div>
-                    <div class="text-end" *ngIf="!canEditGianhap() || DetailDathang().status !== 'dadat'">
+                    <div class="text-end" *ngIf="!canEditGianhap() || (DetailDathang().status !== 'dadat' && DetailDathang().status !== 'danhan')">
                        {{ row[column]||0|number:'1.0-2' }}
                        <!-- <span *ngIf="!canEditGianhap()" class="text-xs text-gray-500 ml-1">(Chỉ xem)</span> -->
                      </div>

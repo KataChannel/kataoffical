@@ -1247,8 +1247,46 @@ async convertDathangImportToTransfer(
       });
     }
 
+      // 9. Cập nhật khi ở trạng thái 'danhan'
+      if (oldDathang.status === 'danhan' && data.status === 'danhan') {
+        for (const sp of data.sanpham) {
+          const oldItem = oldDathang.sanpham.find((o: any) => o.idSP === (sp.idSP ?? sp.id));
+          if (oldItem) {
+            const newSlnhan = parseFloat((sp.slnhan ?? 0).toFixed(3));
+            const oldSlnhan = parseFloat((oldItem.slnhan ?? 0).toFixed(3));
+            const diff = newSlnhan - oldSlnhan;
+            
+            if (diff !== 0) {
+              await prisma.tonKho.update({
+                where: { sanphamId: sp.idSP ?? sp.id },
+                data: {
+                  slton: { increment: diff },
+                },
+              });
+            }
+
+            await prisma.dathangsanpham.update({
+              where: { id: oldItem.id },
+              data: {
+                slnhan: newSlnhan,
+                gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
+                ttnhan: Number(newSlnhan * (sp.gianhap ?? 0)) || 0,
+                ghichu: sp.ghichu,
+              }
+            });
+          }
+        }
+        return await prisma.dathang.update({
+          where: { id },
+          data: {
+            ghichu: data.ghichu,
+          },
+          include: { sanpham: true }
+        });
+      }
 
       throw new Error('Trạng thái không hợp lệ');
+
     });
   }
 
