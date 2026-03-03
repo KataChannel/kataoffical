@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DathangService = void 0;
 const common_1 = require("@nestjs/common");
+const schedule_1 = require("@nestjs/schedule");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
 const status_machine_service_1 = require("../common/status-machine.service");
@@ -1003,10 +1004,12 @@ let DathangService = class DathangService {
             if (oldDathang.status === 'dadat' && data.status === 'danhan') {
                 for (const sp of data.sanpham) {
                     const slnhan = parseFloat((Number(sp.slnhan) ?? 0).toFixed(3));
+                    const oldItem = oldDathang.sanpham.find((o) => o.idSP === (sp.idSP ?? sp.id));
+                    const sldatOld = oldItem ? parseFloat((Number(oldItem.sldat) ?? 0).toFixed(3)) : slnhan;
                     await prisma.tonKho.update({
                         where: { sanphamId: sp.idSP ?? sp.id },
                         data: {
-                            slchonhap: { decrement: slnhan },
+                            slchonhap: { decrement: sldatOld },
                             slton: { increment: slnhan },
                         },
                     });
@@ -1045,6 +1048,29 @@ let DathangService = class DathangService {
                     };
                     await prisma.phieuKho.create({ data: phieuKhoData });
                 }
+                await prisma.importHistory.create({
+                    data: {
+                        caseDetail: {
+                            dathangId: id,
+                            madncc: oldDathang.madncc,
+                            products: data.sanpham.map((item) => {
+                                const sldat = parseFloat((Number(item.sldat) ?? 0).toFixed(3));
+                                const slnhan = parseFloat((Number(item.slnhan) ?? 0).toFixed(3));
+                                return {
+                                    idSP: item.sanphamId ?? item.id,
+                                    sldat: sldat,
+                                    slnhan: slnhan,
+                                    chenhlech: sldat - slnhan
+                                };
+                            }),
+                            additionalInfo: "Lưu vết tự động đối soát lúc nhận hàng",
+                        },
+                        order: 1,
+                        createdBy: "system",
+                        title: `[Metadata] Đối soát nhận hàng ${oldDathang.madncc} - ${new Date().toLocaleString('vi-VN')}`,
+                        type: "dathang_audit",
+                    }
+                });
                 return prisma.dathang.update({
                     where: { id },
                     data: {
@@ -1111,6 +1137,12 @@ let DathangService = class DathangService {
                                 },
                             });
                         }
+                        await prisma.tonKho.update({
+                            where: { sanphamId: spId },
+                            data: {
+                                slchonhap: { set: 0 }
+                            }
+                        });
                         await prisma.dathangsanpham.update({
                             where: { id: oldItem.id },
                             data: {
@@ -1153,6 +1185,29 @@ let DathangService = class DathangService {
                         });
                     }
                 }
+                await prisma.importHistory.create({
+                    data: {
+                        caseDetail: {
+                            dathangId: id,
+                            madncc: oldDathang.madncc,
+                            products: data.sanpham.map((sp) => {
+                                const sldat = parseFloat((sp.sldat ?? 0).toFixed(3));
+                                const slnhan = parseFloat((sp.slnhan ?? 0).toFixed(3));
+                                return {
+                                    idSP: sp.idSP ?? sp.id,
+                                    sldat: sldat,
+                                    slnhan: slnhan,
+                                    chenhlech: sldat - slnhan
+                                };
+                            }),
+                            additionalInfo: "Sửa đổi số liệu sau khi hoàn tất Nhận hàng",
+                        },
+                        order: 1,
+                        createdBy: "system",
+                        title: `[Metadata] Cập nhật đối soát nhận hàng ${oldDathang.madncc} - ${new Date().toLocaleString('vi-VN')}`,
+                        type: "dathang_audit",
+                    }
+                });
                 return await prisma.dathang.update({
                     where: { id },
                     data: {
@@ -1439,53 +1494,58 @@ let DathangService = class DathangService {
                 }
                 return { success: true, count: 0, totalProducts: sanphamIds.length };
             }
-            const batchSize = 15;
+            const batchSize = 30;
             let totalItems = 0;
             const uniqueProducts = new Set();
             for (let i = 0; i < orders.length; i += batchSize) {
                 const batch = orders.slice(i, i + batchSize);
                 await this.prisma.$transaction(async (tx) => {
                     const batchProducts = new Set();
+                    const updatePromises = [];
                     for (const order of batch) {
-                        await tx.dathang.update({
+                        updatePromises.push(tx.dathang.update({
                             where: { id: order.id },
                             data: {
                                 status: 'danhan',
                                 ghichu: (order.ghichu || '') + ' | Bulk match process',
                                 updatedAt: new Date()
                             }
-                        });
+                        }));
                         for (const sp of order.sanpham) {
                             const sldat = parseFloat(sp.sldat.toString()) || 0;
                             const slgiao = parseFloat(sp.slgiao.toString()) || 0;
                             const qtyToReceive = slgiao > 0 ? slgiao : sldat;
                             if (qtyToReceive > 0) {
-                                await tx.dathangsanpham.update({
+                                updatePromises.push(tx.dathangsanpham.update({
                                     where: { id: sp.id },
                                     data: { slnhan: qtyToReceive, ghichu: (sp.ghichu || '') + ' | Bulk match' }
-                                });
-                                await tx.tonKho.upsert({
+                                }));
+                                updatePromises.push(tx.tonKho.upsert({
                                     where: { sanphamId: sp.idSP },
                                     create: { sanphamId: sp.idSP, slton: qtyToReceive, slchonhap: 0, slchogiao: 0 },
                                     update: {
                                         slton: { increment: qtyToReceive },
                                         slchonhap: { decrement: sldat }
                                     }
-                                });
+                                }));
                                 batchProducts.add(sp.idSP);
                                 uniqueProducts.add(sp.idSP);
                                 totalItems++;
                             }
                         }
                     }
-                    for (const prodId of Array.from(batchProducts)) {
-                        await this.tonkhoManager.syncStockToReality(prodId, tx);
-                    }
-                }, { timeout: 60000 });
+                    await Promise.all(updatePromises);
+                    const syncPromises = Array.from(batchProducts).map(id => this.tonkhoManager.syncStockToReality(id, tx));
+                    await Promise.all(syncPromises);
+                }, { timeout: 90000 });
             }
             const unsyncedIds = sanphamIds.filter(id => !uniqueProducts.has(id));
-            for (const id of unsyncedIds) {
-                await this.tonkhoManager.syncStockToReality(id);
+            if (unsyncedIds.length > 0) {
+                const CHUNK_SIZE = 10;
+                for (let j = 0; j < unsyncedIds.length; j += CHUNK_SIZE) {
+                    const chunk = unsyncedIds.slice(j, j + CHUNK_SIZE);
+                    await Promise.all(chunk.map(id => this.tonkhoManager.syncStockToReality(id)));
+                }
             }
             return {
                 success: true,
@@ -1828,25 +1888,37 @@ let DathangService = class DathangService {
                     errors: [],
                 };
             }
-            const BATCH_SIZE = 100;
-            let processedBatches = 0;
+            const BATCH_SIZE = 150;
             let totalOptimized = 0;
             const errors = [];
+            const groups = [];
             for (let i = 0; i < allIds.length; i += BATCH_SIZE) {
-                const batchIds = allIds.slice(i, i + BATCH_SIZE);
-                const batchNum = Math.floor(i / BATCH_SIZE) + 1;
-                const totalBatches = Math.ceil(allIds.length / BATCH_SIZE);
-                console.log(`  🔄 [${batchNum}/${totalBatches}] Đang xử lý ${batchIds.length} sản phẩm...`);
-                try {
-                    const result = await this.completePendingReceiptsBulk(batchIds);
-                    totalOptimized += result.count;
-                    processedBatches++;
-                    console.log(`  ✅ [${batchNum}/${totalBatches}] Hoàn tất: ${result.count} mục khớp lệnh, ${result.totalProducts} sản phẩm sync`);
-                }
-                catch (error) {
-                    const errMsg = `Batch ${batchNum} (${i}-${i + batchIds.length}): ${error.message}`;
-                    errors.push(errMsg);
-                    console.error(`  ❌ [${batchNum}/${totalBatches}] Lỗi:`, error.message);
+                groups.push(allIds.slice(i, i + BATCH_SIZE));
+            }
+            const CONCURRENCY = 2;
+            let processedBatches = 0;
+            for (let i = 0; i < groups.length; i += CONCURRENCY) {
+                const currentGroupBatch = groups.slice(i, i + CONCURRENCY);
+                const results = await Promise.all(currentGroupBatch.map(async (batchIds, idx) => {
+                    const batchNum = i + idx + 1;
+                    console.log(`  🔄 [${batchNum}/${groups.length}] Đang xử lý ${batchIds.length} sản phẩm...`);
+                    try {
+                        const result = await this.completePendingReceiptsBulk(batchIds);
+                        return { success: true, count: result.count, totalProducts: result.totalProducts };
+                    }
+                    catch (error) {
+                        console.error(`  ❌ [${batchNum}/${groups.length}] Lỗi:`, error.message);
+                        return { success: false, error: error.message, batchNum };
+                    }
+                }));
+                for (const res of results) {
+                    if (res.success) {
+                        totalOptimized += res.count;
+                        processedBatches++;
+                    }
+                    else {
+                        errors.push(`Batch ${res.batchNum}: ${res.error}`);
+                    }
                 }
             }
             const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
@@ -1864,8 +1936,54 @@ let DathangService = class DathangService {
             throw error;
         }
     }
+    async autoSystemCompleteOrders() {
+        console.log('🤖 [Auto-pilot] Bắt đầu quét đơn đặt hàng chờ nhập hàng ngày...');
+        try {
+            const pendingOrders = await this.prisma.dathang.findMany({
+                where: {
+                    status: 'dadat',
+                    isActive: true
+                }
+            });
+            if (pendingOrders.length === 0) {
+                console.log('🤖 [Auto-pilot] Không có đơn hàng nào cần xử lý.');
+                return;
+            }
+            for (const order of pendingOrders) {
+                console.log(`🤖 [Auto-pilot] Đang xử lý tự động đơn hàng: ${order.madncc}`);
+                const dathangFull = await this.prisma.dathang.findUnique({
+                    where: { id: order.id },
+                    include: { sanpham: true }
+                });
+                if (!dathangFull)
+                    continue;
+                const updateData = {
+                    status: 'danhan',
+                    ghichu: (order.ghichu || '') + ' | [Auto-pilot] Tự động xác nhận nhập kho lúc 23h',
+                    sanpham: dathangFull.sanpham.map(sp => ({
+                        id: sp.id,
+                        idSP: sp.idSP,
+                        sldat: Number(sp.sldat),
+                        slnhan: Number(sp.sldat),
+                        gianhap: Number(sp.gianhap)
+                    }))
+                };
+                await this.update(order.id, updateData);
+            }
+            console.log(`🤖 [Auto-pilot] Hoàn thành tự động chốt ${pendingOrders.length} đơn hàng.`);
+        }
+        catch (error) {
+            console.error('❌ [Auto-pilot] Lỗi trong quá trình tự động chốt đơn:', error);
+        }
+    }
 };
 exports.DathangService = DathangService;
+__decorate([
+    (0, schedule_1.Cron)('0 0 23 * * *'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], DathangService.prototype, "autoSystemCompleteOrders", null);
 exports.DathangService = DathangService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,

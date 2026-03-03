@@ -33,7 +33,11 @@ case $choice in
         echo "=> Tiến hành Backup từ Server..."
         echo "🌐 Target Database: ${MASKED_DB_URL}"
         bash scripts/fast_backup.sh
-        echo "🎉 Đã hoàn tất Backup! Thoát chương trình."
+        if [ $? -eq 0 ]; then
+            echo "🎉 Đã hoàn tất Backup! Thoát chương trình."
+        else
+            echo "❌ Quá trình Backup gặp lỗi."
+        fi
         exit 0
         ;;
     3)
@@ -45,28 +49,44 @@ case $choice in
         echo "=> Tiến hành Nhân bản Database (Clone DB) trên Server..."
         echo "🌐 Server Database: ${MASKED_DB_URL}"
         bash scripts/clone_db.sh
-        echo "🎉 Đã hoàn tất Clone Data! Thoát chương trình."
+        if [ $? -eq 0 ]; then
+            echo "🎉 Đã hoàn tất Clone Data! Thoát chương trình."
+        else
+            echo "❌ Quá trình Clone Database gặp lỗi."
+        fi
         exit 0
         ;;
     5)
         echo "=> Khởi chạy trình Phục hồi Restore bằng file thiết lập local..."
         echo "🌐 Local Database: ${MASKED_DB_URL}"
         bash scripts/fast_restore.sh
-        echo "🎉 Đã Restore xong! Thoát chương trình."
+        if [ $? -eq 0 ]; then
+            echo "🎉 Đã Restore xong! Thoát chương trình."
+        else
+            echo "❌ Quá trình Restore gặp lỗi."
+        fi
         exit 0
         ;;
     6)
         echo "=> ⚡ Tiến hành Tối ưu hóa Tất cả Sản phẩm..."
         echo "🌐 API Database: ${MASKED_DB_URL}"
         bash scripts/optimize_all.sh
-        echo "🎉 Đã hoàn tất Tối ưu! Thoát chương trình."
+        if [ $? -eq 0 ]; then
+            echo "🎉 Đã hoàn tất Tối ưu! Thoát chương trình."
+        else
+            echo "❌ Quá trình tối ưu gặp lỗi hoặc đã bị người dùng hủy."
+        fi
         exit 0
         ;;
     7)
         echo "=> 🧹 Tiến hành Dọn dẹp Database..."
         echo "🌐 Clean Database: ${MASKED_DB_URL}"
         bash scripts/cleanup_database.sh
-        echo "🎉 Đã dọn dẹp xong! Thoát chương trình."
+        if [ $? -eq 0 ]; then
+            echo "🎉 Đã dọn dẹp xong! Thoát chương trình."
+        else
+            echo "❌ Quá trình dọn dẹp gặp lỗi hoặc đã bị người dùng hủy."
+        fi
         exit 0
         ;;
     0)

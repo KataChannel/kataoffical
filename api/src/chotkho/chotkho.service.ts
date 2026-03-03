@@ -84,6 +84,24 @@ export class ChotkhoService {
               ngaychot: chotkhoMaster.ngaychot
             }
           });
+
+          // 🎯 SYNC TO REALITY: Cập nhật tồn kho vật lý trong hệ thống
+          // Khi chốt kho, slton (tồn sọt) sẽ được đưa về đúng con số đếm được
+          await prisma.tonKho.upsert({
+            where: { sanphamId: detail.sanphamId },
+            create: {
+              sanphamId: detail.sanphamId,
+              slton: new Decimal(detail.sltonthucte),
+              sltontt: new Decimal(detail.sltonthucte), // Đồng bộ mốc tính toán thực tế
+              slchogiao: 0,
+              slchonhap: 0,
+            },
+            update: {
+              slton: new Decimal(detail.sltonthucte),
+              sltontt: new Decimal(detail.sltonthucte), 
+              updatedAt: new Date() // Reset mốc thời gian chốt kho
+            }
+          });
           
           detailCount++;
         }
@@ -460,6 +478,23 @@ export class ChotkhoService {
               chenhlech,
               ghichu: detail.ghichu || '',
               ngaychot: updatedMaster.ngaychot
+            }
+          });
+
+          // 🎯 SYNC TO REALITY: Cập nhật tồn kho vật lý trong hệ thống
+          await prisma.tonKho.upsert({
+            where: { sanphamId: detail.sanphamId },
+            create: {
+              sanphamId: detail.sanphamId,
+              slton: detail.sltonthucte,
+              sltontt: detail.sltonthucte, 
+              slchogiao: 0,
+              slchonhap: 0,
+            },
+            update: {
+              slton: detail.sltonthucte,
+              sltontt: detail.sltonthucte, 
+              updatedAt: new Date()
             }
           });
         }

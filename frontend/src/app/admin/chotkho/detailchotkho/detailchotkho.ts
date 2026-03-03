@@ -377,9 +377,9 @@ import * as XLSXStyle from 'xlsx-js-style';
           masp: product.masp,
           dvt: product.dvt,
           sltonhethong: product.tonkho?.slton || 0,
-          sltonthucte: product.tonkho?.sltinhthucte || 0,
+          sltonthucte: Math.max(0, product.tonkho?.slton || 0), // Mặc định là số tồn vật lý hiện tại (không âm)
           slhuy: product.tonkho?.slhuy || 0,
-          chenhlech: (product.tonkho?.slton || 0) - (product.tonkho?.sltinhthucte || 0) - (product.slhuy || 0),
+          chenhlech: 0, // Mặc định chưa có chênh lệch khi bắt đầu đếm
           dongia: product.dongia
         }));
         
@@ -415,9 +415,9 @@ import * as XLSXStyle from 'xlsx-js-style';
           masp: product.masp,
           dvt: product.dvt,
           sltonhethong: product.sltonhethong || 0,
-          sltonthucte: product.sltonthucte || 0,
+          sltonthucte: Math.max(0, product.sltonthucte || 0),
           slhuy: product.slhuy || 0,
-          chenhlech: (product.sltonhethong || 0) - (product.sltonthucte || 0) - (product.slhuy || 0),
+          chenhlech: 0,
           dongia: product.dongia
         }));
         
@@ -620,6 +620,11 @@ import * as XLSXStyle from 'xlsx-js-style';
         // Remove commas and convert to number
         const numericValue = value.replace(/,/g, '').replace(/[^0-9.-]/g, '');
         value = Number(numericValue) || 0;
+        
+        // Cọc rào: Tồn thực tế và SL Hủy không được âm
+        if (field === 'sltonthucte' || field === 'slhuy') {
+          value = Math.max(0, value);
+        }
       }
       
       // console.log(`Updating ${field} with value:`, value);

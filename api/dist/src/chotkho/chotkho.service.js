@@ -63,6 +63,21 @@ let ChotkhoService = class ChotkhoService {
                             ngaychot: chotkhoMaster.ngaychot
                         }
                     });
+                    await prisma.tonKho.upsert({
+                        where: { sanphamId: detail.sanphamId },
+                        create: {
+                            sanphamId: detail.sanphamId,
+                            slton: new library_1.Decimal(detail.sltonthucte),
+                            sltontt: new library_1.Decimal(detail.sltonthucte),
+                            slchogiao: 0,
+                            slchonhap: 0,
+                        },
+                        update: {
+                            slton: new library_1.Decimal(detail.sltonthucte),
+                            sltontt: new library_1.Decimal(detail.sltonthucte),
+                            updatedAt: new Date()
+                        }
+                    });
                     detailCount++;
                 }
                 const result = await prisma.chotkho.findUnique({
@@ -389,6 +404,21 @@ let ChotkhoService = class ChotkhoService {
                             chenhlech,
                             ghichu: detail.ghichu || '',
                             ngaychot: updatedMaster.ngaychot
+                        }
+                    });
+                    await prisma.tonKho.upsert({
+                        where: { sanphamId: detail.sanphamId },
+                        create: {
+                            sanphamId: detail.sanphamId,
+                            slton: detail.sltonthucte,
+                            sltontt: detail.sltonthucte,
+                            slchogiao: 0,
+                            slchonhap: 0,
+                        },
+                        update: {
+                            slton: detail.sltonthucte,
+                            sltontt: detail.sltonthucte,
+                            updatedAt: new Date()
                         }
                     });
                 }

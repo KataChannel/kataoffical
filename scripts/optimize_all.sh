@@ -21,13 +21,44 @@ echo "╚═══════════════════════�
 echo ""
 
 # Kiểm tra API backend có chạy không
-echo "🔍 Kiểm tra API backend..."
-HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${API_URL}/sanpham/select" 2>/dev/null)
+echo "🔍 Kiểm tra API backend tại ${API_URL}..."
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${API_URL}/sanpham/forselect" 2>/dev/null)
 
 if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "201" ]; then
     echo "❌ API backend KHÔNG chạy trên ${API_URL}!"
-    echo "   Hãy khởi động backend trước: cd api && npx bun start"
-    exit 1
+    echo "   (Đã kiểm tra qua endpoint: /sanpham/forselect)"
+    echo ""
+    read -p "❓ Bạn có muốn tự động khởi chạy Backend tạm thời để tối ưu không? (y/n): " start_be
+    if [[ $start_be =~ ^[Yy]$ ]]; then
+        echo "=> ⏩ Đang khởi chạy Backend tạm thời..."
+        cd api && npx bun start > /dev/null 2>&1 &
+        BE_TEMP_PID=$!
+        
+        echo "⏳ Đang đợi Backend sẵn sàng (thường mất 5-10s)..."
+        COUNT=0
+        while [ $(curl -s -o /dev/null -w "%{http_code}" "${API_URL}/sanpham/forselect" 2>/dev/null) != "200" ]; do
+            sleep 1
+            ((COUNT++))
+            echo -n "."
+            if [ $COUNT -gt 30 ]; then
+                echo "❌ Lỗi: Backend khởi động quá lâu. Vui lòng kiểm tra lại."
+                kill $BE_TEMP_PID 2>/dev/null
+                exit 1
+            fi
+        done
+        echo "✅ Backend đã sẵn sàng! (PID: $BE_TEMP_PID)"
+        
+        # Hàm dọn dẹp khi kết thúc
+        function cleanup {
+          echo ""
+          echo "🛑 Đang dừng Backend tạm thời..."
+          kill $BE_TEMP_PID 2>/dev/null
+        }
+        trap cleanup EXIT
+    else
+        echo "❌ Đã hủy. Hãy khởi động backend trước: cd api && npx bun start"
+        exit 1
+    fi
 fi
 echo "✅ API backend đang chạy!"
 

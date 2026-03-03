@@ -668,4 +668,5 @@ export declare class DathangService {
         totalOptimized: number;
         errors: string[];
     }>;
+    autoSystemCompleteOrders(): Promise<void>;
 }

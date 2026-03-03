@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
 import { StatusMachineService } from 'src/common/status-machine.service';
@@ -1165,14 +1166,18 @@ async convertDathangImportToTransfer(
 
     // 8. Từ 'dadat' chuyển sang 'danhan' (bỏ qua 'dagiao' nhưng vẫn xử lý tồn kho và phiếu kho)
     if (oldDathang.status === 'dadat' && data.status === 'danhan') {
-      // 8.1. Giảm slchonhap (tồn kho chờ nhập) theo số lượng nhận thực tế
+      // 8.1. Cập nhật tồn kho
      for (const sp of data.sanpham) {
       const slnhan = parseFloat((Number(sp.slnhan) ?? 0).toFixed(3));
+      // Lấy sldat cũ để clear triệt để slchonhap
+      const oldItem = oldDathang.sanpham.find((o: any) => o.idSP === (sp.idSP ?? sp.id));
+      const sldatOld = oldItem ? parseFloat((Number(oldItem.sldat) ?? 0).toFixed(3)) : slnhan;
+
       await prisma.tonKho.update({
         where: { sanphamId: sp.idSP ?? sp.id },
         data: {
-        slchonhap: { decrement: slnhan },
-        slton: { increment: slnhan }, // Nhập kho thực tế
+          slchonhap: { decrement: sldatOld }, // Clear hoàn toàn lượng dự kiến cũ
+          slton: { increment: slnhan },      // Tăng lượng thực nhập
         },
       });
       }
@@ -1216,6 +1221,31 @@ async convertDathangImportToTransfer(
       };
       await prisma.phieuKho.create({ data: phieuKhoData });
       }
+
+      // LOG TRACKING METADATA
+      await prisma.importHistory.create({
+        data: {
+          caseDetail: {
+            dathangId: id,
+            madncc: oldDathang.madncc,
+            products: data.sanpham.map((item: any) => {
+              const sldat = parseFloat((Number(item.sldat) ?? 0).toFixed(3));
+              const slnhan = parseFloat((Number(item.slnhan) ?? 0).toFixed(3));
+              return {
+                idSP: item.sanphamId ?? item.id,
+                sldat: sldat,
+                slnhan: slnhan,
+                chenhlech: sldat - slnhan
+              };
+            }),
+            additionalInfo: "Lưu vết tự động đối soát lúc nhận hàng",
+          },
+          order: 1,
+          createdBy: "system",
+          title: `[Metadata] Đối soát nhận hàng ${oldDathang.madncc} - ${new Date().toLocaleString('vi-VN')}`,
+          type: "dathang_audit",
+        }
+      });
 
       // 8.3. Cập nhật trạng thái đơn đặt hàng và thông tin từng sản phẩm
       return prisma.dathang.update({
@@ -1295,6 +1325,14 @@ async convertDathangImportToTransfer(
               });
             }
 
+            // Đảm bảo slchonhap luôn được dọn sạch cho đơn Đã nhận
+            await prisma.tonKho.update({
+              where: { sanphamId: spId },
+              data: {
+                slchonhap: { set: 0 } // Reset về 0 nếu có rác cũ
+              }
+            });
+
             await prisma.dathangsanpham.update({
               where: { id: oldItem.id },
               data: {
@@ -1338,6 +1376,30 @@ async convertDathangImportToTransfer(
             });
           }
         }
+
+        await prisma.importHistory.create({
+          data: {
+            caseDetail: {
+              dathangId: id,
+              madncc: oldDathang.madncc,
+              products: data.sanpham.map((sp: any) => {
+                const sldat = parseFloat((sp.sldat ?? 0).toFixed(3));
+                const slnhan = parseFloat((sp.slnhan ?? 0).toFixed(3));
+                return {
+                  idSP: sp.idSP ?? sp.id,
+                  sldat: sldat,
+                  slnhan: slnhan,
+                  chenhlech: sldat - slnhan
+                };
+              }),
+              additionalInfo: "Sửa đổi số liệu sau khi hoàn tất Nhận hàng",
+            },
+            order: 1,
+            createdBy: "system",
+            title: `[Metadata] Cập nhật đối soát nhận hàng ${oldDathang.madncc} - ${new Date().toLocaleString('vi-VN')}`,
+            type: "dathang_audit",
+          }
+        });
 
         return await prisma.dathang.update({
           where: { id },
@@ -1846,7 +1908,7 @@ async deletebulk(data: any) {
         return { success: true, count: 0, totalProducts: sanphamIds.length };
       }
 
-      const batchSize = 15; // Smaller batch due to multiple updates per order
+      const batchSize = 30; // 🚀 Tăng batch size
       let totalItems = 0;
       const uniqueProducts = new Set<string>();
 
@@ -1855,16 +1917,17 @@ async deletebulk(data: any) {
         
         await this.prisma.$transaction(async (tx) => {
           const batchProducts = new Set<string>();
+          const updatePromises: Promise<any>[] = []; // 🚀 Định nghĩa kiểu rõ ràng để tránh lỗi lint 'never[]'
 
           for (const order of batch) {
-            await tx.dathang.update({
+            updatePromises.push(tx.dathang.update({
               where: { id: order.id },
               data: {
                 status: 'danhan',
                 ghichu: (order.ghichu || '') + ' | Bulk match process',
                 updatedAt: new Date()
               }
-            });
+            }));
 
             for (const sp of order.sanpham) {
               const sldat = parseFloat(sp.sldat.toString()) || 0;
@@ -1872,20 +1935,19 @@ async deletebulk(data: any) {
               const qtyToReceive = slgiao > 0 ? slgiao : sldat;
 
               if (qtyToReceive > 0) {
-                await tx.dathangsanpham.update({
+                updatePromises.push(tx.dathangsanpham.update({
                   where: { id: sp.id },
                   data: { slnhan: qtyToReceive, ghichu: (sp.ghichu || '') + ' | Bulk match' }
-                });
+                }));
                 
-                // Update TonKho atomically for EVERY product
-                await tx.tonKho.upsert({
+                updatePromises.push(tx.tonKho.upsert({
                   where: { sanphamId: sp.idSP },
                   create: { sanphamId: sp.idSP, slton: qtyToReceive, slchonhap: 0, slchogiao: 0 },
                   update: {
                     slton: { increment: qtyToReceive },
                     slchonhap: { decrement: sldat }
                   }
-                });
+                }));
 
                 batchProducts.add(sp.idSP);
                 uniqueProducts.add(sp.idSP);
@@ -1893,19 +1955,27 @@ async deletebulk(data: any) {
               }
             }
           }
+          
+          // Chờ tất cả update trong batch xong (trong cùng transaction)
+          await Promise.all(updatePromises);
 
-          // ✅ AUTO-SNAPSHOT: Sync ONLY touched products IN THIS BATCH
-          for (const prodId of Array.from(batchProducts)) {
-             await this.tonkhoManager.syncStockToReality(prodId, tx);
-          }
-        }, { timeout: 60000 });
+          // 🚀 Song song hóa việc sync trong cùng transaction
+          const syncPromises = Array.from(batchProducts).map(id => 
+            this.tonkhoManager.syncStockToReality(id, tx)
+          );
+          await Promise.all(syncPromises);
+
+        }, { timeout: 90000 });
       }
 
-      // 3. Final safety sync: Ensure ALL requested products are synced 
-      // (in case some products didn't have orders and weren't in any batch)
+      // 3. Final safety sync song song (không block sequential)
       const unsyncedIds = sanphamIds.filter(id => !uniqueProducts.has(id));
-      for (const id of unsyncedIds) {
-        await this.tonkhoManager.syncStockToReality(id);
+      if (unsyncedIds.length > 0) {
+        const CHUNK_SIZE = 10; // Xử lý 10 sản phẩm cùng lúc
+        for (let j = 0; j < unsyncedIds.length; j += CHUNK_SIZE) {
+          const chunk = unsyncedIds.slice(j, j + CHUNK_SIZE);
+          await Promise.all(chunk.map(id => this.tonkhoManager.syncStockToReality(id)));
+        }
       }
 
       return {
@@ -2328,28 +2398,44 @@ async deletebulk(data: any) {
         };
       }
 
-      // 2. Xử lý theo batch
-      const BATCH_SIZE = 100;
-      let processedBatches = 0;
+      // 2. Xử lý theo batch song song (Limit concurrency = 2)
+      const BATCH_SIZE = 150; // 🚀 Tăng kích thước batch
       let totalOptimized = 0;
       const errors: string[] = [];
 
+      // Phân chia danh sách thành các batch lớn
+      const groups: string[][] = [];
       for (let i = 0; i < allIds.length; i += BATCH_SIZE) {
-        const batchIds = allIds.slice(i, i + BATCH_SIZE);
-        const batchNum = Math.floor(i / BATCH_SIZE) + 1;
-        const totalBatches = Math.ceil(allIds.length / BATCH_SIZE);
+        groups.push(allIds.slice(i, i + BATCH_SIZE));
+      }
+
+      // Xử lý lần lượt từng 2 batch một lúc để tránh quá tải DB nhưng vẫn nhanh
+      const CONCURRENCY = 2;
+      let processedBatches = 0; // 🚀 Thêm lại biến này
+      for (let i = 0; i < groups.length; i += CONCURRENCY) {
+        const currentGroupBatch = groups.slice(i, i + CONCURRENCY);
         
-        console.log(`  🔄 [${batchNum}/${totalBatches}] Đang xử lý ${batchIds.length} sản phẩm...`);
-        
-        try {
-          const result = await this.completePendingReceiptsBulk(batchIds);
-          totalOptimized += result.count;
-          processedBatches++;
-          console.log(`  ✅ [${batchNum}/${totalBatches}] Hoàn tất: ${result.count} mục khớp lệnh, ${result.totalProducts} sản phẩm sync`);
-        } catch (error) {
-          const errMsg = `Batch ${batchNum} (${i}-${i + batchIds.length}): ${error.message}`;
-          errors.push(errMsg);
-          console.error(`  ❌ [${batchNum}/${totalBatches}] Lỗi:`, error.message);
+        const results = await Promise.all(currentGroupBatch.map(async (batchIds, idx) => {
+          const batchNum = i + idx + 1;
+          console.log(`  🔄 [${batchNum}/${groups.length}] Đang xử lý ${batchIds.length} sản phẩm...`);
+          
+          try {
+            const result = await this.completePendingReceiptsBulk(batchIds);
+            return { success: true, count: result.count, totalProducts: result.totalProducts };
+          } catch (error) {
+            console.error(`  ❌ [${batchNum}/${groups.length}] Lỗi:`, error.message);
+            return { success: false, error: error.message, batchNum };
+          }
+        }));
+
+        // Tổng hợp kết quả
+        for (const res of results) {
+          if (res.success) {
+            totalOptimized += (res as any).count;
+            processedBatches++;
+          } else {
+            errors.push(`Batch ${(res as any).batchNum}: ${(res as any).error}`);
+          }
         }
       }
 
@@ -2366,6 +2452,56 @@ async deletebulk(data: any) {
     } catch (error) {
       console.error('❌ [OPTIMIZE ALL] Lỗi:', error);
       throw error;
+    }
+  }
+
+  /**
+   * 🤖 AUTO-PILOT CRON JOB
+   * Tự động hoàn tất các đơn đặt hàng 'dadat' sang 'danhan' vào lúc 23h hàng ngày.
+   */
+  @Cron('0 0 23 * * *')
+  async autoSystemCompleteOrders() {
+    console.log('🤖 [Auto-pilot] Bắt đầu quét đơn đặt hàng chờ nhập hàng ngày...');
+    try {
+      const pendingOrders = await this.prisma.dathang.findMany({
+        where: {
+          status: 'dadat',
+          isActive: true
+        }
+      });
+
+      if (pendingOrders.length === 0) {
+        console.log('🤖 [Auto-pilot] Không có đơn hàng nào cần xử lý.');
+        return;
+      }
+
+      for (const order of pendingOrders) {
+        console.log(`🤖 [Auto-pilot] Đang xử lý tự động đơn hàng: ${order.madncc}`);
+        // Lấy đầy đủ thông tin sản phẩm của đơn hàng
+        const dathangFull = await this.prisma.dathang.findUnique({
+          where: { id: order.id },
+          include: { sanpham: true }
+        });
+
+        if (!dathangFull) continue;
+
+        const updateData = {
+          status: 'danhan',
+          ghichu: (order.ghichu || '') + ' | [Auto-pilot] Tự động xác nhận nhập kho lúc 23h',
+          sanpham: dathangFull.sanpham.map(sp => ({
+            id: sp.id, // ID của dathangsanpham record
+            idSP: sp.idSP,
+            sldat: Number(sp.sldat),
+            slnhan: Number(sp.sldat), // Mặc định nhận đủ khi auto
+            gianhap: Number(sp.gianhap)
+          }))
+        };
+
+        await this.update(order.id, updateData);
+      }
+      console.log(`🤖 [Auto-pilot] Hoàn thành tự động chốt ${pendingOrders.length} đơn hàng.`);
+    } catch (error) {
+      console.error('❌ [Auto-pilot] Lỗi trong quá trình tự động chốt đơn:', error);
     }
   }
 
