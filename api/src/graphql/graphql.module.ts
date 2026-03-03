@@ -10,6 +10,7 @@ import { DataLoaderService } from './dataloader.service';
 import { FieldSelectionService } from './field-selection.service';
 import { GraphQLPerformanceService } from './performance.service';
 import { DashboardResolver } from '../dashboard/dashboard.resolver';
+import { NhuCauDatHangResolver } from './nhucaudathang.resolver';
 
 @Module({
   imports: [
@@ -31,6 +32,9 @@ import { DashboardResolver } from '../dashboard/dashboard.resolver';
     
     // Dashboard resolver
     DashboardResolver,
+
+    // ⚡ Optimized resolver for Nhu Cau Dat Hang (replaces 4 heavy queries)
+    NhuCauDatHangResolver,
   ],
   exports: [
     UniversalService,

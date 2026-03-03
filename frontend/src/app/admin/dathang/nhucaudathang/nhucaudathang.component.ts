@@ -446,7 +446,7 @@ export class NhucaudathangComponent {
 
   async loadDonhangWithRelations(forceRefresh: boolean = false) {
     try {
-      this.isLoading = false;
+      this.isLoading = true;
       this.loadingMessage = 'Đang tải dữ liệu đơn hàng...';
       this.progressPercentage = 0;
 
@@ -455,7 +455,6 @@ export class NhucaudathangComponent {
       let endDate: string;
 
       if (this.isDateRangeEnabled && this.batdau && this.ketthuc) {
-        // ✅ Sử dụng getAPIDateRange để đảm bảo consistent timezone handling
         const dateRange = this._timezoneService.getAPIDateRange(
           this.batdau,
           this.ketthuc
@@ -463,307 +462,37 @@ export class NhucaudathangComponent {
         startDate = dateRange.Batdau;
         endDate = dateRange.Ketthuc;
       } else {
-        // Default to today if no date range is set
         const today = new Date();
         const todayRange = this._timezoneService.getAPIDateRange(today, today);
         startDate = todayRange.Batdau;
         endDate = todayRange.Ketthuc;
       }
 
-      this.progressPercentage = 25;
+      this.progressPercentage = 20;
       this.loadingMessage = 'Đang xử lý dữ liệu...';
 
-      const [Donhangs, Dathangs, Tonkhos, Sanphams] = await Promise.all([
-        this._GraphqlService.findAll('donhang', {
-          enableParallelFetch: true,
-          batchSize: 1000,
-          take: 999999,
-          aggressiveCache: !forceRefresh,
-          orderBy: { createdAt: 'desc' },
-          where: {
-            ngaygiao: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-          select: {
-            id: true,
-            madonhang: true,
-            ngaygiao: true,
-            status:true,
-            updatedAt: true,
-            sanpham: {
-              select: {
-                giaban: true,
-                sldat: true,
-                slgiao: true,
-                slnhan: true,
-                sanpham: { select: { masp: true } },
-              },
-            },
-          },
-        }),
-
-        this._GraphqlService.findAll('dathang', {
-          enableParallelFetch: true,
-          batchSize: 1000,
-          take: 999999,
-          aggressiveCache: !forceRefresh,
-          orderBy: { createdAt: 'desc' },
-          where: {
-            OR: [
-              {
-                ngaynhan: {
-                  gte: startDate,
-                  lte: endDate,
-                },
-              },
-              {
-                status: { in: ['dadat', 'dagiao'] }
-              },
-              {
-                updatedAt: { gte: startDate } // Also get recently received
-              }
-            ]
-          },
-          select: {
-            id: true,
-            madncc: true,
-            ngaynhan: true,
-            status: true,
-            updatedAt: true,
-            nhacungcap: {
-              select: {
-                name: true,
-                mancc: true,
-              },
-            },
-            sanpham: {
-              select: {
-                sldat: true,
-                slgiao: true,
-                slnhan: true,
-                sanpham: { select: { masp: true } },
-              },
-            },
-            kho: {
-              select: {
-                name: true,
-                makho: true,
-              },
-            },
-          },
-        }),
-
-        this._GraphqlService.findAll('tonkho', {
-          enableParallelFetch: true,
-          aggressiveCache: !forceRefresh,
-          batchSize: 1000,
-          take: 999999,
-          select: {
-            id: true,
-            sanphamId: true,
-            slton: true,
-            sltontt: true,
-            slchogiao: true,
-            slchonhap: true,
-            updatedAt: true,
-            sanpham: {
-              select: {
-                title: true,
-                masp: true,
-                dvt: true,
-                haohut: true,
-              },
-            },
-          },
-        }),
-
-        this._GraphqlService.findAll('sanpham', {
-          enableParallelFetch: true,
-          aggressiveCache: !forceRefresh,
-          batchSize: 1000,
-          take: 999999,
-          select: {
-            id: true,
-            title: true,
-            masp: true,
-            dvt: true,
-            haohut: true,
-            Nhacungcap:{
-              select:{mancc:true,name:true}
-            },
-          }
-        }),
-        
-      ]);
-
-
-      const DonhangsTranfer = Donhangs.data.flatMap((order: any) =>
-        order.sanpham.map((sp: any) => ({
-          type: 'donhang',
-          status: order.status,
-          madonhang: order.madonhang,
-          ngaygiao: order.ngaygiao,
-          masp: sp.sanpham.masp,
-          giaban: Number(sp.giaban) || 0,
-          sldat: Number(sp.sldat) || 0,
-          slgiao: Number(sp.slgiao) || 0,
-          slnhan: Number(sp.slnhan) || 0,
-          updatedAt: order.updatedAt,
-        }))
-      );
-      const DathangsTranfer = Dathangs.data.flatMap((order: any) => {
-        return order.sanpham.map((sp: any) => ({
-          type: 'dathang',
-          madncc: order.madncc,
-          mancc: order.nhacungcap.mancc,
-          name: order.nhacungcap.name,
-          ngaynhan: order.ngaynhan,
-          masp: sp.sanpham.masp,
-
-          sldat: Number(sp.sldat) || 0,
-          slgiao: Number(sp.slgiao) || 0,
-          slnhan: Number(sp.slnhan) || 0,
-
-          status: order.status,
-          updatedAt: order.updatedAt,
-          makho: order.kho.makho,
-          namekho: order.kho.name,
-        }));
-      });
-      const TonkhosTranfer = Tonkhos.data.map((sp: any) => ({
-        type: 'tonkho',
-        masp: sp.sanpham.masp,
-        title: sp.sanpham.title,
-        dvt: sp.sanpham.dvt,
-        haohut: sp.sanpham.haohut || 0,
-        slton: Number(sp.slton) || 0,
-        sltontt: Number(sp.sltontt) || 0,
-        slchogiao: Number(sp.slchogiao) || 0,
-        slchonhap: Number(sp.slchonhap) || 0,
-        updatedAt: sp.updatedAt,
-      }));
-      const tonghopMap = new Map<string, any>();
-      TonkhosTranfer.forEach((tonkho: any) => {
-        tonghopMap.set(tonkho.masp, {
-          id: GenId(8, false),
-          ngaynhan: tonkho.ngaynhan,
-          mancc: tonkho.mancc,
-          name: tonkho.name,
-          masp: tonkho.masp,
-          title: tonkho.title,
-          dvt: tonkho.dvt,
-          haohut: tonkho.haohut || 0,
-          slton: tonkho.slton,
-          sltontt: tonkho.sltontt,
-          slchogiao: tonkho.slchogiao,
-          slchonhap: tonkho.slchonhap,
-          SLDat: 0,
-          SLGiao: 0,
-        });
-      });
-
-      DathangsTranfer.forEach((dathang: any) => {
-        // console.log(dathang);
-        if (tonghopMap.has(dathang.masp)) {
-          const item = tonghopMap.get(dathang.masp);
-          item.SLDat += dathang.sldat;
-          item.ngaynhan = dathang.ngaynhan;
-          item.mancc = dathang.mancc;
-          item.name = dathang.name;
-          item.makho = dathang.makho;
-          item.namekho = dathang.namekho;
-        }
-      });
-
-      DonhangsTranfer.forEach((donhang: any) => {
-        if (tonghopMap.has(donhang.masp)) {
-          const item = tonghopMap.get(donhang.masp);
-          item.SLGiao += donhang.slnhan;
-        }
-      });
-      const SanphamsTranfer = Sanphams.data;
-
-      // Create efficient lookup maps for better performance
-      const dathangMap = new Map<string, number>();
-      const donhangMap = new Map<string, number>();
-      const tonkhoMap = new Map<string, any>();
-
-      // Build lookup maps in single pass
-      DathangsTranfer.forEach((dh: any) => {
-        const currentSum = dathangMap.get(dh.masp) || 0;
-        dathangMap.set(dh.masp, currentSum + dh.sldat);
-      });
-
-      DonhangsTranfer.forEach((dh: any) => {
-        const currentSum = donhangMap.get(dh.masp) || 0;
-        donhangMap.set(dh.masp, currentSum + dh.slnhan); // Fixed: use slnhan instead of sldat
-      });
-
-      TonkhosTranfer.forEach((tk: any) => {
-        tonkhoMap.set(tk.masp, tk);
-      });
-
-      // Transform data efficiently using maps
-      const transformFinalData = SanphamsTranfer.map((sp: any) => {
-        const tonkho = tonkhoMap.get(sp.masp);
-        const slDat = dathangMap.get(sp.masp) || 0;
-        const slGiao = donhangMap.get(sp.masp) || 0;
-
-        const transformedItem = {
-          ...sp,
-          id: sp.id || GenId(8, false),
-          mancc: sp.Nhacungcap?.[0]?.mancc || '',
-          name: sp.Nhacungcap?.[0]?.name || '',
-          SLDat: slDat,
-          SLGiao: slGiao,
-          slton: tonkho?.slton || 0,
-          sltontt: tonkho?.sltontt || 0,
-          slchogiao: tonkho?.slchogiao || 0,
-          slchonhap: tonkho?.slchonhap || 0,
-          updatedAt: tonkho?.updatedAt || null,
-          haohut: tonkho?.haohut || sp.haohut || 0,
-          slhaohut: 0,
-          Dathangs: DathangsTranfer.filter((dh: any) => dh.masp === sp.masp),
-          Donhangs: DonhangsTranfer.filter((dh: any) => dh.masp === sp.masp),
-        };
-        // Calculate suggestion immediately
-        transformedItem.slhaohut = this.GetSLHaohut(transformedItem);
-        transformedItem.goiy = this.GetGoiy(transformedItem);
-        return transformedItem;
-      })
-        .filter((sp) => sp.masp)
-        .sort(
-          (a, b) =>
-            parseFloat(b.Dathangs.length) - parseFloat(a.Dathangs.length)
-        ); // Sort by Dathangs length descending
-
-      // SanphamsTranfer.
+      // ⚡ OPTIMIZED: Single server-side aggregation replaces 4 heavy queries
+      // BEFORE: 4 queries fetching ~570,000 rows (Donhang 481k + Dathang 55k rows)
+      // AFTER:  1 query returning ~1,022 pre-aggregated rows → giảm 99% data transfer
+      const response = await this._GraphqlService.getNhuCauDatHang(startDate, endDate, forceRefresh);
+      const SanphamsTranfer = response?.data || [];
 
       this.progressPercentage = 75;
       this.loadingMessage = 'Đang tổng hợp dữ liệu...';
+
+      // Fetch kho list (nhỏ, tải nhanh)
       const Khos = await this._GraphqlService.findAll('kho', {
-        enableParallelFetch: true,
-        batchSize: 1000,
-        take: 999999,
-        aggressiveCache: !forceRefresh,
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          name: true,
-          makho: true,
-        },
+        enableParallelFetch: false,
+        aggressiveCache: true,
+        batchSize: 100,
+        take: 100,
+        select: { id: true, name: true, makho: true },
       });
 
-      this.TonghopsFinal = this.transformFinalData(transformFinalData, Khos.data);
-      //console.log('transformFinalData', transformFinalData);
-      //console.log('this.TonghopsFinal', this.TonghopsFinal);
+      this.TonghopsFinal = this.transformFinalData(SanphamsTranfer, Khos.data);
 
       this.TonghopsFinal.forEach((item) => {
         // ✅ CÔNG THỨC TỒN CHUẨN (RELIABLE STOCK):
-        // tongkho = [Tồn chốt thực tế] + [Nhập mới sau chốt] - [Xuất mới sau chốt] + [Hàng đang về]
-
         const lastCountTime = item.updatedAt ? new Date(item.updatedAt).getTime() : 0;
 
         // 1. Tính lượng hàng NHẬP MỚI sau thời điểm chốt kho gần nhất
@@ -772,9 +501,8 @@ export class NhucaudathangComponent {
           .reduce((sum: number, dh: any) => sum + (Number(dh.slnhan) || 0), 0);
 
         // 2. Tính lượng hàng XUẤT MỚI (Giao khách) sau thời điểm chốt kho gần nhất
-        // Lưu ý: Đơn hàng khách 'dagiao' hoặc 'hoanthanh' mới làm giảm tồn thực tế
         const deliveredAfterCount = (item.Donhangs || [])
-          .filter((dh: any) => (dh.status === 'dagiao' || dh.status === 'danhan' || dh.status === 'hoanthanh') && 
+          .filter((dh: any) => (dh.status === 'dagiao' || dh.status === 'danhan' || dh.status === 'hoanthanh') &&
                   dh.updatedAt && new Date(dh.updatedAt).getTime() > lastCountTime)
           .reduce((sum: number, dh: any) => sum + (Number(dh.slnhan) || 0), 0);
 
@@ -787,14 +515,14 @@ export class NhucaudathangComponent {
           (Number(item.kho5) || 0) +
           (Number(item.kho6) || 0)
         );
-        
+
         item.receivedAfterCount = receivedAfterCount;
         item.deliveredAfterCount = deliveredAfterCount;
         item.incomingStock = incomingStock;
 
         // Công thức hội tụ: Tồn chốt + Biến động sau chốt + Hàng sắp về
         item.tongkho = parseFloat((Number(item.sltontt || 0) + receivedAfterCount - deliveredAfterCount + incomingStock).toFixed(3));
-        
+
         item.slhaohut = this.GetSLHaohut(item);
         item.goiy = this.GetGoiy(item);
       });
@@ -802,9 +530,7 @@ export class NhucaudathangComponent {
       // Sort by goiy from large to small
       this.TonghopsFinal.sort((a, b) => parseFloat(b.goiy) - parseFloat(a.goiy));
 
-      //console.log('this.transformFinalData', transformFinalData);
-
-      const tranferTonghop = (await this.convertData(transformFinalData)).flat();
+      const tranferTonghop = (await this.convertData(SanphamsTranfer)).flat();
       this.TonghopsExportFinal = this.convertKhoData(tranferTonghop);
       this.progressPercentage = 90;
       this.loadingMessage = 'Hoàn tất...';
@@ -816,7 +542,6 @@ export class NhucaudathangComponent {
 
       this.progressPercentage = 100;
 
-      // Short delay to show completion
       setTimeout(() => {
         this.isLoading = false;
         this.loadingMessage = '';
@@ -836,7 +561,6 @@ export class NhucaudathangComponent {
       });
     }
   }
-
   async refresh() {
     this.isRefreshing = true;
     this.loadingMessage = 'Đang làm mới dữ liệu...';
@@ -3265,7 +2989,7 @@ export class NhucaudathangComponent {
   }
 
   /**
-   * Handle Enter key for inline editing
+   * Handle Enter key for inline editing (General fields like ghichu, xSLDat)
    */
   onFieldKeyDown(event: KeyboardEvent, row: any, field: string): void {
     if (event.key === 'Enter') {
@@ -3277,11 +3001,90 @@ export class NhucaudathangComponent {
   }
 
   /**
-   * Handle blur for inline editing
+   * Handle blur for inline editing (General fields)
    */
   onFieldBlur(event: FocusEvent, row: any, field: string): void {
     const target = event.target as HTMLInputElement;
     this.saveFieldValue(row, field, target.value);
+  }
+
+  /**
+   * Handle physical stock update - direct saving
+   */
+  onPhysicalStockKeyDown(event: KeyboardEvent, row: any): void {
+    if (event.key === 'Enter') {
+      const target = event.target as HTMLInputElement;
+      this.savePhysicalStock(row, target.value);
+    } else if (event.key === 'Escape') {
+      this.stopEdit(row, 'sltontt');
+    }
+  }
+
+  onPhysicalStockBlur(event: FocusEvent, row: any): void {
+    const target = event.target as HTMLInputElement;
+    this.savePhysicalStock(row, target.value);
+  }
+
+  async savePhysicalStock(row: any, newValue: any): Promise<void> {
+    const slton = parseFloat(newValue);
+    const currentSltontt = Number(row.sltontt || 0);
+
+    // Stop editing immediately
+    this.stopEdit(row, 'sltontt');
+
+    // If value hasn't changed, do nothing
+    if (isNaN(slton) || slton === currentSltontt) {
+      return;
+    }
+
+    // ✅ CHẶN NHẬP SỐ ÂM TỪ GIAO DIỆN
+    if (slton < 0) {
+      this._snackBar.open(`⚠️ Lỗi: Tồn thực tế không được là số âm (${slton}). Hệ thống đã từ chối cập nhật.`, 'Đã hiểu', {
+        duration: 4000,
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    try {
+      this.isLoading = true;
+      this.loadingMessage = `Đang cập nhật tồn kho cho ${row.title}...`;
+
+      const delta = slton - currentSltontt;
+      const type = delta > 0 ? 'nhap' : 'xuat';
+      const absDelta = Math.abs(delta);
+
+      await this._PhieukhoService.CreatePhieukho({
+        title: `ĐIỀU CHỈNH CHỐT KHO TRỰC TIẾP (Ô DỮ LIỆU)`,
+        type: type,
+        isChotkho: true,
+        sanpham: [
+          {
+            sanphamId: row.id,
+            soluong: absDelta,
+          },
+        ],
+        ghichu: `Điều chỉnh ${type === 'nhap' ? 'tăng' : 'giảm'} ${absDelta} cho sản phẩm ${row.masp} (Tồn mới: ${slton}) trực tiếp từ bảng nhu cầu.`,
+        ngay: DateHelpers.now(),
+      });
+
+      this._snackBar.open(`✅ Đã cập nhật tồn thực tế cho ${row.masp}: ${slton}`, '', {
+        duration: 3000,
+        panelClass: ['snackbar-success'],
+      });
+
+      // Reload data immediately to reflect changes
+      await this.loadDonhangWithRelations(true);
+    } catch (error: any) {
+      console.error('Error saving physical stock:', error);
+      this._snackBar.open(`❌ Lỗi: ${error.message || 'Không thể cập nhật tồn kho'}`, 'Đóng', {
+        duration: 5000,
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading = false;
+      this.loadingMessage = '';
+    }
   }
 }
 

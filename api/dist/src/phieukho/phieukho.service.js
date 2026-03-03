@@ -235,6 +235,9 @@ let PhieukhoService = class PhieukhoService {
                         });
                         const currentSltontt = currentTonKho ? (Number(currentTonKho.sltontt) || 0) : 0;
                         const targetStock = data.type === 'nhap' ? currentSltontt + soluong : currentSltontt - soluong;
+                        if (data.isChotkho && targetStock < 0) {
+                            throw new common_1.BadRequestException(`Giao dịch chốt kho khiến tồn thực tế âm (${targetStock}). Vui lòng kiểm tra lại số liệu.`);
+                        }
                         if (data.isChotkho) {
                             await prisma.tonKho.upsert({
                                 where: { sanphamId: sp.sanphamId },

@@ -1908,7 +1908,7 @@ async deletebulk(data: any) {
         return { success: true, count: 0, totalProducts: sanphamIds.length };
       }
 
-      const batchSize = 30; // 🚀 Tăng batch size
+      const batchSize = 40; 
       let totalItems = 0;
       const uniqueProducts = new Set<string>();
 
@@ -1916,18 +1916,19 @@ async deletebulk(data: any) {
         const batch = orders.slice(i, i + batchSize);
         
         await this.prisma.$transaction(async (tx) => {
-          const batchProducts = new Set<string>();
-          const updatePromises: Promise<any>[] = []; // 🚀 Định nghĩa kiểu rõ ràng để tránh lỗi lint 'never[]'
+          // 🚀 Gom nhóm cập nhật TonKho để tránh Deadlock và tăng tốc
+          const tonkhoUpdates = new Map<string, { slton: number; slchonhap: number }>();
 
           for (const order of batch) {
-            updatePromises.push(tx.dathang.update({
+            // Cập nhật trạng thái đơn hàng (tuần tự)
+            await tx.dathang.update({
               where: { id: order.id },
               data: {
                 status: 'danhan',
                 ghichu: (order.ghichu || '') + ' | Bulk match process',
                 updatedAt: new Date()
               }
-            }));
+            });
 
             for (const sp of order.sanpham) {
               const sldat = parseFloat(sp.sldat.toString()) || 0;
@@ -1935,43 +1936,49 @@ async deletebulk(data: any) {
               const qtyToReceive = slgiao > 0 ? slgiao : sldat;
 
               if (qtyToReceive > 0) {
-                updatePromises.push(tx.dathangsanpham.update({
+                // Cập nhật dathangsanpham
+                await tx.dathangsanpham.update({
                   where: { id: sp.id },
                   data: { slnhan: qtyToReceive, ghichu: (sp.ghichu || '') + ' | Bulk match' }
-                }));
+                });
                 
-                updatePromises.push(tx.tonKho.upsert({
-                  where: { sanphamId: sp.idSP },
-                  create: { sanphamId: sp.idSP, slton: qtyToReceive, slchonhap: 0, slchogiao: 0 },
-                  update: {
-                    slton: { increment: qtyToReceive },
-                    slchonhap: { decrement: sldat }
-                  }
-                }));
+                // Gom dữ liệu để update TonKho 1 lần duy nhất
+                const current = tonkhoUpdates.get(sp.idSP) || { slton: 0, slchonhap: 0 };
+                tonkhoUpdates.set(sp.idSP, {
+                  slton: current.slton + qtyToReceive,
+                  slchonhap: current.slchonhap + sldat
+                });
 
-                batchProducts.add(sp.idSP);
                 uniqueProducts.add(sp.idSP);
                 totalItems++;
               }
             }
           }
           
-          // Chờ tất cả update trong batch xong (trong cùng transaction)
-          await Promise.all(updatePromises);
-
-          // 🚀 Song song hóa việc sync trong cùng transaction
-          const syncPromises = Array.from(batchProducts).map(id => 
-            this.tonkhoManager.syncStockToReality(id, tx)
-          );
-          await Promise.all(syncPromises);
-
-        }, { timeout: 90000 });
+          // 🚀 Thực hiện cập nhật TonKho đã gom nhóm (tuần tự theo ID để tránh Deadlock)
+          const sortedProductIds = Array.from(tonkhoUpdates.keys()).sort();
+          for (const prodId of sortedProductIds) {
+            const delta = tonkhoUpdates.get(prodId);
+            if (!delta) continue;
+            
+            await tx.tonKho.upsert({
+              where: { sanphamId: prodId },
+              create: { sanphamId: prodId, slton: delta.slton, slchonhap: 0, slchogiao: 0 },
+              update: {
+                slton: { increment: delta.slton },
+                slchonhap: { decrement: delta.slchonhap }
+              }
+            });
+            // Đồng bộ thực tế luôn trong cùng TX
+            await this.tonkhoManager.syncStockToReality(prodId, tx);
+          }
+        }, { timeout: 120000 });
       }
 
-      // 3. Final safety sync song song (không block sequential)
+      // 3. Final safety sync song song cho các sản phẩm không có đơn hàng
       const unsyncedIds = sanphamIds.filter(id => !uniqueProducts.has(id));
       if (unsyncedIds.length > 0) {
-        const CHUNK_SIZE = 10; // Xử lý 10 sản phẩm cùng lúc
+        const CHUNK_SIZE = 20;
         for (let j = 0; j < unsyncedIds.length; j += CHUNK_SIZE) {
           const chunk = unsyncedIds.slice(j, j + CHUNK_SIZE);
           await Promise.all(chunk.map(id => this.tonkhoManager.syncStockToReality(id)));
@@ -2398,44 +2405,28 @@ async deletebulk(data: any) {
         };
       }
 
-      // 2. Xử lý theo batch song song (Limit concurrency = 2)
-      const BATCH_SIZE = 150; // 🚀 Tăng kích thước batch
+      // 2. Xử lý theo batch
+      const BATCH_SIZE = 200; // 🚀 Tăng kích thước batch vì xử lý tuần tự đã an toàn hơn
       let totalOptimized = 0;
       const errors: string[] = [];
+      let processedBatches = 0;
 
-      // Phân chia danh sách thành các batch lớn
-      const groups: string[][] = [];
       for (let i = 0; i < allIds.length; i += BATCH_SIZE) {
-        groups.push(allIds.slice(i, i + BATCH_SIZE));
-      }
-
-      // Xử lý lần lượt từng 2 batch một lúc để tránh quá tải DB nhưng vẫn nhanh
-      const CONCURRENCY = 2;
-      let processedBatches = 0; // 🚀 Thêm lại biến này
-      for (let i = 0; i < groups.length; i += CONCURRENCY) {
-        const currentGroupBatch = groups.slice(i, i + CONCURRENCY);
+        const batchIds = allIds.slice(i, i + BATCH_SIZE);
+        const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+        const totalBatches = Math.ceil(allIds.length / BATCH_SIZE);
         
-        const results = await Promise.all(currentGroupBatch.map(async (batchIds, idx) => {
-          const batchNum = i + idx + 1;
-          console.log(`  🔄 [${batchNum}/${groups.length}] Đang xử lý ${batchIds.length} sản phẩm...`);
-          
-          try {
-            const result = await this.completePendingReceiptsBulk(batchIds);
-            return { success: true, count: result.count, totalProducts: result.totalProducts };
-          } catch (error) {
-            console.error(`  ❌ [${batchNum}/${groups.length}] Lỗi:`, error.message);
-            return { success: false, error: error.message, batchNum };
-          }
-        }));
-
-        // Tổng hợp kết quả
-        for (const res of results) {
-          if (res.success) {
-            totalOptimized += (res as any).count;
-            processedBatches++;
-          } else {
-            errors.push(`Batch ${(res as any).batchNum}: ${(res as any).error}`);
-          }
+        console.log(`  🔄 [${batchNum}/${totalBatches}] Đang xử lý ${batchIds.length} sản phẩm...`);
+        
+        try {
+          const result = await this.completePendingReceiptsBulk(batchIds);
+          totalOptimized += result.count;
+          processedBatches++;
+          console.log(`  ✅ [${batchNum}/${totalBatches}] Hoàn tất: ${result.count} mục khớp lệnh`);
+        } catch (error) {
+          const errMsg = `Batch ${batchNum}: ${error.message}`;
+          errors.push(errMsg);
+          console.error(`  ❌ [${batchNum}/${totalBatches}] Lỗi:`, error.message);
         }
       }
 

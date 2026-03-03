@@ -1494,54 +1494,61 @@ let DathangService = class DathangService {
                 }
                 return { success: true, count: 0, totalProducts: sanphamIds.length };
             }
-            const batchSize = 30;
+            const batchSize = 40;
             let totalItems = 0;
             const uniqueProducts = new Set();
             for (let i = 0; i < orders.length; i += batchSize) {
                 const batch = orders.slice(i, i + batchSize);
                 await this.prisma.$transaction(async (tx) => {
-                    const batchProducts = new Set();
-                    const updatePromises = [];
+                    const tonkhoUpdates = new Map();
                     for (const order of batch) {
-                        updatePromises.push(tx.dathang.update({
+                        await tx.dathang.update({
                             where: { id: order.id },
                             data: {
                                 status: 'danhan',
                                 ghichu: (order.ghichu || '') + ' | Bulk match process',
                                 updatedAt: new Date()
                             }
-                        }));
+                        });
                         for (const sp of order.sanpham) {
                             const sldat = parseFloat(sp.sldat.toString()) || 0;
                             const slgiao = parseFloat(sp.slgiao.toString()) || 0;
                             const qtyToReceive = slgiao > 0 ? slgiao : sldat;
                             if (qtyToReceive > 0) {
-                                updatePromises.push(tx.dathangsanpham.update({
+                                await tx.dathangsanpham.update({
                                     where: { id: sp.id },
                                     data: { slnhan: qtyToReceive, ghichu: (sp.ghichu || '') + ' | Bulk match' }
-                                }));
-                                updatePromises.push(tx.tonKho.upsert({
-                                    where: { sanphamId: sp.idSP },
-                                    create: { sanphamId: sp.idSP, slton: qtyToReceive, slchonhap: 0, slchogiao: 0 },
-                                    update: {
-                                        slton: { increment: qtyToReceive },
-                                        slchonhap: { decrement: sldat }
-                                    }
-                                }));
-                                batchProducts.add(sp.idSP);
+                                });
+                                const current = tonkhoUpdates.get(sp.idSP) || { slton: 0, slchonhap: 0 };
+                                tonkhoUpdates.set(sp.idSP, {
+                                    slton: current.slton + qtyToReceive,
+                                    slchonhap: current.slchonhap + sldat
+                                });
                                 uniqueProducts.add(sp.idSP);
                                 totalItems++;
                             }
                         }
                     }
-                    await Promise.all(updatePromises);
-                    const syncPromises = Array.from(batchProducts).map(id => this.tonkhoManager.syncStockToReality(id, tx));
-                    await Promise.all(syncPromises);
-                }, { timeout: 90000 });
+                    const sortedProductIds = Array.from(tonkhoUpdates.keys()).sort();
+                    for (const prodId of sortedProductIds) {
+                        const delta = tonkhoUpdates.get(prodId);
+                        if (!delta)
+                            continue;
+                        await tx.tonKho.upsert({
+                            where: { sanphamId: prodId },
+                            create: { sanphamId: prodId, slton: delta.slton, slchonhap: 0, slchogiao: 0 },
+                            update: {
+                                slton: { increment: delta.slton },
+                                slchonhap: { decrement: delta.slchonhap }
+                            }
+                        });
+                        await this.tonkhoManager.syncStockToReality(prodId, tx);
+                    }
+                }, { timeout: 120000 });
             }
             const unsyncedIds = sanphamIds.filter(id => !uniqueProducts.has(id));
             if (unsyncedIds.length > 0) {
-                const CHUNK_SIZE = 10;
+                const CHUNK_SIZE = 20;
                 for (let j = 0; j < unsyncedIds.length; j += CHUNK_SIZE) {
                     const chunk = unsyncedIds.slice(j, j + CHUNK_SIZE);
                     await Promise.all(chunk.map(id => this.tonkhoManager.syncStockToReality(id)));
@@ -1888,37 +1895,25 @@ let DathangService = class DathangService {
                     errors: [],
                 };
             }
-            const BATCH_SIZE = 150;
+            const BATCH_SIZE = 200;
             let totalOptimized = 0;
             const errors = [];
-            const groups = [];
-            for (let i = 0; i < allIds.length; i += BATCH_SIZE) {
-                groups.push(allIds.slice(i, i + BATCH_SIZE));
-            }
-            const CONCURRENCY = 2;
             let processedBatches = 0;
-            for (let i = 0; i < groups.length; i += CONCURRENCY) {
-                const currentGroupBatch = groups.slice(i, i + CONCURRENCY);
-                const results = await Promise.all(currentGroupBatch.map(async (batchIds, idx) => {
-                    const batchNum = i + idx + 1;
-                    console.log(`  🔄 [${batchNum}/${groups.length}] Đang xử lý ${batchIds.length} sản phẩm...`);
-                    try {
-                        const result = await this.completePendingReceiptsBulk(batchIds);
-                        return { success: true, count: result.count, totalProducts: result.totalProducts };
-                    }
-                    catch (error) {
-                        console.error(`  ❌ [${batchNum}/${groups.length}] Lỗi:`, error.message);
-                        return { success: false, error: error.message, batchNum };
-                    }
-                }));
-                for (const res of results) {
-                    if (res.success) {
-                        totalOptimized += res.count;
-                        processedBatches++;
-                    }
-                    else {
-                        errors.push(`Batch ${res.batchNum}: ${res.error}`);
-                    }
+            for (let i = 0; i < allIds.length; i += BATCH_SIZE) {
+                const batchIds = allIds.slice(i, i + BATCH_SIZE);
+                const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+                const totalBatches = Math.ceil(allIds.length / BATCH_SIZE);
+                console.log(`  🔄 [${batchNum}/${totalBatches}] Đang xử lý ${batchIds.length} sản phẩm...`);
+                try {
+                    const result = await this.completePendingReceiptsBulk(batchIds);
+                    totalOptimized += result.count;
+                    processedBatches++;
+                    console.log(`  ✅ [${batchNum}/${totalBatches}] Hoàn tất: ${result.count} mục khớp lệnh`);
+                }
+                catch (error) {
+                    const errMsg = `Batch ${batchNum}: ${error.message}`;
+                    errors.push(errMsg);
+                    console.error(`  ❌ [${batchNum}/${totalBatches}] Lỗi:`, error.message);
                 }
             }
             const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);

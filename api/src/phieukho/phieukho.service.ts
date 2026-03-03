@@ -286,6 +286,10 @@ export class PhieukhoService {
             const currentSltontt = currentTonKho ? (Number(currentTonKho.sltontt) || 0) : 0;
             const targetStock = data.type === 'nhap' ? currentSltontt + soluong : currentSltontt - soluong;
 
+            if (data.isChotkho && targetStock < 0) {
+              throw new BadRequestException(`Giao dịch chốt kho khiến tồn thực tế âm (${targetStock}). Vui lòng kiểm tra lại số liệu.`);
+            }
+
             if (data.isChotkho) {
               // 🚀 SPECIAL CHECKOUT LOGIC: Align Cumulative (slton) with Actual (sltontt)
               // This resets any historical negative balance (Debt) to the real physical count

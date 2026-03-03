@@ -370,7 +370,7 @@ export class TonkhoManagerService {
     const delivered = Number(deliveredAgg._sum?.slnhan || deliveredAgg._sum?.sldat || 0);
     
     // Công thức hội tụ: Tồn chốt cũ + Biến động = Tồn thực tế hiện tại
-    const reliableTotal = Number(tk.sltontt || 0) + received - delivered;
+    const reliableTotal = Math.max(0, Number(tk.sltontt || 0) + received - delivered);
 
     // 3. Cập nhật đồng bộ
     await prisma.tonKho.update({

@@ -301,7 +301,7 @@ let TonkhoManagerService = class TonkhoManagerService {
         ]);
         const received = Number(receivedAgg._sum?.slnhan || 0);
         const delivered = Number(deliveredAgg._sum?.slnhan || deliveredAgg._sum?.sldat || 0);
-        const reliableTotal = Number(tk.sltontt || 0) + received - delivered;
+        const reliableTotal = Math.max(0, Number(tk.sltontt || 0) + received - delivered);
         await prisma.tonKho.update({
             where: { sanphamId },
             data: {

@@ -19,6 +19,7 @@ const dataloader_service_1 = require("./dataloader.service");
 const field_selection_service_1 = require("./field-selection.service");
 const performance_service_1 = require("./performance.service");
 const dashboard_resolver_1 = require("../dashboard/dashboard.resolver");
+const nhucaudathang_resolver_1 = require("./nhucaudathang.resolver");
 let GraphQLUniversalModule = class GraphQLUniversalModule {
 };
 exports.GraphQLUniversalModule = GraphQLUniversalModule;
@@ -38,6 +39,7 @@ exports.GraphQLUniversalModule = GraphQLUniversalModule = __decorate([
             field_selection_service_1.FieldSelectionService,
             performance_service_1.GraphQLPerformanceService,
             dashboard_resolver_1.DashboardResolver,
+            nhucaudathang_resolver_1.NhuCauDatHangResolver,
         ],
         exports: [
             universal_service_1.UniversalService,

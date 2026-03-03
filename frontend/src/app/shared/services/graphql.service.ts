@@ -248,6 +248,14 @@ const AGGREGATE_QUERY = gql`
   }
 `;
 
+// ⚡ Optimized query for Nhu Cau Dat Hang page - replaces 4 heavy queries
+const GET_NHUCAU_DATHANG_QUERY = gql`
+  query GetNhuCauDatHang($startDate: String!, $endDate: String!) {
+    getNhuCauDatHang(startDate: $startDate, endDate: $endDate)
+  }
+`;
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -1599,4 +1607,35 @@ export class GraphqlService {
       }
     });
   }
+
+  // ⚡ Optimized method for Nhu Cau Dat Hang - single server-side aggregation
+  async getNhuCauDatHang(startDate: string, endDate: string, forceRefresh = false): Promise<any> {
+    const cacheKey = `getNhuCauDatHang_${startDate}_${endDate}`;
+    const ttl = forceRefresh ? 0 : this.AGGRESSIVE_TTL;
+
+    if (!forceRefresh) {
+      const cached = this.getFromCache<any>(cacheKey);
+      if (cached) return cached;
+    }
+
+    const startTime = Date.now();
+    try {
+      const result = await firstValueFrom(
+        this.apollo.query<{ getNhuCauDatHang: any }>({
+          query: GET_NHUCAU_DATHANG_QUERY,
+          variables: { startDate, endDate },
+          fetchPolicy: forceRefresh ? 'no-cache' : 'cache-first',
+        })
+      );
+
+      const data = result.data.getNhuCauDatHang;
+      this.setCache(cacheKey, data, this.AGGRESSIVE_TTL);
+      this.trackPerformance('getNhuCauDatHang', startTime, false, data?.data?.length || 0, 'nhucaudathang');
+      return data;
+    } catch (error) {
+      this.trackError(error, 'getNhuCauDatHang');
+      throw error;
+    }
+  }
 }
+

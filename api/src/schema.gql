@@ -296,6 +296,17 @@ type Query {
   dailyMonthlyReport(batdau: String!, ketthuc: String!, groupBy: String!): [DailyMonthlyReportItem!]!
   topProductsByQuantity(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
   topProductsByValue(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
+
+  """
+  Optimized aggregated query for Nhu Cau Dat Hang - replaces 4 heavy queries with server-side aggregation
+  """
+  getNhuCauDatHang(
+    """Start date for order filtering (ISO string)"""
+    startDate: String!
+
+    """End date for order filtering (ISO string)"""
+    endDate: String!
+  ): JSON!
   tickets(status: String, priority: String): [SupportTicket!]!
   ticket(id: String!): SupportTicket
   phongbans(level: Int, loai: String, parentId: String, includeChildren: Boolean): [JSON!]!

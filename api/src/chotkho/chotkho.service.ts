@@ -40,6 +40,13 @@ export class ChotkhoService {
           throw new Error(`Kho với ID ${khoId} không tồn tại trong hệ thống`);
         }
 
+        // Validate sltonthucte is not negative
+        for (const detail of details) {
+          if (detail.sltonthucte < 0) {
+            throw new Error(`Số lượng tồn thực tế không được nhỏ hơn 0 (Sản phẩm ID: ${detail.sanphamId})`);
+          }
+        }
+
         // Validate all sanphamId exist
         for (const detail of details) {
           const sanpham = await prisma.sanpham.findUnique({
@@ -459,6 +466,13 @@ export class ChotkhoService {
 
       // Handle details if provided
       if (data.details && data.details.length > 0) {
+        // Validate sltonthucte is not negative
+        for (const detail of data.details) {
+          if (detail.sltonthucte < 0) {
+            throw new Error(`Số lượng tồn thực tế không được nhỏ hơn 0 (Sản phẩm ID: ${detail.sanphamId})`);
+          }
+        }
+
         // Delete existing details
         await prisma.chotkhodetail.deleteMany({
           where: { chotkhoId: id }

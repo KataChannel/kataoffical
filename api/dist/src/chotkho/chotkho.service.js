@@ -28,6 +28,11 @@ let ChotkhoService = class ChotkhoService {
                     throw new Error(`Kho với ID ${khoId} không tồn tại trong hệ thống`);
                 }
                 for (const detail of details) {
+                    if (detail.sltonthucte < 0) {
+                        throw new Error(`Số lượng tồn thực tế không được nhỏ hơn 0 (Sản phẩm ID: ${detail.sanphamId})`);
+                    }
+                }
+                for (const detail of details) {
                     const sanpham = await prisma.sanpham.findUnique({
                         where: { id: detail.sanphamId }
                     });
@@ -389,6 +394,11 @@ let ChotkhoService = class ChotkhoService {
                 }
             });
             if (data.details && data.details.length > 0) {
+                for (const detail of data.details) {
+                    if (detail.sltonthucte < 0) {
+                        throw new Error(`Số lượng tồn thực tế không được nhỏ hơn 0 (Sản phẩm ID: ${detail.sanphamId})`);
+                    }
+                }
                 await prisma.chotkhodetail.deleteMany({
                     where: { chotkhoId: id }
                 });
