@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1772273137975,
+  "timestamp": 1772600450168,
   "index": "/index.csr.html",
   "assetGroups": [
     {
@@ -746,7 +746,7 @@
     "/images/logo-full.png": "5bdcbe02e264099d567ae836d4236f6c46668ef5",
     "/images/logo.svg": "308827a99d1afc10e933003147d1f0cda870de88",
     "/images/qrcodedonhang.svg": "75b9abcf1ab00cf074e18109f18158c4dceeb388",
-    "/index.csr.html": "936baeb9768d1b1556b1b8fc4def675f6968b0e0",
+    "/index.csr.html": "5c31c25caa7ff61e94a8b4371563a8ede4820836",
     "/keyfigures/keyfigures1.png": "b033bc25cc42e4ef5da8034259109c39b3686af6",
     "/keyfigures/keyfigures2.png": "172790014959e23f497b992368250941b996f3ed",
     "/keyfigures/keyfigures3.png": "60e06a44d4afc608e0793d96af84d8e893c4c7c9",
