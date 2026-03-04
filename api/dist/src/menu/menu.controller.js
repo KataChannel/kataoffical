@@ -1,0 +1,123 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MenuController = void 0;
+const common_1 = require("@nestjs/common");
+const menu_service_1 = require("./menu.service");
+const client_1 = require("@prisma/client");
+const audit_decorator_1 = require("../auditlog/audit.decorator");
+const cache_interceptor_1 = require("../common/cache.interceptor");
+const smart_cache_decorator_1 = require("../common/smart-cache.decorator");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+let MenuController = class MenuController {
+    constructor(menuService) {
+        this.menuService = menuService;
+    }
+    create(createMenuDto) {
+        return this.menuService.create(createMenuDto);
+    }
+    findAll() {
+        return this.menuService.findAll();
+    }
+    getTree(data) {
+        return this.menuService.getTree(data);
+    }
+    reorder(banggiaIds) {
+        return this.menuService.reorderMenus(banggiaIds);
+    }
+    findOne(id) {
+        return this.menuService.findOne(id);
+    }
+    update(id, updateMenuDto) {
+        return this.menuService.update(id, updateMenuDto);
+    }
+    remove(id) {
+        return this.menuService.remove(id);
+    }
+};
+exports.MenuController = MenuController;
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)(),
+    (0, audit_decorator_1.Audit)({ entity: 'Create Menu', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['menu'],
+        get: { ttl: 1800, keyPrefix: 'menu' },
+        updateCache: true
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], MenuController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, cache_interceptor_1.Cache)(1800, 'menu'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], MenuController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Post)('/tree'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], MenuController.prototype, "getTree", null);
+__decorate([
+    (0, common_1.Post)('reorder'),
+    (0, cache_interceptor_1.CacheInvalidate)(['menu']),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", void 0)
+], MenuController.prototype, "reorder", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, cache_interceptor_1.Cache)(1800, 'menu'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], MenuController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Update Menu', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    (0, smart_cache_decorator_1.SmartCache)({
+        invalidate: ['menu'],
+        get: { ttl: 1800, keyPrefix: 'menu' },
+        updateCache: true
+    }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], MenuController.prototype, "update", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Delete)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Delete Menu', action: client_1.AuditAction.DELETE, includeResponse: true }),
+    (0, cache_interceptor_1.CacheInvalidate)(['menu']),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], MenuController.prototype, "remove", null);
+exports.MenuController = MenuController = __decorate([
+    (0, common_1.Controller)('menu'),
+    __metadata("design:paramtypes", [menu_service_1.MenuService])
+], MenuController);
+//# sourceMappingURL=menu.controller.js.map
