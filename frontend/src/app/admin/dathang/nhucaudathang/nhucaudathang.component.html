@@ -13,19 +13,6 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <button mat-raised-button color="primary" class="!bg-blue-600 !text-white !h-[38px]" 
-                            [disabled]="selection.selected.length === 0"
-                            (click)="bulkMagicButton()">
-                        <mat-icon class="mr-1">auto_fix_high</mat-icon>
-                        Tối ưu chọn ({{ selection.selected.length }})
-                    </button>
-                    <button mat-stroked-button color="primary" class="!h-[38px] !text-blue-600" 
-                            (click)="toggleAllRows(); bulkMagicButton()">
-                        <mat-icon class="mr-1">magic_button</mat-icon>
-                        Tối ưu tất cả ({{ dataSource.data.length }})
-                    </button>
-                </div>
                 
                 <!-- Temp Storage Management Buttons -->
                 <div class="flex space-x-2 items-center">
@@ -198,25 +185,6 @@
                 </span>
                 <span (click)="downloadTonkhoTemplate()" class="whitespace-nowrap p-2 border hover:bg-slate-50 rounded-lg cursor-pointer" matTooltip="Tải file Excel mẫu để cập nhật tồn kho">📄 Mẫu Excel</span>
                 
-                <!-- ✅ BẢNG CHÚ GIẢI (LEGEND) - Đặt ở thanh công cụ cho chuyên nghiệp -->
-                <div class="hidden xl:flex items-center space-x-3 ml-4 border-l pl-4 py-1">
-                    <div class="flex items-center space-x-1" matTooltip="Số lượng tồn hệ thống bị âm hoặc hết hàng vật lý">
-                        <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                        <span class="text-[10px] text-gray-600 font-medium">Hết hàng / Nợ</span>
-                    </div>
-                    <div class="flex items-center space-x-1" matTooltip="Đơn NCC treo quá 48h hoặc lệch số liệu Sổ-Thực">
-                        <div class="w-2.5 h-2.5 rounded-full bg-orange-400"></div>
-                        <span class="text-[10px] text-gray-600 font-medium">Treo hàng / Lệch</span>
-                    </div>
-                    <div class="flex items-center space-x-1" matTooltip="Hàng đang nằm trong phiếu Đặt NCC (chưa nhập kho)">
-                        <div class="w-2.5 h-2.5 rounded-full bg-blue-600"></div>
-                        <span class="text-[10px] text-gray-600 font-medium">Đang về (NCC)</span>
-                    </div>
-                    <div class="flex items-center space-x-1" matTooltip="Số lượng máy tính toán cần mua thêm để đủ đơn khách">
-                        <div class="w-2.5 h-2.5 rounded-full bg-purple-600"></div>
-                        <span class="text-[10px] text-gray-600 font-medium">Gợi ý cần mua</span>
-                    </div>
-                </div>
             </div>
         </div>
         
@@ -229,13 +197,6 @@
                 <ng-container [matColumnDef]="column">
                     <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
                         @switch (column) {
-                            @case ('select') {
-                                <mat-checkbox (change)="$event ? toggleAllRows() : null"
-                                              [checked]="selection.hasValue() && isAllSelected()"
-                                              [indeterminate]="selection.hasValue() && !isAllSelected()"
-                                              color="primary">
-                                </mat-checkbox>
-                            }
                             @case ('expand') {
                                 <span></span>
                             }
@@ -294,13 +255,6 @@
                     </th>
                     <td mat-cell *matCellDef="let row; let idx = index" class="cursor-pointer">
                         @switch (column) {
-                            @case ('select') {
-                                <mat-checkbox (click)="$event.stopPropagation()"
-                                              (change)="$event ? selection.toggle(row) : null"
-                                              [checked]="selection.isSelected(row)"
-                                              color="primary">
-                                </mat-checkbox>
-                            }
                             @case ('expand') {
                                 <div class="flex items-center space-x-2">
                                     <button mat-icon-button color="primary"
@@ -328,9 +282,26 @@
                                 </span>
                             }
                             @case ('title') {
-                                <span class="max-w-48 line-clamp-2" [matTooltip]="row[column]">
-                                    {{ row[column] }}
-                                </span>
+                                <div class="flex items-center space-x-2">
+                                    <!-- Status Indicators (Labels from Image 2) -->
+                                    <div class="flex -space-x-1">
+                                        @if ((row['tongkho'] || 0) - (row['khachgiao'] || 0) < 0) {
+                                            <div class="w-2.5 h-2.5 rounded-full bg-red-500 border border-white shadow-sm" matTooltip="Hết hàng / Nợ"></div>
+                                        }
+                                        @if (checkStaleOrder(row).isStale || ((row['tongkho'] || 0) - (row['khachgiao'] || 0) !== (row['sltontt'] || 0))) {
+                                            <div class="w-2.5 h-2.5 rounded-full bg-orange-400 border border-white shadow-sm" matTooltip="Treo hàng / Lệch"></div>
+                                        }
+                                        @if (row['incomingStock'] > 0) {
+                                            <div class="w-2.5 h-2.5 rounded-full bg-blue-600 border border-white shadow-sm" matTooltip="Đang về (NCC)"></div>
+                                        }
+                                        @if (row['goiy'] > 0) {
+                                            <div class="w-2.5 h-2.5 rounded-full bg-purple-600 border border-white shadow-sm" matTooltip="Gợi ý cần mua"></div>
+                                        }
+                                    </div>
+                                    <span class="max-w-48 line-clamp-2 font-medium" [matTooltip]="row[column]">
+                                        {{ row[column] }}
+                                    </span>
+                                </div>
                             }
                             @case ('masp') {
                                 <span class="max-w-32 line-clamp-1 font-mono text-sm">
@@ -560,14 +531,6 @@
                                          <span class="text-[9px] text-gray-400 whitespace-nowrap">
                                              {{row['sltontt']|number:'1.0-2'}} + Biến động
                                          </span>
-                                         <button mat-icon-button class="h-5 w-5 min-w-5 p-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors" 
-                                                 (click)="$event.stopPropagation(); autoReceiveAndSnapshot(row)"
-                                                 [matTooltip]="row['incomingStock'] > 0 ? 'Tối ưu ngay: Nhận hàng & Khớp số' : 'Không có hàng đang về'">
-                                             <mat-icon class="text-[16px]" 
-                                                      [style.color]="row['incomingStock'] > 0 ? '#3b82f6' : '#d1d5db'">
-                                                 auto_fix_high
-                                             </mat-icon>
-                                         </button>
                                      </div>
                                  </div>
                              }
