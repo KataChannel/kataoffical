@@ -138,7 +138,6 @@ export class NhucaudathangComponent {
     'slhaohut',
   ];
   ColumnName: any = {
-    select: '',
     expand: '', // No header for expansion column
     title: 'Tên Sản Phẩm',
     masp: 'Mã Sản Phẩm',
@@ -596,11 +595,15 @@ export class NhucaudathangComponent {
   }
 
   private initializeColumns(): void {
-    this.Columns = Object.keys(this.ColumnName).map((key) => ({
+    const initialKeys = Object.keys(this.ColumnName);
+    this.Columns = initialKeys.map((key) => ({
       key,
       value: this.ColumnName[key],
       isShow: true,
     }));
+    
+    this.FilterColumns = this.FilterColumns.filter(col => initialKeys.includes(col.key));
+    
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
