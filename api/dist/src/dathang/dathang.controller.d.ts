@@ -34,9 +34,9 @@ export declare class DathangController {
         lydohuy: string | null;
         subtitle: string | null;
         madncc: string | null;
+        khoId: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string | null;
-        khoId: string | null;
     }>;
     import(data: any): Promise<{
         success: number;
@@ -74,9 +74,9 @@ export declare class DathangController {
         lydohuy: string | null;
         subtitle: string | null;
         madncc: string | null;
+        khoId: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string | null;
-        khoId: string | null;
     }>;
     getchonhap(params: any): Promise<{
         idSP: string;
@@ -125,6 +125,18 @@ export declare class DathangController {
                 dathangId: string;
                 gianhap: import("@prisma/client/runtime/library").Decimal;
             })[];
+            kho: {
+                id: string;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                diachi: string | null;
+                sdt: string | null;
+                makho: string | null;
+                congtyId: string | null;
+            } | null;
             nhacungcap: {
                 id: string;
                 ghichu: string | null;
@@ -140,18 +152,6 @@ export declare class DathangController {
                 mancc: string;
                 manccold: string | null;
             } | null;
-            kho: {
-                id: string;
-                ghichu: string | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
-                diachi: string | null;
-                sdt: string | null;
-                makho: string | null;
-                congtyId: string | null;
-            } | null;
         } & {
             id: string;
             title: string | null;
@@ -166,9 +166,9 @@ export declare class DathangController {
             lydohuy: string | null;
             subtitle: string | null;
             madncc: string | null;
+            khoId: string | null;
             ngaynhan: Date | null;
             nhacungcapId: string | null;
-            khoId: string | null;
         })[];
         total: number;
         pageNumber: any;
@@ -188,6 +188,18 @@ export declare class DathangController {
     downloadcongnoncc(params: any, res: Response): Promise<void>;
     findAll(): Promise<{
         sanpham: any[];
+        kho: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            diachi: string | null;
+            sdt: string | null;
+            makho: string | null;
+            congtyId: string | null;
+        } | null;
         nhacungcap: {
             id: string;
             ghichu: string | null;
@@ -203,18 +215,6 @@ export declare class DathangController {
             mancc: string;
             manccold: string | null;
         } | null;
-        kho: {
-            id: string;
-            ghichu: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            diachi: string | null;
-            sdt: string | null;
-            makho: string | null;
-            congtyId: string | null;
-        } | null;
         id: string;
         title: string | null;
         type: string | null;
@@ -228,9 +228,9 @@ export declare class DathangController {
         lydohuy: string | null;
         subtitle: string | null;
         madncc: string | null;
+        khoId: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string | null;
-        khoId: string | null;
     }[]>;
     findby(param: any): Promise<({
         sanpham: ({
@@ -272,6 +272,18 @@ export declare class DathangController {
             dathangId: string;
             gianhap: import("@prisma/client/runtime/library").Decimal;
         })[];
+        kho: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            diachi: string | null;
+            sdt: string | null;
+            makho: string | null;
+            congtyId: string | null;
+        } | null;
         nhacungcap: {
             id: string;
             ghichu: string | null;
@@ -287,18 +299,6 @@ export declare class DathangController {
             mancc: string;
             manccold: string | null;
         } | null;
-        kho: {
-            id: string;
-            ghichu: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            diachi: string | null;
-            sdt: string | null;
-            makho: string | null;
-            congtyId: string | null;
-        } | null;
     } & {
         id: string;
         title: string | null;
@@ -313,9 +313,9 @@ export declare class DathangController {
         lydohuy: string | null;
         subtitle: string | null;
         madncc: string | null;
+        khoId: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string | null;
-        khoId: string | null;
     }) | {
         data: ({
             sanpham: ({
@@ -357,6 +357,18 @@ export declare class DathangController {
                 dathangId: string;
                 gianhap: import("@prisma/client/runtime/library").Decimal;
             })[];
+            kho: {
+                id: string;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                diachi: string | null;
+                sdt: string | null;
+                makho: string | null;
+                congtyId: string | null;
+            } | null;
             nhacungcap: {
                 id: string;
                 ghichu: string | null;
@@ -372,18 +384,6 @@ export declare class DathangController {
                 mancc: string;
                 manccold: string | null;
             } | null;
-            kho: {
-                id: string;
-                ghichu: string | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
-                diachi: string | null;
-                sdt: string | null;
-                makho: string | null;
-                congtyId: string | null;
-            } | null;
         } & {
             id: string;
             title: string | null;
@@ -398,9 +398,9 @@ export declare class DathangController {
             lydohuy: string | null;
             subtitle: string | null;
             madncc: string | null;
+            khoId: string | null;
             ngaynhan: Date | null;
             nhacungcapId: string | null;
-            khoId: string | null;
         })[];
         page: any;
         pageSize: any;
@@ -450,6 +450,18 @@ export declare class DathangController {
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: import("@prisma/client/runtime/library").Decimal;
         }[];
+        kho: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            diachi: string | null;
+            sdt: string | null;
+            makho: string | null;
+            congtyId: string | null;
+        } | null;
         nhacungcap: {
             id: string;
             ghichu: string | null;
@@ -465,18 +477,6 @@ export declare class DathangController {
             mancc: string;
             manccold: string | null;
         } | null;
-        kho: {
-            id: string;
-            ghichu: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            diachi: string | null;
-            sdt: string | null;
-            makho: string | null;
-            congtyId: string | null;
-        } | null;
         id: string;
         title: string | null;
         type: string | null;
@@ -490,9 +490,9 @@ export declare class DathangController {
         lydohuy: string | null;
         subtitle: string | null;
         madncc: string | null;
+        khoId: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string | null;
-        khoId: string | null;
     }>;
     findByProductId(id: string): Promise<{
         sanpham: ({
@@ -534,6 +534,18 @@ export declare class DathangController {
             dathangId: string;
             gianhap: import("@prisma/client/runtime/library").Decimal;
         }) | undefined;
+        kho: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            diachi: string | null;
+            sdt: string | null;
+            makho: string | null;
+            congtyId: string | null;
+        } | null;
         nhacungcap: {
             id: string;
             ghichu: string | null;
@@ -549,18 +561,6 @@ export declare class DathangController {
             mancc: string;
             manccold: string | null;
         } | null;
-        kho: {
-            id: string;
-            ghichu: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            diachi: string | null;
-            sdt: string | null;
-            makho: string | null;
-            congtyId: string | null;
-        } | null;
         id: string;
         title: string | null;
         type: string | null;
@@ -574,9 +574,9 @@ export declare class DathangController {
         lydohuy: string | null;
         subtitle: string | null;
         madncc: string | null;
+        khoId: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string | null;
-        khoId: string | null;
     }[]>;
     update(id: string, updateDathangDto: any): Promise<{
         id: string;
@@ -592,9 +592,9 @@ export declare class DathangController {
         lydohuy: string | null;
         subtitle: string | null;
         madncc: string | null;
+        khoId: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string | null;
-        khoId: string | null;
     } | null>;
     remove(id: string): Promise<{
         id: string;
@@ -610,9 +610,9 @@ export declare class DathangController {
         lydohuy: string | null;
         subtitle: string | null;
         madncc: string | null;
+        khoId: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string | null;
-        khoId: string | null;
     }>;
     reorder(body: {
         dathangIds: string[];

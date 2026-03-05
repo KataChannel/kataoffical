@@ -355,18 +355,7 @@
                                             <mat-icon class="text-orange-400 !text-[14px] !w-[14px] !h-[14px] leading-none">info</mat-icon>
                                         }
                                     </div>
-                                    
-                                    <!-- Mô tả lũy kế chi tiết dưới dạng txt nhỏ -->
-                                    <div class="flex flex-col items-end mt-0.5">
-                                        <span class="text-[11px] text-gray-500 whitespace-nowrap">
-                                            Lũy kế: <strong [class.text-red-600]="row[column] < 0" [class.text-gray-700]="row[column] >= 0" class="font-bold ml-0.5">{{ row[column] | number:'1.0-2' }}</strong>
-                                        </span>
-                                        @if (row[column] < 0) {
-                                            <span class="text-[9px] text-red-400 text-right leading-tight max-w-[120px] bg-red-50 px-1 py-0.5 rounded mt-0.5 border border-red-100 italic">
-                                                *Chưa làm phiếu Nhập hoặc chưa Chốt kho
-                                            </span>
-                                        }
-                                    </div>
+
                                 </div>
                             }
                             @case ('slchogiao') {
@@ -400,7 +389,7 @@
                                  @if(row[column] > 0) {
                                   <div class="flex flex-col">
                                       <span class="text-red-600 font-bold" matTooltip="Cần nhập thêm hàng">{{row[column]|number:'1.0-2'}}</span>
-                                      <span class="text-[9px] text-gray-400 whitespace-nowrap">{{row['khachdat']|number:'1.0-2'}}+{{row['slhaohut']|number:'1.0-2'}}-{{row['tongkho']|number:'1.0-2'}}</span>
+                                      <span class="text-[9px] text-gray-400 whitespace-nowrap">{{row['khachdat']|number:'1.0-2'}}+{{row['khachgiao']|number:'1.0-2'}}-{{row['tongkho']|number:'1.0-2'}}</span>
                                   </div>
                               } @else if(row[column] < -100) {
                                   <div class="flex flex-col">
@@ -447,7 +436,7 @@
                                 </div>
                             }
                             @case ('chenhlech') {
-                                @let cl = (row['slton'] || 0) - (row['sltontt'] || 0);
+                                @let cl = ((row['tongkho'] || 0) - (row['khachgiao'] || 0)) - (row['sltontt'] || 0);
                                 <div class="flex flex-col items-end">
                                     @if (cl > 0) {
                                         <span class="font-bold text-blue-600">+{{ cl|number:'1.0-2' }}</span>
@@ -533,7 +522,10 @@
                                             [class.border-yellow-400]="hasFieldChanged(row, 'xSLDat')"
                                             [class.text-purple-600]="getFieldValue(row, 'xSLDat') > 0"
                                             matTooltip="Click để chỉnh sửa SL đặt">
-                                            {{ getFieldValue(row, 'xSLDat') || 0 | number:'1.0-2' }}
+                                            <div class="flex flex-col items-end">
+                                                <span>{{ getFieldValue(row, 'xSLDat') || 0 | number:'1.0-2' }}</span>
+                                                <span class="text-[9px] text-gray-500 font-normal whitespace-nowrap leading-none mt-1">HT: {{ row['SLDat'] || 0 | number:'1.0-2' }}</span>
+                                            </div>
                                             @if (hasFieldChanged(row, 'xSLDat')) {
                                                 <mat-icon class="text-orange-500 text-sm absolute -top-1 -right-1">edit</mat-icon>
                                             }
@@ -725,7 +717,7 @@
             }
         </div>
         @if (row[column] > 0) {
-            <span class="text-[9px] text-gray-400">đang về</span>
+            <span class="text-[9px] text-gray-400">tổng ở kho</span>
         }
     </div>
 </ng-template>

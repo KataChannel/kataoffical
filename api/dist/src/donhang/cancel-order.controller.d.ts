@@ -169,9 +169,9 @@ export declare class CancelOrderController {
         lydohuy: string | null;
         subtitle: string | null;
         madncc: string | null;
+        khoId: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string | null;
-        khoId: string | null;
     })[]>;
     getCanceledDathang(skip?: string, take?: string, startDate?: string, endDate?: string): Promise<({
         khachhang: {
@@ -338,8 +338,8 @@ export declare class CancelOrderController {
         lydohuy: string | null;
         subtitle: string | null;
         madncc: string | null;
+        khoId: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string | null;
-        khoId: string | null;
     })[]>;
 }

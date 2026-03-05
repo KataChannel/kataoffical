@@ -43,11 +43,11 @@ export declare class PhieukhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        madncc: string | null;
-        khoId: string | null;
         maphieu: string | null;
+        madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        khoId: string | null;
         isChotkho: boolean;
     })[]>;
     findOne(id: string): Promise<{
@@ -81,11 +81,11 @@ export declare class PhieukhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        madncc: string | null;
-        khoId: string | null;
         maphieu: string | null;
+        madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        khoId: string | null;
         isChotkho: boolean;
     }>;
     create(data: any): Promise<{
@@ -107,11 +107,11 @@ export declare class PhieukhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        madncc: string | null;
-        khoId: string | null;
         maphieu: string | null;
+        madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        khoId: string | null;
         isChotkho: boolean;
     }>;
     update(id: string, data: any): Promise<{
@@ -133,11 +133,11 @@ export declare class PhieukhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        madncc: string | null;
-        khoId: string | null;
         maphieu: string | null;
+        madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        khoId: string | null;
         isChotkho: boolean;
     }>;
     remove(id: string): Promise<{
@@ -149,11 +149,11 @@ export declare class PhieukhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        madncc: string | null;
-        khoId: string | null;
         maphieu: string | null;
+        madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        khoId: string | null;
         isChotkho: boolean;
     }>;
     createAdjustmentPhieuKho(data: {

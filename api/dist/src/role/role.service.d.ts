@@ -43,8 +43,8 @@ export declare class RoleService {
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
-                description: string | null;
                 codeId: string | null;
+                description: string | null;
                 group: string | null;
             };
         } & {

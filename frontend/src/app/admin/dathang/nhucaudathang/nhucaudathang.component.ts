@@ -375,15 +375,8 @@ export class NhucaudathangComponent {
   }
 
   GetGoiy(item: any) {
-    const suggestion = Number(item.khachdat) + Number(this.GetSLHaohut(item)) - Number(item.tongkho);
+    const suggestion = Number(item.khachdat) + Number(item.khachgiao) - Number(item.tongkho);
     return suggestion.toFixed(3);
-    // if (item.SLGiao > item.SLDat) {
-    //   const suggestion = Math.abs(
-    //     Number(item.khachdat) + Number(this.GetSLHaohut(item)) - Number(item.tongkho)
-    //   );
-    //   return suggestion.toFixed(0);
-    // }
-    // }
   }
 
   GetAbs(val: any) {
@@ -525,6 +518,11 @@ export class NhucaudathangComponent {
 
         item.slhaohut = this.GetSLHaohut(item);
         item.goiy = this.GetGoiy(item);
+        
+        // Default xSLDat to 0 for inputs, keeping SLDat for reference
+        if (!this.tempStorage.has(item.id)) {
+            item.xSLDat = 0;
+        }
       });
 
       // Sort by goiy from large to small
@@ -840,7 +838,7 @@ export class NhucaudathangComponent {
         // SLGiao: toNum(v.SLGiao),
         slton: toNum(v.slton),
         sltontt: toNum(v.sltontt),
-        chenhlech: parseFloat((toNum(v.slton) - toNum(v.sltontt)).toFixed(3)),
+        chenhlech: parseFloat((((toNum(v.tongkho) || 0) - (toNum(v.khachgiao) || 0)) - toNum(v.sltontt)).toFixed(3)),
         ngaynhan: v.ngaynhan ? moment(v.ngaynhan).format('YYYY-MM-DD') : '',
         mancc: v.mancc || '',
         name: v.name || '',
@@ -894,7 +892,7 @@ export class NhucaudathangComponent {
         SLGiao: toNum(v.SLGiao),
         slton: toNum(v.slton),
         sltontt: toNum(v.sltontt),
-        chenhlech: parseFloat((toNum(v.slton) - toNum(v.sltontt)).toFixed(3)),
+        chenhlech: parseFloat((((toNum(v.tongkho) || 0) - (toNum(v.khachgiao) || 0)) - toNum(v.sltontt)).toFixed(3)),
         mancc: v.mancc || '',
         name: v.name || '',
         ngaynhan: v.ngaynhan ? moment(v.ngaynhan).format('YYYY-MM-DD') : '',
@@ -1492,10 +1490,8 @@ export class NhucaudathangComponent {
             (kho: any) => kho.makho === dathang.makho
           );
           if (matchingKho) {
-            // Only count as "incoming" (đang về) if the order status is 'dadat' or 'dagiao'
-            if (dathang.status === 'dadat' || dathang.status === 'dagiao') {
-              khoValues[matchingKho.value] += dathang.sldat;
-            }
+            // Count regardless of status based on user request
+            khoValues[matchingKho.value] += dathang.sldat;
           }
         });
       }

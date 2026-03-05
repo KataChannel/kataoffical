@@ -37,8 +37,8 @@ export declare class UserController {
             createdAt: Date;
             updatedAt: Date;
             name: string;
-            description: string | null;
             codeId: string | null;
+            description: string | null;
             group: string | null;
         }[];
         id: string;
@@ -69,8 +69,8 @@ export declare class UserController {
             createdAt: Date;
             updatedAt: Date;
             name: string;
-            description: string | null;
             codeId: string | null;
+            description: string | null;
             group: string | null;
         }[];
         id: string;

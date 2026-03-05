@@ -21,11 +21,11 @@ export declare class PhieukhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        madncc: string | null;
-        khoId: string | null;
         maphieu: string | null;
+        madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        khoId: string | null;
         isChotkho: boolean;
     }>;
     findAll(): Promise<({
@@ -52,11 +52,11 @@ export declare class PhieukhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        madncc: string | null;
-        khoId: string | null;
         maphieu: string | null;
+        madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        khoId: string | null;
         isChotkho: boolean;
     })[]>;
     xuatnhapton(query: any): Promise<{
@@ -113,11 +113,11 @@ export declare class PhieukhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        madncc: string | null;
-        khoId: string | null;
         maphieu: string | null;
+        madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        khoId: string | null;
         isChotkho: boolean;
     }>;
     update(id: string, updatePhieukhoDto: any): Promise<{
@@ -139,11 +139,11 @@ export declare class PhieukhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        madncc: string | null;
-        khoId: string | null;
         maphieu: string | null;
+        madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        khoId: string | null;
         isChotkho: boolean;
     }>;
     remove(id: string): Promise<{
@@ -155,11 +155,11 @@ export declare class PhieukhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        madncc: string | null;
-        khoId: string | null;
         maphieu: string | null;
+        madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        khoId: string | null;
         isChotkho: boolean;
     }>;
 }

@@ -29,9 +29,9 @@ export declare class ChotkhoResolver {
                 order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
+                userId: string | null;
                 sanphamId: string | null;
                 slhuy: import("@prisma/client/runtime/library").Decimal;
-                userId: string | null;
                 ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
@@ -46,8 +46,8 @@ export declare class ChotkhoResolver {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            userId: string | null;
             codeId: string | null;
+            userId: string | null;
             khoId: string | null;
             ngaychot: Date;
         })[];
@@ -84,9 +84,9 @@ export declare class ChotkhoResolver {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
+            userId: string | null;
             sanphamId: string | null;
             slhuy: import("@prisma/client/runtime/library").Decimal;
-            userId: string | null;
             ngaychot: Date;
             sltonhethong: import("@prisma/client/runtime/library").Decimal;
             sltonthucte: import("@prisma/client/runtime/library").Decimal;
@@ -101,8 +101,8 @@ export declare class ChotkhoResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         codeId: string | null;
+        userId: string | null;
         khoId: string | null;
         ngaychot: Date;
     }) | null>;
@@ -151,9 +151,9 @@ export declare class ChotkhoResolver {
                 order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
+                userId: string | null;
                 sanphamId: string | null;
                 slhuy: import("@prisma/client/runtime/library").Decimal;
-                userId: string | null;
                 ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
@@ -168,8 +168,8 @@ export declare class ChotkhoResolver {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            userId: string | null;
             codeId: string | null;
+            userId: string | null;
             khoId: string | null;
             ngaychot: Date;
         }) | null;
@@ -182,8 +182,8 @@ export declare class ChotkhoResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         codeId: string | null;
+        userId: string | null;
         khoId: string | null;
         ngaychot: Date;
     }>;
@@ -195,8 +195,8 @@ export declare class ChotkhoResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         codeId: string | null;
+        userId: string | null;
         khoId: string | null;
         ngaychot: Date;
     }>;
@@ -234,9 +234,9 @@ export declare class ChotkhoResolver {
                 order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
+                userId: string | null;
                 sanphamId: string | null;
                 slhuy: import("@prisma/client/runtime/library").Decimal;
-                userId: string | null;
                 ngaychot: Date;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
@@ -251,8 +251,8 @@ export declare class ChotkhoResolver {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            userId: string | null;
             codeId: string | null;
+            userId: string | null;
             khoId: string | null;
             ngaychot: Date;
         })[];

@@ -19,8 +19,8 @@ export declare class PermissionService {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        description: string | null;
         codeId: string | null;
+        description: string | null;
         group: string | null;
     }>;
     findBy(param: any): Promise<{
@@ -29,8 +29,8 @@ export declare class PermissionService {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        description: string | null;
         codeId: string | null;
+        description: string | null;
         group: string | null;
     } | {
         data: {
@@ -39,8 +39,8 @@ export declare class PermissionService {
             createdAt: Date;
             updatedAt: Date;
             name: string;
-            description: string | null;
             codeId: string | null;
+            description: string | null;
             group: string | null;
         }[];
         total: number;
@@ -54,8 +54,8 @@ export declare class PermissionService {
             createdAt: Date;
             updatedAt: Date;
             name: string;
-            description: string | null;
             codeId: string | null;
+            description: string | null;
             group: string | null;
         }[];
         total: number;
@@ -68,8 +68,8 @@ export declare class PermissionService {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        description: string | null;
         codeId: string | null;
+        description: string | null;
         group: string | null;
     }>;
     update(id: string, data: any): Promise<any>;
@@ -79,8 +79,8 @@ export declare class PermissionService {
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        description: string | null;
         codeId: string | null;
+        description: string | null;
         group: string | null;
     }>;
     reorderPermissions(permissionIds: string[]): Promise<{

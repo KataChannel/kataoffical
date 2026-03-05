@@ -1,0 +1,108 @@
+# Report: Đơn Hàng & Đặt Hàng (17:00 20/02/2026 - 19:00 21/02/2026 VN)
+
+## 1. Đơn Hàng (Sales Orders)
+- **Tổng số đơn hàng:** 82
+- **Tổng doanh thu ước tính:** 131.832.095 VNĐ
+- **Trạng thái đơn hàng:** danhan (82)
+
+### Chi tiết các đơn hàng:
+- **TG-AA28709** (2026-02-20T10:48:37.067Z) | Khách: LA CHÂTEAU - Hotel & Beauty | Trạng thái: danhan | Tổng tiền: 402.000 VNĐ
+- **TG-AA28710** (2026-02-20T13:03:42.850Z) | Khách: Le Monde Steak (Tân Phú) | Trạng thái: danhan | Tổng tiền: 1.921.900 VNĐ
+- **TG-AA28711** (2026-02-20T13:31:33.337Z) | Khách: HAPPY LAMB | Trạng thái: danhan | Tổng tiền: 2.070.400 VNĐ
+- **TG-AA28712** (2026-02-20T14:44:23.166Z) | Khách: Bò Tơ Bếp Trung Tâm | Trạng thái: danhan | Tổng tiền: 6.583.000 VNĐ
+- **TG-AA28713** (2026-02-20T14:44:23.268Z) | Khách: BÒ TƠ Q7 (BAR) | Trạng thái: danhan | Tổng tiền: 516.000 VNĐ
+- **TG-AA28714** (2026-02-20T14:44:23.348Z) | Khách: BÒ TƠ Q10 (BAR) | Trạng thái: danhan | Tổng tiền: 57.600 VNĐ
+- **TG-AA28715** (2026-02-20T14:44:23.411Z) | Khách: BÒ TƠ Q10 (NV) | Trạng thái: danhan | Tổng tiền: 264.000 VNĐ
+- **TG-AA28716** (2026-02-20T14:44:23.478Z) | Khách: Cơm niêu Hải Sư 2 | Trạng thái: danhan | Tổng tiền: 335.600 VNĐ
+- **TG-AA28717** (2026-02-20T14:44:23.562Z) | Khách: G-MASTER NƯỚNG | Trạng thái: danhan | Tổng tiền: 2.930.200 VNĐ
+- **TG-AA28718** (2026-02-20T14:44:23.759Z) | Khách: NHÀ HÀNG HÀNG DƯƠNG (QUẬN 7) | Trạng thái: danhan | Tổng tiền: 892.900 VNĐ
+- **TG-AA28719** (2026-02-20T14:44:23.886Z) | Khách: Nhà hàng Hoa Lộc Vừng | Trạng thái: danhan | Tổng tiền: 2.052.500 VNĐ
+- **TG-AA28720** (2026-02-20T14:44:24.091Z) | Khách: LONGWANG 7 | Trạng thái: danhan | Tổng tiền: 7.936.050 VNĐ
+- **TG-AA28721** (2026-02-20T14:44:24.286Z) | Khách: LONGWANG 8 | Trạng thái: danhan | Tổng tiền: 3.358.670 VNĐ
+- **TG-AA28722** (2026-02-20T14:44:24.477Z) | Khách: Minh Mẫn (Trần Gia) | Trạng thái: danhan | Tổng tiền: 173.880 VNĐ
+- **TG-AA28723** (2026-02-20T14:44:24.538Z) | Khách: SpringFish Lẩu cá Tứ Xuyên (Thủ Đức) | Trạng thái: danhan | Tổng tiền: 861.600 VNĐ
+- **TG-AA28724** (2026-02-20T14:44:24.631Z) | Khách: STATION SPORT BAR (BẾP) | Trạng thái: danhan | Tổng tiền: 643.360 VNĐ
+- **TG-AA28725** (2026-02-20T14:44:24.708Z) | Khách: TIANLONG 01 | Trạng thái: danhan | Tổng tiền: 4.947.200 VNĐ
+- **TG-AA28726** (2026-02-20T14:44:24.842Z) | Khách: TIANLONG 07 | Trạng thái: danhan | Tổng tiền: 4.012.590 VNĐ
+- **TG-AA28727** (2026-02-20T14:44:24.991Z) | Khách: TIANLONG 08 | Trạng thái: danhan | Tổng tiền: 3.306.000 VNĐ
+- **TG-AA28728** (2026-02-20T14:44:25.105Z) | Khách: Waikiki | Trạng thái: danhan | Tổng tiền: 1.516.000 VNĐ
+- **TG-AA28729** (2026-02-20T14:44:26.651Z) | Khách: BÒ TƠ Q7 | Trạng thái: danhan | Tổng tiền: 2.574.800 VNĐ
+- **TG-AA28730** (2026-02-20T14:44:26.871Z) | Khách: BÒ TƠ Q10 | Trạng thái: danhan | Tổng tiền: 1.392.500 VNĐ
+- **TG-AA28731** (2026-02-20T14:44:27.035Z) | Khách: LONGWANG 3 | Trạng thái: danhan | Tổng tiền: 3.652.900 VNĐ
+- **TG-AA28732** (2026-02-20T14:44:27.192Z) | Khách: LONGWANG 18 | Trạng thái: danhan | Tổng tiền: 5.178.100 VNĐ
+- **TG-AA28733** (2026-02-20T14:48:16.502Z) | Khách: YAKIMONO (PXL) | Trạng thái: danhan | Tổng tiền: 1.338.550 VNĐ
+- **TG-AA28734** (2026-02-20T14:48:16.673Z) | Khách: YAKIMONO (LQĐ) | Trạng thái: danhan | Tổng tiền: 1.826.300 VNĐ
+- **TG-AA28735** (2026-02-20T14:48:16.834Z) | Khách: YAKIMONO (Bình Tân) | Trạng thái: danhan | Tổng tiền: 3.561.600 VNĐ
+- **TG-AA28736** (2026-02-20T14:48:17.019Z) | Khách: MOMO Q3 | Trạng thái: danhan | Tổng tiền: 2.004.750 VNĐ
+- **TG-AA28737** (2026-02-20T14:48:29.547Z) | Khách: HOWDY TACOS | Trạng thái: danhan | Tổng tiền: 279.400 VNĐ
+- **TG-AA28738** (2026-02-20T14:48:47.333Z) | Khách: LONGWANG 1 | Trạng thái: danhan | Tổng tiền: 9.910.100 VNĐ
+- **TG-AA28739** (2026-02-20T15:00:28.382Z) | Khách: Le Monde Steak (PXL) (Bar) | Trạng thái: danhan | Tổng tiền: 481.600 VNĐ
+- **TG-AA28740** (2026-02-20T15:00:28.501Z) | Khách: Phở Sol Q1 (27 Hải Triều) | Trạng thái: danhan | Tổng tiền: 2.079.200 VNĐ
+- **TG-AA28741** (2026-02-20T15:00:28.623Z) | Khách: Le Monde Steak (PXL) | Trạng thái: danhan | Tổng tiền: 1.565.100 VNĐ
+- **TG-AA28742** (2026-02-20T15:00:28.720Z) | Khách: Gcup - Coffe & Bistro | Trạng thái: danhan | Tổng tiền: 448.100 VNĐ
+- **TG-AA28743** (2026-02-20T15:00:28.815Z) | Khách: PHỞ ROCKSTAR | Trạng thái: danhan | Tổng tiền: 1.885.700 VNĐ
+- **TG-AA28744** (2026-02-20T15:00:28.916Z) | Khách: Phở Sol Q4 | Trạng thái: danhan | Tổng tiền: 400.000 VNĐ
+- **TG-AA28745** (2026-02-20T15:00:29.023Z) | Khách: Cháo Sườn Chú Chen | Trạng thái: danhan | Tổng tiền: 2.731.800 VNĐ
+- **TG-AA28746** (2026-02-20T15:00:29.230Z) | Khách: Le Monde Steak (Cao Thắng) (Bar) | Trạng thái: danhan | Tổng tiền: 158.400 VNĐ
+- **TG-AA28747** (2026-02-20T15:00:37.588Z) | Khách: Phở Sol Q1 (32 Phạm Hồng Thái) | Trạng thái: danhan | Tổng tiền: 352.000 VNĐ
+- **TG-AA28748** (2026-02-20T15:00:37.674Z) | Khách: Le Monde Steak (NTMK) | Trạng thái: danhan | Tổng tiền: 220.400 VNĐ
+- **TG-AA28749** (2026-02-20T15:01:04.686Z) | Khách: Gcup - Coffe & Bistro | Trạng thái: danhan | Tổng tiền: 923.200 VNĐ
+- **TG-AA28750** (2026-02-20T15:02:08.230Z) | Khách: BEER 01 (LNC) | Trạng thái: danhan | Tổng tiền: 271.100 VNĐ
+- **TG-AA28751** (2026-02-20T15:02:08.350Z) | Khách: Ichihana Sushi | Trạng thái: danhan | Tổng tiền: 868.150 VNĐ
+- **TG-AA28752** (2026-02-20T15:02:08.494Z) | Khách: Nhà hàng Opus Sài Gòn | Trạng thái: danhan | Tổng tiền: 558.600 VNĐ
+- **TG-AA28753** (2026-02-20T15:02:08.618Z) | Khách: BIA TUYẾT (ĐVB ) | Trạng thái: danhan | Tổng tiền: 4.772.000 VNĐ
+- **TG-AA28754** (2026-02-20T15:02:08.835Z) | Khách: THỦY MỘC | Trạng thái: danhan | Tổng tiền: 2.187.180 VNĐ
+- **TG-AA28755** (2026-02-20T15:02:09.029Z) | Khách: CALI (BAR) NGUYỄN VĂN TRỖI | Trạng thái: danhan | Tổng tiền: 28.500 VNĐ
+- **TG-AA28756** (2026-02-20T15:02:09.087Z) | Khách: CALI (BAR) NGUYỄN HUỆ | Trạng thái: danhan | Tổng tiền: 146.500 VNĐ
+- **TG-AA28757** (2026-02-20T15:02:09.146Z) | Khách: CALI (BAR) NGUYỄN CHÍ THANH | Trạng thái: danhan | Tổng tiền: 23.500 VNĐ
+- **TG-AA28758** (2026-02-20T15:02:09.202Z) | Khách: CALI (BAR) MEGA MALL | Trạng thái: danhan | Tổng tiền: 6.300 VNĐ
+- **TG-AA28759** (2026-02-20T15:02:09.259Z) | Khách: CALI (BAR) Vinhomes Central Park | Trạng thái: danhan | Tổng tiền: 86.400 VNĐ
+- **TG-AA28760** (2026-02-20T15:02:09.309Z) | Khách: CALI (BẾP TỔNG) | Trạng thái: danhan | Tổng tiền: 1.604.200 VNĐ
+- **TG-AA28761** (2026-02-20T15:02:09.403Z) | Khách: CALI (BẾP) NGUYỄN VĂN TRỖI | Trạng thái: danhan | Tổng tiền: 859.700 VNĐ
+- **TG-AA28762** (2026-02-20T15:02:09.503Z) | Khách: CALI (NGUYỄN HUỆ) | Trạng thái: danhan | Tổng tiền: 1.192.100 VNĐ
+- **TG-AA28763** (2026-02-20T15:02:09.607Z) | Khách: CALI (NGUYỄN CHÍ THANH) | Trạng thái: danhan | Tổng tiền: 698.100 VNĐ
+- **TG-AA28764** (2026-02-20T15:02:09.709Z) | Khách: CALI (BẾP) MEGA MALL | Trạng thái: danhan | Tổng tiền: 541.490 VNĐ
+- **TG-AA28765** (2026-02-20T15:02:09.842Z) | Khách: CALI Vinhomes Center Park | Trạng thái: danhan | Tổng tiền: 526.300 VNĐ
+- **TG-AA28766** (2026-02-20T15:02:09.916Z) | Khách: LẨU NARO | Trạng thái: danhan | Tổng tiền: 1.277.400 VNĐ
+- **TG-AA28767** (2026-02-20T15:02:10.143Z) | Khách: Nhà hàng Daiichi Ramen | Trạng thái: danhan | Tổng tiền: 502.400 VNĐ
+- **TG-AA28768** (2026-02-20T15:02:12.539Z) | Khách: BEER 90 | Trạng thái: danhan | Tổng tiền: 168.700 VNĐ
+- **TG-AA28770** (2026-02-20T15:04:12.003Z) | Khách: LONGWANG 11 | Trạng thái: danhan | Tổng tiền: 2.573.100 VNĐ
+- **TG-AA28771** (2026-02-20T15:04:12.131Z) | Khách: Cơm niêu Hải Sư 3 | Trạng thái: danhan | Tổng tiền: 116.000 VNĐ
+- **TG-AA28772** (2026-02-20T15:04:12.200Z) | Khách: BÒ TƠ BÌNH THẠNH (BAR) | Trạng thái: danhan | Tổng tiền: 112.500 VNĐ
+- **TG-AA28773** (2026-02-20T15:04:12.258Z) | Khách: BÒ TƠ BÌNH THẠNH | Trạng thái: danhan | Tổng tiền: 1.582.500 VNĐ
+- **TG-AA28774** (2026-02-20T15:04:12.426Z) | Khách: BÒ TƠ BÌNH THẠNH (NV) | Trạng thái: danhan | Tổng tiền: 16.000 VNĐ
+- **TG-AA28775** (2026-02-20T15:04:12.490Z) | Khách: AN DUYÊN | Trạng thái: danhan | Tổng tiền: 1.702.700 VNĐ
+- **TG-AA28776** (2026-02-20T15:04:13.930Z) | Khách: TIANLONG 09 | Trạng thái: danhan | Tổng tiền: 3.773.437,5 VNĐ
+- **TG-AA28777** (2026-02-20T15:04:14.112Z) | Khách: TIANLONG 06 | Trạng thái: danhan | Tổng tiền: 3.596.700 VNĐ
+- **TG-AA28778** (2026-02-20T15:07:16.498Z) | Khách: KHÈN | Trạng thái: danhan | Tổng tiền: 3.720.400 VNĐ
+- **TG-AA28779** (2026-02-20T15:08:28.843Z) | Khách: KHÈN (Bar) | Trạng thái: danhan | Tổng tiền: 126.630 VNĐ
+- **TG-AA28780** (2026-02-20T15:09:12.566Z) | Khách: Le Monde Steak (Bình Tân) | Trạng thái: danhan | Tổng tiền: 2.377.800 VNĐ
+- **TG-AA28781** (2026-02-20T20:22:47.538Z) | Khách: Nhà Hàng Ssamjang | Trạng thái: danhan | Tổng tiền: 37.800 VNĐ
+- **TG-AA28782** (2026-02-20T20:54:14.502Z) | Khách: Le Monde Steak (Cao Thắng) | Trạng thái: danhan | Tổng tiền: 554.400 VNĐ
+- **TG-AA28783** (2026-02-21T03:22:22.109Z) | Khách: Le Monde Steak (NTMK) | Trạng thái: danhan | Tổng tiền: 865.095 VNĐ
+- **TG-AA28784** (2026-02-21T03:24:10.312Z) | Khách: PHỞ ROCKSTAR | Trạng thái: danhan | Tổng tiền: 144.375 VNĐ
+- **TG-AA28785** (2026-02-21T03:26:11.813Z) | Khách: BIA THỦ CÔNG BRAUHOF SAIGON | Trạng thái: danhan | Tổng tiền: 701.715 VNĐ
+- **TG-AA28786** (2026-02-21T04:08:15.805Z) | Khách: BÒ TƠ Q7 | Trạng thái: danhan | Tổng tiền: 1.251.652,5 VNĐ
+- **TG-AA28787** (2026-02-21T04:09:32.494Z) | Khách: LONGWANG 3 | Trạng thái: danhan | Tổng tiền: 79.170 VNĐ
+- **TG-AA28788** (2026-02-21T04:24:50.612Z) | Khách: LONGWANG 18 | Trạng thái: danhan | Tổng tiền: 236.250 VNĐ
+- **TG-AA28789** (2026-02-21T04:53:11.731Z) | Khách: Bò Tơ Bếp Trung Tâm | Trạng thái: danhan | Tổng tiền: 2.974.500 VNĐ
+- **TG-AA28790** (2026-02-21T10:50:48.484Z) | Khách: LA CHÂTEAU - Hotel & Beauty | Trạng thái: danhan | Tổng tiền: 847.200 VNĐ
+- **TG-AA28791** (2026-02-21T10:51:32.430Z) | Khách: LA CHÂTEAU - Hotel & Beauty | Trạng thái: danhan | Tổng tiền: 377.600 VNĐ
+
+## 2. Phiếu Đặt Hàng (Purchase Orders)
+- **Tổng số phiếu đặt hàng:** 60
+- **Trạng thái phiếu:** danhan (60)
+- **Tổng số mục sản phẩm nhập giá 0đ:** 43 mục
+- **Tổng giá trị dự kiến (chỉ tính mục có giá):** 116.064.704,8 VNĐ
+
+### Thống kê các số PO nhập giá 0đ:
+- **TGNCC-PH00006** (NCC: A Bằng Cần Nước): Có sản phẩm giá 0đ
+- **TGNCC-PH00008** (NCC: VŨ MUA): Có sản phẩm giá 0đ
+- **TGNCC-PH00059** (NCC: Gái Hành Lá): Có sản phẩm giá 0đ
+- **TGNCC-PH00125** (NCC: Năm Nấm): Có sản phẩm giá 0đ
+- **TGNCC-PH03110** (NCC: THU NGUYỆT TRÁI CÂY): Có sản phẩm giá 0đ
+- **TGNCC-PI00001** (NCC: Tỏi Bình minh): Có sản phẩm giá 0đ
+- **TGNCC-PI00002** (NCC: Trung Đậu Bắp): Có sản phẩm giá 0đ
+- **TGNCC-PI00003** (NCC: TRỨNG LƯỢNG): Có sản phẩm giá 0đ
+- **TGNCC-PI00004** (NCC: Tư bún): Có sản phẩm giá 0đ
+- **TGNCC-PI00010** (NCC: BÉ NĂM PHƯỚC HẬU): Có sản phẩm giá 0đ

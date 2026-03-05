@@ -45,9 +45,9 @@ export declare class ChotkhoService {
                 order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
+                userId: string | null;
                 sanphamId: string | null;
                 slhuy: Decimal;
-                userId: string | null;
                 ngaychot: Date;
                 sltonhethong: Decimal;
                 sltonthucte: Decimal;
@@ -62,8 +62,8 @@ export declare class ChotkhoService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            userId: string | null;
             codeId: string | null;
+            userId: string | null;
             khoId: string | null;
             ngaychot: Date;
         }) | null;
@@ -98,9 +98,9 @@ export declare class ChotkhoService {
                 order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
+                userId: string | null;
                 sanphamId: string | null;
                 slhuy: Decimal;
-                userId: string | null;
                 ngaychot: Date;
                 sltonhethong: Decimal;
                 sltonthucte: Decimal;
@@ -115,8 +115,8 @@ export declare class ChotkhoService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            userId: string | null;
             codeId: string | null;
+            userId: string | null;
             khoId: string | null;
             ngaychot: Date;
         })[];
@@ -153,9 +153,9 @@ export declare class ChotkhoService {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
+            userId: string | null;
             sanphamId: string | null;
             slhuy: Decimal;
-            userId: string | null;
             ngaychot: Date;
             sltonhethong: Decimal;
             sltonthucte: Decimal;
@@ -170,8 +170,8 @@ export declare class ChotkhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         codeId: string | null;
+        userId: string | null;
         khoId: string | null;
         ngaychot: Date;
     }) | null>;
@@ -183,8 +183,8 @@ export declare class ChotkhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         codeId: string | null;
+        userId: string | null;
         khoId: string | null;
         ngaychot: Date;
     }>;
@@ -196,8 +196,8 @@ export declare class ChotkhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         codeId: string | null;
+        userId: string | null;
         khoId: string | null;
         ngaychot: Date;
     }>;
@@ -228,9 +228,9 @@ export declare class ChotkhoService {
                 order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
+                userId: string | null;
                 sanphamId: string | null;
                 slhuy: Decimal;
-                userId: string | null;
                 ngaychot: Date;
                 sltonhethong: Decimal;
                 sltonthucte: Decimal;
@@ -245,8 +245,8 @@ export declare class ChotkhoService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            userId: string | null;
             codeId: string | null;
+            userId: string | null;
             khoId: string | null;
             ngaychot: Date;
         })[];
@@ -290,9 +290,9 @@ export declare class ChotkhoService {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
+            userId: string | null;
             sanphamId: string | null;
             slhuy: Decimal;
-            userId: string | null;
             ngaychot: Date;
             sltonhethong: Decimal;
             sltonthucte: Decimal;
@@ -307,8 +307,8 @@ export declare class ChotkhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         codeId: string | null;
+        userId: string | null;
         khoId: string | null;
         ngaychot: Date;
     }) | null>;

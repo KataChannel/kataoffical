@@ -183,8 +183,8 @@ export declare class CancelOrderService {
         lydohuy: string | null;
         subtitle: string | null;
         madncc: string | null;
+        khoId: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string | null;
-        khoId: string | null;
     })[]>;
 }
