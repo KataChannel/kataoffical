@@ -277,20 +277,34 @@ export class PhieukhoService {
         // Update tonkho for each sanpham
         for (const sp of data.sanpham) {
           const soluong = Number(sp.soluong) || 0;
-          if (soluong > 0) {
+          if (soluong > 0 || (data.useAbsoluteTarget && sp.targetSlton !== undefined)) {
             // Find current stock to handle "Checkout Reset" logic
             const currentTonKho = await prisma.tonKho.findUnique({
               where: { sanphamId: sp.sanphamId }
             });
 
             const currentSltontt = currentTonKho ? (Number(currentTonKho.sltontt) || 0) : 0;
-            const targetStock = data.type === 'nhap' ? currentSltontt + soluong : currentSltontt - soluong;
-
-            if (data.isChotkho && targetStock < 0) {
-              throw new BadRequestException(`Giao dịch chốt kho khiến tồn thực tế âm (${targetStock}). Vui lòng kiểm tra lại số liệu.`);
-            }
 
             if (data.isChotkho) {
+              // ✅ FIX: Khi useAbsoluteTarget=true, dùng giá trị tuyệt đối từ frontend
+              // Không tính delta → Không race condition
+              let targetStock: number;
+
+              if (data.useAbsoluteTarget && sp.targetSlton !== undefined) {
+                // 🚀 NEW: Absolute target mode - SET trực tiếp giá trị từ Excel
+                targetStock = Number(sp.targetSlton);
+                console.log(`📌 [CHOTKHO-ABS] ${sp.sanphamId}: sltontt ${currentSltontt} → ${targetStock} (absolute target)`);
+              } else {
+                // Legacy delta mode (backward compatible)
+                targetStock = data.type === 'nhap' ? currentSltontt + soluong : currentSltontt - soluong;
+                console.log(`📌 [CHOTKHO-DELTA] ${sp.sanphamId}: sltontt ${currentSltontt} → ${targetStock} (delta: ${soluong})`);
+              }
+
+              if (targetStock < 0) {
+                console.warn(`⚠️ [CHOTKHO] ${sp.sanphamId}: targetStock=${targetStock} < 0, setting to 0`);
+                targetStock = 0;
+              }
+
               // 🚀 SPECIAL CHECKOUT LOGIC: Align Cumulative (slton) with Actual (sltontt)
               // This resets any historical negative balance (Debt) to the real physical count
               await prisma.tonKho.upsert({

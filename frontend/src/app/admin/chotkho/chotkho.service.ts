@@ -236,13 +236,14 @@ export class ChotkhoService {
         this.showErrorMessage('Lỗi khi tạo chốt kho');
         return false;
       }
-      masterResult.details.map(async (v:any)=>{
+      // ✅ FIX: Await all TonKho updates properly (was fire-and-forget before)
+      await Promise.all(masterResult.details.map(async (v:any)=>{
         // Perform any necessary operations on each detail
       await this.graphqlService.updateOne('tonkho',{sanphamId:v.sanphamId},{
             slton: v.sltonthucte || 0 ,
             sltontt: v.sltonthucte || 0 ,
         })
-      });
+      }));
       console.log('Chốt kho đã được tạo thành công:', masterResult);
       
       this.showSuccessMessage(`Tạo chốt kho thành công với ${masterResult.details?.length || 0} chi tiết`);

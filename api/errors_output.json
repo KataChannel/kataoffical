@@ -1,0 +1,996 @@
+Checking recent ErrorLogs...
+[
+  {
+    "id": "5b195be7-af9d-4dde-9cb5-b18e5d90bbc3",
+    "timestamp": "2026-03-05T07:19:56.377Z",
+    "message": "createImportdata",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "ImportHistory"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.15.0"
+    },
+    "source": "server",
+    "createdAt": "2026-03-05T07:19:56.378Z"
+  },
+  {
+    "id": "7a6e2b8b-6026-4998-b95e-bf017f258db7",
+    "timestamp": "2026-03-05T07:19:52.759Z",
+    "message": "createImportdata",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "ImportHistory"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.15.0"
+    },
+    "source": "server",
+    "createdAt": "2026-03-05T07:19:52.761Z"
+  },
+  {
+    "id": "1fa601f2-e6bd-4c06-a105-47b910117f2a",
+    "timestamp": "2026-03-05T07:19:48.551Z",
+    "message": "createImportdata",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "ImportHistory"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.15.0"
+    },
+    "source": "server",
+    "createdAt": "2026-03-05T07:19:48.553Z"
+  },
+  {
+    "id": "46ac98f2-d4ae-40b3-b9ad-01c1785766ce",
+    "timestamp": "2026-03-05T07:10:28.504Z",
+    "message": "createImportdata",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "ImportHistory"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.15.0"
+    },
+    "source": "server",
+    "createdAt": "2026-03-05T07:10:28.514Z"
+  },
+  {
+    "id": "61290753-bde5-42da-a542-bb404545f0ee",
+    "timestamp": "2026-03-05T05:58:44.778Z",
+    "message": "createImportdata",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "ImportHistory"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.15.0"
+    },
+    "source": "server",
+    "createdAt": "2026-03-05T05:58:44.780Z"
+  },
+  {
+    "id": "14e0c8b8-e13f-4d00-9b88-fa159e396a65",
+    "timestamp": "2026-03-05T04:22:55.746Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/donhang/f8460b92-764a-4d07-a825-c6aff02d47e3",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2026-03-05T04:22:55.747Z"
+  },
+  {
+    "id": "9bb2fde4-d9bf-4952-ae2d-047dae8091c4",
+    "timestamp": "2026-03-05T04:22:55.211Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/donhang/f8460b92-764a-4d07-a825-c6aff02d47e3",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2026-03-05T04:22:55.212Z"
+  },
+  {
+    "id": "00a990b3-4aeb-45a9-97a2-180e9766492c",
+    "timestamp": "2026-03-05T04:13:11.432Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/donhang/eb22973c-8307-400e-b6ee-ddd3d332e0c1",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2026-03-05T04:13:11.435Z"
+  },
+  {
+    "id": "693fb4a9-3470-4545-a4e4-4aa26ad58d50",
+    "timestamp": "2026-03-04T09:54:24.615Z",
+    "message": "createImportdata",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "ImportHistory"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.15.0"
+    },
+    "source": "server",
+    "createdAt": "2026-03-04T09:54:24.642Z"
+  },
+  {
+    "id": "452a8049-7788-4658-999d-83f731175e7a",
+    "timestamp": "2026-03-04T08:29:21.401Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/donhang",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2026-03-04T08:29:21.402Z"
+  },
+  {
+    "id": "d59a793e-e1f2-4bd3-b948-f7fbad5d9bfb",
+    "timestamp": "2026-03-04T06:14:20.475Z",
+    "message": "Lỗi tìm kiếm đơn hàng GraphQL: Http failure response for (unknown url): undefined undefined",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/vandon",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2026-03-04T06:14:20.477Z"
+  },
+  {
+    "id": "c927a00e-1339-44ca-9666-4a54adb90963",
+    "timestamp": "2026-02-28T10:03:44.741Z",
+    "message": "Lỗi lấy tất cả sản phẩm",
+    "details": {
+      "error": "\nInvalid `this.prisma.tonKho.findMany()` invocation in\n/app/dist/src/sanpham/sanpham.service.js:270:54\n\n  267 async nhucaudathang() {\n  268     try {\n  269         const sanphams = await this.prisma.sanpham.findMany();\n→ 270         const tonkhos = await this.prisma.tonKho.findMany(\nThe column `TonKho.createdAt` does not exist in the current database."
+    },
+    "source": "server",
+    "createdAt": "2026-02-28T10:03:44.743Z"
+  },
+  {
+    "id": "0cc73df1-39eb-4640-b99f-2cc20e3bbf29",
+    "timestamp": "2026-02-28T10:03:44.588Z",
+    "message": "Lỗi lấy tất cả sản phẩm",
+    "details": {
+      "error": "\nInvalid `this.prisma.tonKho.findMany()` invocation in\n/app/dist/src/sanpham/sanpham.service.js:270:54\n\n  267 async nhucaudathang() {\n  268     try {\n  269         const sanphams = await this.prisma.sanpham.findMany();\n→ 270         const tonkhos = await this.prisma.tonKho.findMany(\nThe column `TonKho.createdAt` does not exist in the current database."
+    },
+    "source": "server",
+    "createdAt": "2026-02-28T10:03:44.590Z"
+  },
+  {
+    "id": "a36591c3-5975-47b5-ae3f-2fbbc1168483",
+    "timestamp": "2026-02-28T10:03:44.408Z",
+    "message": "Lỗi lấy tất cả sản phẩm",
+    "details": {
+      "error": "\nInvalid `this.prisma.tonKho.findMany()` invocation in\n/app/dist/src/sanpham/sanpham.service.js:270:54\n\n  267 async nhucaudathang() {\n  268     try {\n  269         const sanphams = await this.prisma.sanpham.findMany();\n→ 270         const tonkhos = await this.prisma.tonKho.findMany(\nThe column `TonKho.createdAt` does not exist in the current database."
+    },
+    "source": "server",
+    "createdAt": "2026-02-28T10:03:44.409Z"
+  },
+  {
+    "id": "6258c77e-2906-42db-b869-2020021975a3",
+    "timestamp": "2026-02-28T10:03:44.269Z",
+    "message": "Lỗi lấy tất cả sản phẩm",
+    "details": {
+      "error": "\nInvalid `this.prisma.tonKho.findMany()` invocation in\n/app/dist/src/sanpham/sanpham.service.js:270:54\n\n  267 async nhucaudathang() {\n  268     try {\n  269         const sanphams = await this.prisma.sanpham.findMany();\n→ 270         const tonkhos = await this.prisma.tonKho.findMany(\nThe column `TonKho.createdAt` does not exist in the current database."
+    },
+    "source": "server",
+    "createdAt": "2026-02-28T10:03:44.273Z"
+  },
+  {
+    "id": "43b06890-2ad7-41ef-9cce-481088975efc",
+    "timestamp": "2026-02-28T10:03:42.680Z",
+    "message": "Lỗi lấy tất cả sản phẩm",
+    "details": {
+      "error": "\nInvalid `this.prisma.tonKho.findMany()` invocation in\n/app/dist/src/sanpham/sanpham.service.js:270:54\n\n  267 async nhucaudathang() {\n  268     try {\n  269         const sanphams = await this.prisma.sanpham.findMany();\n→ 270         const tonkhos = await this.prisma.tonKho.findMany(\nThe column `TonKho.createdAt` does not exist in the current database."
+    },
+    "source": "server",
+    "createdAt": "2026-02-28T10:03:42.681Z"
+  },
+  {
+    "id": "b824e7b5-d121-4b58-b038-d379f64b4be3",
+    "timestamp": "2026-02-28T10:03:41.213Z",
+    "message": "Lỗi lấy tất cả sản phẩm",
+    "details": {
+      "error": "\nInvalid `this.prisma.tonKho.findMany()` invocation in\n/app/dist/src/sanpham/sanpham.service.js:270:54\n\n  267 async nhucaudathang() {\n  268     try {\n  269         const sanphams = await this.prisma.sanpham.findMany();\n→ 270         const tonkhos = await this.prisma.tonKho.findMany(\nThe column `TonKho.createdAt` does not exist in the current database."
+    },
+    "source": "server",
+    "createdAt": "2026-02-28T10:03:41.222Z"
+  },
+  {
+    "id": "93acd9b3-7e86-42f1-b83b-4b1c65a71479",
+    "timestamp": "2026-02-26T06:35:48.446Z",
+    "message": "getKhachhangById",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/khachhang/140ea24d-797e-4606-aea9-8e1071bade1f",
+      "name": "ApolloError",
+      "cause": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "clientErrors": [],
+      "networkError": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "graphQLErrors": [],
+      "protocolErrors": []
+    },
+    "source": "client",
+    "createdAt": "2026-02-26T06:35:48.450Z"
+  },
+  {
+    "id": "d7f634ae-79ed-453d-90bb-50888db34656",
+    "timestamp": "2026-02-13T17:06:01.533Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/donhang",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2026-02-13T17:06:01.534Z"
+  },
+  {
+    "id": "37145887-514b-4291-8f29-b342249c98b3",
+    "timestamp": "2026-01-25T10:59:35.974Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/dathang",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Mobile Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2026-01-25T10:59:35.979Z"
+  },
+  {
+    "id": "b9fbaccc-ce7a-43f4-ad6f-86e86707290a",
+    "timestamp": "2026-01-23T17:15:10.077Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/donhang",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0"
+    },
+    "source": "client",
+    "createdAt": "2026-01-23T17:15:10.080Z"
+  },
+  {
+    "id": "e6a198bf-4442-4047-b62e-46028fc47bd1",
+    "timestamp": "2026-01-20T07:31:30.996Z",
+    "message": "getAllKhachhang",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/khachhang/cb7a69b3-0e1c-43f9-ad29-37c500cdbb58",
+      "name": "ApolloError",
+      "cause": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+      "clientErrors": [],
+      "networkError": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "graphQLErrors": [],
+      "protocolErrors": []
+    },
+    "source": "client",
+    "createdAt": "2026-01-20T07:31:31.003Z"
+  },
+  {
+    "id": "5683dc4f-0574-40c7-8978-8eac5b1b47dc",
+    "timestamp": "2026-01-20T07:31:30.995Z",
+    "message": "getKhachhangById",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/khachhang/cb7a69b3-0e1c-43f9-ad29-37c500cdbb58",
+      "name": "ApolloError",
+      "cause": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+      "clientErrors": [],
+      "networkError": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "graphQLErrors": [],
+      "protocolErrors": []
+    },
+    "source": "client",
+    "createdAt": "2026-01-20T07:31:31.002Z"
+  },
+  {
+    "id": "a83a2c86-a78b-4043-9c96-e15d0ed4222e",
+    "timestamp": "2026-01-18T05:59:48.813Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/congnokhachhang",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2026-01-18T05:59:48.816Z"
+  },
+  {
+    "id": "67d99421-df16-4176-8e39-02ea8db77474",
+    "timestamp": "2026-01-14T11:02:54.490Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/donhang/1a8e3082-3bf8-44e1-a594-a9a433ee33b5",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2026-01-14T11:02:54.493Z"
+  },
+  {
+    "id": "3247f88e-3ffb-45d8-90de-887e0a572f53",
+    "timestamp": "2026-01-14T07:40:28.639Z",
+    "message": "getKhachhangById",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/khachhang/38eda13a-62dd-43d6-af54-c114a76eae4c",
+      "name": "ApolloError",
+      "cause": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+      "clientErrors": [],
+      "networkError": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "graphQLErrors": [],
+      "protocolErrors": []
+    },
+    "source": "client",
+    "createdAt": "2026-01-14T07:40:28.644Z"
+  },
+  {
+    "id": "47b5e758-4466-4d64-8377-92188e11bf1a",
+    "timestamp": "2026-01-14T07:40:28.637Z",
+    "message": "getAllKhachhang",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/khachhang/38eda13a-62dd-43d6-af54-c114a76eae4c",
+      "name": "ApolloError",
+      "cause": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+      "clientErrors": [],
+      "networkError": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "graphQLErrors": [],
+      "protocolErrors": []
+    },
+    "source": "client",
+    "createdAt": "2026-01-14T07:40:28.642Z"
+  },
+  {
+    "id": "339fcf0e-df5f-4c5c-8aca-1238882d040f",
+    "timestamp": "2026-01-09T14:06:05.387Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/donhang",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 OPR/125.0.0.0"
+    },
+    "source": "client",
+    "createdAt": "2026-01-09T14:06:05.390Z"
+  },
+  {
+    "id": "4442dbde-c50f-409e-b8ff-9155953d3b64",
+    "timestamp": "2026-01-09T05:14:22.961Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/menu",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2026-01-09T05:14:22.963Z"
+  },
+  {
+    "id": "e0724cc2-2b84-49b9-8fef-c42b218eed78",
+    "timestamp": "2026-01-06T21:23:55.213Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/phieugiaohang/b2c1bb4a-3aa0-4b45-a0b9-7793f0710a86",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2026-01-06T21:23:55.215Z"
+  },
+  {
+    "id": "c251d01c-4577-4c5a-8f9c-e647bed45fb8",
+    "timestamp": "2026-01-06T07:09:20.216Z",
+    "message": "getAllKhachhang",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/khachhang/6ec46783-d98a-4e56-a70b-6fb7a8e9eeed",
+      "name": "ApolloError",
+      "cause": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+      "clientErrors": [],
+      "networkError": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "graphQLErrors": [],
+      "protocolErrors": []
+    },
+    "source": "client",
+    "createdAt": "2026-01-06T07:09:20.217Z"
+  },
+  {
+    "id": "ad889560-d72b-42fc-af66-ac9017792fc3",
+    "timestamp": "2026-01-06T07:09:20.215Z",
+    "message": "getKhachhangById",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/khachhang/6ec46783-d98a-4e56-a70b-6fb7a8e9eeed",
+      "name": "ApolloError",
+      "cause": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+      "clientErrors": [],
+      "networkError": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "graphQLErrors": [],
+      "protocolErrors": []
+    },
+    "source": "client",
+    "createdAt": "2026-01-06T07:09:20.216Z"
+  },
+  {
+    "id": "586941bd-a8a0-4ecc-95ea-8f0759bb7716",
+    "timestamp": "2026-01-06T05:10:54.453Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/user",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2026-01-06T05:10:54.454Z"
+  },
+  {
+    "id": "3a40a4a0-db60-4c37-9070-182eefef59fb",
+    "timestamp": "2025-12-30T09:05:35.048Z",
+    "message": "getAllKhachhang",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/khachhang/new",
+      "name": "ApolloError",
+      "cause": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+      "clientErrors": [],
+      "networkError": {
+        "ok": false,
+        "url": "https://apitg.rausachtrangia.com/graphql",
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for https://apitg.rausachtrangia.com/graphql: 0 undefined",
+        "statusText": "Unknown Error"
+      },
+      "graphQLErrors": [],
+      "protocolErrors": []
+    },
+    "source": "client",
+    "createdAt": "2025-12-30T09:05:35.049Z"
+  },
+  {
+    "id": "0f0002f5-25e8-4442-a850-41897b350b49",
+    "timestamp": "2025-12-30T09:04:26.574Z",
+    "message": "getAllKhachhang",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/khachhang/new",
+      "name": "ApolloError",
+      "cause": {
+        "ok": false,
+        "url": null,
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for (unknown url): undefined undefined",
+        "statusText": "Unknown Error"
+      },
+      "message": "Http failure response for (unknown url): undefined undefined",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+      "clientErrors": [],
+      "networkError": {
+        "ok": false,
+        "url": null,
+        "name": "HttpErrorResponse",
+        "error": {},
+        "status": 0,
+        "headers": {
+          "headers": {},
+          "lazyUpdate": null,
+          "normalizedNames": {}
+        },
+        "message": "Http failure response for (unknown url): undefined undefined",
+        "statusText": "Unknown Error"
+      },
+      "graphQLErrors": [],
+      "protocolErrors": []
+    },
+    "source": "client",
+    "createdAt": "2025-12-30T09:04:26.575Z"
+  },
+  {
+    "id": "3bbdb525-f122-4fe0-812f-efdb110292c4",
+    "timestamp": "2025-12-30T09:04:26.573Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/khachhang/new",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-12-30T09:04:26.575Z"
+  },
+  {
+    "id": "f3ed12a3-3b59-440f-8cb1-80f87a6413f1",
+    "timestamp": "2025-12-23T07:18:05.899Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/phieugiaohang/015bb440-a98f-48ea-9ca8-f44d8ea158ac",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-12-23T07:18:05.902Z"
+  },
+  {
+    "id": "c640d2ad-ecb4-41aa-9b8b-89e65873f9e5",
+    "timestamp": "2025-12-05T03:39:09.686Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/nhanvien/create",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-12-05T03:39:09.687Z"
+  },
+  {
+    "id": "e2b88c98-a996-4644-ab81-39a1b8319a36",
+    "timestamp": "2025-12-02T07:17:36.847Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/user/011345b9-0409-471f-9a33-7fe09362dfa0",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-12-02T07:17:36.848Z"
+  },
+  {
+    "id": "099dd582-3374-44e7-a7f4-4059ffde0984",
+    "timestamp": "2025-11-26T02:00:11.625Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/donhang/b112a183-ff29-4218-ab32-e312c5553f8a",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-11-26T02:00:11.626Z"
+  },
+  {
+    "id": "5520bb76-46d5-45fc-b2eb-4d7375ee02e8",
+    "timestamp": "2025-11-24T06:20:11.787Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/menu",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-11-24T06:20:11.788Z"
+  },
+  {
+    "id": "ff6755b7-da11-41bf-8b2c-db19158a70c8",
+    "timestamp": "2025-11-18T21:08:39.901Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/dathang",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-11-18T21:08:39.902Z"
+  },
+  {
+    "id": "0498815d-d0f1-4329-866f-e3044ee55d1e",
+    "timestamp": "2025-11-11T02:27:26.462Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "http://localhost:4301/admin/congnokhachhang",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-11-11T02:27:26.462Z"
+  },
+  {
+    "id": "dcf99f67-b188-4f72-81a7-f60876289514",
+    "timestamp": "2025-10-25T15:31:18.129Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/menu",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-10-25T15:31:19.162Z"
+  },
+  {
+    "id": "8c3811e8-db4e-4b2a-9094-4030f52d02cc",
+    "timestamp": "2025-10-22T12:11:30.785Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/dathang",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-10-22T12:11:30.791Z"
+  },
+  {
+    "id": "6ab2f631-27ed-4ea4-a0e7-8d234bdae73f",
+    "timestamp": "2025-10-08T08:15:57.272Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/sanpham/f1cb357d-c1a8-4b18-9f18-86ea5d8c4076",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-10-08T08:15:57.273Z"
+  },
+  {
+    "id": "5cf49701-7db0-4b43-802f-19981ce45b9a",
+    "timestamp": "2025-10-08T08:15:57.106Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/sanpham/f1cb357d-c1a8-4b18-9f18-86ea5d8c4076",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-10-08T08:15:57.107Z"
+  },
+  {
+    "id": "67bbe105-62e4-418d-b264-800fabab5d24",
+    "timestamp": "2025-10-08T07:44:19.452Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/sanpham/23010bee-a10e-41cc-b8f9-675e42398e96",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-10-08T07:44:19.454Z"
+  },
+  {
+    "id": "330ee8da-50dc-4e22-8c7c-9e2644e26e4d",
+    "timestamp": "2025-10-07T01:57:03.960Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/sanpham",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-10-07T01:57:03.961Z"
+  },
+  {
+    "id": "fec32107-6694-42d8-ac9f-23a2746ecd41",
+    "timestamp": "2025-10-07T01:57:03.638Z",
+    "message": "Failed to getUserguideBy",
+    "details": {
+      "url": "https://tg.rausachtrangia.com/admin/sanpham",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-10-07T01:57:03.639Z"
+  }
+]
+Chotkho Phieus created today: [
+  {
+    "id": "6482134e-9627-4ab6-a85d-ed28b448e47f",
+    "title": "ĐIỀU CHỈNH CHỐT KHO TRỰC TIẾP (Ô DỮ LIỆU)",
+    "maphieu": "PKNAA00006",
+    "madonhang": null,
+    "madncc": null,
+    "madathang": null,
+    "ngay": "2026-03-05T05:58:44.561Z",
+    "type": "nhap",
+    "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+    "ghichu": "Điều chỉnh tăng 18.4 cho sản phẩm I100921 (Tồn mới: 0) trực tiếp từ bảng nhu cầu.",
+    "isActive": true,
+    "createdAt": "2026-03-05T05:58:44.600Z",
+    "updatedAt": "2026-03-05T05:58:44.600Z",
+    "isChotkho": true,
+    "sanpham": []
+  },
+  {
+    "id": "f71401b4-afcc-4d0e-8517-e394a99f14cf",
+    "title": "ĐIỀU CHỈNH CHỐT KHO TRỰC TIẾP (Ô DỮ LIỆU)",
+    "maphieu": "PKNAA00007",
+    "madonhang": null,
+    "madncc": null,
+    "madathang": null,
+    "ngay": "2026-03-05T05:58:58.141Z",
+    "type": "nhap",
+    "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+    "ghichu": "Điều chỉnh tăng 6.4 cho sản phẩm I100635 (Tồn mới: 0) trực tiếp từ bảng nhu cầu.",
+    "isActive": true,
+    "createdAt": "2026-03-05T05:58:58.176Z",
+    "updatedAt": "2026-03-05T05:58:58.176Z",
+    "isChotkho": true,
+    "sanpham": []
+  },
+  {
+    "id": "94f458d3-2966-426b-a585-8d9e0fea4c9c",
+    "title": "ĐIỀU CHỈNH CHỐT KHO (TĂNG) TỰ ĐỘNG [EXCEL]",
+    "maphieu": "PKNAA00008",
+    "madonhang": null,
+    "madncc": null,
+    "madathang": null,
+    "ngay": "2026-03-05T07:10:30.268Z",
+    "type": "nhap",
+    "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+    "ghichu": "Điều chỉnh tăng tồn kho chốt từ Excel lúc 14:10:30 05/03/2026 ",
+    "isActive": true,
+    "createdAt": "2026-03-05T07:10:27.905Z",
+    "updatedAt": "2026-03-05T07:10:27.905Z",
+    "isChotkho": true,
+    "sanpham": []
+  },
+  {
+    "id": "dd5a9c12-9117-4e24-8c94-825d39336d1e",
+    "title": "ĐIỀU CHỈNH CHỐT KHO TRỰC TIẾP (Ô DỮ LIỆU)",
+    "maphieu": "PKNAA00009",
+    "madonhang": null,
+    "madncc": null,
+    "madathang": null,
+    "ngay": "2026-03-05T07:19:48.447Z",
+    "type": "nhap",
+    "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+    "ghichu": "Điều chỉnh tăng 0.7 cho sản phẩm I100023 (Tồn mới: 0) trực tiếp từ bảng nhu cầu.",
+    "isActive": true,
+    "createdAt": "2026-03-05T07:19:48.495Z",
+    "updatedAt": "2026-03-05T07:19:48.495Z",
+    "isChotkho": true,
+    "sanpham": []
+  },
+  {
+    "id": "a1b6c39e-a0a9-4f72-88ef-e7f6cdd4f1cb",
+    "title": "ĐIỀU CHỈNH CHỐT KHO TRỰC TIẾP (Ô DỮ LIỆU)",
+    "maphieu": "PKNAA00010",
+    "madonhang": null,
+    "madncc": null,
+    "madathang": null,
+    "ngay": "2026-03-05T07:19:52.706Z",
+    "type": "nhap",
+    "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+    "ghichu": "Điều chỉnh tăng 2.2 cho sản phẩm I100006 (Tồn mới: 0) trực tiếp từ bảng nhu cầu.",
+    "isActive": true,
+    "createdAt": "2026-03-05T07:19:52.728Z",
+    "updatedAt": "2026-03-05T07:19:52.728Z",
+    "isChotkho": true,
+    "sanpham": []
+  },
+  {
+    "id": "7a929ac3-ae89-4457-84f0-989ca9eb410b",
+    "title": "ĐIỀU CHỈNH CHỐT KHO TRỰC TIẾP (Ô DỮ LIỆU)",
+    "maphieu": "PKNAA00011",
+    "madonhang": null,
+    "madncc": null,
+    "madathang": null,
+    "ngay": "2026-03-05T07:19:56.308Z",
+    "type": "nhap",
+    "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+    "ghichu": "Điều chỉnh tăng 2.77 cho sản phẩm I100026 (Tồn mới: 0) trực tiếp từ bảng nhu cầu.",
+    "isActive": true,
+    "createdAt": "2026-03-05T07:19:56.346Z",
+    "updatedAt": "2026-03-05T07:19:56.346Z",
+    "isChotkho": true,
+    "sanpham": []
+  }
+]

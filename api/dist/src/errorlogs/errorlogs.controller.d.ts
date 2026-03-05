@@ -12,33 +12,33 @@ export declare class ErrorlogsController {
     findAll(): Promise<{
         id: string;
         createdAt: Date;
-        message: string;
-        timestamp: Date;
         details: import("@prisma/client/runtime/library").JsonValue | null;
+        timestamp: Date;
+        message: string;
         source: string;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
         createdAt: Date;
-        message: string;
-        timestamp: Date;
         details: import("@prisma/client/runtime/library").JsonValue | null;
+        timestamp: Date;
+        message: string;
         source: string;
     }>;
     update(id: string, updateErrorlogsDto: any): Promise<{
         id: string;
         createdAt: Date;
-        message: string;
-        timestamp: Date;
         details: import("@prisma/client/runtime/library").JsonValue | null;
+        timestamp: Date;
+        message: string;
         source: string;
     }>;
     remove(id: string): Promise<{
         id: string;
         createdAt: Date;
-        message: string;
-        timestamp: Date;
         details: import("@prisma/client/runtime/library").JsonValue | null;
+        timestamp: Date;
+        message: string;
         source: string;
     }>;
 }

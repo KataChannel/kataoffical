@@ -229,16 +229,25 @@ let PhieukhoService = class PhieukhoService {
                 });
                 for (const sp of data.sanpham) {
                     const soluong = Number(sp.soluong) || 0;
-                    if (soluong > 0) {
+                    if (soluong > 0 || (data.useAbsoluteTarget && sp.targetSlton !== undefined)) {
                         const currentTonKho = await prisma.tonKho.findUnique({
                             where: { sanphamId: sp.sanphamId }
                         });
                         const currentSltontt = currentTonKho ? (Number(currentTonKho.sltontt) || 0) : 0;
-                        const targetStock = data.type === 'nhap' ? currentSltontt + soluong : currentSltontt - soluong;
-                        if (data.isChotkho && targetStock < 0) {
-                            throw new common_1.BadRequestException(`Giao dịch chốt kho khiến tồn thực tế âm (${targetStock}). Vui lòng kiểm tra lại số liệu.`);
-                        }
                         if (data.isChotkho) {
+                            let targetStock;
+                            if (data.useAbsoluteTarget && sp.targetSlton !== undefined) {
+                                targetStock = Number(sp.targetSlton);
+                                console.log(`📌 [CHOTKHO-ABS] ${sp.sanphamId}: sltontt ${currentSltontt} → ${targetStock} (absolute target)`);
+                            }
+                            else {
+                                targetStock = data.type === 'nhap' ? currentSltontt + soluong : currentSltontt - soluong;
+                                console.log(`📌 [CHOTKHO-DELTA] ${sp.sanphamId}: sltontt ${currentSltontt} → ${targetStock} (delta: ${soluong})`);
+                            }
+                            if (targetStock < 0) {
+                                console.warn(`⚠️ [CHOTKHO] ${sp.sanphamId}: targetStock=${targetStock} < 0, setting to 0`);
+                                targetStock = 0;
+                            }
                             await prisma.tonKho.upsert({
                                 where: { sanphamId: sp.sanphamId },
                                 update: {

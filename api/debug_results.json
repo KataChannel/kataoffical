@@ -1,0 +1,752 @@
+{
+  "masp": "I100479",
+  "product": {
+    "id": "b69aaeb6-f337-4df8-a78a-fa0c84f6faa7",
+    "title": "Dưa hấu",
+    "title2": "",
+    "slug": null,
+    "masp": "I100479",
+    "subtitle": "duahau",
+    "giagoc": "10000",
+    "dvt": "Kg",
+    "hinhanh": null,
+    "loadpoint": "1",
+    "soluong": "0",
+    "soluongkho": "0",
+    "haohut": "0",
+    "ghichu": "",
+    "order": 259,
+    "isActive": false,
+    "createdAt": "2025-05-22T07:48:08.471Z",
+    "updatedAt": "2025-10-08T06:38:15.968Z",
+    "giaban": "0",
+    "vat": "0.05",
+    "TonKho": {
+      "id": "e97cb3bd-c6cd-4a47-a8d4-6c2b8373351a",
+      "sanphamId": "b69aaeb6-f337-4df8-a78a-fa0c84f6faa7",
+      "slton": "1010.4",
+      "slchogiao": "-1223.58",
+      "slchonhap": "-589",
+      "sltontt": "1010.4",
+      "createdAt": "2026-02-28T10:06:26.218Z",
+      "updatedAt": "2026-03-05T08:04:07.660Z"
+    },
+    "chotkhodetail": []
+  },
+  "recentAuditLogs": [],
+  "details1014": [],
+  "phieuKhoMovements": [
+    {
+      "id": "040cc5dd-44fc-48b5-9c42-b3724d1aed21",
+      "phieuKhoId": "3e475d38-13ae-43dd-af1f-3d6da1ac343b",
+      "sanphamId": "b69aaeb6-f337-4df8-a78a-fa0c84f6faa7",
+      "soluong": "3.6",
+      "ghichu": "",
+      "createdAt": "2026-03-05T00:39:58.772Z",
+      "updatedAt": "2026-03-05T00:39:58.772Z",
+      "phieuKho": {
+        "id": "3e475d38-13ae-43dd-af1f-3d6da1ac343b",
+        "title": null,
+        "maphieu": "PX-TG-AA30569",
+        "madonhang": null,
+        "madncc": null,
+        "madathang": null,
+        "ngay": "2026-03-04T17:00:00.000Z",
+        "type": "xuat",
+        "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+        "ghichu": null,
+        "isActive": false,
+        "createdAt": "2026-03-05T00:39:58.772Z",
+        "updatedAt": "2026-03-05T00:39:58.772Z",
+        "isChotkho": false
+      }
+    },
+    {
+      "id": "abadbc9a-4e11-449f-9d88-dc0dd2e4f06d",
+      "phieuKhoId": "4c5c4b4c-8ea4-41b3-a260-82b2569af764",
+      "sanphamId": "b69aaeb6-f337-4df8-a78a-fa0c84f6faa7",
+      "soluong": "6.5",
+      "ghichu": "2 trái",
+      "createdAt": "2026-03-05T00:34:16.125Z",
+      "updatedAt": "2026-03-05T00:34:16.125Z",
+      "phieuKho": {
+        "id": "4c5c4b4c-8ea4-41b3-a260-82b2569af764",
+        "title": null,
+        "maphieu": "PX-TG-AA30559",
+        "madonhang": null,
+        "madncc": null,
+        "madathang": null,
+        "ngay": "2026-03-04T17:00:00.000Z",
+        "type": "xuat",
+        "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+        "ghichu": null,
+        "isActive": false,
+        "createdAt": "2026-03-05T00:34:16.125Z",
+        "updatedAt": "2026-03-05T00:34:16.125Z",
+        "isChotkho": false
+      }
+    },
+    {
+      "id": "add73e7f-f556-478b-be85-c60bcc6774c5",
+      "phieuKhoId": "183e290e-66ee-4733-94e5-835057ac87ed",
+      "sanphamId": "b69aaeb6-f337-4df8-a78a-fa0c84f6faa7",
+      "soluong": "8.8",
+      "ghichu": "",
+      "createdAt": "2026-03-05T00:14:26.628Z",
+      "updatedAt": "2026-03-05T00:14:26.628Z",
+      "phieuKho": {
+        "id": "183e290e-66ee-4733-94e5-835057ac87ed",
+        "title": null,
+        "maphieu": "PX-TG-AA30568",
+        "madonhang": null,
+        "madncc": null,
+        "madathang": null,
+        "ngay": "2026-03-04T17:00:00.000Z",
+        "type": "xuat",
+        "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+        "ghichu": null,
+        "isActive": false,
+        "createdAt": "2026-03-05T00:14:26.628Z",
+        "updatedAt": "2026-03-05T00:14:26.628Z",
+        "isChotkho": false
+      }
+    },
+    {
+      "id": "a7734956-dfa0-4152-bf92-56f65c7f0a80",
+      "phieuKhoId": "6703141f-ff42-40cb-8532-fe1ced0e4647",
+      "sanphamId": "b69aaeb6-f337-4df8-a78a-fa0c84f6faa7",
+      "soluong": "20.5",
+      "ghichu": "",
+      "createdAt": "2026-03-04T23:56:40.507Z",
+      "updatedAt": "2026-03-04T23:56:40.507Z",
+      "phieuKho": {
+        "id": "6703141f-ff42-40cb-8532-fe1ced0e4647",
+        "title": null,
+        "maphieu": "PX-TG-AA30638",
+        "madonhang": null,
+        "madncc": null,
+        "madathang": null,
+        "ngay": "2026-03-04T17:00:00.000Z",
+        "type": "xuat",
+        "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+        "ghichu": null,
+        "isActive": false,
+        "createdAt": "2026-03-04T23:56:40.507Z",
+        "updatedAt": "2026-03-04T23:56:40.507Z",
+        "isChotkho": false
+      }
+    },
+    {
+      "id": "de770902-ae93-49ca-b4b0-73856ed511c9",
+      "phieuKhoId": "e9233d3b-7927-4fd4-83c4-588432d4a292",
+      "sanphamId": "b69aaeb6-f337-4df8-a78a-fa0c84f6faa7",
+      "soluong": "21.5",
+      "ghichu": "",
+      "createdAt": "2026-03-04T23:56:06.360Z",
+      "updatedAt": "2026-03-04T23:56:06.360Z",
+      "phieuKho": {
+        "id": "e9233d3b-7927-4fd4-83c4-588432d4a292",
+        "title": null,
+        "maphieu": "PX-TG-AA30654",
+        "madonhang": null,
+        "madncc": null,
+        "madathang": null,
+        "ngay": "2026-03-04T17:00:00.000Z",
+        "type": "xuat",
+        "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+        "ghichu": null,
+        "isActive": false,
+        "createdAt": "2026-03-04T23:56:06.360Z",
+        "updatedAt": "2026-03-04T23:56:06.360Z",
+        "isChotkho": false
+      }
+    },
+    {
+      "id": "b24b979c-ae69-439c-8eb9-7cbffe4beeec",
+      "phieuKhoId": "0397a8dd-11b5-4a88-b933-78c508d9a573",
+      "sanphamId": "b69aaeb6-f337-4df8-a78a-fa0c84f6faa7",
+      "soluong": "7.5",
+      "ghichu": "",
+      "createdAt": "2026-03-04T23:47:22.412Z",
+      "updatedAt": "2026-03-04T23:47:22.412Z",
+      "phieuKho": {
+        "id": "0397a8dd-11b5-4a88-b933-78c508d9a573",
+        "title": null,
+        "maphieu": "PX-TG-AA30686",
+        "madonhang": null,
+        "madncc": null,
+        "madathang": null,
+        "ngay": "2026-03-04T17:00:00.000Z",
+        "type": "xuat",
+        "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+        "ghichu": null,
+        "isActive": false,
+        "createdAt": "2026-03-04T23:47:22.412Z",
+        "updatedAt": "2026-03-04T23:47:22.412Z",
+        "isChotkho": false
+      }
+    },
+    {
+      "id": "aec30a57-000d-41bf-b420-d367f9d114bf",
+      "phieuKhoId": "ed74a550-27ab-47ae-af48-63b07059de07",
+      "sanphamId": "b69aaeb6-f337-4df8-a78a-fa0c84f6faa7",
+      "soluong": "3.6",
+      "ghichu": "",
+      "createdAt": "2026-03-04T23:11:42.951Z",
+      "updatedAt": "2026-03-04T23:11:42.951Z",
+      "phieuKho": {
+        "id": "ed74a550-27ab-47ae-af48-63b07059de07",
+        "title": null,
+        "maphieu": "PX-TG-AA30583",
+        "madonhang": null,
+        "madncc": null,
+        "madathang": null,
+        "ngay": "2026-03-04T17:00:00.000Z",
+        "type": "xuat",
+        "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+        "ghichu": null,
+        "isActive": false,
+        "createdAt": "2026-03-04T23:11:42.951Z",
+        "updatedAt": "2026-03-04T23:11:42.951Z",
+        "isChotkho": false
+      }
+    },
+    {
+      "id": "71d19346-2f0e-4fe2-a4b3-38797b89c32a",
+      "phieuKhoId": "a8eb2af4-6346-4790-a9a1-e36acfd3ad24",
+      "sanphamId": "b69aaeb6-f337-4df8-a78a-fa0c84f6faa7",
+      "soluong": "11",
+      "ghichu": "",
+      "createdAt": "2026-03-04T23:08:44.013Z",
+      "updatedAt": "2026-03-04T23:08:44.013Z",
+      "phieuKho": {
+        "id": "a8eb2af4-6346-4790-a9a1-e36acfd3ad24",
+        "title": null,
+        "maphieu": "PX-TG-AA30691",
+        "madonhang": null,
+        "madncc": null,
+        "madathang": null,
+        "ngay": "2026-03-04T17:00:00.000Z",
+        "type": "xuat",
+        "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+        "ghichu": null,
+        "isActive": false,
+        "createdAt": "2026-03-04T23:08:44.013Z",
+        "updatedAt": "2026-03-04T23:08:44.013Z",
+        "isChotkho": false
+      }
+    },
+    {
+      "id": "50bf7336-6a2c-4495-9eb1-659dfd58b8ad",
+      "phieuKhoId": "b54afa2f-66fd-40fe-a2b8-36b1df1e7e8f",
+      "sanphamId": "b69aaeb6-f337-4df8-a78a-fa0c84f6faa7",
+      "soluong": "11.2",
+      "ghichu": "",
+      "createdAt": "2026-03-04T22:35:16.052Z",
+      "updatedAt": "2026-03-04T22:35:16.052Z",
+      "phieuKho": {
+        "id": "b54afa2f-66fd-40fe-a2b8-36b1df1e7e8f",
+        "title": null,
+        "maphieu": "PX-TG-AA30617",
+        "madonhang": null,
+        "madncc": null,
+        "madathang": null,
+        "ngay": "2026-03-04T17:00:00.000Z",
+        "type": "xuat",
+        "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+        "ghichu": null,
+        "isActive": false,
+        "createdAt": "2026-03-04T22:35:16.052Z",
+        "updatedAt": "2026-03-04T22:35:16.052Z",
+        "isChotkho": false
+      }
+    },
+    {
+      "id": "22135f76-b78a-45c6-b8ad-e769a1401df5",
+      "phieuKhoId": "1ed49ef4-6c74-43a7-8776-03a9747c986f",
+      "sanphamId": "b69aaeb6-f337-4df8-a78a-fa0c84f6faa7",
+      "soluong": "2.8",
+      "ghichu": "",
+      "createdAt": "2026-03-04T22:21:50.283Z",
+      "updatedAt": "2026-03-04T22:21:50.283Z",
+      "phieuKho": {
+        "id": "1ed49ef4-6c74-43a7-8776-03a9747c986f",
+        "title": null,
+        "maphieu": "PX-TG-AA30610",
+        "madonhang": null,
+        "madncc": null,
+        "madathang": null,
+        "ngay": "2026-03-04T17:00:00.000Z",
+        "type": "xuat",
+        "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+        "ghichu": null,
+        "isActive": false,
+        "createdAt": "2026-03-04T22:21:50.283Z",
+        "updatedAt": "2026-03-04T22:21:50.283Z",
+        "isChotkho": false
+      }
+    }
+  ],
+  "recentImports": [
+    {
+      "id": "3d05ec72-d461-486a-900b-5c62b3dbc117",
+      "caseDetail": {
+        "madncc": "TGNCC-QI00009",
+        "products": [
+          {
+            "idSP": "90ec5c1d-a6db-4e83-8fbf-25059ed0cbc6",
+            "sldat": 18,
+            "slnhan": 20,
+            "chenhlech": -2
+          },
+          {
+            "idSP": "146187a3-d978-4146-b78d-4ad0f600b886",
+            "sldat": 6,
+            "slnhan": 6,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "73287142-7059-4813-846e-8f7139fc2055",
+            "sldat": 2,
+            "slnhan": 2,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "0401acee-a7cc-4c2b-aaba-1a6e0c7165db",
+            "sldat": 1,
+            "slnhan": 1,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "1846c8b3-1c3f-455c-8437-24110f768e0b",
+            "sldat": 0.5,
+            "slnhan": 0.5,
+            "chenhlech": 0
+          }
+        ],
+        "dathangId": "4c422d71-04b4-441d-83ec-a8a6216b5918",
+        "additionalInfo": "Sửa đổi số liệu sau khi hoàn tất Nhận hàng"
+      },
+      "importTime": "2026-03-05T00:23:30.086Z",
+      "createdAt": "2026-03-05T00:23:30.086Z",
+      "updatedAt": "2026-03-05T00:23:30.086Z",
+      "codeId": null,
+      "order": 1,
+      "createdBy": "system",
+      "status": null,
+      "title": "[Metadata] Cập nhật đối soát nhận hàng TGNCC-QI00009 - 00:23:30 5/3/2026",
+      "type": "dathang_audit"
+    },
+    {
+      "id": "f15de562-7cf2-4a1b-a42c-df388d6092f2",
+      "caseDetail": {
+        "madncc": "TGNCC-QI00002",
+        "products": [
+          {
+            "idSP": "fa9acc76-dd87-4624-8203-c6fcfb563f3c",
+            "sldat": 13,
+            "slnhan": 15,
+            "chenhlech": -2
+          },
+          {
+            "idSP": "8e3d2291-3dd7-4c50-96e0-95b5c639453e",
+            "sldat": 8,
+            "slnhan": 8.2,
+            "chenhlech": -0.1999999999999993
+          },
+          {
+            "idSP": "96821ebb-9692-4381-b8a1-86984e8e0717",
+            "sldat": 6.5,
+            "slnhan": 6.5,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "17940d4b-2521-448a-9219-9405ed98073d",
+            "sldat": 4.5,
+            "slnhan": 5,
+            "chenhlech": -0.5
+          },
+          {
+            "idSP": "e2c93ce9-6e4e-4bf9-89f5-8f2e70fed92b",
+            "sldat": 4,
+            "slnhan": 4,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "a6b694e1-da77-476d-b54e-759353396645",
+            "sldat": 3,
+            "slnhan": 3.7,
+            "chenhlech": -0.7000000000000002
+          },
+          {
+            "idSP": "3cc35971-e152-4384-8611-5c34334ef422",
+            "sldat": 1.8,
+            "slnhan": 2.2,
+            "chenhlech": -0.4000000000000001
+          },
+          {
+            "idSP": "b4b63cf7-eb69-4676-a219-457f43c824ea",
+            "sldat": 1.3,
+            "slnhan": 1.6,
+            "chenhlech": -0.3
+          },
+          {
+            "idSP": "3279c32b-c21e-4e0d-a1de-890ab74681ff",
+            "sldat": 1,
+            "slnhan": 1.2,
+            "chenhlech": -0.2
+          },
+          {
+            "idSP": "058576a8-f51f-4831-89fa-949695856353",
+            "sldat": 1,
+            "slnhan": 1,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "4ef731d9-4f67-4484-8926-86e88b9fe24b",
+            "sldat": 1,
+            "slnhan": 1,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "fd2d2682-179b-48c2-aa15-6639b8294ba4",
+            "sldat": 0.5,
+            "slnhan": 0.5,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "7ec76e38-9b41-4086-b014-affa982d2d9a",
+            "sldat": 0.2,
+            "slnhan": 1.5,
+            "chenhlech": -1.3
+          }
+        ],
+        "dathangId": "dc0c2eed-76ed-49f2-a306-6c4456093e14",
+        "additionalInfo": "Sửa đổi số liệu sau khi hoàn tất Nhận hàng"
+      },
+      "importTime": "2026-03-05T00:23:13.707Z",
+      "createdAt": "2026-03-05T00:23:13.707Z",
+      "updatedAt": "2026-03-05T00:23:13.707Z",
+      "codeId": null,
+      "order": 1,
+      "createdBy": "system",
+      "status": null,
+      "title": "[Metadata] Cập nhật đối soát nhận hàng TGNCC-QI00002 - 00:23:13 5/3/2026",
+      "type": "dathang_audit"
+    },
+    {
+      "id": "4f769896-cc3d-48e6-b1dc-aad5367b9ec2",
+      "caseDetail": {
+        "madncc": "TGNCC-QH00125",
+        "products": [
+          {
+            "idSP": "94b6e1c5-a911-4dc1-9a98-09f29fc45dcb",
+            "sldat": 1.5,
+            "slnhan": 2,
+            "chenhlech": -0.5
+          }
+        ],
+        "dathangId": "f4c775ae-6a45-49a7-98f0-51157c383ccf",
+        "additionalInfo": "Sửa đổi số liệu sau khi hoàn tất Nhận hàng"
+      },
+      "importTime": "2026-03-05T00:21:25.772Z",
+      "createdAt": "2026-03-05T00:21:25.772Z",
+      "updatedAt": "2026-03-05T00:21:25.772Z",
+      "codeId": null,
+      "order": 1,
+      "createdBy": "system",
+      "status": null,
+      "title": "[Metadata] Cập nhật đối soát nhận hàng TGNCC-QH00125 - 00:21:25 5/3/2026",
+      "type": "dathang_audit"
+    },
+    {
+      "id": "cc8bdb5a-3cd5-40cb-a73b-1ed5f228b1f2",
+      "caseDetail": {
+        "madncc": "TGNCC-QG00046",
+        "products": [
+          {
+            "idSP": "4c26bc51-61b6-4416-9f76-1988e1954c38",
+            "sldat": 3,
+            "slnhan": 3,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "5471951c-18f1-4f2c-a2ef-21aacc98210d",
+            "sldat": 4,
+            "slnhan": 4,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "53dc8257-eb21-4d0a-89f9-94698f19ae33",
+            "sldat": 5,
+            "slnhan": 5,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "1798c19e-f3c4-4208-9661-3df77172a5ad",
+            "sldat": 9,
+            "slnhan": 10.7,
+            "chenhlech": -1.699999999999999
+          }
+        ],
+        "dathangId": "55afcfb9-b498-4f72-9a32-c9efae7a0ab8",
+        "additionalInfo": "Sửa đổi số liệu sau khi hoàn tất Nhận hàng"
+      },
+      "importTime": "2026-03-05T00:19:11.814Z",
+      "createdAt": "2026-03-05T00:19:11.814Z",
+      "updatedAt": "2026-03-05T00:19:11.814Z",
+      "codeId": null,
+      "order": 1,
+      "createdBy": "system",
+      "status": null,
+      "title": "[Metadata] Cập nhật đối soát nhận hàng TGNCC-QG00046 - 00:19:11 5/3/2026",
+      "type": "dathang_audit"
+    },
+    {
+      "id": "454eb681-07a0-4ccb-a806-643da63440f8",
+      "caseDetail": {
+        "madncc": "TGNCC-QH00003",
+        "products": [
+          {
+            "idSP": "59b483e0-0ae7-43d1-83c3-fdf952ca6f59",
+            "sldat": 40,
+            "slnhan": 40,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "13186ae3-b12d-42a3-9b94-97fc507dcd03",
+            "sldat": 30,
+            "slnhan": 30,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "87514fa2-86c3-4cf4-8863-d682c0e1156d",
+            "sldat": 20,
+            "slnhan": 25,
+            "chenhlech": -5
+          }
+        ],
+        "dathangId": "ffa36f10-f8b1-4f9e-b3d6-52e237b4e5be",
+        "additionalInfo": "Sửa đổi số liệu sau khi hoàn tất Nhận hàng"
+      },
+      "importTime": "2026-03-05T00:17:33.179Z",
+      "createdAt": "2026-03-05T00:17:33.179Z",
+      "updatedAt": "2026-03-05T00:17:33.179Z",
+      "codeId": null,
+      "order": 1,
+      "createdBy": "system",
+      "status": null,
+      "title": "[Metadata] Cập nhật đối soát nhận hàng TGNCC-QH00003 - 00:17:33 5/3/2026",
+      "type": "dathang_audit"
+    },
+    {
+      "id": "65bb450b-c7d1-4214-aab2-928ca95a9011",
+      "caseDetail": {
+        "madncc": "TGNCC-QH00924",
+        "products": [
+          {
+            "idSP": "6214a099-7e7b-4d09-ab61-3d1308d522f3",
+            "sldat": 10,
+            "slnhan": 10,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "ec74f6ed-9963-434a-a099-ade1a83f588a",
+            "sldat": 5.8,
+            "slnhan": 5.8,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "8642c2cd-4e66-437d-b43e-dd83d39acf98",
+            "sldat": 6,
+            "slnhan": 6,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "d68b8572-d9de-490b-b2e4-a6eee525b4fb",
+            "sldat": 20,
+            "slnhan": 20,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "b5e4d8d7-bdfa-424f-bf1d-a20b7637c543",
+            "sldat": 1,
+            "slnhan": 1,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "dc43b5e7-9c5b-49e9-9efb-43e6c040c238",
+            "sldat": 2.3,
+            "slnhan": 2.3,
+            "chenhlech": 0
+          }
+        ],
+        "dathangId": "6b268597-ac50-4113-8961-2cc0821a85d9",
+        "additionalInfo": "Lưu vết tự động đối soát lúc nhận hàng"
+      },
+      "importTime": "2026-03-04T23:00:03.271Z",
+      "createdAt": "2026-03-04T23:00:03.271Z",
+      "updatedAt": "2026-03-04T23:00:03.271Z",
+      "codeId": null,
+      "order": 1,
+      "createdBy": "system",
+      "status": null,
+      "title": "[Metadata] Đối soát nhận hàng TGNCC-QH00924 - 23:00:03 4/3/2026",
+      "type": "dathang_audit"
+    },
+    {
+      "id": "f3b89860-4466-47a6-aa01-952f5d949b87",
+      "caseDetail": {
+        "madncc": "TGNCC-QI00009",
+        "products": [
+          {
+            "idSP": "35052d68-895f-4e10-be52-6188c02a6d61",
+            "sldat": 18,
+            "slnhan": 18,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "da0230fd-8078-46f1-88b9-f7f640a46eeb",
+            "sldat": 6,
+            "slnhan": 6,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "25db1de2-03b7-4384-9e1e-8fb793a0545c",
+            "sldat": 2,
+            "slnhan": 2,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "e80e7c93-b6e2-4fc6-8efb-4e52e77a7cc6",
+            "sldat": 1,
+            "slnhan": 1,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "0ca6da6d-f19b-4718-ab7b-194960ac7859",
+            "sldat": 0.5,
+            "slnhan": 0.5,
+            "chenhlech": 0
+          }
+        ],
+        "dathangId": "4c422d71-04b4-441d-83ec-a8a6216b5918",
+        "additionalInfo": "Lưu vết tự động đối soát lúc nhận hàng"
+      },
+      "importTime": "2026-03-04T23:00:03.249Z",
+      "createdAt": "2026-03-04T23:00:03.249Z",
+      "updatedAt": "2026-03-04T23:00:03.249Z",
+      "codeId": null,
+      "order": 1,
+      "createdBy": "system",
+      "status": null,
+      "title": "[Metadata] Đối soát nhận hàng TGNCC-QI00009 - 23:00:03 4/3/2026",
+      "type": "dathang_audit"
+    },
+    {
+      "id": "25a65e8a-b99e-4afd-b78d-88d342344812",
+      "caseDetail": {
+        "madncc": "TGNCC-QI00006",
+        "products": [
+          {
+            "idSP": "ce2c4c51-3925-460b-b7b6-f943a7f08bdc",
+            "sldat": 10,
+            "slnhan": 10,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "9b547c2e-991a-451a-b18b-be9c8a86697c",
+            "sldat": 10,
+            "slnhan": 10,
+            "chenhlech": 0
+          }
+        ],
+        "dathangId": "fa85dfdd-4f03-4655-a45e-088c31364e12",
+        "additionalInfo": "Lưu vết tự động đối soát lúc nhận hàng"
+      },
+      "importTime": "2026-03-04T23:00:03.227Z",
+      "createdAt": "2026-03-04T23:00:03.227Z",
+      "updatedAt": "2026-03-04T23:00:03.227Z",
+      "codeId": null,
+      "order": 1,
+      "createdBy": "system",
+      "status": null,
+      "title": "[Metadata] Đối soát nhận hàng TGNCC-QI00006 - 23:00:03 4/3/2026",
+      "type": "dathang_audit"
+    },
+    {
+      "id": "6631f7f8-77fb-41b1-a783-dd75eef2d3c0",
+      "caseDetail": {
+        "madncc": "TGNCC-QI00005",
+        "products": [
+          {
+            "idSP": "d47eb573-eb3d-45cd-aa60-aaa79f324748",
+            "sldat": 150,
+            "slnhan": 150,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "4cb1f386-37d0-424c-a227-bba01c145788",
+            "sldat": 50,
+            "slnhan": 50,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "5f630957-3afd-4bc9-86a5-05038ac0f2f6",
+            "sldat": 20,
+            "slnhan": 20,
+            "chenhlech": 0
+          }
+        ],
+        "dathangId": "74f3e6af-47aa-42c2-b137-4ccca3146ea7",
+        "additionalInfo": "Lưu vết tự động đối soát lúc nhận hàng"
+      },
+      "importTime": "2026-03-04T23:00:03.185Z",
+      "createdAt": "2026-03-04T23:00:03.185Z",
+      "updatedAt": "2026-03-04T23:00:03.185Z",
+      "codeId": null,
+      "order": 1,
+      "createdBy": "system",
+      "status": null,
+      "title": "[Metadata] Đối soát nhận hàng TGNCC-QI00005 - 23:00:03 4/3/2026",
+      "type": "dathang_audit"
+    },
+    {
+      "id": "8823070b-a5fd-4986-8d74-dbeaf52eb6db",
+      "caseDetail": {
+        "madncc": "TGNCC-QI00004",
+        "products": [
+          {
+            "idSP": "0f4fc5b4-d936-4fb9-b72e-e089281aad6d",
+            "sldat": 25,
+            "slnhan": 25,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "e202806e-13dc-4a78-b230-ead095dbe9b0",
+            "sldat": 6.5,
+            "slnhan": 6.5,
+            "chenhlech": 0
+          },
+          {
+            "idSP": "4d98d546-2099-4b36-bba5-6753b7891977",
+            "sldat": 5.8,
+            "slnhan": 5.8,
+            "chenhlech": 0
+          }
+        ],
+        "dathangId": "40873c9c-3a00-49e4-b101-8bbe1ee20ca5",
+        "additionalInfo": "Lưu vết tự động đối soát lúc nhận hàng"
+      },
+      "importTime": "2026-03-04T23:00:03.165Z",
+      "createdAt": "2026-03-04T23:00:03.165Z",
+      "updatedAt": "2026-03-04T23:00:03.165Z",
+      "codeId": null,
+      "order": 1,
+      "createdBy": "system",
+      "status": null,
+      "title": "[Metadata] Đối soát nhận hàng TGNCC-QI00004 - 23:00:03 4/3/2026",
+      "type": "dathang_audit"
+    }
+  ]
+}

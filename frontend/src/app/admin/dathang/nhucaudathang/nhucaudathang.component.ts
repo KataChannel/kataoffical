@@ -1164,6 +1164,8 @@ export class NhucaudathangComponent {
 
         const phieuNhapDetails: any[] = [];
         const phieuXuatDetails: any[] = [];
+        // ✅ FIX: Gộp tất cả sản phẩm thay đổi vào 1 danh sách duy nhất với giá trị tuyệt đối
+        const allChangedDetails: any[] = [];
         let unchangedCount = 0;
 
         // ================================================================
@@ -1194,6 +1196,15 @@ export class NhucaudathangComponent {
             });
           } else {
             unchangedCount++;
+          }
+
+          // ✅ FIX: Luôn thêm vào danh sách thay đổi với giá trị tuyệt đối (kể cả unchanged để sync)
+          if (slton !== currentSltontt) {
+            allChangedDetails.push({
+              sanphamId: sanpham.id,
+              soluong: Math.abs(slton - currentSltontt),
+              targetSlton: slton, // ✅ Giá trị tuyệt đối từ Excel
+            });
           }
 
           // Kiểm tra bất thường (chỉ khi có thay đổi)
@@ -1285,24 +1296,16 @@ export class NhucaudathangComponent {
           panelClass: ['snackbar-info'],
         });
 
-        if (phieuNhapDetails.length > 0) {
+        // ✅ FIX: Gửi MỘT request duy nhất với giá trị tuyệt đối (targetSlton)
+        // Không còn race condition vì backend sẽ SET trực tiếp thay vì tính delta
+        if (allChangedDetails.length > 0) {
           await this._PhieukhoService.CreatePhieukho({
-            title: `ĐIỀU CHỈNH CHỐT KHO (TĂNG) TỰ ĐỘNG [EXCEL]`, 
-            type: 'nhap',
+            title: `ĐIỀU CHỈNH CHỐT KHO TỰ ĐỘNG [EXCEL]`, 
+            type: 'nhap', // type chỉ dùng để tạo mã phiếu, logic sẽ dùng targetSlton
             isChotkho: true,
-            sanpham: phieuNhapDetails, 
-            ghichu: `Điều chỉnh tăng tồn kho chốt từ Excel lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
-            ngay: DateHelpers.now()
-          });
-        }
-
-        if (phieuXuatDetails.length > 0) {
-          await this._PhieukhoService.CreatePhieukho({
-            title: `ĐIỀU CHỈNH CHỐT KHO (GIẢM) TỰ ĐỘNG [EXCEL]`, 
-            type: 'xuat',
-            isChotkho: true,
-            sanpham: phieuXuatDetails, 
-            ghichu: `Điều chỉnh giảm tồn kho chốt từ Excel lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
+            useAbsoluteTarget: true, // ✅ Flag mới: dùng giá trị tuyệt đối
+            sanpham: allChangedDetails, 
+            ghichu: `Chốt kho từ Excel (${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm) lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY')}`,
             ngay: DateHelpers.now()
           });
         }

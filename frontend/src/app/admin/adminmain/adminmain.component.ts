@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, ViewChild, ViewEncapsulation, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
@@ -26,6 +26,7 @@ import { CommonuserguideComponent } from '../userguide/commonuserguide/commonuse
 import { UserguideService } from '../userguide/userguide.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AdvancedSearchDialogComponent } from '../../components/advanced-search-dialog/advanced-search-dialog.component';
+import { environment } from '../../../environments/environment.development';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -55,6 +56,7 @@ export class AdminmainComponent {
   Config:any =Config
   User:any ={}
   isQuytrinh:any=false
+  dbName: string = '';
   private _transformer = (node: any, level: number) => {
     return {
       expandable: !!node?.children && node?.children.length > 0,
@@ -108,6 +110,7 @@ export class AdminmainComponent {
     });
     await this._UserguideService.getUserguideBy({codeId:'I100001'})
     this.DetailUserguide = this._UserguideService.DetailUserguide
+    this.fetchDatabaseInfo();
     this._breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       if (result.matches) {
         this.drawer.mode = 'over';
@@ -181,4 +184,16 @@ export class AdminmainComponent {
     { date: '2025-03-01', title: 'Milestone 1', description: 'Completed first phase.', icon: 'fa-check' },
     { date: '2025-06-01', title: 'Milestone 2', description: 'Launched beta version.', icon: 'fa-rocket' },
   ];
+
+  async fetchDatabaseInfo() {
+    try {
+      const response = await fetch(`${environment.APIURL}/database-info`);
+      const data = await response.json();
+      if (data.success && data.database) {
+        this.dbName = data.database.name;
+      }
+    } catch (error) {
+      console.error('Error fetching database info:', error);
+    }
+  }
 }

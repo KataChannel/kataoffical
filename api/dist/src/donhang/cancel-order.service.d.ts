@@ -77,11 +77,11 @@ export declare class CancelOrderService {
             isActive: boolean | null;
             vat: Prisma.Decimal;
             giaban: Prisma.Decimal;
+            slhuy: Prisma.Decimal;
             idSP: string;
             sldat: Prisma.Decimal;
             slgiao: Prisma.Decimal;
             slnhan: Prisma.Decimal;
-            slhuy: Prisma.Decimal;
             ttdat: Prisma.Decimal;
             ttgiao: Prisma.Decimal;
             ttnhan: Prisma.Decimal;
@@ -143,11 +143,11 @@ export declare class CancelOrderService {
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
+            slhuy: Prisma.Decimal;
             idSP: string;
             sldat: Prisma.Decimal;
             slgiao: Prisma.Decimal;
             slnhan: Prisma.Decimal;
-            slhuy: Prisma.Decimal;
             ttdat: Prisma.Decimal;
             ttgiao: Prisma.Decimal;
             ttnhan: Prisma.Decimal;
