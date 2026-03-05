@@ -259,8 +259,22 @@ export class ListDonhangComponent {
               makh: true,
               name: true,
               loaikh: true,
+              banggia: {
+                select: {
+                  id: true,
+                  mabanggia: true,
+                  title: true,
+                },
+              },
             },
-          }
+          },
+          banggia: {
+            select: {
+              id: true,
+              mabanggia: true,
+              title: true,
+            },
+          },
         },
         where: {
           ngaygiao: {
@@ -288,7 +302,9 @@ export class ListDonhangComponent {
           tongtien:v.tongtien,
           vat:v.vat,
           tongvat:v.tongvat,
-          lydohuy: v.lydohuy || ''
+          lydohuy: v.lydohuy || '',
+          banggia: v.banggia || null,
+          khachhang: v.khachhang || null,
         }));
       this.Listdonhang.set(donhangs);
       if (donhangs) {
@@ -730,10 +746,36 @@ export class ListDonhangComponent {
     this.openDongboDialog();
   }
 
+  dongboPreviewData: any = null;
+  isPreviewLoading = signal(false);
+
   /**
-   * Open sync confirmation dialog
+   * Get banggia tooltip info for order row  
    */
-  openDongboDialog() {
+  getBanggiaTooltip(row: any): string {
+    const banggiaOnDon = row.banggia;
+    const banggiaKH = row.khachhang?.banggia;
+    let tooltip = `Mã đơn: ${row.madonhang}\n`;
+    if (banggiaOnDon) {
+      tooltip += `📋 BG trên đơn: ${banggiaOnDon.mabanggia} - ${banggiaOnDon.title}\n`;
+    }
+    if (banggiaKH) {
+      tooltip += `👤 BG khách hàng: ${banggiaKH.mabanggia} - ${banggiaKH.title}\n`;
+    }
+    if (banggiaOnDon && banggiaKH && banggiaOnDon.id !== banggiaKH.id) {
+      tooltip += `⚠️ Đồng bộ sẽ dùng BG đơn hàng: ${banggiaOnDon.mabanggia}`;
+    } else if (banggiaOnDon) {
+      tooltip += `✅ Đồng bộ sẽ dùng: ${banggiaOnDon.mabanggia}`;
+    } else if (banggiaKH) {
+      tooltip += `✅ Đồng bộ sẽ dùng: ${banggiaKH.mabanggia}`;
+    }
+    return tooltip;
+  }
+
+  /**
+   * Open sync confirmation dialog with preview
+   */
+  async openDongboDialog() {
     if (this.EditList.length === 0) {
       this._snackBar.open('Không có đơn hàng nào để đồng bộ', '', {
         duration: 3000,
@@ -744,17 +786,33 @@ export class ListDonhangComponent {
       return;
     }
 
+    // Load preview data
+    this.isPreviewLoading.set(true);
+    this.dongboPreviewData = null;
+
     const dialogRef = this.dialog.open(this.confirmDongboDialog, {
       hasBackdrop: true,
       disableClose: true,
-      width: '600px',
-      maxWidth: '90vw'
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
     });
+
+    // Load preview in background
+    try {
+      const result = await this._DonhangService.PreviewDongboGia(this.EditList);
+      this.dongboPreviewData = result;
+    } catch (e) {
+      console.error('Preview load error:', e);
+    } finally {
+      this.isPreviewLoading.set(false);
+    }
     
     dialogRef.afterClosed().subscribe((result) => {
       if (result === "true") {
         this.executeDongboVat();
       }
+      this.dongboPreviewData = null;
     });
   }
 

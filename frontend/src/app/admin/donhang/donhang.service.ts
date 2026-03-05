@@ -151,6 +151,28 @@ export class DonhangService {
       };
     }
   }
+
+  async PreviewDongboGia(list: any) {
+    const dulieu = list.map((item: any) => item.id);
+    if (dulieu.length === 0) return { previews: [] };
+
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+        body: JSON.stringify(dulieu),
+      };
+      const response = await fetch(`${environment.APIURL}/donhang/dongbogia-preview`, options);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return await response.json();
+    } catch (error: any) {
+      console.error('Lỗi khi preview đồng bộ giá:', error);
+      return { previews: [] };
+    }
+  }
   async CreateDonhang(dulieu: any) {
     try {
       const options = {

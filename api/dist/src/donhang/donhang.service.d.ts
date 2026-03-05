@@ -84,6 +84,9 @@ export declare class DonhangService {
         masp: string;
         slchogiaott: number;
     }[]>;
+    dongbogiaPreview(listdonhang: any): Promise<{
+        previews: any[];
+    }>;
     dongbogia(listdonhang: any): Promise<{
         status: string;
         message: string;

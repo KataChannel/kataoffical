@@ -842,6 +842,102 @@ let DonhangService = class DonhangService {
             slchogiaott: parseFloat(value.sldat.toFixed(3)),
         }));
     }
+    async dongbogiaPreview(listdonhang) {
+        const previews = [];
+        for (const donhangId of listdonhang) {
+            try {
+                const donhang = await this.prisma.donhang.findUnique({
+                    where: { id: donhangId },
+                    include: {
+                        banggia: {
+                            include: {
+                                sanpham: { include: { sanpham: true } },
+                            },
+                        },
+                        khachhang: {
+                            include: {
+                                banggia: {
+                                    include: {
+                                        sanpham: { include: { sanpham: true } },
+                                    },
+                                },
+                            },
+                        },
+                        sanpham: { include: { sanpham: true } },
+                    },
+                });
+                if (!donhang)
+                    continue;
+                const banggiaUuTien = donhang.banggia || donhang.khachhang?.banggia;
+                const banggiaKhachhang = donhang.khachhang?.banggia;
+                if (!banggiaUuTien)
+                    continue;
+                const banggiaDefault = await this.prisma.banggia.findUnique({
+                    where: { id: DEFAUL_BANGGIA_ID },
+                    include: { sanpham: { include: { sanpham: true } } },
+                });
+                const products = [];
+                let hasChanges = false;
+                for (const sp of donhang.sanpham) {
+                    const giaSanpham = banggiaUuTien.sanpham.find((bgsp) => bgsp.sanphamId === sp.idSP);
+                    const giaSanphamKH = (donhang.banggia && banggiaKhachhang)
+                        ? banggiaKhachhang.sanpham.find((bgsp) => bgsp.sanphamId === sp.idSP)
+                        : null;
+                    const giaSanphamDefault = banggiaDefault?.sanpham.find((bgsp) => bgsp.sanphamId === sp.idSP);
+                    let newPrice = 0;
+                    let giaSource = 'Không tìm thấy';
+                    if (giaSanpham && Number(giaSanpham.giaban) > 0) {
+                        newPrice = Number(giaSanpham.giaban);
+                        giaSource = `${banggiaUuTien.mabanggia}${donhang.banggia ? ' (đơn hàng)' : ' (khách hàng)'}`;
+                    }
+                    else if (giaSanphamKH && Number(giaSanphamKH.giaban) > 0) {
+                        newPrice = Number(giaSanphamKH.giaban);
+                        giaSource = `${banggiaKhachhang?.mabanggia} (fallback KH)`;
+                    }
+                    else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
+                        newPrice = Number(giaSanphamDefault.giaban);
+                        giaSource = 'BG04 (mặc định)';
+                    }
+                    const oldPrice = Number(sp.giaban) || 0;
+                    const changed = Math.abs(oldPrice - newPrice) > 0.01;
+                    if (changed)
+                        hasChanges = true;
+                    products.push({
+                        title: sp.sanpham?.title || '',
+                        masp: sp.sanpham?.masp || '',
+                        oldPrice,
+                        newPrice,
+                        giaSource,
+                        changed,
+                        slnhan: Number(sp.slnhan) || 0,
+                        sldat: Number(sp.sldat) || 0,
+                    });
+                }
+                previews.push({
+                    donhangId: donhang.id,
+                    madonhang: donhang.madonhang,
+                    khachhang: donhang.khachhang?.name || '',
+                    banggiaOnDon: donhang.banggia
+                        ? { mabanggia: donhang.banggia.mabanggia, title: donhang.banggia.title }
+                        : null,
+                    banggiaOnKH: donhang.khachhang?.banggia
+                        ? { mabanggia: donhang.khachhang.banggia.mabanggia, title: donhang.khachhang.banggia.title }
+                        : null,
+                    banggiaUsed: {
+                        mabanggia: banggiaUuTien.mabanggia,
+                        title: banggiaUuTien.title,
+                        source: donhang.banggia ? 'Đơn hàng' : 'Khách hàng',
+                    },
+                    hasChanges,
+                    products,
+                });
+            }
+            catch (err) {
+                console.error(`Preview error for ${donhangId}:`, err);
+            }
+        }
+        return { previews };
+    }
     async dongbogia(listdonhang) {
         console.log('Đồng bộ giá cho danh sách đơn hàng:', listdonhang);
         let totalUpdatedCount = 0;
@@ -859,6 +955,15 @@ let DonhangService = class DonhangService {
                             const donhang = await prisma.donhang.findUnique({
                                 where: { id: donhangId },
                                 include: {
+                                    banggia: {
+                                        include: {
+                                            sanpham: {
+                                                include: {
+                                                    sanpham: true
+                                                }
+                                            },
+                                        },
+                                    },
                                     khachhang: {
                                         include: {
                                             banggia: {
@@ -886,17 +991,13 @@ let DonhangService = class DonhangService {
                                 errorCount++;
                                 continue;
                             }
-                            if (!donhang.khachhang) {
-                                console.warn(`Đơn hàng ${donhang.madonhang} không có thông tin khách hàng`);
+                            if (!donhang.banggia && !donhang.khachhang?.banggia) {
+                                console.warn(`Đơn hàng ${donhang.madonhang} không có bảng giá (trên đơn và trên khách hàng)`);
                                 errorCount++;
                                 continue;
                             }
-                            if (!donhang.khachhang.banggia) {
-                                console.warn(`Khách hàng ${donhang.khachhang.name} không có bảng giá được gán`);
-                                errorCount++;
-                                continue;
-                            }
-                            const banggiaKhachhang = donhang.khachhang.banggia;
+                            const banggiaUuTien = (donhang.banggia || donhang.khachhang?.banggia);
+                            const banggiaKhachhang = donhang.khachhang?.banggia;
                             const banggiaDefault = await prisma.banggia.findUnique({
                                 where: { id: DEFAUL_BANGGIA_ID },
                                 include: {
@@ -907,36 +1008,32 @@ let DonhangService = class DonhangService {
                                     },
                                 },
                             });
-                            console.log(`Cập nhật giá cho đơn hàng ${donhang.madonhang} từ bảng giá ${banggiaKhachhang.mabanggia} (của khách hàng ${donhang.khachhang.name})`);
+                            console.log(`Cập nhật giá cho đơn hàng ${donhang.madonhang} từ bảng giá ${banggiaUuTien.mabanggia}${donhang.banggia ? ' (trên đơn hàng)' : ' (của khách hàng)'}`);
                             let tongchua = 0;
                             let hasUpdates = false;
                             for (const donhangSanpham of donhang.sanpham) {
-                                const giaSanpham = banggiaKhachhang.sanpham.find((bgsp) => bgsp.sanphamId === donhangSanpham.idSP);
+                                const giaSanpham = banggiaUuTien.sanpham.find((bgsp) => bgsp.sanphamId === donhangSanpham.idSP);
+                                const giaSanphamKH = (donhang.banggia && banggiaKhachhang)
+                                    ? banggiaKhachhang.sanpham.find((bgsp) => bgsp.sanphamId === donhangSanpham.idSP)
+                                    : null;
                                 const giaSanphamDefault = banggiaDefault?.sanpham.find((bgsp) => bgsp.sanphamId === donhangSanpham.idSP);
                                 let giaban = 0;
                                 let giaSource = 'none';
-                                if (giaSanpham) {
-                                    const giabanFromBanggia = Number(giaSanpham.giaban);
-                                    if (giabanFromBanggia > 0) {
-                                        giaban = giabanFromBanggia;
-                                        giaSource = `bảng giá ${banggiaKhachhang.mabanggia} (của khách hàng)`;
-                                    }
-                                    else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
-                                        giaban = Number(giaSanphamDefault.giaban);
-                                        giaSource = 'bảng giá mặc định (fallback do giá = 0)';
-                                    }
-                                    else {
-                                        giaban = 0;
-                                        giaSource = 'không tìm thấy giá hợp lệ (trả về 0)';
-                                    }
+                                if (giaSanpham && Number(giaSanpham.giaban) > 0) {
+                                    giaban = Number(giaSanpham.giaban);
+                                    giaSource = `bảng giá ${banggiaUuTien.mabanggia}${donhang.banggia ? ' (trên đơn hàng)' : ' (của khách hàng)'}`;
+                                }
+                                else if (giaSanphamKH && Number(giaSanphamKH.giaban) > 0) {
+                                    giaban = Number(giaSanphamKH.giaban);
+                                    giaSource = `bảng giá ${banggiaKhachhang?.mabanggia} (fallback từ khách hàng)`;
                                 }
                                 else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
                                     giaban = Number(giaSanphamDefault.giaban);
-                                    giaSource = 'bảng giá mặc định (không có trong bảng giá khách hàng)';
+                                    giaSource = 'bảng giá mặc định (fallback)';
                                 }
                                 else {
                                     giaban = 0;
-                                    giaSource = 'không tìm thấy trong cả 2 bảng giá (trả về 0)';
+                                    giaSource = 'không tìm thấy giá hợp lệ trong tất cả bảng giá (trả về 0)';
                                 }
                                 if (giaban > 0) {
                                     const sldat = Number(donhangSanpham.sldat) || 0;
@@ -989,10 +1086,10 @@ let DonhangService = class DonhangService {
                                                     action: 'DONGBOGIA',
                                                     donhangId: donhang.id,
                                                     madonhang: donhang.madonhang,
-                                                    khachhangId: donhang.khachhang.id,
-                                                    khachhangName: donhang.khachhang.name,
-                                                    banggiaId: banggiaKhachhang.id,
-                                                    mabanggia: banggiaKhachhang.mabanggia,
+                                                    khachhangId: donhang.khachhang?.id,
+                                                    khachhangName: donhang.khachhang?.name,
+                                                    banggiaId: banggiaUuTien.id,
+                                                    mabanggia: banggiaUuTien.mabanggia,
                                                     sanphamId: donhangSanpham.idSP,
                                                     sanphamTitle: donhangSanpham.sanpham?.title,
                                                     sanphamMasp: donhangSanpham.sanpham?.masp,
@@ -1047,10 +1144,10 @@ let DonhangService = class DonhangService {
                                         metadata: {
                                             action: 'DONGBOGIA_TOTAL',
                                             madonhang: donhang.madonhang,
-                                            khachhangId: donhang.khachhang.id,
-                                            khachhangName: donhang.khachhang.name,
-                                            banggiaId: banggiaKhachhang.id,
-                                            mabanggia: banggiaKhachhang.mabanggia,
+                                            khachhangId: donhang.khachhang?.id,
+                                            khachhangName: donhang.khachhang?.name,
+                                            banggiaId: banggiaUuTien.id,
+                                            mabanggia: banggiaUuTien.mabanggia,
                                             tongchua: tongchua,
                                             vatRate: vatRate,
                                             tongtienDifference: tongtien - oldTongtien,

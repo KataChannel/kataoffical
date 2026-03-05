@@ -183,6 +183,9 @@ export declare class DonhangController {
         vat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
     }[]>;
+    dongbogiaPreview(params: any): Promise<{
+        previews: any[];
+    }>;
     dongbogia(params: any): Promise<{
         status: string;
         message: string;

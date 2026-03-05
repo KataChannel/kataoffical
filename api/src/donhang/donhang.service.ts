@@ -1105,6 +1105,117 @@ export class DonhangService {
       slchogiaott: parseFloat(value.sldat.toFixed(3)),
     }));
   }
+  /**
+   * Preview price changes without actually updating.
+   * Returns old vs new prices for review before confirming.
+   */
+  async dongbogiaPreview(listdonhang: any) {
+    const previews: any[] = [];
+
+    for (const donhangId of listdonhang) {
+      try {
+        const donhang = await this.prisma.donhang.findUnique({
+          where: { id: donhangId },
+          include: {
+            banggia: {
+              include: {
+                sanpham: { include: { sanpham: true } },
+              },
+            },
+            khachhang: {
+              include: {
+                banggia: {
+                  include: {
+                    sanpham: { include: { sanpham: true } },
+                  },
+                },
+              },
+            },
+            sanpham: { include: { sanpham: true } },
+          },
+        });
+
+        if (!donhang) continue;
+
+        const banggiaUuTien = donhang.banggia || donhang.khachhang?.banggia;
+        const banggiaKhachhang = donhang.khachhang?.banggia;
+
+        if (!banggiaUuTien) continue;
+
+        const banggiaDefault = await this.prisma.banggia.findUnique({
+          where: { id: DEFAUL_BANGGIA_ID },
+          include: { sanpham: { include: { sanpham: true } } },
+        });
+
+        const products: any[] = [];
+        let hasChanges = false;
+
+        for (const sp of donhang.sanpham) {
+          const giaSanpham = banggiaUuTien.sanpham.find(
+            (bgsp) => bgsp.sanphamId === sp.idSP,
+          );
+          const giaSanphamKH = (donhang.banggia && banggiaKhachhang)
+            ? banggiaKhachhang.sanpham.find((bgsp) => bgsp.sanphamId === sp.idSP)
+            : null;
+          const giaSanphamDefault = banggiaDefault?.sanpham.find(
+            (bgsp) => bgsp.sanphamId === sp.idSP,
+          );
+
+          let newPrice = 0;
+          let giaSource = 'Không tìm thấy';
+
+          if (giaSanpham && Number(giaSanpham.giaban) > 0) {
+            newPrice = Number(giaSanpham.giaban);
+            giaSource = `${banggiaUuTien.mabanggia}${donhang.banggia ? ' (đơn hàng)' : ' (khách hàng)'}`;
+          } else if (giaSanphamKH && Number(giaSanphamKH.giaban) > 0) {
+            newPrice = Number(giaSanphamKH.giaban);
+            giaSource = `${banggiaKhachhang?.mabanggia} (fallback KH)`;
+          } else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
+            newPrice = Number(giaSanphamDefault.giaban);
+            giaSource = 'BG04 (mặc định)';
+          }
+
+          const oldPrice = Number(sp.giaban) || 0;
+          const changed = Math.abs(oldPrice - newPrice) > 0.01;
+          if (changed) hasChanges = true;
+
+          products.push({
+            title: sp.sanpham?.title || '',
+            masp: sp.sanpham?.masp || '',
+            oldPrice,
+            newPrice,
+            giaSource,
+            changed,
+            slnhan: Number(sp.slnhan) || 0,
+            sldat: Number(sp.sldat) || 0,
+          });
+        }
+
+        previews.push({
+          donhangId: donhang.id,
+          madonhang: donhang.madonhang,
+          khachhang: donhang.khachhang?.name || '',
+          banggiaOnDon: donhang.banggia
+            ? { mabanggia: donhang.banggia.mabanggia, title: donhang.banggia.title }
+            : null,
+          banggiaOnKH: donhang.khachhang?.banggia
+            ? { mabanggia: donhang.khachhang.banggia.mabanggia, title: donhang.khachhang.banggia.title }
+            : null,
+          banggiaUsed: {
+            mabanggia: banggiaUuTien.mabanggia,
+            title: banggiaUuTien.title,
+            source: donhang.banggia ? 'Đơn hàng' : 'Khách hàng',
+          },
+          hasChanges,
+          products,
+        });
+      } catch (err) {
+        console.error(`Preview error for ${donhangId}:`, err);
+      }
+    }
+
+    return { previews };
+  }
 
   async dongbogia(listdonhang: any) {
     console.log('Đồng bộ giá cho danh sách đơn hàng:', listdonhang);
@@ -1125,10 +1236,20 @@ export class DonhangService {
 
           for (const donhangId of batch) {
             try {
-              // 1. Tìm đơn hàng với khách hàng và bảng giá của khách hàng
+              // 1. Tìm đơn hàng với bảng giá trên đơn + bảng giá khách hàng
               const donhang = await prisma.donhang.findUnique({
                 where: { id: donhangId },
                 include: {
+                  // ✅ Bảng giá gắn trực tiếp trên đơn hàng (ưu tiên cao nhất)
+                  banggia: {
+                    include: {
+                      sanpham: {
+                        include: {
+                          sanpham: true
+                        }
+                      },
+                    },
+                  },
                   khachhang: {
                     include: {
                       banggia: {
@@ -1159,21 +1280,16 @@ export class DonhangService {
                 continue;
               }
 
-              // 2. Kiểm tra khách hàng có bảng giá không
-              if (!donhang.khachhang) {
-                console.warn(`Đơn hàng ${donhang.madonhang} không có thông tin khách hàng`);
+              // 2. Kiểm tra có bảng giá không
+              if (!donhang.banggia && !donhang.khachhang?.banggia) {
+                console.warn(`Đơn hàng ${donhang.madonhang} không có bảng giá (trên đơn và trên khách hàng)`);
                 errorCount++;
                 continue;
               }
 
-              if (!donhang.khachhang.banggia) {
-                console.warn(`Khách hàng ${donhang.khachhang.name} không có bảng giá được gán`);
-                errorCount++;
-                continue;
-              }
-
-              // Lấy bảng giá hiện tại của khách hàng
-              const banggiaKhachhang = donhang.khachhang.banggia;
+              // ✅ Ưu tiên: Bảng giá trên đơn hàng > Bảng giá của khách hàng
+              const banggiaUuTien = (donhang.banggia || donhang.khachhang?.banggia)!;
+              const banggiaKhachhang = donhang.khachhang?.banggia;
 
               // Lấy bảng giá mặc định để fallback
               const banggiaDefault = await prisma.banggia.findUnique({
@@ -1187,19 +1303,24 @@ export class DonhangService {
                 },
               });
 
-              console.log(`Cập nhật giá cho đơn hàng ${donhang.madonhang} từ bảng giá ${banggiaKhachhang.mabanggia} (của khách hàng ${donhang.khachhang.name})`);
+              console.log(`Cập nhật giá cho đơn hàng ${donhang.madonhang} từ bảng giá ${banggiaUuTien.mabanggia}${donhang.banggia ? ' (trên đơn hàng)' : ' (của khách hàng)'}`);
 
               let tongchua = 0; // Tổng tiền chưa VAT
               let hasUpdates = false;
 
               // 3. Cập nhật giá cho từng sản phẩm trong đơn hàng với logic ưu tiên
               for (const donhangSanpham of donhang.sanpham) {
-                // Tìm giá từ bảng giá của khách hàng (ưu tiên 1)
-                const giaSanpham = banggiaKhachhang.sanpham.find(
+                // ✅ Tìm giá từ bảng giá ưu tiên (đơn hàng > khách hàng) (ưu tiên 1)
+                const giaSanpham = banggiaUuTien.sanpham.find(
                   (bgsp) => bgsp.sanphamId === donhangSanpham.idSP,
                 );
 
-                // Tìm giá từ bảng giá mặc định (ưu tiên 2)
+                // Tìm giá từ bảng giá khách hàng nếu bảng giá ưu tiên là đơn hàng (ưu tiên 2)
+                const giaSanphamKH = (donhang.banggia && banggiaKhachhang) 
+                  ? banggiaKhachhang.sanpham.find((bgsp) => bgsp.sanphamId === donhangSanpham.idSP)
+                  : null;
+
+                // Tìm giá từ bảng giá mặc định (ưu tiên 3)
                 const giaSanphamDefault = banggiaDefault?.sanpham.find(
                   (bgsp) => bgsp.sanphamId === donhangSanpham.idSP,
                 );
@@ -1207,30 +1328,23 @@ export class DonhangService {
                 let giaban = 0;
                 let giaSource = 'none';
 
-                // Logic ưu tiên lấy giá
-                if (giaSanpham) {
-                  const giabanFromBanggia = Number(giaSanpham.giaban);
-                  if (giabanFromBanggia > 0) {
-                    // Ưu tiên 1: Có giá từ bảng giá của khách hàng và > 0
-                    giaban = giabanFromBanggia;
-                    giaSource = `bảng giá ${banggiaKhachhang.mabanggia} (của khách hàng)`;
-                  } else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
-                    // Ưu tiên 2: Giá bảng giá khách hàng = 0, lấy từ bảng giá mặc định
-                    giaban = Number(giaSanphamDefault.giaban);
-                    giaSource = 'bảng giá mặc định (fallback do giá = 0)';
-                  } else {
-                    // Ưu tiên 3: Cả 2 đều = 0 hoặc không có, trả về 0
-                    giaban = 0;
-                    giaSource = 'không tìm thấy giá hợp lệ (trả về 0)';
-                  }
+                // Logic ưu tiên lấy giá: Đơn hàng > Khách hàng > Mặc định
+                if (giaSanpham && Number(giaSanpham.giaban) > 0) {
+                  // Ưu tiên 1: Có giá từ bảng giá ưu tiên (trên đơn hàng hoặc khách hàng) và > 0
+                  giaban = Number(giaSanpham.giaban);
+                  giaSource = `bảng giá ${banggiaUuTien.mabanggia}${donhang.banggia ? ' (trên đơn hàng)' : ' (của khách hàng)'}`;
+                } else if (giaSanphamKH && Number(giaSanphamKH.giaban) > 0) {
+                  // Ưu tiên 2: Fallback về bảng giá khách hàng (khi bảng giá đơn hàng không có SP này)
+                  giaban = Number(giaSanphamKH.giaban);
+                  giaSource = `bảng giá ${banggiaKhachhang?.mabanggia} (fallback từ khách hàng)`;
                 } else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
-                  // Ưu tiên 2: Không có trong bảng giá khách hàng, lấy từ bảng giá mặc định
+                  // Ưu tiên 3: Lấy từ bảng giá mặc định
                   giaban = Number(giaSanphamDefault.giaban);
-                  giaSource = 'bảng giá mặc định (không có trong bảng giá khách hàng)';
+                  giaSource = 'bảng giá mặc định (fallback)';
                 } else {
-                  // Ưu tiên 3: Không tìm thấy ở đâu, trả về 0
+                  // Không tìm thấy giá hợp lệ ở đâu, trả về 0
                   giaban = 0;
-                  giaSource = 'không tìm thấy trong cả 2 bảng giá (trả về 0)';
+                  giaSource = 'không tìm thấy giá hợp lệ trong tất cả bảng giá (trả về 0)';
                 }
 
                 if (giaban > 0) {
@@ -1296,10 +1410,10 @@ export class DonhangService {
                           action: 'DONGBOGIA',
                           donhangId: donhang.id,
                           madonhang: donhang.madonhang,
-                          khachhangId: donhang.khachhang.id,
-                          khachhangName: donhang.khachhang.name,
-                          banggiaId: banggiaKhachhang.id,
-                          mabanggia: banggiaKhachhang.mabanggia,
+                          khachhangId: donhang.khachhang?.id,
+                          khachhangName: donhang.khachhang?.name,
+                          banggiaId: banggiaUuTien.id,
+                          mabanggia: banggiaUuTien.mabanggia,
                           sanphamId: donhangSanpham.idSP,
                           sanphamTitle: donhangSanpham.sanpham?.title,
                           sanphamMasp: donhangSanpham.sanpham?.masp,
@@ -1366,10 +1480,10 @@ export class DonhangService {
                     metadata: {
                       action: 'DONGBOGIA_TOTAL',
                       madonhang: donhang.madonhang,
-                      khachhangId: donhang.khachhang.id,
-                      khachhangName: donhang.khachhang.name,
-                      banggiaId: banggiaKhachhang.id,
-                      mabanggia: banggiaKhachhang.mabanggia,
+                      khachhangId: donhang.khachhang?.id,
+                      khachhangName: donhang.khachhang?.name,
+                      banggiaId: banggiaUuTien.id,
+                      mabanggia: banggiaUuTien.mabanggia,
                       tongchua: tongchua,
                       vatRate: vatRate,
                       tongtienDifference: tongtien - oldTongtien,
