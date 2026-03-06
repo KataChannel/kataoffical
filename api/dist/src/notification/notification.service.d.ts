@@ -5,12 +5,12 @@ export declare class NotificationService {
     constructor(prisma: PrismaService);
     subscribe(userId: string, subscription: any): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         userId: string;
         endpoint: string;
         p256dh: string;
         auth: string;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     unsubscribe(endpoint: string): Promise<{
         success: boolean;
@@ -20,39 +20,40 @@ export declare class NotificationService {
         error: any;
     }>;
     sendNotificationToUser(userId: string, payload: any): Promise<void>;
+    broadcastToRoles(roles: string[], payload: any): Promise<void>;
     broadcastToAdmins(payload: any): Promise<void>;
     getUserNotifications(userId: string, search?: string): Promise<{
         id: string;
-        title: string;
-        type: string | null;
+        userId: string;
         createdAt: Date;
         updatedAt: Date;
         link: string | null;
-        userId: string;
+        title: string;
         message: string;
+        type: string | null;
         isRead: boolean;
     }[]>;
     markAsRead(id: string): Promise<{
         id: string;
-        title: string;
-        type: string | null;
+        userId: string;
         createdAt: Date;
         updatedAt: Date;
         link: string | null;
-        userId: string;
+        title: string;
         message: string;
+        type: string | null;
         isRead: boolean;
     }>;
     markAllAsRead(userId: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     deleteNotification(id: string): Promise<{
         id: string;
-        title: string;
-        type: string | null;
+        userId: string;
         createdAt: Date;
         updatedAt: Date;
         link: string | null;
-        userId: string;
+        title: string;
         message: string;
+        type: string | null;
         isRead: boolean;
     }>;
     getUnreadCount(userId: string): Promise<{

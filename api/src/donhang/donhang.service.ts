@@ -7,16 +7,22 @@ import { PerformanceLogger } from '../shared/performance-logger';
 import { BanggiaPriceHistoryService } from '../banggia/banggia-price-history.service';
 import { PriceHistoryService } from './price-history.service';
 import { UpdateProductPriceDto } from './dto/price-management.dto';
+import { ImportdataService } from '../importdata/importdata.service';
+import { CancelOrderService } from './cancel-order.service';
+import { NotificationService } from '../notification/notification.service';
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 const DEFAUL_BANGGIA_ID = '84a62698-5784-4ac3-b506-5e662d1511cb';
 @Injectable()
 export class DonhangService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly _ImportdataService: ImportdataService,
     private readonly statusMachine: StatusMachineService,
     private readonly tonkhoManager: TonkhoManagerService,
+    private readonly cancelOrderService: CancelOrderService,
     private readonly priceHistoryService: BanggiaPriceHistoryService,
     private readonly donhangPriceHistoryService: PriceHistoryService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
@@ -2106,6 +2112,15 @@ export class DonhangService {
       }
     }
     
+    if (success > 0) {
+      this.notificationService.broadcastToAdmins({
+        title: 'Import Đơn Hàng Thành Công',
+        body: `Đã import thành công ${success} đơn hàng.`,
+        url: '/admin/donhang/list',
+        type: 'import'
+      }).catch(err => console.error('Failed to send notification:', err));
+    }
+    
     // ✅ Return detailed import summary
     console.log('✅ [IMPORT] Import completed:', {
       total: convertData.length,
@@ -2212,7 +2227,7 @@ export class DonhangService {
 
 
 
-    return this.prisma.$transaction(async (prisma) => {
+    const result = await this.prisma.$transaction(async (prisma) => {
       // Get khachhang data
       const khachhang = await prisma.khachhang.findUnique({
         where: { id: dto.khachhangId },
@@ -2409,10 +2424,22 @@ export class DonhangService {
       }
       return newDonhang;
     });
+
+    if (result) {
+      const khachhang = result.khachhangId ? await this.prisma.khachhang.findUnique({ where: { id: result.khachhangId } }) : null;
+      this.notificationService.broadcastToAdmins({
+        title: 'Đơn Hàng Mới',
+        body: `Đơn hàng ${result.madonhang} đã được tạo cho KH ${khachhang?.name || 'N/A'}.`,
+        url: `/admin/donhang/detail/${result.id}`,
+        type: 'donhang'
+      }).catch(err => console.error('Failed to send notification:', err));
+    }
+
+    return result;
   }
 
   async update(id: string, data: any) {
-    return this.prisma.$transaction(async (prisma) => {
+    const result = await this.prisma.$transaction(async (prisma) => {
       // 1. Lấy đơn hàng cũ kèm chi tiết sản phẩm
       const oldDonhang = await prisma.donhang.findUnique({
         where: { id },
@@ -3629,7 +3656,7 @@ export class DonhangService {
   }
 
   async removeBulk(ids: string[]) {
-    return this.prisma.$transaction(async (prisma) => {
+    const result = await this.prisma.$transaction(async (prisma) => {
       let success = 0;
       let fail = 0;
       for (const id of ids) {

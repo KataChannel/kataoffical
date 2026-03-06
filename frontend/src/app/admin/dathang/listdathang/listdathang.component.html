@@ -124,10 +124,9 @@
             </span>
             }
             @case ('ngaynhan') {
-            <div class="max-w-40 line-clamp-4 text-xs flex flex-col">
-              <span>Từ: {{ row.ngaynhan | date:'dd/MM/yyyy'}}</span>
-              <span *ngIf="row.ngaynhanEnd">Đến: {{ row.ngaynhanEnd | date:'dd/MM/yyyy'}}</span>
-            </div>
+            <span class="max-w-40 line-clamp-4 text-xs font-bold">
+              {{ row.ngaynhan | date:'dd/MM/yyyy'}}
+            </span>
             }
             @case ('createdAt') {
             <span class="max-w-40 line-clamp-4 text-xs">

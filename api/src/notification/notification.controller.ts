@@ -46,5 +46,16 @@ export class NotificationController {
   async getUnreadCount(@Param('userId') userId: string) {
     return this.notificationService.getUnreadCount(userId);
   }
+
+  @Post('test-admin-push')
+  async testAdminPush(@Body() body: { title?: string; body?: string }) {
+    await this.notificationService.broadcastToAdmins({
+      title: body.title || 'Thông báo thử nghiệm',
+      body: body.body || 'Đây là thông báo test dành cho Admin/Manager.',
+      url: '/admin',
+      type: 'test'
+    });
+    return { success: true, message: 'Message broadcasted to all admins' };
+  }
 }
 

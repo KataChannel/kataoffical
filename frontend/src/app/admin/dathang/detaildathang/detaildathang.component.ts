@@ -24,7 +24,7 @@ import {
   GenId,
   convertToSlug,
 } from '../../../shared/utils/shared.utils';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -107,7 +107,8 @@ export class DetailDathangComponent {
           madncc: GenId(8, false),
           type: 'dathang',
           ngaynhan: moment().add(1, 'days').format('YYYY-MM-DD'),
-          ngaynhanEnd: moment().add(1, 'days').format('YYYY-MM-DD'),
+          ngaynhanEnd: null,
+          sanpham: [],
         });
         this._ListdathangComponent.drawer.open();
         this.isEdit.update((value) => !value);
@@ -131,9 +132,33 @@ export class DetailDathangComponent {
   filterBanggia: any[] = [];
   filterSanpham: any[] = [];
   dathangId: any = this._DathangService.dathangId;
+  @ViewChild('menuTrigger') spMenuTrigger!: MatMenuTrigger;
   async ngOnInit() {
   }
   async handleDathangAction() {
+    const data = this.DetailDathang();
+    if (!data.nhacungcapId) {
+      this._snackBar.open('Vui lòng chọn Nhà Cung Cấp', 'Đóng', {
+        duration: 3000,
+        panelClass: ['snackbar-error']
+      });
+      return;
+    }
+    if (!data.khoId) {
+      this._snackBar.open('Vui lòng chọn Kho Nhận', 'Đóng', {
+        duration: 3000,
+        panelClass: ['snackbar-error']
+      });
+      return;
+    }
+    if (!this.dataSource.data || this.dataSource.data.length === 0) {
+      this._snackBar.open('Danh sách sản phẩm trống', 'Đóng', {
+        duration: 3000,
+        panelClass: ['snackbar-error']
+      });
+      return;
+    }
+
     if (this.dathangId() === 'new') {
       await this.createDathang();
     } else {
@@ -145,7 +170,7 @@ export class DetailDathangComponent {
       this.DetailDathang.update((v: any) => {
         v.sanpham = this.dataSource.data;
         v.ngaynhan = v.ngaynhan ? moment(v.ngaynhan).format('YYYY-MM-DD') : null;
-        v.ngaynhanEnd = v.ngaynhanEnd ? moment(v.ngaynhanEnd).format('YYYY-MM-DD') : null;
+        v.ngaynhanEnd = null;
         return v;
       });
       await this._DathangService.CreateDathang(this.DetailDathang());
@@ -257,7 +282,7 @@ export class DetailDathangComponent {
           return rest;
         });
         v.ngaynhan = v.ngaynhan ? moment(v.ngaynhan).format('YYYY-MM-DD') : null;
-        v.ngaynhanEnd = v.ngaynhanEnd ? moment(v.ngaynhanEnd).format('YYYY-MM-DD') : null;
+        v.ngaynhanEnd = null;
         return v;
       });
       console.log(this.DetailDathang());
@@ -675,7 +700,7 @@ export class DetailDathangComponent {
   CheckItem(item: any) {
     return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
-  ApplyFilterColum(menu: any) {
+  ApplyFilterColum(menu?: any) {
     console.log(this.ListFilter);
     
     // Get existing products to preserve their values
@@ -710,7 +735,11 @@ export class DetailDathangComponent {
       return v;
     });
     this.dataSource.data.sort((a, b) => a.order - b.order);
-    menu.closeMenu();
+    if (menu) {
+      menu.closeMenu();
+    } else if (this.spMenuTrigger) {
+      this.spMenuTrigger.closeMenu();
+    }
   }
 
   GiaoDonhang() {

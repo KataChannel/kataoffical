@@ -16,12 +16,13 @@ const shared_module_1 = require("../shared/shared.module");
 const status_machine_service_1 = require("../common/status-machine.service");
 const tonkho_manager_service_1 = require("../common/tonkho-manager.service");
 const auth_module_1 = require("../auth/auth.module");
+const notification_module_1 = require("../notification/notification.module");
 let DathangModule = class DathangModule {
 };
 exports.DathangModule = DathangModule;
 exports.DathangModule = DathangModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, importdata_module_1.ImportdataModule, shared_module_1.SharedModule, auth_module_1.AuthModule],
+        imports: [prisma_module_1.PrismaModule, importdata_module_1.ImportdataModule, shared_module_1.SharedModule, auth_module_1.AuthModule, notification_module_1.NotificationModule],
         controllers: [dathang_controller_1.DathangController],
         providers: [dathang_service_1.DathangService, status_machine_service_1.StatusMachineService, tonkho_manager_service_1.TonkhoManagerService],
         exports: [dathang_service_1.DathangService]

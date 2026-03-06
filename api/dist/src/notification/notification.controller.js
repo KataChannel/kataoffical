@@ -47,6 +47,15 @@ let NotificationController = class NotificationController {
     async getUnreadCount(userId) {
         return this.notificationService.getUnreadCount(userId);
     }
+    async testAdminPush(body) {
+        await this.notificationService.broadcastToAdmins({
+            title: body.title || 'Thông báo thử nghiệm',
+            body: body.body || 'Đây là thông báo test dành cho Admin/Manager.',
+            url: '/admin',
+            type: 'test'
+        });
+        return { success: true, message: 'Message broadcasted to all admins' };
+    }
 };
 exports.NotificationController = NotificationController;
 __decorate([
@@ -99,6 +108,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], NotificationController.prototype, "getUnreadCount", null);
+__decorate([
+    (0, common_1.Post)('test-admin-push'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "testAdminPush", null);
 exports.NotificationController = NotificationController = __decorate([
     (0, common_1.Controller)('notifications'),
     __metadata("design:paramtypes", [notification_service_1.NotificationService])

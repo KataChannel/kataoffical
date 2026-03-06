@@ -25,40 +25,47 @@ export declare class NotificationController {
         message: string;
     }>;
     getUserNotifications(userId: string, search?: string): Promise<{
+        message: string;
         id: string;
+        userId: string;
         title: string;
         type: string | null;
+        link: string | null;
+        isRead: boolean;
         createdAt: Date;
         updatedAt: Date;
-        link: string | null;
-        userId: string;
-        message: string;
-        isRead: boolean;
     }[]>;
     markAsRead(id: string): Promise<{
+        message: string;
         id: string;
+        userId: string;
         title: string;
         type: string | null;
+        link: string | null;
+        isRead: boolean;
         createdAt: Date;
         updatedAt: Date;
-        link: string | null;
-        userId: string;
-        message: string;
-        isRead: boolean;
     }>;
     markAllAsRead(userId: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     deleteNotification(id: string): Promise<{
+        message: string;
         id: string;
+        userId: string;
         title: string;
         type: string | null;
+        link: string | null;
+        isRead: boolean;
         createdAt: Date;
         updatedAt: Date;
-        link: string | null;
-        userId: string;
-        message: string;
-        isRead: boolean;
     }>;
     getUnreadCount(userId: string): Promise<{
         count: number;
+    }>;
+    testAdminPush(body: {
+        title?: string;
+        body?: string;
+    }): Promise<{
+        success: boolean;
+        message: string;
     }>;
 }

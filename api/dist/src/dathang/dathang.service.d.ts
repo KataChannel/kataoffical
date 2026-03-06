@@ -2,12 +2,14 @@ import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from '../importdata/importdata.service';
 import { StatusMachineService } from '../common/status-machine.service';
 import { TonkhoManagerService } from '../common/tonkho-manager.service';
+import { NotificationService } from '../notification/notification.service';
 export declare class DathangService {
     private readonly prisma;
     private readonly _ImportdataService;
     private readonly statusMachine;
     private readonly tonkhoManager;
-    constructor(prisma: PrismaService, _ImportdataService: ImportdataService, statusMachine: StatusMachineService, tonkhoManager: TonkhoManagerService);
+    private readonly notificationService;
+    constructor(prisma: PrismaService, _ImportdataService: ImportdataService, statusMachine: StatusMachineService, tonkhoManager: TonkhoManagerService, notificationService: NotificationService);
     private formatDateForFilename;
     private convertDateFilters;
     generateNextOrderCode(): Promise<string>;
@@ -18,11 +20,11 @@ export declare class DathangService {
         sanpham: any[];
         kho: {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            ghichu: string | null;
+            isActive: boolean;
             makho: string | null;
             diachi: string | null;
             sdt: string | null;
@@ -30,11 +32,11 @@ export declare class DathangService {
         } | null;
         nhacungcap: {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
+            ghichu: string | null;
+            isActive: boolean;
             diachi: string | null;
             sdt: string | null;
             mancc: string;
@@ -44,6 +46,8 @@ export declare class DathangService {
             tenfile: string | null;
         } | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date | null;
         title: string | null;
         type: string | null;
         madncc: string | null;
@@ -55,8 +59,6 @@ export declare class DathangService {
         isActive: boolean;
         status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
-        createdAt: Date;
-        updatedAt: Date | null;
         subtitle: string | null;
         khoId: string | null;
         lydohuy: string | null;
@@ -85,11 +87,11 @@ export declare class DathangService {
                 sltontt: import("@prisma/client/runtime/library").Decimal;
             } | null;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             title: string;
             order: number | null;
             isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
             subtitle: string | null;
             title2: string | null;
             slug: string | null;
@@ -106,11 +108,11 @@ export declare class DathangService {
         }[];
         kho: {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            ghichu: string | null;
+            isActive: boolean;
             makho: string | null;
             diachi: string | null;
             sdt: string | null;
@@ -118,11 +120,11 @@ export declare class DathangService {
         } | null;
         nhacungcap: {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
+            ghichu: string | null;
+            isActive: boolean;
             diachi: string | null;
             sdt: string | null;
             mancc: string;
@@ -132,6 +134,8 @@ export declare class DathangService {
             tenfile: string | null;
         } | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date | null;
         title: string | null;
         type: string | null;
         madncc: string | null;
@@ -143,8 +147,6 @@ export declare class DathangService {
         isActive: boolean;
         status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
-        createdAt: Date;
-        updatedAt: Date | null;
         subtitle: string | null;
         khoId: string | null;
         lydohuy: string | null;
@@ -159,11 +161,11 @@ export declare class DathangService {
         data: ({
             kho: {
                 id: string;
-                ghichu: string | null;
-                isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
+                ghichu: string | null;
+                isActive: boolean;
                 makho: string | null;
                 diachi: string | null;
                 sdt: string | null;
@@ -171,11 +173,11 @@ export declare class DathangService {
             } | null;
             nhacungcap: {
                 id: string;
-                ghichu: string | null;
-                isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
                 name: string | null;
+                ghichu: string | null;
+                isActive: boolean;
                 diachi: string | null;
                 sdt: string | null;
                 mancc: string;
@@ -187,12 +189,12 @@ export declare class DathangService {
             sanpham: ({
                 sanpham: {
                     id: string;
+                    createdAt: Date;
+                    updatedAt: Date;
                     title: string;
                     ghichu: string | null;
                     order: number | null;
                     isActive: boolean;
-                    createdAt: Date;
-                    updatedAt: Date;
                     subtitle: string | null;
                     title2: string | null;
                     slug: string | null;
@@ -225,6 +227,8 @@ export declare class DathangService {
             })[];
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date | null;
             title: string | null;
             type: string | null;
             madncc: string | null;
@@ -236,8 +240,6 @@ export declare class DathangService {
             isActive: boolean;
             status: import(".prisma/client").$Enums.StatusDonhang;
             printCount: number | null;
-            createdAt: Date;
-            updatedAt: Date | null;
             subtitle: string | null;
             khoId: string | null;
             lydohuy: string | null;
@@ -256,11 +258,11 @@ export declare class DathangService {
     findby(param: any): Promise<({
         kho: {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            ghichu: string | null;
+            isActive: boolean;
             makho: string | null;
             diachi: string | null;
             sdt: string | null;
@@ -268,11 +270,11 @@ export declare class DathangService {
         } | null;
         nhacungcap: {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
+            ghichu: string | null;
+            isActive: boolean;
             diachi: string | null;
             sdt: string | null;
             mancc: string;
@@ -284,12 +286,12 @@ export declare class DathangService {
         sanpham: ({
             sanpham: {
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 title: string;
                 ghichu: string | null;
                 order: number | null;
                 isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
                 subtitle: string | null;
                 title2: string | null;
                 slug: string | null;
@@ -322,6 +324,8 @@ export declare class DathangService {
         })[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date | null;
         title: string | null;
         type: string | null;
         madncc: string | null;
@@ -333,8 +337,6 @@ export declare class DathangService {
         isActive: boolean;
         status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
-        createdAt: Date;
-        updatedAt: Date | null;
         subtitle: string | null;
         khoId: string | null;
         lydohuy: string | null;
@@ -342,11 +344,11 @@ export declare class DathangService {
         data: ({
             kho: {
                 id: string;
-                ghichu: string | null;
-                isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
+                ghichu: string | null;
+                isActive: boolean;
                 makho: string | null;
                 diachi: string | null;
                 sdt: string | null;
@@ -354,11 +356,11 @@ export declare class DathangService {
             } | null;
             nhacungcap: {
                 id: string;
-                ghichu: string | null;
-                isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
                 name: string | null;
+                ghichu: string | null;
+                isActive: boolean;
                 diachi: string | null;
                 sdt: string | null;
                 mancc: string;
@@ -370,12 +372,12 @@ export declare class DathangService {
             sanpham: ({
                 sanpham: {
                     id: string;
+                    createdAt: Date;
+                    updatedAt: Date;
                     title: string;
                     ghichu: string | null;
                     order: number | null;
                     isActive: boolean;
-                    createdAt: Date;
-                    updatedAt: Date;
                     subtitle: string | null;
                     title2: string | null;
                     slug: string | null;
@@ -408,6 +410,8 @@ export declare class DathangService {
             })[];
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date | null;
             title: string | null;
             type: string | null;
             madncc: string | null;
@@ -419,8 +423,6 @@ export declare class DathangService {
             isActive: boolean;
             status: import(".prisma/client").$Enums.StatusDonhang;
             printCount: number | null;
-            createdAt: Date;
-            updatedAt: Date | null;
             subtitle: string | null;
             khoId: string | null;
             lydohuy: string | null;
@@ -449,6 +451,8 @@ export declare class DathangService {
         }[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date | null;
         title: string | null;
         type: string | null;
         madncc: string | null;
@@ -460,8 +464,6 @@ export declare class DathangService {
         isActive: boolean;
         status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
-        createdAt: Date;
-        updatedAt: Date | null;
         subtitle: string | null;
         khoId: string | null;
         lydohuy: string | null;
@@ -485,6 +487,8 @@ export declare class DathangService {
         }[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date | null;
         title: string | null;
         type: string | null;
         madncc: string | null;
@@ -496,14 +500,14 @@ export declare class DathangService {
         isActive: boolean;
         status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
-        createdAt: Date;
-        updatedAt: Date | null;
         subtitle: string | null;
         khoId: string | null;
         lydohuy: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date | null;
         title: string | null;
         type: string | null;
         madncc: string | null;
@@ -515,14 +519,14 @@ export declare class DathangService {
         isActive: boolean;
         status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
-        createdAt: Date;
-        updatedAt: Date | null;
         subtitle: string | null;
         khoId: string | null;
         lydohuy: string | null;
     } | null>;
     remove(id: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date | null;
         title: string | null;
         type: string | null;
         madncc: string | null;
@@ -534,8 +538,6 @@ export declare class DathangService {
         isActive: boolean;
         status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
-        createdAt: Date;
-        updatedAt: Date | null;
         subtitle: string | null;
         khoId: string | null;
         lydohuy: string | null;
@@ -544,12 +546,12 @@ export declare class DathangService {
         sanpham: ({
             sanpham: {
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 title: string;
                 ghichu: string | null;
                 order: number | null;
                 isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
                 subtitle: string | null;
                 title2: string | null;
                 slug: string | null;
@@ -582,11 +584,11 @@ export declare class DathangService {
         }) | undefined;
         kho: {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            ghichu: string | null;
+            isActive: boolean;
             makho: string | null;
             diachi: string | null;
             sdt: string | null;
@@ -594,11 +596,11 @@ export declare class DathangService {
         } | null;
         nhacungcap: {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
+            ghichu: string | null;
+            isActive: boolean;
             diachi: string | null;
             sdt: string | null;
             mancc: string;
@@ -608,6 +610,8 @@ export declare class DathangService {
             tenfile: string | null;
         } | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date | null;
         title: string | null;
         type: string | null;
         madncc: string | null;
@@ -619,8 +623,6 @@ export declare class DathangService {
         isActive: boolean;
         status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
-        createdAt: Date;
-        updatedAt: Date | null;
         subtitle: string | null;
         khoId: string | null;
         lydohuy: string | null;

@@ -121,21 +121,51 @@ let NotificationService = NotificationService_1 = class NotificationService {
             this.logger.error('Error in sendNotificationToUser', error.stack);
         }
     }
+    async broadcastToRoles(roles, payload) {
+        try {
+            this.logger.log(`Broadcasting notification to roles: ${roles.join(', ')}`);
+            const users = await this.prisma.user.findMany({
+                where: {
+                    roles: {
+                        some: {
+                            role: {
+                                name: { in: roles, mode: 'insensitive' }
+                            }
+                        }
+                    }
+                },
+                select: { id: true }
+            });
+            this.logger.log(`Found ${users.length} users with matching roles`);
+            const sendPromises = users.map(user => this.sendNotificationToUser(user.id, payload));
+            await Promise.allSettled(sendPromises);
+        }
+        catch (error) {
+            this.logger.error('Error in broadcastToRoles', error.stack);
+        }
+    }
     async broadcastToAdmins(payload) {
+        return this.broadcastToRoles(['Admin', 'PKD', 'ORDER'], payload);
     }
     async getUserNotifications(userId, search) {
-        const where = { userId };
-        if (search) {
-            where.OR = [
-                { title: { contains: search, mode: 'insensitive' } },
-                { message: { contains: search, mode: 'insensitive' } },
-            ];
+        try {
+            const where = { userId };
+            if (search) {
+                where.OR = [
+                    { title: { contains: search, mode: 'insensitive' } },
+                    { message: { contains: search, mode: 'insensitive' } },
+                ];
+            }
+            return await this.prisma.notification.findMany({
+                where,
+                orderBy: { createdAt: 'desc' },
+                take: 50,
+            });
         }
-        return this.prisma.notification.findMany({
-            where,
-            orderBy: { createdAt: 'desc' },
-            take: 50,
-        });
+        catch (error) {
+            this.logger.error(`Error in getUserNotifications for user ${userId}: ${error.message}`, error.stack);
+            return [];
+        }
     }
     async markAsRead(id) {
         return this.prisma.notification.update({
@@ -155,10 +185,16 @@ let NotificationService = NotificationService_1 = class NotificationService {
         });
     }
     async getUnreadCount(userId) {
-        const count = await this.prisma.notification.count({
-            where: { userId, isRead: false },
-        });
-        return { count };
+        try {
+            const count = await this.prisma.notification.count({
+                where: { userId, isRead: false },
+            });
+            return { count };
+        }
+        catch (error) {
+            this.logger.error(`Error in getUnreadCount for user ${userId}: ${error.message}`, error.stack);
+            return { count: 0 };
+        }
     }
 };
 exports.NotificationService = NotificationService;

@@ -53,7 +53,7 @@ export class DathangService {
       console.log('🔄 Creating dathang with enhanced date sync:', dulieu);
       
       // Synchronize date fields if they exist
-      const synchronizedData = this.timezoneService.synchronizeObjectDates(dulieu, ['ngaygiao', 'ngaynhan']);
+      const synchronizedData = this.timezoneService.synchronizeObjectDates(dulieu, ['ngaygiao', 'ngaynhan', 'ngaynhanEnd']);
       
       const options = {
           method:'POST',
@@ -246,7 +246,7 @@ export class DathangService {
       console.log('🔄 Updating dathang with enhanced date sync:', dulieu);
       
       // Synchronize date fields if they exist
-      const synchronizedData = this.timezoneService.synchronizeObjectDates(dulieu, ['ngaygiao', 'ngaynhan']);
+      const synchronizedData = this.timezoneService.synchronizeObjectDates(dulieu, ['ngaygiao', 'ngaynhan', 'ngaynhanEnd']);
       
       const options = {
           method:'PATCH',

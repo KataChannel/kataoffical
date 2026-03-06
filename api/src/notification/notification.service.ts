@@ -132,26 +132,56 @@ export class NotificationService {
     }
   }
 
+  async broadcastToRoles(roles: string[], payload: any) {
+    try {
+      this.logger.log(`Broadcasting notification to roles: ${roles.join(', ')}`);
+      
+      const users = await this.prisma.user.findMany({
+        where: {
+          roles: {
+            some: {
+              role: {
+                name: { in: roles, mode: 'insensitive' }
+              }
+            }
+          }
+        },
+        select: { id: true }
+      });
+
+      this.logger.log(`Found ${users.length} users with matching roles`);
+
+      const sendPromises = users.map(user => this.sendNotificationToUser(user.id, payload));
+      await Promise.allSettled(sendPromises);
+    } catch (error) {
+      this.logger.error('Error in broadcastToRoles', error.stack);
+    }
+  }
+
   async broadcastToAdmins(payload: any) {
-    // Hardcoded logic to broadcast to admin groups if generic broadcast is needed
-    // e.g. sendNotificationToUser('390299a1-cef6-4540-b26e-1198ead22f33', payload);
+    return this.broadcastToRoles(['Admin', 'PKD', 'ORDER'], payload);
   }
 
   async getUserNotifications(userId: string, search?: string) {
-    const where: any = { userId };
-    
-    if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { message: { contains: search, mode: 'insensitive' } },
-      ];
-    }
+    try {
+      const where: any = { userId };
+      
+      if (search) {
+        where.OR = [
+          { title: { contains: search, mode: 'insensitive' } },
+          { message: { contains: search, mode: 'insensitive' } },
+        ];
+      }
 
-    return this.prisma.notification.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      take: 50,
-    });
+      return await this.prisma.notification.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+      });
+    } catch (error) {
+      this.logger.error(`Error in getUserNotifications for user ${userId}: ${error.message}`, error.stack);
+      return [];
+    }
   }
 
   async markAsRead(id: string) {
@@ -175,9 +205,14 @@ export class NotificationService {
   }
 
   async getUnreadCount(userId: string) {
-    const count = await this.prisma.notification.count({
-      where: { userId, isRead: false },
-    });
-    return { count };
+    try {
+      const count = await this.prisma.notification.count({
+        where: { userId, isRead: false },
+      });
+      return { count };
+    } catch (error) {
+      this.logger.error(`Error in getUnreadCount for user ${userId}: ${error.message}`, error.stack);
+      return { count: 0 };
+    }
   }
 }

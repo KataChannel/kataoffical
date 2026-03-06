@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from '../importdata/importdata.service';
 import { StatusMachineService } from '../common/status-machine.service';
 import { TonkhoManagerService } from '../common/tonkho-manager.service';
 import { PerformanceLogger } from '../shared/performance-logger';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class DathangService {
@@ -13,6 +14,7 @@ export class DathangService {
     private readonly _ImportdataService: ImportdataService,
     private readonly statusMachine: StatusMachineService,
     private readonly tonkhoManager: TonkhoManagerService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
@@ -197,8 +199,18 @@ export class DathangService {
           title: `Import Đặt hàng ${new Date().toLocaleString('vi-VN')}`,
           type: 'dathang',
         });
-      }
     }
+  }
+    
+    if (success > 0) {
+      this.notificationService.broadcastToAdmins({
+        title: 'Import Đặt Hàng Thành Công',
+        body: `Đã import thành công ${success} đơn đặt hàng.`,
+        url: '/admin/dathang/list',
+        type: 'import'
+      }).catch(err => console.error('Failed to send notification:', err));
+    }
+
     return {
       success,
       fail,
@@ -498,7 +510,10 @@ async convertDathangImportToTransfer(
   async create(dto: any) {   
      
     const madathang = await this.generateNextOrderCode();
-    return this.prisma.$transaction(async (prisma) => {      
+    const result = await this.prisma.$transaction(async (prisma) => {      
+      if (!dto.nhacungcap || !dto.nhacungcap.mancc) {
+        throw new BadRequestException('Thông tin nhà cung cấp không hợp lệ');
+      }
       const nhacungcap = await prisma.nhacungcap.findFirst({
         where: {
           mancc: dto.nhacungcap.mancc,
@@ -533,13 +548,13 @@ async convertDathangImportToTransfer(
             create: dto?.sanpham?.map((sp: any) => ({
               idSP: sp.id,
               ghichu: sp.ghichu,
-              sldat: sp.sldat || 0,
-              slgiao: sp.slgiao || 0,
-              slnhan: sp.slnhan || 0,
-              slhuy: sp.slhuy || 0,
-              ttdat: sp.ttdat || 0,
-              ttgiao: sp.ttgiao || 0,
-              ttnhan: Number(sp.slnhan*sp.gianhap) || 0,
+              sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+              slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+              slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+              slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
+              ttdat: parseFloat((sp.ttdat ?? 0).toFixed(3)),
+              ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
+              ttnhan: parseFloat(((sp.slnhan || 0) * (sp.gianhap || 0)).toFixed(3)),
             })),
           },
         },
@@ -562,11 +577,23 @@ async convertDathangImportToTransfer(
       }
       return newDathang;
     });
+
+    if (result) {
+      const nhacungcap = result.nhacungcapId ? await this.prisma.nhacungcap.findUnique({ where: { id: result.nhacungcapId } }) : null;
+      this.notificationService.broadcastToAdmins({
+        title: 'Đặt Hàng Mới',
+        body: `Đơn đặt hàng ${result.madncc} đã được tạo cho NCC ${nhacungcap?.name || 'N/A'}.`,
+        url: `/admin/dathang/detail/${result.id}`,
+        type: 'dathang'
+      }).catch(err => console.error('Failed to send notification:', err));
+    }
+
+    return result;
   }
 
   async createbynhucau(dto: any) {
     const madathang = await this.generateNextOrderCode();
-    return this.prisma.$transaction(async (prisma) => {
+    const result = await this.prisma.$transaction(async (prisma) => {
       // Verify that the associated supplier (nhacungcap) exists
       const nhacungcap = await prisma.nhacungcap.findUnique({
         where: { id: dto.id },
@@ -607,7 +634,7 @@ async convertDathangImportToTransfer(
               slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
               ttdat: parseFloat((sp.ttdat ?? 0).toFixed(3)),
               ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
-              ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(3)),
+              ttnhan: parseFloat(((sp.slnhan || 0) * (sp.gianhap || 0)).toFixed(3)),
             })),
           },
         },
@@ -630,6 +657,18 @@ async convertDathangImportToTransfer(
       }
       return newDathang;
     });
+
+    if (result) {
+      const nhacungcap = result.nhacungcapId ? await this.prisma.nhacungcap.findUnique({ where: { id: result.nhacungcapId } }) : null;
+      this.notificationService.broadcastToAdmins({
+        title: 'Đặt Hàng Mới (Nhu Cầu)',
+        body: `Đơn đặt hàng ${result.madncc} đã được tạo cho NCC ${nhacungcap?.name || 'N/A'}.`,
+        url: `/admin/dathang/detail/${result.id}`,
+        type: 'dathang'
+      }).catch(err => console.error('Failed to send notification:', err));
+    }
+
+    return result;
   }
 
   async update(id: string, data: any) {

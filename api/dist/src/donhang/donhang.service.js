@@ -18,15 +18,21 @@ const tonkho_manager_service_1 = require("../common/tonkho-manager.service");
 const performance_logger_1 = require("../shared/performance-logger");
 const banggia_price_history_service_1 = require("../banggia/banggia-price-history.service");
 const price_history_service_1 = require("./price-history.service");
+const importdata_service_1 = require("../importdata/importdata.service");
+const cancel_order_service_1 = require("./cancel-order.service");
+const notification_service_1 = require("../notification/notification.service");
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 const DEFAUL_BANGGIA_ID = '84a62698-5784-4ac3-b506-5e662d1511cb';
 let DonhangService = class DonhangService {
-    constructor(prisma, statusMachine, tonkhoManager, priceHistoryService, donhangPriceHistoryService) {
+    constructor(prisma, _ImportdataService, statusMachine, tonkhoManager, cancelOrderService, priceHistoryService, donhangPriceHistoryService, notificationService) {
         this.prisma = prisma;
+        this._ImportdataService = _ImportdataService;
         this.statusMachine = statusMachine;
         this.tonkhoManager = tonkhoManager;
+        this.cancelOrderService = cancelOrderService;
         this.priceHistoryService = priceHistoryService;
         this.donhangPriceHistoryService = donhangPriceHistoryService;
+        this.notificationService = notificationService;
     }
     formatDateForFilename() {
         const now = new Date();
@@ -1673,6 +1679,14 @@ let DonhangService = class DonhangService {
                 });
             }
         }
+        if (success > 0) {
+            this.notificationService.broadcastToAdmins({
+                title: 'Import Đơn Hàng Thành Công',
+                body: `Đã import thành công ${success} đơn hàng.`,
+                url: '/admin/donhang/list',
+                type: 'import'
+            }).catch(err => console.error('Failed to send notification:', err));
+        }
         console.log('✅ [IMPORT] Import completed:', {
             total: convertData.length,
             success,
@@ -1741,7 +1755,7 @@ let DonhangService = class DonhangService {
         if (existingDonhang) {
             throw new common_1.InternalServerErrorException(`Không thể tạo mã đơn hàng duy nhất sau ${maxOrderAttempts} lần thử`);
         }
-        return this.prisma.$transaction(async (prisma) => {
+        const result = await this.prisma.$transaction(async (prisma) => {
             const khachhang = await prisma.khachhang.findUnique({
                 where: { id: dto.khachhangId },
                 include: { banggia: true },
@@ -1912,9 +1926,19 @@ let DonhangService = class DonhangService {
             }
             return newDonhang;
         });
+        if (result) {
+            const khachhang = result.khachhangId ? await this.prisma.khachhang.findUnique({ where: { id: result.khachhangId } }) : null;
+            this.notificationService.broadcastToAdmins({
+                title: 'Đơn Hàng Mới',
+                body: `Đơn hàng ${result.madonhang} đã được tạo cho KH ${khachhang?.name || 'N/A'}.`,
+                url: `/admin/donhang/detail/${result.id}`,
+                type: 'donhang'
+            }).catch(err => console.error('Failed to send notification:', err));
+        }
+        return result;
     }
     async update(id, data) {
-        return this.prisma.$transaction(async (prisma) => {
+        const result = await this.prisma.$transaction(async (prisma) => {
             const oldDonhang = await prisma.donhang.findUnique({
                 where: { id },
                 include: { sanpham: true },
@@ -2895,7 +2919,7 @@ let DonhangService = class DonhangService {
     async remove(id) {
     }
     async removeBulk(ids) {
-        return this.prisma.$transaction(async (prisma) => {
+        const result = await this.prisma.$transaction(async (prisma) => {
             let success = 0;
             let fail = 0;
             for (const id of ids) {
@@ -3492,9 +3516,12 @@ exports.DonhangService = DonhangService;
 exports.DonhangService = DonhangService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        importdata_service_1.ImportdataService,
         status_machine_service_1.StatusMachineService,
         tonkho_manager_service_1.TonkhoManagerService,
+        cancel_order_service_1.CancelOrderService,
         banggia_price_history_service_1.BanggiaPriceHistoryService,
-        price_history_service_1.PriceHistoryService])
+        price_history_service_1.PriceHistoryService,
+        notification_service_1.NotificationService])
 ], DonhangService);
 //# sourceMappingURL=donhang.service.js.map

@@ -13,9 +13,10 @@ import { StatusMachineService } from '../common/status-machine.service';
 import { TonkhoManagerService } from '../common/tonkho-manager.service';
 import { AuthModule } from '../auth/auth.module';
 import { BanggiaModule } from '../banggia/banggia.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [PrismaModule, ImportdataModule, SharedModule, AuthModule, BanggiaModule],
+  imports: [PrismaModule, ImportdataModule, SharedModule, AuthModule, BanggiaModule, NotificationModule],
   controllers: [DonhangController, DonhangPriceController, CancelOrderController],
   providers: [
     DonhangService,

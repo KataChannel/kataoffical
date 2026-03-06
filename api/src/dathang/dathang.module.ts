@@ -7,9 +7,10 @@ import { SharedModule } from '../shared/shared.module';
 import { StatusMachineService } from '../common/status-machine.service';
 import { TonkhoManagerService } from '../common/tonkho-manager.service';
 import { AuthModule } from '../auth/auth.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [PrismaModule, ImportdataModule, SharedModule, AuthModule],
+  imports: [PrismaModule, ImportdataModule, SharedModule, AuthModule, NotificationModule],
   controllers: [DathangController],
   providers: [DathangService, StatusMachineService, TonkhoManagerService],
   exports: [DathangService]

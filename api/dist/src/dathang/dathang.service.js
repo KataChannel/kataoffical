@@ -17,12 +17,14 @@ const importdata_service_1 = require("../importdata/importdata.service");
 const status_machine_service_1 = require("../common/status-machine.service");
 const tonkho_manager_service_1 = require("../common/tonkho-manager.service");
 const performance_logger_1 = require("../shared/performance-logger");
+const notification_service_1 = require("../notification/notification.service");
 let DathangService = class DathangService {
-    constructor(prisma, _ImportdataService, statusMachine, tonkhoManager) {
+    constructor(prisma, _ImportdataService, statusMachine, tonkhoManager, notificationService) {
         this.prisma = prisma;
         this._ImportdataService = _ImportdataService;
         this.statusMachine = statusMachine;
         this.tonkhoManager = tonkhoManager;
+        this.notificationService = notificationService;
     }
     formatDateForFilename() {
         const now = new Date();
@@ -188,6 +190,14 @@ let DathangService = class DathangService {
                     type: 'dathang',
                 });
             }
+        }
+        if (success > 0) {
+            this.notificationService.broadcastToAdmins({
+                title: 'Import Đặt Hàng Thành Công',
+                body: `Đã import thành công ${success} đơn đặt hàng.`,
+                url: '/admin/dathang/list',
+                type: 'import'
+            }).catch(err => console.error('Failed to send notification:', err));
         }
         return {
             success,
@@ -432,7 +442,10 @@ let DathangService = class DathangService {
     }
     async create(dto) {
         const madathang = await this.generateNextOrderCode();
-        return this.prisma.$transaction(async (prisma) => {
+        const result = await this.prisma.$transaction(async (prisma) => {
+            if (!dto.nhacungcap || !dto.nhacungcap.mancc) {
+                throw new common_1.BadRequestException('Thông tin nhà cung cấp không hợp lệ');
+            }
             const nhacungcap = await prisma.nhacungcap.findFirst({
                 where: {
                     mancc: dto.nhacungcap.mancc,
@@ -464,13 +477,13 @@ let DathangService = class DathangService {
                         create: dto?.sanpham?.map((sp) => ({
                             idSP: sp.id,
                             ghichu: sp.ghichu,
-                            sldat: sp.sldat || 0,
-                            slgiao: sp.slgiao || 0,
-                            slnhan: sp.slnhan || 0,
-                            slhuy: sp.slhuy || 0,
-                            ttdat: sp.ttdat || 0,
-                            ttgiao: sp.ttgiao || 0,
-                            ttnhan: Number(sp.slnhan * sp.gianhap) || 0,
+                            sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                            slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
+                            ttdat: parseFloat((sp.ttdat ?? 0).toFixed(3)),
+                            ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
+                            ttnhan: parseFloat(((sp.slnhan || 0) * (sp.gianhap || 0)).toFixed(3)),
                         })),
                     },
                 },
@@ -491,10 +504,20 @@ let DathangService = class DathangService {
             }
             return newDathang;
         });
+        if (result) {
+            const nhacungcap = result.nhacungcapId ? await this.prisma.nhacungcap.findUnique({ where: { id: result.nhacungcapId } }) : null;
+            this.notificationService.broadcastToAdmins({
+                title: 'Đặt Hàng Mới',
+                body: `Đơn đặt hàng ${result.madncc} đã được tạo cho NCC ${nhacungcap?.name || 'N/A'}.`,
+                url: `/admin/dathang/detail/${result.id}`,
+                type: 'dathang'
+            }).catch(err => console.error('Failed to send notification:', err));
+        }
+        return result;
     }
     async createbynhucau(dto) {
         const madathang = await this.generateNextOrderCode();
-        return this.prisma.$transaction(async (prisma) => {
+        const result = await this.prisma.$transaction(async (prisma) => {
             const nhacungcap = await prisma.nhacungcap.findUnique({
                 where: { id: dto.id },
             });
@@ -530,7 +553,7 @@ let DathangService = class DathangService {
                             slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
                             ttdat: parseFloat((sp.ttdat ?? 0).toFixed(3)),
                             ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
-                            ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(3)),
+                            ttnhan: parseFloat(((sp.slnhan || 0) * (sp.gianhap || 0)).toFixed(3)),
                         })),
                     },
                 },
@@ -551,6 +574,16 @@ let DathangService = class DathangService {
             }
             return newDathang;
         });
+        if (result) {
+            const nhacungcap = result.nhacungcapId ? await this.prisma.nhacungcap.findUnique({ where: { id: result.nhacungcapId } }) : null;
+            this.notificationService.broadcastToAdmins({
+                title: 'Đặt Hàng Mới (Nhu Cầu)',
+                body: `Đơn đặt hàng ${result.madncc} đã được tạo cho NCC ${nhacungcap?.name || 'N/A'}.`,
+                url: `/admin/dathang/detail/${result.id}`,
+                type: 'dathang'
+            }).catch(err => console.error('Failed to send notification:', err));
+        }
+        return result;
     }
     async update(id, data) {
         return this.prisma.$transaction(async (prisma) => {
@@ -1990,6 +2023,7 @@ exports.DathangService = DathangService = __decorate([
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         importdata_service_1.ImportdataService,
         status_machine_service_1.StatusMachineService,
-        tonkho_manager_service_1.TonkhoManagerService])
+        tonkho_manager_service_1.TonkhoManagerService,
+        notification_service_1.NotificationService])
 ], DathangService);
 //# sourceMappingURL=dathang.service.js.map

@@ -22,12 +22,13 @@ const status_machine_service_1 = require("../common/status-machine.service");
 const tonkho_manager_service_1 = require("../common/tonkho-manager.service");
 const auth_module_1 = require("../auth/auth.module");
 const banggia_module_1 = require("../banggia/banggia.module");
+const notification_module_1 = require("../notification/notification.module");
 let DonhangModule = class DonhangModule {
 };
 exports.DonhangModule = DonhangModule;
 exports.DonhangModule = DonhangModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, importdata_module_1.ImportdataModule, shared_module_1.SharedModule, auth_module_1.AuthModule, banggia_module_1.BanggiaModule],
+        imports: [prisma_module_1.PrismaModule, importdata_module_1.ImportdataModule, shared_module_1.SharedModule, auth_module_1.AuthModule, banggia_module_1.BanggiaModule, notification_module_1.NotificationModule],
         controllers: [donhang_controller_1.DonhangController, donhang_price_controller_1.DonhangPriceController, cancel_order_controller_1.CancelOrderController],
         providers: [
             donhang_service_1.DonhangService,

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal, ViewChild, ViewEncapsulation, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Config, User } from './adminmain';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeModule, MatTreeFlattener, MatTreeFlatDataSource } from '@angular/material/tree';
@@ -99,6 +99,7 @@ export class AdminmainComponent {
     private _UserService:UserService,
     private _ErrorLogService:ErrorLogService,
     private swPush: SwPush,
+    private router: Router,
   ) {}
 
   hasChild = (_: number, node: any) => node.expandable;
@@ -129,6 +130,12 @@ export class AdminmainComponent {
     await this._UserguideService.getUserguideBy({codeId:'I100001'})
     this.DetailUserguide = this._UserguideService.DetailUserguide
     this.fetchDatabaseInfo();
+
+    // Listen for push notifications while the app is open
+    this.swPush.messages.subscribe(msg => {
+      console.log('Push message received:', msg);
+      this.fetchNotifications();
+    });
     this._breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       if (result.matches) {
         this.drawer.mode = 'over';
@@ -223,11 +230,12 @@ export class AdminmainComponent {
         url += `?search=${encodeURIComponent(this.notificationSearchTerm)}`;
       }
       const resp = await fetch(url);
-      this.notifications = await resp.json();
-      
-      const countResp = await fetch(`${environment.APIURL}/notifications/user/${this.User.id}/unread-count`);
-      const countData = await countResp.json();
-      this.unreadCount = countData.count || 0;
+    const data = await resp.json();
+    this.notifications = Array.isArray(data) ? data : [];
+    
+    const countResp = await fetch(`${environment.APIURL}/notifications/user/${this.User.id}/unread-count`);
+    const countData = await countResp.json();
+    this.unreadCount = countData && typeof countData.count === 'number' ? countData.count : 0;
     } catch (error) {
       console.error('Error fetching notifications:', error);
     }
@@ -305,7 +313,7 @@ export class AdminmainComponent {
     if (notification.link) {
       // If link is internal (starts with /), use router
       if (notification.link.startsWith('/')) {
-        window.location.href = notification.link; // Or use Router if it's cleaner
+        this.router.navigateByUrl(notification.link);
       } else {
         window.open(notification.link, '_blank');
       }
