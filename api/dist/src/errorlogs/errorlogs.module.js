@@ -10,7 +10,7 @@ exports.ErrorlogsModule = void 0;
 const common_1 = require("@nestjs/common");
 const errorlogs_service_1 = require("./errorlogs.service");
 const errorlogs_controller_1 = require("./errorlogs.controller");
-const prisma_module_1 = require("prisma/prisma.module");
+const prisma_module_1 = require("../../prisma/prisma.module");
 let ErrorlogsModule = class ErrorlogsModule {
 };
 exports.ErrorlogsModule = ErrorlogsModule;

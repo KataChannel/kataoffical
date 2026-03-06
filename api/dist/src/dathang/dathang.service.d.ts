@@ -23,9 +23,9 @@ export declare class DathangService {
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            makho: string | null;
             diachi: string | null;
             sdt: string | null;
-            makho: string | null;
             congtyId: string | null;
         } | null;
         nhacungcap: {
@@ -34,31 +34,32 @@ export declare class DathangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isshowvat: boolean;
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            email: string | null;
-            tenfile: string | null;
             mancc: string;
             manccold: string | null;
+            email: string | null;
+            isshowvat: boolean;
+            tenfile: string | null;
         } | null;
         id: string;
         title: string | null;
         type: string | null;
+        madncc: string | null;
+        ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         ghichu: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
-        printCount: number | null;
+        nhacungcapId: string | null;
         order: number | null;
         isActive: boolean;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        printCount: number | null;
         createdAt: Date;
         updatedAt: Date | null;
-        lydohuy: string | null;
         subtitle: string | null;
-        madncc: string | null;
         khoId: string | null;
-        ngaynhan: Date | null;
-        nhacungcapId: string | null;
+        lydohuy: string | null;
     }[]>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -89,9 +90,7 @@ export declare class DathangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            vat: import("@prisma/client/runtime/library").Decimal | null;
             subtitle: string | null;
-            giaban: import("@prisma/client/runtime/library").Decimal;
             title2: string | null;
             slug: string | null;
             masp: string;
@@ -102,6 +101,8 @@ export declare class DathangService {
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: import("@prisma/client/runtime/library").Decimal;
+            giaban: import("@prisma/client/runtime/library").Decimal;
+            vat: import("@prisma/client/runtime/library").Decimal | null;
         }[];
         kho: {
             id: string;
@@ -110,9 +111,9 @@ export declare class DathangService {
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            makho: string | null;
             diachi: string | null;
             sdt: string | null;
-            makho: string | null;
             congtyId: string | null;
         } | null;
         nhacungcap: {
@@ -121,31 +122,32 @@ export declare class DathangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isshowvat: boolean;
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            email: string | null;
-            tenfile: string | null;
             mancc: string;
             manccold: string | null;
+            email: string | null;
+            isshowvat: boolean;
+            tenfile: string | null;
         } | null;
         id: string;
         title: string | null;
         type: string | null;
+        madncc: string | null;
+        ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         ghichu: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
-        printCount: number | null;
+        nhacungcapId: string | null;
         order: number | null;
         isActive: boolean;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        printCount: number | null;
         createdAt: Date;
         updatedAt: Date | null;
-        lydohuy: string | null;
         subtitle: string | null;
-        madncc: string | null;
         khoId: string | null;
-        ngaynhan: Date | null;
-        nhacungcapId: string | null;
+        lydohuy: string | null;
     }>;
     import(data: any): Promise<{
         success: number;
@@ -155,6 +157,33 @@ export declare class DathangService {
     convertDathangImportToTransfer(dathangimport: any[]): Promise<any[]>;
     search(params: any): Promise<{
         data: ({
+            kho: {
+                id: string;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                makho: string | null;
+                diachi: string | null;
+                sdt: string | null;
+                congtyId: string | null;
+            } | null;
+            nhacungcap: {
+                id: string;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string | null;
+                diachi: string | null;
+                sdt: string | null;
+                mancc: string;
+                manccold: string | null;
+                email: string | null;
+                isshowvat: boolean;
+                tenfile: string | null;
+            } | null;
             sanpham: ({
                 sanpham: {
                     id: string;
@@ -164,9 +193,7 @@ export declare class DathangService {
                     isActive: boolean;
                     createdAt: Date;
                     updatedAt: Date;
-                    vat: import("@prisma/client/runtime/library").Decimal | null;
                     subtitle: string | null;
-                    giaban: import("@prisma/client/runtime/library").Decimal;
                     title2: string | null;
                     slug: string | null;
                     masp: string;
@@ -177,6 +204,8 @@ export declare class DathangService {
                     soluong: import("@prisma/client/runtime/library").Decimal | null;
                     soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                     haohut: import("@prisma/client/runtime/library").Decimal;
+                    giaban: import("@prisma/client/runtime/library").Decimal;
+                    vat: import("@prisma/client/runtime/library").Decimal | null;
                 };
             } & {
                 id: string;
@@ -194,50 +223,24 @@ export declare class DathangService {
                 dathangId: string;
                 gianhap: import("@prisma/client/runtime/library").Decimal;
             })[];
-            kho: {
-                id: string;
-                ghichu: string | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
-                diachi: string | null;
-                sdt: string | null;
-                makho: string | null;
-                congtyId: string | null;
-            } | null;
-            nhacungcap: {
-                id: string;
-                ghichu: string | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                isshowvat: boolean;
-                name: string | null;
-                diachi: string | null;
-                sdt: string | null;
-                email: string | null;
-                tenfile: string | null;
-                mancc: string;
-                manccold: string | null;
-            } | null;
         } & {
             id: string;
             title: string | null;
             type: string | null;
+            madncc: string | null;
+            ngaynhan: Date | null;
+            ngaynhanEnd: Date | null;
             ghichu: string | null;
-            status: import(".prisma/client").$Enums.StatusDonhang;
-            printCount: number | null;
+            nhacungcapId: string | null;
             order: number | null;
             isActive: boolean;
+            status: import(".prisma/client").$Enums.StatusDonhang;
+            printCount: number | null;
             createdAt: Date;
             updatedAt: Date | null;
-            lydohuy: string | null;
             subtitle: string | null;
-            madncc: string | null;
             khoId: string | null;
-            ngaynhan: Date | null;
-            nhacungcapId: string | null;
+            lydohuy: string | null;
         })[];
         total: number;
         pageNumber: any;
@@ -251,6 +254,33 @@ export declare class DathangService {
         slchonhaptt: number;
     }[]>;
     findby(param: any): Promise<({
+        kho: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            makho: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            congtyId: string | null;
+        } | null;
+        nhacungcap: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            mancc: string;
+            manccold: string | null;
+            email: string | null;
+            isshowvat: boolean;
+            tenfile: string | null;
+        } | null;
         sanpham: ({
             sanpham: {
                 id: string;
@@ -260,9 +290,7 @@ export declare class DathangService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                vat: import("@prisma/client/runtime/library").Decimal | null;
                 subtitle: string | null;
-                giaban: import("@prisma/client/runtime/library").Decimal;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -273,6 +301,8 @@ export declare class DathangService {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
+                giaban: import("@prisma/client/runtime/library").Decimal;
+                vat: import("@prisma/client/runtime/library").Decimal | null;
             };
         } & {
             id: string;
@@ -290,52 +320,53 @@ export declare class DathangService {
             dathangId: string;
             gianhap: import("@prisma/client/runtime/library").Decimal;
         })[];
-        kho: {
-            id: string;
-            ghichu: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            diachi: string | null;
-            sdt: string | null;
-            makho: string | null;
-            congtyId: string | null;
-        } | null;
-        nhacungcap: {
-            id: string;
-            ghichu: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            isshowvat: boolean;
-            name: string | null;
-            diachi: string | null;
-            sdt: string | null;
-            email: string | null;
-            tenfile: string | null;
-            mancc: string;
-            manccold: string | null;
-        } | null;
     } & {
         id: string;
         title: string | null;
         type: string | null;
+        madncc: string | null;
+        ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         ghichu: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
-        printCount: number | null;
+        nhacungcapId: string | null;
         order: number | null;
         isActive: boolean;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        printCount: number | null;
         createdAt: Date;
         updatedAt: Date | null;
-        lydohuy: string | null;
         subtitle: string | null;
-        madncc: string | null;
         khoId: string | null;
-        ngaynhan: Date | null;
-        nhacungcapId: string | null;
+        lydohuy: string | null;
     }) | {
         data: ({
+            kho: {
+                id: string;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                makho: string | null;
+                diachi: string | null;
+                sdt: string | null;
+                congtyId: string | null;
+            } | null;
+            nhacungcap: {
+                id: string;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string | null;
+                diachi: string | null;
+                sdt: string | null;
+                mancc: string;
+                manccold: string | null;
+                email: string | null;
+                isshowvat: boolean;
+                tenfile: string | null;
+            } | null;
             sanpham: ({
                 sanpham: {
                     id: string;
@@ -345,9 +376,7 @@ export declare class DathangService {
                     isActive: boolean;
                     createdAt: Date;
                     updatedAt: Date;
-                    vat: import("@prisma/client/runtime/library").Decimal | null;
                     subtitle: string | null;
-                    giaban: import("@prisma/client/runtime/library").Decimal;
                     title2: string | null;
                     slug: string | null;
                     masp: string;
@@ -358,6 +387,8 @@ export declare class DathangService {
                     soluong: import("@prisma/client/runtime/library").Decimal | null;
                     soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                     haohut: import("@prisma/client/runtime/library").Decimal;
+                    giaban: import("@prisma/client/runtime/library").Decimal;
+                    vat: import("@prisma/client/runtime/library").Decimal | null;
                 };
             } & {
                 id: string;
@@ -375,50 +406,24 @@ export declare class DathangService {
                 dathangId: string;
                 gianhap: import("@prisma/client/runtime/library").Decimal;
             })[];
-            kho: {
-                id: string;
-                ghichu: string | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
-                diachi: string | null;
-                sdt: string | null;
-                makho: string | null;
-                congtyId: string | null;
-            } | null;
-            nhacungcap: {
-                id: string;
-                ghichu: string | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                isshowvat: boolean;
-                name: string | null;
-                diachi: string | null;
-                sdt: string | null;
-                email: string | null;
-                tenfile: string | null;
-                mancc: string;
-                manccold: string | null;
-            } | null;
         } & {
             id: string;
             title: string | null;
             type: string | null;
+            madncc: string | null;
+            ngaynhan: Date | null;
+            ngaynhanEnd: Date | null;
             ghichu: string | null;
-            status: import(".prisma/client").$Enums.StatusDonhang;
-            printCount: number | null;
+            nhacungcapId: string | null;
             order: number | null;
             isActive: boolean;
+            status: import(".prisma/client").$Enums.StatusDonhang;
+            printCount: number | null;
             createdAt: Date;
             updatedAt: Date | null;
-            lydohuy: string | null;
             subtitle: string | null;
-            madncc: string | null;
             khoId: string | null;
-            ngaynhan: Date | null;
-            nhacungcapId: string | null;
+            lydohuy: string | null;
         })[];
         page: any;
         pageSize: any;
@@ -446,19 +451,20 @@ export declare class DathangService {
         id: string;
         title: string | null;
         type: string | null;
+        madncc: string | null;
+        ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         ghichu: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
-        printCount: number | null;
+        nhacungcapId: string | null;
         order: number | null;
         isActive: boolean;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        printCount: number | null;
         createdAt: Date;
         updatedAt: Date | null;
-        lydohuy: string | null;
         subtitle: string | null;
-        madncc: string | null;
         khoId: string | null;
-        ngaynhan: Date | null;
-        nhacungcapId: string | null;
+        lydohuy: string | null;
     }>;
     createbynhucau(dto: any): Promise<{
         sanpham: {
@@ -481,55 +487,58 @@ export declare class DathangService {
         id: string;
         title: string | null;
         type: string | null;
+        madncc: string | null;
+        ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         ghichu: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
-        printCount: number | null;
+        nhacungcapId: string | null;
         order: number | null;
         isActive: boolean;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        printCount: number | null;
         createdAt: Date;
         updatedAt: Date | null;
-        lydohuy: string | null;
         subtitle: string | null;
-        madncc: string | null;
         khoId: string | null;
-        ngaynhan: Date | null;
-        nhacungcapId: string | null;
+        lydohuy: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
         title: string | null;
         type: string | null;
+        madncc: string | null;
+        ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         ghichu: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
-        printCount: number | null;
+        nhacungcapId: string | null;
         order: number | null;
         isActive: boolean;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        printCount: number | null;
         createdAt: Date;
         updatedAt: Date | null;
-        lydohuy: string | null;
         subtitle: string | null;
-        madncc: string | null;
         khoId: string | null;
-        ngaynhan: Date | null;
-        nhacungcapId: string | null;
+        lydohuy: string | null;
     } | null>;
     remove(id: string): Promise<{
         id: string;
         title: string | null;
         type: string | null;
+        madncc: string | null;
+        ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         ghichu: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
-        printCount: number | null;
+        nhacungcapId: string | null;
         order: number | null;
         isActive: boolean;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        printCount: number | null;
         createdAt: Date;
         updatedAt: Date | null;
-        lydohuy: string | null;
         subtitle: string | null;
-        madncc: string | null;
         khoId: string | null;
-        ngaynhan: Date | null;
-        nhacungcapId: string | null;
+        lydohuy: string | null;
     }>;
     findByProductId(idSP: string): Promise<{
         sanpham: ({
@@ -541,9 +550,7 @@ export declare class DathangService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                vat: import("@prisma/client/runtime/library").Decimal | null;
                 subtitle: string | null;
-                giaban: import("@prisma/client/runtime/library").Decimal;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -554,6 +561,8 @@ export declare class DathangService {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
+                giaban: import("@prisma/client/runtime/library").Decimal;
+                vat: import("@prisma/client/runtime/library").Decimal | null;
             };
         } & {
             id: string;
@@ -578,9 +587,9 @@ export declare class DathangService {
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            makho: string | null;
             diachi: string | null;
             sdt: string | null;
-            makho: string | null;
             congtyId: string | null;
         } | null;
         nhacungcap: {
@@ -589,31 +598,32 @@ export declare class DathangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isshowvat: boolean;
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            email: string | null;
-            tenfile: string | null;
             mancc: string;
             manccold: string | null;
+            email: string | null;
+            isshowvat: boolean;
+            tenfile: string | null;
         } | null;
         id: string;
         title: string | null;
         type: string | null;
+        madncc: string | null;
+        ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         ghichu: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
-        printCount: number | null;
+        nhacungcapId: string | null;
         order: number | null;
         isActive: boolean;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        printCount: number | null;
         createdAt: Date;
         updatedAt: Date | null;
-        lydohuy: string | null;
         subtitle: string | null;
-        madncc: string | null;
         khoId: string | null;
-        ngaynhan: Date | null;
-        nhacungcapId: string | null;
+        lydohuy: string | null;
     }[]>;
     deletebulk(data: any): Promise<{
         total: number;

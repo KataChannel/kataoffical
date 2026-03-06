@@ -77,9 +77,6 @@ export class LoginComponent implements OnInit {
       if (token) {
         console.log('Token from URL:', token);
         this.validateToken(token); // Validate the token
-      } else {
-        this.router.navigate(['/admin/lienheadmin']);
-        console.error('Token not found in URL');
       }
     });
   }
@@ -117,33 +114,21 @@ export class LoginComponent implements OnInit {
         this._UserService.login(this.User).then((data:any) => {
           console.log(data);
           
-          if (data[0]) {
+          if (data && data[0]) {
             setTimeout(() => {
                 window.location.reload();
               }, 100); 
-          //  console.log(data);
-            // this.postMessage(data[1]);
-            // if (isPlatformBrowser(this.platformId)) {
-            //   this.postMessage(data[1]);
-            //   setTimeout(() => {
-            //     window.location.reload();
-            //   }, 100);    
-            // }
           }
-          else {
-        //     this._NotifierService.notify('error',data[1])
-        //  //   console.log(data);
-        //     this._spinner.hide();
-          }
+        }).catch(err => {
+          console.error('Login promise error:', err);
         });
       } catch (error) {
-        console.error('Login error:', error);
+        console.error('Login catch error:', error);
       }
-     
     }
     else
     {
-      //this._NotifierService.notify('error',"Vui lòng điền đủ thông tin")
+      alert("Vui lòng điền đủ Số điện thoại và Mật khẩu");
     }
 
   }

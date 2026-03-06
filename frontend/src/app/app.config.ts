@@ -96,7 +96,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig }, 
     provideServiceWorker('ngsw-worker.js', {
-            enabled: !isDevMode(),
+            enabled: true,
             registrationStrategy: 'registerWhenStable:30000'
           })
   ]

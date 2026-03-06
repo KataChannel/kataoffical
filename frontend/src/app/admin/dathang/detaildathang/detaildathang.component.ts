@@ -107,6 +107,7 @@ export class DetailDathangComponent {
           madncc: GenId(8, false),
           type: 'dathang',
           ngaynhan: moment().add(1, 'days').format('YYYY-MM-DD'),
+          ngaynhanEnd: moment().add(1, 'days').format('YYYY-MM-DD'),
         });
         this._ListdathangComponent.drawer.open();
         this.isEdit.update((value) => !value);
@@ -143,7 +144,8 @@ export class DetailDathangComponent {
     try {
       this.DetailDathang.update((v: any) => {
         v.sanpham = this.dataSource.data;
-        v.ngaynhan = moment(v.ngaygiao).format('YYYY-MM-DD');
+        v.ngaynhan = v.ngaynhan ? moment(v.ngaynhan).format('YYYY-MM-DD') : null;
+        v.ngaynhanEnd = v.ngaynhanEnd ? moment(v.ngaynhanEnd).format('YYYY-MM-DD') : null;
         return v;
       });
       await this._DathangService.CreateDathang(this.DetailDathang());
@@ -254,6 +256,8 @@ export class DetailDathangComponent {
           const { TonKho, ...rest } = item;
           return rest;
         });
+        v.ngaynhan = v.ngaynhan ? moment(v.ngaynhan).format('YYYY-MM-DD') : null;
+        v.ngaynhanEnd = v.ngaynhanEnd ? moment(v.ngaynhanEnd).format('YYYY-MM-DD') : null;
         return v;
       });
       console.log(this.DetailDathang());

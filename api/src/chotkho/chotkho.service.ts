@@ -153,7 +153,7 @@ export class ChotkhoService {
         this.notificationService.sendNotificationToUser(inventoryData.userId, {
           title: 'Cập nhật tồn kho',
           body: `Quá trình tạo chốt kho ${transactionResult.data.title} đã hoàn thành.`,
-          url: '/admin/stock' // Optional, can be adjusted according to frontend routes
+          url: `/admin/chotkho/${transactionResult.data.id}` // Optional, can be adjusted according to frontend routes
         }).catch(err => console.error('Error sending push notification:', err));
       }
 
@@ -560,7 +560,7 @@ export class ChotkhoService {
         this.notificationService.sendNotificationToUser(transactionResult.userId, {
           title: 'Cập nhật tồn kho (Sửa đổi)',
           body: `Quá trình cập nhật chốt kho đã hoàn thành.`,
-          url: '/admin/stock'
+          url: `/admin/chotkho/${transactionResult.id}`
         }).catch(err => console.error('Error sending push notification:', err));
       }
 

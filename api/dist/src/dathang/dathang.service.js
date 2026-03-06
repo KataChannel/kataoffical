@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DathangService = void 0;
 const common_1 = require("@nestjs/common");
 const schedule_1 = require("@nestjs/schedule");
-const prisma_service_1 = require("prisma/prisma.service");
+const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
 const status_machine_service_1 = require("../common/status-machine.service");
 const tonkho_manager_service_1 = require("../common/tonkho-manager.service");
@@ -454,6 +454,7 @@ let DathangService = class DathangService {
                     type: dto.type,
                     madncc: madathang,
                     ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
+                    ngaynhanEnd: dto.ngaynhanEnd ? new Date(dto.ngaynhanEnd) : null,
                     nhacungcapId: nhacungcap.id,
                     khoId: dto.khoId,
                     isActive: dto.isActive !== undefined ? dto.isActive : true,
@@ -513,6 +514,7 @@ let DathangService = class DathangService {
                     type: dto.type,
                     madncc: madathang,
                     ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
+                    ngaynhanEnd: dto.ngaynhanEnd ? new Date(dto.ngaynhanEnd) : null,
                     nhacungcapId: nhacungcap.id,
                     khoId: dto.khoId,
                     isActive: dto.isActive !== undefined ? dto.isActive : true,
@@ -602,6 +604,7 @@ let DathangService = class DathangService {
                         title: data.title,
                         type: data.type,
                         ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+                        ngaynhanEnd: data.ngaynhanEnd ? new Date(data.ngaynhanEnd) : undefined,
                         nhacungcapId: data.nhacungcapId,
                         khoId: khoId,
                         isActive: data.isActive,
@@ -709,6 +712,7 @@ let DathangService = class DathangService {
                         title: data.title,
                         type: data.type,
                         ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+                        ngaynhanEnd: data.ngaynhanEnd ? new Date(data.ngaynhanEnd) : undefined,
                         nhacungcapId: data.nhacungcapId,
                         khoId: khoId,
                         isActive: data.isActive,
@@ -978,6 +982,7 @@ let DathangService = class DathangService {
                         title: data.title,
                         type: data.type,
                         ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+                        ngaynhanEnd: data.ngaynhanEnd ? new Date(data.ngaynhanEnd) : undefined,
                         nhacungcapId: data.nhacungcapId,
                         khoId: khoId,
                         isActive: data.isActive,
@@ -1214,6 +1219,7 @@ let DathangService = class DathangService {
                         title: data.title,
                         type: data.type,
                         ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+                        ngaynhanEnd: data.ngaynhanEnd ? new Date(data.ngaynhanEnd) : undefined,
                         nhacungcapId: data.nhacungcapId,
                         khoId: khoId,
                         isActive: data.isActive,

@@ -12,8 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DathangService = void 0;
 const common_1 = require("@nestjs/common");
 const moment = require("moment-timezone");
-const prisma_service_1 = require("prisma/prisma.service");
-const importdata_service_1 = require("src/importdata/importdata.service");
+const prisma_service_1 = require("../../prisma/prisma.service");
+const importdata_service_1 = require("../importdata/importdata.service");
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 let DathangService = class DathangService {
     constructor(prisma, _ImportdataService) {

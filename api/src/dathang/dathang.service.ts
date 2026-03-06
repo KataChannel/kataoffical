@@ -523,6 +523,7 @@ async convertDathangImportToTransfer(
           type: dto.type,
           madncc: madathang,
           ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
+          ngaynhanEnd: dto.ngaynhanEnd ? new Date(dto.ngaynhanEnd) : null,
           nhacungcapId: nhacungcap.id,
           khoId: dto.khoId, // Add khoId
           isActive: dto.isActive !== undefined ? dto.isActive : true,
@@ -590,6 +591,7 @@ async convertDathangImportToTransfer(
           type: dto.type,
           madncc: madathang,
           ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
+          ngaynhanEnd: dto.ngaynhanEnd ? new Date(dto.ngaynhanEnd) : null,
           nhacungcapId: nhacungcap.id,
           khoId: dto.khoId, // Add khoId
           isActive: dto.isActive !== undefined ? dto.isActive : true,
@@ -700,6 +702,7 @@ async convertDathangImportToTransfer(
             title: data.title,
             type: data.type,
             ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+            ngaynhanEnd: data.ngaynhanEnd ? new Date(data.ngaynhanEnd) : undefined,
             nhacungcapId: data.nhacungcapId,
             khoId: khoId, // Update khoId
             isActive: data.isActive,
@@ -823,6 +826,7 @@ async convertDathangImportToTransfer(
             title: data.title,
             type: data.type,
             ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+            ngaynhanEnd: data.ngaynhanEnd ? new Date(data.ngaynhanEnd) : undefined,
             nhacungcapId: data.nhacungcapId,
             khoId: khoId, // Update khoId
             isActive: data.isActive,
@@ -1139,6 +1143,7 @@ async convertDathangImportToTransfer(
           title: data.title,
           type: data.type,
           ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+          ngaynhanEnd: data.ngaynhanEnd ? new Date(data.ngaynhanEnd) : undefined,
           nhacungcapId: data.nhacungcapId,
           khoId: khoId, // Update khoId
           isActive: data.isActive,
@@ -1407,6 +1412,7 @@ async convertDathangImportToTransfer(
             title: data.title,
             type: data.type,
             ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+            ngaynhanEnd: data.ngaynhanEnd ? new Date(data.ngaynhanEnd) : undefined,
             nhacungcapId: data.nhacungcapId,
             khoId: khoId,
             isActive: data.isActive,

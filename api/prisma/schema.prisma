@@ -392,6 +392,7 @@ model Dathang {
   type         String?
   madncc       String?          @unique
   ngaynhan     DateTime?
+  ngaynhanEnd  DateTime?
   ghichu       String?
   nhacungcapId String?
   order        Int?

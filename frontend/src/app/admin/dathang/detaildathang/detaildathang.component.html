@@ -74,17 +74,10 @@
           </mat-select>
         </mat-form-field> -->
 
-        <!-- <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-          <mat-label>Ngày Giao Hàng</mat-label>
-          <input matInput [matDatepicker]="datepicker" [(ngModel)]="DetailDathang().ngaygiao" [ngModelOptions]="{ standalone: true }" />
-          <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
-          <mat-datepicker #datepicker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-full lg:col-span-3" subscriptSizing="dynamic">
+        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
           <mat-label>Ghi Chú Đơn Hàng</mat-label>  
-          <textarea matInput [(ngModel)]="DetailDathang().ghichu" [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Ghi Chú"></textarea>   
-       </mat-form-field> -->
+          <textarea matInput [(ngModel)]="DetailDathang().ghichu" [disabled]="!isEdit()" [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Ghi Chú"></textarea>   
+       </mat-form-field>
       </div>
 
       <!-- <div class="w-full flex items-start"><strong>Địa Chỉ : </strong> {{DetailDathang()?.nhacungcap?.diachi}}</div>
@@ -101,6 +94,17 @@
                   <input matInput [(ngModel)]="DetailDathang().madncc"  [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Mã Đặt Hàng" />
               </mat-form-field>  -->
 
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Khoảng Ngày Nhận</mat-label>
+          <mat-date-range-input [rangePicker]="picker" [disabled]="!isEdit()">
+            <input matStartDate [(ngModel)]="DetailDathang().ngaynhan" [ngModelOptions]="{ standalone: true }" placeholder="Từ ngày" />
+            <input matEndDate [(ngModel)]="DetailDathang().ngaynhanEnd" [ngModelOptions]="{ standalone: true }" placeholder="Đến ngày" />
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+        
+        
               <mat-form-field appearance="outline" subscriptSizing="dynamic">
                 <mat-label>Nhà Cung Cấp</mat-label>
                 <mat-select [(ngModel)]="DetailDathang().nhacungcapId" [ngModelOptions]="{ standalone: true }"

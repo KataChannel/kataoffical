@@ -247,7 +247,17 @@ export class AdminmainComponent {
 
   async toggleNotifications(event: any) {
     if (!this.swPush.isEnabled) {
-      this._snackBar.open('Trình duyệt không hỗ trợ thông báo đẩy.', 'Đóng', { duration: 3000 });
+      const isSecureContext = window.isSecureContext;
+      const message = isSecureContext 
+        ? 'Tính năng thông báo đang bị tắt trong cấu hình hoặc Service Worker chưa sẵn sàng.' 
+        : 'Thông báo đẩy yêu cầu kết nối bảo mật (HTTPS) hoặc Localhost.';
+      
+      this._snackBar.open(message, 'Đóng', { 
+        duration: 5000,
+        panelClass: ['snackbar-warning'],
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      });
       return;
     }
 

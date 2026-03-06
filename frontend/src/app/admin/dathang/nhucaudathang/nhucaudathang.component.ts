@@ -1079,13 +1079,14 @@ export class NhucaudathangComponent {
         }
 
         // Validate và transform dữ liệu
-        const validData: Array<{ masp: string; slton: number }> = [];
+        const validData: Array<{ masp: string; slton: number; slhuy: number }> = [];
         const errors: string[] = [];
         console.log(excelData);
 
         excelData.forEach((row: any, index: number) => {
           const masp = row.masp?.toString().trim() || row.ITEMCODE?.toString().trim();
           let slton = parseFloat(row.slton || row.QUANTITY || '0');
+          let slhuy = parseFloat(row.slhuy || '0');
 
           // Validate required fields
           if (!masp) {
@@ -1101,8 +1102,12 @@ export class NhucaudathangComponent {
               })`
             );
           }
+          
+          if (isNaN(slhuy) || slhuy == null || slhuy < 0) {
+            slhuy = 0;
+          }
 
-          validData.push({ masp, slton });
+          validData.push({ masp, slton, slhuy });
         });
 
         if (errors.length > 0) {
@@ -1161,7 +1166,7 @@ export class NhucaudathangComponent {
         const sanphamMap = new Map(allSanpham.map((sp: any) => [sp.masp, sp]));
 
         const processErrors: string[] = [];
-        const validDataMap = new Map(validData.map(item => [item.masp, item.slton]));
+        const validDataMap = new Map(validData.map(item => [item.masp, { slton: item.slton, slhuy: item.slhuy }]));
 
         const phieuNhapDetails: any[] = [];
         const phieuXuatDetails: any[] = [];
@@ -1174,7 +1179,10 @@ export class NhucaudathangComponent {
         // ================================================================
         const danhSachCanhBao: StockWarningItem[] = [];
 
-        for (const [masp, slton] of validDataMap.entries()) {
+        for (const [masp, parsedData] of validDataMap.entries()) {
+          const slton = parsedData.slton;
+          const slhuy = parsedData.slhuy;
+          
           const tonkho = tonkhoMap.get(masp);
           const sanpham = sanphamMap.get(masp);
 
@@ -1200,13 +1208,13 @@ export class NhucaudathangComponent {
           }
 
           // ✅ FIX: Luôn thêm vào danh sách thay đổi với giá trị tuyệt đối (kể cả unchanged để sync)
-          if (slton !== currentSltontt) {
+          if (slton !== currentSltontt || slhuy > 0) {
             allChangedDetails.push({
               sanphamId: sanpham.id,
               sltonhethong: currentSltontt, // Giá trị cũ
               sltonthucte: slton, // Giá trị mới (từ Excel)
-              slhuy: 0,
-              ghichu: slton > currentSltontt ? 'Điều chỉnh tăng từ Excel' : 'Điều chỉnh giảm từ Excel',
+              slhuy: slhuy,
+              ghichu: slton > currentSltontt ? 'Điều chỉnh tăng từ Excel' : (slton < currentSltontt ? 'Điều chỉnh giảm từ Excel' : 'Cập nhật từ Excel'),
             });
           }
 
@@ -1376,6 +1384,7 @@ export class NhucaudathangComponent {
       masp: 'masp',
       title: 'title',
       slton: 'slton',
+      slhuy: 'slhuy',
     };
     const Sanphams = await this._GraphqlService.findAll('sanpham', {
       take: 999999,
@@ -1394,6 +1403,7 @@ export class NhucaudathangComponent {
       masp: sp.masp || '',
       title: sp.title || '',
       slton: sp.TonKho?.slton || 0,
+      slhuy: 0,
     }));
     // Tạo file Excel với dữ liệu mẫu
     writeExcelFile(

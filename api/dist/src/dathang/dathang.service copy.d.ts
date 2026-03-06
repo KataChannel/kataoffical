@@ -38,6 +38,7 @@ export declare class DathangService {
         madncc: string | null;
         khoId: string | null;
         ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
     }[]>;
     findOne(id: string): Promise<{
@@ -100,6 +101,7 @@ export declare class DathangService {
         madncc: string | null;
         khoId: string | null;
         ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
     }>;
     create(data: any): Promise<{
@@ -135,6 +137,7 @@ export declare class DathangService {
         madncc: string | null;
         khoId: string | null;
         ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
     }>;
     createbynhucau(data: any): Promise<{
@@ -170,6 +173,7 @@ export declare class DathangService {
         madncc: string | null;
         khoId: string | null;
         ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
     }>;
     update(id: string, data: any): Promise<{
@@ -205,6 +209,7 @@ export declare class DathangService {
         madncc: string | null;
         khoId: string | null;
         ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
     }>;
     remove(id: string): Promise<{
@@ -223,6 +228,7 @@ export declare class DathangService {
         madncc: string | null;
         khoId: string | null;
         ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
     }>;
 }

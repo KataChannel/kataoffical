@@ -14,7 +14,7 @@ exports.DonhangCronService = void 0;
 const common_1 = require("@nestjs/common");
 const schedule_1 = require("@nestjs/schedule");
 const moment = require("moment-timezone");
-const prisma_service_1 = require("prisma/prisma.service");
+const prisma_service_1 = require("../../prisma/prisma.service");
 let DonhangCronService = DonhangCronService_1 = class DonhangCronService {
     constructor(prisma) {
         this.prisma = prisma;

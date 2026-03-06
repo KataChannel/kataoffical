@@ -167,14 +167,14 @@
                     </span>
                   }
                   @case ('slhuy') {
-                    <div *ngIf="isEdit()"
+                    <div *ngIf="isEdit() && _UserService.hasPermission('slhuyedit')"
                          [contentEditable]="true"
                          (blur)="updateValue($event, idx, row, 'slhuy', 'number')"
                          (keydown.enter)="updateValue($event, idx, row, 'slhuy', 'number')"
                          class="slhuy-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none cursor-text">
                       {{ row[column] || 0 | number:'1.0-3' }}
                     </div>
-                    <span *ngIf="!isEdit()" class="max-w-20 line-clamp-4">
+                    <span *ngIf="!isEdit() || !_UserService.hasPermission('slhuyedit')" class="max-w-20 line-clamp-4">
                       {{ row[column] | number:'1.0-3' }}
                     </span>
                   }

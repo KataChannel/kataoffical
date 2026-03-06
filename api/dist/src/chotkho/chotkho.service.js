@@ -121,7 +121,7 @@ let ChotkhoService = class ChotkhoService {
                 this.notificationService.sendNotificationToUser(inventoryData.userId, {
                     title: 'Cập nhật tồn kho',
                     body: `Quá trình tạo chốt kho ${transactionResult.data.title} đã hoàn thành.`,
-                    url: '/admin/stock'
+                    url: `/admin/chotkho/${transactionResult.data.id}`
                 }).catch(err => console.error('Error sending push notification:', err));
             }
             return transactionResult;
@@ -472,7 +472,7 @@ let ChotkhoService = class ChotkhoService {
                 this.notificationService.sendNotificationToUser(transactionResult.userId, {
                     title: 'Cập nhật tồn kho (Sửa đổi)',
                     body: `Quá trình cập nhật chốt kho đã hoàn thành.`,
-                    url: '/admin/stock'
+                    url: `/admin/chotkho/${transactionResult.id}`
                 }).catch(err => console.error('Error sending push notification:', err));
             }
             return transactionResult;

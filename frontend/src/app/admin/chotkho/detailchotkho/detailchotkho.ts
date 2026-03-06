@@ -24,6 +24,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
 import { SanphamService } from '../../sanpham/sanpham.service';
 import * as XLSX from 'xlsx';
 import * as XLSXStyle from 'xlsx-js-style';
+import { UserService } from '../../user/user.service';
   @Component({
     selector: 'app-detailchotkho',
     imports: [
@@ -53,6 +54,7 @@ import * as XLSXStyle from 'xlsx-js-style';
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
     _dialog:MatDialog = inject(MatDialog)
+    _UserService:UserService = inject(UserService)
     
     @ViewChild(MatSort) sort!: MatSort;
     

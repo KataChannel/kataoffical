@@ -185,6 +185,7 @@ export declare class CancelOrderService {
         madncc: string | null;
         khoId: string | null;
         ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
     })[]>;
 }

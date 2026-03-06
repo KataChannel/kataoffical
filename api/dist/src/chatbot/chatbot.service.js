@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChatbotService = void 0;
 const generative_ai_1 = require("@google/generative-ai");
 const common_1 = require("@nestjs/common");
-const prisma_service_1 = require("prisma/prisma.service");
+const prisma_service_1 = require("../../prisma/prisma.service");
 let ChatbotService = class ChatbotService {
     constructor(prisma) {
         this.prisma = prisma;

@@ -171,6 +171,7 @@ export declare class CancelOrderController {
         madncc: string | null;
         khoId: string | null;
         ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
     })[]>;
     getCanceledDathang(skip?: string, take?: string, startDate?: string, endDate?: string): Promise<({
@@ -340,6 +341,7 @@ export declare class CancelOrderController {
         madncc: string | null;
         khoId: string | null;
         ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
     })[]>;
 }
