@@ -11,7 +11,7 @@ const common_1 = require("@nestjs/common");
 const nhanvien_service_1 = require("./nhanvien.service");
 const nhanvien_controller_1 = require("./nhanvien.controller");
 const nhanvien_resolver_1 = require("./nhanvien.resolver");
-const prisma_module_1 = require("../../prisma/prisma.module");
+const prisma_module_1 = require("prisma/prisma.module");
 const auth_module_1 = require("../auth/auth.module");
 let NhanvienModule = class NhanvienModule {
 };

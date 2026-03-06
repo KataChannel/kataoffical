@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Param, Delete, Patch, UseGuards } from '@nestjs/common';
 import { RoleService } from './role.service';
-import { Audit } from 'src/auditlog/audit.decorator';
+import { Audit } from '../auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 @Controller('role')
 export class RoleController {
   constructor(private readonly rolesService: RoleService) {}

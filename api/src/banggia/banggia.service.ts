@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ImportdataService } from 'src/importdata/importdata.service';
-import { SocketGateway } from 'src/socket.gateway';
+import { ImportdataService } from '../importdata/importdata.service';
+import { SocketGateway } from '../socket.gateway';
 import { BanggiaPriceHistoryService } from './banggia-price-history.service';
 
 @Injectable()

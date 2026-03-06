@@ -1,5 +1,5 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { SocketGateway } from 'src/socket.gateway';
+import { SocketGateway } from '../socket.gateway';
 export declare class UserService {
     private prisma;
     private _SocketGateway;

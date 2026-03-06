@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from 'prisma/prisma.service';
-import { ImportdataService } from 'src/importdata/importdata.service';
-import { StatusMachineService } from 'src/common/status-machine.service';
-import { TonkhoManagerService } from 'src/common/tonkho-manager.service';
+import { ImportdataService } from '../importdata/importdata.service';
+import { StatusMachineService } from '../common/status-machine.service';
+import { TonkhoManagerService } from '../common/tonkho-manager.service';
 import { PerformanceLogger } from '../shared/performance-logger';
 
 @Injectable()

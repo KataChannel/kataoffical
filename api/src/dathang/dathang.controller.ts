@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, Res, UseGuards } from '@nestjs/common';
 import { DathangService } from './dathang.service';
 import { AuditAction } from '@prisma/client';
-import { Audit } from 'src/auditlog/audit.decorator';
+import { Audit } from '../auditlog/audit.decorator';
 import { Response } from 'express';
 import { Cache } from '../common/cache.interceptor';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('dathang')
 export class DathangController {

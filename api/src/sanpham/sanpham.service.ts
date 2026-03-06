@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
-import { ImportdataService } from 'src/importdata/importdata.service';
-import { SocketGateway } from 'src/socket.gateway';
+import { ErrorlogsService } from '../errorlogs/errorlogs.service';
+import { ImportdataService } from '../importdata/importdata.service';
+import { SocketGateway } from '../socket.gateway';
 
 @Injectable()
 export class SanphamService {

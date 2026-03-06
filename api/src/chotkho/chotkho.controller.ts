@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { ChotkhoService } from './chotkho.service'; 
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
-import { Audit } from 'src/auditlog/audit.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'; 
+import { Audit } from '../auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
 import { Cache, CacheInvalidate } from '../common/cache.interceptor';
 import { SmartCache } from '../common/smart-cache.decorator';

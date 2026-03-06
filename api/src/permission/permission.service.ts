@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service'; // Giả sử đường dẫn này là cố định
 import { SocketGateway } from './socket.gateway'; // Nằm trong cùng thư mục module
-import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
+import { ErrorlogsService } from '../errorlogs/errorlogs.service';
 
 @Injectable()
 export class PermissionService {

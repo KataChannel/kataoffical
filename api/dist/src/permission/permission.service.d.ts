@@ -1,6 +1,6 @@
 import { PrismaService } from 'prisma/prisma.service';
 import { SocketGateway } from './socket.gateway';
-import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
+import { ErrorlogsService } from '../errorlogs/errorlogs.service';
 export declare class PermissionService {
     private readonly prisma;
     private _SocketGateway;

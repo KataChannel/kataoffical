@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 const core_1 = require("@nestjs/core");
+const graphql_1 = require("@nestjs/graphql");
 const auditlog_service_1 = require("../auditlog/auditlog.service");
 const audit_decorator_1 = require("./audit.decorator");
 let AuditInterceptor = class AuditInterceptor {
@@ -26,13 +27,21 @@ let AuditInterceptor = class AuditInterceptor {
         if (!auditConfig) {
             return next.handle();
         }
-        const request = context.switchToHttp().getRequest();
+        let request;
+        if (context.getType() === 'http') {
+            request = context.switchToHttp().getRequest();
+        }
+        else if (context.getType() === 'graphql') {
+            const gqlContext = graphql_1.GqlExecutionContext.create(context);
+            request = gqlContext.getContext().req;
+        }
+        request = request || {};
         const startTime = Date.now();
         return next.handle().pipe((0, operators_1.tap)(async (result) => {
             try {
                 const dynamicConfig = request.auditConfig || {};
                 if (!request.user?.id) {
-                    console.warn(`AUDIT WARNING: Action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
+                    console.warn(`AUDIT WARNING: Action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url || 'GraphQL'}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
                 }
                 await this.auditService.logActivity({
                     entityName: auditConfig.entity,
@@ -63,7 +72,7 @@ let AuditInterceptor = class AuditInterceptor {
         }), (0, operators_1.catchError)((error) => {
             const dynamicConfig = request.auditConfig || {};
             if (!request.user?.id) {
-                console.warn(`AUDIT WARNING: Error in action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url}, Error: ${error.message}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
+                console.warn(`AUDIT WARNING: Error in action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url || 'GraphQL'}, Error: ${error.message}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
             }
             this.auditService.logActivity({
                 entityName: auditConfig.entity,

@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { SocketGateway } from './socket.gateway';
-import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
+import { ErrorlogsService } from '../errorlogs/errorlogs.service';
 
 @Injectable()
 export class UserguideService {

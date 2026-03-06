@@ -10,13 +10,11 @@ exports.MinioModule = void 0;
 const common_1 = require("@nestjs/common");
 const minio_controller_1 = require("./minio.controller");
 const minio_service_1 = require("./minio.service");
-const prisma_module_1 = require("../../prisma/prisma.module");
 let MinioModule = class MinioModule {
 };
 exports.MinioModule = MinioModule;
 exports.MinioModule = MinioModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
         controllers: [minio_controller_1.MinioController],
         providers: [minio_service_1.MinioService],
         exports: [minio_service_1.MinioService],

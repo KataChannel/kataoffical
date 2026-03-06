@@ -3,8 +3,8 @@ import { UserguideService } from './userguide.service';
 import { UserguideController } from './userguide.controller';
 import { PrismaModule } from 'prisma/prisma.module';
 import { SocketGateway } from './socket.gateway';
-import { ErrorlogsModule } from 'src/errorlogs/errorlogs.module';
-import { AuthModule } from 'src/auth/auth.module';
+import { ErrorlogsModule } from '../errorlogs/errorlogs.module';
+import { AuthModule } from '../auth/auth.module';
 @Module({
   imports: [AuthModule,PrismaModule, ErrorlogsModule],
   controllers: [UserguideController],

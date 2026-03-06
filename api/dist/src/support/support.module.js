@@ -11,7 +11,6 @@ const common_1 = require("@nestjs/common");
 const support_service_1 = require("./support.service");
 const support_resolver_1 = require("./support.resolver");
 const support_upload_controller_1 = require("./support-upload.controller");
-const prisma_service_1 = require("../../prisma/prisma.service");
 const auth_module_1 = require("../auth/auth.module");
 const minio_service_1 = require("../minio/minio.service");
 let SupportModule = class SupportModule {
@@ -21,7 +20,7 @@ exports.SupportModule = SupportModule = __decorate([
     (0, common_1.Module)({
         imports: [auth_module_1.AuthModule],
         controllers: [support_upload_controller_1.SupportUploadController],
-        providers: [support_resolver_1.SupportResolver, support_service_1.SupportService, prisma_service_1.PrismaService, minio_service_1.MinioService],
+        providers: [support_resolver_1.SupportResolver, support_service_1.SupportService, minio_service_1.MinioService],
         exports: [support_service_1.SupportService],
     })
 ], SupportModule);

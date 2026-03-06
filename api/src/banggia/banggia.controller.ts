@@ -13,8 +13,8 @@ import {
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { BanggiaService } from './banggia.service';
 import { AuditAction } from '@prisma/client';
-import { Audit } from 'src/auditlog/audit.decorator';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Audit } from '../auditlog/audit.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('banggia')
 @Controller('banggia')

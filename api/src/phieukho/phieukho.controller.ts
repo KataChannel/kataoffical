@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, Query, UseGuards } from '@nestjs/common';
 import { PhieukhoService } from './phieukho.service';
-import { Audit } from 'src/auditlog/audit.decorator';
+import { Audit } from '../auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
 import { Cache, CacheInvalidate } from '../common/cache.interceptor';
 import { SmartCache } from '../common/smart-cache.decorator';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 @Controller('phieukho')
 export class PhieukhoController {
   constructor(private readonly phieukhoService: PhieukhoService) {}

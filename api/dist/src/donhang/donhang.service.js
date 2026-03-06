@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DonhangService = void 0;
 const common_1 = require("@nestjs/common");
 const moment = require("moment-timezone");
-const prisma_service_1 = require("../../prisma/prisma.service");
+const prisma_service_1 = require("prisma/prisma.service");
 const status_machine_service_1 = require("../common/status-machine.service");
 const tonkho_manager_service_1 = require("../common/tonkho-manager.service");
 const performance_logger_1 = require("../shared/performance-logger");

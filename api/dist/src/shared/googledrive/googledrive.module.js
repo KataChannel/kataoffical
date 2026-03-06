@@ -8,7 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GoogledriveModule = void 0;
 const common_1 = require("@nestjs/common");
-const prisma_module_1 = require("../../../prisma/prisma.module");
+const prisma_module_1 = require("prisma/prisma.module");
 const googledrive_controller_1 = require("./googledrive.controller");
 const googledrive_service_1 = require("./googledrive.service");
 const chatbot_module_1 = require("../../chatbot/chatbot.module");

@@ -12,7 +12,6 @@ const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
 const user_permission_service_1 = require("./user-permission.service");
 const user_permission_controller_1 = require("./user-permission.controller");
-const prisma_service_1 = require("../../prisma/prisma.service");
 const auth_module_1 = require("../auth/auth.module");
 let UserPermissionModule = class UserPermissionModule {
 };
@@ -28,7 +27,7 @@ exports.UserPermissionModule = UserPermissionModule = __decorate([
             auth_module_1.AuthModule,
         ],
         controllers: [user_permission_controller_1.UserPermissionController],
-        providers: [user_permission_service_1.UserPermissionService, prisma_service_1.PrismaService],
+        providers: [user_permission_service_1.UserPermissionService],
         exports: [user_permission_service_1.UserPermissionService],
     })
 ], UserPermissionModule);

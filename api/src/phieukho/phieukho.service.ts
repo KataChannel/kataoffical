@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ImportdataService } from 'src/importdata/importdata.service';
-import { convertXuatnhapton } from 'src/shared/utils/xuatnhapton.utils';
+import { ImportdataService } from '../importdata/importdata.service';
+import { convertXuatnhapton } from '../shared/utils/xuatnhapton.utils';
 
 @Injectable()
 export class PhieukhoService {

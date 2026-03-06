@@ -21,9 +21,10 @@ echo "4. Nhân bản Database (Copy từ rausachfinal -> testdata trên Server)"
 echo "5. Phục hồi (Restore) dữ liệu Backup từ máy lên Docker Local"
 echo "6. ⚡ Tối ưu hóa Tất cả Sản phẩm (Khớp lệnh hàng loạt)"
 echo "7. 🧹 Dọn dẹp Database (Xóa Log & Tối ưu lưu trữ)"
+echo "8. 🔧 Sửa lỗi 'too many open files' (Tăng giới hạn inotify)"
 echo "0. Thoát"
 echo "-----------------------------------"
-read -p "Vui lòng chọn chức năng (0-7): " choice
+read -p "Vui lòng chọn chức năng (0-8): " choice
 
 case $choice in
     1)
@@ -89,6 +90,17 @@ case $choice in
         fi
         exit 0
         ;;
+    8)
+        echo "=> 🔧 Tiến hành Sửa lỗi 'too many open files'..."
+        sudo sysctl -w fs.inotify.max_user_watches=524288
+        sudo sysctl -w fs.inotify.max_user_instances=512
+        if [ $? -eq 0 ]; then
+            echo "🎉 Đã tăng giới hạn inotify thành công! Bạn có thể chạy lại lựa chọn 1."
+        else
+            echo "❌ Có lỗi xảy ra khi thực hiện lệnh sudo."
+        fi
+        exit 0
+        ;;
     0)
         echo "👋 Đã thoát."
         exit 0
@@ -103,7 +115,7 @@ echo "-----------------------------------"
 echo "Đang khởi động Server Backend và Frontend..."
 
 # Chạy API trong background subshell để không đổi đường dẫn của script gốc
-(cd api && npx bun start) &
+(cd api && bun start) &
 API_PID=$!
 
 # Chạy Frontend (đường dẫn vẫn ở thư mục gốc)

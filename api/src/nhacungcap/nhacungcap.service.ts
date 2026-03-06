@@ -5,7 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ImportdataService } from 'src/importdata/importdata.service';
+import { ImportdataService } from '../importdata/importdata.service';
 
 @Injectable()
 export class NhacungcapService {

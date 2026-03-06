@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { ImportdataService } from './importdata.service'; 
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'; 
 import { AuditAction } from '@prisma/client';
-import { Audit } from 'src/auditlog/audit.decorator';
+import { Audit } from '../auditlog/audit.decorator';
 @ApiTags('importdata') 
 @Controller('importdata') 
 export class ImportdataController { 

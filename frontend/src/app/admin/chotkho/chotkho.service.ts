@@ -174,81 +174,54 @@ export class ChotkhoService {
   async createChotkhoWithDetails(data: ChotkhoCreateData) {
     try {
       this.isLoading.set(true);
-      const newChotkho: any = await this.ChotkhoCodeId();
       const currentUserId = data.userId || (await this.getCurrentUserId());
-      
-      // Prepare nested create data with master and details in one operation
-      const nestedCreateData = {
-        ngaychot: data.ngaychot,
-        title: data.title,
-        ghichu: data.ghichu,
-        userId: currentUserId,
-        codeId: newChotkho.codeId,
-        order: newChotkho.newOrder,
-        details: {
-          create: data.details && data.details.length > 0 
-            ? data.details.map((detail) => ({
-                sanphamId: detail.sanphamId,
-                userId: currentUserId,
-                sltonhethong: detail.sltonhethong || 0,
-                sltonthucte: detail.sltonthucte || 0,
-                slhuy: detail.slhuy || 0,
-                chenhlech: this.calculateChenhLech(
-                  detail.sltonhethong || 0,
-                  detail.sltonthucte || 0,
-                  detail.slhuy || 0
-                ),
-                ghichu: detail.ghichu || '',
-              }))
-            : []
+
+      const detailsData = data.details && data.details.length > 0
+        ? data.details.map((detail) => ({
+          sanphamId: detail.sanphamId,
+          sltonhethong: detail.sltonhethong || 0,
+          sltonthucte: detail.sltonthucte || 0,
+          slhuy: detail.slhuy || 0,
+          ghichu: detail.ghichu || '',
+        }))
+        : [];
+
+      const mutation = gql`
+        mutation ChotkhoCreate($data: JSON!) {
+          chotkhoCreate(data: $data)
+        }
+      `;
+
+      const variables = {
+        data: {
+          ngaychot: data.ngaychot,
+          title: data.title,
+          ghichu: data.ghichu,
+          khoId: data.khoId,
+          userId: currentUserId,
+          details: detailsData
         }
       };
 
-      // Create master record with nested details in single transaction
-      const masterResult = await this.graphqlService.createOne(
-        this.modelName,
-        nestedCreateData,
-        {
-          select: {
-            id: true,
-            ngaychot: true,
-            title: true,
-            ghichu: true,
-            userId: true,
-            codeId: true,
-            order: true,
-            details: {
-              select: {
-                id: true,
-                sanphamId: true,
-                sltonhethong: true,
-                sltonthucte: true,
-                slhuy: true,
-                chenhlech: true,
-                ghichu: true,
-              }
-            }
-          },
-        }
+      const result = await firstValueFrom(
+        this.apollo.mutate<any>({
+          mutation,
+          variables,
+        })
       );
 
-      if (!masterResult || !masterResult.id) {
-        this.showErrorMessage('Lỗi khi tạo chốt kho');
+      const masterResult = result.data?.chotkhoCreate;
+
+      if (!masterResult || !masterResult.success) {
+        this.showErrorMessage(masterResult?.message || 'Lỗi khi tạo chốt kho');
         return false;
       }
-      // ✅ FIX: Await all TonKho updates properly (was fire-and-forget before)
-      await Promise.all(masterResult.details.map(async (v:any)=>{
-        // Perform any necessary operations on each detail
-      await this.graphqlService.updateOne('tonkho',{sanphamId:v.sanphamId},{
-            slton: v.sltonthucte || 0 ,
-            sltontt: v.sltonthucte || 0 ,
-        })
-      }));
+
       console.log('Chốt kho đã được tạo thành công:', masterResult);
-      
-      this.showSuccessMessage(`Tạo chốt kho thành công với ${masterResult.details?.length || 0} chi tiết`);
+
+      this.showSuccessMessage(masterResult.message || `Tạo chốt kho thành công`);
       await this.getAllChotkho();
-      return masterResult;
+      return masterResult.data;
     } catch (error) {
       console.error('Error creating chotkho with details:', error);
       this.showErrorMessage('Lỗi khi tạo chốt kho');
@@ -256,8 +229,8 @@ export class ChotkhoService {
     } finally {
       this.isLoading.set(false);
     }
-  } 
-  
+  }
+
   async getAllChotkho(searchParam?: ChotkhoSearchParams): Promise<void> {
     try {
       this.isLoading.set(true);

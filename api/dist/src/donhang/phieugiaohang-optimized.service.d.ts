@@ -63,16 +63,16 @@ export declare class PhieuGiaoHangOptimizedService {
             order: number | null;
             isActive: boolean | null;
             vat: import("@prisma/client/runtime/library").Decimal;
-            giaban: import("@prisma/client/runtime/library").Decimal;
-            slhuy: import("@prisma/client/runtime/library").Decimal;
             idSP: string;
             sldat: import("@prisma/client/runtime/library").Decimal;
             slgiao: import("@prisma/client/runtime/library").Decimal;
             slnhan: import("@prisma/client/runtime/library").Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
             donhangId: string;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             ttsauvat: import("@prisma/client/runtime/library").Decimal;
         })[];
     } & {

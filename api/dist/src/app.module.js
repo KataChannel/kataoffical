@@ -19,7 +19,6 @@ const test_resolver_1 = require("./test/test.resolver");
 const auth_module_1 = require("./auth/auth.module");
 const user_module_1 = require("./user/user.module");
 const prisma_module_1 = require("../prisma/prisma.module");
-const prisma_service_1 = require("../prisma/prisma.service");
 const menu_module_1 = require("./menu/menu.module");
 const sanpham_module_1 = require("./sanpham/sanpham.module");
 const banggia_module_1 = require("./banggia/banggia.module");
@@ -89,9 +88,10 @@ exports.AppModule = AppModule = __decorate([
                     };
                 },
             }),
+            redis_module_1.RedisModule,
+            prisma_module_1.PrismaModule,
             auth_module_1.AuthModule,
             user_module_1.UserModule,
-            prisma_module_1.PrismaModule,
             menu_module_1.MenuModule,
             sanpham_module_1.SanphamModule,
             banggia_module_1.BanggiaModule,
@@ -113,7 +113,6 @@ exports.AppModule = AppModule = __decorate([
             userguide_module_1.UserguideModule,
             importdata_module_1.ImportdataModule,
             auditlog_module_1.AuditLogModule,
-            redis_module_1.RedisModule,
             cache_module_1.CacheModule,
             chotkho_module_1.ChotkhoModule,
             graphql_module_1.GraphQLUniversalModule,
@@ -124,7 +123,6 @@ exports.AppModule = AppModule = __decorate([
         controllers: [app_controller_1.AppController],
         providers: [
             app_service_1.AppService,
-            prisma_service_1.PrismaService,
             test_resolver_1.TestResolver,
             core_1.Reflector,
             {
@@ -141,7 +139,6 @@ exports.AppModule = AppModule = __decorate([
             },
             auditlog_service_1.AuditService,
         ],
-        exports: [prisma_service_1.PrismaService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

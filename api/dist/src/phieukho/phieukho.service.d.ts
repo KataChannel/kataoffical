@@ -1,5 +1,5 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { ImportdataService } from 'src/importdata/importdata.service';
+import { ImportdataService } from '../importdata/importdata.service';
 export declare class PhieukhoService {
     private readonly prisma;
     private _ImportdataService;
@@ -56,8 +56,8 @@ export declare class PhieukhoService {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            sanphamId: string;
             soluong: import("@prisma/client/runtime/library").Decimal;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
         kho: {
@@ -94,8 +94,8 @@ export declare class PhieukhoService {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            sanphamId: string;
             soluong: import("@prisma/client/runtime/library").Decimal;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {
@@ -120,8 +120,8 @@ export declare class PhieukhoService {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            sanphamId: string;
             soluong: import("@prisma/client/runtime/library").Decimal;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {

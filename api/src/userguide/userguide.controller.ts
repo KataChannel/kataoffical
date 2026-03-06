@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpExcep
 import { UserguideService } from './userguide.service';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Audit } from 'src/auditlog/audit.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Audit } from '../auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
 @ApiTags('userguide')
 @Controller('userguide')

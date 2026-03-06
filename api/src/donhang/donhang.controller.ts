@@ -3,11 +3,11 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
 import { DonhangService } from './donhang.service';
 import { AuditAction } from '@prisma/client';
-import { Audit } from 'src/auditlog/audit.decorator';
+import { Audit } from '../auditlog/audit.decorator';
 import { DonhangCronService } from './donhang-cron.service';
 import { Cache, CacheInvalidate } from '../common/cache.interceptor';
 import { SmartCache } from '../common/smart-cache.decorator';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('donhang')
 export class DonhangController {

@@ -3,6 +3,7 @@ import { Injectable, NestInterceptor, ExecutionContext, CallHandler, HttpExcepti
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { Reflector } from '@nestjs/core';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuditService } from '../auditlog/auditlog.service';
 import { AUDIT_METADATA_KEY } from './audit.decorator';
 
@@ -12,25 +13,34 @@ export class AuditInterceptor implements NestInterceptor {
   constructor(
     private readonly auditService: AuditService,
     private readonly reflector: Reflector,
-  ) {}
+  ) { }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const auditConfig = this.reflector.get(AUDIT_METADATA_KEY, context.getHandler());
     if (!auditConfig) {
       return next.handle();
     }
-    const request = context.switchToHttp().getRequest();
+
+    let request;
+    if (context.getType() === 'http') {
+      request = context.switchToHttp().getRequest();
+    } else if ((context.getType() as string) === 'graphql') {
+      const gqlContext = GqlExecutionContext.create(context);
+      request = gqlContext.getContext().req;
+    }
+    request = request || {};
+
     const startTime = Date.now();
     return next.handle().pipe(
       tap(async (result) => {
         try {
           const dynamicConfig = request.auditConfig || {};
-          
+
           // Log warning if user is not authenticated for audit action
           if (!request.user?.id) {
-            console.warn(`AUDIT WARNING: Action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
+            console.warn(`AUDIT WARNING: Action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url || 'GraphQL'}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
           }
-          
+
           await this.auditService.logActivity({
             entityName: auditConfig.entity,
             entityId: dynamicConfig.entityId || this.extractEntityId(request, result, auditConfig),
@@ -62,12 +72,12 @@ export class AuditInterceptor implements NestInterceptor {
       }),
       catchError((error) => {
         const dynamicConfig = request.auditConfig || {};
-        
+
         // Log warning if user is not authenticated for audit action (error case)
         if (!request.user?.id) {
-          console.warn(`AUDIT WARNING: Error in action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url}, Error: ${error.message}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
+          console.warn(`AUDIT WARNING: Error in action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url || 'GraphQL'}, Error: ${error.message}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
         }
-        
+
         this.auditService.logActivity({
           entityName: auditConfig.entity,
           entityId: dynamicConfig.entityId || request.params?.id || 'N/A',

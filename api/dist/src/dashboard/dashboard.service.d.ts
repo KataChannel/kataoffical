@@ -1,6 +1,6 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { SocketGateway } from 'src/socket.gateway';
-import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
+import { SocketGateway } from '../socket.gateway';
+import { ErrorlogsService } from '../errorlogs/errorlogs.service';
 import { SummaryQueryDto } from './dto/summary-query.dto';
 export declare class DashboardService {
     private readonly prisma;

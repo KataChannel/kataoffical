@@ -1,7 +1,7 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { ImportdataService } from 'src/importdata/importdata.service';
-import { StatusMachineService } from 'src/common/status-machine.service';
-import { TonkhoManagerService } from 'src/common/tonkho-manager.service';
+import { ImportdataService } from '../importdata/importdata.service';
+import { StatusMachineService } from '../common/status-machine.service';
+import { TonkhoManagerService } from '../common/tonkho-manager.service';
 export declare class DathangService {
     private readonly prisma;
     private readonly _ImportdataService;
@@ -183,11 +183,11 @@ export declare class DathangService {
                 ghichu: string | null;
                 order: number | null;
                 isActive: boolean;
-                slhuy: import("@prisma/client/runtime/library").Decimal;
                 idSP: string;
                 sldat: import("@prisma/client/runtime/library").Decimal;
                 slgiao: import("@prisma/client/runtime/library").Decimal;
                 slnhan: import("@prisma/client/runtime/library").Decimal;
+                slhuy: import("@prisma/client/runtime/library").Decimal;
                 ttdat: import("@prisma/client/runtime/library").Decimal;
                 ttgiao: import("@prisma/client/runtime/library").Decimal;
                 ttnhan: import("@prisma/client/runtime/library").Decimal;
@@ -279,11 +279,11 @@ export declare class DathangService {
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
-            slhuy: import("@prisma/client/runtime/library").Decimal;
             idSP: string;
             sldat: import("@prisma/client/runtime/library").Decimal;
             slgiao: import("@prisma/client/runtime/library").Decimal;
             slnhan: import("@prisma/client/runtime/library").Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
@@ -364,11 +364,11 @@ export declare class DathangService {
                 ghichu: string | null;
                 order: number | null;
                 isActive: boolean;
-                slhuy: import("@prisma/client/runtime/library").Decimal;
                 idSP: string;
                 sldat: import("@prisma/client/runtime/library").Decimal;
                 slgiao: import("@prisma/client/runtime/library").Decimal;
                 slnhan: import("@prisma/client/runtime/library").Decimal;
+                slhuy: import("@prisma/client/runtime/library").Decimal;
                 ttdat: import("@prisma/client/runtime/library").Decimal;
                 ttgiao: import("@prisma/client/runtime/library").Decimal;
                 ttnhan: import("@prisma/client/runtime/library").Decimal;
@@ -431,11 +431,11 @@ export declare class DathangService {
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
-            slhuy: import("@prisma/client/runtime/library").Decimal;
             idSP: string;
             sldat: import("@prisma/client/runtime/library").Decimal;
             slgiao: import("@prisma/client/runtime/library").Decimal;
             slnhan: import("@prisma/client/runtime/library").Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
@@ -466,11 +466,11 @@ export declare class DathangService {
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
-            slhuy: import("@prisma/client/runtime/library").Decimal;
             idSP: string;
             sldat: import("@prisma/client/runtime/library").Decimal;
             slgiao: import("@prisma/client/runtime/library").Decimal;
             slnhan: import("@prisma/client/runtime/library").Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
@@ -560,11 +560,11 @@ export declare class DathangService {
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
-            slhuy: import("@prisma/client/runtime/library").Decimal;
             idSP: string;
             sldat: import("@prisma/client/runtime/library").Decimal;
             slgiao: import("@prisma/client/runtime/library").Decimal;
             slnhan: import("@prisma/client/runtime/library").Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;

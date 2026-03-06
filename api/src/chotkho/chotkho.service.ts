@@ -6,7 +6,7 @@ import { Decimal } from '@prisma/client/runtime/library';
 export class ChotkhoService {
   constructor(
     private prisma: PrismaService
-  ) {}
+  ) { }
 
   /**
    * 🎯 CREATE METHOD: Tạo chốt kho với master-detail structure
@@ -30,12 +30,12 @@ export class ChotkhoService {
     try {
       return await this.prisma.$transaction(async (prisma) => {
         const { ngaychot, title, ghichu, khoId, userId, details } = inventoryData;
-        
+
         // Validate khoId exists
         const kho = await prisma.kho.findUnique({
           where: { id: khoId }
         });
-        
+
         if (!kho) {
           throw new Error(`Kho với ID ${khoId} không tồn tại trong hệ thống`);
         }
@@ -52,12 +52,12 @@ export class ChotkhoService {
           const sanpham = await prisma.sanpham.findUnique({
             where: { id: detail.sanphamId }
           });
-          
+
           if (!sanpham) {
             throw new Error(`Sản phẩm với ID ${detail.sanphamId} không tồn tại trong hệ thống`);
           }
         }
-        
+
         // Tạo master record - Chotkho
         const chotkhoMaster = await prisma.chotkho.create({
           data: {
@@ -77,7 +77,7 @@ export class ChotkhoService {
         let detailCount = 0;
         for (const detail of details) {
           const chenhlech = Number(detail.sltonhethong) - Number(detail.sltonthucte) - Number(detail.slhuy);
-          
+
           await prisma.chotkhodetail.create({
             data: {
               chotkhoId: chotkhoMaster.id,
@@ -105,11 +105,11 @@ export class ChotkhoService {
             },
             update: {
               slton: new Decimal(detail.sltonthucte),
-              sltontt: new Decimal(detail.sltonthucte), 
+              sltontt: new Decimal(detail.sltonthucte),
               updatedAt: new Date() // Reset mốc thời gian chốt kho
             }
           });
-          
+
           detailCount++;
         }
 
@@ -121,8 +121,8 @@ export class ChotkhoService {
               select: { id: true, name: true, makho: true }
             },
             user: {
-              select: { 
-                id: true, 
+              select: {
+                id: true,
                 email: true,
                 profile: { select: { name: true } }
               }
@@ -142,6 +142,8 @@ export class ChotkhoService {
           message: `Tạo chốt kho thành công với ${detailCount} sản phẩm`,
           data: result
         };
+      }, {
+        timeout: 30000,
       });
     } catch (error) {
       console.error('Error in create chotkho:', error);
@@ -261,7 +263,7 @@ export class ChotkhoService {
 
   async findAll(page: number = 1, limit: number = 10) {
     const skip = (page - 1) * limit;
-    
+
     const [items, total] = await Promise.all([
       this.prisma.chotkho.findMany({
         skip,
@@ -364,9 +366,9 @@ export class ChotkhoService {
   async search(searchParams: any) {
     const { khoId, sanphamId, fromDate, toDate, page = 1, limit = 10 } = searchParams;
     const skip = (page - 1) * limit;
-    
+
     const where: any = {};
-    
+
     if (khoId) where.khoId = khoId;
     if (fromDate || toDate) {
       where.ngaychot = {};
@@ -481,7 +483,7 @@ export class ChotkhoService {
         // Create new details
         for (const detail of data.details) {
           const chenhlech = Number(detail.sltonhethong) - Number(detail.sltonthucte) - Number(detail.slhuy);
-          
+
           await prisma.chotkhodetail.create({
             data: {
               chotkhoId: id,
@@ -501,13 +503,13 @@ export class ChotkhoService {
             create: {
               sanphamId: detail.sanphamId,
               slton: detail.sltonthucte,
-              sltontt: detail.sltonthucte, 
+              sltontt: detail.sltonthucte,
               slchogiao: 0,
               slchonhap: 0,
             },
             update: {
               slton: detail.sltonthucte,
-              sltontt: detail.sltonthucte, 
+              sltontt: detail.sltonthucte,
               updatedAt: new Date()
             }
           });
@@ -519,8 +521,8 @@ export class ChotkhoService {
         where: { id },
         include: {
           user: {
-            select: { 
-              id: true, 
+            select: {
+              id: true,
               email: true,
               profile: { select: { name: true } }
             }
@@ -534,6 +536,8 @@ export class ChotkhoService {
           }
         }
       });
+    }, {
+      timeout: 30000,
     });
   }
 }

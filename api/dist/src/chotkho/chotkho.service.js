@@ -112,6 +112,8 @@ let ChotkhoService = class ChotkhoService {
                     message: `Tạo chốt kho thành công với ${detailCount} sản phẩm`,
                     data: result
                 };
+            }, {
+                timeout: 30000,
             });
         }
         catch (error) {
@@ -452,6 +454,8 @@ let ChotkhoService = class ChotkhoService {
                     }
                 }
             });
+        }, {
+            timeout: 30000,
         });
     }
 };

@@ -3,7 +3,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { UserPermissionService } from './user-permission.service';
 import { UserPermissionController } from './user-permission.controller';
-import { PrismaService } from 'prisma/prisma.service';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
@@ -16,7 +15,7 @@ import { AuthModule } from '../auth/auth.module';
     AuthModule, // Import AuthModule để sử dụng AuthService
   ],
   controllers: [UserPermissionController],
-  providers: [UserPermissionService, PrismaService],
+  providers: [UserPermissionService],
   exports: [UserPermissionService],
 })
-export class UserPermissionModule {}
+export class UserPermissionModule { }

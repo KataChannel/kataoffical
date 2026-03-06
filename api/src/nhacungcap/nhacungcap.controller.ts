@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, HttpStatus, HttpException, Query, UseGuards } from '@nestjs/common';
 import { NhacungcapService } from './nhacungcap.service';
-import { Audit } from 'src/auditlog/audit.decorator';
+import { Audit } from '../auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Cache, CacheInvalidate } from '../common/cache.interceptor';
 import { SmartCache } from '../common/smart-cache.decorator';
 

@@ -1,7 +1,7 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
-import { ImportdataService } from 'src/importdata/importdata.service';
-import { SocketGateway } from 'src/socket.gateway';
+import { ErrorlogsService } from '../errorlogs/errorlogs.service';
+import { ImportdataService } from '../importdata/importdata.service';
+import { SocketGateway } from '../socket.gateway';
 export declare class SanphamService {
     private readonly prisma;
     private _SocketGateway;

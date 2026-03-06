@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ImportdataService } from 'src/importdata/importdata.service';
+import { ImportdataService } from '../importdata/importdata.service';
 import { PerformanceLogger } from '../shared/performance-logger';
 
 @Injectable()

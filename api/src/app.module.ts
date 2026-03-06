@@ -10,7 +10,6 @@ import { TestResolver } from './test/test.resolver';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from '../prisma/prisma.module';
-import { PrismaService } from '../prisma/prisma.service';
 import { MenuModule } from './menu/menu.module';
 import { SanphamModule } from './sanpham/sanpham.module';
 import { BanggiaModule } from './banggia/banggia.module';
@@ -75,9 +74,10 @@ import { NhanvienModule } from './nhanvien/nhanvien.module';
         };
       },
     }),
-    AuthModule, 
-    UserModule,
+    RedisModule,
     PrismaModule,
+    AuthModule,
+    UserModule,
     MenuModule,
     SanphamModule,
     BanggiaModule,
@@ -97,9 +97,8 @@ import { NhanvienModule } from './nhanvien/nhanvien.module';
     CallbackModule,
     DashboardModule,
     UserguideModule,
-    ImportdataModule,    
+    ImportdataModule,
     AuditLogModule,
-    RedisModule,
     CacheModule,
     ChotkhoModule,
     // UploadModule,
@@ -112,7 +111,6 @@ import { NhanvienModule } from './nhanvien/nhanvien.module';
   controllers: [AppController],
   providers: [
     AppService,
-    PrismaService,
     TestResolver,
     Reflector,
     {
@@ -129,7 +127,6 @@ import { NhanvienModule } from './nhanvien/nhanvien.module';
     },
     AuditService,
   ],
-  exports: [PrismaService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

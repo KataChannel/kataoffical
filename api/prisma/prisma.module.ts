@@ -1,8 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
+import { RedisModule } from '../src/redis/redis.module';
 
+@Global()
 @Module({
+  imports: [RedisModule],
   providers: [PrismaService],
-  exports: [PrismaService],  // Quan trọng: Xuất để module khác có thể sử dụng
+  exports: [PrismaService],
 })
-export class PrismaModule {}
+export class PrismaModule { }

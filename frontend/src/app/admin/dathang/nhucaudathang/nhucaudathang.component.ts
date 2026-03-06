@@ -50,6 +50,7 @@ import { DathangService } from '../dathang.service';
 import { DonhangService } from '../../donhang/donhang.service';
 import { DateHelpers } from '../../../shared/utils/date-helpers';
 import { PhieukhoService } from '../../phieukho/phieukho.service';
+import { ChotkhoService } from '../../chotkho/chotkho.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 import {
   NestedDataDialogComponent,
@@ -223,6 +224,7 @@ export class NhucaudathangComponent {
   private _DathangService = inject(DathangService);
   private _DonhangService = inject(DonhangService);
   private _PhieukhoService = inject(PhieukhoService);
+  private _ChotkhoService = inject(ChotkhoService);
   _snackBar = inject(MatSnackBar);
 
   Listsanpham: any = this._SanphamService.ListSanpham;
@@ -275,7 +277,7 @@ export class NhucaudathangComponent {
 
   async bulkMagicButton(): Promise<void> {
     const selectedItems = this.selection.selected;
-    
+
     if (selectedItems.length === 0) {
       this._snackBar.open('Vui lòng chọn ít nhất một sản phẩm để tối ưu!', '', { duration: 3000 });
       return;
@@ -288,7 +290,7 @@ export class NhucaudathangComponent {
     });
 
     const result = await firstValueFrom(dialogRef.afterClosed());
-    
+
     if (result && result.completedCount > 0) {
       this._snackBar.open(`✅ Đã xử lý tối ưu thành công ${result.completedCount} sản phẩm!`, '', {
         duration: 4000,
@@ -393,7 +395,7 @@ export class NhucaudathangComponent {
   // ✅ Kiểm tra đơn hàng NCC bị "treo" quá 48h (Zombie Orders)
   checkStaleOrder(row: any, khoValueKey: string | null = null): { isStale: boolean, days: number, oldestDate: Date | null } {
     if (!row.Dathangs || row.Dathangs.length === 0) return { isStale: false, days: 0, oldestDate: null };
-    
+
     let relevantOrders = row.Dathangs;
     if (khoValueKey) {
       const khoMetadata = this.KhoMetadata.find(k => k.value === khoValueKey);
@@ -417,7 +419,7 @@ export class NhucaudathangComponent {
     const oldest: Date = oldestDate;
     const diffTime = Math.abs(now.getTime() - oldest.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     return {
       isStale: diffDays >= 2, // Cảnh báo nếu quá 2 ngày
       days: diffDays,
@@ -494,7 +496,7 @@ export class NhucaudathangComponent {
         // 2. Tính lượng hàng XUẤT MỚI (Giao khách) sau thời điểm chốt kho gần nhất
         const deliveredAfterCount = (item.Donhangs || [])
           .filter((dh: any) => (dh.status === 'dagiao' || dh.status === 'danhan' || dh.status === 'hoanthanh') &&
-                  dh.updatedAt && new Date(dh.updatedAt).getTime() > lastCountTime)
+            dh.updatedAt && new Date(dh.updatedAt).getTime() > lastCountTime)
           .reduce((sum: number, dh: any) => sum + (Number(dh.slnhan) || 0), 0);
 
         // 3. Hàng đang về từ NCC (chưa nhận)
@@ -516,10 +518,10 @@ export class NhucaudathangComponent {
 
         item.slhaohut = this.GetSLHaohut(item);
         item.goiy = this.GetGoiy(item);
-        
+
         // Default xSLDat to 0 for inputs, keeping SLDat for reference
         if (!this.tempStorage.has(item.id)) {
-            item.xSLDat = 0;
+          item.xSLDat = 0;
         }
       });
 
@@ -601,9 +603,9 @@ export class NhucaudathangComponent {
       value: this.ColumnName[key],
       isShow: true,
     }));
-    
+
     this.FilterColumns = this.FilterColumns.filter(col => initialKeys.includes(col.key));
-    
+
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
@@ -858,7 +860,7 @@ export class NhucaudathangComponent {
       }));
       const mapping: any = {
         ngaynhan: 'NGÀY',
-        mancc : 'MÃ NCC',
+        mancc: 'MÃ NCC',
         name: 'TÊN NHÀ CUNG CẤP',
         masp: 'MÃ SẢN PHẨM',
         title: 'TÊN SẢN PHẨM',
@@ -1095,8 +1097,7 @@ export class NhucaudathangComponent {
           if (isNaN(slton) || slton == null || slton <= 0) {
             slton = 0;
             console.log(
-              `Dòng ${index + 1} - ${masp}: slton được set về 0 (giá trị gốc: ${
-                row.slton
+              `Dòng ${index + 1} - ${masp}: slton được set về 0 (giá trị gốc: ${row.slton
               })`
             );
           }
@@ -1176,7 +1177,7 @@ export class NhucaudathangComponent {
         for (const [masp, slton] of validDataMap.entries()) {
           const tonkho = tonkhoMap.get(masp);
           const sanpham = sanphamMap.get(masp);
-          
+
           if (!sanpham) {
             processErrors.push(`Không tìm thấy sản phẩm với mã: ${masp}`);
             continue;
@@ -1202,17 +1203,19 @@ export class NhucaudathangComponent {
           if (slton !== currentSltontt) {
             allChangedDetails.push({
               sanphamId: sanpham.id,
-              soluong: Math.abs(slton - currentSltontt),
-              targetSlton: slton, // ✅ Giá trị tuyệt đối từ Excel
+              sltonhethong: currentSltontt, // Giá trị cũ
+              sltonthucte: slton, // Giá trị mới (từ Excel)
+              slhuy: 0,
+              ghichu: slton > currentSltontt ? 'Điều chỉnh tăng từ Excel' : 'Điều chỉnh giảm từ Excel',
             });
           }
 
           // Kiểm tra bất thường (chỉ khi có thay đổi)
           if (slton !== currentSltontt) {
             const warning = this.detectStockAnomalies(
-              masp, 
-              sanpham.title || masp, 
-              slton, 
+              masp,
+              sanpham.title || masp,
+              slton,
               currentSltontt
             );
             if (warning) {
@@ -1296,18 +1299,22 @@ export class NhucaudathangComponent {
           panelClass: ['snackbar-info'],
         });
 
-        // ✅ FIX: Gửi MỘT request duy nhất với giá trị tuyệt đối (targetSlton)
-        // Không còn race condition vì backend sẽ SET trực tiếp thay vì tính delta
+        // ✅ MIGRATION: Gửi request gọi `ChotkhoService` thay vì `PhieukhoService` 
+        // Luồng mới ghi lại đầy đủ lịch sử Master-Detail và có Audit Log tự động
         if (allChangedDetails.length > 0) {
-          await this._PhieukhoService.CreatePhieukho({
-            title: `ĐIỀU CHỈNH CHỐT KHO TỰ ĐỘNG [EXCEL]`, 
-            type: 'nhap', // type chỉ dùng để tạo mã phiếu, logic sẽ dùng targetSlton
-            isChotkho: true,
-            useAbsoluteTarget: true, // ✅ Flag mới: dùng giá trị tuyệt đối
-            sanpham: allChangedDetails, 
+          const defaultKhoId = '4cc01811-61f5-4bdc-83de-a493764e9258'; // KHO TỔNG - HCM (fallback)
+
+          const ckResult = await this._ChotkhoService.createChotkhoWithDetails({
+            ngaychot: DateHelpers.now(),
+            title: `ĐIỀU CHỈNH CHỐT KHO TỰ ĐỘNG [EXCEL]`,
+            khoId: defaultKhoId,
             ghichu: `Chốt kho từ Excel (${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm) lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY')}`,
-            ngay: DateHelpers.now()
+            details: allChangedDetails
           });
+
+          if (!ckResult || ckResult === false) {
+            throw new Error("Tạo chốt kho thất bại từ API. Vui lòng kiểm tra lại log hệ thống.");
+          }
         }
 
         this._snackBar.dismiss();
@@ -1510,7 +1517,7 @@ export class NhucaudathangComponent {
         0
       );
       // console.log('Donhangs', Donhangs);
-      
+
       // khachgiao = Đơn đã giao + đã nhận + hoàn thành -> đã xong
       const khachgiao = Donhangs.filter(
         (v: any) => v.status === 'dagiao' || v.status === 'danhan' || v.status === 'hoanthanh'
@@ -2736,7 +2743,7 @@ export class NhucaudathangComponent {
    */
   saveFieldValue(row: any, field: string, value: any): void {
     const key = this.getRowKey(row);
-    
+
     if (!this.tempStorage.has(key)) {
       this.tempStorage.set(key, {
         masp: row.masp,
@@ -2744,14 +2751,14 @@ export class NhucaudathangComponent {
         changes: {}
       });
     }
-    
+
     const tempData = this.tempStorage.get(key);
     tempData.changes[field] = value;
     tempData.lastModified = new Date().toISOString();
-    
+
     this.saveTempEditsToStorage();
     this.stopEdit(row, field);
-    
+
     this._snackBar.open(`Đã lưu tạm ${field}`, '', {
       duration: 1000,
       horizontalPosition: 'end',
@@ -2776,8 +2783,8 @@ export class NhucaudathangComponent {
    */
   hasFieldChanged(row: any, field: string): boolean {
     const key = this.getRowKey(row);
-    return this.tempStorage.has(key) && 
-           this.tempStorage.get(key).changes[field] !== undefined;
+    return this.tempStorage.has(key) &&
+      this.tempStorage.get(key).changes[field] !== undefined;
   }
 
   /**
@@ -2857,9 +2864,9 @@ export class NhucaudathangComponent {
    */
   async autoReceiveAndSnapshot(row: any): Promise<void> {
     const incomingStock = Number(row.incomingStock || 0);
-    
+
     // Create descriptive message
-    const msg = incomingStock > 0 
+    const msg = incomingStock > 0
       ? `Xác nhận khớp lệnh nhập ${incomingStock} kg và đồng bộ tồn kho?`
       : `Sản phẩm này hiện KHÔNG có hàng đang về. Bạn có muốn thực hiện ĐỒNG BỘ lại sổ sách với thực tế để xóa chênh lệch không?`;
 
@@ -2875,19 +2882,19 @@ export class NhucaudathangComponent {
     });
 
     const confirmed = await firstValueFrom(dialogRef.afterClosed());
-    
+
     if (!confirmed) return;
 
     try {
-      this._snackBar.open('🚀 Đang xử lý khớp lệnh thông minh...', '', { 
+      this._snackBar.open('🚀 Đang xử lý khớp lệnh thông minh...', '', {
         duration: 3000,
         panelClass: ['snackbar-info']
       });
-      
+
       const result = await this._DathangService.confirmReceiptByProduct(row.id);
-      
+
       if (result.success !== false) {
-        const successMsg = incomingStock > 0 
+        const successMsg = incomingStock > 0
           ? `✅ Khớp lệnh thành công! Đã nhập thực ${incomingStock} kg và đồng bộ tồn kho.`
           : `✅ Đã đồng bộ tồn kho thực tế và xóa chênh lệch thành công cho sản phẩm!`;
 
@@ -2895,7 +2902,7 @@ export class NhucaudathangComponent {
           duration: 4000,
           panelClass: ['snackbar-success']
         });
-        
+
         // Reload dữ liệu và bypass cache để thấy ngay kết quả mới
         await this.loadDonhangWithRelations(true);
       } else {
@@ -2926,10 +2933,10 @@ export class NhucaudathangComponent {
 
     try {
       const tempCount = this.tempStorage.size;
-      
+
       // Apply changes to dataSource.data (synchronize with tempStorage)
       const currentData = [...this.dataSource.data];
-      
+
       for (const [key, tempData] of this.tempStorage.entries()) {
         const rowIndex = currentData.findIndex((item: any) => this.getRowKey(item) === key);
         if (rowIndex !== -1) {

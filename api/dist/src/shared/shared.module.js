@@ -14,7 +14,6 @@ const common_1 = require("@nestjs/common");
 const performance_controller_1 = require("./controllers/performance.controller");
 const performance_log_service_1 = require("./services/performance-log.service");
 const performance_logger_1 = require("./performance-logger");
-const prisma_module_1 = require("../../prisma/prisma.module");
 let SharedModule = class SharedModule {
     constructor(performanceLogService) {
         this.performanceLogService = performanceLogService;
@@ -26,7 +25,6 @@ let SharedModule = class SharedModule {
 exports.SharedModule = SharedModule;
 exports.SharedModule = SharedModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
         controllers: [performance_controller_1.PerformanceController],
         providers: [performance_log_service_1.PerformanceLogService],
         exports: [performance_log_service_1.PerformanceLogService],
