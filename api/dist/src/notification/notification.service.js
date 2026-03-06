@@ -123,9 +123,16 @@ let NotificationService = NotificationService_1 = class NotificationService {
     }
     async broadcastToAdmins(payload) {
     }
-    async getUserNotifications(userId) {
+    async getUserNotifications(userId, search) {
+        const where = { userId };
+        if (search) {
+            where.OR = [
+                { title: { contains: search, mode: 'insensitive' } },
+                { message: { contains: search, mode: 'insensitive' } },
+            ];
+        }
         return this.prisma.notification.findMany({
-            where: { userId },
+            where,
             orderBy: { createdAt: 'desc' },
             take: 50,
         });

@@ -24,7 +24,7 @@ export declare class NotificationController {
         success: boolean;
         message: string;
     }>;
-    getUserNotifications(userId: string): Promise<{
+    getUserNotifications(userId: string, search?: string): Promise<{
         id: string;
         title: string;
         type: string | null;

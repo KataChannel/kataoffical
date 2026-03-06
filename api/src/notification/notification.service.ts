@@ -137,9 +137,18 @@ export class NotificationService {
     // e.g. sendNotificationToUser('390299a1-cef6-4540-b26e-1198ead22f33', payload);
   }
 
-  async getUserNotifications(userId: string) {
+  async getUserNotifications(userId: string, search?: string) {
+    const where: any = { userId };
+    
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { message: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
     return this.prisma.notification.findMany({
-      where: { userId },
+      where,
       orderBy: { createdAt: 'desc' },
       take: 50,
     });

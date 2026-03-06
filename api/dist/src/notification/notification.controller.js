@@ -32,8 +32,8 @@ let NotificationController = class NotificationController {
         }
         return this.notificationService.unsubscribe(body.endpoint);
     }
-    async getUserNotifications(userId) {
-        return this.notificationService.getUserNotifications(userId);
+    async getUserNotifications(userId, search) {
+        return this.notificationService.getUserNotifications(userId, search);
     }
     async markAsRead(id) {
         return this.notificationService.markAsRead(id);
@@ -66,8 +66,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)('user/:userId'),
     __param(0, (0, common_1.Param)('userId')),
+    __param(1, (0, common_1.Query)('search')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], NotificationController.prototype, "getUserNotifications", null);
 __decorate([

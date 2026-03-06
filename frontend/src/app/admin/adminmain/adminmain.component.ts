@@ -23,6 +23,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { FormsModule } from '@angular/forms';
+import { SwPush } from '@angular/service-worker';
 import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
 import { CommonuserguideComponent } from '../userguide/commonuserguide/commonuserguide.component';
 import { UserguideService } from '../userguide/userguide.service';
@@ -50,6 +53,8 @@ import { environment } from '../../../environments/environment.development';
     MatStepperModule,
     MatBadgeModule,
     MatTooltipModule,
+    MatSlideToggleModule,
+    FormsModule,
   ],
   templateUrl: './adminmain.component.html',
   styleUrls: ['./adminmain.component.scss']
@@ -63,6 +68,9 @@ export class AdminmainComponent {
   dbName: string = '';
   notifications: any[] = [];
   unreadCount: number = 0;
+  isSubscribed: boolean = false;
+  notificationSearchTerm: string = '';
+  readonly VAPID_PUBLIC_KEY = "BAvPai7WQsKJEriy6QzNwR8PilSz-BugoT221pgKAgXQb7CH55KLe8WbEP23a7GdNsppktd0IR9lTmpLPsgJuyE";
   private _transformer = (node: any, level: number) => {
     return {
       expandable: !!node?.children && node?.children.length > 0,
@@ -90,6 +98,7 @@ export class AdminmainComponent {
     private _breakpointObserver:BreakpointObserver,
     private _UserService:UserService,
     private _ErrorLogService:ErrorLogService,
+    private swPush: SwPush,
   ) {}
 
   hasChild = (_: number, node: any) => node.expandable;
@@ -114,6 +123,7 @@ export class AdminmainComponent {
         this.dataSource.data = this._MenuService.ListMenu()
         
         await this.fetchNotifications();
+        this.checkSubscriptionStatus();
       } 
     });
     await this._UserguideService.getUserguideBy({codeId:'I100001'})
@@ -208,7 +218,11 @@ export class AdminmainComponent {
   async fetchNotifications() {
     if (!this.User?.id) return;
     try {
-      const resp = await fetch(`${environment.APIURL}/notifications/user/${this.User.id}`);
+      let url = `${environment.APIURL}/notifications/user/${this.User.id}`;
+      if (this.notificationSearchTerm) {
+        url += `?search=${encodeURIComponent(this.notificationSearchTerm)}`;
+      }
+      const resp = await fetch(url);
       this.notifications = await resp.json();
       
       const countResp = await fetch(`${environment.APIURL}/notifications/user/${this.User.id}/unread-count`);
@@ -219,14 +233,72 @@ export class AdminmainComponent {
     }
   }
 
+  onNotificationSearch() {
+    this.fetchNotifications();
+  }
+
+  async checkSubscriptionStatus() {
+    if (this.swPush.isEnabled) {
+      this.swPush.subscription.subscribe(sub => {
+        this.isSubscribed = !!sub;
+      });
+    }
+  }
+
+  async toggleNotifications(event: any) {
+    if (!this.swPush.isEnabled) {
+      this._snackBar.open('Trình duyệt không hỗ trợ thông báo đẩy.', 'Đóng', { duration: 3000 });
+      return;
+    }
+
+    if (this.isSubscribed) {
+      // Unsubscribe logic would go here if needed, but we can just toggle back
+      // For simplicity, we just enable. If they want to disable, they'd have to use browser settings or we implement unsubscribe
+      this._snackBar.open('Thông báo đang bật. Để tắt, vui lòng dùng cài đặt trình duyệt.', 'Đóng', { duration: 3000 });
+    } else {
+      try {
+        const sub = await this.swPush.requestSubscription({
+          serverPublicKey: this.VAPID_PUBLIC_KEY
+        });
+        
+        // Send subscription to backend
+        await fetch(`${environment.APIURL}/notifications/subscribe`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: this.User.id,
+            subscription: sub
+          })
+        });
+        
+        this.isSubscribed = true;
+        this._snackBar.open('Đã bật thông báo thành công!', 'Đóng', { duration: 3000 });
+      } catch (err) {
+        console.error('Could not subscribe to notifications', err);
+        this.isSubscribed = false;
+      }
+    }
+  }
+
   async markAsRead(notification: any) {
-    if (notification.isRead) return;
-    try {
-      await fetch(`${environment.APIURL}/notifications/${notification.id}/read`, { method: 'PATCH' });
-      notification.isRead = true;
-      if (this.unreadCount > 0) this.unreadCount--;
-    } catch (error) {
-      console.error('Error marking as read:', error);
+    if (!notification.isRead) {
+      try {
+        await fetch(`${environment.APIURL}/notifications/${notification.id}/read`, { method: 'PATCH' });
+        notification.isRead = true;
+        if (this.unreadCount > 0) this.unreadCount--;
+      } catch (error) {
+        console.error('Error marking as read:', error);
+      }
+    }
+    
+    // Navigate if there's a link
+    if (notification.link) {
+      // If link is internal (starts with /), use router
+      if (notification.link.startsWith('/')) {
+        window.location.href = notification.link; // Or use Router if it's cleaner
+      } else {
+        window.open(notification.link, '_blank');
+      }
     }
   }
 

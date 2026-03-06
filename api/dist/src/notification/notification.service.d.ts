@@ -21,7 +21,7 @@ export declare class NotificationService {
     }>;
     sendNotificationToUser(userId: string, payload: any): Promise<void>;
     broadcastToAdmins(payload: any): Promise<void>;
-    getUserNotifications(userId: string): Promise<{
+    getUserNotifications(userId: string, search?: string): Promise<{
         id: string;
         title: string;
         type: string | null;
