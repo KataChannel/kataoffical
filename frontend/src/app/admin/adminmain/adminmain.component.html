@@ -78,8 +78,8 @@
         <button mat-icon-button (click)="drawer1.toggle();isQuytrinh=true">
           <mat-icon>dashboard</mat-icon>
         </button>
-        <button mat-icon-button (click)="drawer1.toggle()">
-          <mat-icon>notifications</mat-icon>
+        <button mat-icon-button (click)="drawer1.toggle();isQuytrinh=false">
+          <mat-icon [matBadge]="unreadCount" matBadgeColor="warn" [matBadgeHidden]="unreadCount === 0">notifications</mat-icon>
         </button>
         <a mat-icon-button [routerLink]="['/admin/support']">
           <mat-icon>chat</mat-icon>
@@ -109,7 +109,7 @@
 
 
   <mat-drawer #drawer1 class="!w-screen lg:!w-1/2" mode="over" position="end">
-    <div class="relative h-full flex flex-col space-y-2 p-2">
+    <div class="relative h-full flex flex-col space-y-2 p-2" *ngIf="isQuytrinh">
       <div class="flex flex-row space-x-2 items-center">
           <button mat-icon-button (click)="drawer1.toggle()">
             <mat-icon>arrow_back</mat-icon>
@@ -120,6 +120,55 @@
         Không có dữ liệu
         <!-- <app-commonuserguide [Detail]="DetailUserguide()"></app-commonuserguide> -->
        </div>
+    </div>
+
+    <!-- Notification Container inside Drawer -->
+    <div class="relative h-full flex flex-col space-y-4 p-4 bg-gray-50" *ngIf="!isQuytrinh">
+      <div class="flex flex-row space-x-2 items-center justify-between border-b pb-2">
+        <div class="flex flex-row space-x-2 items-center">
+          <button mat-icon-button (click)="drawer1.toggle()">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <span class="font-bold text-lg">Thông Báo</span>
+          <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full" *ngIf="unreadCount > 0">{{ unreadCount }} mới</span>
+        </div>
+        <button *ngIf="notifications.length > 0" mat-stroked-button color="primary" class="!rounded-full shadow-sm bg-white" (click)="markAllAsRead()">
+          <mat-icon class="!text-[18px]">done_all</mat-icon> Đánh dấu đã đọc
+        </button>
+      </div>
+
+      <div class="relative flex flex-col w-full h-full overflow-y-auto space-y-3 pb-8">
+        <div *ngIf="notifications.length === 0" class="flex flex-col items-center justify-center p-8 text-gray-400 mt-10">
+          <mat-icon class="!w-16 !h-16 !text-[64px] mb-4 text-gray-300">notifications_none</mat-icon>
+          <p class="text-base">Bạn không có thông báo nào.</p>
+        </div>
+
+        <div *ngFor="let n of notifications" 
+             class="relative group p-4 rounded-xl border cursor-pointer hover:shadow-md transition-all flex flex-col"
+             [ngClass]="{'bg-blue-50/50 border-blue-200 shadow-sm': !n.isRead, 'bg-white border-gray-100': n.isRead}"
+             (click)="markAsRead(n)">
+          
+          <div class="flex justify-between items-start mb-1 gap-2">
+            <div class="font-bold text-[15px] flex items-center" [ngClass]="{'text-[#0B9444]': !n.isRead, 'text-gray-700': n.isRead}">
+              <mat-icon *ngIf="!n.isRead" class="!w-4 !h-4 !min-w-4 !text-[16px] mr-1 text-red-500">fiber_manual_record</mat-icon>
+              {{ n.title }}
+            </div>
+            
+            <button mat-icon-button class="!w-7 !h-7 !min-w-7 flex items-center justify-center text-gray-300 hover:bg-red-50 hover:text-red-500 transition-colors rounded-full opacity-0 group-hover:opacity-100" 
+                    (click)="deleteNotification(n.id); $event.stopPropagation()"
+                    matTooltip="Xóa">
+              <mat-icon class="!text-[18px]">delete_outline</mat-icon>
+            </button>
+          </div>
+          
+          <div class="text-[14px] leading-relaxed text-gray-600 mt-1 whitespace-pre-wrap flex-grow pl-[1px]" [ngClass]="{'pl-5': !n.isRead}">{{ n.message }}</div>
+          
+          <div class="text-[12px] text-gray-400 mt-3 flex items-center">
+             <mat-icon class="!w-4 !h-4 !text-[14px] mr-1 text-gray-300">schedule</mat-icon>
+             {{ n.createdAt | date:'dd/MM/yyyy HH:mm' }}
+          </div>
+        </div>
+      </div>
     </div>
   </mat-drawer>
 </mat-drawer-container>

@@ -38,6 +38,7 @@
     "@nestjs/websockets": "^11.0.10",
     "@prisma/client": "6.15.0",
     "@types/graphql": "^14.5.0",
+    "@types/web-push": "^3.6.4",
     "apollo-server-express": "^3.13.0",
     "bcryptjs": "^3.0.0",
     "class-transformer": "^0.5.1",
@@ -63,7 +64,8 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "socket.io": "^4.8.1",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

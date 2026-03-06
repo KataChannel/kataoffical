@@ -47,6 +47,8 @@ import { SupportModule } from './support/support.module';
 import { CacheModule } from './cache/cache.module';
 import { PhongbanModule } from './phongban/phongban.module';
 import { NhanvienModule } from './nhanvien/nhanvien.module';
+import { NotificationModule } from './notification/notification.module';
+
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -107,6 +109,7 @@ import { NhanvienModule } from './nhanvien/nhanvien.module';
     SupportModule,
     PhongbanModule,
     NhanvienModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [

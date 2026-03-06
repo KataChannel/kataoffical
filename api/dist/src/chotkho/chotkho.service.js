@@ -13,13 +13,15 @@ exports.ChotkhoService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const library_1 = require("@prisma/client/runtime/library");
+const notification_service_1 = require("../notification/notification.service");
 let ChotkhoService = class ChotkhoService {
-    constructor(prisma) {
+    constructor(prisma, notificationService) {
         this.prisma = prisma;
+        this.notificationService = notificationService;
     }
     async create(inventoryData) {
         try {
-            return await this.prisma.$transaction(async (prisma) => {
+            const transactionResult = await this.prisma.$transaction(async (prisma) => {
                 const { ngaychot, title, ghichu, khoId, userId, details } = inventoryData;
                 const kho = await prisma.kho.findUnique({
                     where: { id: khoId }
@@ -115,6 +117,14 @@ let ChotkhoService = class ChotkhoService {
             }, {
                 timeout: 30000,
             });
+            if (transactionResult.success && transactionResult.data && inventoryData.userId) {
+                this.notificationService.sendNotificationToUser(inventoryData.userId, {
+                    title: 'Cập nhật tồn kho',
+                    body: `Quá trình tạo chốt kho ${transactionResult.data.title} đã hoàn thành.`,
+                    url: '/admin/stock'
+                }).catch(err => console.error('Error sending push notification:', err));
+            }
+            return transactionResult;
         }
         catch (error) {
             console.error('Error in create chotkho:', error);
@@ -385,83 +395,98 @@ let ChotkhoService = class ChotkhoService {
         };
     }
     async updateChotkhoWithDetails(id, data) {
-        return this.prisma.$transaction(async (prisma) => {
-            const updatedMaster = await prisma.chotkho.update({
-                where: { id },
-                data: {
-                    ngaychot: data.ngaychot,
-                    title: data.title,
-                    ghichu: data.ghichu,
-                    isActive: data.isActive
-                }
-            });
-            if (data.details && data.details.length > 0) {
-                for (const detail of data.details) {
-                    if (detail.sltonthucte < 0) {
-                        throw new Error(`Số lượng tồn thực tế không được nhỏ hơn 0 (Sản phẩm ID: ${detail.sanphamId})`);
+        try {
+            const transactionResult = await this.prisma.$transaction(async (prisma) => {
+                const updatedMaster = await prisma.chotkho.update({
+                    where: { id },
+                    data: {
+                        ngaychot: data.ngaychot,
+                        title: data.title,
+                        ghichu: data.ghichu,
+                        isActive: data.isActive
+                    }
+                });
+                if (data.details && data.details.length > 0) {
+                    for (const detail of data.details) {
+                        if (detail.sltonthucte < 0) {
+                            throw new Error(`Số lượng tồn thực tế không được nhỏ hơn 0 (Sản phẩm ID: ${detail.sanphamId})`);
+                        }
+                    }
+                    await prisma.chotkhodetail.deleteMany({
+                        where: { chotkhoId: id }
+                    });
+                    for (const detail of data.details) {
+                        const chenhlech = Number(detail.sltonhethong) - Number(detail.sltonthucte) - Number(detail.slhuy);
+                        await prisma.chotkhodetail.create({
+                            data: {
+                                chotkhoId: id,
+                                sanphamId: detail.sanphamId,
+                                sltonhethong: detail.sltonhethong,
+                                sltonthucte: detail.sltonthucte,
+                                slhuy: detail.slhuy,
+                                chenhlech,
+                                ghichu: detail.ghichu || '',
+                                ngaychot: updatedMaster.ngaychot
+                            }
+                        });
+                        await prisma.tonKho.upsert({
+                            where: { sanphamId: detail.sanphamId },
+                            create: {
+                                sanphamId: detail.sanphamId,
+                                slton: detail.sltonthucte,
+                                sltontt: detail.sltonthucte,
+                                slchogiao: 0,
+                                slchonhap: 0,
+                            },
+                            update: {
+                                slton: detail.sltonthucte,
+                                sltontt: detail.sltonthucte,
+                                updatedAt: new Date()
+                            }
+                        });
                     }
                 }
-                await prisma.chotkhodetail.deleteMany({
-                    where: { chotkhoId: id }
-                });
-                for (const detail of data.details) {
-                    const chenhlech = Number(detail.sltonhethong) - Number(detail.sltonthucte) - Number(detail.slhuy);
-                    await prisma.chotkhodetail.create({
-                        data: {
-                            chotkhoId: id,
-                            sanphamId: detail.sanphamId,
-                            sltonhethong: detail.sltonhethong,
-                            sltonthucte: detail.sltonthucte,
-                            slhuy: detail.slhuy,
-                            chenhlech,
-                            ghichu: detail.ghichu || '',
-                            ngaychot: updatedMaster.ngaychot
-                        }
-                    });
-                    await prisma.tonKho.upsert({
-                        where: { sanphamId: detail.sanphamId },
-                        create: {
-                            sanphamId: detail.sanphamId,
-                            slton: detail.sltonthucte,
-                            sltontt: detail.sltonthucte,
-                            slchogiao: 0,
-                            slchonhap: 0,
+                return await prisma.chotkho.findUnique({
+                    where: { id },
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                email: true,
+                                profile: { select: { name: true } }
+                            }
                         },
-                        update: {
-                            slton: detail.sltonthucte,
-                            sltontt: detail.sltonthucte,
-                            updatedAt: new Date()
-                        }
-                    });
-                }
-            }
-            return await prisma.chotkho.findUnique({
-                where: { id },
-                include: {
-                    user: {
-                        select: {
-                            id: true,
-                            email: true,
-                            profile: { select: { name: true } }
-                        }
-                    },
-                    details: {
-                        include: {
-                            sanpham: {
-                                select: { id: true, title: true, masp: true }
+                        details: {
+                            include: {
+                                sanpham: {
+                                    select: { id: true, title: true, masp: true }
+                                }
                             }
                         }
                     }
-                }
+                });
+            }, {
+                timeout: 30000,
             });
-        }, {
-            timeout: 30000,
-        });
+            if (transactionResult && transactionResult.userId) {
+                this.notificationService.sendNotificationToUser(transactionResult.userId, {
+                    title: 'Cập nhật tồn kho (Sửa đổi)',
+                    body: `Quá trình cập nhật chốt kho đã hoàn thành.`,
+                    url: '/admin/stock'
+                }).catch(err => console.error('Error sending push notification:', err));
+            }
+            return transactionResult;
+        }
+        catch (error) {
+            console.error('Error in update chotkho:', error);
+            throw error;
+        }
     }
 };
 exports.ChotkhoService = ChotkhoService;
 exports.ChotkhoService = ChotkhoService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        notification_service_1.NotificationService])
 ], ChotkhoService);
 //# sourceMappingURL=chotkho.service.js.map

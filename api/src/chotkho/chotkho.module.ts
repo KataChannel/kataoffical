@@ -7,11 +7,13 @@ import { SocketGateway } from '../socket.gateway';
 import { AuthModule } from '../auth/auth.module'; 
 import { ErrorlogsService } from '../errorlogs/errorlogs.service';
 import { SharedModule } from '../shared/shared.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, SharedModule], 
+  imports: [PrismaModule, AuthModule, SharedModule, NotificationModule], 
   controllers: [ChotkhoController],
   providers: [ChotkhoService, ChotkhoResolver, SocketGateway, ErrorlogsService], 
+
   exports: [ChotkhoService] 
 })
 export class ChotkhoModule {}

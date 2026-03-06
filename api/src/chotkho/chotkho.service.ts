@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Decimal } from '@prisma/client/runtime/library';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class ChotkhoService {
   constructor(
-    private prisma: PrismaService
+    private prisma: PrismaService,
+    private notificationService: NotificationService
   ) { }
 
   /**
@@ -28,7 +30,7 @@ export class ChotkhoService {
     }>;
   }) {
     try {
-      return await this.prisma.$transaction(async (prisma) => {
+      const transactionResult = await this.prisma.$transaction(async (prisma) => {
         const { ngaychot, title, ghichu, khoId, userId, details } = inventoryData;
 
         // Validate khoId exists
@@ -145,9 +147,21 @@ export class ChotkhoService {
       }, {
         timeout: 30000,
       });
+
+      // Gửi Push Notification cho creator hoặc admin
+      if (transactionResult.success && transactionResult.data && inventoryData.userId) {
+        this.notificationService.sendNotificationToUser(inventoryData.userId, {
+          title: 'Cập nhật tồn kho',
+          body: `Quá trình tạo chốt kho ${transactionResult.data.title} đã hoàn thành.`,
+          url: '/admin/stock' // Optional, can be adjusted according to frontend routes
+        }).catch(err => console.error('Error sending push notification:', err));
+      }
+
+      return transactionResult;
     } catch (error) {
       console.error('Error in create chotkho:', error);
       throw error;
+
     }
   }
 
@@ -454,8 +468,9 @@ export class ChotkhoService {
       }>;
     }
   ) {
-    return this.prisma.$transaction(async (prisma) => {
-      // Update master record
+    try {
+      const transactionResult = await this.prisma.$transaction(async (prisma) => {
+        // Update master record
       const updatedMaster = await prisma.chotkho.update({
         where: { id },
         data: {
@@ -539,5 +554,20 @@ export class ChotkhoService {
     }, {
       timeout: 30000,
     });
+
+      // Gửi Push Notification cho creator hoặc admin
+      if (transactionResult && transactionResult.userId) {
+        this.notificationService.sendNotificationToUser(transactionResult.userId, {
+          title: 'Cập nhật tồn kho (Sửa đổi)',
+          body: `Quá trình cập nhật chốt kho đã hoàn thành.`,
+          url: '/admin/stock'
+        }).catch(err => console.error('Error sending push notification:', err));
+      }
+
+      return transactionResult;
+    } catch (error) {
+      console.error('Error in update chotkho:', error);
+      throw error;
+    }
   }
 }

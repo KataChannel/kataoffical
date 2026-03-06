@@ -21,6 +21,8 @@ import { StorageService } from '../../shared/utils/storage.service';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
 import { CommonuserguideComponent } from '../userguide/commonuserguide/commonuserguide.component';
 import { UserguideService } from '../userguide/userguide.service';
@@ -46,6 +48,8 @@ import { environment } from '../../../environments/environment.development';
     MatInputModule,
     MatFormFieldModule,
     MatStepperModule,
+    MatBadgeModule,
+    MatTooltipModule,
   ],
   templateUrl: './adminmain.component.html',
   styleUrls: ['./adminmain.component.scss']
@@ -57,6 +61,8 @@ export class AdminmainComponent {
   User:any ={}
   isQuytrinh:any=false
   dbName: string = '';
+  notifications: any[] = [];
+  unreadCount: number = 0;
   private _transformer = (node: any, level: number) => {
     return {
       expandable: !!node?.children && node?.children.length > 0,
@@ -106,6 +112,8 @@ export class AdminmainComponent {
         await this._MenuService.getTreeMenu(permissions)
         this.ListMenu = this.FilterListMenu = this._MenuService.ListMenu()    
         this.dataSource.data = this._MenuService.ListMenu()
+        
+        await this.fetchNotifications();
       } 
     });
     await this._UserguideService.getUserguideBy({codeId:'I100001'})
@@ -194,6 +202,51 @@ export class AdminmainComponent {
       }
     } catch (error) {
       console.error('Error fetching database info:', error);
+    }
+  }
+
+  async fetchNotifications() {
+    if (!this.User?.id) return;
+    try {
+      const resp = await fetch(`${environment.APIURL}/notifications/user/${this.User.id}`);
+      this.notifications = await resp.json();
+      
+      const countResp = await fetch(`${environment.APIURL}/notifications/user/${this.User.id}/unread-count`);
+      const countData = await countResp.json();
+      this.unreadCount = countData.count || 0;
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  }
+
+  async markAsRead(notification: any) {
+    if (notification.isRead) return;
+    try {
+      await fetch(`${environment.APIURL}/notifications/${notification.id}/read`, { method: 'PATCH' });
+      notification.isRead = true;
+      if (this.unreadCount > 0) this.unreadCount--;
+    } catch (error) {
+      console.error('Error marking as read:', error);
+    }
+  }
+
+  async markAllAsRead() {
+    try {
+      await fetch(`${environment.APIURL}/notifications/user/${this.User.id}/read-all`, { method: 'PATCH' });
+      this.notifications.forEach(n => n.isRead = true);
+      this.unreadCount = 0;
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+    }
+  }
+
+  async deleteNotification(id: string) {
+    try {
+      await fetch(`${environment.APIURL}/notifications/${id}`, { method: 'DELETE' });
+      this.notifications = this.notifications.filter(n => n.id !== id);
+      await this.fetchNotifications(); // Refresh count properly
+    } catch (error) {
+      console.error('Error deleting notification:', error);
     }
   }
 }

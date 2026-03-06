@@ -1,8 +1,10 @@
 import { PrismaService } from '../../prisma/prisma.service';
 import { Decimal } from '@prisma/client/runtime/library';
+import { NotificationService } from '../notification/notification.service';
 export declare class ChotkhoService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private notificationService;
+    constructor(prisma: PrismaService, notificationService: NotificationService);
     create(inventoryData: {
         ngaychot?: Date;
         title?: string;
