@@ -5,12 +5,12 @@ export declare class NotificationService {
     constructor(prisma: PrismaService);
     subscribe(userId: string, subscription: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         userId: string;
         endpoint: string;
         p256dh: string;
         auth: string;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     unsubscribe(endpoint: string): Promise<{
         success: boolean;
@@ -24,36 +24,36 @@ export declare class NotificationService {
     broadcastToAdmins(payload: any): Promise<void>;
     getUserNotifications(userId: string, search?: string): Promise<{
         id: string;
-        userId: string;
+        title: string;
+        type: string | null;
         createdAt: Date;
         updatedAt: Date;
         link: string | null;
-        title: string;
+        userId: string;
         message: string;
-        type: string | null;
         isRead: boolean;
     }[]>;
     markAsRead(id: string): Promise<{
         id: string;
-        userId: string;
+        title: string;
+        type: string | null;
         createdAt: Date;
         updatedAt: Date;
         link: string | null;
-        title: string;
+        userId: string;
         message: string;
-        type: string | null;
         isRead: boolean;
     }>;
     markAllAsRead(userId: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     deleteNotification(id: string): Promise<{
         id: string;
-        userId: string;
+        title: string;
+        type: string | null;
         createdAt: Date;
         updatedAt: Date;
         link: string | null;
-        title: string;
+        userId: string;
         message: string;
-        type: string | null;
         isRead: boolean;
     }>;
     getUnreadCount(userId: string): Promise<{
