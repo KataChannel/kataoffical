@@ -793,41 +793,9 @@ export class DetailDathangComponent {
       });
   }
 
-  // ✅ Helper method to validate and parse decimal numbers (supports both . and ,)
-  private parseDecimalValue(input: string): number {
-    // Remove any non-numeric characters except decimal separators (. and ,)
-    const cleanInput = input.replace(/[^\d.,]/g, '');
-    
-    // Convert comma to dot for consistent parsing (European format support)
-    const normalizedInput = cleanInput.replace(/,/g, '.');
-    
-    // Handle multiple decimal points - keep only the first one
-    const parts = normalizedInput.split('.');
-    const cleanDecimal = parts.length > 1 
-      ? `${parts[0]}.${parts.slice(1).join('')}` 
-      : normalizedInput;
-    
-    const parsed = parseFloat(cleanDecimal);
-    return isNaN(parsed) ? 0 : parsed;
-  }
 
-  // ✅ Method to format decimal display
-  formatDecimalDisplay(value: number): string {
-    return value % 1 === 0 ? value.toString() : value.toFixed(3);
-  }
 
-  // ✅ Method to normalize decimal input (convert comma to dot for consistency)
-  normalizeDecimalInput(input: string): string {
-    return input.replace(/,/g, '.');
-  }
 
-  // ✅ Method to validate decimal input (supports both . and ,)
-  isValidDecimalInput(input: string): boolean {
-    // Allow digits, one decimal separator (. or ,), and basic validation
-    const normalizedInput = this.normalizeDecimalInput(input);
-    const decimalPattern = /^\d*\.?\d*$/;
-    return decimalPattern.test(normalizedInput);
-  }
 
   // ✅ Helper method to focus next input in sequence
   private focusNextInput(currentFieldClass: string, currentIndex: number): void {

@@ -19,7 +19,7 @@ services:
     ports:
       - "55050:80"
     depends_on:
-      - postgres  
+      - postgres
   redis:
     image: redis:latest
     container_name: rausach-redis
@@ -28,7 +28,7 @@ services:
       - "56379:6379"
     volumes:
       - redis_data:/data
-    command: ["redis-server", "--appendonly", "yes"]      
+    command: [ "redis-server", "--appendonly", "yes" ]
   berausach:
     build: ./api
     container_name: rausach-backend
@@ -45,10 +45,10 @@ services:
       - ZALO_APP_ID=your-zalo-app-id
       - ZALO_APP_SECRET=your-zalo-app-secret
       - BASE_URL=https://tg.rausachtrangia.com
-      - SERVER_URL=https://apitg.rausachtrangia.com 
+      - SERVER_URL=https://apitg.rausachtrangia.com
       - PORT=3331
       - REDIS_HOST=redis
-      - REDIS_PORT=56379
+      - REDIS_PORT=6379
       - MINIO_ENDPOINT=storage.rausachtrangia.com
       - MINIO_PORT=59000
       - MINIO_USE_SSL=false
@@ -60,9 +60,10 @@ services:
       - MINIO_BUCKET=uploads
       - MINIO_REGION=us-east-1
       - MINIO_PUBLIC_URL=http://storage.rausachtrangia.com:59000
+      - GOOGLE_API_KEY=AIzaSyAcLy3dOt27BgxkDSAY7fRm0jbwlzPo-80
     depends_on:
       - postgres
-      - redis      
+      - redis
   ferausach:
     build: ./frontend
     container_name: rausach-frontend
@@ -72,7 +73,6 @@ services:
     environment:
       - NODE_ENV=production
 
-      
   minio_rausach:
     image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
     container_name: rausach-minio
@@ -86,13 +86,12 @@ services:
     volumes:
       - minio_rausach:/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
       interval: 30s
       timeout: 20s
       retries: 3
       start_period: 10s
     restart: unless-stopped
-
 
 volumes:
   pg_data:

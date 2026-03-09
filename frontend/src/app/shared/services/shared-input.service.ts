@@ -148,10 +148,73 @@ export class SharedInputService {
   constructor(private snackBar: MatSnackBar) {}
 
   /**
-   * Parse decimal value with support for both comma and dot
+   * Parse decimal value with support for thousands separators and both comma/dot decimals
    */
-  parseDecimalValue(value: string): number {
-    return Number(value.replace(/,/g, '.')) || 0;
+  parseDecimalValue(value: string | number): number {
+    if (!value && value !== 0) return 0;
+    
+    let str = value.toString().trim();
+    
+    // Handle negative numbers
+    const isNegative = str.startsWith('-');
+    if (isNegative) {
+      str = str.substring(1);
+    }
+    
+    // Remove all characters except digits, dots and commas
+    str = str.replace(/[^\d.,]/g, '');
+    if (!str) return 0;
+
+    // Check if it has both comma and dot
+    const hasComma = str.includes(',');
+    const hasDot = str.includes('.');
+
+    if (hasComma && hasDot) {
+      // Find which one comes last
+      const lastComma = str.lastIndexOf(',');
+      const lastDot = str.lastIndexOf('.');
+      
+      if (lastDot > lastComma) {
+        // Dot is decimal, comma is thousand separator (e.g. 1,234.56)
+        str = str.replace(/,/g, '');
+      } else {
+        // Comma is decimal, dot is thousand separator (e.g. 1.234,56)
+        str = str.replace(/\./g, '').replace(/,/g, '.');
+      }
+    } else if (hasComma) {
+      // Only comma exists
+      const commaCount = (str.match(/,/g) || []).length;
+      if (commaCount > 1) {
+        // Multiple commas -> thousands separator (e.g. 1,000,000)
+        str = str.replace(/,/g, '');
+      } else {
+        const parts = str.split(',');
+        if (parts[1] && parts[1].length === 3) {
+          // Exactly 3 trailing digits is treated as thousands separator (e.g. 10,000)
+          str = str.replace(/,/g, '');
+        } else {
+          // Decimal separator (e.g. 10,5 or 10,50)
+          str = str.replace(/,/g, '.');
+        }
+      }
+    } else if (hasDot) {
+      // Only dot exists
+      const dotCount = (str.match(/\./g) || []).length;
+      if (dotCount > 1) {
+        // Multiple dots -> thousands separator (e.g. 1.000.000)
+        str = str.replace(/\./g, '');
+      } else {
+        const parts = str.split('.');
+        if (parts[1] && parts[1].length === 3) {
+          // Exactly 3 trailing digits is treated as thousands separator (e.g. 10.000)
+          str = str.replace(/\./g, '');
+        }
+      }
+    }
+
+    const parsed = parseFloat(str);
+    const finalValue = isNaN(parsed) ? 0 : parsed;
+    return isNegative ? -finalValue : finalValue;
   }
 
   /**

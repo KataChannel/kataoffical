@@ -17,20 +17,23 @@ ssh $SERVER << EOF
     # Tạo folder chứa tạm trên Host
     mkdir -p /tmp/rausach_backup_$TIMESTAMP
     
+    # Tìm tên container (có thể có prefix/suffix)
+    DB_CONTAINER=\$(docker ps --format '{{.Names}}' | grep rausach-postgres | head -n 1)
+    REDIS_CONTAINER=\$(docker ps --format '{{.Names}}' | grep rausach-redis | head -n 1)
+    MINIO_CONTAINER=\$(docker ps --format '{{.Names}}' | grep rausach-minio | head -n 1)
+
     # 1. Backup Database PostgreSQL
-    echo "   -> Trích xuất database PostgreSQL..."
-    # Không thể ghi trực tiếp volume sang Host từ bên trong container nếu folder chưa được map. 
-    # Nên dùng stdout ra rồi >> vào file bên ngoài Host.
-    docker exec rausach-postgres pg_dump -U AWois79wFA1bxMK -d rausachfinal -F c > /tmp/rausach_backup_$TIMESTAMP/rausachfinal_db.dump || echo "      Lỗi: Không tìm thấy PostgreSQL container hoặc sai tên DB"
+    echo "   -> Trích xuất database PostgreSQL (\$DB_CONTAINER)..."
+    docker exec \$DB_CONTAINER pg_dump -U AWois79wFA1bxMK -d rausachfinal -F c > /tmp/rausach_backup_$TIMESTAMP/rausachfinal_db.dump || echo "      Lỗi: Không tìm thấy PostgreSQL container hoặc sai tên DB"
     
     # 2. Backup Redis
-    echo "   -> Backup Redis dump.rdb..."
-    docker exec rausach-redis redis-cli SAVE || true
-    docker cp rausach-redis:/data/dump.rdb /tmp/rausach_backup_$TIMESTAMP/redis_dump.rdb 2>/dev/null || echo "      Lỗi: Không copy được Redis data"
+    echo "   -> Backup Redis dump.rdb (\$REDIS_CONTAINER)..."
+    docker exec \$REDIS_CONTAINER redis-cli SAVE || true
+    docker cp \$REDIS_CONTAINER:/data/dump.rdb /tmp/rausach_backup_$TIMESTAMP/redis_dump.rdb 2>/dev/null || echo "      Lỗi: Không copy được Redis data"
 
     # 3. Backup Minio Data (ảnh/video uploads)
-    echo "   -> Backup MinIO Uploads..."
-    docker cp rausach-minio:/data /tmp/rausach_backup_$TIMESTAMP/minio_data 2>/dev/null || echo "      Lỗi: Không copy được Minio data"
+    echo "   -> Backup MinIO Uploads (\$MINIO_CONTAINER)..."
+    docker cp \$MINIO_CONTAINER:/data /tmp/rausach_backup_$TIMESTAMP/minio_data 2>/dev/null || echo "      Lỗi: Không copy được Minio data"
 
     # 4. Backup docker-compose.yml và env
     echo "   -> Backup configs (.env, docker-compose.yml)..."
