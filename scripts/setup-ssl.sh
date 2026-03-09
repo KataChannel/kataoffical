@@ -20,7 +20,7 @@ if systemctl is-active --quiet nginx; then
     
     # Cấu hình SSL
     echo "🔐 Requesting SSL certificates..."
-    certbot --nginx -d tg.rausachtrangia.com -d media.rausachtrangia.com -d apitg.rausachtrangia.com \
+    certbot --nginx -d tg.rausachtrangia.com -d media.rausachtrangia.com -d apitg.rausachtrangia.com -d g.rausachtrangia.com \
         --non-interactive \
         --agree-tos \
         --email admin@rausachtrangia.com \

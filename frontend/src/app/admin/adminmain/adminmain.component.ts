@@ -272,7 +272,12 @@ export class AdminmainComponent {
     if (this.isSubscribed) {
       // Unsubscribe logic would go here if needed, but we can just toggle back
       // For simplicity, we just enable. If they want to disable, they'd have to use browser settings or we implement unsubscribe
-      this._snackBar.open('Thông báo đang bật. Để tắt, vui lòng dùng cài đặt trình duyệt.', 'Đóng', { duration: 3000 });
+      this._snackBar.open('Thông báo đang bật. Để tắt, vui lòng dùng cài đặt trình duyệt.', 'Đóng', { 
+        duration: 3000,
+        panelClass: ['snackbar-info'],
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      });
     } else {
       try {
         const sub = await this.swPush.requestSubscription({
@@ -290,7 +295,12 @@ export class AdminmainComponent {
         });
         
         this.isSubscribed = true;
-        this._snackBar.open('Đã bật thông báo thành công!', 'Đóng', { duration: 3000 });
+        this._snackBar.open('Đã bật thông báo thành công!', 'Đóng', { 
+          duration: 3000,
+          panelClass: ['snackbar-success'],
+          horizontalPosition: 'end',
+          verticalPosition: 'top'
+        });
       } catch (err) {
         console.error('Could not subscribe to notifications', err);
         this.isSubscribed = false;

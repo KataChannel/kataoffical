@@ -14,11 +14,10 @@ RUN bun install --no-cache
 COPY . .
 
 # Force Docker cache invalidation - BUST_CACHE_16_AUG_15_33
-# Install Prisma globally and use db push instead of migrate
+# Install Prisma globally
 RUN bun install -g prisma
-# Force rebuild with accept-data-loss flag - 2025-08-16 15:28
-RUN bun prisma db push --accept-data-loss
 RUN bun prisma generate
+RUN bun run build
 
 # Use a smaller runtime image
 FROM oven/bun:latest

@@ -51,56 +51,80 @@
   </mat-drawer>
 
   <div class="relative flex flex-col w-full h-full primary">
-    <div class="relative flex flex-row space-x-2 justify-between items-center p-1 bg-[#57A345]">
-      <div class="flex flex-row space-x-2 items-center">
-        <button mat-icon-button (click)="drawer.toggle()">
+    <div class="relative flex flex-row justify-between items-center p-1 bg-[#57A345] text-white overflow-hidden">
+      <!-- Left: Menu & Search Icon (Mobile/Tablet < XL) -->
+      <div class="flex flex-row items-center flex-shrink-0">
+        <button mat-icon-button (click)="drawer.toggle()" class="!text-white flex-shrink-0">
           <mat-icon>menu</mat-icon>
         </button>
-        <!-- <button mat-icon-button><mat-icon>search</mat-icon></button> -->
-        <div (click)="openSearchDialog()" class="relative max-w-xl flex flex-row items-center search-input-container">
+        
+        <!-- Search Button Icon (Hidden on Desktop XL) -->
+        <button mat-icon-button (click)="openSearchDialog()" class="xl:hidden !text-white flex-shrink-0">
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
+
+      <!-- Right: Search Bar (Desktop only), DB Name, and Action Icons -->
+      <div class="flex flex-row items-center justify-end flex-1 min-w-0">
+        
+        <!-- Search Bar (Desktop only > 1280px) -->
+        <div (click)="openSearchDialog()" class="hidden xl:flex relative flex-1 max-w-[280px] items-center search-input-container mx-2 overflow-hidden">
           <input type="text" placeholder="Tìm Kiếm..."
-            class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
+            class="block w-full pl-10 pr-4 py-1.5 text-gray-700 bg-white/95 border border-transparent rounded-lg focus:outline-none text-xs truncate"
             readonly>
           <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <span class="material-symbols-outlined text-gray-500">search</span>
+            <span class="material-symbols-outlined text-gray-500 !text-xl">search</span>
           </div>
         </div>
 
-      </div>
-      <div class="flex flex-row space-x-2 items-center">
-        <div *ngIf="dbName" class="flex items-center px-4 py-1.5 bg-white/15 rounded-md border border-white/25 mr-3 shadow-inner backdrop-blur-sm transition-all hover:bg-white/25">
-          <mat-icon class="!w-5 !h-5 text-[18px] mr-2 text-white/90">storage</mat-icon>
-          <span class="text-white text-[11px] font-bold tracking-widest uppercase opacity-95">{{dbName}}</span>
+        <!-- DB Name - Only shown on extra large screens -->
+        <div *ngIf="dbName" class="hidden xl:flex items-center px-3 py-1 bg-white/10 rounded-md border border-white/20 mr-2 backdrop-blur-sm flex-shrink-0">
+          <mat-icon class="!w-4 !h-4 text-[16px] mr-1.5 text-white/90">storage</mat-icon>
+          <span class="text-white text-[10px] font-bold tracking-widest uppercase truncate max-w-[100px]">{{dbName}}</span>
         </div>
-        <button mat-icon-button (click)="ClearCache()">
-          <mat-icon>cached</mat-icon>
-        </button>
-        <button mat-icon-button (click)="drawer1.toggle();isQuytrinh=true">
-          <mat-icon>dashboard</mat-icon>
-        </button>
-        <button mat-icon-button (click)="drawer1.toggle();isQuytrinh=false">
-          <mat-icon [matBadge]="unreadCount" matBadgeColor="warn" [matBadgeHidden]="unreadCount === 0">notifications</mat-icon>
-        </button>
-        <a mat-icon-button [routerLink]="['/admin/support']">
-          <mat-icon>chat</mat-icon>
-        </a>
-        <button mat-icon-button [matMenuTriggerFor]="menu1">
-          <mat-icon>account_circle</mat-icon>
-        </button>
+        
+        <!-- Action Buttons Group - Forced to stay on one line and never shrink -->
+        <div class="flex flex-row items-center flex-nowrap flex-shrink-0">
+          <button mat-icon-button (click)="ClearCache()" class="!text-white" matTooltip="Xóa Cache">
+            <mat-icon class="!text-[22px]">cached</mat-icon>
+          </button>
+          
+          <button mat-icon-button (click)="drawer1.toggle();isQuytrinh=true" class="!text-white" matTooltip="Quy trình">
+            <mat-icon class="!text-[22px]">dashboard</mat-icon>
+          </button>
+          
+          <button mat-icon-button (click)="drawer1.toggle();isQuytrinh=false" class="!text-white" matTooltip="Thông báo">
+            <mat-icon [matBadge]="unreadCount" matBadgeColor="warn" [matBadgeHidden]="unreadCount === 0" class="!text-[22px]">notifications</mat-icon>
+          </button>
+          
+          <a mat-icon-button [routerLink]="['/admin/support']" class="!text-white hidden xs:inline-flex" matTooltip="Hỗ trợ">
+            <mat-icon class="!text-[22px]">chat</mat-icon>
+          </a>
+          
+          <button mat-icon-button [matMenuTriggerFor]="menu1" class="!text-white">
+            <mat-icon class="!text-[26px]">account_circle</mat-icon>
+          </button>
+        </div>
+        
         <mat-menu #menu1="matMenu">
           <div class="flex flex-row space-x-2 items-center p-4">
             <img [src]="User?.Avatar" alt="Avatar" class="max-w-14 max-h-14 object-cover rounded-full">
             <div class="flex flex-col">
-              <div class="font-bold">{{User?.Hoten}}</div>
-              <div class="italic text-xs">{{User?.Vitri}}</div>
-              <div class="italic text-xs">{{User?.email}}</div>
+              <div class="font-bold border-b pb-1 mb-1">{{User?.Hoten}}</div>
+              <div class="italic text-xs text-gray-500">{{User?.Vitri}}</div>
+              <div class="italic text-xs text-gray-500">{{User?.email}}</div>
             </div>
           </div>
-          <a [href]="'/admin/profile'" mat-menu-item>Thông Tin</a>
-          <button mat-menu-item>Cài Đặt</button>
-          <button mat-menu-item (click)="logout()">Đăng Xuất</button>
+          <mat-divider></mat-divider>
+          <a [routerLink]="['/admin/profile']" mat-menu-item>
+            <mat-icon>person</mat-icon>
+            <span>Thông Tin</span>
+          </a>
+          <button mat-menu-item (click)="logout()" class="text-red-500">
+            <mat-icon class="text-red-500">logout</mat-icon>
+            <span>Đăng Xuất</span>
+          </button>
         </mat-menu>
-
       </div>
     </div>
     

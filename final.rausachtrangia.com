@@ -1,7 +1,7 @@
 # Main frontend service với domain tg.rausachtrangia.com
 server {
     listen 80;
-    server_name tg.rausachtrangia.com;
+    server_name tg.rausachtrangia.com g.rausachtrangia.com;
 
     # Đường dẫn cho Certbot xác thực
     location /.well-known/acme-challenge/ {

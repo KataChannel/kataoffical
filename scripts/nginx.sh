@@ -28,14 +28,14 @@ if sudo nginx -t; then
     
     # Cấu hình SSL
     echo "🔒 Configuring SSL..."
-    sudo certbot --nginx -d tg.rausachtrangia.com -d media.rausachtrangia.com -d apitg.rausachtrangia.com --non-interactive --agree-tos --email admin@rausachtrangia.com
+    sudo certbot --nginx -d tg.rausachtrangia.com -d media.rausachtrangia.com -d apitg.rausachtrangia.com -d g.rausachtrangia.com --non-interactive --agree-tos --email admin@rausachtrangia.com
     
     if [ $? -eq 0 ]; then
         echo "✅ SSL configured successfully"
     else
         echo "⚠️ SSL configuration failed, trying standalone mode..."
         sudo systemctl stop nginx
-        sudo certbot certonly --standalone -d tg.rausachtrangia.com -d media.rausachtrangia.com -d apitg.rausachtrangia.com --non-interactive --agree-tos --email admin@rausachtrangia.com
+        sudo certbot certonly --standalone -d tg.rausachtrangia.com -d media.rausachtrangia.com -d apitg.rausachtrangia.com -d g.rausachtrangia.com --non-interactive --agree-tos --email admin@rausachtrangia.com
         sudo systemctl start nginx
     fi
 else
