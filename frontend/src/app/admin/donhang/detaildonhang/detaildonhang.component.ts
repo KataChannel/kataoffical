@@ -386,12 +386,14 @@ export class DetailDonhangComponent {
     const uniqueProducts = [];
 
     for (const product of products) {
-      if (!seen.has(product.id)) {
-        seen.add(product.id);
+      // Check for product ID (idSP) or the record ID if idSP is missing
+      const lookupId = product.idSP || product.id;
+      if (!seen.has(lookupId)) {
+        seen.add(lookupId);
         uniqueProducts.push(product);
       } else {
         console.warn(
-          `Removed duplicate product: ${product.title} (ID: ${product.id})`
+          `Removed duplicate product: ${product.title} (Lookup ID: ${lookupId})`
         );
       }
     }
@@ -421,8 +423,8 @@ export class DetailDonhangComponent {
       return 'Vui lòng thêm ít nhất một sản phẩm';
     }
 
-    // ✅ NEW: Check for duplicate products
-    const productIds = donhang.sanpham.map((sp: any) => sp.id);
+    // ✅ FIX: Check for duplicate products using idSP consistently
+    const productIds = donhang.sanpham.map((sp: any) => sp.idSP || sp.id);
     const uniqueProductIds = [...new Set(productIds)];
     if (productIds.length !== uniqueProductIds.length) {
       return 'Có sản phẩm trùng lặp trong đơn hàng. Vui lòng kiểm tra lại.';
@@ -1781,35 +1783,37 @@ export class DetailDonhangComponent {
     } else {
       // Product is not selected yet, add it to ListFilter
       if (CheckItem) {
+        // ✅ FIX: Add item to ListFilter IMMEDIATELY to prevent race condition from rapid clicks
         // Create a copy of the object to avoid read-only property error
         const itemCopy = { ...CheckItem };
         
-        // Get correct price from banggia
+        // Initialize default values locally
+        itemCopy.giaban = item.giaban || 0;
+        itemCopy.sldat = 1;
+        itemCopy.slgiao = 1;
+        itemCopy.slnhan = 1;
+        itemCopy.slhuy = 0;
+        itemCopy.ttdat = 0;
+        itemCopy.ttgiao = 0;
+        itemCopy.ttnhan = 0;
+        itemCopy.ttsauvat = 0;
+        itemCopy.vat = 0;
+        itemCopy.ghichu = '';
+        itemCopy.order = this.ListFilter.length + 1;
+        itemCopy.idSP = item.id; // Set idSP for consistency
+        
+        // Add immediately
+        this.ListFilter.push(itemCopy);
+        this.dataSource().data = [...this.ListFilter];
+        this.dataSource().data.sort((a, b) => (a.order || 0) - (b.order || 0));
+        
+        // Then update price asynchronously if needed
         this.getProductPriceFromBanggia(item.id, item.giaban || 0).then(correctPrice => {
-          itemCopy.giaban = correctPrice;
-          
-          // Initialize default quantities if not present
-          itemCopy.sldat = itemCopy.sldat || 1;
-          itemCopy.slgiao = itemCopy.slgiao || 1;
-          itemCopy.slnhan = itemCopy.slnhan || 1;
-          itemCopy.slhuy = itemCopy.slhuy || 0;
-          itemCopy.ttdat = itemCopy.ttdat || 0;
-          itemCopy.ttgiao = itemCopy.ttgiao || 0;
-          itemCopy.ttnhan = itemCopy.ttnhan || 0;
-          itemCopy.ttsauvat = itemCopy.ttsauvat || 0;
-          itemCopy.vat = itemCopy.vat || 0;
-          itemCopy.ghichu = itemCopy.ghichu || '';
-          itemCopy.order = this.ListFilter.length + 1;
-          
-          // Update ListFilter at the correct position
-          const existingIndex = this.ListFilter.findIndex(existing => existing.id === item.id);
-          if (existingIndex === -1) {
-            this.ListFilter.push(itemCopy);
-            console.log(`Added product: ${item.title} with price: ${correctPrice}`);
-            
-            // Update dataSource immediately
+          const index = this.ListFilter.findIndex(f => f.id === item.id);
+          if (index !== -1) {
+            this.ListFilter[index].giaban = correctPrice;
+            // Trigger UI update if necessary (though most fields won't change)
             this.dataSource().data = [...this.ListFilter];
-            this.dataSource().data.sort((a, b) => (a.order || 0) - (b.order || 0));
           }
         });
       }
