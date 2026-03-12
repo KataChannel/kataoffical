@@ -92,6 +92,19 @@ let NotificationService = NotificationService_1 = class NotificationService {
                 this.logger.log(`No active subscriptions found for user ${userId}`);
                 return;
             }
+            const pushPayload = {
+                notification: {
+                    title: payload.title || 'Thông báo mới',
+                    body: payload.body || '',
+                    icon: payload.icon || '/icons/icon-72x72.png',
+                    vibrate: [100, 50, 100],
+                    data: {
+                        url: payload.url || '/',
+                        id: notification.id
+                    },
+                    actions: payload.actions || []
+                }
+            };
             const sendPromises = subscriptions.map((sub) => {
                 const pushSubscription = {
                     endpoint: sub.endpoint,
@@ -101,7 +114,7 @@ let NotificationService = NotificationService_1 = class NotificationService {
                     },
                 };
                 return webPush
-                    .sendNotification(pushSubscription, JSON.stringify(payload))
+                    .sendNotification(pushSubscription, JSON.stringify(pushPayload))
                     .catch(async (error) => {
                     if (error.statusCode === 404 || error.statusCode === 410) {
                         this.logger.warn(`Subscription has expired or is no longer valid: ${sub.endpoint}`);

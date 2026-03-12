@@ -349,4 +349,25 @@ export class AdminmainComponent {
       console.error('Error deleting notification:', error);
     }
   }
+
+  async testPushNotification() {
+    try {
+      this._snackBar.open('Đang gửi thông báo thử nghiệm...', '', { duration: 1000 });
+      const resp = await fetch(`${environment.APIURL}/notifications/test-admin-push`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Test Push Notification',
+          body: 'Đây là thông báo test được gửi từ nút Test UI.'
+        })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        this._snackBar.open('Đã phát thông báo test cho Admin!', 'Đóng', { duration: 3000, panelClass: ['snackbar-success'] });
+      }
+    } catch (error) {
+      console.error('Error testing push notification:', error);
+      this._snackBar.open('Lỗi khi gửi thông báo test', 'Đóng', { duration: 3000, panelClass: ['snackbar-error'] });
+    }
+  }
 }

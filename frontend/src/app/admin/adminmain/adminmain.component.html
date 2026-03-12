@@ -179,6 +179,10 @@
             </mat-slide-toggle>
           </div>
 
+          <button mat-icon-button class="!text-orange-500" (click)="testPushNotification()" matTooltip="Gửi test push">
+            <mat-icon>send</mat-icon>
+          </button>
+
           <button *ngIf="notifications.length > 0" mat-icon-button class="!text-[#0B9444]" (click)="markAllAsRead()" matTooltip="Đánh dấu tất cả đã đọc">
             <mat-icon>done_all</mat-icon>
           </button>

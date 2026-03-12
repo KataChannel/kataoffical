@@ -102,6 +102,22 @@ export class NotificationService {
         return;
       }
 
+      // 🎯 WRAP PAYLOAD FOR ANGULAR SERVICE WORKER NATIVE PUSH
+      // Standard Angular SW expects { "notification": { "title": "...", "body": "...", "data": { "url": "..." } } }
+      const pushPayload = {
+        notification: {
+          title: payload.title || 'Thông báo mới',
+          body: payload.body || '',
+          icon: payload.icon || '/icons/icon-72x72.png',
+          vibrate: [100, 50, 100],
+          data: {
+            url: payload.url || '/',
+            id: notification.id
+          },
+          actions: payload.actions || []
+        }
+      };
+
       const sendPromises = subscriptions.map((sub) => {
         const pushSubscription = {
           endpoint: sub.endpoint,
@@ -112,7 +128,7 @@ export class NotificationService {
         };
 
         return webPush
-          .sendNotification(pushSubscription, JSON.stringify(payload))
+          .sendNotification(pushSubscription, JSON.stringify(pushPayload))
           .catch(async (error) => {
             if (error.statusCode === 404 || error.statusCode === 410) {
               this.logger.warn(`Subscription has expired or is no longer valid: ${sub.endpoint}`);
