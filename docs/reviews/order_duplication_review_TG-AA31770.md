@@ -21,13 +21,35 @@ Chúng tôi đã cập nhật file `frontend/src/app/admin/donhang/detaildonhang
 2. **Cải tiến Deduplication:** Cập nhật hàm `removeDuplicateProducts` và logic validate để luôn kiểm tra trùng lặp dựa trên mã sản phẩm (`idSP`) thay vì ID bản ghi.
 
 ### B. Dọn dẹp dữ liệu (Data Cleanup)
-1. **Phát hiện:** Tìm thấy **17 đơn hàng khác** trong hệ thống cũng đang gặp tình trạng trùng lặp sản phẩm tương tự.
+1. **Phát hiện:** Tìm thấy **17 đơn hàng** (bao gồm đơn hàng gốc) trong hệ thống gặp tình trạng trùng lặp sản phẩm tương tự.
 2. **Xử lý:** Đã triển khai script `global_cleanup_duplicates.js` để tự động gộp (merge) tất cả các dòng trùng lặp trên toàn hệ thống, cộng dồn số lượng và cập nhật ghi chú một cách an toàn.
 
+**Danh sách các đơn hàng đã được chuẩn hóa:**
+
+| STT | Mã Đơn Hàng | Ngày Giao | Trạng Thái |
+| :--- | :--- | :--- | :--- |
+| 1 | **TG-AA31770** | 12/03/2026 | Đã giao |
+| 2 | **TG-AA29390** | 25/02/2026 | Đã đặt |
+| 3 | **TG-AA28872** | 22/02/2026 | Đã nhận |
+| 4 | **TG-AA27874** | 11/02/2026 | Đã nhận |
+| 5 | **TG-AA27504** | 09/02/2026 | Đã nhận |
+| 6 | **TG-AA26991** | 06/02/2026 | Đã nhận |
+| 7 | **TG-AA19626** | 26/12/2025 | Đã nhận |
+| 8 | **TG-AA15269** | 01/12/2025 | Đã nhận |
+| 9 | **TG-AA12068** | 14/11/2025 | Đã nhận |
+| 10 | **TG-AA10005** | 01/11/2025 | Đã nhận |
+| 11 | **TG-AA09660** | 30/10/2025 | Đã nhận |
+| 12 | **TG-AA06267** | 09/10/2025 | Đã nhận |
+| 13 | **TG-AA02257** | 14/09/2025 | Đã nhận |
+| 14 | **TG-AA01805** | 12/09/2025 | Đã nhận |
+| 15 | **TG-AA01915** | 12/09/2025 | Đã nhận |
+| 16 | **TG-AA00972** | 07/09/2025 | Đã nhận |
+| 17 | **TG-AA00835** | 06/09/2025 | Đã nhận |
+
 ## 4. Trạng thái hiện tại
-- **Hệ thống:** Đã vận hành với mã nguồn đã sửa lỗi, ngăn chặn hoàn toàn việc tái diễn.
+- **Hệ thống:** Đã vận hành với mã nguồn đã sửa lỗi tại Frontend, ngăn chặn hoàn toàn việc tái diễn tình trạng nhấn đúp tạo dòng mới.
 - **Dữ liệu:** Toàn bộ dữ liệu trùng lặp cũ đã được dọn dẹp và chuẩn hóa.
-- **Đơn hàng TG-AA31770:** Đã trở về trạng thái bình thường (không còn dòng trùng).
+- **Đơn hàng TG-AA31770:** Đã trở về trạng thái bình thường và đã được xử lý giao hàng.
 
 ---
 *Ngày báo cáo: 12/03/2026*
