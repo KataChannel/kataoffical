@@ -3,7 +3,7 @@
 # 🚀 Tazav1 Deployment Helper with Generated SSH Key
 # Auto-generated helper script for deployment with key: default
 
-SSH_KEY="/home/server/.ssh/default"
+SSH_KEY="/home/it/.ssh/default"
 SSH_USER="root"
 SERVER_IP="116.118.49.243"
 
