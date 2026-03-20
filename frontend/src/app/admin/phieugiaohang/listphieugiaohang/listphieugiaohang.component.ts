@@ -171,8 +171,8 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     await this.LoadData();
   }
   getTongdon(row: any): number {
-    // Assuming 'tongdon' is the total amount for the order
-    return Number(row.tongtien) + Number(row.tongvat) || 0;
+    // 'tongtien' already includes VAT from backend, so we don't add 'tongvat' again
+    return Number(row.tongtien) || 0;
   }
   async ngOnInit(): Promise<void> {
     // 🔥 AUTO-LOAD: Tự động load dữ liệu trong ngày khi vào trang
