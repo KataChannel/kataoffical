@@ -610,10 +610,15 @@
 
 <ng-template #DeleteDialog>
     <mat-dialog-content>
-        <div class="flex flex-col space-y-8 items-center justify-center">
-            <div class="font-bold">Xác Nhận</div>
-            <div>Bạn chắc chắn muốn xoá không?</div>
-            <div class="flex flex-row space-x-2 items-center justify-center">
+        <div class="flex flex-col space-y-4 items-center justify-center min-w-[300px]">
+            <div class="font-bold text-lg">Xác Nhận</div>
+            <div class="text-center">Bạn chắc chắn muốn xoá các đơn sau không?</div>
+            <div class="flex flex-col w-full max-h-40 overflow-y-auto bg-gray-50 p-3 rounded border border-gray-200 gap-1">
+                @for (item of EditList; track item.id) {
+                <div class="text-center font-medium text-blue-600">{{item.madonhang}}</div>
+                }
+            </div>
+            <div class="flex flex-row space-x-2 items-center justify-center pt-2">
                 <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
                 <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
             </div>
