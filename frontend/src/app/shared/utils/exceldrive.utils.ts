@@ -33,8 +33,11 @@ export function writeExcelFileSheets(
           return newItem;
         })
       : data;
-    // Tạo worksheet từ finalData
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(finalData);
+    // Tạo worksheet từ finalData (hỗ trợ cả json và aoa)
+    const worksheet: XLSX.WorkSheet = (finalData.length > 0 && Array.isArray(finalData[0]))
+      ? XLSX.utils.aoa_to_sheet(finalData)
+      : XLSX.utils.json_to_sheet(finalData);
+      
     workbook.SheetNames.push(sheetName);
     workbook.Sheets[sheetName] = worksheet;
   });

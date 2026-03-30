@@ -36,6 +36,7 @@ export class DonhangGraphqlService {
   donhangId = signal<string | null>(null);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
+  lastSearchParams: any = {};
 
   constructor() {
     this.socket = this._sharedSocketService.getSocket();
@@ -56,6 +57,7 @@ export class DonhangGraphqlService {
    */
   async searchDonhang(searchParams: any) {
     try {
+      this.lastSearchParams = searchParams;
       this.loading.set(true);
       this.error.set(null);
 
@@ -77,13 +79,34 @@ export class DonhangGraphqlService {
       // Lấy dữ liệu đơn hàng với GraphQL
       const result = await this._GraphqlService.findMany('donhang', {
         where,
-        include: {
+        select: {
+          id: true,
+          madonhang: true,
+          status: true,
+          ngaygiao: true,
+          ghichu: true,
+          shipper: true,
+          phieuve: true,
+          giodi: true,
+          giove: true,
+          kynhan: true,
+          khachhangId: true,
+          banggiaId: true,
+          createdAt: true,
           khachhang: {
             select: {
               id: true,
               name: true,
               sdt: true,
-              diachi: true
+              diachi: true,
+              machuyen: true,
+              gionhanhang: true,
+              nhomkhachhang: {
+                select: {
+                  id: true,
+                  name: true
+                }
+              }
             }
           },
           sanpham: {
@@ -101,8 +124,6 @@ export class DonhangGraphqlService {
               order: true,
               isActive: true,
               giaban: true,
-              ttsauvat: true,
-              vat: true,
               sanpham: {
                 select: {
                   id: true,
@@ -438,16 +459,17 @@ export class DonhangGraphqlService {
   }
 
   /**
-   * Xuất Excel danh sách vận đơn và phiếu chuyển
+   * Xuất Excel danh sách vận đơn và phiếu chuyển (3 sheet: Vận đơn + Hàng Siêu Thị + Phiếu Chuyển)
+   * Theo yêu cầu đặc thù cho nhóm SIÊU THỊ (30128727-7c5c-43c0-bc4b-0da5c6db0141)
    */
   async exportVandonToExcel(data?: any[]) {
     try {
-      const vandonData = data || this.ListVandon();
-      // Lấy dữ liệu phiếu chuyển từ DonhangService
-      const phieuchuyenData = this._donhangService.ListDonhang();
+      // Nhóm Siêu Thị ID từ tài liệu yêu cầu
+      const GROUP_SIEU_THI_ID = '30128727-7c5c-43c0-bc4b-0da5c6db0141';
+      const rawDonhangList = this.ListDonhang();
       
-      if (vandonData.length === 0 && phieuchuyenData.length === 0) {
-        this._snackBar.open('Không có dữ liệu để xuất', '', {
+      if (!rawDonhangList || rawDonhangList.length === 0) {
+        this._snackBar.open('Không có dữ liệu để xuất (Vui lòng Nhấn Tìm Kiếm trước)', '', {
           duration: 3000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
@@ -456,7 +478,27 @@ export class DonhangGraphqlService {
         return;
       }
 
-      // Lấy danh sách nhân viên để mapping shipper theo machuyen
+      // 1. FILTER: Lấy tất cả đơn hàng KHÔNG HỦY cho Vận Đơn & Phiếu Chuyển
+      const allActiveOrders = rawDonhangList.filter((order: any) => order.status !== 'huy');
+
+      if (allActiveOrders.length === 0) {
+        this._snackBar.open('Không có đơn hàng nào hợp lệ (tất cả đã hủy)', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning']
+        });
+        return;
+      }
+
+      // 2. FILTER RIÊNG: Chỉ lấy nhóm SIÊU THỊ cho sheet HÀNG ST
+      const sieuThiOrders = allActiveOrders.filter((order: any) => 
+        order.khachhang?.nhomkhachhang?.some(
+          (nhom: any) => nhom.id === GROUP_SIEU_THI_ID || nhom.name?.toLowerCase().includes('siêu thị')
+        )
+      );
+
+      // Lấy danh sách nhân viên để mapping shipper theo machuyen (nếu cần)
       let nhanvienList: any[] = [];
       try {
         const nhanvienResponse = await this._NhanvienService.getAllNhanvien({ limit: 9999 });
@@ -465,73 +507,102 @@ export class DonhangGraphqlService {
         console.warn('Không thể lấy danh sách nhân viên:', error);
       }
 
-      // Chuẩn bị dữ liệu xuất Excel cho vận đơn - Chỉ các trường cần thiết
-      const vandonExcelData = vandonData.map((item: any, index: number) => ({
-        'STT': index + 1,
-        'Mã Đơn Hàng': item.madonhang || '',
-        'Khách Hàng': item.khachhang || '',
-        'Tên Sản Phẩm': item.title || '',
-        'Đơn Vị Tính': item.dvt || '',
-        'SL Đặt': Number(item.sldat) || 0,
-        'SL Giao': Number(item.slgiao) || 0,
-        'SL Nhận': Number(item.slnhan) || 0,
-        'Ngày Giao': item.ngaygiao ? new Date(item.ngaygiao).toLocaleDateString('vi-VN') : '',
-        'Trạng Thái': this.getStatusLabel(item.status) || ''
-      }));
+      const dateStr = moment(this.lastSearchParams?.Batdau || new Date()).format('DD/MM/YYYY');
+      const fileName = `VanDon_TongHop_${moment(this.lastSearchParams?.Batdau || new Date()).format('DD-MM-YYYY')}`;
 
-      // Chuẩn bị dữ liệu xuất Excel cho phiếu chuyển
-      const phieuchuyenExcelData = phieuchuyenData.map((item: any, index: number) => {
-        // Xác định shipper: nếu đã có thì giữ nguyên, nếu không thì tìm theo machuyen
-        let shipper = item.shipper || '';
+      // --- SHEET 1: VẬN ĐƠN (Tất cả đơn hàng) ---
+      const vandonSheetData = allActiveOrders.flatMap((order: any) => 
+        (order.sanpham || []).map((sp: any) => ({
+          'STT': '',
+          'Mã Đơn Hàng': order.madonhang || '',
+          'Khách Hàng': order.khachhang?.name || '',
+          'Tên Sản Phẩm': sp.sanpham?.title || '',
+          'Đơn Vị Tính': sp.sanpham?.dvt || '',
+          'SL Đặt': Number(sp.sldat) || 0,
+          'SL Giao': Number(sp.slgiao) || 0,
+          'SL Nhận': Number(sp.slnhan) || 0,
+          'Ngày Giao': order.ngaygiao ? moment(order.ngaygiao).format('D/M/YYYY') : dateStr,
+          'Trạng Thái': this.getStatusLabel(order.status)
+        }))
+      ).map((v, i) => ({ ...v, 'STT': i + 1 }));
+
+      // --- SHEET 2: HÀNG ST (Chỉ nhóm Siêu Thị) ---
+      const hangSieuThiAOA: any[][] = [
+        ["BẢNG SẢN PHẨM HÀNG ĐÓNG GÓI SIÊU THỊ", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+        ["tên khách hàng", "sản phẩm", "DVT", "KL", "", "", "", "mã KH", "", "", "", "", "", ""]
+      ];
+      
+      sieuThiOrders.forEach((order: any) => {
+        (order.sanpham || []).forEach((sp: any) => {
+          if (!sp.isActive) return;
+          const slGiao = Number(sp.slgiao || sp.sldat) || 0;
+          hangSieuThiAOA.push([
+            order.khachhang?.name || '',
+            sp.sanpham?.title || '',
+            sp.sanpham?.dvt || '',
+            slGiao,
+            slGiao,
+            slGiao,
+            order.ngaygiao ? moment(order.ngaygiao).format('D/M/YYYY') : dateStr,
+            'st'
+          ]);
+        });
+      });
+
+      // --- SHEET 3: PHIẾU CHUYẾN (Tất cả đơn hàng) ---
+      const phieuChuyenSheetData = allActiveOrders.map((order: any, index: number) => {
+        const activeProducts = (order.sanpham || []).filter((sp: any) => sp.isActive);
+        const totalItems = activeProducts.length;
         
-        // Nếu shipper chưa có và có machuyen, tìm nhân viên có maLamViec trùng với machuyen
-        if (!shipper && item.machuyen && nhanvienList.length > 0) {
-          const matchedNhanvien = nhanvienList.find(
-            (nv: any) => nv.maLamViec && nv.maLamViec.toLowerCase() === item.machuyen.toLowerCase()
+        // Số Lượng = Tổng SL Đặt
+        const totalQty = activeProducts.reduce((sum: number, sp: any) => sum + (Number(sp.sldat) || 0), 0);
+        
+        // Số Lượng TT = Tổng SL Giao (Thực Tế bốc đi)
+        const totalQtyTT = activeProducts.reduce((sum: number, sp: any) => sum + (Number(sp.slgiao || sp.sldat) || 0), 0);
+        
+        // Nếu shipper rỗng, thử tìm trong nhanvienList theo machuyen
+        let shipperName = order.shipper || '';
+        if (!shipperName && order.khachhang?.machuyen && nhanvienList.length > 0) {
+          const nv = nhanvienList.find(n => 
+            n.maNV === order.khachhang.machuyen || 
+            n.maLamViec === order.khachhang.machuyen
           );
-          if (matchedNhanvien) {
-            shipper = matchedNhanvien.hoTen || '';
-          }
+          if (nv) shipperName = nv.hoTen;
         }
 
         return {
           'STT': index + 1,
-          'Mã Đơn Hàng': item.madonhang || '',
-          'Ngày Giao': item.ngaygiao ? new Date(item.ngaygiao).toLocaleString('vi-VN') : '',
-          'Tên Khách Hàng': item.name || '',
-          'Số Lượng': item.soluongtt || 0,
-          'Mã Chuyến': item.machuyen || '',
-          'Địa Chỉ': item.diachi || '',
-          'Liên Hệ': '',
-          'Số Điện Thoại': item.sdt || '',
-          'Giờ Nhận Hàng': item.gionhanhang || '',
-          'Tổng Số Món': item.tongsomon || 0,
-          'Số Lượng TT': item.loadpoint || 0,
-          'Shipper': shipper,
-          'Phiếu Về': item.phieuve || '',
-          'Giờ Đi': item.giodi || '',
-          'Giờ Về': item.giove || '',
-          'Ký Nhận': item.kynhan || ''
+          'Mã Đơn Hàng': order.madonhang || '',
+          'Ngày Giao': order.ngaygiao ? moment(order.ngaygiao).format('HH:mm:ss DD/MM/YYYY') : `07:00:00 ${dateStr}`,
+          'Tên Khách Hàng': order.khachhang?.name || '',
+          'Số Lượng': totalQty,
+          'Mã Chuyến': order.khachhang?.machuyen || '',
+          'Địa Chỉ': order.khachhang?.diachi || '',
+          'Liên Hệ': '', 
+          'Số Điện Thoại': order.khachhang?.sdt || '',
+          'Giờ Nhận Hàng': order.khachhang?.gionhanhang || '',
+          'Tổng Số Món': totalItems,
+          'Số Lượng TT': totalQtyTT,
+          'Shipper': shipperName,
+          'Phiếu Về': order.phieuve || '',
+          'Giờ Đi': order.giodi || '',
+          'Giờ Về': order.giove || '',
+          'Ký Nhận': order.kynhan || ''
         };
       });
 
       // Import dynamic để tránh bundle size
       const { writeExcelFileSheets } = await import('../../shared/utils/exceldrive.utils');
-      const fileName = `VanDon_PhieuChuyen_${new Date().toISOString().slice(0, 10)}`;
       
-      // Tạo Excel với 2 sheets - format đúng theo interface
       const sheets = {
-        'Vận Đơn': {
-          data: vandonExcelData
-        },
-        'Phiếu Chuyển': {
-          data: phieuchuyenExcelData
-        }
+        'Vận Đơn': { data: vandonSheetData },
+        'HÀNG ST': { data: hangSieuThiAOA },
+        'Phiếu Chuyển': { data: phieuChuyenSheetData }
       };
       
       writeExcelFileSheets(sheets, fileName);
-      
-      this._snackBar.open('Xuất Excel thành công', '', {
+
+      this._snackBar.open('Xuất Excel thành công (3 sheet)', '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
@@ -539,10 +610,7 @@ export class DonhangGraphqlService {
       });
 
     } catch (error: any) {
-      await this._ErrorLogService.logError(
-        `Lỗi xuất Excel vận đơn: ${error.message || error}`
-      );
-
+      await this._ErrorLogService.logError(`Lỗi xuất Excel vận đơn siêu thị: ${error.message || error}`);
       this._snackBar.open('Lỗi khi xuất Excel: ' + error.message, '', {
         duration: 3000,
         horizontalPosition: 'end',
