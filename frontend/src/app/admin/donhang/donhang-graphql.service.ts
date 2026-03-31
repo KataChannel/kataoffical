@@ -79,28 +79,13 @@ export class DonhangGraphqlService {
       // Lấy dữ liệu đơn hàng với GraphQL
       const result = await this._GraphqlService.findMany('donhang', {
         where,
-        select: {
-          id: true,
-          madonhang: true,
-          status: true,
-          ngaygiao: true,
-          ghichu: true,
-          shipper: true,
-          phieuve: true,
-          giodi: true,
-          giove: true,
-          kynhan: true,
-          khachhangId: true,
-          banggiaId: true,
-          createdAt: true,
+        include: {
           khachhang: {
             select: {
               id: true,
               name: true,
               sdt: true,
               diachi: true,
-              machuyen: true,
-              gionhanhang: true,
               nhomkhachhang: {
                 select: {
                   id: true,
@@ -124,6 +109,8 @@ export class DonhangGraphqlService {
               order: true,
               isActive: true,
               giaban: true,
+              ttsauvat: true,
+              vat: true,
               sanpham: {
                 select: {
                   id: true,
@@ -466,6 +453,12 @@ export class DonhangGraphqlService {
     try {
       // Nhóm Siêu Thị ID từ tài liệu yêu cầu
       const GROUP_SIEU_THI_ID = '30128727-7c5c-43c0-bc4b-0da5c6db0141';
+      
+      // Lấy danh sách đơn hàng gốc (không flatten) từ signal ListDonhang
+      // Nếu data được truyền vào (từ filtered UI), dùng nó.
+      // Dữ liệu trong Table UI thường là flatten (VandonList), cần filter lại từ ListDonhang hoặc map lại.
+      // Để chính xác, ta lấy ListDonhang() hiện tại và lọc theo tiêu chuẩn.
+      
       const rawDonhangList = this.ListDonhang();
       
       if (!rawDonhangList || rawDonhangList.length === 0) {
@@ -478,11 +471,17 @@ export class DonhangGraphqlService {
         return;
       }
 
-      // 1. FILTER: Lấy tất cả đơn hàng KHÔNG HỦY cho Vận Đơn & Phiếu Chuyển
-      const allActiveOrders = rawDonhangList.filter((order: any) => order.status !== 'huy');
+      // 1. FILTER: Chỉ lấy nhóm SIÊU THỊ và trạng thái != 'huy'
+      const filteredDonhangs = rawDonhangList.filter((order: any) => {
+        const isSieuThi = order.khachhang?.nhomkhachhang?.some(
+          (nhom: any) => nhom.id === GROUP_SIEU_THI_ID || nhom.name?.toLowerCase().includes('siêu thị')
+        );
+        const isNotHuy = order.status !== 'huy';
+        return isSieuThi && isNotHuy;
+      });
 
-      if (allActiveOrders.length === 0) {
-        this._snackBar.open('Không có đơn hàng nào hợp lệ (tất cả đã hủy)', '', {
+      if (filteredDonhangs.length === 0) {
+        this._snackBar.open('Không tìm thấy đơn hàng nào thuộc nhóm SIÊU THỊ (hoặc đã hủy)', '', {
           duration: 3000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
@@ -490,13 +489,6 @@ export class DonhangGraphqlService {
         });
         return;
       }
-
-      // 2. FILTER RIÊNG: Chỉ lấy nhóm SIÊU THỊ cho sheet HÀNG ST
-      const sieuThiOrders = allActiveOrders.filter((order: any) => 
-        order.khachhang?.nhomkhachhang?.some(
-          (nhom: any) => nhom.id === GROUP_SIEU_THI_ID || nhom.name?.toLowerCase().includes('siêu thị')
-        )
-      );
 
       // Lấy danh sách nhân viên để mapping shipper theo machuyen (nếu cần)
       let nhanvienList: any[] = [];
@@ -507,102 +499,95 @@ export class DonhangGraphqlService {
         console.warn('Không thể lấy danh sách nhân viên:', error);
       }
 
-      const dateStr = moment(this.lastSearchParams?.Batdau || new Date()).format('DD/MM/YYYY');
-      const fileName = `VanDon_TongHop_${moment(this.lastSearchParams?.Batdau || new Date()).format('DD-MM-YYYY')}`;
+      // --- SHEET 1: VẬN ĐƠN (Rollup per order) ---
+      const vandonSheetData = filteredDonhangs.map((order: any, index: number) => ({
+        'STT': index + 1,
+        'Mã Đơn Hàng': order.madonhang || '',
+        'Khách Hàng': order.khachhang?.name || '',
+        'Địa Chỉ': order.khachhang?.diachi || '',
+        'Số Điện Thoại': order.khachhang?.sdt || '',
+        'Tổng Tiền': Number(order.tongtien) || 0,
+        'Ghi Chú': order.ghichu || ''
+      }));
 
-      // --- SHEET 1: VẬN ĐƠN (Tất cả đơn hàng) ---
-      const vandonSheetData = allActiveOrders.flatMap((order: any) => 
-        (order.sanpham || []).map((sp: any) => ({
-          'STT': '',
-          'Mã Đơn Hàng': order.madonhang || '',
-          'Khách Hàng': order.khachhang?.name || '',
-          'Tên Sản Phẩm': sp.sanpham?.title || '',
-          'Đơn Vị Tính': sp.sanpham?.dvt || '',
-          'SL Đặt': Number(sp.sldat) || 0,
-          'SL Giao': Number(sp.slgiao) || 0,
-          'SL Nhận': Number(sp.slnhan) || 0,
-          'Ngày Giao': order.ngaygiao ? moment(order.ngaygiao).format('D/M/YYYY') : dateStr,
-          'Trạng Thái': this.getStatusLabel(order.status)
-        }))
-      ).map((v, i) => ({ ...v, 'STT': i + 1 }));
-
-      // --- SHEET 2: HÀNG ST (Chỉ nhóm Siêu Thị) ---
-      const hangSieuThiAOA: any[][] = [
-        ["BẢNG SẢN PHẨM HÀNG ĐÓNG GÓI SIÊU THỊ", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-        ["tên khách hàng", "sản phẩm", "DVT", "KL", "", "", "", "mã KH", "", "", "", "", "", ""]
-      ];
-      
-      sieuThiOrders.forEach((order: any) => {
+      // --- SHEET 2: HÀNG SIÊU THỊ (Aggregate products) ---
+      const productMap = new Map<string, any>();
+      filteredDonhangs.forEach((order: any) => {
         (order.sanpham || []).forEach((sp: any) => {
           if (!sp.isActive) return;
-          const slGiao = Number(sp.slgiao || sp.sldat) || 0;
-          hangSieuThiAOA.push([
-            order.khachhang?.name || '',
-            sp.sanpham?.title || '',
-            sp.sanpham?.dvt || '',
-            slGiao,
-            slGiao,
-            slGiao,
-            order.ngaygiao ? moment(order.ngaygiao).format('D/M/YYYY') : dateStr,
-            'st'
-          ]);
+          const key = sp.sanpham?.masp || sp.sanpham?.title || 'Unknown';
+          const current = productMap.get(key) || {
+            'Tên Sản Phẩm': sp.sanpham?.title || '',
+            'ĐVT': sp.sanpham?.dvt || '',
+            'Số Lượng': 0,
+            'Đơn Giá': Number(sp.giaban) || 0,
+            'Thành Tiền': 0
+          };
+          current['Số Lượng'] += Number(sp.slgiao || sp.sldat) || 0;
+          current['Thành Tiền'] += (Number(sp.slgiao || sp.sldat) || 0) * (Number(sp.giaban) || 0);
+          productMap.set(key, current);
         });
       });
+      const hangSieuThiSheetData = Array.from(productMap.values()).map((v, i) => ({
+        'STT': i + 1,
+        ...v
+      }));
 
-      // --- SHEET 3: PHIẾU CHUYẾN (Tất cả đơn hàng) ---
-      const phieuChuyenSheetData = allActiveOrders.map((order: any, index: number) => {
-        const activeProducts = (order.sanpham || []).filter((sp: any) => sp.isActive);
-        const totalItems = activeProducts.length;
+      // --- SHEET 3: PHIẾU CHUYẾN (Rollup per trip/shift) ---
+      const tripMap = new Map<string, any>();
+      filteredDonhangs.forEach((order: any) => {
+        const machuyen = order.khachhang?.machuyen || order.machuyen || 'Chưa gán';
         
-        // Số Lượng = Tổng SL Đặt
-        const totalQty = activeProducts.reduce((sum: number, sp: any) => sum + (Number(sp.sldat) || 0), 0);
-        
-        // Số Lượng TT = Tổng SL Giao (Thực Tế bốc đi)
-        const totalQtyTT = activeProducts.reduce((sum: number, sp: any) => sum + (Number(sp.slgiao || sp.sldat) || 0), 0);
-        
-        // Nếu shipper rỗng, thử tìm trong nhanvienList theo machuyen
-        let shipperName = order.shipper || '';
-        if (!shipperName && order.khachhang?.machuyen && nhanvienList.length > 0) {
-          const nv = nhanvienList.find(n => 
-            n.maNV === order.khachhang.machuyen || 
-            n.maLamViec === order.khachhang.machuyen
+        let shipper = order.shipper || '';
+        if (!shipper && machuyen !== 'Chưa gán' && nhanvienList.length > 0) {
+          const matchedNv = nhanvienList.find(
+            (nv: any) => nv.maLamViec && nv.maLamViec.toLowerCase() === machuyen.toLowerCase()
           );
-          if (nv) shipperName = nv.hoTen;
+          if (matchedNv) shipper = matchedNv.hoTen || '';
         }
 
-        return {
-          'STT': index + 1,
-          'Mã Đơn Hàng': order.madonhang || '',
-          'Ngày Giao': order.ngaygiao ? moment(order.ngaygiao).format('HH:mm:ss DD/MM/YYYY') : `07:00:00 ${dateStr}`,
-          'Tên Khách Hàng': order.khachhang?.name || '',
-          'Số Lượng': totalQty,
-          'Mã Chuyến': order.khachhang?.machuyen || '',
-          'Địa Chỉ': order.khachhang?.diachi || '',
-          'Liên Hệ': '', 
-          'Số Điện Thoại': order.khachhang?.sdt || '',
-          'Giờ Nhận Hàng': order.khachhang?.gionhanhang || '',
-          'Tổng Số Món': totalItems,
-          'Số Lượng TT': totalQtyTT,
-          'Shipper': shipperName,
-          'Phiếu Về': order.phieuve || '',
+        const current = tripMap.get(machuyen) || {
+          'Mã Chuyến': machuyen,
+          'Tài Xế': shipper,
+          'Khách Hàng': [],
           'Giờ Đi': order.giodi || '',
-          'Giờ Về': order.giove || '',
-          'Ký Nhận': order.kynhan || ''
+          'Giờ Về': order.giove || ''
         };
+        
+        if (order.khachhang?.name && !current['Khách Hàng'].includes(order.khachhang.name)) {
+          current['Khách Hàng'].push(order.khachhang.name);
+        }
+        
+        // Cập nhật giờ nếu chưa có hoặc dùng của đơn đầu tiên trong chuyến
+        if (!current['Giờ Đi'] && order.giodi) current['Giờ Đi'] = order.giodi;
+        if (!current['Giờ Về'] && order.giove) current['Giờ Về'] = order.giove;
+        
+        tripMap.set(machuyen, current);
       });
+
+      const phieuChuyenSheetData = Array.from(tripMap.values()).map((v, i) => ({
+        'STT': i + 1,
+        'Mã Chuyến': v['Mã Chuyến'],
+        'Tài Xế': v['Tài Xế'],
+        'Danh sách khách hàng trong chuyến': v['Khách Hàng'].join(', '),
+        'Thời gian đi': v['Giờ Đi'],
+        'Thời gian về': v['Giờ Về']
+      }));
 
       // Import dynamic để tránh bundle size
       const { writeExcelFileSheets } = await import('../../shared/utils/exceldrive.utils');
+      const dateStr = moment(this.lastSearchParams?.Batdau || new Date()).format('DD-MM-YYYY');
+      const fileName = `VanDon_SieuThi_${dateStr}`;
       
       const sheets = {
         'Vận Đơn': { data: vandonSheetData },
-        'HÀNG ST': { data: hangSieuThiAOA },
-        'Phiếu Chuyển': { data: phieuChuyenSheetData }
+        'Hàng Siêu Thị': { data: hangSieuThiSheetData },
+        'Phiếu Chuyến': { data: phieuChuyenSheetData }
       };
       
       writeExcelFileSheets(sheets, fileName);
-
-      this._snackBar.open('Xuất Excel thành công (3 sheet)', '', {
+      
+      this._snackBar.open('Xuất Excel SIÊU THỊ thành công (3 sheet)', '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
