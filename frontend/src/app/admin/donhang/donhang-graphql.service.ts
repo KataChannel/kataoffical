@@ -8,6 +8,7 @@ import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { SharedSocketService } from '../../shared/services/sharedsocket.service';
 import { DonhangService } from './donhang.service';
 import { NhanvienService } from '../nhanvien/nhanvien.service';
+import { TimezoneService } from '../../shared/services/timezone.service';
 import moment from 'moment';
 
 @Injectable({
@@ -20,8 +21,9 @@ export class DonhangGraphqlService {
   private _snackBar = inject(MatSnackBar);
   private _ErrorLogService = inject(ErrorLogService);
   private _sharedSocketService = inject(SharedSocketService);
-  private _donhangService = inject(DonhangService);
+  private _DonhangService = inject(DonhangService);
   private _NhanvienService = inject(NhanvienService);
+  private _timezoneService = inject(TimezoneService);
   
   private socket: any;
 
@@ -100,6 +102,7 @@ export class DonhangGraphqlService {
               sdt: true,
               diachi: true,
               machuyen: true,
+              loaikh: true,
               gionhanhang: true,
               nhomkhachhang: {
                 select: {
@@ -498,6 +501,11 @@ export class DonhangGraphqlService {
         )
       );
 
+      // 3. FILTER RIÊNG: Chỉ lấy nhóm KHÁCH LẺ cho sheet KHÁCH LẺ
+      const khachLeOrders = allActiveOrders.filter((order: any) => 
+        order.khachhang?.loaikh?.toLowerCase().includes('lẻ')
+      );
+
       // Lấy danh sách nhân viên để mapping shipper theo machuyen (nếu cần)
       let nhanvienList: any[] = [];
       try {
@@ -528,8 +536,8 @@ export class DonhangGraphqlService {
 
       // --- SHEET 2: HÀNG ST (Chỉ nhóm Siêu Thị) ---
       const hangSieuThiAOA: any[][] = [
-        ["BẢNG SẢN PHẨM HÀNG ĐÓNG GÓI SIÊU THỊ", "", "", "", "", "", "", "", "", "", "", ""],
-        ["tên khách hàng", "sản phẩm", "DVT", "KL", "", "mã KH", "", "", "", "", "", ""]
+        ["BẢNG SẢN PHẨM HÀNG ĐÓNG GÓI SIÊU THỊ", "", "", "", "", ""],
+        ["tên khách hàng", "sản phẩm", "DVT", "KL", "Ngày Giao", "Trạng Thái"]
       ];
       
       sieuThiOrders.forEach((order: any) => {
@@ -542,12 +550,33 @@ export class DonhangGraphqlService {
             sp.sanpham?.dvt || '',
             slGiao,
             order.ngaygiao ? moment(order.ngaygiao).format('D/M/YYYY') : dateStr,
-            'st'
+            this.getStatusLabel(order.status)
           ]);
         });
       });
 
-      // --- SHEET 3: PHIẾU CHUYẾN (Tất cả đơn hàng) ---
+      // --- SHEET 3: KHÁCH LẺ (Loại Khách Hàng = Lẻ) ---
+      const hangKhachLeAOA: any[][] = [
+        ["BẢNG SẢN PHẨM HÀNG KHÁCH LẺ", "", "", "", "", ""],
+        ["tên khách hàng", "sản phẩm", "DVT", "KL", "Ngày Giao", "Trạng Thái"]
+      ];
+      
+      khachLeOrders.forEach((order: any) => {
+        (order.sanpham || []).forEach((sp: any) => {
+          if (!sp.isActive) return;
+          const slGiao = Number(sp.slgiao || sp.sldat) || 0;
+          hangKhachLeAOA.push([
+            order.khachhang?.name || '',
+            sp.sanpham?.title || '',
+            sp.sanpham?.dvt || '',
+            slGiao,
+            order.ngaygiao ? moment(order.ngaygiao).format('D/M/YYYY') : dateStr,
+            this.getStatusLabel(order.status)
+          ]);
+        });
+      });
+
+      // --- SHEET 4: PHIẾU CHUYẾN (Tất cả đơn hàng) ---
       const phieuChuyenSheetData = allActiveOrders.map((order: any, index: number) => {
         const activeProducts = (order.sanpham || []).filter((sp: any) => sp.isActive);
         const totalItems = activeProducts.length;
@@ -589,18 +618,153 @@ export class DonhangGraphqlService {
         };
       });
 
+      // --- NEW SHEET: TỔNG HỢP (Aggregated from Nhu Cau Dat Hang) ---
+      let tonghopSheetData: any[] = [];
+      try {
+        // Use the same date range as the search to fetch aggregate data
+        let startDate: string;
+        let endDate: string;
+
+        if (this.lastSearchParams?.Batdau && this.lastSearchParams?.Ketthuc) {
+          const range = this._timezoneService.getAPIDateRange(
+            this.lastSearchParams.Batdau,
+            this.lastSearchParams.Ketthuc
+          );
+          startDate = range.Batdau;
+          endDate = range.Ketthuc;
+        } else {
+          const today = new Date();
+          const range = this._timezoneService.getAPIDateRange(today, today);
+          startDate = range.Batdau;
+          endDate = range.Ketthuc;
+        }
+
+        const response = await this._GraphqlService.getNhuCauDatHang(startDate, endDate, true);
+        const rawAggregated = response || [];
+
+        // Define warehouses for mapping
+        const warehouses = [
+          { value: 'kho1', label: 'TG-LONG AN', makho: 'TG-LA' },
+          { value: 'kho2', label: 'Bổ Sung', makho: 'TG-BS' },
+          { value: 'kho3', label: 'TG-ĐÀ LẠT', makho: 'TG-ĐL' },
+          { value: 'kho4', label: 'KHO TỔNG - HCM', makho: 'TG-HCM' },
+          { value: 'kho5', label: 'SG1', makho: 'TG-SG1' },
+          { value: 'kho6', label: 'SG2', makho: 'TG-SG2' },
+        ];
+
+        // Process data using Reliable Stock formula
+        const processedAggregated = (rawAggregated.data || []).map((item: any) => {
+          const lastCountTime = item.updatedAt ? new Date(item.updatedAt).getTime() : 0;
+
+          // 1. Nhập mới sau chốt
+          const receivedAfterCount = (item.Dathangs || [])
+            .filter((dh: any) => dh.status === 'danhan' && dh.updatedAt && new Date(dh.updatedAt).getTime() > lastCountTime)
+            .reduce((sum: number, dh: any) => sum + (Number(dh.slnhan) || 0), 0);
+
+          // 2. Xuất mới sau chốt
+          const deliveredAfterCount = (item.Donhangs || [])
+            .filter((dh: any) => (dh.status === 'dagiao' || dh.status === 'danhan' || dh.status === 'hoanthanh') &&
+              dh.updatedAt && new Date(dh.updatedAt).getTime() > lastCountTime)
+            .reduce((sum: number, dh: any) => sum + (Number(dh.slnhan) || 0), 0);
+
+          // 3. Đang về từ NCC
+          const khoValues: any = {};
+          warehouses.forEach(w => khoValues[w.value] = 0);
+          if (item.Dathangs) {
+            item.Dathangs.forEach((dh: any) => {
+              const w = warehouses.find(kho => kho.makho === dh.makho);
+              if (w) khoValues[w.value] += (Number(dh.sldat) || 0);
+            });
+          }
+
+          const incomingStock = Object.values(khoValues).reduce((sum: any, val: any) => sum + val, 0) as number;
+
+          // formula: Tồn chốt + Biến động + Đang về
+          const tongkho = parseFloat((Number(item.sltontt || 0) + receivedAfterCount - deliveredAfterCount + incomingStock).toFixed(3));
+          
+          // khachdat & khachgiao logic from transformFinalData
+          const khachdat = (item.Donhangs || [])
+            .filter((v: any) => v.status === 'dadat')
+            .reduce((acc: number, curr: any) => acc + (Number(curr.sldat) || 0), 0);
+
+          const khachgiao = (item.Donhangs || [])
+            .filter((v: any) => v.status === 'dagiao' || v.status === 'danhan' || v.status === 'hoanthanh')
+            .reduce((acc: number, curr: any) => acc + (Number(curr.sldat) || 0), 0);
+
+          const goiy = parseFloat((khachdat + khachgiao - tongkho).toFixed(3));
+          const slhaohut = khachdat > 0 ? parseFloat(((khachdat * (item.haohut || 0)) / 100).toFixed(3)) : 0;
+
+          return {
+            ngaynhan: item.Dathangs && item.Dathangs.length > 0 ? moment(item.Dathangs[0].ngaynhan).format('YYYY-MM-DD') : '',
+            mancc: item.mancc || '',
+            name: item.name || '',
+            masp: item.masp || '',
+            title: item.title || '',
+            dvt: item.dvt || '',
+            xSLDat: 0, // Default for template
+            goiy: goiy,
+            ghichu: item.ghichu || '',
+            khachdat: khachdat,
+            khachgiao: khachgiao,
+            slton: parseFloat((tongkho - khachgiao).toFixed(3)),
+            tongkho: tongkho,
+            sltontt: Number(item.sltontt) || 0,
+            chenhlech: parseFloat((tongkho - khachgiao - (Number(item.sltontt) || 0)).toFixed(3)),
+            ...khoValues,
+            haohut: item.haohut || 0,
+            slhaohut: slhaohut
+          };
+        });
+
+        // Apply mapping to match Image 2
+        const mapping: any = {
+          ngaynhan: 'NGÀY',
+          mancc: 'MÃ NCC',
+          name: 'TÊN NHÀ CUNG CẤP',
+          masp: 'MÃ SẢN PHẨM',
+          title: 'TÊN SẢN PHẨM',
+          dvt: 'ĐVT',
+          xSLDat: 'SL ĐẶT (NHÀ CC)',
+          goiy: 'SL CẦN ĐẶT (GỢI Ý)',
+          ghichu: 'GHI CHÚ',
+          khachdat: 'TỔNG ĐẶT (KHÁCH)',
+          khachgiao: 'TỔNG BÁN (GIAO)',
+          slton: 'TỒN HỆ THỐNG',
+          tongkho: 'TỔNG TỒN (CÁC KHO)',
+          sltontt: 'TỒN CHỐT KHO (THỰC TẾ)',
+          chenhlech: 'CHÊNH LỆCH',
+          kho1: 'TG-LONG AN',
+          kho2: 'BỔ SUNG',
+          kho3: 'TG-ĐÀ LẠT',
+          haohut: 'TỈ LỆ HAO HỤT (%)',
+          slhaohut: 'SL HAO HỤT',
+        };
+
+        tonghopSheetData = processedAggregated.map((item: any) => {
+          const row: any = {};
+          Object.keys(mapping).forEach(key => {
+            row[mapping[key]] = item[key];
+          });
+          return row;
+        });
+
+      } catch (error) {
+        console.warn('Không thể tạo sheet Tổng hợp:', error);
+      }
       // Import dynamic để tránh bundle size
       const { writeExcelFileSheets } = await import('../../shared/utils/exceldrive.utils');
       
       const sheets = {
-        'Vận Đơn': { data: vandonSheetData },
-        'HÀNG ST': { data: hangSieuThiAOA },
+        'Tổng hợp': { data: tonghopSheetData },
+        'Vận đơn': { data: vandonSheetData },
+        'Hàng ST': { data: hangSieuThiAOA },
+        'Khách lẻ': { data: hangKhachLeAOA },
         'Phiếu Chuyển': { data: phieuChuyenSheetData }
       };
       
       writeExcelFileSheets(sheets, fileName);
 
-      this._snackBar.open('Xuất Excel thành công (3 sheet)', '', {
+      this._snackBar.open('Xuất Excel thành công (5 sheet)', '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
