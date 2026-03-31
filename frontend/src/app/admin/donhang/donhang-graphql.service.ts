@@ -528,8 +528,8 @@ export class DonhangGraphqlService {
 
       // --- SHEET 2: HÀNG ST (Chỉ nhóm Siêu Thị) ---
       const hangSieuThiAOA: any[][] = [
-        ["BẢNG SẢN PHẨM HÀNG ĐÓNG GÓI SIÊU THỊ", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-        ["tên khách hàng", "sản phẩm", "DVT", "KL", "", "", "", "mã KH", "", "", "", "", "", ""]
+        ["BẢNG SẢN PHẨM HÀNG ĐÓNG GÓI SIÊU THỊ", "", "", "", "", "", "", "", "", "", "", ""],
+        ["tên khách hàng", "sản phẩm", "DVT", "KL", "", "mã KH", "", "", "", "", "", ""]
       ];
       
       sieuThiOrders.forEach((order: any) => {
@@ -540,8 +540,6 @@ export class DonhangGraphqlService {
             order.khachhang?.name || '',
             sp.sanpham?.title || '',
             sp.sanpham?.dvt || '',
-            slGiao,
-            slGiao,
             slGiao,
             order.ngaygiao ? moment(order.ngaygiao).format('D/M/YYYY') : dateStr,
             'st'
