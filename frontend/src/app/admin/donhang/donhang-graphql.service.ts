@@ -81,20 +81,7 @@ export class DonhangGraphqlService {
       // Lấy dữ liệu đơn hàng với GraphQL
       const result = await this._GraphqlService.findMany('donhang', {
         where,
-        select: {
-          id: true,
-          madonhang: true,
-          status: true,
-          ngaygiao: true,
-          ghichu: true,
-          shipper: true,
-          phieuve: true,
-          giodi: true,
-          giove: true,
-          kynhan: true,
-          khachhangId: true,
-          banggiaId: true,
-          createdAt: true,
+        include: {
           khachhang: {
             select: {
               id: true,
@@ -127,6 +114,8 @@ export class DonhangGraphqlService {
               order: true,
               isActive: true,
               giaban: true,
+              ttsauvat: true,
+              vat: true,
               sanpham: {
                 select: {
                   id: true,
@@ -751,6 +740,7 @@ export class DonhangGraphqlService {
       } catch (error) {
         console.warn('Không thể tạo sheet Tổng hợp:', error);
       }
+
       // Import dynamic để tránh bundle size
       const { writeExcelFileSheets } = await import('../../shared/utils/exceldrive.utils');
       
