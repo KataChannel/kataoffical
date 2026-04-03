@@ -27,9 +27,10 @@ echo "5. Phục hồi dữ liệu lên Local Docker"
 echo "6. ⚡ Tối ưu hóa Tất cả Sản phẩm"
 echo "7. 🧹 Dọn dẹp Database"
 echo "8. 🔧 Sửa lỗi 'too many open files'"
+echo "9. 🚀 Triển khai An toàn (Build Local -> Server)"
 echo "0. Thoát"
 echo "-----------------------------------"
-read -p "Vui lòng chọn chức năng (0-8): " choice
+read -p "Vui lòng chọn chức năng (0-9): " choice
 
 case $choice in
     1)
@@ -55,7 +56,7 @@ case $choice in
         bash scripts/fast_restore.sh
         exit 0
         ;;
-    6|7|8)
+    6|7|8|9)
         # Handle other options as before
         if [ "$choice" -eq 6 ]; then bash scripts/optimize_all.sh; fi
         if [ "$choice" -eq 7 ]; then bash scripts/cleanup_database.sh; fi
@@ -63,6 +64,7 @@ case $choice in
             sudo sysctl -w fs.inotify.max_user_watches=524288
             sudo sysctl -w fs.inotify.max_user_instances=512
         fi
+        if [ "$choice" -eq 9 ]; then bash scripts/deploy_safe_local.sh; fi
         exit 0
         ;;
     0)
