@@ -17,6 +17,7 @@ export class AuditUserValidationMiddleware implements NestMiddleware {
   use(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     // Skip validation for public endpoints
     const publicEndpoints = [
+      '/',
       '/auth/login',
       '/auth/register',
       '/auth/google',
@@ -29,7 +30,7 @@ export class AuditUserValidationMiddleware implements NestMiddleware {
     ];
 
     const isPublicEndpoint = publicEndpoints.some(endpoint => 
-      req.path.startsWith(endpoint)
+      endpoint === '/' ? req.path === '/' : req.path.startsWith(endpoint)
     );
 
     // Skip for GET requests on findby endpoints (often used for searching without auth)

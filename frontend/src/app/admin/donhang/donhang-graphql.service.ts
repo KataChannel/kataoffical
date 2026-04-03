@@ -671,14 +671,9 @@ export class DonhangGraphqlService {
           // formula: Tồn chốt + Biến động + Đang về
           const tongkho = parseFloat((Number(item.sltontt || 0) + receivedAfterCount - deliveredAfterCount + incomingStock).toFixed(3));
           
-          // khachdat & khachgiao logic from transformFinalData
-          const khachdat = (item.Donhangs || [])
-            .filter((v: any) => v.status === 'dadat')
-            .reduce((acc: number, curr: any) => acc + (Number(curr.sldat) || 0), 0);
-
-          const khachgiao = (item.Donhangs || [])
-            .filter((v: any) => v.status === 'dagiao' || v.status === 'danhan' || v.status === 'hoanthanh')
-            .reduce((acc: number, curr: any) => acc + (Number(curr.sldat) || 0), 0);
+          // khachdat & khachgiao logic from backended pre-aggregated fields
+          const khachdat = Number(item.khachdat) || 0;
+          const khachgiao = Number(item.khachgiao) || 0;
 
           const goiy = parseFloat((khachdat + khachgiao - tongkho).toFixed(3));
           const slhaohut = khachdat > 0 ? parseFloat(((khachdat * (item.haohut || 0)) / 100).toFixed(3)) : 0;
@@ -705,7 +700,7 @@ export class DonhangGraphqlService {
           };
         });
 
-        // Apply mapping to match Image 2
+        // Apply mapping to match F1 (NhucauDathang)
         const mapping: any = {
           ngaynhan: 'NGÀY',
           mancc: 'MÃ NCC',
@@ -725,6 +720,9 @@ export class DonhangGraphqlService {
           kho1: 'TG-LONG AN',
           kho2: 'BỔ SUNG',
           kho3: 'TG-ĐÀ LẠT',
+          kho4: 'KHO TỔNG - HCM',
+          kho5: 'SG1',
+          kho6: 'SG2',
           haohut: 'TỈ LỆ HAO HỤT (%)',
           slhaohut: 'SL HAO HỤT',
         };
@@ -732,7 +730,13 @@ export class DonhangGraphqlService {
         tonghopSheetData = processedAggregated.map((item: any) => {
           const row: any = {};
           Object.keys(mapping).forEach(key => {
-            row[mapping[key]] = item[key];
+            const val = item[key];
+            // Ensure 0 for numeric fields if empty/null, but keep strings as strings
+            if (['ngaynhan', 'mancc', 'name', 'masp', 'title', 'dvt', 'ghichu'].includes(key)) {
+              row[mapping[key]] = val || '';
+            } else {
+              row[mapping[key]] = (val === null || val === undefined || val === '') ? 0 : val;
+            }
           });
           return row;
         });

@@ -15,6 +15,7 @@ let AuditUserValidationMiddleware = AuditUserValidationMiddleware_1 = class Audi
     }
     use(req, res, next) {
         const publicEndpoints = [
+            '/',
             '/auth/login',
             '/auth/register',
             '/auth/google',
@@ -25,7 +26,7 @@ let AuditUserValidationMiddleware = AuditUserValidationMiddleware_1 = class Audi
             '/callback',
             '/app'
         ];
-        const isPublicEndpoint = publicEndpoints.some(endpoint => req.path.startsWith(endpoint));
+        const isPublicEndpoint = publicEndpoints.some(endpoint => endpoint === '/' ? req.path === '/' : req.path.startsWith(endpoint));
         const isPublicSearchEndpoint = req.method === 'POST' && req.path.includes('/findby');
         if (!isPublicEndpoint && !isPublicSearchEndpoint) {
             const isModifyingOperation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);

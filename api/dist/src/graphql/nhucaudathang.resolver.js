@@ -110,7 +110,7 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
                 : Promise.resolve([]),
             deliveredDonhangIds.length > 0
                 ? this.prisma.$queryRaw `
-              SELECT "idSP", CAST(COALESCE(SUM("slnhan"::numeric), 0) AS float8) as total
+              SELECT "idSP", CAST(COALESCE(SUM("sldat"::numeric), 0) AS float8) as total
               FROM "Donhangsanpham"
               WHERE "donhangId" = ANY(${deliveredDonhangIds})
               GROUP BY "idSP"

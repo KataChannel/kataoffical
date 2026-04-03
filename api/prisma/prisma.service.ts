@@ -50,11 +50,15 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
               // Execute the original database operation
               const result = await value.apply(target, args);
               
-              // After success, invalidate the cache
-              this.logger.debug(`[GlobalCache] Action '${prop.toString()}' detected on ${modelName}, invalidating cache...`);
-              this.redisService.invalidateModelCache(modelName).catch(err => 
-                this.logger.error(`[GlobalCache] Invalidation fail for ${modelName}: ${err.message}`)
-              );
+              // After success, invalidate the cache (skip for logging models)
+              const skipInvalidation = ['performanceLog', 'auditLog'].includes(modelName);
+              
+              if (!skipInvalidation) {
+                this.logger.debug(`[GlobalCache] Action '${prop.toString()}' detected on ${modelName}, invalidating cache...`);
+                this.redisService.invalidateModelCache(modelName).catch(err => 
+                  this.logger.error(`[GlobalCache] Invalidation fail for ${modelName}: ${err.message}`)
+                );
+              }
               
               return result;
             };

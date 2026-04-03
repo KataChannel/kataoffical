@@ -44,8 +44,11 @@ let PrismaService = PrismaService_1 = class PrismaService extends client_1.Prism
                     if (typeof value === 'function' && writeActions.includes(prop)) {
                         return async (...args) => {
                             const result = await value.apply(target, args);
-                            this.logger.debug(`[GlobalCache] Action '${prop.toString()}' detected on ${modelName}, invalidating cache...`);
-                            this.redisService.invalidateModelCache(modelName).catch(err => this.logger.error(`[GlobalCache] Invalidation fail for ${modelName}: ${err.message}`));
+                            const skipInvalidation = ['performanceLog', 'auditLog'].includes(modelName);
+                            if (!skipInvalidation) {
+                                this.logger.debug(`[GlobalCache] Action '${prop.toString()}' detected on ${modelName}, invalidating cache...`);
+                                this.redisService.invalidateModelCache(modelName).catch(err => this.logger.error(`[GlobalCache] Invalidation fail for ${modelName}: ${err.message}`));
+                            }
                             return result;
                         };
                     }

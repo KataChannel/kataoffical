@@ -166,7 +166,7 @@ export class NhuCauDatHangResolver {
         // Customer DELIVERED totals for this range
         deliveredDonhangIds.length > 0
           ? this.prisma.$queryRaw<{ idSP: string; total: number }[]>`
-              SELECT "idSP", CAST(COALESCE(SUM("slnhan"::numeric), 0) AS float8) as total
+              SELECT "idSP", CAST(COALESCE(SUM("sldat"::numeric), 0) AS float8) as total
               FROM "Donhangsanpham"
               WHERE "donhangId" = ANY(${deliveredDonhangIds})
               GROUP BY "idSP"
