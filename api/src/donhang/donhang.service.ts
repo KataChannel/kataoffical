@@ -211,7 +211,7 @@ export class DonhangService {
               sanpham: true,
             },
           },
-          khachhang: { include: { banggia: { include: { sanpham: true } } } },
+          khachhang: true,
         },
         orderBy: { createdAt: 'desc' },
         skip: (Number(pageNumber) - 1) * Number(pageSize),
@@ -241,9 +241,7 @@ export class DonhangService {
           ghichu: item.ghichu,
         };
       }),
-      khachhang: khachhang
-        ? (({ banggia, ...rest }) => rest)(khachhang as any)
-        : null, // Xóa banggia
+      khachhang: khachhang || null,
       name: khachhang?.name,
     }));
 
@@ -1278,7 +1276,7 @@ export class DonhangService {
               });
 
               console.log(`Đơn hàng ${donhangId} đã được tìm thấy`);
-              console.log(`Đơn hàng ${donhang} đã được tìm thấy`);
+              // console.log(`Đơn hàng ${donhang} đã được tìm thấy`);
               
               if (!donhang) {
                 console.warn(`Đơn hàng ${donhangId} không tồn tại`);
@@ -1570,13 +1568,12 @@ export class DonhangService {
             sanpham: true,
           },
         },
-        khachhang: { include: { banggia: { include: { sanpham: true } } } },
+        khachhang: true,
       },
       orderBy: { createdAt: 'desc' },
     });
 
     return result.map(({ khachhang, sanpham, ...donhang }) => {
-      console.log('sanpham', sanpham);
       return {
         ...donhang,
         name: khachhang?.name,
@@ -1647,7 +1644,7 @@ export class DonhangService {
             sanpham: true,
           },
         },
-        khachhang: { include: { banggia: { include: { sanpham: true } } } },
+        khachhang: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -1704,13 +1701,7 @@ export class DonhangService {
             sanpham: true,
           },
         },
-        khachhang: {
-          include: {
-            banggia: {
-              include: { sanpham: true },
-            },
-          },
-        },
+        khachhang: true,
       },
     });
 
@@ -1739,9 +1730,7 @@ export class DonhangService {
           ghichu: item.ghichu,
         };
       }),
-      khachhang: donhang.khachhang
-        ? (({ banggia, ...rest }) => rest)(donhang.khachhang as any)
-        : null, // Xóa banggia
+      khachhang: donhang.khachhang || null,
     };
   }
   async findOne(id: string) {
@@ -1753,7 +1742,7 @@ export class DonhangService {
             sanpham: true,
           },
         },
-        khachhang: { include: { banggia: { include: { sanpham: true } } } },
+        khachhang: true,
       },
     });
     if (!donhang) throw new NotFoundException('DonHang not found');

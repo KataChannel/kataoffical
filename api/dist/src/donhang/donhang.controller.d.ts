@@ -103,7 +103,34 @@ export declare class DonhangController {
     search(params: any): Promise<{
         data: {
             sanpham: any[];
-            khachhang: any;
+            khachhang: {
+                id: string;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                isshowvat: boolean;
+                banggiaId: string | null;
+                name: string | null;
+                namenn: string | null;
+                subtitle: string | null;
+                makh: string;
+                makhold: string | null;
+                diachi: string | null;
+                sdt: string | null;
+                mst: string | null;
+                gionhanhang: string | null;
+                quan: string | null;
+                email: string | null;
+                phone: string | null;
+                address: string | null;
+                loaikh: string | null;
+                hiengia: boolean;
+                istitle2: boolean;
+                tenfile: string | null;
+                tenkh: string | null;
+                machuyen: string | null;
+            } | null;
             name: string | null | undefined;
             id: string;
             title: string | null;
@@ -297,7 +324,34 @@ export declare class DonhangController {
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: import("@prisma/client/runtime/library").Decimal;
         }[];
-        khachhang: any;
+        khachhang: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            isshowvat: boolean;
+            banggiaId: string | null;
+            name: string | null;
+            namenn: string | null;
+            subtitle: string | null;
+            makh: string;
+            makhold: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            mst: string | null;
+            gionhanhang: string | null;
+            quan: string | null;
+            email: string | null;
+            phone: string | null;
+            address: string | null;
+            loaikh: string | null;
+            hiengia: boolean;
+            istitle2: boolean;
+            tenfile: string | null;
+            tenkh: string | null;
+            machuyen: string | null;
+        } | null;
         id: string;
         title: string | null;
         type: string | null;
@@ -451,32 +505,7 @@ export declare class DonhangController {
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: import("@prisma/client/runtime/library").Decimal;
         }[];
-        khachhang: ({
-            banggia: ({
-                sanpham: {
-                    id: string;
-                    order: number | null;
-                    isActive: boolean;
-                    banggiaId: string;
-                    giaban: import("@prisma/client/runtime/library").Decimal;
-                    sanphamId: string;
-                }[];
-            } & {
-                id: string;
-                title: string | null;
-                type: string | null;
-                ghichu: string | null;
-                status: string | null;
-                order: number | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                mabanggia: string | null;
-                batdau: Date | null;
-                ketthuc: Date | null;
-                isDefault: boolean;
-            }) | null;
-        } & {
+        khachhang: {
             id: string;
             ghichu: string | null;
             isActive: boolean;
@@ -503,7 +532,7 @@ export declare class DonhangController {
             tenfile: string | null;
             tenkh: string | null;
             machuyen: string | null;
-        }) | null;
+        } | null;
         id: string;
         title: string | null;
         type: string | null;

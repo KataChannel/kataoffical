@@ -172,7 +172,7 @@ let DonhangService = class DonhangService {
                                 sanpham: true,
                             },
                         },
-                        khachhang: { include: { banggia: { include: { sanpham: true } } } },
+                        khachhang: true,
                     },
                     orderBy: { createdAt: 'desc' },
                     skip: (Number(pageNumber) - 1) * Number(pageSize),
@@ -195,9 +195,7 @@ let DonhangService = class DonhangService {
                         ghichu: item.ghichu,
                     };
                 }),
-                khachhang: khachhang
-                    ? (({ banggia, ...rest }) => rest)(khachhang)
-                    : null,
+                khachhang: khachhang || null,
                 name: khachhang?.name,
             }));
             return {
@@ -991,7 +989,6 @@ let DonhangService = class DonhangService {
                                 },
                             });
                             console.log(`Đơn hàng ${donhangId} đã được tìm thấy`);
-                            console.log(`Đơn hàng ${donhang} đã được tìm thấy`);
                             if (!donhang) {
                                 console.warn(`Đơn hàng ${donhangId} không tồn tại`);
                                 errorCount++;
@@ -1220,12 +1217,11 @@ let DonhangService = class DonhangService {
                         sanpham: true,
                     },
                 },
-                khachhang: { include: { banggia: { include: { sanpham: true } } } },
+                khachhang: true,
             },
             orderBy: { createdAt: 'desc' },
         });
         return result.map(({ khachhang, sanpham, ...donhang }) => {
-            console.log('sanpham', sanpham);
             return {
                 ...donhang,
                 name: khachhang?.name,
@@ -1291,7 +1287,7 @@ let DonhangService = class DonhangService {
                             sanpham: true,
                         },
                     },
-                    khachhang: { include: { banggia: { include: { sanpham: true } } } },
+                    khachhang: true,
                 },
                 orderBy: { createdAt: 'desc' },
             });
@@ -1339,13 +1335,7 @@ let DonhangService = class DonhangService {
                         sanpham: true,
                     },
                 },
-                khachhang: {
-                    include: {
-                        banggia: {
-                            include: { sanpham: true },
-                        },
-                    },
-                },
+                khachhang: true,
             },
         });
         if (!donhang)
@@ -1366,9 +1356,7 @@ let DonhangService = class DonhangService {
                     ghichu: item.ghichu,
                 };
             }),
-            khachhang: donhang.khachhang
-                ? (({ banggia, ...rest }) => rest)(donhang.khachhang)
-                : null,
+            khachhang: donhang.khachhang || null,
         };
     }
     async findOne(id) {
@@ -1380,7 +1368,7 @@ let DonhangService = class DonhangService {
                         sanpham: true,
                     },
                 },
-                khachhang: { include: { banggia: { include: { sanpham: true } } } },
+                khachhang: true,
             },
         });
         if (!donhang)
