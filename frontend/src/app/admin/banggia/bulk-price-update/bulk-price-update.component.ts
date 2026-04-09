@@ -14,7 +14,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { PriceHistoryService } from '../price-history.service';
 import { GraphqlService } from '../../../shared/services/graphql.service';
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 
 interface PriceUpdateRow {
   sanphamId: string;
@@ -194,6 +194,24 @@ export class BulkPriceUpdateComponent implements OnInit {
     ];
 
     const ws = XLSX.utils.json_to_sheet(template);
+    
+    // Add borders to all cells
+    const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        const cell_address = { c: C, r: R };
+        const cell_ref = XLSX.utils.encode_cell(cell_address);
+        if (!ws[cell_ref]) ws[cell_ref] = { t: 'z', v: '' };
+        if (!ws[cell_ref].s) ws[cell_ref].s = {};
+        ws[cell_ref].s.border = {
+          top: { style: 'thin', color: { rgb: '000000' } },
+          bottom: { style: 'thin', color: { rgb: '000000' } },
+          left: { style: 'thin', color: { rgb: '000000' } },
+          right: { style: 'thin', color: { rgb: '000000' } }
+        };
+      }
+    }
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Cập nhật giá');
     XLSX.writeFile(wb, 'mau-cap-nhat-gia.xlsx');

@@ -1,0 +1,3052 @@
+{
+  "I100233": {
+    "name": "Trứng gà",
+    "history": [
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 132
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 129
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 126
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 124
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 122
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -4,
+        "after": 118
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -6,
+        "after": 112
+      },
+      {
+        "time": "16:44:19 8/4/2026",
+        "type": "Chốt Kho",
+        "change": -3,
+        "after": 109
+      },
+      {
+        "time": "16:45:34 8/4/2026",
+        "type": "Chốt Kho",
+        "change": -3,
+        "after": 106
+      },
+      {
+        "time": "09:32:00 9/4/2026",
+        "type": "Nhập Kho",
+        "change": 30,
+        "after": 136
+      },
+      {
+        "time": "10:22:12 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 134
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 132
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 129
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 127
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 125
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -5,
+        "after": 120
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -4,
+        "after": 116
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -5,
+        "after": 111
+      },
+      {
+        "time": "17:03:40 9/4/2026",
+        "type": "Chốt Kho",
+        "change": -39,
+        "after": 72
+      }
+    ],
+    "end84": 106,
+    "nhap94": 30,
+    "xuat94": -25,
+    "logSystemEnd": 111,
+    "logRealEnd": 72
+  },
+  "I100479": {
+    "name": "Dưa hấu",
+    "history": [
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.2,
+        "after": 632
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -6,
+        "after": 626
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.5,
+        "after": 623.5
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.6,
+        "after": 619.9
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -5.5,
+        "after": 614.4
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -6.9,
+        "after": 607.5
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -11.5,
+        "after": 596
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.4,
+        "after": 592.6
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -11.8,
+        "after": 580.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -6,
+        "after": 574.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.4,
+        "after": 573.4
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.8,
+        "after": 570.6
+      },
+      {
+        "time": "13:54:14 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -6.1,
+        "after": 564.5
+      },
+      {
+        "time": "14:32:05 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 561.5
+      },
+      {
+        "time": "15:14:17 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -5.6,
+        "after": 555.9
+      },
+      {
+        "time": "16:44:19 8/4/2026",
+        "type": "Chốt Kho",
+        "change": -79,
+        "after": 476.9
+      },
+      {
+        "time": "16:45:34 8/4/2026",
+        "type": "Chốt Kho",
+        "change": -79,
+        "after": 397.9
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -4.7,
+        "after": 393.2
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -10.6,
+        "after": 382.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -11.7,
+        "after": 370.9
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -5.5,
+        "after": 365.4
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.3,
+        "after": 362.1
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.6,
+        "after": 358.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -10.8,
+        "after": 347.7
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -8,
+        "after": 339.7
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -5.1,
+        "after": 334.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -5,
+        "after": 329.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.6,
+        "after": 326
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -6,
+        "after": 320
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -9.4,
+        "after": 310.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 307.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.5,
+        "after": 304.1
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.1,
+        "after": 301
+      },
+      {
+        "time": "17:03:40 9/4/2026",
+        "type": "Chốt Kho",
+        "change": -97,
+        "after": 204
+      }
+    ],
+    "end84": 397.9,
+    "nhap94": 0,
+    "xuat94": -96.9,
+    "logSystemEnd": 301,
+    "logRealEnd": 204
+  },
+  "I100207": {
+    "name": "Xà lách lolo xanh",
+    "history": [
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 210.1
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 207.1
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 206.1
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 205.1
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 204.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 203.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 202.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 201.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 199.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 197.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 196.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 195.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 194.7
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 194.2
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 193.2
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 192.7
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 192.5
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 191.5
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 191
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 190
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.2,
+        "after": 188.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 186.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 185.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 184.7
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 181.7
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.5,
+        "after": 179.2
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -8,
+        "after": 171.2
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -5,
+        "after": 166.2
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -10,
+        "after": 156.2
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -7,
+        "after": 149.2
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -15,
+        "after": 134.2
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -8.2,
+        "after": 126
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 125.5
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -8,
+        "after": 117.5
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -8,
+        "after": 109.5
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.6,
+        "after": 108.9
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -14,
+        "after": 94.9
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 94.4
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 93.9
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.5,
+        "after": 91.4
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 90.4
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -6,
+        "after": 84.4
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 83.4
+      },
+      {
+        "time": "14:29:06 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 82.4
+      },
+      {
+        "time": "14:29:32 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 81.9
+      },
+      {
+        "time": "14:31:01 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 80.9
+      },
+      {
+        "time": "14:31:32 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 78.9
+      },
+      {
+        "time": "14:33:28 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 77.9
+      },
+      {
+        "time": "14:59:02 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.4,
+        "after": 76.5
+      },
+      {
+        "time": "15:16:03 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 73.5
+      },
+      {
+        "time": "16:44:19 8/4/2026",
+        "type": "Chốt Kho",
+        "change": -0.7,
+        "after": 72.8
+      },
+      {
+        "time": "16:45:34 8/4/2026",
+        "type": "Chốt Kho",
+        "change": -0.7,
+        "after": 72.1
+      },
+      {
+        "time": "06:00:02 9/4/2026",
+        "type": "Nhập Kho",
+        "change": 120,
+        "after": 192.1
+      },
+      {
+        "time": "08:34:39 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 191.1
+      },
+      {
+        "time": "09:51:26 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 189.1
+      },
+      {
+        "time": "09:52:56 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 186.1
+      },
+      {
+        "time": "09:57:44 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 183.1
+      },
+      {
+        "time": "10:01:07 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 180.1
+      },
+      {
+        "time": "11:37:48 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 179.1
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 178.6
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -10.5,
+        "after": 168.1
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -12.4,
+        "after": 155.7
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -11,
+        "after": 144.7
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 143.7
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 142.6
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 141.5
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 140.5
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 138.5
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 137.5
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 136.5
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 136.2
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -4,
+        "after": 132.2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -4,
+        "after": 128.2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 127.7
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.5,
+        "after": 126.2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 125.2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 123.2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 121.2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.6,
+        "after": 120.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -4,
+        "after": 116.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 116.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -12,
+        "after": 104.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -8,
+        "after": 96.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 95.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -7,
+        "after": 88.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -6.3,
+        "after": 82.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -15,
+        "after": 67.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -5,
+        "after": 62.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -7,
+        "after": 55.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -10,
+        "after": 45.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 44.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.7,
+        "after": 43.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 42.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.7,
+        "after": 39.1
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -15,
+        "after": 24.1
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.5,
+        "after": 20.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 20.1
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 19.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 18.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 18.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 16.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 15.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 14.2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 13.7
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.7,
+        "after": 12
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 11
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 10.7
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -4,
+        "after": 6.7
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 3.7
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 3.2
+      },
+      {
+        "time": "14:22:17 9/4/2026",
+        "type": "Nhập Kho",
+        "change": 35,
+        "after": 38.2
+      },
+      {
+        "time": "14:39:25 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 37.2
+      },
+      {
+        "time": "15:02:34 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 36.2
+      },
+      {
+        "time": "15:42:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -5,
+        "after": 31.2
+      },
+      {
+        "time": "17:03:40 9/4/2026",
+        "type": "Chốt Kho",
+        "change": -29.2,
+        "after": 2
+      }
+    ],
+    "end84": 72.1,
+    "nhap94": 155,
+    "xuat94": -195.89999999999998,
+    "logSystemEnd": 31.2,
+    "logRealEnd": 2
+  },
+  "I100003": {
+    "name": "Bắp cải trắng",
+    "history": [
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.8,
+        "after": 79.15
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.5,
+        "after": 76.65
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 76.15
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 75.05
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -4.2,
+        "after": 70.85
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.2,
+        "after": 69.65
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.9,
+        "after": 66.75
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.7,
+        "after": 63.05
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.8,
+        "after": 62.25
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.7,
+        "after": 61.55
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 60.55
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.75,
+        "after": 57.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 57.3
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.3,
+        "after": 56
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.5,
+        "after": 53.5
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.8,
+        "after": 52.7
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.7,
+        "after": 51
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.8,
+        "after": 50.2
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.1,
+        "after": 48.1
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -6.2,
+        "after": 41.9
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.8,
+        "after": 40.1
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -6.5,
+        "after": 33.6
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.2,
+        "after": 32.4
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 30.4
+      },
+      {
+        "time": "15:26:46 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -5.5,
+        "after": 24.9
+      },
+      {
+        "time": "16:44:19 8/4/2026",
+        "type": "Chốt Kho",
+        "change": 14.5,
+        "after": 39.4
+      },
+      {
+        "time": "16:45:34 8/4/2026",
+        "type": "Chốt Kho",
+        "change": 14.5,
+        "after": 53.9
+      },
+      {
+        "time": "06:00:02 9/4/2026",
+        "type": "Nhập Kho",
+        "change": 70,
+        "after": 123.9
+      },
+      {
+        "time": "09:51:26 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.2,
+        "after": 122.7
+      },
+      {
+        "time": "09:55:07 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.7,
+        "after": 122
+      },
+      {
+        "time": "09:58:40 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -4.8,
+        "after": 117.2
+      },
+      {
+        "time": "10:01:07 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 116.2
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -7.5,
+        "after": 108.7
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.5,
+        "after": 107.2
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 106.2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.2,
+        "after": 103
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.8,
+        "after": 102.2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.8,
+        "after": 98.4
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 95.4
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -5.8,
+        "after": 89.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.5,
+        "after": 86.1
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.1,
+        "after": 83
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.7,
+        "after": 80.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.4,
+        "after": 77.9
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.7,
+        "after": 76.2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.8,
+        "after": 75.4
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -6.9,
+        "after": 68.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.5,
+        "after": 67
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.5,
+        "after": 65.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -5.7,
+        "after": 59.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.4,
+        "after": 57.4
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 55.4
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.6,
+        "after": 52.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.2,
+        "after": 50.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -7,
+        "after": 43.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -4.1,
+        "after": 39.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 38.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.7,
+        "after": 34.8
+      },
+      {
+        "time": "15:01:41 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.3,
+        "after": 33.5
+      },
+      {
+        "time": "15:02:34 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 32.5
+      },
+      {
+        "time": "15:42:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 30.5
+      },
+      {
+        "time": "17:03:40 9/4/2026",
+        "type": "Chốt Kho",
+        "change": -21.5,
+        "after": 9
+      }
+    ],
+    "end84": 53.9,
+    "nhap94": 70,
+    "xuat94": -93.39999999999999,
+    "logSystemEnd": 30.5,
+    "logRealEnd": 9
+  },
+  "I100002": {
+    "name": "Bắp cải tím",
+    "history": [
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.2,
+        "after": 31.52
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 30.52
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 29.42
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.7,
+        "after": 28.72
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 27.72
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.6,
+        "after": 26.12
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.6,
+        "after": 24.52
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.3,
+        "after": 23.22
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.4,
+        "after": 21.82
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.8,
+        "after": 19.02
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.2,
+        "after": 17.82
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 16.72
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.5,
+        "after": 15.22
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.5,
+        "after": 13.72
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.3,
+        "after": 11.42
+      },
+      {
+        "time": "16:44:19 8/4/2026",
+        "type": "Chốt Kho",
+        "change": -0.5,
+        "after": 10.92
+      },
+      {
+        "time": "16:45:34 8/4/2026",
+        "type": "Chốt Kho",
+        "change": -0.5,
+        "after": 10.42
+      },
+      {
+        "time": "09:51:26 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.8,
+        "after": 9.62
+      },
+      {
+        "time": "09:55:07 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.7,
+        "after": 8.92
+      },
+      {
+        "time": "10:01:07 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.7,
+        "after": 8.22
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.2,
+        "after": 7.02
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 6.02
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.87,
+        "after": 5.15
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.9,
+        "after": 4.25
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 2.25
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.2,
+        "after": 1.05
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.7,
+        "after": 0.35
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.3,
+        "after": -1.95
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.4,
+        "after": -3.35
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.95,
+        "after": -4.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": -5.4
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.3,
+        "after": -6.7
+      },
+      {
+        "time": "14:17:32 9/4/2026",
+        "type": "Nhập Kho",
+        "change": 20,
+        "after": 13.3
+      },
+      {
+        "time": "15:01:41 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.3,
+        "after": 12
+      },
+      {
+        "time": "15:02:34 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 11
+      },
+      {
+        "time": "17:03:40 9/4/2026",
+        "type": "Chốt Kho",
+        "change": 7,
+        "after": 18
+      }
+    ],
+    "end84": 10.42,
+    "nhap94": 20,
+    "xuat94": -19.42,
+    "logSystemEnd": 11,
+    "logRealEnd": 18
+  },
+  "I100164": {
+    "name": "Ớt đà lạt (đỏ)",
+    "history": [
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.25,
+        "after": 16.66
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 16.16
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 15.86
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 14.86
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.6,
+        "after": 14.26
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 13.16
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 12.96
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 12.66
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.5,
+        "after": 11.16
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.6,
+        "after": 10.56
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 10.06
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.4,
+        "after": 8.66
+      },
+      {
+        "time": "13:54:14 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.9,
+        "after": 6.76
+      },
+      {
+        "time": "14:31:32 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.2,
+        "after": 5.56
+      },
+      {
+        "time": "14:33:28 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 5.06
+      },
+      {
+        "time": "14:34:51 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 4.06
+      },
+      {
+        "time": "14:59:02 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 3.56
+      },
+      {
+        "time": "15:21:24 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.35,
+        "after": 3.21
+      },
+      {
+        "time": "15:23:51 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 2.71
+      },
+      {
+        "time": "16:44:19 8/4/2026",
+        "type": "Chốt Kho",
+        "change": 10.7,
+        "after": 13.41
+      },
+      {
+        "time": "16:45:34 8/4/2026",
+        "type": "Chốt Kho",
+        "change": 10.7,
+        "after": 24.11
+      },
+      {
+        "time": "06:00:01 9/4/2026",
+        "type": "Nhập Kho",
+        "change": 10,
+        "after": 34.11
+      },
+      {
+        "time": "08:34:39 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 33.11
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.3,
+        "after": 31.81
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.35,
+        "after": 31.46
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.6,
+        "after": 30.86
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 29.76
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.3,
+        "after": 27.46
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 26.46
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.6,
+        "after": 24.86
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 22.86
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.56,
+        "after": 22.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 21.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 21
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.6,
+        "after": 20.4
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 19.9
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 18.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 18.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2.4,
+        "after": 15.9
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3.3,
+        "after": 12.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.6,
+        "after": 11
+      },
+      {
+        "time": "17:03:40 9/4/2026",
+        "type": "Chốt Kho",
+        "change": -10.2,
+        "after": 0.8
+      }
+    ],
+    "end84": 24.11,
+    "nhap94": 10,
+    "xuat94": -23.110000000000003,
+    "logSystemEnd": 11,
+    "logRealEnd": 0.8
+  },
+  "I100165": {
+    "name": "Ớt đà lạt (vàng)",
+    "history": [
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 4.83
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.48,
+        "after": 4.35
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 3.85
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.4,
+        "after": 3.45
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.9,
+        "after": 1.55
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 1.05
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 0.05
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": -0.15
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": -0.45
+      },
+      {
+        "time": "14:33:28 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": -0.95
+      },
+      {
+        "time": "15:21:24 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": -1.45
+      },
+      {
+        "time": "15:23:51 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.6,
+        "after": -2.05
+      },
+      {
+        "time": "16:44:19 8/4/2026",
+        "type": "Chốt Kho",
+        "change": 3.1,
+        "after": 1.05
+      },
+      {
+        "time": "16:45:34 8/4/2026",
+        "type": "Chốt Kho",
+        "change": 3.1,
+        "after": 4.15
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 3.65
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.95,
+        "after": 2.7
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 2.2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 1.1
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 0.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 0.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 0.1
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": -0.9
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": -3.9
+      },
+      {
+        "time": "14:21:49 9/4/2026",
+        "type": "Nhập Kho",
+        "change": 7.5,
+        "after": 3.6
+      },
+      {
+        "time": "17:03:40 9/4/2026",
+        "type": "Chốt Kho",
+        "change": -0.42,
+        "after": 3.18
+      }
+    ],
+    "end84": 4.15,
+    "nhap94": 7.5,
+    "xuat94": -8.05,
+    "logSystemEnd": 3.6,
+    "logRealEnd": 3.18
+  },
+  "I100166": {
+    "name": "Ớt đà lạt (xanh)",
+    "history": [
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 25.38
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.4,
+        "after": 24.98
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.4,
+        "after": 24.58
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.2,
+        "after": 23.38
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 23.18
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 22.98
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 22.78
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 21.78
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.6,
+        "after": 20.18
+      },
+      {
+        "time": "14:59:02 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.6,
+        "after": 19.58
+      },
+      {
+        "time": "16:44:19 8/4/2026",
+        "type": "Chốt Kho",
+        "change": -1.8,
+        "after": 17.78
+      },
+      {
+        "time": "16:45:34 8/4/2026",
+        "type": "Chốt Kho",
+        "change": -1.8,
+        "after": 15.98
+      },
+      {
+        "time": "06:00:01 9/4/2026",
+        "type": "Nhập Kho",
+        "change": 10,
+        "after": 25.98
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.57,
+        "after": 25.41
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.3,
+        "after": 24.11
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 23.61
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 23.11
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 22.01
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.2,
+        "after": 20.81
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.46,
+        "after": 20.35
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 20.15
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 18.15
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.4,
+        "after": 17.75
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.1,
+        "after": 16.65
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 16.45
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.65,
+        "after": 15.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 14.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 12.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.4,
+        "after": 11.4
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.7,
+        "after": 10.7
+      },
+      {
+        "time": "14:39:25 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 10.2
+      },
+      {
+        "time": "17:03:40 9/4/2026",
+        "type": "Chốt Kho",
+        "change": -1.9,
+        "after": 8.3
+      }
+    ],
+    "end84": 15.98,
+    "nhap94": 10,
+    "xuat94": -15.78,
+    "logSystemEnd": 10.2,
+    "logRealEnd": 8.3
+  },
+  "I100004": {
+    "name": "Bắp chuối bào",
+    "history": [
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 15.7
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.4,
+        "after": 15.3
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 14.3
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 13.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 13.3
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 12.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 12.3
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 11.3
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 10.8
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 10.3
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 10
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 9.5
+      },
+      {
+        "time": "14:29:06 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 9.2
+      },
+      {
+        "time": "14:30:12 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 8.9
+      },
+      {
+        "time": "14:31:01 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 8.7
+      },
+      {
+        "time": "14:31:32 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 8.5
+      },
+      {
+        "time": "14:33:28 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 8.3
+      },
+      {
+        "time": "14:34:51 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 8
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 7.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 5.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 5.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.7,
+        "after": 3.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 2.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 1.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 1.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 0.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 0
+      },
+      {
+        "time": "14:16:24 9/4/2026",
+        "type": "Nhập Kho",
+        "change": 8.3,
+        "after": 8.3
+      },
+      {
+        "time": "14:39:25 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 7.8
+      }
+    ],
+    "end84": null,
+    "nhap94": 8.3,
+    "xuat94": -8.5,
+    "logSystemEnd": null,
+    "logRealEnd": null
+  },
+  "I100256": {
+    "name": "Bún nhỏ",
+    "history": [
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -10,
+        "after": 58.5
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 56.5
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 55.5
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.5,
+        "after": 54
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 53
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 51
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -5,
+        "after": 46
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 45
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": 44.5
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 42.5
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -4,
+        "after": 38.5
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 35.5
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -3,
+        "after": 32.5
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 30.5
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -4,
+        "after": 26.5
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 25.5
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -5,
+        "after": 20.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 19.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 18.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 17.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -6,
+        "after": 11.5
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1.5,
+        "after": 10
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -8,
+        "after": 2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -2,
+        "after": 0
+      },
+      {
+        "time": "15:12:25 9/4/2026",
+        "type": "Nhập Kho",
+        "change": 38.5,
+        "after": 38.5
+      }
+    ],
+    "end84": null,
+    "nhap94": 38.5,
+    "xuat94": -38.5,
+    "logSystemEnd": null,
+    "logRealEnd": null
+  },
+  "I100113": {
+    "name": "Húng lũi",
+    "history": [
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": 0.11
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.05,
+        "after": 0.06
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": -0.14
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": -0.44
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": -0.64
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": -0.74
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": -0.94
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": -1.14
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": -1.24
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": -1.34
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": -1.54
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": -1.84
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.4,
+        "after": -2.24
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": -2.34
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.6,
+        "after": -2.94
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": -3.04
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": -3.24
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": -3.74
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": -4.04
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": -4.14
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": -4.24
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": -4.44
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": -4.54
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": -4.84
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": -5.34
+      },
+      {
+        "time": "13:00:00 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": -5.44
+      },
+      {
+        "time": "13:54:14 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.5,
+        "after": -5.94
+      },
+      {
+        "time": "14:33:28 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": -6.04
+      },
+      {
+        "time": "15:20:34 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": -6.14
+      },
+      {
+        "time": "15:22:05 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": -6.24
+      },
+      {
+        "time": "15:26:46 8/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": -6.34
+      },
+      {
+        "time": "16:44:19 8/4/2026",
+        "type": "Chốt Kho",
+        "change": 4.6,
+        "after": -1.74
+      },
+      {
+        "time": "16:45:34 8/4/2026",
+        "type": "Chốt Kho",
+        "change": 4.6,
+        "after": 2.86
+      },
+      {
+        "time": "06:00:02 9/4/2026",
+        "type": "Nhập Kho",
+        "change": 10,
+        "after": 12.86
+      },
+      {
+        "time": "09:51:26 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 12.66
+      },
+      {
+        "time": "09:52:56 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": 12.56
+      },
+      {
+        "time": "09:57:44 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": 12.46
+      },
+      {
+        "time": "09:58:40 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 12.26
+      },
+      {
+        "time": "10:01:07 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 12.06
+      },
+      {
+        "time": "10:22:12 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": 11.96
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": 11.86
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": 11.76
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 11.56
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 11.26
+      },
+      {
+        "time": "13:00:00 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.05,
+        "after": 11.21
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": 11.11
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.05,
+        "after": 11.06
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 10.76
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.01,
+        "after": 10.75
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 10.45
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -1,
+        "after": 9.45
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.05,
+        "after": 9.4
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": 9.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": 9.2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 9
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": 8.9
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 8.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 8.4
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.6,
+        "after": 7.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.6,
+        "after": 7.2
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": 7.1
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 6.8
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 6.6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 6.3
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.2,
+        "after": 6.1
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": 6
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.1,
+        "after": 5.9
+      },
+      {
+        "time": "13:00:01 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 5.6
+      },
+      {
+        "time": "14:12:22 9/4/2026",
+        "type": "Xuất Kho",
+        "change": -0.3,
+        "after": 5.3
+      },
+      {
+        "time": "17:03:40 9/4/2026",
+        "type": "Chốt Kho",
+        "change": -2.4,
+        "after": 2.9
+      }
+    ],
+    "end84": 2.86,
+    "nhap94": 10,
+    "xuat94": -7.559999999999998,
+    "logSystemEnd": 5.3,
+    "logRealEnd": 2.9
+  }
+}

@@ -1344,6 +1344,10 @@ export class ListcongnonccComponent {
       summarySheet['!cols'] = [
         { wch: 15 }, { wch: 35 }, { wch: 10 }, { wch: 15 }, { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }
       ];
+
+      // Add borders to all cells in summarySheet
+      this.applyBorders(summarySheet);
+
       XLSX.utils.book_append_sheet(workbook, summarySheet, 'Tổng Hợp');
 
       // ==========================================
@@ -1418,6 +1422,10 @@ export class ListcongnonccComponent {
 
       detailSheet['!merges'] = mergesDetail;
       detailSheet['!cols'] = detailHeaders.map(() => ({ wch: 15 }));
+
+      // Add borders to all cells in detailSheet
+      this.applyBorders(detailSheet);
+
       XLSX.utils.book_append_sheet(workbook, detailSheet, 'Chi Tiết');
 
       // 5. Write and Download
@@ -1684,6 +1692,7 @@ export class ListcongnonccComponent {
       worksheet['!cols'] = columnWidths;
 
       // Add worksheet to workbook
+      this.applyBorders(worksheet);
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Công Nợ NCC');
 
       // Generate Excel file
@@ -1826,6 +1835,26 @@ export class ListcongnonccComponent {
 
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
+  }
+
+  // Helper to apply borders to all used cells in a sheet
+  private applyBorders(ws: any) {
+    if (!ws || !ws['!ref']) return;
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        const cell_address = { c: C, r: R };
+        const cell_ref = XLSX.utils.encode_cell(cell_address);
+        if (!ws[cell_ref]) ws[cell_ref] = { t: 'z', v: '' };
+        if (!ws[cell_ref].s) ws[cell_ref].s = {};
+        ws[cell_ref].s.border = {
+          top: { style: 'thin', color: { rgb: '000000' } },
+          bottom: { style: 'thin', color: { rgb: '000000' } },
+          left: { style: 'thin', color: { rgb: '000000' } },
+          right: { style: 'thin', color: { rgb: '000000' } }
+        };
+      }
+    }
   }
 }
 

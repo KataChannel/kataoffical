@@ -1887,6 +1887,23 @@ let DathangService = class DathangService {
         });
         const XLSX = require('xlsx-js-style');
         const ws = XLSX.utils.json_to_sheet(excelData);
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+            for (let C = range.s.c; C <= range.e.c; ++C) {
+                const cell_address = { c: C, r: R };
+                const cell_ref = XLSX.utils.encode_cell(cell_address);
+                if (!ws[cell_ref])
+                    ws[cell_ref] = { t: 'z' };
+                if (!ws[cell_ref].s)
+                    ws[cell_ref].s = {};
+                ws[cell_ref].s.border = {
+                    top: { style: 'thin', color: { rgb: '000000' } },
+                    bottom: { style: 'thin', color: { rgb: '000000' } },
+                    left: { style: 'thin', color: { rgb: '000000' } },
+                    right: { style: 'thin', color: { rgb: '000000' } }
+                };
+            }
+        }
         const colWidths = [
             { wch: 5 },
             { wch: 15 },

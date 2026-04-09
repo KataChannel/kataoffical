@@ -605,7 +605,7 @@ export class DonhangService {
     }
 
     // Borders
-    for (let r = 5; r < currentRowIndex; r++) {
+    for (let r = 3; r < currentRowIndex; r++) {
          const row = worksheet.getRow(r);
          for (let c = 1; c <= columns.length; c++) {
              row.getCell(c).border = { top: {style:'thin'}, left: {style:'thin'}, right: {style:'thin'}, bottom: {style:'thin'} };
