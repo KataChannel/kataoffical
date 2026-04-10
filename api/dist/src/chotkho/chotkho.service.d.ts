@@ -5,6 +5,18 @@ export declare class ChotkhoService {
     private prisma;
     private notificationService;
     constructor(prisma: PrismaService, notificationService: NotificationService);
+    calculateStockFromLogs(sanphamId: string, khoId: string, endTime?: Date, tx?: any): Promise<{
+        initialQty: number;
+        lastClosingDate: Date;
+        currentCalc: number;
+        history: any[];
+    }>;
+    getTraceLog(chotkhoId: string, sanphamId: string): Promise<{
+        initialQty: number;
+        lastClosingDate: Date;
+        currentCalc: number;
+        history: any[];
+    }>;
     create(inventoryData: {
         ngaychot?: Date;
         title?: string;
@@ -24,10 +36,10 @@ export declare class ChotkhoService {
         data: ({
             user: {
                 id: string;
-                email: string | null;
                 profile: {
                     name: string;
                 } | null;
+                email: string | null;
             } | null;
             kho: {
                 id: string;
@@ -43,31 +55,31 @@ export declare class ChotkhoService {
             } & {
                 id: string;
                 title: string | null;
+                ngaychot: Date;
+                sltonhethong: Decimal;
+                sltonthucte: Decimal;
+                slhuy: Decimal;
+                chenhlech: Decimal;
                 ghichu: string | null;
-                order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                slhuy: Decimal;
-                userId: string | null;
+                order: number | null;
                 sanphamId: string | null;
-                ngaychot: Date;
-                sltonthucte: Decimal;
-                sltonhethong: Decimal;
-                chenhlech: Decimal;
                 chotkhoId: string | null;
+                userId: string | null;
             })[];
         } & {
             id: string;
             title: string | null;
+            ngaychot: Date;
             ghichu: string | null;
-            order: number | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            order: number | null;
             userId: string | null;
-            codeId: string | null;
             khoId: string | null;
-            ngaychot: Date;
+            isActive: boolean;
+            codeId: string | null;
         }) | null;
     }>;
     getAllProductsByKho(khoId: string): Promise<any[]>;
@@ -77,10 +89,10 @@ export declare class ChotkhoService {
         data: ({
             user: {
                 id: string;
-                email: string | null;
                 profile: {
                     name: string;
                 } | null;
+                email: string | null;
             } | null;
             kho: {
                 id: string;
@@ -96,31 +108,31 @@ export declare class ChotkhoService {
             } & {
                 id: string;
                 title: string | null;
+                ngaychot: Date;
+                sltonhethong: Decimal;
+                sltonthucte: Decimal;
+                slhuy: Decimal;
+                chenhlech: Decimal;
                 ghichu: string | null;
-                order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                slhuy: Decimal;
-                userId: string | null;
+                order: number | null;
                 sanphamId: string | null;
-                ngaychot: Date;
-                sltonthucte: Decimal;
-                sltonhethong: Decimal;
-                chenhlech: Decimal;
                 chotkhoId: string | null;
+                userId: string | null;
             })[];
         } & {
             id: string;
             title: string | null;
+            ngaychot: Date;
             ghichu: string | null;
-            order: number | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            order: number | null;
             userId: string | null;
-            codeId: string | null;
             khoId: string | null;
-            ngaychot: Date;
+            isActive: boolean;
+            codeId: string | null;
         })[];
         pagination: {
             current: number;
@@ -132,10 +144,10 @@ export declare class ChotkhoService {
     findOne(id: string): Promise<({
         user: {
             id: string;
-            email: string | null;
             profile: {
                 name: string;
             } | null;
+            email: string | null;
         } | null;
         kho: {
             id: string;
@@ -151,66 +163,66 @@ export declare class ChotkhoService {
         } & {
             id: string;
             title: string | null;
+            ngaychot: Date;
+            sltonhethong: Decimal;
+            sltonthucte: Decimal;
+            slhuy: Decimal;
+            chenhlech: Decimal;
             ghichu: string | null;
-            order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            slhuy: Decimal;
-            userId: string | null;
+            order: number | null;
             sanphamId: string | null;
-            ngaychot: Date;
-            sltonthucte: Decimal;
-            sltonhethong: Decimal;
-            chenhlech: Decimal;
             chotkhoId: string | null;
+            userId: string | null;
         })[];
     } & {
         id: string;
         title: string | null;
+        ngaychot: Date;
         ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         userId: string | null;
-        codeId: string | null;
         khoId: string | null;
-        ngaychot: Date;
+        isActive: boolean;
+        codeId: string | null;
     }) | null>;
     update(id: string, updateData: any): Promise<{
         id: string;
         title: string | null;
+        ngaychot: Date;
         ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         userId: string | null;
-        codeId: string | null;
         khoId: string | null;
-        ngaychot: Date;
+        isActive: boolean;
+        codeId: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
         title: string | null;
+        ngaychot: Date;
         ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         userId: string | null;
-        codeId: string | null;
         khoId: string | null;
-        ngaychot: Date;
+        isActive: boolean;
+        codeId: string | null;
     }>;
     search(searchParams: any): Promise<{
         data: ({
             user: {
                 id: string;
-                email: string | null;
                 profile: {
                     name: string;
                 } | null;
+                email: string | null;
             } | null;
             kho: {
                 id: string;
@@ -226,31 +238,31 @@ export declare class ChotkhoService {
             } & {
                 id: string;
                 title: string | null;
+                ngaychot: Date;
+                sltonhethong: Decimal;
+                sltonthucte: Decimal;
+                slhuy: Decimal;
+                chenhlech: Decimal;
                 ghichu: string | null;
-                order: number | null;
                 createdAt: Date;
                 updatedAt: Date;
-                slhuy: Decimal;
-                userId: string | null;
+                order: number | null;
                 sanphamId: string | null;
-                ngaychot: Date;
-                sltonthucte: Decimal;
-                sltonhethong: Decimal;
-                chenhlech: Decimal;
                 chotkhoId: string | null;
+                userId: string | null;
             })[];
         } & {
             id: string;
             title: string | null;
+            ngaychot: Date;
             ghichu: string | null;
-            order: number | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            order: number | null;
             userId: string | null;
-            codeId: string | null;
             khoId: string | null;
-            ngaychot: Date;
+            isActive: boolean;
+            codeId: string | null;
         })[];
         pagination: {
             current: any;
@@ -274,10 +286,10 @@ export declare class ChotkhoService {
     }): Promise<({
         user: {
             id: string;
-            email: string | null;
             profile: {
                 name: string;
             } | null;
+            email: string | null;
         } | null;
         details: ({
             sanpham: {
@@ -288,30 +300,30 @@ export declare class ChotkhoService {
         } & {
             id: string;
             title: string | null;
+            ngaychot: Date;
+            sltonhethong: Decimal;
+            sltonthucte: Decimal;
+            slhuy: Decimal;
+            chenhlech: Decimal;
             ghichu: string | null;
-            order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            slhuy: Decimal;
-            userId: string | null;
+            order: number | null;
             sanphamId: string | null;
-            ngaychot: Date;
-            sltonthucte: Decimal;
-            sltonhethong: Decimal;
-            chenhlech: Decimal;
             chotkhoId: string | null;
+            userId: string | null;
         })[];
     } & {
         id: string;
         title: string | null;
+        ngaychot: Date;
         ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         userId: string | null;
-        codeId: string | null;
         khoId: string | null;
-        ngaychot: Date;
+        isActive: boolean;
+        codeId: string | null;
     }) | null>;
 }

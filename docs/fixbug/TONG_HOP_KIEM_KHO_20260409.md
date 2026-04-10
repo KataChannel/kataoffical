@@ -43,6 +43,13 @@ Toàn bộ sản phẩm đều có sự sai lệch giữa con số **Hệ thốn
     *   Lỗi hiển thị giá trị tuyệt đối hoặc sai lệch logic cộng dồn của báo cáo bên thứ ba.
 2.  **Khớp số thực tế:** Toàn bộ dữ liệu kiểm kê thực tế đã được cập nhật chính xác vào hệ thống thông qua phiên chốt kho lúc 17:03 ngày 09/04.
 
+## 4. Đề xuất phương án xử lý
+Để đảm bảo số liệu hệ thống luôn khớp với thực tế và tránh các sai lệch trong báo cáo, chúng tôi đề xuất các giải pháp sau:
+- **Chuẩn hóa quy trình chốt kho:** Cần rà soát và chuẩn hóa logic lấy dữ liệu đầu kỳ, đảm bảo hệ thống luôn truy xuất từ phiên chốt kho gần nhất, tránh việc lấy nhầm dữ liệu tồn từ các ngày trước đó (như trường hợp Húng lủi).
+- **Cải thiện thời gian đồng bộ dữ liệu:** Thiết lập cơ chế ưu tiên đồng bộ hoặc tạo độ trễ hợp lý cho báo cáo để đảm bảo các phiếu nhập kho sáng sớm và xuất kho chiều muộn đã được hệ thống ghi nhận đầy đủ trước khi xuất số liệu "Hệ thống".
+- **Kiểm tra và hiệu chỉnh báo cáo bên thứ ba:** Làm việc với đơn vị cung cấp hoặc kiểm tra lại logic hiển thị để khắc phục các lỗi về giá trị tuyệt đối hoặc sai lệch trong công thức cộng dồn dữ liệu.
+- **Xác thực qua Trace Log:** Sử dụng dữ liệu từ Trace Log (như đã thực hiện trong báo cáo này) làm căn cứ chuẩn để đối soát và điều chỉnh các báo cáo hiển thị nếu phát hiện sai lệch.
+
 ---
 **Người thực hiện:** Antigravity AI
 **Danh sách chi tiết:** [Thư mục fixbug](file:///chikiet/kata2025/rausachfinal/docs/fixbug/)

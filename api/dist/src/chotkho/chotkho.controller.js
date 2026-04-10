@@ -33,6 +33,14 @@ let ChotkhoController = class ChotkhoController {
             throw new common_1.HttpException(error.message || 'Create inventory check failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async getTraceLog(id, sanphamId) {
+        try {
+            return await this.chotkhoService.getTraceLog(id, sanphamId);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Get trace log failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async getAllProductsByKho(khoId) {
         try {
             return await this.chotkhoService.getAllProductsByKho(khoId);
@@ -121,6 +129,17 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ChotkhoController.prototype, "create", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Get Trace Log for a specific product in a closing session' }),
+    (0, swagger_1.ApiParam)({ name: 'id', type: String, description: 'Chotkho ID' }),
+    (0, swagger_1.ApiParam)({ name: 'sanphamId', type: String, description: 'Product ID' }),
+    (0, common_1.Get)(':id/trace-log/:sanphamId'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('sanphamId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "getTraceLog", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get all products with inventory by warehouse' }),
     (0, swagger_1.ApiParam)({ name: 'khoId', type: String, description: 'Warehouse ID' }),

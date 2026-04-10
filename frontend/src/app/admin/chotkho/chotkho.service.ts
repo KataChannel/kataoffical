@@ -130,6 +130,26 @@ export class ChotkhoService {
   isRefreshing: WritableSignal<boolean> = signal(false);
   lastUpdated: WritableSignal<Date | null> = signal(null);
 
+  async getTraceLog(chotkhoId: string, sanphamId: string): Promise<any> {
+    try {
+      this.isLoading.set(true);
+      const response = await firstValueFrom(
+        this.http.get(`${environment.APIURL}/chotkho/${chotkhoId}/trace-log/${sanphamId}`, {
+          headers: {
+            Authorization: `Bearer ${this.storageService.getItem('token')}`,
+          },
+        })
+      );
+      return response;
+    } catch (error) {
+      console.error('Error getting trace log:', error);
+      this.showErrorMessage('Lỗi khi lấy dữ liệu đối soát');
+      return null;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
   async ChotkhoCodeId() {
     try {
       const maxOrderResult = await this.graphqlService.aggregate('chotkho', {

@@ -50,6 +50,21 @@ export class ChotkhoController {
     }
   }
 
+  @ApiOperation({ summary: 'Get Trace Log for a specific product in a closing session' })
+  @ApiParam({ name: 'id', type: String, description: 'Chotkho ID' })
+  @ApiParam({ name: 'sanphamId', type: String, description: 'Product ID' })
+  @Get(':id/trace-log/:sanphamId')
+  async getTraceLog(
+    @Param('id') id: string,
+    @Param('sanphamId') sanphamId: string
+  ) {
+    try {
+      return await this.chotkhoService.getTraceLog(id, sanphamId);
+    } catch (error) {
+      throw new HttpException(error.message || 'Get trace log failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @ApiOperation({ summary: 'Get all products with inventory by warehouse' })
   @ApiParam({ name: 'khoId', type: String, description: 'Warehouse ID' })
   @Get('products/by-warehouse/:khoId')

@@ -2063,6 +2063,25 @@ private removeCustomersFromGroup(nhomKhachhang: any): void {
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
+  // Helper to apply borders to all used cells in a sheet
+  private applyBorders(ws: any) {
+    if (!ws || !ws['!ref']) return;
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        const cell_address = { c: C, r: R };
+        const cell_ref = XLSX.utils.encode_cell(cell_address);
+        if (!ws[cell_ref]) ws[cell_ref] = { t: 'z', v: '' };
+        if (!ws[cell_ref].s) ws[cell_ref].s = {};
+        ws[cell_ref].s.border = {
+          top: { style: 'thin', color: { rgb: '000000' } },
+          bottom: { style: 'thin', color: { rgb: '000000' } },
+          left: { style: 'thin', color: { rgb: '000000' } },
+          right: { style: 'thin', color: { rgb: '000000' } }
+        };
+      }
+    }
+  }
 }
 
 
@@ -2087,25 +2106,6 @@ function memoize() {
 
     return descriptor;
   };
-  // Helper to apply borders to all used cells in a sheet
-  private applyBorders(ws: any) {
-    if (!ws || !ws['!ref']) return;
-    const range = XLSX.utils.decode_range(ws['!ref']);
-    for (let R = range.s.r; R <= range.e.r; ++R) {
-      for (let C = range.s.c; C <= range.e.c; ++C) {
-        const cell_address = { c: C, r: R };
-        const cell_ref = XLSX.utils.encode_cell(cell_address);
-        if (!ws[cell_ref]) ws[cell_ref] = { t: 'z', v: '' };
-        if (!ws[cell_ref].s) ws[cell_ref].s = {};
-        ws[cell_ref].s.border = {
-          top: { style: 'thin', color: { rgb: '000000' } },
-          bottom: { style: 'thin', color: { rgb: '000000' } },
-          left: { style: 'thin', color: { rgb: '000000' } },
-          right: { style: 'thin', color: { rgb: '000000' } }
-        };
-      }
-    }
-  }
 }
 
 function Debounce(delay: number = 300) {

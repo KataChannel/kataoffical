@@ -9,6 +9,101 @@ export class ChotkhoService {
     private prisma: PrismaService,
     private notificationService: NotificationService
   ) { }
+  /**
+   * 🎯 TRACE LOG LOGIC: Tính toán tồn kho dựa trên phiên chốt kho gần nhất và các giao dịch phát sinh
+   */
+  async calculateStockFromLogs(sanphamId: string, khoId: string, endTime: Date = new Date(), tx?: any) {
+    const prisma = tx || this.prisma;
+    
+    // 1. Tìm phiên chốt kho gần nhất của sản phẩm này
+    const lastChot = await this.prisma.chotkhodetail.findFirst({
+      where: {
+        sanphamId,
+        chotkho: {
+          khoId,
+          isActive: true,
+          ngaychot: { lt: endTime }
+        }
+      },
+      orderBy: { ngaychot: 'desc' },
+      include: { chotkho: true }
+    });
+
+    const startTime = lastChot ? lastChot.ngaychot : new Date(0);
+    const initialQty = lastChot ? Number(lastChot.sltonthucte) : 0;
+
+    // 2. Lấy tất cả các phiếu xuất (Donhangsanpham)
+    const xuat = await prisma.donhangsanpham.findMany({
+      where: {
+        idSP: sanphamId,
+        donhang: {
+          khoId,
+          status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
+          updatedAt: { gt: startTime, lte: endTime }
+        }
+      },
+      include: { donhang: true }
+    });
+
+    // 3. Lấy tất cả các phiếu nhập (Dathangsanpham)
+    const nhap = await prisma.dathangsanpham.findMany({
+      where: {
+        idSP: sanphamId,
+        dathang: {
+          khoId,
+          status: 'danhan',
+          updatedAt: { gt: startTime, lte: endTime }
+        }
+      },
+      include: { dathang: true }
+    });
+
+    // 4. Tổng hợp sự kiện
+    const events = [
+      ...xuat.map(x => ({
+        type: 'XUẤT',
+        qty: Number(x.slnhan || x.slgiao || x.sldat),
+        time: x.donhang.updatedAt,
+        code: x.donhang.madonhang,
+        note: 'Đơn hàng'
+      })),
+      ...nhap.map(n => ({
+        type: 'NHẬP',
+        qty: Number(n.slnhan || n.slgiao),
+        time: n.dathang.updatedAt,
+        code: n.dathang.madncc,
+        note: 'Nhập kho'
+      }))
+    ].sort((a, b) => a.time.getTime() - b.time.getTime());
+
+    let currentCalc = initialQty;
+    const history = events.map(e => {
+      if (e.type === 'XUẤT') currentCalc -= e.qty;
+      else currentCalc += e.qty;
+      return { ...e, balance: currentCalc };
+    });
+
+    return {
+      initialQty,
+      lastClosingDate: startTime,
+      currentCalc,
+      history
+    };
+  }
+
+  /**
+   * API lấy Trace Log cho một sản phẩm trong một phiên chốt kho cụ thể
+   */
+  async getTraceLog(chotkhoId: string, sanphamId: string) {
+    const chotkho = await this.prisma.chotkho.findUnique({
+      where: { id: chotkhoId }
+    });
+
+    if (!chotkho) throw new Error('Không tìm thấy phiên chốt kho');
+    if (!chotkho.khoId) throw new Error('Phiên chốt kho không có thông tin khoId');
+
+    return await this.calculateStockFromLogs(sanphamId, chotkho.khoId, chotkho.ngaychot);
+  }
 
   /**
    * 🎯 CREATE METHOD: Tạo chốt kho với master-detail structure
@@ -78,17 +173,21 @@ export class ChotkhoService {
         // Tạo detail records - Chotkhodetail
         let detailCount = 0;
         for (const detail of details) {
-          const chenhlech = Number(detail.sltonhethong) - Number(detail.sltonthucte) - Number(detail.slhuy);
+          // 🎯 CHUẨN HÓA LOGIC: Lấy tồn kho hệ thống thực tế từ Log (Standardization)
+          const analysis = await this.calculateStockFromLogs(detail.sanphamId, khoId, chotkhoMaster.ngaychot, prisma);
+          const sltonhethong_chuan = analysis.currentCalc;
+
+          const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
 
           await prisma.chotkhodetail.create({
             data: {
               chotkhoId: chotkhoMaster.id,
               sanphamId: detail.sanphamId,
-              sltonhethong: new Decimal(detail.sltonhethong),
+              sltonhethong: new Decimal(sltonhethong_chuan), // Sử dụng số đã được chuẩn hóa
               sltonthucte: new Decimal(detail.sltonthucte),
               slhuy: new Decimal(detail.slhuy),
               chenhlech: new Decimal(chenhlech),
-              ghichu: detail.ghichu || '',
+              ghichu: detail.ghichu || (analysis.currentCalc !== Number(detail.sltonhethong) ? `⚠️ Đã chuẩn hóa từ log (Báo cáo cũ: ${detail.sltonhethong})` : ''),
               userId,
               ngaychot: chotkhoMaster.ngaychot
             }
@@ -191,14 +290,24 @@ export class ChotkhoService {
         }
       });
 
-      return sanphamKhoRecords.map(item => ({
-        sanphamId: item.sanphamId,
-        sanpham: item.sanpham,
-        sltonhethong: Number(item.soluong),
-        sltonthucte: 0,
-        slhuy: 0,
-        chenhlech: Number(item.soluong)
+      const products = await Promise.all(sanphamKhoRecords.map(async (item) => {
+        // Chuẩn hóa: Thay vì lấy item.soluong trực tiếp, ta tính toán lại từ log để đối soát
+        const analysis = await this.calculateStockFromLogs(item.sanphamId, khoId);
+        
+        return {
+          sanphamId: item.sanphamId,
+          sanpham: item.sanpham,
+          sltonhethong_db: Number(item.soluong), // Số trong DB hiện tại
+          sltonhethong: analysis.currentCalc,    // Số thực tế tính từ log (Chuẩn hóa)
+          sltonthucte: 0,
+          slhuy: 0,
+          chenhlech: analysis.currentCalc,
+          isSynced: analysis.currentCalc === Number(item.soluong),
+          lastClosingDate: analysis.lastClosingDate
+        };
       }));
+
+      return products;
     } catch (error) {
       console.error('Error getting products by kho:', error);
       throw error;
@@ -497,17 +606,23 @@ export class ChotkhoService {
 
         // Create new details
         for (const detail of data.details) {
-          const chenhlech = Number(detail.sltonhethong) - Number(detail.sltonthucte) - Number(detail.slhuy);
+          if (!updatedMaster.khoId) throw new Error('Không thể tính toán log: phiên chốt kho thiếu khoId');
+          
+          // 🎯 CHUẨN HÓA LOGIC: Kiểm tra lại tồn kho hệ thống từ log (Standardization)
+          const analysis = await this.calculateStockFromLogs(detail.sanphamId, updatedMaster.khoId, updatedMaster.ngaychot, prisma);
+          const sltonhethong_chuan = analysis.currentCalc;
+
+          const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
 
           await prisma.chotkhodetail.create({
             data: {
               chotkhoId: id,
               sanphamId: detail.sanphamId,
-              sltonhethong: detail.sltonhethong,
-              sltonthucte: detail.sltonthucte,
-              slhuy: detail.slhuy,
-              chenhlech,
-              ghichu: detail.ghichu || '',
+              sltonhethong: new Decimal(sltonhethong_chuan),
+              sltonthucte: new Decimal(detail.sltonthucte),
+              slhuy: new Decimal(detail.slhuy),
+              chenhlech: new Decimal(chenhlech),
+              ghichu: detail.ghichu || (analysis.currentCalc !== Number(detail.sltonhethong) ? `⚠️ Đã chuẩn hóa từ log (Báo cáo cũ: ${detail.sltonhethong})` : ''),
               ngaychot: updatedMaster.ngaychot
             }
           });

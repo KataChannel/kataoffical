@@ -19,6 +19,85 @@ let ChotkhoService = class ChotkhoService {
         this.prisma = prisma;
         this.notificationService = notificationService;
     }
+    async calculateStockFromLogs(sanphamId, khoId, endTime = new Date(), tx) {
+        const prisma = tx || this.prisma;
+        const lastChot = await this.prisma.chotkhodetail.findFirst({
+            where: {
+                sanphamId,
+                chotkho: {
+                    khoId,
+                    isActive: true,
+                    ngaychot: { lt: endTime }
+                }
+            },
+            orderBy: { ngaychot: 'desc' },
+            include: { chotkho: true }
+        });
+        const startTime = lastChot ? lastChot.ngaychot : new Date(0);
+        const initialQty = lastChot ? Number(lastChot.sltonthucte) : 0;
+        const xuat = await prisma.donhangsanpham.findMany({
+            where: {
+                idSP: sanphamId,
+                donhang: {
+                    khoId,
+                    status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
+                    updatedAt: { gt: startTime, lte: endTime }
+                }
+            },
+            include: { donhang: true }
+        });
+        const nhap = await prisma.dathangsanpham.findMany({
+            where: {
+                idSP: sanphamId,
+                dathang: {
+                    khoId,
+                    status: 'danhan',
+                    updatedAt: { gt: startTime, lte: endTime }
+                }
+            },
+            include: { dathang: true }
+        });
+        const events = [
+            ...xuat.map(x => ({
+                type: 'XUẤT',
+                qty: Number(x.slnhan || x.slgiao || x.sldat),
+                time: x.donhang.updatedAt,
+                code: x.donhang.madonhang,
+                note: 'Đơn hàng'
+            })),
+            ...nhap.map(n => ({
+                type: 'NHẬP',
+                qty: Number(n.slnhan || n.slgiao),
+                time: n.dathang.updatedAt,
+                code: n.dathang.madncc,
+                note: 'Nhập kho'
+            }))
+        ].sort((a, b) => a.time.getTime() - b.time.getTime());
+        let currentCalc = initialQty;
+        const history = events.map(e => {
+            if (e.type === 'XUẤT')
+                currentCalc -= e.qty;
+            else
+                currentCalc += e.qty;
+            return { ...e, balance: currentCalc };
+        });
+        return {
+            initialQty,
+            lastClosingDate: startTime,
+            currentCalc,
+            history
+        };
+    }
+    async getTraceLog(chotkhoId, sanphamId) {
+        const chotkho = await this.prisma.chotkho.findUnique({
+            where: { id: chotkhoId }
+        });
+        if (!chotkho)
+            throw new Error('Không tìm thấy phiên chốt kho');
+        if (!chotkho.khoId)
+            throw new Error('Phiên chốt kho không có thông tin khoId');
+        return await this.calculateStockFromLogs(sanphamId, chotkho.khoId, chotkho.ngaychot);
+    }
     async create(inventoryData) {
         try {
             const transactionResult = await this.prisma.$transaction(async (prisma) => {
@@ -56,16 +135,18 @@ let ChotkhoService = class ChotkhoService {
                 console.log(`📦 Created master chotkho record: ${chotkhoMaster.id}`);
                 let detailCount = 0;
                 for (const detail of details) {
-                    const chenhlech = Number(detail.sltonhethong) - Number(detail.sltonthucte) - Number(detail.slhuy);
+                    const analysis = await this.calculateStockFromLogs(detail.sanphamId, khoId, chotkhoMaster.ngaychot, prisma);
+                    const sltonhethong_chuan = analysis.currentCalc;
+                    const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
                     await prisma.chotkhodetail.create({
                         data: {
                             chotkhoId: chotkhoMaster.id,
                             sanphamId: detail.sanphamId,
-                            sltonhethong: new library_1.Decimal(detail.sltonhethong),
+                            sltonhethong: new library_1.Decimal(sltonhethong_chuan),
                             sltonthucte: new library_1.Decimal(detail.sltonthucte),
                             slhuy: new library_1.Decimal(detail.slhuy),
                             chenhlech: new library_1.Decimal(chenhlech),
-                            ghichu: detail.ghichu || '',
+                            ghichu: detail.ghichu || (analysis.currentCalc !== Number(detail.sltonhethong) ? `⚠️ Đã chuẩn hóa từ log (Báo cáo cũ: ${detail.sltonhethong})` : ''),
                             userId,
                             ngaychot: chotkhoMaster.ngaychot
                         }
@@ -153,14 +234,21 @@ let ChotkhoService = class ChotkhoService {
                     }
                 }
             });
-            return sanphamKhoRecords.map(item => ({
-                sanphamId: item.sanphamId,
-                sanpham: item.sanpham,
-                sltonhethong: Number(item.soluong),
-                sltonthucte: 0,
-                slhuy: 0,
-                chenhlech: Number(item.soluong)
+            const products = await Promise.all(sanphamKhoRecords.map(async (item) => {
+                const analysis = await this.calculateStockFromLogs(item.sanphamId, khoId);
+                return {
+                    sanphamId: item.sanphamId,
+                    sanpham: item.sanpham,
+                    sltonhethong_db: Number(item.soluong),
+                    sltonhethong: analysis.currentCalc,
+                    sltonthucte: 0,
+                    slhuy: 0,
+                    chenhlech: analysis.currentCalc,
+                    isSynced: analysis.currentCalc === Number(item.soluong),
+                    lastClosingDate: analysis.lastClosingDate
+                };
             }));
+            return products;
         }
         catch (error) {
             console.error('Error getting products by kho:', error);
@@ -416,16 +504,20 @@ let ChotkhoService = class ChotkhoService {
                         where: { chotkhoId: id }
                     });
                     for (const detail of data.details) {
-                        const chenhlech = Number(detail.sltonhethong) - Number(detail.sltonthucte) - Number(detail.slhuy);
+                        if (!updatedMaster.khoId)
+                            throw new Error('Không thể tính toán log: phiên chốt kho thiếu khoId');
+                        const analysis = await this.calculateStockFromLogs(detail.sanphamId, updatedMaster.khoId, updatedMaster.ngaychot, prisma);
+                        const sltonhethong_chuan = analysis.currentCalc;
+                        const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
                         await prisma.chotkhodetail.create({
                             data: {
                                 chotkhoId: id,
                                 sanphamId: detail.sanphamId,
-                                sltonhethong: detail.sltonhethong,
-                                sltonthucte: detail.sltonthucte,
-                                slhuy: detail.slhuy,
-                                chenhlech,
-                                ghichu: detail.ghichu || '',
+                                sltonhethong: new library_1.Decimal(sltonhethong_chuan),
+                                sltonthucte: new library_1.Decimal(detail.sltonthucte),
+                                slhuy: new library_1.Decimal(detail.slhuy),
+                                chenhlech: new library_1.Decimal(chenhlech),
+                                ghichu: detail.ghichu || (analysis.currentCalc !== Number(detail.sltonhethong) ? `⚠️ Đã chuẩn hóa từ log (Báo cáo cũ: ${detail.sltonhethong})` : ''),
                                 ngaychot: updatedMaster.ngaychot
                             }
                         });

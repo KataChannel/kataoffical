@@ -13,10 +13,9 @@ Quản lý tồn kho tại siêu thị dựa trên 3 chỉ số chính:
 *   **(1) Tồn Kho ST:** Số lượng hàng được chuyển từ kho tổng về.
 *   **(2) Tồn Thực tế ST:** Cập nhật thông qua việc upload file Excel sau khi đã sơ chế.
 *   **(3) Hàng Hủy:** Cập nhật thông qua việc upload file Excel sau khi đã sơ chế.
-*   **(4) Số lượng Bán:** Dữ liệu bán hàng thực tế (Cột K) trong ngày.
 
 **Công thức tính toán:**
-> **Hao Hụt = (1) - [(2) + (3) + (4)]**
+> **Hao Hụt = (1) - [(2) + (3)]**
 
 ---
 
@@ -39,36 +38,12 @@ Quản lý tồn kho tại siêu thị dựa trên 3 chỉ số chính:
 
 ## III. Xử lý Dữ liệu & Excel
 
-### 1. Logic Cập nhật Chênh lệch
-*   Chốt quy trình cập nhật Tồn kho và Hàng hủy, sau đó thực hiện chuyển ngược dữ liệu về Tồn kho tổng.
-
-### 2. Cấu trúc File & Snapshot
-*   Chuyển đổi dữ liệu từ cấu trúc `Sheet tổng` sang cấu trúc `Sheet order`.
-
-### 3. Trình bày & Xác nhận Đối soát
-*   Tạo bảng tổng hợp dữ liệu để phục vụ bước xác nhận cuối cùng.
-*   Yêu cầu kẻ ô (Border) cho toàn bộ vùng dữ liệu để đảm bảo tính thẩm mỹ và dễ đọc.
-
-### 4. Ghi chú & Rà soát
-*   Rà soát lại phần ghi chú để loại bỏ các bước thanh toán/thao tác thừa không cần thiết.
-
----
-
-## IV. Danh mục Sản phẩm Trọng điểm (Audit List)
-
-Để đảm bảo tính chính xác, 11 mã sản phẩm dưới đây đã được đưa vào danh sách theo dõi Trace Log và đối soát dữ liệu hàng ngày:
-
-1.  **I100233:** Trứng gà
-2.  **I100479:** Dưa hấu
-3.  **I100207:** Xà lách lolo xanh
-4.  **I100003:** Bắp cải trắng
-5.  **I100002:** Bắp cải tím
-6.  **I100164:** Ớt đà lạt (đỏ)
-7.  **I100165:** Ớt đà lạt (vàng)
-8.  **I100166:** Ớt đà lạt (xanh)
-9.  **I100004:** Bắp chuối bào
-10. **I100256:** Bún nhỏ
-11. **I100113:** Húng lũi
+*   **Logic Cập nhật:** Chốt quy trình cập nhật Tồn kho và Hàng hủy, sau đó thực hiện chuyển ngược dữ liệu về Tồn kho tổng.
+*   **Cấu trúc File:** Chuyển đổi dữ liệu từ cấu trúc `Sheet tổng` sang cấu trúc `Sheet order`.
+*   **Trình bày & Xác nhận:**
+    *   Tạo bảng tổng hợp dữ liệu để phục vụ bước xác nhận cuối cùng.
+    *   Yêu cầu kẻ ô (Border) cho toàn bộ vùng dữ liệu để đảm bảo tính thẩm mỹ và dễ đọc.
+*   **Ghi chú bổ sung:** Rà soát lại phần ghi chú để loại bỏ các bước thanh toán/thao tác thừa không cần thiết.
 
 ---
 *Tài liệu này được tổng hợp từ dữ liệu quét tay: `Đã quét_20260408-1226.pdf` và `Đã quét_20260408-1433.pdf`.*
