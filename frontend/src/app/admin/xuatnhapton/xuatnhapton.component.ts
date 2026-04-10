@@ -19,7 +19,6 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { RouterOutlet } from "@angular/router";
 import { DateHelpers } from "../../shared/utils/date-helpers";
 import { memoize, Debounce } from "../../shared/utils/decorators";
-import { writeExcelMultiple, readExcelFileNoWorker } from "../../shared/utils/exceldrive.utils";
 import { removeVietnameseAccents } from "../../shared/utils/texttransfer.utils";
 import { TrangThaiDon } from "../../shared/utils/trangthai";
 import { DathangService } from "../dathang/dathang.service";
@@ -28,6 +27,14 @@ import { KhoService } from "../kho/kho.service";
 import { PhieukhoService } from "../phieukho/phieukho.service";
 import { SanphamService } from "../sanpham/sanpham.service";
 import { GraphqlService } from "../../shared/services/graphql.service";
+import { ChotkhoService } from "../chotkho/chotkho.service";
+import {
+  readExcelFileNoWorkerArray,
+  writeExcelFile,
+  writeExcelMultiple,
+  readExcelFileNoWorker
+} from "../../shared/utils/exceldrive.utils";
+import { StockWarningDialogComponent, StockWarningItem, StockWarningData } from "../dathang/nhucaudathang/stock-warning-dialog.component";
 @Component({
   selector: 'app-xuatnhapton',
   templateUrl: './xuatnhapton.component.html',
@@ -85,10 +92,12 @@ export class XuatnhaptonComponent implements OnDestroy {
   private _DonhangService: DonhangService = inject(DonhangService);
   private _GraphqlService: GraphqlService = inject(GraphqlService);
   private _KhoService: KhoService = inject(KhoService);
+  private _ChotkhoService: ChotkhoService = inject(ChotkhoService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   Xuatnhapton:any = this._PhieukhoService.ListPhieukho;
   dataSource = new MatTableDataSource([]);
   _snackBar: MatSnackBar = inject(MatSnackBar);  CountItem: any = 0;
+  isUpdatingStock = false;
   SearchParams: any = {
     Batdau: DateHelpers.format(DateHelpers.now(), 'YYYY-MM-DD'),
     Ketthuc: DateHelpers.format(DateHelpers.add(DateHelpers.now(), 1, 'day'), 'YYYY-MM-DD'),
@@ -330,78 +339,416 @@ export class XuatnhaptonComponent implements OnDestroy {
     writeExcelMultiple({SP, XNT}, title);
   }
 
-  async ImporExcel(event: any) {
-    const files = Array.from(event.target.files) as File[];
-    const data = await readExcelFileNoWorker(files[0], 'XNT');
+  async Capnhattonkho() {
+    this.isUpdatingStock = true;
 
-    const phieuNhapDetails: any[] = [];
-    const phieuXuatDetails: any[] = [];
+    // Tạo input file element động
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.xlsx,.xls,.csv';
+    fileInput.style.display = 'none';
 
-    data.forEach((v: any) => {
-      const exitItem = this.Xuatnhapton().find((item: any) => item.masp === v.masp);
-      if (exitItem) {
-        if (v.slton > exitItem.slton) {
-          // Tính chênh lệch cho phiếu nhập
-          phieuNhapDetails.push({
-          sanphamId:this._SanphamService.ListSanpham().find((item:any)=>item.masp===v.masp).id, 
-          soluong: v.slton - exitItem.slton,
-          // thêm các trường cần thiết
+    fileInput.onchange = async (event: any) => {
+      try {
+        const file = event.target.files[0];
+        if (!file) {
+          this._snackBar.open('Không có file được chọn', 'Đóng', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
           });
-        } else if (v.slton < exitItem.slton) {
-          // Tính chênh lệch cho phiếu xuất
-          phieuXuatDetails.push({
-          sanphamId:this._SanphamService.ListSanpham().find((item:any)=>item.masp===v.masp).id,
-          soluong: exitItem.slton - v.slton,
-          // thêm các trường cần thiết
-          });
+          this.isUpdatingStock = false;
+          return;
         }
-      }
-    });    if (phieuNhapDetails.length > 0) {
-      // Tạo phiếu nhập một lần với danh sách chi tiết
-      this._PhieukhoService.CreatePhieukho(
-        {
-        title:`Điều Chỉnh Kho Ngày ${DateHelpers.format(DateHelpers.now(), 'DD/MM/YYYY ')}`, 
-        type:'nhap',
-        sanpham: phieuNhapDetails, 
-        ghichu: `Cập nhật tồn kho lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
-        ngay: DateHelpers.now()
-      });
-    }
-    if (phieuXuatDetails.length > 0) {
-      // Tạo phiếu xuất một lần với danh sách chi tiết
-      this._PhieukhoService.CreatePhieukho(
-        {
-        title:`Điều Chỉnh Kho Ngày ${DateHelpers.format(DateHelpers.now(), 'DD/MM/YYYY ')}`, 
-        type:'xuat',
-        sanpham: phieuXuatDetails, 
-        ghichu: `Cập nhật tồn kho lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
-        ngay: DateHelpers.now()
-      });
-    }
-    if (phieuNhapDetails.length > 0) {
-      this._snackBar.open(`Điều chỉnh nhập kho với ${phieuNhapDetails.length} sản phẩm`, '', {
-          duration: 1000,
-          horizontalPosition: "end",
-          verticalPosition: "top",
-          panelClass: ['snackbar-success'],
+
+        // Hiển thị loading
+        this._snackBar.open('Đang xử lý file Excel...', '', {
+          duration: 0,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-info'],
+        });
+
+        // Đọc file Excel (không sử dụng worker)
+        const excelData = await readExcelFileNoWorkerArray(event);
+
+        if (!excelData || excelData.length === 0) {
+          this._snackBar.dismiss();
+          this._snackBar.open('File Excel trống hoặc không hợp lệ', 'Đóng', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
           });
-    }
-    if (phieuXuatDetails.length > 0) {
-      this._snackBar.open(`Điều chỉnh xuất kho với ${phieuXuatDetails.length} sản phẩm`, '', {
-          duration: 1000,
-          horizontalPosition: "end",
-          verticalPosition: "top",
-          panelClass: ['snackbar-success'],
+          return;
+        }
+
+        // Validate và transform dữ liệu
+        const validData: Array<{ masp: string; slton: number; slhuy: number }> = [];
+        const errors: string[] = [];
+        console.log(excelData);
+
+        excelData.forEach((row: any, index: number) => {
+          const masp = row.masp?.toString().trim() || row.ITEMCODE?.toString().trim();
+          let slton = parseFloat(row.slton || row.QUANTITY || '0');
+          let slhuy = parseFloat(row.slhuy || '0');
+
+          // Validate required fields
+          if (!masp) {
+            errors.push(`Dòng ${index + 1}: Thiếu mã sản phẩm`);
+            return;
+          }
+
+          // Xử lý slton: nếu NaN, null, undefined hoặc <= 0 thì set về 0
+          if (isNaN(slton) || slton == null || slton <= 0) {
+            slton = 0;
+            console.log(
+              `Dòng ${index + 1} - ${masp}: slton được set về 0 (giá trị gốc: ${row.slton
+              })`
+            );
+          }
+          
+          if (isNaN(slhuy) || slhuy == null || slhuy < 0) {
+            slhuy = 0;
+          }
+
+          validData.push({ masp, slton, slhuy });
         });
-    }
-    if (phieuNhapDetails.length === 0 && phieuXuatDetails.length === 0) {
-            this._snackBar.open('Kho không thay đổi', '', {
-          duration: 1000,
-          horizontalPosition: "end",
-          verticalPosition: "top",
-          panelClass: ['snackbar-success'],
+
+        if (errors.length > 0) {
+          this._snackBar.dismiss();
+          this._snackBar.open(
+            `Có ${errors.length} lỗi trong file. Xem console để biết chi tiết.`,
+            'Đóng',
+            {
+              duration: 5000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-error'],
+            }
+          );
+          console.error('Validation errors:', errors);
+          return;
+        }
+
+        // Get all existing TonKho and Sanpham data
+        const [tonkhoResponse, sanphamResponse] = await Promise.all([
+          this._GraphqlService.findAll('tonkho', {
+            take: 999999,
+            select: {
+              id: true,
+              sanphamId: true,
+              slton: true,
+              sltontt: true,
+              slchogiao: true,
+              slchonhap: true,
+              sanpham: {
+                select: {
+                  id: true,
+                  masp: true,
+                  title: true,
+                },
+              },
+            },
+          }),
+          this._GraphqlService.findAll('sanpham', {
+            take: 999999,
+            select: {
+              id: true,
+              masp: true,
+              title: true,
+            },
+          }),
+        ]);
+
+        const allTonkho = tonkhoResponse.data || [];
+        const allSanpham = sanphamResponse.data || [];
+
+        // Create maps for quick lookup
+        const tonkhoMap = new Map(
+          allTonkho.map((tk: any) => [tk.sanpham?.masp, tk])
+        );
+        const sanphamMap = new Map(allSanpham.map((sp: any) => [sp.masp, sp]));
+
+        const processErrors: string[] = [];
+        const validDataMap = new Map(validData.map(item => [item.masp, { slton: item.slton, slhuy: item.slhuy }]));
+
+        const phieuNhapDetails: any[] = [];
+        const phieuXuatDetails: any[] = [];
+        const allChangedDetails: any[] = [];
+        let unchangedCount = 0;
+
+        const danhSachCanhBao: StockWarningItem[] = [];
+
+        for (const [masp, parsedData] of validDataMap.entries()) {
+          const slton = parsedData.slton;
+          const slhuy = parsedData.slhuy;
+          
+          const tonkho = tonkhoMap.get(masp);
+          const sanpham = sanphamMap.get(masp);
+
+          if (!sanpham) {
+            processErrors.push(`Không tìm thấy sản phẩm với mã: ${masp}`);
+            continue;
+          }
+
+          const currentSltontt = Number(tonkho ? (tonkho.sltontt || 0) : 0);
+
+          if (slton > currentSltontt) {
+            phieuNhapDetails.push({
+              sanphamId: sanpham.id,
+              soluong: slton - currentSltontt,
+            });
+          } else if (slton < currentSltontt) {
+            phieuXuatDetails.push({
+              sanphamId: sanpham.id,
+              soluong: currentSltontt - slton,
+            });
+          } else {
+            unchangedCount++;
+          }
+
+          if (slton !== currentSltontt || slhuy > 0) {
+            allChangedDetails.push({
+              sanphamId: sanpham.id,
+              sltonhethong: currentSltontt,
+              sltonthucte: slton,
+              slhuy: slhuy,
+              ghichu: slton > currentSltontt ? 'Điều chỉnh tăng từ Excel' : (slton < currentSltontt ? 'Điều chỉnh giảm từ Excel' : 'Cập nhật từ Excel'),
+            });
+          }
+
+          if (slton !== currentSltontt) {
+            const warning = this.detectStockAnomalies(
+              masp,
+              sanpham.title || masp,
+              slton,
+              currentSltontt
+            );
+            if (warning) {
+              danhSachCanhBao.push(warning);
+            }
+
+            const slchonhap = Number(tonkho?.slchonhap || 0);
+            if (slchonhap > 0 && slton >= (currentSltontt + slchonhap * 0.8)) {
+              danhSachCanhBao.push({
+                masp,
+                title: sanpham.title || sanpham.masp,
+                sltonCu: currentSltontt,
+                sltonMoi: slton,
+                chenhLech: slton - currentSltontt,
+                loaiDieuChinh: 'tang',
+                mucDoNghiemTrong: 'cao',
+                lyDoCanhBao: `CẢNH BÁO ĐẾM LẶP: Bạn chốt ${slton} kg trong khi có ${slchonhap} kg 'Hàng đang về' chưa nhấn 'Đã nhận'. Có phải bạn đã đếm cả hàng mới về này không?`
+              });
+            } else if (slchonhap > 0) {
+              danhSachCanhBao.push({
+                masp,
+                title: sanpham.title || sanpham.masp,
+                sltonCu: currentSltontt,
+                sltonMoi: slton,
+                chenhLech: Math.abs(slton - currentSltontt),
+                loaiDieuChinh: slton > currentSltontt ? 'tang' : 'giam',
+                mucDoNghiemTrong: 'trung_binh',
+                lyDoCanhBao: `Lưu ý: Sản phẩm còn ${slchonhap} kg 'Hàng đang về' chưa xác nhận nhập kho hệ thống.`
+              });
+            }
+          }
+        }
+
+        this._snackBar.dismiss();
+
+        const spBinhThuong = (phieuNhapDetails.length + phieuXuatDetails.length) - danhSachCanhBao.length;
+
+        const dialogData: StockWarningData = {
+          title: '⚠️ Xác Nhận Cập Nhật Chốt Kho',
+          tongSanPham: validDataMap.size,
+          spBinhThuong: Math.max(0, spBinhThuong),
+          spKhongThayDoi: unchangedCount,
+          danhSachCanhBao,
+          danhSachNhap: phieuNhapDetails,
+          danhSachXuat: phieuXuatDetails,
+        };
+
+        const dialogRef = this._dialog.open(StockWarningDialogComponent, {
+          width: '700px',
+          maxHeight: '90vh',
+          disableClose: true,
+          data: dialogData
         });
+
+        const confirmed = await dialogRef.afterClosed().toPromise();
+
+        if (!confirmed) {
+          this._snackBar.open('Đã hủy cập nhật chốt kho.', 'Đóng', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-info'],
+          });
+          this.isUpdatingStock = false;
+          return;
+        }
+
+        this._snackBar.open('Đang lưu dữ liệu chốt kho...', '', {
+          duration: 0,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-info'],
+        });
+
+        if (allChangedDetails.length > 0) {
+          const defaultKhoId = '4cc01811-61f5-4bdc-83de-a493764e9258'; 
+
+          const ckResult = await this._ChotkhoService.createChotkhoWithDetails({
+            ngaychot: DateHelpers.now(),
+            title: `ĐIỀU CHỈNH CHỐT KHO TỰ ĐỘNG [EXCEL]`,
+            khoId: defaultKhoId,
+            ghichu: `Chốt kho từ Excel (${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm) lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY')}`,
+            details: allChangedDetails
+          });
+
+          if (!ckResult || ckResult === false) {
+            throw new Error("Tạo chốt kho thất bại từ API. Vui lòng kiểm tra lại log hệ thống.");
+          }
+        }
+
+        this._snackBar.dismiss();
+
+        if (processErrors.length > 0) {
+          console.error('Process errors:', processErrors);
+          this._snackBar.open(
+            `Hoàn thành với ${processErrors.length} lỗi. ${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm, ${unchangedCount} giữ nguyên. Xem console.`,
+            'Đóng',
+            {
+              duration: 5000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-warning'],
+            }
+          );
+        } else {
+          this._snackBar.open(
+            `✅ Cập nhật TonKho thành công: ${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm, ${unchangedCount} giữ nguyên.`,
+            'Đóng',
+            {
+              duration: 4000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-success'],
+            }
+          );
+        }
+
+        this.ngOnInit();
+      } catch (error: any) {
+        this._snackBar.dismiss();
+        this._snackBar.open(`Lỗi xử lý file: ${error.message}`, 'Đóng', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+        console.error('Error processing Excel file:', error);
+      } finally {
+        this.isUpdatingStock = false;
+      }
+    };
+
+    fileInput.oncancel = () => {
+      this.isUpdatingStock = false;
+    };
+
+    document.body.appendChild(fileInput);
+    fileInput.click();
+    document.body.removeChild(fileInput);
+  }
+
+  async downloadTonkhoTemplate() {
+    const mapping = {
+      masp: 'masp',
+      title: 'title',
+      slton: 'slton',
+      slhuy: 'slhuy',
+    };
+    const Sanphams = await this._GraphqlService.findAll('sanpham', {
+      take: 999999,
+      select: {
+        id: true,
+        masp: true,
+        title: true,
+        TonKho: {
+          select: {
+            slton: true,
+            sltontt: true,
+          },
+        },
+      },
+    });
+    const sampleData = Sanphams.data.map((sp: any) => ({
+      masp: sp.masp || '',
+      title: sp.title || '',
+      slton: sp.TonKho?.sltontt || sp.TonKho?.slton || 0,
+      slhuy: 0,
+    }));
+    writeExcelFile(
+      sampleData,
+      'MauCapNhatTonKho',
+      Object.values(mapping),
+      mapping
+    );
+
+    this._snackBar.open('Đã tải file Excel mẫu', 'Đóng', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-info'],
+    });
+  }
+
+  private detectStockAnomalies(
+    masp: string,
+    title: string,
+    sltonMoi: number,
+    sltonCu: number
+  ): StockWarningItem | null {
+    const chenhLech = Math.abs(sltonMoi - sltonCu);
+    const loaiDieuChinh: 'tang' | 'giam' = sltonMoi > sltonCu ? 'tang' : 'giam';
+
+    if (sltonCu === 0 && sltonMoi >= 1000) {
+      return {
+        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
+        mucDoNghiemTrong: 'cao',
+        lyDoCanhBao: `Tồn cũ = 0 nhưng nhập mới ${sltonMoi.toLocaleString()} → kiểm tra lại số liệu gốc`
+      };
     }
+
+    if (sltonMoi >= 5000) {
+      return {
+        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
+        mucDoNghiemTrong: 'cao',
+        lyDoCanhBao: `Số lượng ${sltonMoi.toLocaleString()} rất lớn → có thể nhập nhầm đơn vị (cây vs thùng)`
+      };
+    }
+
+    if (sltonCu > 0 && chenhLech / sltonCu > 5) {
+      return {
+        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
+        mucDoNghiemTrong: 'trung_binh',
+        lyDoCanhBao: `Chênh lệch ${(chenhLech / sltonCu * 100).toFixed(0)}% so với tồn cũ → xác nhận lại`
+      };
+    }
+
+    if (loaiDieuChinh === 'giam' && chenhLech >= 500) {
+      return {
+        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
+        mucDoNghiemTrong: 'trung_binh',
+        lyDoCanhBao: `Giảm ${chenhLech.toLocaleString()} đơn vị → kiểm tra phiếu xuất kho`
+      };
+    }
+
+    return null;
   }
 
   private _dialog: MatDialog = inject(MatDialog);

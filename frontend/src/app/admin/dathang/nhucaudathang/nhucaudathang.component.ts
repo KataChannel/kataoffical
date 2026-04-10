@@ -91,7 +91,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatPaginatorModule,
     MatMenuModule,
     MatSidenavModule,
-    RouterOutlet,
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
@@ -424,6 +423,51 @@ export class NhucaudathangComponent {
       isStale: diffDays >= 2, // Cảnh báo nếu quá 2 ngày
       days: diffDays,
       oldestDate: oldestDate
+    };
+  }
+
+  /**
+   * ✅ Phát hiện các bất thường trong tồn kho khi chốt kho
+   * Giúp cảnh báo nhân viên nếu nhập sai số lượng (quá lớn, quá nhỏ, lệch đơn vị)
+   */
+  detectStockAnomalies(masp: string, title: string, sltonMoi: number, sltonCu: number): StockWarningItem | null {
+    const chenhLech = Math.abs(sltonMoi - sltonCu);
+    const loaiDieuChinh = sltonMoi > sltonCu ? 'tang' : 'giam';
+    const phanTramThayDoi = sltonCu > 0 ? (chenhLech / sltonCu) * 100 : 0;
+    
+    // Ngưỡng cảnh báo: Chỉ quan tâm nếu chênh lệch > 30kg hoặc > 50%
+    if (chenhLech <= 30 && (phanTramThayDoi <= 50 || chenhLech <= 5)) {
+      return null;
+    }
+
+    let mucDoNghiemTrong: 'cao' | 'trung_binh' | 'thap' = 'thap';
+    let lyDoCanhBao = '';
+
+    // 1. Cảnh báo mức ĐỎ (Rất nghiêm trọng)
+    if (chenhLech > 100 || (phanTramThayDoi > 200 && chenhLech > 10)) {
+      mucDoNghiemTrong = 'cao';
+      lyDoCanhBao = `SỰ THAY ĐỔI CỰC LỚN: ${loaiDieuChinh === 'tang' ? 'Tăng' : 'Giảm'} ${chenhLech.toFixed(1)}kg (${phanTramThayDoi.toFixed(0)}%). Vui lòng kiểm tra lại đơn vị tính hoặc số lượng nhập liệu.`;
+    } 
+    // 2. Cảnh báo mức VÀNG (Đáng ngờ)
+    else if (chenhLech > 30 || (phanTramThayDoi > 50 && chenhLech > 5)) {
+      mucDoNghiemTrong = 'trung_binh';
+      lyDoCanhBao = `Thay đổi đáng kể: ${loaiDieuChinh === 'tang' ? 'Tăng' : 'Giảm'} ${chenhLech.toFixed(1)}kg. Chênh lệch ${phanTramThayDoi.toFixed(0)}% so với số cũ.`;
+    }
+    // 3. Cảnh báo mức XANH (Sai lệch nhỏ hơn)
+    else {
+      mucDoNghiemTrong = 'thap';
+      lyDoCanhBao = `Sai lệch: ${chenhLech.toFixed(1)}kg.`;
+    }
+
+    return {
+      masp,
+      title,
+      sltonCu,
+      sltonMoi,
+      chenhLech,
+      loaiDieuChinh,
+      mucDoNghiemTrong,
+      lyDoCanhBao
     };
   }
 
@@ -976,62 +1020,7 @@ export class NhucaudathangComponent {
   // ================================================================
   // CẢNH BÁO BẤT THƯỜNG CHỐT KHO
   // ================================================================
-  private detectStockAnomalies(
-    masp: string,
-    title: string,
-    sltonMoi: number,
-    sltonCu: number
-  ): StockWarningItem | null {
-    const chenhLech = Math.abs(sltonMoi - sltonCu);
-    const loaiDieuChinh: 'tang' | 'giam' = sltonMoi > sltonCu ? 'tang' : 'giam';
 
-    // Rule 1: Số lượng mới > 1000 khi cũ = 0 (nhập đột biến)
-    if (sltonCu === 0 && sltonMoi >= 1000) {
-      return {
-        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
-        mucDoNghiemTrong: 'cao',
-        lyDoCanhBao: `Tồn cũ = 0 nhưng nhập mới ${sltonMoi.toLocaleString()} → kiểm tra lại số liệu gốc`
-      };
-    }
-
-    // Rule 2: Giá trị cực lớn > 5000 (bất kể cũ bao nhiêu)
-    if (sltonMoi >= 5000) {
-      return {
-        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
-        mucDoNghiemTrong: 'cao',
-        lyDoCanhBao: `Số lượng ${sltonMoi.toLocaleString()} rất lớn → có thể nhập nhầm đơn vị (cây vs thùng)`
-      };
-    }
-
-    // Rule 3: Thay đổi > 500% so với giá trị cũ
-    if (sltonCu > 0 && chenhLech / sltonCu > 5) {
-      return {
-        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
-        mucDoNghiemTrong: 'trung_binh',
-        lyDoCanhBao: `Chênh lệch ${(chenhLech / sltonCu * 100).toFixed(0)}% so với tồn cũ → xác nhận lại`
-      };
-    }
-
-    // Rule 4: Giảm tồn > 500 đơn vị
-    if (loaiDieuChinh === 'giam' && chenhLech >= 500) {
-      return {
-        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
-        mucDoNghiemTrong: 'trung_binh',
-        lyDoCanhBao: `Giảm ${chenhLech.toLocaleString()} đơn vị → kiểm tra phiếu xuất kho`
-      };
-    }
-
-    // Rule 5: Tăng đột biến > 500 khi cũ < 50
-    if (sltonCu < 50 && sltonMoi > 500) {
-      return {
-        masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
-        mucDoNghiemTrong: 'thap',
-        lyDoCanhBao: `Tồn cũ chỉ ${sltonCu} nhưng nhập ${sltonMoi.toLocaleString()} → xác nhận lại`
-      };
-    }
-
-    return null;
-  }
 
   async Capnhattonkho() {
     this.isUpdatingStock = true;
@@ -1379,47 +1368,7 @@ export class NhucaudathangComponent {
   }
 
   // Tải file Excel mẫu để cập nhật tồn kho
-  async downloadTonkhoTemplate() {
-    const mapping = {
-      masp: 'masp',
-      title: 'title',
-      slton: 'slton',
-      slhuy: 'slhuy',
-    };
-    const Sanphams = await this._GraphqlService.findAll('sanpham', {
-      take: 999999,
-      select: {
-        id: true,
-        masp: true,
-        title: true,
-        TonKho: {
-          select: {
-            slton: true,
-          },
-        },
-      },
-    });
-    const sampleData = Sanphams.data.map((sp: any) => ({
-      masp: sp.masp || '',
-      title: sp.title || '',
-      slton: sp.TonKho?.slton || 0,
-      slhuy: 0,
-    }));
-    // Tạo file Excel với dữ liệu mẫu
-    writeExcelFile(
-      sampleData,
-      'MauCapNhatTonKho',
-      Object.values(mapping),
-      mapping
-    );
 
-    this._snackBar.open('Đã tải file Excel mẫu', 'Đóng', {
-      duration: 2000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-info'],
-    });
-  }
 
   convertKhoData(inputData: any) {
     const warehouses = [

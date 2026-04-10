@@ -16,6 +16,19 @@
                     aria-label="Example icon-button with a menu">
                     <mat-icon>tune</mat-icon>
                 </button>
+                
+                <span (click)="!isUpdatingStock && Capnhattonkho()" 
+                      [class]="'whitespace-nowrap p-2 border rounded-lg cursor-pointer flex items-center space-x-2 ' + 
+                                (isUpdatingStock ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50')" 
+                      matTooltip="Tải file Excel lên để cập nhật tồn kho">
+                    @if (isUpdatingStock) {
+                        <mat-icon class="animate-spin text-sm">sync</mat-icon>
+                        <span>Đang cập nhật...</span>
+                    } @else {
+                        <span>📁 Cập Nhật Tồn Kho</span>
+                    }
+                </span>
+                <span (click)="downloadTonkhoTemplate()" class="whitespace-nowrap p-2 border hover:bg-slate-50 rounded-lg cursor-pointer" matTooltip="Tải file Excel mẫu để cập nhật tồn kho">📄 Mẫu Excel</span>
                 <mat-menu #menu="matMenu">
                     <div class="p-4">
                         <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
