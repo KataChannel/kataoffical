@@ -47,6 +47,9 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
                         select: { mancc: true, name: true },
                         take: 1,
                     },
+                    planningNote: {
+                        select: { content: true }
+                    }
                 },
             }),
             this.prisma.tonKho.findMany({
@@ -243,18 +246,27 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
                 kho6: (kho6Id && skMap?.get(kho6Id)) || 0,
                 Dathangs: dathangs,
                 Donhangs: [],
+                ghichu: sp.planningNote?.content || '',
             };
         })
             .sort((a, b) => b.Dathangs.length - a.Dathangs.length);
         return {
             data: result,
-            meta: {
-                totalProducts: result.length,
-                startDate,
-                endDate,
-                generatedAt: new Date().toISOString(),
-            },
+            totalCount: result.length,
         };
+    }
+    async saveNhucauNote(sanphamId, content) {
+        try {
+            const result = await this.prisma.nhucauPlanningNote.upsert({
+                where: { sanphamId },
+                update: { content },
+                create: { sanphamId, content },
+            });
+            return { success: true, data: result };
+        }
+        catch (error) {
+            return { success: false, message: error.message };
+        }
     }
 };
 exports.NhuCauDatHangResolver = NhuCauDatHangResolver;
@@ -275,6 +287,17 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], NhuCauDatHangResolver.prototype, "getNhuCauDatHang", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
+        name: 'saveNhucauNote',
+        description: 'Saves or updates a persistent procurement note for a product',
+    }),
+    __param(0, (0, graphql_1.Args)('sanphamId')),
+    __param(1, (0, graphql_1.Args)('content')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], NhuCauDatHangResolver.prototype, "saveNhucauNote", null);
 exports.NhuCauDatHangResolver = NhuCauDatHangResolver = __decorate([
     (0, common_1.Injectable)(),
     (0, graphql_1.Resolver)(),

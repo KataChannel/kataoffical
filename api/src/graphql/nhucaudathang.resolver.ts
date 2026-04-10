@@ -1,4 +1,4 @@
-import { Resolver, Query, Args } from '@nestjs/graphql';
+import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { Injectable } from '@nestjs/common';
 import { GraphQLJSON } from 'graphql-type-json';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -77,6 +77,9 @@ export class NhuCauDatHangResolver {
             select: { mancc: true, name: true },
             take: 1,
           },
+          planningNote: {
+            select: { content: true }
+          }
         },
       }),
 
@@ -343,18 +346,34 @@ export class NhuCauDatHangResolver {
           // Details
           Dathangs: dathangs,
           Donhangs: [],
+          ghichu: sp.planningNote?.content || '',
         };
       })
       .sort((a, b) => b.Dathangs.length - a.Dathangs.length);
 
     return {
       data: result,
-      meta: {
-        totalProducts: result.length,
-        startDate,
-        endDate,
-        generatedAt: new Date().toISOString(),
-      },
+      totalCount: result.length,
     };
+  }
+
+  @Mutation(() => GraphQLJSON, {
+    name: 'saveNhucauNote',
+    description: 'Saves or updates a persistent procurement note for a product',
+  })
+  async saveNhucauNote(
+    @Args('sanphamId') sanphamId: string,
+    @Args('content') content: string,
+  ) {
+    try {
+      const result = await this.prisma.nhucauPlanningNote.upsert({
+        where: { sanphamId },
+        update: { content },
+        create: { sanphamId, content },
+      });
+      return { success: true, data: result };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
   }
 }

@@ -2906,8 +2906,15 @@ export class NhucaudathangComponent {
       for (const [key, tempData] of this.tempStorage.entries()) {
         const rowIndex = currentData.findIndex((item: any) => this.getRowKey(item) === key);
         if (rowIndex !== -1) {
+          const row = currentData[rowIndex];
+
+          // ✅ LƯU GHI CHÚ NHU CẦU LÊN DATABASE (STICKY NOTE)
+          if (tempData.changes['ghichu'] !== undefined) {
+             await this._GraphqlService.saveNhucauNote(row.id, tempData.changes['ghichu']);
+          }
+
           // Apply changes to the row in dataSource
-          Object.assign(currentData[rowIndex], tempData.changes);
+          Object.assign(row, tempData.changes);
         }
       }
 

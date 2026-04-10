@@ -244,6 +244,7 @@ model Sanpham {
   SanphamKho      SanphamKho[]
   TonKho          TonKho?
   Nhacungcap      Nhacungcap[]      @relation("NhacungcapToSanpham")
+  planningNote    NhucauPlanningNote?
 }
 
 model Donhang {
@@ -938,5 +939,14 @@ model Notification {
   @@index([userId])
   @@index([createdAt])
   @@index([isRead])
+}
+
+model NhucauPlanningNote {
+  id        String   @id @default(uuid())
+  sanphamId String   @unique
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sanpham   Sanpham  @relation(fields: [sanphamId], references: [id], onDelete: Cascade)
 }
 

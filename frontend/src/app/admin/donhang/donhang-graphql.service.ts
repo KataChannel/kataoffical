@@ -544,6 +544,36 @@ export class DonhangGraphqlService {
         });
       });
 
+      // --- NEW SHEET: TH Hàng ST (Aggregated by Product) ---
+      const thHangSieuThiMap = new Map<string, { title: string, dvt: string, qty: number }>();
+      sieuThiOrders.forEach((order: any) => {
+        (order.sanpham || []).forEach((sp: any) => {
+          if (!sp.isActive) return;
+          const title = sp.sanpham?.title || 'Unknown';
+          const slGiao = Number(sp.slgiao || sp.sldat) || 0;
+          const existing = thHangSieuThiMap.get(title);
+          if (existing) {
+            existing.qty += slGiao;
+          } else {
+            thHangSieuThiMap.set(title, {
+              title,
+              dvt: sp.sanpham?.dvt || '',
+              qty: slGiao
+            });
+          }
+        });
+      });
+
+      const thHangSieuThiAOA: any[][] = [
+        ["TỔNG HỢP HÀNG SIÊU THỊ ĐÓNG GÓI", "", "", ""],
+        ["sản phẩm", "DVT", "KL", "Ghi chú"]
+      ];
+      Array.from(thHangSieuThiMap.values())
+        .sort((a, b) => a.title.localeCompare(b.title))
+        .forEach(item => {
+          thHangSieuThiAOA.push([item.title, item.dvt, item.qty, ""]);
+        });
+
       // --- SHEET 3: KHÁCH LẺ (Loại Khách Hàng = Lẻ) ---
       const hangKhachLeAOA: any[][] = [
         ["BẢNG SẢN PHẨM HÀNG KHÁCH LẺ", "", "", "", "", ""],
@@ -756,6 +786,7 @@ export class DonhangGraphqlService {
         'Tổng hợp': { data: tonghopSheetData },
         'Vận đơn': { data: vandonSheetData },
         'Hàng ST': { data: hangSieuThiAOA },
+        'TH Hang ST': { data: thHangSieuThiAOA },
         'Khách lẻ': { data: hangKhachLeAOA },
         'Phiếu Chuyển': { data: phieuChuyenSheetData }
       };

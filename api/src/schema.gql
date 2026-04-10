@@ -455,6 +455,9 @@ type Mutation {
     """Specific model to clear cache for (optional)"""
     modelName: String
   ): JSON!
+
+  """Saves or updates a persistent procurement note for a product"""
+  saveNhucauNote(sanphamId: String!, content: String!): JSON!
   createTicket(input: CreateTicketInput!): SupportTicket!
   updateTicket(id: String!, input: UpdateTicketInput!): SupportTicket!
   addResponse(ticketId: String!, input: CreateResponseInput!): SupportResponse!

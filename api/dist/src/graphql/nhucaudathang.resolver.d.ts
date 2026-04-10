@@ -31,12 +31,23 @@ export declare class NhuCauDatHangResolver {
             kho6: number;
             Dathangs: any[];
             Donhangs: never[];
+            ghichu: string;
         }[];
-        meta: {
-            totalProducts: number;
-            startDate: string;
-            endDate: string;
-            generatedAt: string;
+        totalCount: number;
+    }>;
+    saveNhucauNote(sanphamId: string, content: string): Promise<{
+        success: boolean;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            sanphamId: string;
+            content: string;
         };
+        message?: undefined;
+    } | {
+        success: boolean;
+        message: any;
+        data?: undefined;
     }>;
 }

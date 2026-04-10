@@ -255,6 +255,12 @@ const GET_NHUCAU_DATHANG_QUERY = gql`
   }
 `;
 
+const SAVE_NHUCAU_NOTE_MUTATION = gql`
+  mutation SaveNhucauNote($sanphamId: String!, $content: String!) {
+    saveNhucauNote(sanphamId: $sanphamId, content: $content)
+  }
+`;
+
 
 @Injectable({
   providedIn: 'root'
@@ -1634,6 +1640,23 @@ export class GraphqlService {
       return data;
     } catch (error) {
       this.trackError(error, 'getNhuCauDatHang');
+      throw error;
+    }
+  }
+
+  async saveNhucauNote(sanphamId: string, content: string): Promise<any> {
+    const startTime = Date.now();
+    try {
+      const result = await firstValueFrom(
+        this.apollo.mutate({
+          mutation: SAVE_NHUCAU_NOTE_MUTATION,
+          variables: { sanphamId, content }
+        })
+      );
+      this.trackPerformance('saveNhucauNote', startTime, false, 1, 'sanpham');
+      return result.data;
+    } catch (error) {
+      this.trackError(error, 'saveNhucauNote');
       throw error;
     }
   }
