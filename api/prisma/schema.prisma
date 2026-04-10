@@ -275,6 +275,8 @@ model Donhang {
   shipper          String?
   banggia          Banggia?         @relation(fields: [banggiaId], references: [id])
   khachhang        Khachhang?       @relation(fields: [khachhangId], references: [id])
+  khoId            String?
+  kho              Kho?             @relation(fields: [khoId], references: [id])
   sanpham          Donhangsanpham[]
   PhieuKho         PhieuKho[]
 
@@ -465,6 +467,7 @@ model Kho {
   updatedAt  DateTime     @updatedAt
   Chotkho    Chotkho[]
   Dathang    Dathang[]
+  Donhang    Donhang[]
   congty     Congty?      @relation(fields: [congtyId], references: [id])
   phieukho   PhieuKho[]
   sanphamKho SanphamKho[]

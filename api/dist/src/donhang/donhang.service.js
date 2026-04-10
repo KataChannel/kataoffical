@@ -1763,6 +1763,7 @@ let DonhangService = class DonhangService {
                     isActive: dto.isActive,
                     order: maxOrder + 1,
                     ghichu: dto.ghichu,
+                    khoId: dto.khoId || DEFAUL_KHO_ID,
                     isshowvat: khachhang.isshowvat,
                     sanpham: {
                         create: (() => {

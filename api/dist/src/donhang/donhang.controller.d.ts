@@ -50,6 +50,7 @@ export declare class DonhangController {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
+        khoId: string | null;
     }>;
     ImportDonhangOld(data: any): Promise<{
         status: string;
@@ -157,6 +158,7 @@ export declare class DonhangController {
             kynhan: string | null;
             nhanvienchiahang: string | null;
             shipper: string | null;
+            khoId: string | null;
         }[];
         total: number;
         pageNumber: any;
@@ -209,6 +211,7 @@ export declare class DonhangController {
         banggiaId: string | null;
         vat: import("@prisma/client/runtime/library").Decimal;
         lydohuy: string | null;
+        khoId: string | null;
     }[]>;
     dongbogiaPreview(params: any): Promise<{
         previews: any[];
@@ -293,6 +296,7 @@ export declare class DonhangController {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
+        khoId: string | null;
     }>;
     searchfield(searchParams: Record<string, any>): Promise<{
         sanpham: {
@@ -377,6 +381,7 @@ export declare class DonhangController {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
+        khoId: string | null;
     }>;
     findByProductId(id: string): Promise<{
         sanpham: ({
@@ -473,6 +478,7 @@ export declare class DonhangController {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
+        khoId: string | null;
     }[]>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -558,6 +564,7 @@ export declare class DonhangController {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
+        khoId: string | null;
     }>;
     updatePhieugiao(id: string, updateDonhangDto: any): Promise<{
         sanpham: {
@@ -604,6 +611,7 @@ export declare class DonhangController {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
+        khoId: string | null;
     }>;
     updateBulk(data: any[]): Promise<{
         success: number;

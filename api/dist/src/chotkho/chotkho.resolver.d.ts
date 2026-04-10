@@ -4,17 +4,17 @@ export declare class ChotkhoResolver {
     constructor(chotkhoService: ChotkhoService);
     findMany(page?: number, limit?: number): Promise<{
         data: ({
+            kho: {
+                id: string;
+                name: string;
+                makho: string | null;
+            } | null;
             user: {
                 id: string;
                 email: string | null;
                 profile: {
                     name: string;
                 } | null;
-            } | null;
-            kho: {
-                id: string;
-                name: string;
-                makho: string | null;
             } | null;
             details: ({
                 sanpham: {
@@ -46,9 +46,9 @@ export declare class ChotkhoResolver {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            khoId: string | null;
             userId: string | null;
             codeId: string | null;
-            khoId: string | null;
             ngaychot: Date;
         })[];
         pagination: {
@@ -59,17 +59,17 @@ export declare class ChotkhoResolver {
         };
     }>;
     findOne(id: string): Promise<({
+        kho: {
+            id: string;
+            name: string;
+            makho: string | null;
+        } | null;
         user: {
             id: string;
             email: string | null;
             profile: {
                 name: string;
             } | null;
-        } | null;
-        kho: {
-            id: string;
-            name: string;
-            makho: string | null;
         } | null;
         details: ({
             sanpham: {
@@ -101,9 +101,9 @@ export declare class ChotkhoResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        khoId: string | null;
         userId: string | null;
         codeId: string | null;
-        khoId: string | null;
         ngaychot: Date;
     }) | null>;
     getProductsByWarehouse(khoId: string): Promise<any[]>;
@@ -126,17 +126,17 @@ export declare class ChotkhoResolver {
         success: boolean;
         message: string;
         data: ({
+            kho: {
+                id: string;
+                name: string;
+                makho: string | null;
+            } | null;
             user: {
                 id: string;
                 email: string | null;
                 profile: {
                     name: string;
                 } | null;
-            } | null;
-            kho: {
-                id: string;
-                name: string;
-                makho: string | null;
             } | null;
             details: ({
                 sanpham: {
@@ -168,9 +168,9 @@ export declare class ChotkhoResolver {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            khoId: string | null;
             userId: string | null;
             codeId: string | null;
-            khoId: string | null;
             ngaychot: Date;
         }) | null;
     }>;
@@ -182,9 +182,9 @@ export declare class ChotkhoResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        khoId: string | null;
         userId: string | null;
         codeId: string | null;
-        khoId: string | null;
         ngaychot: Date;
     }>;
     remove(id: string): Promise<{
@@ -195,9 +195,9 @@ export declare class ChotkhoResolver {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        khoId: string | null;
         userId: string | null;
         codeId: string | null;
-        khoId: string | null;
         ngaychot: Date;
     }>;
     search(filters?: {
@@ -209,17 +209,17 @@ export declare class ChotkhoResolver {
         limit?: number;
     }): Promise<{
         data: ({
+            kho: {
+                id: string;
+                name: string;
+                makho: string | null;
+            } | null;
             user: {
                 id: string;
                 email: string | null;
                 profile: {
                     name: string;
                 } | null;
-            } | null;
-            kho: {
-                id: string;
-                name: string;
-                makho: string | null;
             } | null;
             details: ({
                 sanpham: {
@@ -251,9 +251,9 @@ export declare class ChotkhoResolver {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            khoId: string | null;
             userId: string | null;
             codeId: string | null;
-            khoId: string | null;
             ngaychot: Date;
         })[];
         pagination: {

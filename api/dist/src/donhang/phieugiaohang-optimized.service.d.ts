@@ -101,6 +101,7 @@ export declare class PhieuGiaoHangOptimizedService {
         kynhan: string | null;
         nhanvienchiahang: string | null;
         shipper: string | null;
+        khoId: string | null;
     }>;
     updateBulkOptimized(ids: string[], status: string): Promise<{
         success: number;

@@ -34,9 +34,9 @@ export declare class DathangService {
         createdAt: Date;
         updatedAt: Date | null;
         lydohuy: string | null;
+        khoId: string | null;
         subtitle: string | null;
         madncc: string | null;
-        khoId: string | null;
         ngaynhan: Date | null;
         ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
@@ -97,9 +97,9 @@ export declare class DathangService {
         createdAt: Date;
         updatedAt: Date | null;
         lydohuy: string | null;
+        khoId: string | null;
         subtitle: string | null;
         madncc: string | null;
-        khoId: string | null;
         ngaynhan: Date | null;
         ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
@@ -133,9 +133,9 @@ export declare class DathangService {
         createdAt: Date;
         updatedAt: Date | null;
         lydohuy: string | null;
+        khoId: string | null;
         subtitle: string | null;
         madncc: string | null;
-        khoId: string | null;
         ngaynhan: Date | null;
         ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
@@ -169,9 +169,9 @@ export declare class DathangService {
         createdAt: Date;
         updatedAt: Date | null;
         lydohuy: string | null;
+        khoId: string | null;
         subtitle: string | null;
         madncc: string | null;
-        khoId: string | null;
         ngaynhan: Date | null;
         ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
@@ -205,9 +205,9 @@ export declare class DathangService {
         createdAt: Date;
         updatedAt: Date | null;
         lydohuy: string | null;
+        khoId: string | null;
         subtitle: string | null;
         madncc: string | null;
-        khoId: string | null;
         ngaynhan: Date | null;
         ngaynhanEnd: Date | null;
         nhacungcapId: string | null;
@@ -224,9 +224,9 @@ export declare class DathangService {
         createdAt: Date;
         updatedAt: Date | null;
         lydohuy: string | null;
+        khoId: string | null;
         subtitle: string | null;
         madncc: string | null;
-        khoId: string | null;
         ngaynhan: Date | null;
         ngaynhanEnd: Date | null;
         nhacungcapId: string | null;

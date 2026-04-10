@@ -6,17 +6,17 @@ export declare class ChotkhoController {
         success: boolean;
         message: string;
         data: ({
+            kho: {
+                id: string;
+                name: string;
+                makho: string | null;
+            } | null;
             user: {
                 id: string;
                 email: string | null;
                 profile: {
                     name: string;
                 } | null;
-            } | null;
-            kho: {
-                id: string;
-                name: string;
-                makho: string | null;
             } | null;
             details: ({
                 sanpham: {
@@ -48,9 +48,9 @@ export declare class ChotkhoController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            khoId: string | null;
             userId: string | null;
             codeId: string | null;
-            khoId: string | null;
             ngaychot: Date;
         }) | null;
     }>;
@@ -62,17 +62,17 @@ export declare class ChotkhoController {
     }>;
     getAllProductsByKho(khoId: string): Promise<any[]>;
     findOne(id: string): Promise<({
+        kho: {
+            id: string;
+            name: string;
+            makho: string | null;
+        } | null;
         user: {
             id: string;
             email: string | null;
             profile: {
                 name: string;
             } | null;
-        } | null;
-        kho: {
-            id: string;
-            name: string;
-            makho: string | null;
         } | null;
         details: ({
             sanpham: {
@@ -104,24 +104,24 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        khoId: string | null;
         userId: string | null;
         codeId: string | null;
-        khoId: string | null;
         ngaychot: Date;
     }) | null>;
     findAll(page?: string, limit?: string): Promise<{
         data: ({
+            kho: {
+                id: string;
+                name: string;
+                makho: string | null;
+            } | null;
             user: {
                 id: string;
                 email: string | null;
                 profile: {
                     name: string;
                 } | null;
-            } | null;
-            kho: {
-                id: string;
-                name: string;
-                makho: string | null;
             } | null;
             details: ({
                 sanpham: {
@@ -153,9 +153,9 @@ export declare class ChotkhoController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            khoId: string | null;
             userId: string | null;
             codeId: string | null;
-            khoId: string | null;
             ngaychot: Date;
         })[];
         pagination: {
@@ -203,9 +203,9 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        khoId: string | null;
         userId: string | null;
         codeId: string | null;
-        khoId: string | null;
         ngaychot: Date;
     }) | null>;
     update(id: string, data: any): Promise<{
@@ -216,9 +216,9 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        khoId: string | null;
         userId: string | null;
         codeId: string | null;
-        khoId: string | null;
         ngaychot: Date;
     }>;
     remove(id: string): Promise<{
@@ -229,9 +229,9 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        khoId: string | null;
         userId: string | null;
         codeId: string | null;
-        khoId: string | null;
         ngaychot: Date;
     }>;
 }

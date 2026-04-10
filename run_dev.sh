@@ -28,9 +28,10 @@ echo "6. ⚡ Tối ưu hóa Tất cả Sản phẩm"
 echo "7. 🧹 Dọn dẹp Database"
 echo "8. 🔧 Sửa lỗi 'too many open files'"
 echo "9. 🚀 Triển khai An toàn (Build Local -> Server)"
+echo "10. ⏫ Cập nhật Schema Database (Push)"
 echo "0. Thoát"
 echo "-----------------------------------"
-read -p "Vui lòng chọn chức năng (0-9): " choice
+read -p "Vui lòng chọn chức năng (0-10): " choice
 
 case $choice in
     1)
@@ -65,6 +66,11 @@ case $choice in
             sudo sysctl -w fs.inotify.max_user_instances=512
         fi
         if [ "$choice" -eq 9 ]; then bash scripts/deploy_safe_local.sh; fi
+        exit 0
+        ;;
+    10)
+        echo "=> ⏫ Tiến hành Push Database (prisma db push)..."
+        (cd api && npx prisma db push)
         exit 0
         ;;
     0)

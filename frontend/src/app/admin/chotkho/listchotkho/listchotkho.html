@@ -44,18 +44,6 @@
             </div>
           </div>
           
-          <button class="flex flex-row items-center" color="primary" matTooltip="Thêm mới" (click)="create()"
-            mat-flat-button>
-            <mat-icon>add_circle</mat-icon>
-            <span class="whitespace-nowrap">Tạo Mới</span>
-          </button>
-          
-          <!-- Select All Toggle Button -->
-          <button class="flex flex-row items-center whitespace-nowrap" color="accent" matTooltip="Chọn/Bỏ chọn tất cả" 
-            (click)="ToggleAll()" mat-flat-button>
-            <mat-icon>checklist</mat-icon>
-            <span class="whitespace-nowrap">{{EditList.length > 0 ? 'Bỏ chọn' : 'Chọn tất cả'}}</span>
-          </button>
           
           <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
             class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button [disabled]="isLoading()">
@@ -68,12 +56,6 @@
             <span class="whitespace-nowrap">Xoá ({{EditList.length}})</span>
           </button>
 
-          <!-- Smart Refresh Button -->
-          <button class="flex flex-row items-center" color="accent" matTooltip="Smart Refresh" 
-            (click)="smartRefresh()" [disabled]="isRefreshing" mat-flat-button>
-            <mat-icon>refresh</mat-icon>
-            <span class="whitespace-nowrap">Refresh</span>
-          </button>
         </div>
       </div>
 
