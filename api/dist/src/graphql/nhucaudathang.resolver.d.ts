@@ -21,6 +21,8 @@ export declare class NhuCauDatHangResolver {
             xSLDat: number;
             khachdat: number;
             khachgiao: number;
+            khachhuy: number;
+            slsnapshot: number;
             kho1: number;
             kho2: number;
             kho3: number;

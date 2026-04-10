@@ -65,8 +65,8 @@ export declare class AuthService {
                 };
             } & {
                 id: string;
-                permissionId: string;
                 roleId: string;
+                permissionId: string;
             })[];
         } & {
             id: string;

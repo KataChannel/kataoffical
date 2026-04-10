@@ -10,19 +10,19 @@ export declare class RoleController {
     }>;
     assignPermissionToRole(data: any): Promise<{
         id: string;
-        permissionId: string;
         roleId: string;
+        permissionId: string;
     }>;
     removePermissionFromRole(data: any): Promise<{
         id: string;
-        permissionId: string;
         roleId: string;
+        permissionId: string;
     }>;
     findAll(): Promise<({
         permissions: {
             id: string;
-            permissionId: string;
             roleId: string;
+            permissionId: string;
         }[];
     } & {
         id: string;
@@ -33,8 +33,8 @@ export declare class RoleController {
     findOne(id: string): Promise<({
         permissions: {
             id: string;
-            permissionId: string;
             roleId: string;
+            permissionId: string;
         }[];
     } & {
         id: string;
@@ -56,8 +56,8 @@ export declare class RoleController {
             };
         } & {
             id: string;
-            permissionId: string;
             roleId: string;
+            permissionId: string;
         })[];
     } & {
         id: string;

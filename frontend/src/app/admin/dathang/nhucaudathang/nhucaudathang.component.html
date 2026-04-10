@@ -388,6 +388,14 @@
                                     }
                                 </div>
                             }
+                            @case ('slsnapshot') {
+                                <div class="flex flex-col items-end min-w-[80px]">
+                                    <span class="font-semibold text-blue-600 text-[14px] tabular-nums">
+                                        {{ row[column] | number:'1.0-2' }}
+                                    </span>
+                                    <span class="text-[9px] text-blue-400 whitespace-nowrap">Số trước chốt (Trace Log)</span>
+                                </div>
+                            }
                             @case ('chenhlech') {
                                 @let cl = ((row['tongkho'] || 0) - (row['khachgiao'] || 0)) - (row['sltontt'] || 0);
                                 <div class="flex flex-col items-end">

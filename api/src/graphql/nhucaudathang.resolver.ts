@@ -64,7 +64,7 @@ export class NhuCauDatHangResolver {
     // ============================================================
     // Step 1: Gather relevant IDs and metadata
     // ============================================================
-    const [sanphams, tonkhos, khos, sanphamKhos] = await Promise.all([
+    const [sanphams, tonkhos, khos, chotkhos, sanphamKhos] = await Promise.all([
       // All products with primary supplier
       this.prisma.sanpham.findMany({
         select: {
@@ -97,6 +97,16 @@ export class NhuCauDatHangResolver {
         select: { id: true, name: true, makho: true },
       }),
 
+      // Latest Chotkhodetail for system snapshot (Trace log value before closing)
+      this.prisma.chotkhodetail.findMany({
+        orderBy: { ngaychot: 'desc' },
+        distinct: ['sanphamId'],
+        select: {
+          sanphamId: true,
+          sltonhethong: true,
+          sltonthucte: true,
+        }
+      }),
       // Per-warehouse stock (Actually used for the kho1...kho6 columns)
       this.prisma.sanphamKho.findMany({
         select: {
@@ -141,7 +151,7 @@ export class NhuCauDatHangResolver {
     // ============================================================
     // ⚡ FIX: Cast SUM results to float8 to get plain JS numbers instead of Prisma Decimal objects
     // This prevents "very large numbers" or string serialization issues in the JSON response
-    const [dathangSumRaw, donhangPendingRaw, donhangDeliveredRaw] =
+    const [dathangSumRaw, donhangPendingRaw, donhangDeliveredRaw, donhangCancelledRaw] =
       await Promise.all([
         // NCC order totals for this range
         summaryDathangIds.length > 0
@@ -170,6 +180,19 @@ export class NhuCauDatHangResolver {
               FROM "Donhangsanpham"
               WHERE "donhangId" = ANY(${deliveredDonhangIds})
               GROUP BY "idSP"
+            `
+          : Promise.resolve([]),
+
+        // Customer CANCELLED totals (Full cancellation status 'huy' OR partial cancellation 'slhuy')
+        qualifyingDonhangs.length > 0
+          ? this.prisma.$queryRaw<{ idSP: string; total: number }[]>`
+              SELECT 
+                dps."idSP",
+                CAST(SUM(CASE WHEN d.status = 'huy' THEN dps.sldat ELSE dps.slhuy END) AS float8) as total
+              FROM "Donhangsanpham" dps
+              JOIN "Donhang" d ON d.id = dps."donhangId"
+              WHERE d.id = ANY(${qualifyingDonhangs.map((d) => d.id)})
+              GROUP BY dps."idSP"
             `
           : Promise.resolve([]),
       ]);
@@ -230,6 +253,16 @@ export class NhuCauDatHangResolver {
       khachGiaoMap.set(d.idSP, this.toNum(d.total)),
     );
 
+    const khachHuyMap = new Map<string, number>();
+    (donhangCancelledRaw as any[]).forEach((d) =>
+      khachHuyMap.set(d.idSP, this.toNum(d.total)),
+    );
+
+    const chotkhoMap = new Map<string, number>();
+    (chotkhos as any[]).forEach((ck) =>
+      chotkhoMap.set(ck.sanphamId, this.toNum(ck.sltonhethong)),
+    );
+
     const dathangsByProduct = new Map<string, any[]>();
     recentDathangs.forEach((dh) => {
       dh.sanpham.forEach((sp: any) => {
@@ -270,6 +303,8 @@ export class NhuCauDatHangResolver {
         const slDatNCC = dathangSumMap.get(sp.id) || 0;
         const slKhachDat = khachDatMap.get(sp.id) || 0;
         const slKhachGiao = khachGiaoMap.get(sp.id) || 0;
+        const slKhachHuy = khachHuyMap.get(sp.id) || 0;
+        const slSnapshot = chotkhoMap.get(sp.id) || 0;
         const dathangs = dathangsByProduct.get(sp.id) || [];
         const skMap = spKhoMap.get(sp.id);
 
@@ -294,6 +329,8 @@ export class NhuCauDatHangResolver {
           xSLDat: slDatNCC,
           khachdat: slKhachDat,
           khachgiao: slKhachGiao,
+          khachhuy: slKhachHuy,
+          slsnapshot: slSnapshot,
 
           // Warehouse Stock levels
           kho1: (kho1Id && skMap?.get(kho1Id)) || 0,

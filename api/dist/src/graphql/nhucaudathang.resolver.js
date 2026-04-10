@@ -35,7 +35,7 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
     async getNhuCauDatHang(startDate, endDate) {
         const start = new Date(startDate);
         const end = new Date(endDate);
-        const [sanphams, tonkhos, khos, sanphamKhos] = await Promise.all([
+        const [sanphams, tonkhos, khos, chotkhos, sanphamKhos] = await Promise.all([
             this.prisma.sanpham.findMany({
                 select: {
                     id: true,
@@ -61,6 +61,15 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
             }),
             this.prisma.kho.findMany({
                 select: { id: true, name: true, makho: true },
+            }),
+            this.prisma.chotkhodetail.findMany({
+                orderBy: { ngaychot: 'desc' },
+                distinct: ['sanphamId'],
+                select: {
+                    sanphamId: true,
+                    sltonhethong: true,
+                    sltonthucte: true,
+                }
             }),
             this.prisma.sanphamKho.findMany({
                 select: {
@@ -91,7 +100,7 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
         const deliveredDonhangIds = qualifyingDonhangs
             .filter((d) => ['dagiao', 'danhan', 'hoanthanh'].includes(d.status))
             .map((d) => d.id);
-        const [dathangSumRaw, donhangPendingRaw, donhangDeliveredRaw] = await Promise.all([
+        const [dathangSumRaw, donhangPendingRaw, donhangDeliveredRaw, donhangCancelledRaw] = await Promise.all([
             summaryDathangIds.length > 0
                 ? this.prisma.$queryRaw `
               SELECT "idSP", CAST(COALESCE(SUM("sldat"::numeric), 0) AS float8) as total
@@ -114,6 +123,17 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
               FROM "Donhangsanpham"
               WHERE "donhangId" = ANY(${deliveredDonhangIds})
               GROUP BY "idSP"
+            `
+                : Promise.resolve([]),
+            qualifyingDonhangs.length > 0
+                ? this.prisma.$queryRaw `
+              SELECT 
+                dps."idSP",
+                CAST(SUM(CASE WHEN d.status = 'huy' THEN dps.sldat ELSE dps.slhuy END) AS float8) as total
+              FROM "Donhangsanpham" dps
+              JOIN "Donhang" d ON d.id = dps."donhangId"
+              WHERE d.id = ANY(${qualifyingDonhangs.map((d) => d.id)})
+              GROUP BY dps."idSP"
             `
                 : Promise.resolve([]),
         ]);
@@ -154,6 +174,10 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
         donhangPendingRaw.forEach((d) => khachDatMap.set(d.idSP, this.toNum(d.total)));
         const khachGiaoMap = new Map();
         donhangDeliveredRaw.forEach((d) => khachGiaoMap.set(d.idSP, this.toNum(d.total)));
+        const khachHuyMap = new Map();
+        donhangCancelledRaw.forEach((d) => khachHuyMap.set(d.idSP, this.toNum(d.total)));
+        const chotkhoMap = new Map();
+        chotkhos.forEach((ck) => chotkhoMap.set(ck.sanphamId, this.toNum(ck.sltonhethong)));
         const dathangsByProduct = new Map();
         recentDathangs.forEach((dh) => {
             dh.sanpham.forEach((sp) => {
@@ -188,6 +212,8 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
             const slDatNCC = dathangSumMap.get(sp.id) || 0;
             const slKhachDat = khachDatMap.get(sp.id) || 0;
             const slKhachGiao = khachGiaoMap.get(sp.id) || 0;
+            const slKhachHuy = khachHuyMap.get(sp.id) || 0;
+            const slSnapshot = chotkhoMap.get(sp.id) || 0;
             const dathangs = dathangsByProduct.get(sp.id) || [];
             const skMap = spKhoMap.get(sp.id);
             return {
@@ -207,6 +233,8 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
                 xSLDat: slDatNCC,
                 khachdat: slKhachDat,
                 khachgiao: slKhachGiao,
+                khachhuy: slKhachHuy,
+                slsnapshot: slSnapshot,
                 kho1: (kho1Id && skMap?.get(kho1Id)) || 0,
                 kho2: (kho2Id && skMap?.get(kho2Id)) || 0,
                 kho3: (kho3Id && skMap?.get(kho3Id)) || 0,
