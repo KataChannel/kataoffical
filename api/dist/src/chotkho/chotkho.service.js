@@ -39,7 +39,6 @@ let ChotkhoService = class ChotkhoService {
             where: {
                 idSP: sanphamId,
                 donhang: {
-                    khoId,
                     status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
                     updatedAt: { gt: startTime, lte: endTime }
                 }
@@ -50,7 +49,6 @@ let ChotkhoService = class ChotkhoService {
             where: {
                 idSP: sanphamId,
                 dathang: {
-                    khoId,
                     status: 'danhan',
                     updatedAt: { gt: startTime, lte: endTime }
                 }

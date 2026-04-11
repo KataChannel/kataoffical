@@ -28,7 +28,7 @@
   <ng-container *ngIf="!isDelete()">
     <!-- Master Information -->
     <div class="p-4 rounded-lg mb-4" *ngIf="DetailChotkho()">
-      <h3 class="text-lg font-semibold mb-4">Thông tin chốt kho</h3>
+      <h3 class="text-lg font-semibold mb-4">Thông tin chốt kho [Hệ thống đã cập nhật]</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Tiêu Đề</mat-label>
@@ -142,6 +142,10 @@
               <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
                 <span class="line-clamp-4 me-4">
                   {{ ColumnName[column] }}
+                  <br *ngIf="ColumnDesc[column]">
+                  <small class="text-[10px] lowercase font-normal opacity-60 italic" *ngIf="ColumnDesc[column]">
+                    ({{ ColumnDesc[column] }})
+                  </small>
                 </span>
               </th>
               <td mat-cell *matCellDef="let row; let idx = index">

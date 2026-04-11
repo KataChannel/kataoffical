@@ -47,6 +47,12 @@ import { UserService } from '../../user/user.service';
     styleUrl: './detailchotkho.scss'
   })
   export class DetailChotkhoComponent {
+    public ColumnDesc: any = {
+      sltonhethong: 'Số liệu Snapshot',
+      sltonthucte: 'Số kiểm đếm',
+      slhuy: 'Hàng hư hỏng',
+      chenhlech: 'Hệ thống - Thực tế'
+    };
     _ListChotkhoComponent:ListChotkhoComponent = inject(ListChotkhoComponent)
     _ChotkhoService:ChotkhoService = inject(ChotkhoService)
     _SanphamService: SanphamService = inject(SanphamService);

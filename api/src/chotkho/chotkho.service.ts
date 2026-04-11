@@ -37,7 +37,7 @@ export class ChotkhoService {
       where: {
         idSP: sanphamId,
         donhang: {
-          khoId,
+          // Bỏ lọc khoId để lấy dữ liệu tổng từ tất cả các kho (Nhập/Xuất liên kho)
           status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
           updatedAt: { gt: startTime, lte: endTime }
         }
@@ -50,7 +50,7 @@ export class ChotkhoService {
       where: {
         idSP: sanphamId,
         dathang: {
-          khoId,
+          // Bỏ lọc khoId để lấy dữ liệu nhập tổng từ tất cả các nguồn
           status: 'danhan',
           updatedAt: { gt: startTime, lte: endTime }
         }
