@@ -11,12 +11,6 @@ export declare class KhachhangService {
     generateMakh(loaikh: string): Promise<string>;
     create(data: any): Promise<{
         id: string;
-        ghichu: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        isshowvat: boolean;
-        banggiaId: string | null;
         name: string | null;
         namenn: string | null;
         subtitle: string | null;
@@ -31,10 +25,16 @@ export declare class KhachhangService {
         phone: string | null;
         address: string | null;
         loaikh: string | null;
+        ghichu: string | null;
         hiengia: boolean;
+        isActive: boolean;
         istitle2: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         tenfile: string | null;
         tenkh: string | null;
+        banggiaId: string | null;
+        isshowvat: boolean;
         machuyen: string | null;
     }>;
     import(data: any[]): Promise<{
@@ -44,6 +44,8 @@ export declare class KhachhangService {
     findAllForSelect(): Promise<{
         data: {
             id: string;
+            name: string | null;
+            makh: string;
             banggia: {
                 id: string;
                 title: string | null;
@@ -51,35 +53,27 @@ export declare class KhachhangService {
                 batdau: Date | null;
                 ketthuc: Date | null;
             } | null;
-            name: string | null;
-            makh: string;
         }[];
     }>;
     findAll(query: any): Promise<{
         data: ({
             banggia: {
                 id: string;
-                title: string | null;
-                type: string | null;
                 ghichu: string | null;
-                status: string | null;
-                order: number | null;
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                title: string | null;
                 mabanggia: string | null;
+                type: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
+                order: number | null;
+                status: string | null;
                 isDefault: boolean;
             } | null;
         } & {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            isshowvat: boolean;
-            banggiaId: string | null;
             name: string | null;
             namenn: string | null;
             subtitle: string | null;
@@ -94,10 +88,16 @@ export declare class KhachhangService {
             phone: string | null;
             address: string | null;
             loaikh: string | null;
+            ghichu: string | null;
             hiengia: boolean;
+            isActive: boolean;
             istitle2: boolean;
+            createdAt: Date;
+            updatedAt: Date;
             tenfile: string | null;
             tenkh: string | null;
+            banggiaId: string | null;
+            isshowvat: boolean;
             machuyen: string | null;
         })[];
         total: number;
@@ -108,27 +108,21 @@ export declare class KhachhangService {
     findby(param: any): Promise<({
         banggia: {
             id: string;
-            title: string | null;
-            type: string | null;
             ghichu: string | null;
-            status: string | null;
-            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
             mabanggia: string | null;
+            type: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
+            order: number | null;
+            status: string | null;
             isDefault: boolean;
         } | null;
     } & {
         id: string;
-        ghichu: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        isshowvat: boolean;
-        banggiaId: string | null;
         name: string | null;
         namenn: string | null;
         subtitle: string | null;
@@ -143,36 +137,36 @@ export declare class KhachhangService {
         phone: string | null;
         address: string | null;
         loaikh: string | null;
+        ghichu: string | null;
         hiengia: boolean;
+        isActive: boolean;
         istitle2: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         tenfile: string | null;
         tenkh: string | null;
+        banggiaId: string | null;
+        isshowvat: boolean;
         machuyen: string | null;
     }) | {
         data: ({
             banggia: {
                 id: string;
-                title: string | null;
-                type: string | null;
                 ghichu: string | null;
-                status: string | null;
-                order: number | null;
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                title: string | null;
                 mabanggia: string | null;
+                type: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
+                order: number | null;
+                status: string | null;
                 isDefault: boolean;
             } | null;
         } & {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            isshowvat: boolean;
-            banggiaId: string | null;
             name: string | null;
             namenn: string | null;
             subtitle: string | null;
@@ -187,41 +181,41 @@ export declare class KhachhangService {
             phone: string | null;
             address: string | null;
             loaikh: string | null;
+            ghichu: string | null;
             hiengia: boolean;
+            isActive: boolean;
             istitle2: boolean;
+            createdAt: Date;
+            updatedAt: Date;
             tenfile: string | null;
             tenkh: string | null;
+            banggiaId: string | null;
+            isshowvat: boolean;
             machuyen: string | null;
         })[];
         page: any;
-        pageSize: any;
+        pageSize: number;
         total: number;
         pageCount: number;
     } | null>;
     findOne(id: string): Promise<{
         banggia: {
             id: string;
-            title: string | null;
-            type: string | null;
             ghichu: string | null;
-            status: string | null;
-            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
             mabanggia: string | null;
+            type: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
+            order: number | null;
+            status: string | null;
             isDefault: boolean;
         } | null;
     } & {
         id: string;
-        ghichu: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        isshowvat: boolean;
-        banggiaId: string | null;
         name: string | null;
         namenn: string | null;
         subtitle: string | null;
@@ -236,36 +230,36 @@ export declare class KhachhangService {
         phone: string | null;
         address: string | null;
         loaikh: string | null;
+        ghichu: string | null;
         hiengia: boolean;
+        isActive: boolean;
         istitle2: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         tenfile: string | null;
         tenkh: string | null;
+        banggiaId: string | null;
+        isshowvat: boolean;
         machuyen: string | null;
     }>;
     searchfield(searchParams: Record<string, any>): Promise<{
         banggia: {
             id: string;
-            title: string | null;
-            type: string | null;
             ghichu: string | null;
-            status: string | null;
-            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
             mabanggia: string | null;
+            type: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
+            order: number | null;
+            status: string | null;
             isDefault: boolean;
         } | null;
     } & {
         id: string;
-        ghichu: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        isshowvat: boolean;
-        banggiaId: string | null;
         name: string | null;
         namenn: string | null;
         subtitle: string | null;
@@ -280,36 +274,36 @@ export declare class KhachhangService {
         phone: string | null;
         address: string | null;
         loaikh: string | null;
+        ghichu: string | null;
         hiengia: boolean;
+        isActive: boolean;
         istitle2: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         tenfile: string | null;
         tenkh: string | null;
+        banggiaId: string | null;
+        isshowvat: boolean;
         machuyen: string | null;
     }>;
     update(id: string, data: any): Promise<{
         banggia: {
             id: string;
-            title: string | null;
-            type: string | null;
             ghichu: string | null;
-            status: string | null;
-            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
             mabanggia: string | null;
+            type: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
+            order: number | null;
+            status: string | null;
             isDefault: boolean;
         } | null;
     } & {
         id: string;
-        ghichu: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        isshowvat: boolean;
-        banggiaId: string | null;
         name: string | null;
         namenn: string | null;
         subtitle: string | null;
@@ -324,20 +318,20 @@ export declare class KhachhangService {
         phone: string | null;
         address: string | null;
         loaikh: string | null;
+        ghichu: string | null;
         hiengia: boolean;
+        isActive: boolean;
         istitle2: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         tenfile: string | null;
         tenkh: string | null;
+        banggiaId: string | null;
+        isshowvat: boolean;
         machuyen: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
-        ghichu: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        isshowvat: boolean;
-        banggiaId: string | null;
         name: string | null;
         namenn: string | null;
         subtitle: string | null;
@@ -352,10 +346,16 @@ export declare class KhachhangService {
         phone: string | null;
         address: string | null;
         loaikh: string | null;
+        ghichu: string | null;
         hiengia: boolean;
+        isActive: boolean;
         istitle2: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         tenfile: string | null;
         tenkh: string | null;
+        banggiaId: string | null;
+        isshowvat: boolean;
         machuyen: string | null;
     }>;
 }

@@ -34,6 +34,14 @@ export declare class PhieukhoService {
             };
             soluong: import("@prisma/client/runtime/library").Decimal;
         }[];
+        tuKho: {
+            id: string;
+            name: string;
+        } | null;
+        denKho: {
+            id: string;
+            name: string;
+        } | null;
     } & {
         id: string;
         title: string | null;
@@ -48,6 +56,8 @@ export declare class PhieukhoService {
         madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        tuKhoId: string | null;
+        denKhoId: string | null;
         isChotkho: boolean;
     })[]>;
     findOne(id: string): Promise<{
@@ -86,6 +96,8 @@ export declare class PhieukhoService {
         madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        tuKhoId: string | null;
+        denKhoId: string | null;
         isChotkho: boolean;
     }>;
     create(data: any): Promise<{
@@ -112,6 +124,8 @@ export declare class PhieukhoService {
         madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        tuKhoId: string | null;
+        denKhoId: string | null;
         isChotkho: boolean;
     }>;
     update(id: string, data: any): Promise<{
@@ -138,6 +152,8 @@ export declare class PhieukhoService {
         madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        tuKhoId: string | null;
+        denKhoId: string | null;
         isChotkho: boolean;
     }>;
     remove(id: string): Promise<{
@@ -154,6 +170,8 @@ export declare class PhieukhoService {
         madncc: string | null;
         madathang: string | null;
         ngay: Date | null;
+        tuKhoId: string | null;
+        denKhoId: string | null;
         isChotkho: boolean;
     }>;
     createAdjustmentPhieuKho(data: {

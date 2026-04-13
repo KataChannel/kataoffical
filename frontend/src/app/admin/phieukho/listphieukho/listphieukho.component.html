@@ -103,6 +103,16 @@
                             {{ row[column]?.name}}
                         </span>
                         }
+                        @case ('tuKho') {
+                        <span class="max-w-40 line-clamp-4 font-semibold text-red-600">
+                            {{ row[column]?.name}}
+                        </span>
+                        }
+                        @case ('denKho') {
+                        <span class="max-w-40 line-clamp-4 font-semibold text-green-600">
+                            {{ row[column]?.name}}
+                        </span>
+                        }
                         @case ('ngay') {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column]|date:'dd/MM/yyyy'}}

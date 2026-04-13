@@ -20,7 +20,7 @@ export class UserService {
     });
   }
   async getUsers() {
-    const users = await this.prisma.user.findMany({
+    const users = await this.prisma.executeWithRetry(prisma => prisma.user.findMany({
       include: {
         roles: {
           include: {
@@ -43,7 +43,7 @@ export class UserService {
           }
         }
       },
-    });
+    }));
   
     return users.map(({ password, roles, userPermissions, ...userWithoutPassword }) => {
       // Get role-based permissions
@@ -80,7 +80,7 @@ export class UserService {
     });
   }
   async findAll() {
-    const users = await this.prisma.user.findMany({
+    const users = await this.prisma.executeWithRetry(prisma => prisma.user.findMany({
       include: {
         roles: {
           include: {
@@ -103,7 +103,7 @@ export class UserService {
           }
         }
       },
-    });
+    }));
   
     return users.map(({ password, roles, userPermissions, ...userWithoutPassword }) => {
       // Get role-based permissions
@@ -141,7 +141,7 @@ export class UserService {
   }
    
   async findOne(id: string) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.executeWithRetry(prisma => prisma.user.findUnique({
       where: { id },
       include: {
         roles: {
@@ -159,7 +159,7 @@ export class UserService {
           }
         }
       },
-    }); 
+    })); 
     if (!user) throw new NotFoundException('User not found');
     
     // Loại bỏ password và userPermissions một cách an toàn bằng destructuring

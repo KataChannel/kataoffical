@@ -179,11 +179,11 @@ export class KhachhangService {
 
   async findAll(query: any) {    
     try {
-      const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
-      const numericPage = Number(page || 1); // Default to page 1 if not provided
-      const numericPageSize = Number(pageSize || 50);
-      const skip = (numericPage - 1) * numericPageSize;
-      const take = numericPageSize;
+      const { page, pageSize: rawPageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
+      const numericPage = Math.max(Number(page || 1), 1);
+      const pageSize = Math.min(Math.max(Number(rawPageSize) || 50, 1), 1000); // 🛡️ CAP at 1000
+      const skip = (numericPage - 1) * pageSize;
+      const take = pageSize;
       const where: any = {};
       // Xử lý tìm kiếm chung (OR condition)
       if (search) {
@@ -227,8 +227,8 @@ export class KhachhangService {
         data: sanphams,
         total: Number(total),
         page: numericPage,
-        pageSize: numericPageSize,
-        totalPages: Math.ceil(Number(total) / numericPageSize),
+        pageSize: pageSize,
+        totalPages: Math.ceil(Number(total) / pageSize),
       };
     } catch (error) {
       console.log('Error in findAllSanpham:', error);
@@ -238,7 +238,8 @@ export class KhachhangService {
 
   async findby(param:any) {
       
-    const { page = 1, pageSize = 50, isOne, ...where } = param;
+    const { page = 1, pageSize: rawPageSize = 50, isOne, ...where } = param;
+    const pageSize = Math.min(Math.max(Number(rawPageSize) || 50, 1), 1000); // 🛡️ CAP at 1000
     const whereClause: any = {};
     if (where.id) {
       whereClause.id = where.id;

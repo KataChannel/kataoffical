@@ -52,9 +52,27 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
+          <mat-form-field class="w-full" *ngIf="DetailPhieukho().type!='chuyenkho'" appearance="outline" subscriptSizing="dynamic">
             <mat-label>Kho</mat-label>
             <mat-select [(ngModel)]="DetailPhieukho().khoId" [disabled]="!isEdit()">
+              <mat-option *ngFor="let item of _KhoService.ListKho()" [value]="item.id">
+                ({{ item.makho }}){{ item.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="w-full" *ngIf="DetailPhieukho().type=='chuyenkho'" appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Từ Kho</mat-label>
+            <mat-select [(ngModel)]="DetailPhieukho().tuKhoId" [disabled]="!isEdit()">
+              <mat-option *ngFor="let item of _KhoService.ListKho()" [value]="item.id">
+                ({{ item.makho }}){{ item.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="w-full" *ngIf="DetailPhieukho().type=='chuyenkho'" appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Đến Kho</mat-label>
+            <mat-select [(ngModel)]="DetailPhieukho().denKhoId" [disabled]="!isEdit()">
               <mat-option *ngFor="let item of _KhoService.ListKho()" [value]="item.id">
                 ({{ item.makho }}){{ item.name }}
               </mat-option>

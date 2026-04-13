@@ -140,7 +140,9 @@ let DonhangService = class DonhangService {
     }
     async search(params) {
         return await performance_logger_1.PerformanceLogger.logAsync('DonhangService.search', async () => {
-            const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, query, } = params;
+            const { Batdau, Ketthuc, Type, pageSize: rawPageSize = 10, pageNumber: rawPageNumber = 1, query, } = params;
+            const pageSize = Math.min(Math.max(Number(rawPageSize) || 10, 1), 1000);
+            const pageNumber = Math.max(Number(rawPageNumber) || 1, 1);
             const ngaygiao = Batdau || Ketthuc
                 ? {
                     ...(Batdau && { gte: new Date(Batdau) }),
@@ -175,8 +177,8 @@ let DonhangService = class DonhangService {
                         khachhang: true,
                     },
                     orderBy: { createdAt: 'desc' },
-                    skip: (Number(pageNumber) - 1) * Number(pageSize),
-                    take: Number(pageSize),
+                    skip: (pageNumber - 1) * pageSize,
+                    take: pageSize,
                 }),
             ]);
             const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({

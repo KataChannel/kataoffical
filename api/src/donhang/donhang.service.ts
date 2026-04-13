@@ -172,10 +172,13 @@ export class DonhangService {
         Batdau,
         Ketthuc,
         Type,
-        pageSize = 10,
-        pageNumber = 1,
+        pageSize: rawPageSize = 10,
+        pageNumber: rawPageNumber = 1,
         query,
       } = params;
+
+      const pageSize = Math.min(Math.max(Number(rawPageSize) || 10, 1), 1000); // 🛡️ CAP at 1000 to prevent OOM/Bridge errors
+      const pageNumber = Math.max(Number(rawPageNumber) || 1, 1);
 
     const ngaygiao =
       Batdau || Ketthuc
@@ -214,8 +217,8 @@ export class DonhangService {
           khachhang: true,
         },
         orderBy: { createdAt: 'desc' },
-        skip: (Number(pageNumber) - 1) * Number(pageSize),
-        take: Number(pageSize),
+        skip: (pageNumber - 1) * pageSize,
+        take: pageSize,
       }),
     ]);
     const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({

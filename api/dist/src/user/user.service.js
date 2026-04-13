@@ -29,7 +29,7 @@ let UserService = class UserService {
         });
     }
     async getUsers() {
-        const users = await this.prisma.user.findMany({
+        const users = await this.prisma.executeWithRetry(prisma => prisma.user.findMany({
             include: {
                 roles: {
                     include: {
@@ -52,7 +52,7 @@ let UserService = class UserService {
                     }
                 }
             },
-        });
+        }));
         return users.map(({ password, roles, userPermissions, ...userWithoutPassword }) => {
             const rolePermissions = Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission))));
             const validUserPermissions = userPermissions
@@ -74,7 +74,7 @@ let UserService = class UserService {
         });
     }
     async findAll() {
-        const users = await this.prisma.user.findMany({
+        const users = await this.prisma.executeWithRetry(prisma => prisma.user.findMany({
             include: {
                 roles: {
                     include: {
@@ -97,7 +97,7 @@ let UserService = class UserService {
                     }
                 }
             },
-        });
+        }));
         return users.map(({ password, roles, userPermissions, ...userWithoutPassword }) => {
             const rolePermissions = Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission))));
             const validUserPermissions = userPermissions
@@ -119,7 +119,7 @@ let UserService = class UserService {
         });
     }
     async findOne(id) {
-        const user = await this.prisma.user.findUnique({
+        const user = await this.prisma.executeWithRetry(prisma => prisma.user.findUnique({
             where: { id },
             include: {
                 roles: {
@@ -137,7 +137,7 @@ let UserService = class UserService {
                     }
                 }
             },
-        });
+        }));
         if (!user)
             throw new common_1.NotFoundException('User not found');
         const { password, roles, userPermissions, ...userWithoutPassword } = user;

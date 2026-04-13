@@ -25,7 +25,7 @@ export class PhieukhoService {
   async generateNextOrderCode(type: any): Promise<string> {
     try {
       // Validate type parameter
-      if (!type || !['nhap', 'xuat'].includes(type)) {
+      if (!type || !['nhap', 'xuat', 'chuyenkho'].includes(type)) {
         throw new Error(`Invalid type: ${type}`);
       }
 
@@ -36,7 +36,9 @@ export class PhieukhoService {
       });
 
       // Mã mặc định cho từng loại
-      let nextCode = type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+      let nextCode = 'PKNAA00001';
+      if (type === 'xuat') nextCode = 'PKXAA00001';
+      if (type === 'chuyenkho') nextCode = 'PCKAA00001';
 
       if (lastOrder && lastOrder.maphieu) {
         console.log(`Last order found: ${lastOrder.maphieu} for type: ${type}`);
@@ -50,18 +52,19 @@ export class PhieukhoService {
     } catch (error) {
       console.error('Error in generateNextOrderCode:', error);
       // Return safe default in case of any error
-      return type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+      return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PCKAA00001');
     }
   }
-
   private incrementOrderCode(orderCode: string, type: any): string {
-    // Sử dụng prefix theo loại: PKN cho nhap, PKX cho xuat
-    const prefix = type === 'nhap' ? 'PKN' : 'PKX';
+    // Sử dụng prefix theo loại: PKN cho nhap, PKX cho xuat, PCK cho chuyenkho
+    let prefix = 'PKN';
+    if (type === 'xuat') prefix = 'PKX';
+    if (type === 'chuyenkho') prefix = 'PCK';
     
     // Validate orderCode format
     if (!orderCode || orderCode.length < 8) {
       console.warn(`Invalid orderCode format: ${orderCode}, using default`);
-      return type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+      return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PCKAA00001');
     }
     
     // Với cấu trúc mã: prefix (3 ký tự) + 2 chữ (AA -> ZZ) + 5 số (00001 -> 99999)
@@ -72,7 +75,7 @@ export class PhieukhoService {
     // Validate parsed numbers
     if (isNaN(numbers) || numbers < 0) {
       console.warn(`Invalid number part in orderCode: ${orderCode}, numberPart: ${numberPart}, parsed: ${numbers}`);
-      return type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+      return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PCKAA00001');
     }
 
     let newLetters = letters;
@@ -180,6 +183,18 @@ export class PhieukhoService {
             name: true
           }
         },
+        tuKho: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        denKho: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -206,8 +221,8 @@ export class PhieukhoService {
 
   async create(data: any) {
     // Validate input data first
-    if (!data.type || !['nhap', 'xuat'].includes(data.type)) {
-      throw new BadRequestException('Invalid phieukho type. Must be "nhap" or "xuat"');
+    if (!data.type || !['nhap', 'xuat', 'chuyenkho'].includes(data.type)) {
+      throw new BadRequestException('Invalid phieukho type. Must be "nhap", "xuat" or "chuyenkho"');
     }
     
     if (!data.sanpham || !Array.isArray(data.sanpham) || data.sanpham.length === 0) {
@@ -261,6 +276,8 @@ export class PhieukhoService {
             type: data.type,
             isChotkho: data.isChotkho || false,
             khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+            tuKhoId: data.tuKhoId,
+            denKhoId: data.denKhoId,
             ghichu: data.ghichu,
             isActive: data.isActive ?? true,
             sanpham: {
@@ -321,6 +338,43 @@ export class PhieukhoService {
                   slchonhap: 0
                 }
               });
+            } else if (data.type === 'chuyenkho') {
+              // 🚀 SPECIAL: Transfer Logic (Transactional update for two warehouses)
+              if (!data.tuKhoId || !data.denKhoId) {
+                throw new BadRequestException('tuKhoId and denKhoId are required for transfers');
+              }
+              if (data.tuKhoId === data.denKhoId) {
+                throw new BadRequestException('Source and Destination warehouses must be different');
+              }
+
+              // 1. Subtract from Source (tuKhoId) - NOTE: Currently TonKho logic is simplified to one global slton per sanphamId? 
+              // Wait, checking schema: TonKho has only sanphamId as @unique. 
+              // This project seems to handle multi-warehouse via a different mechanism or it's currently 1-1.
+              // IF TonKho is global, transfer is just internal redistribution? 
+              // BUT the request says "Trừ tại Kho Đi, Cộng tại Kho Nhận". 
+              // Let's assume there's a SanphamKho table we should use instead or update TonKho if it's per warehouse.
+              // ACUALLY: Schema shows `model TonKho { sanphamId String @unique ... }`
+              // This implies TonKho is GLOBAL. 
+              // BUT `model Kho` has `sanphamKho SanphamKho[]`. 
+              // Let's check `SanphamKho`.
+              // `model SanphamKho { id String @id, khoId String, sanphamId String, soluong Decimal }`
+              // YES! SanphamKho is the multi-warehouse table.
+              
+              // Update Source Warehouse
+              await prisma.sanphamKho.upsert({
+                where: { id: `SK_${data.tuKhoId}_${sp.sanphamId}` }, // Composite ID strategy
+                update: { soluong: { decrement: soluong } },
+                create: { id: `SK_${data.tuKhoId}_${sp.sanphamId}`, khoId: data.tuKhoId, sanphamId: sp.sanphamId, soluong: -soluong }
+              });
+
+              // Update Destination Warehouse
+              await prisma.sanphamKho.upsert({
+                where: { id: `SK_${data.denKhoId}_${sp.sanphamId}` },
+                update: { soluong: { increment: soluong } },
+                create: { id: `SK_${data.denKhoId}_${sp.sanphamId}`, khoId: data.denKhoId, sanphamId: sp.sanphamId, soluong: soluong }
+              });
+
+              // NOTE: If we want to keep TonKho (global) updated, transfers don't change global total.
             } else {
               // Regular Inventory movement (Import/Export)
               if (data.type === 'nhap') {
@@ -329,11 +383,25 @@ export class PhieukhoService {
                   update: { slton: { increment: soluong } },
                   create: { sanphamId: sp.sanphamId, slton: soluong, slchogiao: 0, slchonhap: 0 }
                 });
+                
+                // Update specific warehouse
+                await prisma.sanphamKho.upsert({
+                  where: { id: `SK_${data.khoId}_${sp.sanphamId}` },
+                  update: { soluong: { increment: soluong } },
+                  create: { id: `SK_${data.khoId}_${sp.sanphamId}`, khoId: data.khoId, sanphamId: sp.sanphamId, soluong: soluong }
+                });
               } else if (data.type === 'xuat') {
                 await prisma.tonKho.upsert({
                   where: { sanphamId: sp.sanphamId },
                   update: { slton: { decrement: soluong } },
                   create: { sanphamId: sp.sanphamId, slton: -soluong, slchogiao: 0, slchonhap: 0 }
+                });
+
+                // Update specific warehouse
+                await prisma.sanphamKho.upsert({
+                  where: { id: `SK_${data.khoId}_${sp.sanphamId}` },
+                  update: { soluong: { decrement: soluong } },
+                  create: { id: `SK_${data.khoId}_${sp.sanphamId}`, khoId: data.khoId, sanphamId: sp.sanphamId, soluong: -soluong }
                 });
               }
             }

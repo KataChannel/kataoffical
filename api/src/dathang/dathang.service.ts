@@ -104,7 +104,11 @@ export class DathangService {
 
   async findAll() {
     return await PerformanceLogger.logAsync('DathangService.findAll', async () => {
+      // 🚀 OPTIMIZATION: Limited to 100 most recent records to prevent "High memory usage" (860MB+)
+      // as seen in logs. Over time, fetching thousands of orders with full includes
+      // will crash the server.
       const dathangs = await this.prisma.dathang.findMany({
+        take: 100,
         include: {
           sanpham: {
             include: {
@@ -432,7 +436,7 @@ async convertDathangImportToTransfer(
   async findby(param: any) {
     console.log('findby', param);
     
-    const { page = 1, pageSize = 50, isOne, khoId, ...where } = param;
+    const { page: rawPage = 1, pageSize: rawPageSize = 50, isOne, khoId, ...where } = param;
     const whereClause: any = {};     
 
     // Filter by title if provided
@@ -480,32 +484,34 @@ async convertDathangImportToTransfer(
       return oneResult;
     }
 
-    const skip = (page - 1) * pageSize;
+    const pageSize = Math.min(Math.max(Number(rawPageSize) || 10, 1), 1000); // 🛡️ CAP at 1000 to prevent OOM/Bridge errors
+    const pageNumber = Math.max(Number(rawPage) || 1, 1);
+    const skip = (pageNumber - 1) * pageSize;
     const [dathangs, total] = await Promise.all([
       this.prisma.dathang.findMany({
         where: whereClause,
-        include: {
-          sanpham: {
-            include: { sanpham: true },
+          include: {
+            sanpham: {
+              include: { sanpham: true },
+            },
+            nhacungcap: true,
+            kho: true, // Include kho information
           },
-          nhacungcap: true,
-          kho: true, // Include kho information
-        },
-        skip,
-        take: pageSize,
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.dathang.count({ where: whereClause }),
-    ]);
+          skip,
+          take: pageSize,
+          orderBy: { createdAt: 'desc' },
+        }),
+        this.prisma.dathang.count({ where: whereClause }),
+      ]);
 
-    return {
-      data: dathangs,
-      page,
-      pageSize,
-      total,
-      pageCount: Math.ceil(total / pageSize),
-    };
-  }
+      return {
+        data: dathangs,
+        page: pageNumber,
+        pageSize,
+        total,
+        pageCount: Math.ceil(total / pageSize),
+      };
+    }
 
   async create(dto: any) {   
      

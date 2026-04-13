@@ -469,8 +469,10 @@ model Kho {
   Dathang    Dathang[]
   Donhang    Donhang[]
   congty     Congty?      @relation(fields: [congtyId], references: [id])
-  phieukho   PhieuKho[]
-  sanphamKho SanphamKho[]
+  phieukho    PhieuKho[]
+  phieukhoDi  PhieuKho[]   @relation("tuKhoRelation")
+  phieukhoDen PhieuKho[]   @relation("denKhoRelation")
+  sanphamKho  SanphamKho[]
 }
 
 model SanphamKho {
@@ -495,12 +497,16 @@ model PhieuKho {
   ngay      DateTime?
   type      String?
   khoId     String?
+  tuKhoId   String?
+  denKhoId  String?
   ghichu    String?
   isActive  Boolean           @default(true)
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
   isChotkho Boolean           @default(false)
   kho       Kho?              @relation(fields: [khoId], references: [id])
+  tuKho     Kho?              @relation("tuKhoRelation", fields: [tuKhoId], references: [id])
+  denKho    Kho?              @relation("denKhoRelation", fields: [denKhoId], references: [id])
   dathang   Dathang?          @relation(fields: [madncc], references: [madncc])
   donhang   Donhang?          @relation(fields: [madonhang], references: [madonhang])
   sanpham   PhieuKhoSanpham[]

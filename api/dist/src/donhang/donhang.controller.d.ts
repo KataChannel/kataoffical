@@ -161,8 +161,8 @@ export declare class DonhangController {
             khoId: string | null;
         }[];
         total: number;
-        pageNumber: any;
-        pageSize: any;
+        pageNumber: number;
+        pageSize: number;
         totalPages: number;
     }>;
     congnokhachhang(params: any): Promise<{

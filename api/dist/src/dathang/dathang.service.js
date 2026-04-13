@@ -95,6 +95,7 @@ let DathangService = class DathangService {
     async findAll() {
         return await performance_logger_1.PerformanceLogger.logAsync('DathangService.findAll', async () => {
             const dathangs = await this.prisma.dathang.findMany({
+                take: 100,
                 include: {
                     sanpham: {
                         include: {
@@ -375,7 +376,7 @@ let DathangService = class DathangService {
     }
     async findby(param) {
         console.log('findby', param);
-        const { page = 1, pageSize = 50, isOne, khoId, ...where } = param;
+        const { page: rawPage = 1, pageSize: rawPageSize = 50, isOne, khoId, ...where } = param;
         const whereClause = {};
         if (where.subtitle) {
             whereClause.OR = [];
@@ -415,7 +416,9 @@ let DathangService = class DathangService {
             });
             return oneResult;
         }
-        const skip = (page - 1) * pageSize;
+        const pageSize = Math.min(Math.max(Number(rawPageSize) || 10, 1), 1000);
+        const pageNumber = Math.max(Number(rawPage) || 1, 1);
+        const skip = (pageNumber - 1) * pageSize;
         const [dathangs, total] = await Promise.all([
             this.prisma.dathang.findMany({
                 where: whereClause,
@@ -434,7 +437,7 @@ let DathangService = class DathangService {
         ]);
         return {
             data: dathangs,
-            page,
+            page: pageNumber,
             pageSize,
             total,
             pageCount: Math.ceil(total / pageSize),

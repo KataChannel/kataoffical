@@ -30,14 +30,18 @@ let PhieukhoService = class PhieukhoService {
     }
     async generateNextOrderCode(type) {
         try {
-            if (!type || !['nhap', 'xuat'].includes(type)) {
+            if (!type || !['nhap', 'xuat', 'chuyenkho'].includes(type)) {
                 throw new Error(`Invalid type: ${type}`);
             }
             const lastOrder = await this.prisma.phieuKho.findFirst({
                 where: { type },
                 orderBy: { createdAt: 'desc' },
             });
-            let nextCode = type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+            let nextCode = 'PKNAA00001';
+            if (type === 'xuat')
+                nextCode = 'PKXAA00001';
+            if (type === 'chuyenkho')
+                nextCode = 'PCKAA00001';
             if (lastOrder && lastOrder.maphieu) {
                 console.log(`Last order found: ${lastOrder.maphieu} for type: ${type}`);
                 nextCode = this.incrementOrderCode(lastOrder.maphieu, type);
@@ -50,21 +54,25 @@ let PhieukhoService = class PhieukhoService {
         }
         catch (error) {
             console.error('Error in generateNextOrderCode:', error);
-            return type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+            return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PCKAA00001');
         }
     }
     incrementOrderCode(orderCode, type) {
-        const prefix = type === 'nhap' ? 'PKN' : 'PKX';
+        let prefix = 'PKN';
+        if (type === 'xuat')
+            prefix = 'PKX';
+        if (type === 'chuyenkho')
+            prefix = 'PCK';
         if (!orderCode || orderCode.length < 8) {
             console.warn(`Invalid orderCode format: ${orderCode}, using default`);
-            return type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+            return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PCKAA00001');
         }
         const letters = orderCode.slice(3, 5);
         const numberPart = orderCode.slice(5);
         const numbers = parseInt(numberPart, 10);
         if (isNaN(numbers) || numbers < 0) {
             console.warn(`Invalid number part in orderCode: ${orderCode}, numberPart: ${numberPart}, parsed: ${numbers}`);
-            return type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+            return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PCKAA00001');
         }
         let newLetters = letters;
         let newNumbers = numbers + 1;
@@ -153,6 +161,18 @@ let PhieukhoService = class PhieukhoService {
                         name: true
                     }
                 },
+                tuKho: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                denKho: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
             },
             orderBy: { createdAt: 'desc' },
         });
@@ -171,8 +191,8 @@ let PhieukhoService = class PhieukhoService {
         return phieuKho;
     }
     async create(data) {
-        if (!data.type || !['nhap', 'xuat'].includes(data.type)) {
-            throw new common_1.BadRequestException('Invalid phieukho type. Must be "nhap" or "xuat"');
+        if (!data.type || !['nhap', 'xuat', 'chuyenkho'].includes(data.type)) {
+            throw new common_1.BadRequestException('Invalid phieukho type. Must be "nhap", "xuat" or "chuyenkho"');
         }
         if (!data.sanpham || !Array.isArray(data.sanpham) || data.sanpham.length === 0) {
             throw new common_1.BadRequestException('Sanpham array is required and cannot be empty');
@@ -215,6 +235,8 @@ let PhieukhoService = class PhieukhoService {
                         type: data.type,
                         isChotkho: data.isChotkho || false,
                         khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+                        tuKhoId: data.tuKhoId,
+                        denKhoId: data.denKhoId,
                         ghichu: data.ghichu,
                         isActive: data.isActive ?? true,
                         sanpham: {
@@ -263,6 +285,24 @@ let PhieukhoService = class PhieukhoService {
                                 }
                             });
                         }
+                        else if (data.type === 'chuyenkho') {
+                            if (!data.tuKhoId || !data.denKhoId) {
+                                throw new common_1.BadRequestException('tuKhoId and denKhoId are required for transfers');
+                            }
+                            if (data.tuKhoId === data.denKhoId) {
+                                throw new common_1.BadRequestException('Source and Destination warehouses must be different');
+                            }
+                            await prisma.sanphamKho.upsert({
+                                where: { id: `SK_${data.tuKhoId}_${sp.sanphamId}` },
+                                update: { soluong: { decrement: soluong } },
+                                create: { id: `SK_${data.tuKhoId}_${sp.sanphamId}`, khoId: data.tuKhoId, sanphamId: sp.sanphamId, soluong: -soluong }
+                            });
+                            await prisma.sanphamKho.upsert({
+                                where: { id: `SK_${data.denKhoId}_${sp.sanphamId}` },
+                                update: { soluong: { increment: soluong } },
+                                create: { id: `SK_${data.denKhoId}_${sp.sanphamId}`, khoId: data.denKhoId, sanphamId: sp.sanphamId, soluong: soluong }
+                            });
+                        }
                         else {
                             if (data.type === 'nhap') {
                                 await prisma.tonKho.upsert({
@@ -270,12 +310,22 @@ let PhieukhoService = class PhieukhoService {
                                     update: { slton: { increment: soluong } },
                                     create: { sanphamId: sp.sanphamId, slton: soluong, slchogiao: 0, slchonhap: 0 }
                                 });
+                                await prisma.sanphamKho.upsert({
+                                    where: { id: `SK_${data.khoId}_${sp.sanphamId}` },
+                                    update: { soluong: { increment: soluong } },
+                                    create: { id: `SK_${data.khoId}_${sp.sanphamId}`, khoId: data.khoId, sanphamId: sp.sanphamId, soluong: soluong }
+                                });
                             }
                             else if (data.type === 'xuat') {
                                 await prisma.tonKho.upsert({
                                     where: { sanphamId: sp.sanphamId },
                                     update: { slton: { decrement: soluong } },
                                     create: { sanphamId: sp.sanphamId, slton: -soluong, slchogiao: 0, slchonhap: 0 }
+                                });
+                                await prisma.sanphamKho.upsert({
+                                    where: { id: `SK_${data.khoId}_${sp.sanphamId}` },
+                                    update: { soluong: { decrement: soluong } },
+                                    create: { id: `SK_${data.khoId}_${sp.sanphamId}`, khoId: data.khoId, sanphamId: sp.sanphamId, soluong: -soluong }
                                 });
                             }
                         }

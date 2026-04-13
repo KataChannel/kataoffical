@@ -88,8 +88,8 @@ export declare class DonhangService {
             khoId: string | null;
         }[];
         total: number;
-        pageNumber: any;
-        pageSize: any;
+        pageNumber: number;
+        pageSize: number;
         totalPages: number;
     }>;
     congnokhachhang(params: any): Promise<{

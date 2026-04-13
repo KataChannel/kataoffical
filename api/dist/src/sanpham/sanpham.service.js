@@ -301,7 +301,8 @@ let SanphamService = class SanphamService {
         }
     }
     async findby(param) {
-        const { page = 1, pageSize = 99999, isOne, ...where } = param;
+        const { page = 1, pageSize: rawPageSize = 50, isOne, ...where } = param;
+        const pageSize = Math.min(Math.max(Number(rawPageSize) || 50, 1), 1000);
         const whereClause = {};
         if (where.id) {
             whereClause.id = where.id;
