@@ -39,6 +39,7 @@ let ChotkhoService = class ChotkhoService {
             where: {
                 idSP: sanphamId,
                 donhang: {
+                    khoId: khoId,
                     status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
                     updatedAt: { gt: startTime, lte: endTime }
                 }
@@ -49,6 +50,7 @@ let ChotkhoService = class ChotkhoService {
             where: {
                 idSP: sanphamId,
                 dathang: {
+                    khoId: khoId,
                     status: 'danhan',
                     updatedAt: { gt: startTime, lte: endTime }
                 }
@@ -147,6 +149,23 @@ let ChotkhoService = class ChotkhoService {
                             ghichu: detail.ghichu || (analysis.currentCalc !== Number(detail.sltonhethong) ? `⚠️ Đã chuẩn hóa từ log (Báo cáo cũ: ${detail.sltonhethong})` : ''),
                             userId,
                             ngaychot: chotkhoMaster.ngaychot
+                        }
+                    });
+                    await prisma.sanphamKho.upsert({
+                        where: {
+                            sanphamId_khoId: {
+                                sanphamId: detail.sanphamId,
+                                khoId: khoId
+                            }
+                        },
+                        create: {
+                            sanphamId: detail.sanphamId,
+                            khoId: khoId,
+                            soluong: new library_1.Decimal(detail.sltonthucte),
+                        },
+                        update: {
+                            soluong: new library_1.Decimal(detail.sltonthucte),
+                            updatedAt: new Date()
                         }
                     });
                     await prisma.tonKho.upsert({
@@ -519,18 +538,35 @@ let ChotkhoService = class ChotkhoService {
                                 ngaychot: updatedMaster.ngaychot
                             }
                         });
+                        await prisma.sanphamKho.upsert({
+                            where: {
+                                sanphamId_khoId: {
+                                    sanphamId: detail.sanphamId,
+                                    khoId: updatedMaster.khoId
+                                }
+                            },
+                            create: {
+                                sanphamId: detail.sanphamId,
+                                khoId: updatedMaster.khoId,
+                                soluong: new library_1.Decimal(detail.sltonthucte),
+                            },
+                            update: {
+                                soluong: new library_1.Decimal(detail.sltonthucte),
+                                updatedAt: new Date()
+                            }
+                        });
                         await prisma.tonKho.upsert({
                             where: { sanphamId: detail.sanphamId },
                             create: {
                                 sanphamId: detail.sanphamId,
-                                slton: detail.sltonthucte,
-                                sltontt: detail.sltonthucte,
+                                slton: new library_1.Decimal(detail.sltonthucte),
+                                sltontt: new library_1.Decimal(detail.sltonthucte),
                                 slchogiao: 0,
                                 slchonhap: 0,
                             },
                             update: {
-                                slton: detail.sltonthucte,
-                                sltontt: detail.sltonthucte,
+                                slton: new library_1.Decimal(detail.sltonthucte),
+                                sltontt: new library_1.Decimal(detail.sltonthucte),
                                 updatedAt: new Date()
                             }
                         });

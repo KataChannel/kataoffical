@@ -4,42 +4,42 @@ export declare class ImportdataController {
     constructor(importdataService: ImportdataService);
     create(data: any): Promise<{
         id: string;
-        title: string | null;
-        type: string | null;
-        status: string | null;
-        order: number | null;
-        createdAt: Date;
-        updatedAt: Date;
         caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         importTime: Date;
+        createdAt: Date;
+        updatedAt: Date;
         codeId: string | null;
+        order: number | null;
         createdBy: string | null;
+        status: string | null;
+        title: string | null;
+        type: string | null;
     }>;
     findby(param: any): Promise<{
         id: string;
-        title: string | null;
-        type: string | null;
-        status: string | null;
-        order: number | null;
-        createdAt: Date;
-        updatedAt: Date;
         caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         importTime: Date;
+        createdAt: Date;
+        updatedAt: Date;
         codeId: string | null;
+        order: number | null;
         createdBy: string | null;
+        status: string | null;
+        title: string | null;
+        type: string | null;
     } | {
         data: {
             id: string;
-            title: string | null;
-            type: string | null;
-            status: string | null;
-            order: number | null;
-            createdAt: Date;
-            updatedAt: Date;
             caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
             importTime: Date;
+            createdAt: Date;
+            updatedAt: Date;
             codeId: string | null;
+            order: number | null;
             createdBy: string | null;
+            status: string | null;
+            title: string | null;
+            type: string | null;
         }[];
         total: number;
         page: any;
@@ -48,16 +48,16 @@ export declare class ImportdataController {
     findAll(page?: string, limit?: string): Promise<{
         data: {
             id: string;
-            title: string | null;
-            type: string | null;
-            status: string | null;
-            order: number | null;
-            createdAt: Date;
-            updatedAt: Date;
             caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
             importTime: Date;
+            createdAt: Date;
+            updatedAt: Date;
             codeId: string | null;
+            order: number | null;
             createdBy: string | null;
+            status: string | null;
+            title: string | null;
+            type: string | null;
         }[];
         total: number;
         page: number;
@@ -68,30 +68,30 @@ export declare class ImportdataController {
     }>;
     findOne(id: string): Promise<{
         id: string;
-        title: string | null;
-        type: string | null;
-        status: string | null;
-        order: number | null;
-        createdAt: Date;
-        updatedAt: Date;
         caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         importTime: Date;
+        createdAt: Date;
+        updatedAt: Date;
         codeId: string | null;
+        order: number | null;
         createdBy: string | null;
+        status: string | null;
+        title: string | null;
+        type: string | null;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
         id: string;
-        title: string | null;
-        type: string | null;
-        status: string | null;
-        order: number | null;
-        createdAt: Date;
-        updatedAt: Date;
         caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         importTime: Date;
+        createdAt: Date;
+        updatedAt: Date;
         codeId: string | null;
+        order: number | null;
         createdBy: string | null;
+        status: string | null;
+        title: string | null;
+        type: string | null;
     }>;
     reorder(body: {
         importdataIds: string[];

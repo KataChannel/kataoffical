@@ -41,19 +41,37 @@
                 <button matTooltip="Tải dữ liệu từ drive" (click)="LoadData()" color="primary" mat-icon-button>
                     <mat-icon>cloud_download</mat-icon>
                 </button>
+
+                <!-- Bộ Chọn Khoảng Ngày -->
+                <div class="flex flex-row items-center space-x-2 bg-slate-50 p-1 px-3 rounded-lg border border-slate-200">
+                    <mat-form-field appearance="outline" class="!w-40" subscriptSizing="dynamic">
+                        <mat-label>Từ Ngày</mat-label>
+                        <input matInput [matDatepicker]="startPicker" [(ngModel)]="startDate">
+                        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #startPicker></mat-datepicker>
+                    </mat-form-field>
+                    <span class="text-gray-400">-</span>
+                    <mat-form-field appearance="outline" class="!w-40" subscriptSizing="dynamic">
+                        <mat-label>Đến Ngày</mat-label>
+                        <input matInput [matDatepicker]="endPicker" [(ngModel)]="endDate">
+                        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #endPicker></mat-datepicker>
+                    </mat-form-field>
+                    <button 
+                        mat-flat-button 
+                        color="primary" 
+                        (click)="searchData()"
+                        class="!h-10 ml-2"
+                        matTooltip="Bấm tìm phiếu kho">
+                        <mat-icon>search</mat-icon>
+                        Tìm Phiếu
+                    </button>
+                </div>
+
                 <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
-                    {{CountItem}} Sản Phẩm
+                    {{CountItem}} Phiếu Kho
                 </span>
                 
-                <!-- Nút Tìm Kiếm -->
-                <button 
-                    mat-icon-button 
-                    color="primary" 
-                    (click)="searchData()"
-                    class="!h-10"
-                    matTooltip="Nhấn để tải dữ liệu phiếu kho">
-                    <mat-icon>search</mat-icon>
-                </button>
             </div>
         </div>
         <div *ngIf="isFilter" class="w-full grid grid-cols-2 gap-2 lg:flex lg:flex-row lg:space-x-2 items-center">

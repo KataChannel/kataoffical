@@ -77,9 +77,17 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
           this._ListphieukhoComponent.drawer.close();
         }
         if(id === '0'){
-          this.DetailPhieukho.set({ sanpham:[],ngay: new Date() });
+          const maphieu = await this._PhieukhoService.getNextCode('chuyenkho');
+          
+          this.DetailPhieukho.set({ 
+            maphieu: maphieu.replace(/"/g, ''), // Remove quotes if returned as string
+            type: 'chuyenkho',
+            sanpham:[],
+            ngay: new Date(),
+            ghichu: ''
+          });
           this._ListphieukhoComponent.drawer.open();
-          this.isEdit.update(value => !value);
+          this.isEdit.set(true);
           this._router.navigate(['/admin/phieukho', "0"]);
         }
         else{
@@ -89,11 +97,14 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
         }
       });
     }
-    ChangeType(event:any){
-      // this.DetailPhieukho.update((v:any)=>{
-      //   v.sanpham = [];
-      //   return v;
-      // })
+    async ChangeType(event:any){
+      if (this.phieukhoId() === '0') {
+        const maphieu = await this._PhieukhoService.getNextCode(event.value);
+        this.DetailPhieukho.update((v:any)=>{
+          v.maphieu = maphieu.replace(/"/g, '');
+          return v;
+        });
+      }
     }
     ChosenDonhang(event:any,type:any){
       console.log(event.value);
@@ -216,11 +227,22 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
    }
    AddSanpham(){
     this.DetailPhieukho.update((v:any)=>{
-      v.sanpham.push({id:GenId(8,false),idSP:'',sldat:0,soluong:0,ghichu:''})
+      if (!v.sanpham) v.sanpham = [];
+      v.sanpham.push({id:GenId(8,false),sanphamId:'',soluong:0,ghichu:''})
       return v;
     })
-    console.log(this.DetailPhieukho());
-    
+  }
+
+  RemoveSanpham(index: number) {
+    this.DetailPhieukho.update((v: any) => {
+      v.sanpham.splice(index, 1);
+      return v;
+    });
+  }
+
+  getSPUnit(sanphamId: string) {
+    const sp = this._SanphamService.ListSanpham().find((x: any) => x.id == sanphamId);
+    return sp ? sp.dvt : '';
   }
 
   }

@@ -27,6 +27,12 @@ export class PhieukhoController {
     return this.phieukhoService.findAll();
   }
 
+  @Get('range')
+  @UseGuards(JwtAuthGuard)
+  findByRange(@Query('start') start: string, @Query('end') end: string) {
+    return this.phieukhoService.findByRange(start, end);
+  }
+
   @Post('xuatnhapton')
   @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Xuat Nhap Ton', action: AuditAction.CREATE, includeResponse: true})
@@ -74,5 +80,11 @@ export class PhieukhoController {
   @CacheInvalidate(['phieukho', 'kho'])
   remove(@Param('id') id: string) {
     return this.phieukhoService.remove(id);
+  }
+
+  @Get('next-code/:type')
+  @UseGuards(JwtAuthGuard)
+  getNextCode(@Param('type') type: string) {
+    return this.phieukhoService.generateNextOrderCode(type);
   }
 }

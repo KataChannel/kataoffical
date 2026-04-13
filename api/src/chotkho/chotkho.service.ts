@@ -37,7 +37,7 @@ export class ChotkhoService {
       where: {
         idSP: sanphamId,
         donhang: {
-          // Bỏ lọc khoId để lấy dữ liệu tổng từ tất cả các kho (Nhập/Xuất liên kho)
+          khoId: khoId, // Lọc chính xác theo kho đang đối soát
           status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
           updatedAt: { gt: startTime, lte: endTime }
         }
@@ -50,7 +50,7 @@ export class ChotkhoService {
       where: {
         idSP: sanphamId,
         dathang: {
-          // Bỏ lọc khoId để lấy dữ liệu nhập tổng từ tất cả các nguồn
+          khoId: khoId, // Lọc chính xác theo kho đang đối soát
           status: 'danhan',
           updatedAt: { gt: startTime, lte: endTime }
         }
@@ -194,7 +194,28 @@ export class ChotkhoService {
           });
 
           // 🎯 SYNC TO REALITY: Cập nhật tồn kho vật lý trong hệ thống
-          // Khi chốt kho, slton (tồn sọt) sẽ được đưa về đúng con số đếm được
+          // Khi chốt kho, số lượng tại KHO cụ thể (SanphamKho) và Tồn tổng (TonKho) sẽ được đưa về đúng con số thực tế
+          
+          // 1. Cập nhật tồn kho tại kho cụ thể
+          await prisma.sanphamKho.upsert({
+            where: {
+              sanphamId_khoId: {
+                sanphamId: detail.sanphamId,
+                khoId: khoId
+              }
+            },
+            create: {
+              sanphamId: detail.sanphamId,
+              khoId: khoId,
+              soluong: new Decimal(detail.sltonthucte),
+            },
+            update: {
+              soluong: new Decimal(detail.sltonthucte),
+              updatedAt: new Date()
+            }
+          });
+
+          // 2. Cập nhật tồn kho tổng (Optional - nếu hệ thống dùng table này để tính tồn chung)
           await prisma.tonKho.upsert({
             where: { sanphamId: detail.sanphamId },
             create: {
@@ -628,18 +649,39 @@ export class ChotkhoService {
           });
 
           // 🎯 SYNC TO REALITY: Cập nhật tồn kho vật lý trong hệ thống
+          
+          // 1. Cập nhật tồn tại kho cụ thể
+          await prisma.sanphamKho.upsert({
+            where: {
+              sanphamId_khoId: {
+                sanphamId: detail.sanphamId,
+                khoId: updatedMaster.khoId
+              }
+            },
+            create: {
+              sanphamId: detail.sanphamId,
+              khoId: updatedMaster.khoId,
+              soluong: new Decimal(detail.sltonthucte),
+            },
+            update: {
+              soluong: new Decimal(detail.sltonthucte),
+              updatedAt: new Date()
+            }
+          });
+
+          // 2. Cập nhật tồn kho tổng
           await prisma.tonKho.upsert({
             where: { sanphamId: detail.sanphamId },
             create: {
               sanphamId: detail.sanphamId,
-              slton: detail.sltonthucte,
-              sltontt: detail.sltonthucte,
+              slton: new Decimal(detail.sltonthucte),
+              sltontt: new Decimal(detail.sltonthucte),
               slchogiao: 0,
               slchonhap: 0,
             },
             update: {
-              slton: detail.sltonthucte,
-              sltontt: detail.sltonthucte,
+              slton: new Decimal(detail.sltonthucte),
+              sltontt: new Decimal(detail.sltonthucte),
               updatedAt: new Date()
             }
           });

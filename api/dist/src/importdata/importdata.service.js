@@ -35,22 +35,22 @@ let ImportdataService = class ImportdataService {
     async generateCodeId() {
         try {
             const latest = await this.prisma.importHistory.findFirst({
-                orderBy: { codeId: 'desc' },
+                where: { codeId: { not: null } },
+                orderBy: { createdAt: 'desc' },
             });
             let nextNumber = 1;
             if (latest && latest.codeId) {
                 const prefix = 'IH';
-                const match = latest.codeId.match(new RegExp(prefix + '(\\d+)'));
+                const match = latest.codeId.match(/\d+/);
                 if (match) {
-                    nextNumber = parseInt(match[1]) + 1;
+                    nextNumber = parseInt(match[0], 10) + 1;
                 }
             }
-            const newPrefix = 'IH';
-            return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
+            return `IH${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generateImportdataCodeId', error);
-            throw error;
+            console.error('Error generating IH codeId:', error);
+            return `IH${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`;
         }
     }
     async create(data) {

@@ -19,6 +19,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
+
 @Component({
   selector: 'app-listphieukho',
   templateUrl: './listphieukho.component.html',
@@ -37,8 +40,10 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
     MatSelectModule,
     CommonModule,
     FormsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDatepickerModule
   ],
+  providers: [provideNativeDateAdapter()]
 })
 export class ListPhieukhoComponent {
   Detail: any = {};
@@ -80,6 +85,8 @@ export class ListPhieukhoComponent {
     {title:'Điều Chỉnh',value:'dieuchinh'}
   ]
   isFilter: boolean = false;
+  startDate: Date = new Date();
+  endDate: Date = new Date();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
@@ -144,7 +151,12 @@ export class ListPhieukhoComponent {
   }
   
   async loadData(): Promise<void> {
-    await this._PhieukhoService.getAllPhieukho();
+    const start = new Date(this.startDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(this.endDate);
+    end.setHours(23, 59, 59, 999);
+    
+    await this._PhieukhoService.getPhieukhoByRange(start.toISOString(), end.toISOString());
     this.CountItem = this.Listphieukho().length;
   }
   

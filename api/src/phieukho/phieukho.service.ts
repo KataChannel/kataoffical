@@ -38,7 +38,7 @@ export class PhieukhoService {
       // Mã mặc định cho từng loại
       let nextCode = 'PKNAA00001';
       if (type === 'xuat') nextCode = 'PKXAA00001';
-      if (type === 'chuyenkho') nextCode = 'PCKAA00001';
+      if (type === 'chuyenkho') nextCode = 'PK-CK-AA0001';
 
       if (lastOrder && lastOrder.maphieu) {
         console.log(`Last order found: ${lastOrder.maphieu} for type: ${type}`);
@@ -52,41 +52,54 @@ export class PhieukhoService {
     } catch (error) {
       console.error('Error in generateNextOrderCode:', error);
       // Return safe default in case of any error
-      return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PCKAA00001');
+      return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PK-CK-AA0001');
     }
   }
   private incrementOrderCode(orderCode: string, type: any): string {
-    // Sử dụng prefix theo loại: PKN cho nhap, PKX cho xuat, PCK cho chuyenkho
+    // Sử dụng prefix theo loại: PKN cho nhap, PKX cho xuat, PK-CK- cho chuyenkho
     let prefix = 'PKN';
-    if (type === 'xuat') prefix = 'PKX';
-    if (type === 'chuyenkho') prefix = 'PCK';
-    
-    // Validate orderCode format
-    if (!orderCode || orderCode.length < 8) {
-      console.warn(`Invalid orderCode format: ${orderCode}, using default`);
-      return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PCKAA00001');
+    let numberPartLength = 5;
+    let letterStartIndex = 3;
+
+    if (type === 'xuat') {
+        prefix = 'PKX';
+        numberPartLength = 5;
+        letterStartIndex = 3;
+    } else if (type === 'chuyenkho') {
+        prefix = 'PK-CK-';
+        numberPartLength = 4;
+        letterStartIndex = 6;
     }
     
-    // Với cấu trúc mã: prefix (3 ký tự) + 2 chữ (AA -> ZZ) + 5 số (00001 -> 99999)
-    const letters = orderCode.slice(3, 5);
-    const numberPart = orderCode.slice(5);
+    // Validate orderCode format - check if it at least contains the prefix
+    if (!orderCode || !orderCode.startsWith(prefix)) {
+      console.warn(`Invalid orderCode prefix: ${orderCode}, expected ${prefix}. Using default.`);
+      return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PK-CK-AA0001');
+    }
+    
+    // Extract letters and numbers based on dynamic indices
+    const letters = orderCode.slice(letterStartIndex, letterStartIndex + 2);
+    const numberPart = orderCode.slice(letterStartIndex + 2);
     const numbers = parseInt(numberPart, 10);
 
     // Validate parsed numbers
     if (isNaN(numbers) || numbers < 0) {
       console.warn(`Invalid number part in orderCode: ${orderCode}, numberPart: ${numberPart}, parsed: ${numbers}`);
-      return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PCKAA00001');
+      return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PK-CK-AA0001');
     }
 
     let newLetters = letters;
     let newNumbers = numbers + 1;
 
-    if (newNumbers > 99999) {
-      newNumbers = 1; // Reset số về 00001
+    // Giới hạn số (99999 cho nhap/xuat, 9999 cho chuyenkho)
+    const maxNumber = Math.pow(10, numberPartLength) - 1;
+
+    if (newNumbers > maxNumber) {
+      newNumbers = 1; // Reset số về 1
       newLetters = this.incrementLetters(letters);
     }
 
-    return `${prefix}${newLetters}${newNumbers.toString().padStart(5, '0')}`;
+    return `${prefix}${newLetters}${newNumbers.toString().padStart(numberPartLength, '0')}`;
   }
 
   private incrementLetters(letters: string): string {
@@ -155,50 +168,37 @@ export class PhieukhoService {
 
 
   async findAll() {
-    // 🚀 OPTIMIZATION: Limited to 100 most recent records to prevent "High memory usage" (3.9GB)
-    // and "Very slow request" (57s) as seen in logs.
     const phieuKhos = await this.prisma.phieuKho.findMany({
-      take: 100, // Chỉ lấy 100 phiếu gần nhất
-      where: {
-        isActive: true
-      },
+      take: 100,
+      where: { isActive: true },
       include: {
-        sanpham: { 
-          select: {
-            id: true,
-            soluong: true,
-            ghichu: true,
-            sanpham: {
-              select: {
-                id: true,
-                masp: true,
-                title: true
-              }
-            }
-          }
-        },
-        kho: {
-          select: {
-            id: true,
-            name: true
-          }
-        },
-        tuKho: {
-          select: {
-            id: true,
-            name: true
-          }
-        },
-        denKho: {
-          select: {
-            id: true,
-            name: true
-          }
-        },
+        sanpham: { select: { id: true, soluong: true, ghichu: true, sanpham: { select: { id: true, masp: true, title: true } } } },
+        kho: { select: { id: true, name: true } },
+        tuKho: { select: { id: true, name: true } },
+        denKho: { select: { id: true, name: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
-    
+    return phieuKhos;
+  }
+
+  async findByRange(start: string, end: string) {
+    const phieuKhos = await this.prisma.phieuKho.findMany({
+      where: {
+        isActive: true,
+        ngay: {
+          gte: new Date(start),
+          lte: new Date(end),
+        },
+      },
+      include: {
+        sanpham: { select: { id: true, soluong: true, ghichu: true, sanpham: { select: { id: true, masp: true, title: true } } } },
+        kho: { select: { id: true, name: true } },
+        tuKho: { select: { id: true, name: true } },
+        denKho: { select: { id: true, name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
     return phieuKhos;
   }
 
@@ -229,12 +229,20 @@ export class PhieukhoService {
       throw new BadRequestException('Sanpham array is required and cannot be empty');
     }
 
-    // Validate all sanpham have required fields
+    // Merge sanpham with same sanphamId to prevent unique constraint violation
+    const mergedSanphamMap = new Map();
     for (const sp of data.sanpham) {
-      if (!sp.sanphamId || !sp.soluong) {
-        throw new BadRequestException('Each sanpham must have sanphamId and soluong');
+      if (!sp.sanphamId) continue;
+      
+      if (mergedSanphamMap.has(sp.sanphamId)) {
+        const existing = mergedSanphamMap.get(sp.sanphamId);
+        existing.soluong = (Number(existing.soluong) || 0) + (Number(sp.soluong) || 0);
+        if (sp.ghichu) existing.ghichu = existing.ghichu ? `${existing.ghichu}; ${sp.ghichu}` : sp.ghichu;
+      } else {
+        mergedSanphamMap.set(sp.sanphamId, { ...sp });
       }
     }
+    data.sanpham = Array.from(mergedSanphamMap.values());
 
     // Generate maphieu outside transaction to avoid nested queries
     let maphieukho: string = '';

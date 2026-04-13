@@ -65,6 +65,26 @@ export class PhieukhoService {
       return console.error(error);
     }
   }
+
+  async getPhieukhoByRange(start: string, end: string) {
+    try {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+      };
+      const response = await fetch(`${environment.APIURL}/phieukho/range?start=${start}&end=${end}`, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      this.ListPhieukho.set(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
   async getPhieukhoByid(id: any) {
     try {
       const options = {
@@ -172,5 +192,25 @@ export class PhieukhoService {
       } catch (error) {
           return console.error(error);
       }
+  }
+
+  async getNextCode(type: string) {
+    try {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+      };
+      const response = await fetch(`${environment.APIURL}/phieukho/next-code/${type}`, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.text();
+    } catch (error) {
+      console.error(error);
+      return '';
+    }
   }
 }

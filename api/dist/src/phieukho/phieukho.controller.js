@@ -30,6 +30,9 @@ let PhieukhoController = class PhieukhoController {
     findAll() {
         return this.phieukhoService.findAll();
     }
+    findByRange(start, end) {
+        return this.phieukhoService.findByRange(start, end);
+    }
     xuatnhapton(query) {
         return this.phieukhoService.xuatnhapton(query);
     }
@@ -44,6 +47,9 @@ let PhieukhoController = class PhieukhoController {
     }
     remove(id) {
         return this.phieukhoService.remove(id);
+    }
+    getNextCode(type) {
+        return this.phieukhoService.generateNextOrderCode(type);
     }
 };
 exports.PhieukhoController = PhieukhoController;
@@ -68,6 +74,15 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PhieukhoController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('range'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Query)('start')),
+    __param(1, (0, common_1.Query)('end')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], PhieukhoController.prototype, "findByRange", null);
 __decorate([
     (0, common_1.Post)('xuatnhapton'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
@@ -121,6 +136,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PhieukhoController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Get)('next-code/:type'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('type')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PhieukhoController.prototype, "getNextCode", null);
 exports.PhieukhoController = PhieukhoController = __decorate([
     (0, common_1.Controller)('phieukho'),
     __metadata("design:paramtypes", [phieukho_service_1.PhieukhoService])

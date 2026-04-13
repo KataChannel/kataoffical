@@ -5,18 +5,18 @@ export declare class NhacungcapController {
     constructor(nhacungcapService: NhacungcapService);
     create(data: any): Promise<{
         id: string;
-        ghichu: string | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isshowvat: boolean;
         name: string | null;
-        diachi: string | null;
-        sdt: string | null;
-        email: string | null;
-        tenfile: string | null;
+        ghichu: string | null;
+        isActive: boolean;
         mancc: string;
         manccold: string | null;
+        diachi: string | null;
+        email: string | null;
+        sdt: string | null;
+        isshowvat: boolean;
+        tenfile: string | null;
     }>;
     getLastUpdatedNhacungcap(): Promise<{
         updatedAt: number;
@@ -30,15 +30,13 @@ export declare class NhacungcapController {
         data: ({
             Sanpham: {
                 id: string;
-                title: string;
-                ghichu: string | null;
-                order: number | null;
-                isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                vat: import("@prisma/client/runtime/library").Decimal | null;
+                order: number | null;
+                title: string;
+                ghichu: string | null;
+                isActive: boolean;
                 subtitle: string | null;
-                giaban: import("@prisma/client/runtime/library").Decimal;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -49,21 +47,23 @@ export declare class NhacungcapController {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
+                giaban: import("@prisma/client/runtime/library").Decimal;
+                vat: import("@prisma/client/runtime/library").Decimal | null;
             }[];
         } & {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isshowvat: boolean;
             name: string | null;
-            diachi: string | null;
-            sdt: string | null;
-            email: string | null;
-            tenfile: string | null;
+            ghichu: string | null;
+            isActive: boolean;
             mancc: string;
             manccold: string | null;
+            diachi: string | null;
+            email: string | null;
+            sdt: string | null;
+            isshowvat: boolean;
+            tenfile: string | null;
         })[];
         error?: undefined;
     } | {
@@ -75,18 +75,18 @@ export declare class NhacungcapController {
     findAll(query: any): Promise<{
         data: {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isshowvat: boolean;
             name: string | null;
-            diachi: string | null;
-            sdt: string | null;
-            email: string | null;
-            tenfile: string | null;
+            ghichu: string | null;
+            isActive: boolean;
             mancc: string;
             manccold: string | null;
+            diachi: string | null;
+            email: string | null;
+            sdt: string | null;
+            isshowvat: boolean;
+            tenfile: string | null;
         }[];
         total: number;
         page: number;
@@ -104,15 +104,13 @@ export declare class NhacungcapController {
         data: {
             Sanpham: {
                 id: string;
-                title: string;
-                ghichu: string | null;
-                order: number | null;
-                isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                vat: import("@prisma/client/runtime/library").Decimal | null;
+                order: number | null;
+                title: string;
+                ghichu: string | null;
+                isActive: boolean;
                 subtitle: string | null;
-                giaban: import("@prisma/client/runtime/library").Decimal;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -123,21 +121,23 @@ export declare class NhacungcapController {
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: import("@prisma/client/runtime/library").Decimal;
+                giaban: import("@prisma/client/runtime/library").Decimal;
+                vat: import("@prisma/client/runtime/library").Decimal | null;
             }[];
         } & {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isshowvat: boolean;
             name: string | null;
-            diachi: string | null;
-            sdt: string | null;
-            email: string | null;
-            tenfile: string | null;
+            ghichu: string | null;
+            isActive: boolean;
             mancc: string;
             manccold: string | null;
+            diachi: string | null;
+            email: string | null;
+            sdt: string | null;
+            isshowvat: boolean;
+            tenfile: string | null;
         };
         error?: undefined;
     } | {
@@ -148,33 +148,33 @@ export declare class NhacungcapController {
     }>;
     findby(param: any): Promise<{
         id: string;
-        ghichu: string | null;
-        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isshowvat: boolean;
         name: string | null;
-        diachi: string | null;
-        sdt: string | null;
-        email: string | null;
-        tenfile: string | null;
+        ghichu: string | null;
+        isActive: boolean;
         mancc: string;
         manccold: string | null;
+        diachi: string | null;
+        email: string | null;
+        sdt: string | null;
+        isshowvat: boolean;
+        tenfile: string | null;
     } | {
         data: {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isshowvat: boolean;
             name: string | null;
-            diachi: string | null;
-            sdt: string | null;
-            email: string | null;
-            tenfile: string | null;
+            ghichu: string | null;
+            isActive: boolean;
             mancc: string;
             manccold: string | null;
+            diachi: string | null;
+            email: string | null;
+            sdt: string | null;
+            isshowvat: boolean;
+            tenfile: string | null;
         }[];
         total: number;
         page: any;
@@ -185,18 +185,18 @@ export declare class NhacungcapController {
         message: string;
         data: {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isshowvat: boolean;
             name: string | null;
-            diachi: string | null;
-            sdt: string | null;
-            email: string | null;
-            tenfile: string | null;
+            ghichu: string | null;
+            isActive: boolean;
             mancc: string;
             manccold: string | null;
+            diachi: string | null;
+            email: string | null;
+            sdt: string | null;
+            isshowvat: boolean;
+            tenfile: string | null;
         };
         error?: undefined;
     } | {
@@ -210,18 +210,18 @@ export declare class NhacungcapController {
         message: string;
         data: {
             id: string;
-            ghichu: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isshowvat: boolean;
             name: string | null;
-            diachi: string | null;
-            sdt: string | null;
-            email: string | null;
-            tenfile: string | null;
+            ghichu: string | null;
+            isActive: boolean;
             mancc: string;
             manccold: string | null;
+            diachi: string | null;
+            email: string | null;
+            sdt: string | null;
+            isshowvat: boolean;
+            tenfile: string | null;
         };
         error?: undefined;
     } | {

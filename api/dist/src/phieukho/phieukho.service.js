@@ -41,7 +41,7 @@ let PhieukhoService = class PhieukhoService {
             if (type === 'xuat')
                 nextCode = 'PKXAA00001';
             if (type === 'chuyenkho')
-                nextCode = 'PCKAA00001';
+                nextCode = 'PK-CK-AA0001';
             if (lastOrder && lastOrder.maphieu) {
                 console.log(`Last order found: ${lastOrder.maphieu} for type: ${type}`);
                 nextCode = this.incrementOrderCode(lastOrder.maphieu, type);
@@ -54,33 +54,42 @@ let PhieukhoService = class PhieukhoService {
         }
         catch (error) {
             console.error('Error in generateNextOrderCode:', error);
-            return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PCKAA00001');
+            return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PK-CK-AA0001');
         }
     }
     incrementOrderCode(orderCode, type) {
         let prefix = 'PKN';
-        if (type === 'xuat')
+        let numberPartLength = 5;
+        let letterStartIndex = 3;
+        if (type === 'xuat') {
             prefix = 'PKX';
-        if (type === 'chuyenkho')
-            prefix = 'PCK';
-        if (!orderCode || orderCode.length < 8) {
-            console.warn(`Invalid orderCode format: ${orderCode}, using default`);
-            return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PCKAA00001');
+            numberPartLength = 5;
+            letterStartIndex = 3;
         }
-        const letters = orderCode.slice(3, 5);
-        const numberPart = orderCode.slice(5);
+        else if (type === 'chuyenkho') {
+            prefix = 'PK-CK-';
+            numberPartLength = 4;
+            letterStartIndex = 6;
+        }
+        if (!orderCode || !orderCode.startsWith(prefix)) {
+            console.warn(`Invalid orderCode prefix: ${orderCode}, expected ${prefix}. Using default.`);
+            return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PK-CK-AA0001');
+        }
+        const letters = orderCode.slice(letterStartIndex, letterStartIndex + 2);
+        const numberPart = orderCode.slice(letterStartIndex + 2);
         const numbers = parseInt(numberPart, 10);
         if (isNaN(numbers) || numbers < 0) {
             console.warn(`Invalid number part in orderCode: ${orderCode}, numberPart: ${numberPart}, parsed: ${numbers}`);
-            return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PCKAA00001');
+            return type === 'nhap' ? 'PKNAA00001' : (type === 'xuat' ? 'PKXAA00001' : 'PK-CK-AA0001');
         }
         let newLetters = letters;
         let newNumbers = numbers + 1;
-        if (newNumbers > 99999) {
+        const maxNumber = Math.pow(10, numberPartLength) - 1;
+        if (newNumbers > maxNumber) {
             newNumbers = 1;
             newLetters = this.incrementLetters(letters);
         }
-        return `${prefix}${newLetters}${newNumbers.toString().padStart(5, '0')}`;
+        return `${prefix}${newLetters}${newNumbers.toString().padStart(numberPartLength, '0')}`;
     }
     incrementLetters(letters) {
         if (!letters || letters.length !== 2) {
@@ -137,42 +146,31 @@ let PhieukhoService = class PhieukhoService {
     async findAll() {
         const phieuKhos = await this.prisma.phieuKho.findMany({
             take: 100,
+            where: { isActive: true },
+            include: {
+                sanpham: { select: { id: true, soluong: true, ghichu: true, sanpham: { select: { id: true, masp: true, title: true } } } },
+                kho: { select: { id: true, name: true } },
+                tuKho: { select: { id: true, name: true } },
+                denKho: { select: { id: true, name: true } },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        return phieuKhos;
+    }
+    async findByRange(start, end) {
+        const phieuKhos = await this.prisma.phieuKho.findMany({
             where: {
-                isActive: true
+                isActive: true,
+                ngay: {
+                    gte: new Date(start),
+                    lte: new Date(end),
+                },
             },
             include: {
-                sanpham: {
-                    select: {
-                        id: true,
-                        soluong: true,
-                        ghichu: true,
-                        sanpham: {
-                            select: {
-                                id: true,
-                                masp: true,
-                                title: true
-                            }
-                        }
-                    }
-                },
-                kho: {
-                    select: {
-                        id: true,
-                        name: true
-                    }
-                },
-                tuKho: {
-                    select: {
-                        id: true,
-                        name: true
-                    }
-                },
-                denKho: {
-                    select: {
-                        id: true,
-                        name: true
-                    }
-                },
+                sanpham: { select: { id: true, soluong: true, ghichu: true, sanpham: { select: { id: true, masp: true, title: true } } } },
+                kho: { select: { id: true, name: true } },
+                tuKho: { select: { id: true, name: true } },
+                denKho: { select: { id: true, name: true } },
             },
             orderBy: { createdAt: 'desc' },
         });
@@ -197,11 +195,21 @@ let PhieukhoService = class PhieukhoService {
         if (!data.sanpham || !Array.isArray(data.sanpham) || data.sanpham.length === 0) {
             throw new common_1.BadRequestException('Sanpham array is required and cannot be empty');
         }
+        const mergedSanphamMap = new Map();
         for (const sp of data.sanpham) {
-            if (!sp.sanphamId || !sp.soluong) {
-                throw new common_1.BadRequestException('Each sanpham must have sanphamId and soluong');
+            if (!sp.sanphamId)
+                continue;
+            if (mergedSanphamMap.has(sp.sanphamId)) {
+                const existing = mergedSanphamMap.get(sp.sanphamId);
+                existing.soluong = (Number(existing.soluong) || 0) + (Number(sp.soluong) || 0);
+                if (sp.ghichu)
+                    existing.ghichu = existing.ghichu ? `${existing.ghichu}; ${sp.ghichu}` : sp.ghichu;
+            }
+            else {
+                mergedSanphamMap.set(sp.sanphamId, { ...sp });
             }
         }
+        data.sanpham = Array.from(mergedSanphamMap.values());
         let maphieukho = '';
         let attempts = 0;
         const maxAttempts = 5;
