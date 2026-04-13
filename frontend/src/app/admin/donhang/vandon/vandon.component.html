@@ -13,6 +13,11 @@
     
     <div *ngIf="!isSearch" class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
         <div class="flex flex-row space-x-2 items-center">
+            <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200 mr-2">
+                {{CountItem}} Đơn Hàng
+                <span *ngIf="loading()" class="ml-2 animate-pulse text-blue-600">(Đang tải...)</span>
+            </span>
+
             <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
                 <mat-icon>tune</mat-icon>
             </button>
@@ -36,7 +41,7 @@
                 <mat-icon>search</mat-icon>
             </button>
             
-            <!-- Export Excel Buttons -->
+            <!-- Export Excel Button (Original) -->
             <button matTooltip="Xuất Excel SIÊU THỊ (3 sheet: Vận đơn + Hàng Siêu Thị + Phiếu Chuyến)" mat-icon-button color="accent" 
                     [disabled]="loading()" (click)="exportVandonToExcel()">
                 <mat-icon>file_download</mat-icon>
@@ -51,16 +56,15 @@
                 <mat-icon>file_upload</mat-icon>
             </button>
             
-            <!-- <button matTooltip="Xuất Excel (Toàn bộ)" mat-icon-button color="warn" 
-                    [disabled]="loading()" (click)="exportAllToExcel()">
-                <mat-icon>download</mat-icon>
-            </button> -->
-            
             <input class="hidden" (change)="ImporExcel($event)" type="file" #uploadfile>
-            <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
-                {{CountItem}} Đơn Hàng
-                <span *ngIf="loading()" class="ml-2 animate-pulse text-blue-600">(Đang tải...)</span>
-            </span>
+        </div>
+
+        <div class="flex items-center">
+            <!-- New Export Excel Button (Fig 2) - Moved to far right -->
+            <button matTooltip="Xuất Excel (Sản Phẩm Hình 2 - Đối soát tồn kho)" mat-icon-button color="warn" 
+                    [disabled]="loading()" (click)="exportF2ToExcel()">
+                <mat-icon>file_download</mat-icon>
+            </button>
         </div>
     </div>
     <div *ngIf="isSearch" class="py-2 w-full flex flex-row space-x-2 items-center">

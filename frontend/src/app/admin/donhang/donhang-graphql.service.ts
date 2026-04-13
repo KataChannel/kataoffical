@@ -454,7 +454,7 @@ export class DonhangGraphqlService {
    * Xuất Excel danh sách vận đơn và phiếu chuyển (3 sheet: Vận đơn + Hàng Siêu Thị + Phiếu Chuyển)
    * Theo yêu cầu đặc thù cho nhóm SIÊU THỊ (30128727-7c5c-43c0-bc4b-0da5c6db0141)
    */
-  async exportVandonToExcel(data?: any[]) {
+  async exportVandonToExcel(data?: any[], filterMaSPs?: string[]) {
     try {
       // Nhóm Siêu Thị ID từ tài liệu yêu cầu
       const GROUP_SIEU_THI_ID = '30128727-7c5c-43c0-bc4b-0da5c6db0141';
@@ -471,7 +471,17 @@ export class DonhangGraphqlService {
       }
 
       // 1. FILTER: Lấy tất cả đơn hàng KHÔNG HỦY cho Vận Đơn & Phiếu Chuyển
-      const allActiveOrders = rawDonhangList.filter((order: any) => order.status !== 'huy');
+      let allActiveOrders = rawDonhangList.filter((order: any) => order.status !== 'huy');
+
+      // 🔥 LỌC THEO MÃ SẢN PHẨM (Nếu có truyền vào list mã)
+      if (filterMaSPs && filterMaSPs.length > 0) {
+        allActiveOrders = allActiveOrders.map(order => ({
+          ...order,
+          sanpham: (order.sanpham || []).filter((sp: any) => 
+            filterMaSPs.includes(sp.sanpham?.masp)
+          )
+        })).filter(order => order.sanpham.length > 0);
+      }
 
       if (allActiveOrders.length === 0) {
         this._snackBar.open('Không có đơn hàng nào hợp lệ (tất cả đã hủy)', '', {
@@ -1089,6 +1099,84 @@ export class DonhangGraphqlService {
       this.error.set(error.message || 'Lỗi khi tìm kiếm');
       this.loading.set(false);
       throw error;
+    }
+  }
+
+  /**
+   * Xuất Excel báo cáo tồn kho cho Figure 2
+   */
+  async exportFig2InventoryToExcel(maSPs: string[]) {
+    try {
+      this.loading.set(true);
+      
+      // Lấy danh sách sản phẩm cùng thông tin tồn kho và phiên chốt kho gần nhất
+      const products = await this._GraphqlService.findMany('sanpham', {
+        where: { masp: { in: maSPs } },
+        include: {
+          TonKho: {
+            select: {
+              slton: true
+            }
+          },
+          chotkhodetail: {
+            orderBy: { ngaychot: 'desc' },
+            take: 1,
+            select: {
+              sltonhethong: true,
+              sltonthucte: true,
+              chenhlech: true,
+              ngaychot: true
+            }
+          }
+        }
+      });
+
+      if (!products || products.length === 0) {
+        throw new Error('Không tìm thấy dữ liệu cho các sản phẩm Figure 2');
+      }
+
+      // Sắp xếp theo thứ tự yêu cầu trong hình
+      const sortedProducts = maSPs.map(masp => 
+        products.find((p: any) => p.masp === masp)
+      ).filter(p => !!p);
+
+      const reportData = sortedProducts.map((p: any) => {
+        const lastClosing = p.chotkhodetail?.[0] || {};
+        return {
+          'Mã Sản Phẩm': p.masp || '',
+          'Tên Sản Phẩm': p.title || '',
+          'TỒN HỆ THỐNG': Number(p.TonKho?.slton) || 0,
+          'TỒN CHỐT KHO (THỰC TẾ)': Number(lastClosing.sltonthucte) || 0,
+          'SỐ LƯỢNG CHỐT KHO (SNAPSHOT)': Number(lastClosing.sltonhethong) || 0,
+          'CHÊNH LỆCH': Number(lastClosing.chenhlech) || 0
+        };
+      });
+
+      const fileName = `DoiSoat_TonKho_Hinh2_${moment().format('DD-MM-YYYY')}`;
+      const { writeExcelFileSheets } = await import('../../shared/utils/exceldrive.utils');
+      
+      writeExcelFileSheets({ 
+        'Đối Soát Figure 2': { 
+          data: reportData,
+          headers: ['Mã Sản Phẩm', 'Tên Sản Phẩm', 'TỒN HỆ THỐNG', 'TỒN CHỐT KHO (THỰC TẾ)', 'SỐ LƯỢNG CHỐT KHO (SNAPSHOT)', 'CHÊNH LỆCH']
+        } 
+      }, fileName);
+
+      this._snackBar.open('Xuất Excel Hình 2 (Đối soát tồn kho) thành công', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+
+    } catch (error: any) {
+      console.error('Export error:', error);
+      this._snackBar.open('Lỗi khi xuất Excel Hình 2: ' + error.message, '', {
+        duration: 5000,
+        panelClass: ['snackbar-error']
+      });
+    } finally {
+      this.loading.set(false);
     }
   }
 }

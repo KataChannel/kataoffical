@@ -485,6 +485,8 @@ model SanphamKho {
   updatedAt DateTime @updatedAt
   kho       Kho      @relation(fields: [khoId], references: [id])
   sanpham   Sanpham  @relation(fields: [sanphamId], references: [id])
+
+  @@unique([sanphamId, khoId])
 }
 
 model PhieuKho {

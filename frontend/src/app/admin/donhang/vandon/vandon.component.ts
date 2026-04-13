@@ -464,6 +464,17 @@ export class VandonComponent {
   }
 
   /**
+   * Xuất Excel cho các sản phẩm theo Hình 2 (Đối soát tồn kho)
+   */
+  async exportF2ToExcel() {
+    const filterMaSPs = [
+      'I100233', 'I100479', 'I100164', 'I100165', 'I100166', 
+      'I100003', 'I100002', 'I100113', 'I100207', 'I100004', 'I100256'
+    ];
+    await this._DonhangGraphqlService.exportFig2InventoryToExcel(filterMaSPs);
+  }
+
+  /**
    * Xuất Excel toàn bộ danh sách
    */
   async exportAllToExcel() {
