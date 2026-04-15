@@ -122,7 +122,8 @@ export class DonhangGraphqlService {
                   masp: true,
                   title: true,
                   giagoc: true,
-                  dvt: true
+                  dvt: true,
+                  loadpoint: true
                 }
               }
             }
@@ -616,6 +617,9 @@ export class DonhangGraphqlService {
         // Số Lượng TT = Tổng SL Giao (Thực Tế bốc đi)
         const totalQtyTT = activeProducts.reduce((sum: number, sp: any) => sum + (Number(sp.slgiao || sp.sldat) || 0), 0);
         
+        // Trọng Tải = Tổng (loadpoint sản phẩm × SL Đặt)
+        const totalLoadpoint = parseFloat(activeProducts.reduce((sum: number, sp: any) => sum + (Number(sp.sanpham?.loadpoint || 0) * Number(sp.sldat || 0)), 0).toFixed(3));
+        
         // Nếu shipper rỗng, thử tìm trong nhanvienList theo machuyen
         let shipperName = order.shipper || '';
         if (!shipperName && order.khachhang?.machuyen && nhanvienList.length > 0) {
@@ -632,13 +636,14 @@ export class DonhangGraphqlService {
           'Ngày Giao': order.ngaygiao ? moment(order.ngaygiao).format('HH:mm:ss DD/MM/YYYY') : `07:00:00 ${dateStr}`,
           'Tên Khách Hàng': order.khachhang?.name || '',
           'Số Lượng': totalQty,
+          'Số Lượng TT': totalQtyTT,
+          'Trọng Tải': totalLoadpoint,
           'Mã Chuyến': order.khachhang?.machuyen || '',
           'Địa Chỉ': order.khachhang?.diachi || '',
           'Liên Hệ': '', 
           'Số Điện Thoại': order.khachhang?.sdt || '',
           'Giờ Nhận Hàng': order.khachhang?.gionhanhang || '',
           'Tổng Số Món': totalItems,
-          'Số Lượng TT': totalQtyTT,
           'Shipper': shipperName,
           'Phiếu Về': order.phieuve || '',
           'Giờ Đi': order.giodi || '',
