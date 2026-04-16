@@ -368,18 +368,28 @@ export class PhieukhoService {
               // `model SanphamKho { id String @id, khoId String, sanphamId String, soluong Decimal }`
               // YES! SanphamKho is the multi-warehouse table.
               
-              // Update Source Warehouse
+              // Update Source Warehouse (tuKhoId)
               await prisma.sanphamKho.upsert({
-                where: { id: `SK_${data.tuKhoId}_${sp.sanphamId}` }, // Composite ID strategy
+                where: {
+                  sanphamId_khoId: {
+                    sanphamId: sp.sanphamId,
+                    khoId: data.tuKhoId
+                  }
+                },
                 update: { soluong: { decrement: soluong } },
-                create: { id: `SK_${data.tuKhoId}_${sp.sanphamId}`, khoId: data.tuKhoId, sanphamId: sp.sanphamId, soluong: -soluong }
+                create: { khoId: data.tuKhoId, sanphamId: sp.sanphamId, soluong: -soluong }
               });
 
-              // Update Destination Warehouse
+              // Update Destination Warehouse (denKhoId)
               await prisma.sanphamKho.upsert({
-                where: { id: `SK_${data.denKhoId}_${sp.sanphamId}` },
+                where: {
+                  sanphamId_khoId: {
+                    sanphamId: sp.sanphamId,
+                    khoId: data.denKhoId
+                  }
+                },
                 update: { soluong: { increment: soluong } },
-                create: { id: `SK_${data.denKhoId}_${sp.sanphamId}`, khoId: data.denKhoId, sanphamId: sp.sanphamId, soluong: soluong }
+                create: { khoId: data.denKhoId, sanphamId: sp.sanphamId, soluong: soluong }
               });
 
               // NOTE: If we want to keep TonKho (global) updated, transfers don't change global total.
@@ -394,9 +404,14 @@ export class PhieukhoService {
                 
                 // Update specific warehouse
                 await prisma.sanphamKho.upsert({
-                  where: { id: `SK_${data.khoId}_${sp.sanphamId}` },
+                  where: {
+                    sanphamId_khoId: {
+                      sanphamId: sp.sanphamId,
+                      khoId: data.khoId
+                    }
+                  },
                   update: { soluong: { increment: soluong } },
-                  create: { id: `SK_${data.khoId}_${sp.sanphamId}`, khoId: data.khoId, sanphamId: sp.sanphamId, soluong: soluong }
+                  create: { khoId: data.khoId, sanphamId: sp.sanphamId, soluong: soluong }
                 });
               } else if (data.type === 'xuat') {
                 await prisma.tonKho.upsert({
@@ -407,9 +422,14 @@ export class PhieukhoService {
 
                 // Update specific warehouse
                 await prisma.sanphamKho.upsert({
-                  where: { id: `SK_${data.khoId}_${sp.sanphamId}` },
+                  where: {
+                    sanphamId_khoId: {
+                      sanphamId: sp.sanphamId,
+                      khoId: data.khoId
+                    }
+                  },
                   update: { soluong: { decrement: soluong } },
-                  create: { id: `SK_${data.khoId}_${sp.sanphamId}`, khoId: data.khoId, sanphamId: sp.sanphamId, soluong: -soluong }
+                  create: { khoId: data.khoId, sanphamId: sp.sanphamId, soluong: -soluong }
                 });
               }
             }

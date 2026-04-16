@@ -23,6 +23,7 @@ export declare class ChotkhoService {
         ghichu?: string;
         khoId: string;
         userId?: string;
+        confirmOrderIds?: string[];
         details: Array<{
             sanphamId: string;
             sltonhethong: number;
@@ -81,6 +82,7 @@ export declare class ChotkhoService {
             codeId: string | null;
             ngaychot: Date;
         }) | null;
+        warnings: any[];
     }>;
     getAllProductsByKho(khoId: string): Promise<any[]>;
     getAllKho(): Promise<any[]>;

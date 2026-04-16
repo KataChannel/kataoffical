@@ -10,7 +10,7 @@ export interface StockWarningItem {
   sltonCu: number;        // Tồn chốt kho cũ (sltontt)
   sltonMoi: number;        // Giá trị import mới
   chenhLech: number;       // Mức chênh lệch
-  loaiDieuChinh: 'tang' | 'giam'; // Tăng hay giảm
+  loaiDieuChinh: 'tang' | 'giam' | 'khong_doi'; // Tăng hay giảm
   lyDoCanhBao: string;     // Lý do cảnh báo
   mucDoNghiemTrong: 'cao' | 'trung_binh' | 'thap';
 }
@@ -117,8 +117,9 @@ export interface StockWarningData {
                     <span class="text-gray-500">Chênh lệch:</span>
                     <span class="font-bold ml-1"
                           [class.text-green-600]="item.loaiDieuChinh === 'tang'"
-                          [class.text-red-600]="item.loaiDieuChinh === 'giam'">
-                      {{ item.loaiDieuChinh === 'tang' ? '+' : '-' }}{{ item.chenhLech | number:'1.0-1' }}
+                          [class.text-red-600]="item.loaiDieuChinh === 'giam'"
+                          [class.text-gray-600]="item.loaiDieuChinh === 'khong_doi'">
+                      {{ item.loaiDieuChinh === 'tang' ? '+' : (item.loaiDieuChinh === 'giam' ? '-' : '') }}{{ item.chenhLech | number:'1.0-1' }}
                     </span>
                   </div>
                 </div>

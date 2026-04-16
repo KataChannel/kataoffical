@@ -53,6 +53,7 @@ export declare class ChotkhoController {
             codeId: string | null;
             ngaychot: Date;
         }) | null;
+        warnings: any[];
     }>;
     getTraceLog(id: string, sanphamId: string): Promise<{
         initialQty: number;

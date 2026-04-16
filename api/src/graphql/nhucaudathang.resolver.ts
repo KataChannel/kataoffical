@@ -120,10 +120,11 @@ export class NhuCauDatHangResolver {
       }),
     ]);
 
-    // Dathang summary based on date range
+    // Dathang summary based on date range + any pending older orders
     const summaryDathangs = await this.prisma.dathang.findMany({
       where: {
-        ngaynhan: { gte: start, lte: end },
+        ngaynhan: { lte: end },
+        status: { in: ['dadat'] }, // Only include pending NCC orders (Hàng đang về)
         isActive: true,
       },
       select: { id: true, status: true },
@@ -133,10 +134,11 @@ export class NhuCauDatHangResolver {
     const qualifyingDathangIds = [...summaryDathangIds];
 
     // Qualifying Donhang IDs:
-    // Strictly for the summary columns (Pending vs Delivered)
+    // Filter for customer orders scheduled for or before today and not fully processed
     const qualifyingDonhangs = await this.prisma.donhang.findMany({
       where: {
-        ngaygiao: { gte: start, lte: end },
+        ngaygiao: { lte: end },
+        status: { in: ['dadat', 'dagiao'] }, // Include pending and partially delivered
       },
       select: { id: true, status: true },
     });

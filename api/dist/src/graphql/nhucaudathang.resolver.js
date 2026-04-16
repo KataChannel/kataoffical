@@ -84,7 +84,8 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
         ]);
         const summaryDathangs = await this.prisma.dathang.findMany({
             where: {
-                ngaynhan: { gte: start, lte: end },
+                ngaynhan: { lte: end },
+                status: { in: ['dadat'] },
                 isActive: true,
             },
             select: { id: true, status: true },
@@ -93,7 +94,8 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
         const qualifyingDathangIds = [...summaryDathangIds];
         const qualifyingDonhangs = await this.prisma.donhang.findMany({
             where: {
-                ngaygiao: { gte: start, lte: end },
+                ngaygiao: { lte: end },
+                status: { in: ['dadat', 'dagiao'] },
             },
             select: { id: true, status: true },
         });

@@ -50,6 +50,7 @@ export function writeExcelFileSheets(
   const excelBuffer: any = XLSX.write(workbook, {
     bookType: 'xlsx',
     type: 'array',
+    cellStyles: true,
   });
 
   saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
@@ -86,6 +87,7 @@ export function writeExcelFile(
   const excelBuffer: any = XLSX.write(workbook, {
     bookType: 'xlsx',
     type: 'array',
+    cellStyles: true,
   });
   saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
 }
@@ -138,6 +140,7 @@ export function writeExcelMultiple(
   const excelBuffer: any = XLSX.write(workbook, {
     bookType: 'xlsx',
     type: 'array',
+    cellStyles: true,
   });
   saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
 }
@@ -194,6 +197,7 @@ export function writeExcelFileWithSheets(
   const excelBuffer: any = XLSX.write(workbook, {
     bookType: 'xlsx',
     type: 'array',
+    cellStyles: true,
   });
   saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
 }
@@ -290,6 +294,7 @@ export function UploadDathang(
   const excelBuffer: any = XLSX.write(workbook, {
     bookType: 'xlsx',
     type: 'array',
+    cellStyles: true,
   });
   saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
 }

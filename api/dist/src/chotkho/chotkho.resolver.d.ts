@@ -173,6 +173,7 @@ export declare class ChotkhoResolver {
             codeId: string | null;
             ngaychot: Date;
         }) | null;
+        warnings: any[];
     }>;
     update(id: string, data: any): Promise<{
         id: string;

@@ -1214,7 +1214,7 @@ export class NhucaudathangComponent {
             });
           }
 
-          // Kiểm tra bất thường (chỉ khi có thay đổi)
+          // Kiểm tra bất thường chênh lệch (chỉ khi có thay đổi số)
           if (slton !== currentSltontt) {
             const warning = this.detectStockAnomalies(
               masp,
@@ -1225,11 +1225,15 @@ export class NhucaudathangComponent {
             if (warning) {
               danhSachCanhBao.push(warning);
             }
+          }
 
-            // ✅ SMART ALERT: Kiểm tra nếu chốt kho khi vẫn còn "Hàng đang về"
-            const slchonhap = Number(tonkho?.slchonhap || 0);
-            if (slchonhap > 0 && slton >= (currentSltontt + slchonhap * 0.8)) {
-              // Nếu số mới chốt xấp xỉ hoặc lớn hơn (cũ + đang về) -> Nghi ngờ đếm lặp
+          // ✅ CẢNH BÁO HÀNG TRUNG CHUYỂN: Kiểm tra độc lập (ngay cả khi khách nhập số khớp với kho hiện tại)
+          const slchonhap = Number(tonkho?.slchonhap || 0);
+          const slchogiao = Number(tonkho?.slchogiao || 0);
+          
+          if (slchonhap > 0 || slchogiao > 0) {
+            // Kiểm tra rủi ro "Đếm lặp hàng đang về vào hàng tồn kho"
+            if (slchonhap > 0 && slton !== currentSltontt && slton >= (currentSltontt + slchonhap * 0.8)) {
               danhSachCanhBao.push({
                 masp,
                 title: sanpham.title || sanpham.masp,
@@ -1238,19 +1242,25 @@ export class NhucaudathangComponent {
                 chenhLech: slton - currentSltontt,
                 loaiDieuChinh: 'tang',
                 mucDoNghiemTrong: 'cao',
-                lyDoCanhBao: `CẢNH BÁO ĐẾM LẶP: Bạn chốt ${slton} kg trong khi có ${slchonhap} kg 'Hàng đang về' chưa nhấn 'Đã nhận'. Có phải bạn đã đếm cả hàng mới về này không?`
+                lyDoCanhBao: `CẢNH BÁO ĐẾM LẶP: Đã chốt tăng ${slton - currentSltontt} kg trong khi có ${slchonhap} kg 'Hàng đang về' chưa xác nhận 'Đã nhận'. Rủi ro đếm lộn hàng trung chuyển!`
               });
-            } else if (slchonhap > 0) {
-              // Cảnh báo thông thường về hàng đang treo
+            } else {
+              // Cảnh báo thông thường về việc chốt kho lên lô hàng có phát sinh giao dịch bị treo
+              let warningMess = `Sản phẩm này đang có `;
+              if (slchonhap > 0) warningMess += `${slchonhap} kg 'Hàng đang về' `;
+              if (slchonhap > 0 && slchogiao > 0) warningMess += `và `;
+              if (slchogiao > 0) warningMess += `${slchogiao} kg 'Đơn đang đi' `;
+              warningMess += `chưa hoàn tất. Vui lòng kiểm tra kỹ số thực tế.`;
+
               danhSachCanhBao.push({
                 masp,
                 title: sanpham.title || sanpham.masp,
                 sltonCu: currentSltontt,
                 sltonMoi: slton,
                 chenhLech: Math.abs(slton - currentSltontt),
-                loaiDieuChinh: slton > currentSltontt ? 'tang' : 'giam',
+                loaiDieuChinh: 'khong_doi', // Để hiển thị màu xám/vàng thay vì xanh đỏ
                 mucDoNghiemTrong: 'trung_binh',
-                lyDoCanhBao: `Lưu ý: Sản phẩm còn ${slchonhap} kg 'Hàng đang về' chưa xác nhận nhập kho hệ thống.`
+                lyDoCanhBao: warningMess
               });
             }
           }
