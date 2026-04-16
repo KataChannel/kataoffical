@@ -1138,6 +1138,26 @@ export class NhucaudathangComponent {
                   id: true,
                   masp: true,
                   title: true,
+                  Dathangsanpham: {
+                    where: { dathang: { status: { in: ['dadat', 'dagiao'] } } },
+                    orderBy: { dathang: { createdAt: 'asc' } },
+                    take: 1,
+                    select: {
+                      dathang: {
+                        select: { createdAt: true }
+                      }
+                    }
+                  },
+                  Donhangsanpham: {
+                    where: { donhang: { status: { in: ['dadat', 'dagiao'] } } },
+                    orderBy: { donhang: { createdAt: 'asc' } },
+                    take: 1,
+                    select: {
+                      donhang: {
+                        select: { createdAt: true }
+                      }
+                    }
+                  }
                 },
               },
             },
@@ -1242,7 +1262,9 @@ export class NhucaudathangComponent {
                 chenhLech: slton - currentSltontt,
                 loaiDieuChinh: 'tang',
                 mucDoNghiemTrong: 'cao',
-                lyDoCanhBao: `CẢNH BÁO ĐẾM LẶP: Đã chốt tăng ${slton - currentSltontt} kg trong khi có ${slchonhap} kg 'Hàng đang về' chưa xác nhận 'Đã nhận'. Rủi ro đếm lộn hàng trung chuyển!`
+                lyDoCanhBao: `CẢNH BÁO ĐẾM LẶP: Đã chốt tăng ${slton - currentSltontt} kg trong khi có ${slchonhap} kg 'Hàng đang về' chưa xác nhận 'Đã nhận'. Rủi ro đếm lộn hàng trung chuyển!`,
+                slchonhap: slchonhap,
+                slchogiao: slchogiao
               });
             } else {
               // Cảnh báo thông thường về việc chốt kho lên lô hàng có phát sinh giao dịch bị treo
@@ -1252,15 +1274,25 @@ export class NhucaudathangComponent {
               if (slchogiao > 0) warningMess += `${slchogiao} kg 'Đơn đang đi' `;
               warningMess += `chưa hoàn tất. Vui lòng kiểm tra kỹ số thực tế.`;
 
+              // 🚩 Tính toán độ trễ chứng từ (T+1)
+              const dathangOldest = tonkho?.sanpham?.Dathangsanpham?.[0]?.dathang?.createdAt;
+              const donhangOldest = tonkho?.sanpham?.Donhangsanpham?.[0]?.donhang?.createdAt;
+              const oldestDate = dathangOldest || donhangOldest;
+              const isLate = oldestDate ? (new Date().getTime() - new Date(oldestDate).getTime()) > (24 * 60 * 60 * 1000) : false;
+
               danhSachCanhBao.push({
                 masp,
                 title: sanpham.title || sanpham.masp,
                 sltonCu: currentSltontt,
                 sltonMoi: slton,
                 chenhLech: Math.abs(slton - currentSltontt),
-                loaiDieuChinh: 'khong_doi', // Để hiển thị màu xám/vàng thay vì xanh đỏ
-                mucDoNghiemTrong: 'trung_binh',
-                lyDoCanhBao: warningMess
+                loaiDieuChinh: 'khong_doi', 
+                mucDoNghiemTrong: isLate ? 'cao' : 'trung_binh', 
+                lyDoCanhBao: isLate ? `🚩 CẢNH BÁO TRỄ CHỨNG TỪ: ${warningMess} (Đơn cũ nhất từ ${new Date(oldestDate).toLocaleDateString('vi-VN')})` : warningMess,
+                isLate: isLate,
+                oldestPendingDate: oldestDate ? new Date(oldestDate) : null,
+                slchonhap: slchonhap,
+                slchogiao: slchogiao
               });
             }
           }
@@ -1284,8 +1316,9 @@ export class NhucaudathangComponent {
         };
 
         const dialogRef = this._dialog.open(StockWarningDialogComponent, {
-          width: '700px',
-          maxHeight: '90vh',
+          width: '90vw',
+          height: '90vh',
+          maxWidth: '1600px', // Prevent too wide on giant screens
           disableClose: true,
           data: dialogData
         });
