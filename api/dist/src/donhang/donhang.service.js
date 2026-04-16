@@ -2098,10 +2098,6 @@ let DonhangService = class DonhangService {
             }
             if (oldDonhang.status === 'dadat' && data.status === 'dagiao') {
                 for (const sp of data.sanpham) {
-                    const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
-                    await this.updateTonKhoSafe(prisma, sp.id, {
-                        slchogiao: { decrement: decValue },
-                    });
                 }
                 const maphieuNew = `PX-${data.madonhang}`;
                 const phieuPayload = {
@@ -2199,6 +2195,7 @@ let DonhangService = class DonhangService {
                 for (const item of data.sanpham) {
                     const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(3));
                     const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(3));
+                    const donhangSanpham = oldDonhang.sanpham.find((sp) => sp.idSP === item.id);
                     if (receivedQty < shippedQty) {
                         const shortage = shippedQty - receivedQty;
                         await prisma.tonKho.update({
@@ -2213,6 +2210,11 @@ let DonhangService = class DonhangService {
                                 : `Thiếu ${shortage.toFixed(3)}`,
                         });
                     }
+                    const reservedQty = parseFloat((donhangSanpham?.slgiao ?? donhangSanpham?.sldat ?? 0).toFixed(3));
+                    await prisma.tonKho.update({
+                        where: { sanphamId: item.id },
+                        data: { slchogiao: { decrement: reservedQty } },
+                    });
                 }
                 if (shortageItems.length > 0) {
                     const maphieuNhap = `PN-${data.madonhang}-RET-${this.formatDateForFilename()}`;
@@ -2275,10 +2277,12 @@ let DonhangService = class DonhangService {
             }
             if (oldDonhang.status === 'dadat' && data.status === 'danhan') {
                 for (const sp of data.sanpham) {
+                    const oldSp = oldDonhang.sanpham.find(o => o.idSP === sp.id);
+                    const reservedQty = parseFloat((oldSp?.sldat ?? 0).toFixed(3));
                     const receivedQty = parseFloat((sp.slnhan ?? sp.slgiao ?? sp.sldat ?? 0).toFixed(3));
                     await this.updateTonKhoSafe(prisma, sp.id, {
-                        slchogiao: { decrement: receivedQty },
-                        slton: { decrement: receivedQty },
+                        slchogiao: { decrement: reservedQty },
+                        ...(receivedQty < reservedQty ? { slton: { increment: reservedQty - receivedQty } } : {})
                     });
                 }
                 const maphieuNew = `PX-${data.madonhang}`;

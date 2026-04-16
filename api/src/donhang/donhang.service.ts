@@ -2635,11 +2635,13 @@ export class DonhangService {
       // 4. Chuyển sang 'dagiao'
       if (oldDonhang.status === 'dadat' && data.status === 'dagiao') {
         for (const sp of data.sanpham) {
-          const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
-          await this.updateTonKhoSafe(prisma, sp.id, {
-            slchogiao: { decrement: decValue },
-            // ❌ KHÔNG trừ slton ở đây nữa vì đã trừ khi ở trạng thái DADAT (Xác nhận)
-          });
+          // const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
+          // await this.updateTonKhoSafe(prisma, sp.id, {
+          //   slchogiao: { decrement: decValue },
+          //   // ❌ KHÔNG trừ slton ở đây nữa vì đã trừ khi ở trạng thái DADAT (Xác nhận)
+          // });
+          // 🚩 GIỮ NGUYÊN slchogiao ở bước DAGIAO (Đang đi) để phản ánh đúng thực tế đang trên đường.
+          // Sẽ giảm slchogiao khi sang bước DANHAN (Đã nhận/Hoàn tất).
         }
         const maphieuNew = `PX-${data.madonhang}`;
         const phieuPayload = {
@@ -2751,6 +2753,7 @@ export class DonhangService {
         for (const item of data.sanpham) {
           const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(3));
           const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(3));
+          const donhangSanpham = oldDonhang.sanpham.find((sp: any) => sp.idSP === item.id);
           
           if (receivedQty < shippedQty) {
             // Xử lý hao hụt: hoàn lại tồn kho cho phần thiếu
@@ -2768,7 +2771,13 @@ export class DonhangService {
                 : `Thiếu ${shortage.toFixed(3)}`,
             });
           }
-          // Không cần làm gì thêm nếu slnhan === slgiao vì tồn kho đã được giảm ở bước DAGIAO
+          
+          // ✅ CẬP NHẬT: Giảm slchogiao khi hoàn tất việc nhận hàng
+          const reservedQty = parseFloat((donhangSanpham?.slgiao ?? donhangSanpham?.sldat ?? 0).toFixed(3));
+          await prisma.tonKho.update({
+            where: { sanphamId: item.id },
+            data: { slchogiao: { decrement: reservedQty } },
+          });
         }
         if (shortageItems.length > 0) {
           const maphieuNhap = `PN-${data.madonhang}-RET-${this.formatDateForFilename()}`;
@@ -2847,10 +2856,15 @@ export class DonhangService {
       if (oldDonhang.status === 'dadat' && data.status === 'danhan') {
         // Xử lý tồn kho: giảm slchogiao và slton cho số lượng nhận
         for (const sp of data.sanpham) {
+          const oldSp = oldDonhang.sanpham.find(o => o.idSP === sp.id);
+          const reservedQty = parseFloat((oldSp?.sldat ?? 0).toFixed(3));
           const receivedQty = parseFloat((sp.slnhan ?? sp.slgiao ?? sp.sldat ?? 0).toFixed(3));
+          
           await this.updateTonKhoSafe(prisma, sp.id, {
-            slchogiao: { decrement: receivedQty },
-            slton: { decrement: receivedQty },
+            slchogiao: { decrement: reservedQty },
+            // slton already decremented at DADAT (create). 
+            // If receivedQty < reservedQty, we should increment slton back by the difference.
+            ...(receivedQty < reservedQty ? { slton: { increment: reservedQty - receivedQty } } : {})
           });
         }
 

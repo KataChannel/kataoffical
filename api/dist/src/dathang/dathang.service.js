@@ -802,15 +802,6 @@ let DathangService = class DathangService {
                 });
             }
             if (data.status === 'dagiao') {
-                for (const sp of data.sanpham) {
-                    const decValue = parseFloat((Number(sp.slgiao) ?? 0).toFixed(3));
-                    await prisma.tonKho.update({
-                        where: { sanphamId: sp.idSP },
-                        data: {
-                            slchonhap: { decrement: decValue },
-                        },
-                    });
-                }
                 const maphieuNew = `PX-${data.madncc}-${this.formatDateForFilename()}`;
                 const phieuPayload = {
                     ngay: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
@@ -866,9 +857,14 @@ let DathangService = class DathangService {
                 for (const item of data.sanpham) {
                     const receivedQty = parseFloat((Number(item.slnhan) ?? 0).toFixed(3));
                     const shippedQty = parseFloat((Number(item.slgiao) ?? 0).toFixed(3));
+                    const oldSp = oldDathang.sanpham.find(o => o.idSP === item.idSP);
+                    const reservedQty = parseFloat((Number(oldSp?.sldat) ?? 0).toFixed(3));
                     await prisma.tonKho.update({
                         where: { sanphamId: item.idSP },
-                        data: { slton: { increment: receivedQty } },
+                        data: {
+                            slton: { increment: receivedQty },
+                            slchonhap: { decrement: reservedQty }
+                        },
                     });
                     if (receivedQty < shippedQty) {
                         const shortage = shippedQty - receivedQty;
@@ -1045,13 +1041,14 @@ let DathangService = class DathangService {
             if (oldDathang.status === 'dadat' && data.status === 'danhan') {
                 for (const sp of data.sanpham) {
                     const slnhan = parseFloat((Number(sp.slnhan) ?? 0).toFixed(3));
-                    const oldItem = oldDathang.sanpham.find((o) => o.idSP === (sp.idSP ?? sp.id));
-                    const sldatOld = oldItem ? parseFloat((Number(oldItem.sldat) ?? 0).toFixed(3)) : slnhan;
+                    const receivedQty = parseFloat((Number(sp.slnhan) ?? 0).toFixed(3));
+                    const oldSp = oldDathang.sanpham.find(o => o.idSP === (sp.idSP ?? sp.id));
+                    const reservedQty = parseFloat((Number(oldSp?.sldat) ?? 0).toFixed(3));
                     await prisma.tonKho.update({
                         where: { sanphamId: sp.idSP ?? sp.id },
                         data: {
-                            slchonhap: { decrement: sldatOld },
-                            slton: { increment: slnhan },
+                            slton: { increment: receivedQty },
+                            slchonhap: { decrement: reservedQty },
                         },
                     });
                 }

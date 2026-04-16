@@ -933,15 +933,17 @@ async convertDathangImportToTransfer(
       // 4. Chuyển sang 'dagiao' (xuất kho từ nhà cung cấp)
       if (data.status === 'dagiao') {
         // 4.1. Giảm slchonhap
-        for (const sp of data.sanpham) {
-          const decValue = parseFloat((Number(sp.slgiao) ?? 0).toFixed(3));
-          await prisma.tonKho.update({
-            where: { sanphamId: sp.idSP },
-            data: {
-              slchonhap: { decrement: decValue },
-            },
-          });
-        }
+        // for (const sp of data.sanpham) {
+        //   const decValue = parseFloat((Number(sp.slgiao) ?? 0).toFixed(3));
+        //   await prisma.tonKho.update({
+        //     where: { sanphamId: sp.idSP },
+        //     data: {
+        //       slchonhap: { decrement: decValue },
+        //     },
+        //   });
+        // }
+        // 🚩 GIỮ NGUYÊN slchonhap ở bước DAGIAO (Đang về) để phản ánh đúng thực tế đang trên đường.
+        // Sẽ giảm slchonhap khi sang bước DANHAN (Đã nhận).
 
         // 4.2. Tạo/upsert phiếu kho xuất
         const maphieuNew = `PX-${data.madncc}-${this.formatDateForFilename()}`;
@@ -1011,9 +1013,15 @@ async convertDathangImportToTransfer(
           const shippedQty = parseFloat((Number(item.slgiao) ?? 0).toFixed(3));
           
           // Tăng tồn kho theo số lượng thực nhận
+          const oldSp = oldDathang.sanpham.find(o => o.idSP === item.idSP);
+          const reservedQty = parseFloat((Number(oldSp?.sldat) ?? 0).toFixed(3));
+          
           await prisma.tonKho.update({
             where: { sanphamId: item.idSP },
-            data: { slton: { increment: receivedQty } },
+            data: { 
+              slton: { increment: receivedQty },
+              slchonhap: { decrement: reservedQty } // ✅ Giải phóng slchonhap khi đã nhận hàng
+            },
           });
           
           // Nếu thiếu hàng, tạo phiếu xuất trả về cho phần thiếu
@@ -1219,15 +1227,15 @@ async convertDathangImportToTransfer(
       // 8.1. Cập nhật tồn kho
      for (const sp of data.sanpham) {
       const slnhan = parseFloat((Number(sp.slnhan) ?? 0).toFixed(3));
-      // Lấy sldat cũ để clear triệt để slchonhap
-      const oldItem = oldDathang.sanpham.find((o: any) => o.idSP === (sp.idSP ?? sp.id));
-      const sldatOld = oldItem ? parseFloat((Number(oldItem.sldat) ?? 0).toFixed(3)) : slnhan;
-
+      const receivedQty = parseFloat((Number(sp.slnhan) ?? 0).toFixed(3));
+      const oldSp = oldDathang.sanpham.find(o => o.idSP === (sp.idSP ?? sp.id));
+      const reservedQty = parseFloat((Number(oldSp?.sldat) ?? 0).toFixed(3));
+      
       await prisma.tonKho.update({
         where: { sanphamId: sp.idSP ?? sp.id },
         data: {
-          slchonhap: { decrement: sldatOld }, // Clear hoàn toàn lượng dự kiến cũ
-          slton: { increment: slnhan },      // Tăng lượng thực nhập
+          slton: { increment: receivedQty },
+          slchonhap: { decrement: reservedQty },
         },
       });
       }

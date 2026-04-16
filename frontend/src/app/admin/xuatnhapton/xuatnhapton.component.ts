@@ -450,21 +450,21 @@ export class XuatnhaptonComponent implements OnDestroy {
                   title: true,
                   Dathangsanpham: {
                     where: { dathang: { status: { in: ['dadat', 'dagiao'] } } },
-                    orderBy: { dathang: { createdAt: 'asc' } },
-                    take: 1,
+                    orderBy: { dathang: { createdAt: 'desc' } },
+                    take: 50,
                     select: {
                       dathang: {
-                        select: { createdAt: true }
+                        select: { id: true, madncc: true, createdAt: true, status: true }
                       }
                     }
                   },
                   Donhangsanpham: {
                     where: { donhang: { status: { in: ['dadat', 'dagiao'] } } },
-                    orderBy: { donhang: { createdAt: 'asc' } },
-                    take: 1,
+                    orderBy: { donhang: { createdAt: 'desc' } },
+                    take: 50,
                     select: {
                       donhang: {
-                        select: { createdAt: true }
+                        select: { id: true, madonhang: true, createdAt: true, status: true }
                       }
                     }
                   }
@@ -578,11 +578,45 @@ export class XuatnhaptonComponent implements OnDestroy {
               if (slchogiao > 0) warningMess += `${slchogiao} kg 'Đơn đang đi' `;
               warningMess += `chưa hoàn tất. Vui lòng kiểm tra kỹ số thực tế.`;
 
-              // 🚩 Tính toán độ trễ chứng từ (T+1)
-              const dathangOldest = tonkho?.sanpham?.Dathangsanpham?.[0]?.dathang?.createdAt;
-              const donhangOldest = tonkho?.sanpham?.Donhangsanpham?.[0]?.donhang?.createdAt;
+              // 🚩 Tính toán độ trễ chứng từ (Chỉ tính cho các đơn thực sự chưa nhận/giao: dadat, dagiao)
+              const dList = tonkho?.sanpham?.Dathangsanpham || tonkho?.sanpham?.dathangsanpham || [];
+              const donList = tonkho?.sanpham?.Donhangsanpham || tonkho?.sanpham?.donhangsanpham || [];
+              
+              const dActive = dList.filter((i: any) => i.dathang?.status === 'dadat' || i.dathang?.status === 'dagiao');
+              const donActive = donList.filter((i: any) => i.donhang?.status === 'dadat' || i.donhang?.status === 'dagiao');
+              
+              const dathangOldest = dActive[0]?.dathang?.createdAt;
+              const donhangOldest = donActive[0]?.donhang?.createdAt;
               const oldestDate = dathangOldest || donhangOldest;
               const isLate = oldestDate ? (new Date().getTime() - new Date(oldestDate).getTime()) > (24 * 60 * 60 * 1000) : false;
+
+              const pendingList: any[] = [];
+              if (dList?.length) {
+                dList.forEach((item: any) => {
+                  if (item.dathang && (item.dathang.status === 'dadat' || item.dathang.status === 'dagiao')) {
+                    pendingList.push({ 
+                      id: item.dathang.id, 
+                      code: item.dathang.madncc || 'ĐN-' + item.dathang.id.split('-')[0], 
+                      date: new Date(item.dathang.createdAt), 
+                      type: 'dathang',
+                      status: item.dathang.status
+                    });
+                  }
+                });
+              }
+              if (donList?.length) {
+                donList.forEach((item: any) => {
+                  if (item.donhang && (item.donhang.status === 'dadat' || item.donhang.status === 'dagiao')) {
+                    pendingList.push({ 
+                      id: item.donhang.id, 
+                      code: item.donhang.madonhang || 'DH-' + item.donhang.id.split('-')[0], 
+                      date: new Date(item.donhang.createdAt), 
+                      type: 'donhang',
+                      status: item.donhang.status
+                    });
+                  }
+                });
+              }
 
               danhSachCanhBao.push({
                 masp,
@@ -596,7 +630,8 @@ export class XuatnhaptonComponent implements OnDestroy {
                 isLate: isLate,
                 oldestPendingDate: oldestDate ? new Date(oldestDate) : null,
                 slchonhap: slchonhap,
-                slchogiao: slchogiao
+                slchogiao: slchogiao,
+                pendingList: pendingList
               });
             }
           }

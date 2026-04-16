@@ -22,8 +22,8 @@ export declare class PhieukhoController {
         createdAt: Date;
         updatedAt: Date;
         khoId: string | null;
-        maphieu: string | null;
         madncc: string | null;
+        maphieu: string | null;
         madathang: string | null;
         ngay: Date | null;
         tuKhoId: string | null;
@@ -63,8 +63,8 @@ export declare class PhieukhoController {
         createdAt: Date;
         updatedAt: Date;
         khoId: string | null;
-        maphieu: string | null;
         madncc: string | null;
+        maphieu: string | null;
         madathang: string | null;
         ngay: Date | null;
         tuKhoId: string | null;
@@ -104,8 +104,8 @@ export declare class PhieukhoController {
         createdAt: Date;
         updatedAt: Date;
         khoId: string | null;
-        maphieu: string | null;
         madncc: string | null;
+        maphieu: string | null;
         madathang: string | null;
         ngay: Date | null;
         tuKhoId: string | null;
@@ -167,8 +167,8 @@ export declare class PhieukhoController {
         createdAt: Date;
         updatedAt: Date;
         khoId: string | null;
-        maphieu: string | null;
         madncc: string | null;
+        maphieu: string | null;
         madathang: string | null;
         ngay: Date | null;
         tuKhoId: string | null;
@@ -195,8 +195,8 @@ export declare class PhieukhoController {
         createdAt: Date;
         updatedAt: Date;
         khoId: string | null;
-        maphieu: string | null;
         madncc: string | null;
+        maphieu: string | null;
         madathang: string | null;
         ngay: Date | null;
         tuKhoId: string | null;
@@ -213,8 +213,8 @@ export declare class PhieukhoController {
         createdAt: Date;
         updatedAt: Date;
         khoId: string | null;
-        maphieu: string | null;
         madncc: string | null;
+        maphieu: string | null;
         madathang: string | null;
         ngay: Date | null;
         tuKhoId: string | null;
