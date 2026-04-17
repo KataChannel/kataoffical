@@ -2,7 +2,8 @@
   <mat-drawer #drawer class="flex flex-col !w-full h-full" [position]="'end'" mode="over">
     <router-outlet></router-outlet>
   </mat-drawer>
-  <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
+  <div class="flex flex-col items-start space-y-2 h-screen-12 w-full p-2">
+    <div class="flex flex-col space-y-2 w-full">
     <div class="w-full flex flex-col gap-2  lg:flex-row lg:items-center lg:justify-between">
 
       <div class="flex flex-row space-x-2 items-center">
@@ -51,8 +52,46 @@
             <mat-icon>compare</mat-icon>
           </button>
         </div>
+        
+        @if(EditList.length > 0){
+        <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)" class="flex flex-row items-center"
+          color="warn" matTooltip="Xoá" mat-flat-button>
+          <mat-icon>delete</mat-icon>
+          <span class="whitespace-nowrap">Xoá</span>
+        </button>
+        <button mat-flat-button *ngIf="EditList.length > 0" (click)="DoDanhan()" color="primary" matTooltip="Đã Nhận">
+          <span class="whitespace-nowrap">Đã Nhận</span>
+        </button>
+        }
+      </div>
 
-        <div class="flex flex-row flex-wrap gap-2 items-center whitespace-nowrap overflow-x-auto pb-1 max-w-[calc(100vw-500px)]">
+
+
+
+    </div>
+    <div class="flex flex-row space-x-2 items-center">
+      <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+        <mat-label>Bắt Đầu</mat-label>
+        <input matInput [matDatepicker]="pickerBatdau" [(ngModel)]="searchParam.Batdau"
+          [ngModelOptions]="{standalone: true}">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau"></mat-datepicker-toggle>
+        <mat-datepicker #pickerBatdau></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+        <mat-label>Kết Thúc</mat-label>
+        <input matInput [matDatepicker]="pickerKetthuc" [(ngModel)]="searchParam.Ketthuc"
+          [ngModelOptions]="{standalone: true}">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
+        <mat-datepicker #pickerKetthuc></mat-datepicker>
+      </mat-form-field>
+
+      <button mat-icon-button color="primary" (click)="onDateChange()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </div>
+
+     <div class="flex flex-row flex-wrap gap-2 items-center whitespace-nowrap overflow-x-auto w-full">
           <div (click)="resetStatusFilter()" 
                class="status-badge status-secondary !cursor-pointer hover:brightness-95 transition-all shadow-sm"
                matTooltip="Hiển thị tất cả đơn hàng">
@@ -101,50 +140,9 @@
               <span class="status-dot"></span>
               Đã hủy: {{countByStatus('huy')}}
           </div>
-        </div>
-
-
-
-
-        @if(EditList.length > 0){
-        <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)" class="flex flex-row items-center"
-          color="warn" matTooltip="Xoá" mat-flat-button>
-          <mat-icon>delete</mat-icon>
-          <span class="whitespace-nowrap">Xoá</span>
-        </button>
-        <button mat-flat-button *ngIf="EditList.length > 0" (click)="DoDanhan()" color="primary" matTooltip="Đã Nhận">
-          <span class="whitespace-nowrap">Đã Nhận</span>
-        </button>
-        }
       </div>
+</div>
 
-
-
-
-    </div>
-
-
-    <div class="flex flex-row space-x-2 items-center">
-      <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-        <mat-label>Bắt Đầu</mat-label>
-        <input matInput [matDatepicker]="pickerBatdau" [(ngModel)]="searchParam.Batdau"
-          [ngModelOptions]="{standalone: true}">
-        <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau"></mat-datepicker-toggle>
-        <mat-datepicker #pickerBatdau></mat-datepicker>
-      </mat-form-field>
-
-      <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-        <mat-label>Kết Thúc</mat-label>
-        <input matInput [matDatepicker]="pickerKetthuc" [(ngModel)]="searchParam.Ketthuc"
-          [ngModelOptions]="{standalone: true}">
-        <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
-        <mat-datepicker #pickerKetthuc></mat-datepicker>
-      </mat-form-field>
-
-      <button mat-icon-button color="primary" (click)="onDateChange()">
-        <mat-icon>search</mat-icon>
-      </button>
-    </div>
     <div class="w-full overflow-auto">
       <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
         @for (column of displayedColumns; track column) {

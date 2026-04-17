@@ -18,7 +18,7 @@ export interface StockWarningItem {
   oldestPendingDate?: Date | null; // Ngày chứng từ trễ nhất
   slchonhap?: number;
   slchogiao?: number;
-  pendingList?: { id: string; code: string; date: Date; type: 'dathang' | 'donhang'; status?: string }[];
+  pendingList?: { id: string; code: string; date: Date; type: 'dathang' | 'donhang'; status?: string; soluong?: number }[];
 }
 
 export interface StockWarningData {
@@ -229,7 +229,12 @@ export interface StockWarningData {
                                     {{ order.type === 'dathang' ? 'arrow_downward' : 'arrow_upward' }}
                                   </mat-icon>
                                   <div class="flex flex-col items-start leading-none">
-                                    <span class="text-[10px] font-black" [class.text-blue-800]="order.type === 'dathang'" [class.text-orange-800]="order.type === 'donhang'">{{ order.code }}</span>
+                                     <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-black" [class.text-blue-800]="order.type === 'dathang'" [class.text-orange-800]="order.type === 'donhang'">{{ order.code }}</span>
+                                        @if (order.soluong) {
+                                           <span class="text-[9px] font-bold text-slate-400">({{ order.soluong | number:'1.0-2' }} kg)</span>
+                                        }
+                                     </div>
                                     @if (order.status) {
                                       <span class="text-[7px] uppercase font-bold px-1 rounded-sm mt-0.5"
                                             [class.bg-green-100]="order.status === 'danhan' || order.status === 'hoanthanh'"

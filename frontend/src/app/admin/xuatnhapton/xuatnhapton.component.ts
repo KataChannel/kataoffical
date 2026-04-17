@@ -451,8 +451,10 @@ export class XuatnhaptonComponent implements OnDestroy {
                   Dathangsanpham: {
                     where: { dathang: { status: { in: ['dadat', 'dagiao'] } } },
                     orderBy: { dathang: { createdAt: 'desc' } },
-                    take: 50,
+                    take: 500,
                     select: {
+                      sldat: true,
+                      slgiao: true,
                       dathang: {
                         select: { id: true, madncc: true, createdAt: true, status: true }
                       }
@@ -461,8 +463,10 @@ export class XuatnhaptonComponent implements OnDestroy {
                   Donhangsanpham: {
                     where: { donhang: { status: { in: ['dadat', 'dagiao'] } } },
                     orderBy: { donhang: { createdAt: 'desc' } },
-                    take: 50,
+                    take: 500,
                     select: {
+                      sldat: true,
+                      slgiao: true,
                       donhang: {
                         select: { id: true, madonhang: true, createdAt: true, status: true }
                       }
@@ -591,15 +595,21 @@ export class XuatnhaptonComponent implements OnDestroy {
               const isLate = oldestDate ? (new Date().getTime() - new Date(oldestDate).getTime()) > (24 * 60 * 60 * 1000) : false;
 
               const pendingList: any[] = [];
+              let sumSlchonhapRecord = 0;
+              let sumSlchogiaoRecord = 0;
+
               if (dList?.length) {
                 dList.forEach((item: any) => {
                   if (item.dathang && (item.dathang.status === 'dadat' || item.dathang.status === 'dagiao')) {
+                    const slValue = Number(item.slgiao || item.sldat || 0);
+                    sumSlchonhapRecord += slValue;
                     pendingList.push({ 
                       id: item.dathang.id, 
                       code: item.dathang.madncc || 'ĐN-' + item.dathang.id.split('-')[0], 
                       date: new Date(item.dathang.createdAt), 
                       type: 'dathang',
-                      status: item.dathang.status
+                      status: item.dathang.status,
+                      soluong: slValue
                     });
                   }
                 });
@@ -607,15 +617,27 @@ export class XuatnhaptonComponent implements OnDestroy {
               if (donList?.length) {
                 donList.forEach((item: any) => {
                   if (item.donhang && (item.donhang.status === 'dadat' || item.donhang.status === 'dagiao')) {
+                    const slValue = Number(item.slgiao || item.sldat || 0);
+                    sumSlchogiaoRecord += slValue;
                     pendingList.push({ 
                       id: item.donhang.id, 
                       code: item.donhang.madonhang || 'DH-' + item.donhang.id.split('-')[0], 
                       date: new Date(item.donhang.createdAt), 
                       type: 'donhang',
-                      status: item.donhang.status
+                      status: item.donhang.status,
+                      soluong: slValue
                     });
                   }
                 });
+              }
+
+              // ✅ PHÁT HIỆN DỮ LIỆU ẢO (OUT OF SYNC)
+              const isSyncError = (slchonhap > 0 && Math.abs(slchonhap - sumSlchonhapRecord) > 0.01) || 
+                                (slchogiao > 0 && Math.abs(slchogiao - sumSlchogiaoRecord) > 0.01);
+              
+              if (isSyncError) {
+                const ghostMess = `⚠️ LỖI ĐỒNG BỘ: Hệ thống ghi nhận treo (${slchonhap}/${slchogiao} kg) nhưng thực tế chỉ tìm thấy (${sumSlchonhapRecord.toFixed(2)}/${sumSlchogiaoRecord.toFixed(2)} kg) đơn hàng tương ứng. Có thể do đơn hàng cũ đã bị xóa hoặc thay đổi trạng thái nhưng kho chưa cập nhật.`;
+                warningMess = ghostMess + " " + warningMess;
               }
 
               danhSachCanhBao.push({
@@ -625,7 +647,7 @@ export class XuatnhaptonComponent implements OnDestroy {
                 sltonMoi: slton,
                 chenhLech: Math.abs(slton - currentSltontt),
                 loaiDieuChinh: 'khong_doi', 
-                mucDoNghiemTrong: isLate ? 'cao' : 'trung_binh', 
+                mucDoNghiemTrong: (isLate || isSyncError) ? 'cao' : 'trung_binh', 
                 lyDoCanhBao: isLate ? `🚩 CẢNH BÁO TRỄ CHỨNG TỪ: ${warningMess} (Đơn cũ nhất từ ${new Date(oldestDate).toLocaleDateString('vi-VN')})` : warningMess,
                 isLate: isLate,
                 oldestPendingDate: oldestDate ? new Date(oldestDate) : null,
