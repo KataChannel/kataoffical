@@ -2409,9 +2409,11 @@ export class NhucaudathangComponent {
             },
           },
           ngaygiao: {
-            gte: startDate,
             lte: endDate,
           },
+          status: {
+            in: ['dadat', 'dagiao']
+          }
         },
         select: {
           id: true,

@@ -127,6 +127,15 @@ type TopProductItem {
   totalValue: Float!
 }
 
+type StagnantProductItem {
+  sanpham: SanphamInfo!
+  status: String!
+  hoursStagnant: Float!
+  oldestOrderCode: String
+  orderId: String
+  quantity: Float!
+}
+
 type SupportUser {
   id: ID!
   name: String
@@ -296,6 +305,7 @@ type Query {
   dailyMonthlyReport(batdau: String!, ketthuc: String!, groupBy: String!): [DailyMonthlyReportItem!]!
   topProductsByQuantity(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
   topProductsByValue(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
+  getStagnantProducts(limit: Int): [StagnantProductItem!]!
 
   """
   Optimized aggregated query for Nhu Cau Dat Hang - replaces 4 heavy queries with server-side aggregation

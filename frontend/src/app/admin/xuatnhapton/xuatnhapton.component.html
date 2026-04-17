@@ -2,51 +2,66 @@
     <mat-drawer #drawer class="flex flex-col !w-full h-full" [position]="'end'" mode="over">
         <router-outlet></router-outlet>
     </mat-drawer>
-    <div class="flex flex-col space-y-2 h-screen-14 w-full p-2">
-        <div class="flex flex-row space-x-2 items-center">      
-                <div class="relative">
-                    <input type="text" (keyup)="applyFilter($event)"
-                        placeholder="Tìm Kiếm..."
-                        class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <span class="material-symbols-outlined text-gray-500">search</span>
-                    </div>
+    <div class="flex flex-col space-y-4 h-screen-14 w-full p-3 sm:p-4 bg-slate-50/50">
+        <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-white p-3 rounded-xl shadow-sm border border-slate-200">      
+            <div class="relative flex-1">
+                <input type="text" (keyup)="applyFilter($event)"
+                    placeholder="Tìm kiếm mã hàng, tên sản phẩm..."
+                    class="block w-full pl-10 pr-4 py-2.5 text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none transition-all">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <span class="material-symbols-outlined text-slate-400">search</span>
                 </div>
+            </div>
+            
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
                 <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu"
-                    aria-label="Example icon-button with a menu">
+                    class="!bg-blue-50 !rounded-lg shrink-0">
                     <mat-icon>tune</mat-icon>
                 </button>
                 
-                <span (click)="!isUpdatingStock && Capnhattonkho()" 
-                      [class]="'whitespace-nowrap p-2 border rounded-lg cursor-pointer flex items-center space-x-2 ' + 
-                                (isUpdatingStock ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50')" 
-                      matTooltip="Tải file Excel lên để cập nhật tồn kho">
+                <div class="h-6 w-px bg-slate-200 mx-1 shrink-0"></div>
+
+                <button (click)="!isUpdatingStock && Capnhattonkho()" 
+                      [class]="'whitespace-nowrap px-4 py-2.5 rounded-lg border flex items-center gap-2 text-sm font-bold transition-all shrink-0 shadow-sm ' + 
+                                (isUpdatingStock ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed' : 'bg-slate-900 text-white border-slate-900 hover:bg-slate-800')" 
+                      [disabled]="isUpdatingStock"
+                      matTooltip="Cập nhật tồn kho từ Excel">
                     @if (isUpdatingStock) {
-                        <mat-icon class="animate-spin text-sm">sync</mat-icon>
-                        <span>Đang cập nhật...</span>
+                        <mat-icon class="animate-spin !h-4 !w-4 text-[16px]">sync</mat-icon>
+                        <span>Đang xử lý...</span>
                     } @else {
-                        <span>📁 Cập Nhật Tồn Kho</span>
+                        <mat-icon class="!h-4 !w-4 text-[16px]">upload_file</mat-icon>
+                        <span>Chốt Kho Excel</span>
                     }
-                </span>
-                <span (click)="downloadTonkhoTemplate()" class="whitespace-nowrap p-2 border hover:bg-slate-50 rounded-lg cursor-pointer" matTooltip="Tải file Excel mẫu để cập nhật tồn kho">📄 Mẫu Excel</span>
-                <mat-menu #menu="matMenu">
-                    <div class="p-4">
-                        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-                            <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput
-                                placeholder="Tìm Kiếm" />
-                            <mat-icon matPrefix>search</mat-icon>
-                        </mat-form-field>
-                    </div>
-                    <div class="flex flex-col max-h-80 overflow-auto">
-                        @for (item of FilterColumns; track item.key) {
-                        <button mat-menu-item (click)="toggleColumn(item);$event.stopPropagation()">
-                            <mat-icon>{{item.isShow ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
-                            <span>{{item.value}}</span>
-                        </button>
-                        }
-                    </div>
-                </mat-menu>
+                </button>
+                
+                <button (click)="downloadTonkhoTemplate()" 
+                        class="whitespace-nowrap px-4 py-2.5 bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm transition-all shrink-0" 
+                        matTooltip="Tải file mẫu">
+                    <mat-icon class="!h-4 !w-4 text-[16px]">description</mat-icon>
+                    <span class="hidden xs:inline">Mẫu Excel</span>
+                </button>
             </div>
+
+            <mat-menu #menu="matMenu" class="!rounded-xl !shadow-2xl border border-slate-100">
+                <div class="p-3 bg-slate-50 border-b border-slate-100">
+                    <div class="relative">
+                        <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()"
+                               placeholder="Tìm cột..."
+                               class="w-full pl-9 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-lg focus:border-blue-500 focus:outline-none shadow-sm">
+                        <mat-icon class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 scale-75">search</mat-icon>
+                    </div>
+                </div>
+                <div class="flex flex-col max-h-80 overflow-auto py-1">
+                    @for (item of FilterColumns; track item.key) {
+                    <button mat-menu-item (click)="toggleColumn(item);$event.stopPropagation()" class="!h-10">
+                        <mat-icon class="!mr-2 text-blue-500">{{item.isShow ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
+                        <span class="text-sm font-medium text-slate-700">{{item.value}}</span>
+                    </button>
+                    }
+                </div>
+            </mat-menu>
+        </div>
         <div class="w-full overflow-auto">
             <table class="excelstyle !border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {

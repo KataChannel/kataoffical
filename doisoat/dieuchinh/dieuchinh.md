@@ -56,4 +56,25 @@ Sau khi đánh giá sự phức tạp của vận hành thực tế (đóng gói
 - **Dài hạn (Human Operations):** Áp dụng **SOP (Bước 2)**. Kể từ nay, bất kỳ đơn nhập hàng hay xuất giao nào đi qua ngày `(T+1)` (quá 24 giờ) mà vẫn ở trạng thái "Đang về/Đang đi", quản lý cần tiến hành rà soát để nhắc nhở và có chế tài cảnh cáo chuyên cần đối với tổ kho vận nhằm duy trì danh sách cảnh báo ở mức Minimum (Dưới 10).
 
 ---
-**Cập nhật lần cuối:** 16-04-2026 (Bổ sung hạng mục ràng buộc hệ thống)
+
+---
+
+## 4. Xử lý lệch số liệu Nhu cầu đặt hàng và Đồng bộ Logic Lọc (2026-04-17)
+
+### Hiện trạng lỗi (Discrepancy Analysis)
+*   **Vấn đề:** Cột "TỔNG ĐẶT (KHÁCH)" hiển thị số lớn (ví dụ 11.5kg) nhưng danh sách chi tiết khi mở lên chỉ hiện 1.5kg.
+*   **Phát hiện (Diagnosis):** Hệ thống đang bị nợ đơn cũ từ quá khứ (đơn từ tháng 1/2026 vẫn ở trạng thái `dadat`). 
+*   **Nguyên nhân gốc rễ:** 
+    - **Backend:** Tính toán nhu cầu mua hàng dựa trên nguyên tắc lũy kế (`ngaygiao <= Today`). Do đó nó cộng toàn bộ nợ cũ để báo cho người mua hàng biết tổng lượng hàng cần để trả đủ cho khách.
+    - **Frontend:** Trước đây chỉ lọc đơn theo khoảng ngày người dùng chọn (`gte startDate AND lte endDate`). Nếu người dùng chỉ xem "Hôm nay", hệ thống sẽ ẩn đi các đơn nợ từ quá khứ, dẫn đến mất dấu 10kg hàng.
+
+### Cách xử lý (Technical Resolution)
+*   **Đồng bộ Logic Hiển thị:** Cập nhật file `NhucaudathangComponent.ts`. Thay đổi điều kiện lọc trong Dialog chi tiết sang `lte: endDate` cho các trạng thái `dadat` và `dagiao`.
+*   **Kết quả:** Danh sách chi tiết bây giờ sẽ hiển thị đầy đủ các đơn hàng đóng góp vào con số Tổng (bao gồm cả nợ cũ), giúp khớp số 100% giữa bảng tổng và chi tiết.
+
+### Quy trình Vận hành Khuyến nghị (SOP)
+*   **Thanh lý đơn treo:** Định kỳ hàng tuần, kế toán cần lọc các đơn hàng có `ngaygiao` quá 7 ngày mà vẫn ở trạng thái `dadat`. 
+*   **Xử lý:** Nếu khách không nhận hoặc quên không giao, phải chuyển trạng thái sang `huy` (Hủy) hoặc `hoanthanh` (nếu đã giao ngoài) để "làm sạch" cột nhu cầu đặt hàng. Việc để đơn treo quá lâu sẽ khiến hệ thống liên tục báo mua thêm hàng cho các đơn không bao giờ giao, gây đọng vốn và dư thừa tồn kho thực tế.
+
+---
+**Cập nhật lần cuối:** 17-04-2026 (Xử lý lệch số liệu nhu cầu & Đồng bộ logic lọc)

@@ -50,75 +50,99 @@ export interface StockWarningData {
           </button>
         </div>
 
-        <!-- STATS CARDS: Smaller & Slimmer -->
-        <div class="grid grid-cols-4 gap-3 mt-4">
-          <div class="bg-white border border-slate-200 px-4 py-2.5 rounded-lg shadow-sm cursor-pointer hover:bg-slate-50 transition-colors" (click)="setFilter('all')">
-            <p class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Tổng sản phẩm</p>
-            <div class="text-lg font-black text-slate-800">{{ data.tongSanPham }}</div>
+        <!-- STATS BADGES: Sleek Capsules -->
+        <div class="flex flex-wrap items-center gap-2 mt-4">
+          <div (click)="setFilter('all')" 
+               class="cursor-pointer hover:bg-slate-200 flex items-center gap-2 px-3 py-1 bg-slate-100 text-slate-700 rounded-full border border-slate-200 transition-all shadow-sm">
+            <span class="text-[9px] font-bold uppercase tracking-tight opacity-60">Tổng SP</span>
+            <span class="w-px h-2.5 bg-slate-300"></span>
+            <span class="text-[11px] font-black leading-none">{{ data.tongSanPham }}</span>
           </div>
-          <div class="bg-white border border-slate-200 px-4 py-2.5 rounded-lg shadow-sm border-l-4 border-l-green-500 opacity-60">
-            <p class="text-[9px] font-bold uppercase tracking-wider text-green-600">Bình thường</p>
-            <div class="text-lg font-black text-slate-800">{{ data.spBinhThuong }}</div>
+
+          <div class="flex items-center gap-2 px-3 py-1 bg-green-50 text-green-700 rounded-full border border-green-100 opacity-80">
+            <span class="text-[9px] font-bold uppercase tracking-tight opacity-70">Bình thường</span>
+            <span class="w-px h-2.5 bg-green-200"></span>
+            <span class="text-[11px] font-black leading-none">{{ data.spBinhThuong }}</span>
           </div>
-          <div class="bg-white border border-slate-200 px-4 py-2.5 rounded-lg shadow-sm border-l-4 border-l-slate-300 opacity-60">
-            <p class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Không đổi</p>
-            <div class="text-lg font-black text-slate-800">{{ data.spKhongThayDoi }}</div>
+
+          <div class="flex items-center gap-2 px-3 py-1 bg-slate-50 text-slate-400 rounded-full border border-slate-100 opacity-80">
+            <span class="text-[9px] font-bold uppercase tracking-tight opacity-70">Không đổi</span>
+            <span class="w-px h-2.5 bg-slate-200"></span>
+            <span class="text-[11px] font-black leading-none">{{ data.spKhongThayDoi }}</span>
           </div>
-          <div class="bg-white border border-slate-200 px-4 py-2.5 rounded-lg shadow-sm border-l-4 border-l-rose-500 ring-2 transition-all cursor-pointer hover:bg-rose-50/30" 
-               [class.ring-rose-200]="selectedFilter === 'all' || selectedFilter === 'cao' || selectedFilter === 'late' || selectedFilter === 'tb'"
-               [class.ring-transparent]="!(selectedFilter === 'all' || selectedFilter === 'cao' || selectedFilter === 'late' || selectedFilter === 'tb')"
-               (click)="setFilter('all')">
-            <p class="text-[9px] font-bold uppercase tracking-wider text-rose-600">⚠️ Cảnh báo</p>
-            <div class="text-lg font-black text-rose-600">{{ data.danhSachCanhBao.length }}</div>
+
+          <div (click)="setFilter('all')" 
+               class="cursor-pointer hover:ring-2 hover:ring-rose-200 flex items-center gap-2 px-3 py-1 bg-rose-50 text-rose-600 rounded-full border border-rose-200 transition-all shadow-sm select-none">
+            <mat-icon style="font-size: 12px; width: 12px; height: 12px" class="text-rose-500">warning</mat-icon>
+            <span class="text-[9px] font-black uppercase tracking-tight">Cảnh báo</span>
+            <span class="w-px h-2.5 bg-rose-200"></span>
+            <span class="text-xs font-black leading-none">{{ data.danhSachCanhBao.length }}</span>
           </div>
         </div>
-        <!-- QUICK FILTER BADGES: NY Style -->
-        <div class="flex items-center gap-2 mt-4 px-1 overflow-x-auto pb-1 no-scrollbar">
-           <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2">Phân loại:</span>
-           
-           <button (click)="setFilter('all')" 
-                   matTooltip="Hiển thị tất cả các mã hàng có cảnh báo"
-                   [class]="'px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1.5 ' + 
-                            (selectedFilter === 'all' ? 'bg-slate-800 text-white border-slate-800 shadow-md' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400 shadow-sm')">
-              Tất cả ({{ data.danhSachCanhBao.length }})
-           </button>
+        <!-- QUICK FILTER & SEARCH: Responsive -->
+        <div class="flex flex-col gap-3 mt-4">
+          <div class="flex items-center gap-2 px-1 overflow-x-auto pb-1 no-scrollbar shrink-0">
+             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2">Phân loại:</span>
+             
+             <button (click)="setFilter('all')" 
+                     matTooltip="Hiển thị tất cả các mã hàng có cảnh báo"
+                     [class]="'px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1.5 whitespace-nowrap ' + 
+                              (selectedFilter === 'all' ? 'bg-slate-800 text-white border-slate-800 shadow-md' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400 shadow-sm')">
+                Tất cả ({{ data.danhSachCanhBao.length }})
+             </button>
+  
+             <button (click)="setFilter('late')" 
+                     matTooltip="Các sản phẩm có chứng từ treo chưa xử lý quá 24h"
+                     [class]="'px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1.5 whitespace-nowrap ' + 
+                              (selectedFilter === 'late' ? 'bg-rose-600 text-white border-rose-600 shadow-md' : 'bg-white text-rose-600 border-rose-100 hover:bg-rose-50 shadow-sm')">
+                🚩 Trễ (>24h)
+             </button>
+  
+             <button (click)="setFilter('cao')" 
+                     matTooltip="Các lỗi nghiêm trọng: Rủi ro đếm lặp, sai lệch lớn, hoặc tồn cũ bằng 0"
+                     [class]="'px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1.5 whitespace-nowrap ' + 
+                              (selectedFilter === 'cao' ? 'bg-rose-500 text-white border-rose-500 shadow-md' : 'bg-white text-rose-500 border-rose-100 hover:bg-rose-50 shadow-sm')">
+                🔴 Cấp bách (Cao)
+             </button>
+  
+             <button (click)="setFilter('tb')" 
+                     matTooltip="Các sản phẩm có mức chênh lệch cao (>500%)"
+                     [class]="'px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1.5 whitespace-nowrap ' + 
+                              (selectedFilter === 'tb' ? 'bg-amber-500 text-white border-amber-500 shadow-md' : 'bg-white text-amber-600 border-amber-100 hover:bg-amber-50 shadow-sm')">
+                🟡 Chênh lệch (TB)
+             </button>
+  
+             <div class="w-px h-4 bg-slate-200 mx-1"></div>
+  
+             <button (click)="setFilter('tang')" 
+                     matTooltip="Các mã hàng sẽ được điều chỉnh TĂNG số lượng tồn"
+                     [class]="'px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1.5 whitespace-nowrap ' + 
+                              (selectedFilter === 'tang' ? 'bg-green-600 text-white border-green-600 shadow-md' : 'bg-white text-green-700 border-green-100 hover:bg-green-50 shadow-sm')">
+                📥 Điều chỉnh Tăng
+             </button>
+  
+             <button (click)="setFilter('giam')" 
+                     matTooltip="Các mã hàng sẽ được điều chỉnh GIẢM số lượng tồn"
+                     [class]="'px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1.5 whitespace-nowrap ' + 
+                              (selectedFilter === 'giam' ? 'bg-rose-500 text-white border-rose-500 shadow-md' : 'bg-white text-rose-700 border-rose-100 hover:bg-rose-50 shadow-sm')">
+                📤 Điều chỉnh Giảm
+             </button>
+          </div>
 
-           <button (click)="setFilter('late')" 
-                   matTooltip="Các sản phẩm có chứng từ treo chưa xử lý quá 24h"
-                   [class]="'px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1.5 ' + 
-                            (selectedFilter === 'late' ? 'bg-rose-600 text-white border-rose-600 shadow-md' : 'bg-white text-rose-600 border-rose-100 hover:bg-rose-50 shadow-sm')">
-              🚩 Trễ (>24h)
-           </button>
-
-           <button (click)="setFilter('cao')" 
-                   matTooltip="Các lỗi nghiêm trọng: Rủi ro đếm lặp, sai lệch lớn, hoặc tồn cũ bằng 0"
-                   [class]="'px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1.5 ' + 
-                            (selectedFilter === 'cao' ? 'bg-rose-500 text-white border-rose-500 shadow-md' : 'bg-white text-rose-500 border-rose-100 hover:bg-rose-50 shadow-sm')">
-              🔴 Cấp bách (Cao)
-           </button>
-
-           <button (click)="setFilter('tb')" 
-                   matTooltip="Các sản phẩm có mức chênh lệch cao (>500%)"
-                   [class]="'px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1.5 ' + 
-                            (selectedFilter === 'tb' ? 'bg-amber-500 text-white border-amber-500 shadow-md' : 'bg-white text-amber-600 border-amber-100 hover:bg-amber-50 shadow-sm')">
-              🟡 Chênh lệch (TB)
-           </button>
-
-           <div class="w-px h-4 bg-slate-200 mx-1"></div>
-
-           <button (click)="setFilter('tang')" 
-                   matTooltip="Các mã hàng sẽ được điều chỉnh TĂNG số lượng tồn"
-                   [class]="'px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1.5 ' + 
-                            (selectedFilter === 'tang' ? 'bg-green-600 text-white border-green-600 shadow-md' : 'bg-white text-green-700 border-green-100 hover:bg-green-50 shadow-sm')">
-              📥 Điều chỉnh Tăng
-           </button>
-
-           <button (click)="setFilter('giam')" 
-                   matTooltip="Các mã hàng sẽ được điều chỉnh GIẢM số lượng tồn"
-                   [class]="'px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1.5 ' + 
-                            (selectedFilter === 'giam' ? 'bg-rose-500 text-white border-rose-500 shadow-md' : 'bg-white text-rose-700 border-rose-100 hover:bg-rose-50 shadow-sm')">
-              📤 Điều chỉnh Giảm
-           </button>
+          <!-- SEARCH BOX -->
+          <div class="relative w-full overflow-hidden">
+            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 scale-75" style="width: 18px; height: 18px; font-size: 18px">search</mat-icon>
+            <input type="text" 
+                   [value]="searchTerm"
+                   (input)="searchTerm = $any($event.target).value"
+                   placeholder="Tìm kiếm mã hàng, tên sản phẩm..."
+                   class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none shadow-sm">
+            @if (searchTerm) {
+              <button (click)="searchTerm = ''" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                <mat-icon style="width: 14px; height: 14px; font-size: 14px">cancel</mat-icon>
+              </button>
+            }
+          </div>
         </div>
       </div>
 
@@ -234,24 +258,24 @@ export interface StockWarningData {
         }
       </div>
 
-      <!-- FOOTER: Slimmer -->
-      <div class="px-6 py-3 border-t border-slate-100 bg-white flex justify-between items-center shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
-        <div class="flex items-center gap-4 text-[11px]">
-           <p class="font-medium text-slate-500">Sẽ thực hiện: 
-             <span class="font-black text-green-600 ml-1">Nhập +{{ data.danhSachNhap.length }}</span>, 
-             <span class="font-black text-rose-600 ml-1">Xuất -{{ data.danhSachXuat.length }}</span> mã hàng
+      <!-- FOOTER: Responsive -->
+      <div class="px-6 py-4 border-t border-slate-100 bg-white flex flex-col sm:flex-row justify-between items-center gap-4 shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-4 text-[11px] text-center sm:text-left">
+           <p class="font-medium text-slate-500 leading-relaxed">Sẽ thực hiện: 
+             <span class="font-black text-green-600">Nhập +{{ data.danhSachNhap.length }}</span>, 
+             <span class="font-black text-rose-600">Xuất -{{ data.danhSachXuat.length }}</span> mã hàng
            </p>
         </div>
 
-        <div class="flex gap-2.5">
-          <button (click)="onCancel()" class="px-4 py-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all border border-slate-200">
+        <div class="flex w-full sm:w-auto gap-2.5">
+          <button (click)="onCancel()" class="flex-1 sm:flex-none px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all border border-slate-200">
             Hủy lệnh
           </button>
           <button (click)="onConfirm()" 
-                  class="px-6 py-2 text-xs font-black text-white rounded-lg shadow-md transition-all active:scale-95 flex items-center gap-2"
+                  class="flex-1 sm:flex-none px-6 py-2 text-xs font-black text-white rounded-lg shadow-md transition-all active:scale-95 flex items-center justify-center gap-2"
                   [class.bg-slate-900]="!hasCriticalWarnings" [class.bg-rose-600]="hasCriticalWarnings">
             <mat-icon style="font-size: 16px; width: 16px; height: 16px">check_circle</mat-icon>
-            {{ hasCriticalWarnings ? 'Vẫn xác nhận cập nhật' : 'Xác nhận cập nhật' }}
+            {{ hasCriticalWarnings ? 'Vẫn xác nhận' : 'Xác nhận' }}
           </button>
         </div>
       </div>
@@ -277,25 +301,43 @@ export interface StockWarningData {
 })
 export class StockWarningDialogComponent {
   hasCriticalWarnings: boolean;
+  searchTerm: string = '';
   selectedFilter: string = 'all';
 
   get filteredList() {
     let list = this.data.danhSachCanhBao;
     
-    switch (this.selectedFilter) {
-      case 'late':
-        return list.filter(item => item.isLate);
-      case 'cao':
-        return list.filter(item => item.mucDoNghiemTrong === 'cao');
-      case 'tb':
-        return list.filter(item => item.mucDoNghiemTrong === 'trung_binh');
-      case 'tang':
-        return list.filter(item => item.loaiDieuChinh === 'tang');
-      case 'giam':
-        return list.filter(item => item.loaiDieuChinh === 'giam');
-      default:
-        return list;
+    // 1. Filter by Category
+    if (this.selectedFilter !== 'all') {
+      switch (this.selectedFilter) {
+        case 'late':
+          list = list.filter(item => item.isLate);
+          break;
+        case 'cao':
+          list = list.filter(item => item.mucDoNghiemTrong === 'cao');
+          break;
+        case 'tb':
+          list = list.filter(item => item.mucDoNghiemTrong === 'trung_binh');
+          break;
+        case 'tang':
+          list = list.filter(item => item.loaiDieuChinh === 'tang');
+          break;
+        case 'giam':
+          list = list.filter(item => item.loaiDieuChinh === 'giam');
+          break;
+      }
     }
+
+    // 2. Filter by Search Term
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase().trim();
+      list = list.filter(item => 
+        item.masp.toLowerCase().includes(term) || 
+        item.title.toLowerCase().includes(term)
+      );
+    }
+    
+    return list;
   }
 
   constructor(

@@ -34,8 +34,21 @@ export interface TopProductData {
 }
 
 export interface TopProductsResponse {
-  byQuantity: TopProductData[];
-  byValue: TopProductData[];
+  byQuantity: any[];
+  byValue: any[];
+}
+
+export interface StagnantProductData {
+  sanpham: {
+    id: string;
+    title: string;
+    masp: string;
+  };
+  status: string;
+  hoursStagnant: number;
+  orderId: string;
+  oldestOrderCode: string;
+  quantity: number;
 }
 
 // GraphQL Queries
@@ -119,6 +132,22 @@ const GET_TOP_PRODUCTS = gql`
       }
       totalQuantity
       totalValue
+    }
+  }
+`;
+
+const GET_STAGNANT_PRODUCTS = gql`
+  query GetStagnantProducts($limit: Int) {
+    getStagnantProducts(limit: $limit) {
+      sanpham {
+        id
+        title
+        masp
+      }
+      status
+      hoursStagnant
+      oldestOrderCode
+      quantity
     }
   }
 `;
@@ -224,6 +253,23 @@ export class DashboardService {
         byQuantity: result.data.topProductsByQuantity || [],
         byValue: result.data.topProductsByValue || []
       }))
+    );
+  }
+
+  /**
+   * Danh sách sản phẩm bị đình trệ lâu nhất
+   */
+  getStagnantProducts(limit: number = 10): Observable<StagnantProductData[]> {
+    return this.apollo.query({
+      query: GET_STAGNANT_PRODUCTS,
+      variables: {
+        limit: limit
+      },
+      context: {
+        headers: this.getHeaders()
+      }
+    }).pipe(
+      map((result: any) => result.data.getStagnantProducts || [])
     );
   }
 

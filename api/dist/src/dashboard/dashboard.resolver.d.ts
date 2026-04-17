@@ -38,4 +38,13 @@ export declare class DashboardResolver {
     dailyMonthlyReport(batdau: string, ketthuc: string, groupBy: string): Promise<DailyMonthlyReportItem[]>;
     topProductsByQuantity(batdau: string, ketthuc: string, limit: number): Promise<TopProductItem[]>;
     topProductsByValue(batdau: string, ketthuc: string, limit: number): Promise<TopProductItem[]>;
+    getStagnantProducts(limit?: number): Promise<StagnantProductItem[]>;
+}
+export declare class StagnantProductItem {
+    sanpham: SanphamInfo;
+    status: string;
+    hoursStagnant: number;
+    oldestOrderCode?: string;
+    orderId?: string;
+    quantity: number;
 }

@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DashboardResolver = exports.TopProductItem = exports.SanphamInfo = exports.DailyMonthlyReportItem = exports.AggregateResult = exports.AggregateSum = exports.AggregateCount = void 0;
+exports.StagnantProductItem = exports.DashboardResolver = exports.TopProductItem = exports.SanphamInfo = exports.DailyMonthlyReportItem = exports.AggregateResult = exports.AggregateSum = exports.AggregateCount = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const common_1 = require("@nestjs/common");
@@ -298,6 +298,60 @@ let DashboardResolver = class DashboardResolver {
             totalValue: Number(item.totalvalue) || 0,
         }));
     }
+    async getStagnantProducts(limit = 5) {
+        const limitVal = limit || 5;
+        const rawDonhang = await this.prisma.$queryRawUnsafe(`
+      SELECT 
+        sp.id as "sanphamId",
+        dh.id as "orderId",
+        sp.title,
+        sp.masp,
+        'Đang đi' as status,
+        dh.madonhang as "orderCode",
+        dh.ngaygiao as "ngay",
+        EXTRACT(EPOCH FROM (NOW() - dh.ngaygiao))/3600 as hours,
+        dsp.sldat as quantity
+      FROM "Donhangsanpham" dsp
+      INNER JOIN "Donhang" dh ON dsp."donhangId" = dh.id
+      INNER JOIN "Sanpham" sp ON dsp."idSP" = sp.id
+      WHERE dh.status = 'dagiao' 
+      ORDER BY dh.ngaygiao ASC
+      LIMIT 100
+    `);
+        const rawDathang = await this.prisma.$queryRawUnsafe(`
+      SELECT 
+        sp.id as "sanphamId",
+        dh.id as "orderId",
+        sp.title,
+        sp.masp,
+        'Đang về' as status,
+        dh.madncc as "orderCode",
+        dh."createdAt" as "ngay",
+        EXTRACT(EPOCH FROM (NOW() - dh."createdAt"))/3600 as hours,
+        dsp.sldat as quantity
+      FROM "Dathangsanpham" dsp
+      INNER JOIN "Dathang" dh ON dsp."dathangId" = dh.id
+      INNER JOIN "Sanpham" sp ON dsp."idSP" = sp.id
+      WHERE dh.status = 'dadat'
+      ORDER BY dh."createdAt" ASC
+      LIMIT 100
+    `);
+        const combined = [...rawDonhang, ...rawDathang]
+            .sort((a, b) => b.hours - a.hours)
+            .slice(0, limitVal);
+        return combined.map(item => ({
+            sanpham: {
+                id: item.sanphamId,
+                title: item.title,
+                masp: item.masp
+            },
+            status: item.status,
+            hoursStagnant: Math.round(item.hours),
+            orderId: item.orderId,
+            oldestOrderCode: item.orderCode,
+            quantity: Number(item.quantity) || 0
+        }));
+    }
 };
 exports.DashboardResolver = DashboardResolver;
 __decorate([
@@ -361,9 +415,46 @@ __decorate([
     __metadata("design:paramtypes", [String, String, Number]),
     __metadata("design:returntype", Promise)
 ], DashboardResolver.prototype, "topProductsByValue", null);
+__decorate([
+    (0, graphql_1.Query)(() => [StagnantProductItem]),
+    __param(0, (0, graphql_1.Args)('limit', { type: () => graphql_2.Int, nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], DashboardResolver.prototype, "getStagnantProducts", null);
 exports.DashboardResolver = DashboardResolver = __decorate([
     (0, common_1.Injectable)(),
     (0, graphql_1.Resolver)('Dashboard'),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], DashboardResolver);
+let StagnantProductItem = class StagnantProductItem {
+};
+exports.StagnantProductItem = StagnantProductItem;
+__decorate([
+    (0, graphql_2.Field)(() => SanphamInfo),
+    __metadata("design:type", SanphamInfo)
+], StagnantProductItem.prototype, "sanpham", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => String),
+    __metadata("design:type", String)
+], StagnantProductItem.prototype, "status", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => graphql_2.Float),
+    __metadata("design:type", Number)
+], StagnantProductItem.prototype, "hoursStagnant", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => String, { nullable: true }),
+    __metadata("design:type", String)
+], StagnantProductItem.prototype, "oldestOrderCode", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => String, { nullable: true }),
+    __metadata("design:type", String)
+], StagnantProductItem.prototype, "orderId", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => graphql_2.Float),
+    __metadata("design:type", Number)
+], StagnantProductItem.prototype, "quantity", void 0);
+exports.StagnantProductItem = StagnantProductItem = __decorate([
+    (0, graphql_2.ObjectType)()
+], StagnantProductItem);
 //# sourceMappingURL=dashboard.resolver.js.map

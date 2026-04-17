@@ -318,4 +318,90 @@ export class DashboardResolver {
       totalValue: Number(item.totalvalue) || 0,
     }));
   }
+
+  @Query(() => [StagnantProductItem])
+  async getStagnantProducts(
+    @Args('limit', { type: () => Int, nullable: true }) limit: number = 5
+  ): Promise<StagnantProductItem[]> {
+    const limitVal = limit || 5;
+
+    // 1. Lấy đơn hàng KHÁCH (Đang đi) - Trễ chứng từ
+    const rawDonhang = await this.prisma.$queryRawUnsafe(`
+      SELECT 
+        sp.id as "sanphamId",
+        dh.id as "orderId",
+        sp.title,
+        sp.masp,
+        'Đang đi' as status,
+        dh.madonhang as "orderCode",
+        dh.ngaygiao as "ngay",
+        EXTRACT(EPOCH FROM (NOW() - dh.ngaygiao))/3600 as hours,
+        dsp.sldat as quantity
+      FROM "Donhangsanpham" dsp
+      INNER JOIN "Donhang" dh ON dsp."donhangId" = dh.id
+      INNER JOIN "Sanpham" sp ON dsp."idSP" = sp.id
+      WHERE dh.status = 'dagiao' 
+      ORDER BY dh.ngaygiao ASC
+      LIMIT 100
+    `) as any[];
+
+    // 2. Lấy đơn hàng NCC (Đang về) - Trễ nhập kho
+    const rawDathang = await this.prisma.$queryRawUnsafe(`
+      SELECT 
+        sp.id as "sanphamId",
+        dh.id as "orderId",
+        sp.title,
+        sp.masp,
+        'Đang về' as status,
+        dh.madncc as "orderCode",
+        dh."createdAt" as "ngay",
+        EXTRACT(EPOCH FROM (NOW() - dh."createdAt"))/3600 as hours,
+        dsp.sldat as quantity
+      FROM "Dathangsanpham" dsp
+      INNER JOIN "Dathang" dh ON dsp."dathangId" = dh.id
+      INNER JOIN "Sanpham" sp ON dsp."idSP" = sp.id
+      WHERE dh.status = 'dadat'
+      ORDER BY dh."createdAt" ASC
+      LIMIT 100
+    `) as any[];
+
+    // 3. Gộp và lấy Top theo số giờ trễ
+    const combined = [...rawDonhang, ...rawDathang]
+      .sort((a, b) => b.hours - a.hours)
+      .slice(0, limitVal);
+
+    return combined.map(item => ({
+      sanpham: {
+        id: item.sanphamId,
+        title: item.title,
+        masp: item.masp
+      },
+      status: item.status,
+      hoursStagnant: Math.round(item.hours),
+      orderId: item.orderId,
+      oldestOrderCode: item.orderCode,
+      quantity: Number(item.quantity) || 0
+    }));
+  }
+}
+
+@ObjectType()
+export class StagnantProductItem {
+  @Field(() => SanphamInfo)
+  sanpham: SanphamInfo;
+  
+  @Field(() => String)
+  status: string;
+  
+  @Field(() => Float)
+  hoursStagnant: number;
+  
+  @Field(() => String, { nullable: true })
+  oldestOrderCode?: string;
+
+  @Field(() => String, { nullable: true })
+  orderId?: string;
+
+  @Field(() => Float)
+  quantity: number;
 }

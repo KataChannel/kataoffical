@@ -49,6 +49,8 @@ type Query {
     ketthuc: String!
     limit: Int!
   ): [TopProductItem!]!
+
+  getStagnantProducts(limit: Int): [StagnantProductItem!]!
 }
 
 type Mutation {
@@ -128,6 +130,14 @@ type ProductInfo {
   id: String!
   title: String
   masp: String
+}
+
+type StagnantProductItem {
+  sanpham: ProductInfo!
+  status: String!
+  hoursStagnant: Float!
+  oldestOrderCode: String
+  quantity: Float!
 }
 
 scalar JSON

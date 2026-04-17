@@ -15,7 +15,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { DashboardService, ComprehensiveDashboardData, DailyMonthlyReport, TopProductsResponse } from './dashboard.service';
+import { DashboardService, ComprehensiveDashboardData, DailyMonthlyReport, TopProductsResponse, StagnantProductData } from './dashboard.service';
 import moment from 'moment';
 
 // Chart.js imports
@@ -66,6 +66,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   dailyMonthlyData: DailyMonthlyReport[] = [];
   topProductsData: TopProductsResponse | null = null;
   topCustomersData: TopCustomer[] = [];
+  stagnantProductsData: StagnantProductData[] = [];
 
   // Chart instances
   ordersChart: any = null;
@@ -84,6 +85,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   isLoading = false;
   isChartsLoading = false;
   isCustomersLoading = false;
+  isStagnantLoading = false;
 
   // Table columns for customers
   customerColumns: string[] = ['stt', 'loai', 'ten', 'ngay', 'doanhthu', 'action'];
@@ -350,6 +352,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     
     // Load top customers
     this.loadTopCustomers();
+
+    // Load stagnant products
+    this.loadStagnantProducts();
   }
 
   private loadComprehensiveData(): void {
@@ -430,6 +435,22 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.topCustomersData = this.generateMockCustomers();
       this.isCustomersLoading = false;
     }, 1000);
+  }
+
+  private loadStagnantProducts(): void {
+    this.isStagnantLoading = true;
+    const stagnantSub = this.dashboardService.getStagnantProducts(6)
+      .subscribe({
+        next: (data) => {
+          this.stagnantProductsData = data;
+          this.isStagnantLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading stagnant products:', error);
+          this.isStagnantLoading = false;
+        }
+      });
+    this.subscriptions.push(stagnantSub);
   }
 
   private generateMockCustomers(): TopCustomer[] {
@@ -643,7 +664,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!ctx) return;
 
     // ✅ Filter out invalid data and prepare chart data
-    const validData = this.topProductsData.byQuantity.filter(item => 
+    const validData = this.topProductsData.byQuantity.filter((item: any) => 
       item && 
       item.sanpham && 
       item.sanpham.title && 
@@ -675,9 +696,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     const config = {
       type: 'doughnut',
       data: {
-        labels: validData.map(item => item.sanpham.title || 'N/A'),
+        labels: validData.map((item: any) => item.sanpham.title || 'N/A'),
         datasets: [{
-          data: validData.map(item => item.totalQuantity || 0),
+          data: validData.map((item: any) => item.totalQuantity || 0),
           backgroundColor: colors,
           hoverBackgroundColor: colors.map(color => color + 'CC'), // Add transparency on hover
           borderWidth: 2,
@@ -800,9 +821,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     const config = {
       type: 'pie',
       data: {
-        labels: validData.map(item => item.sanpham.title || 'N/A'),
+        labels: validData.map((item: any) => item.sanpham.title || 'N/A'),
         datasets: [{
-          data: validData.map(item => item.totalValue || 0),
+          data: validData.map((item: any) => item.totalValue || 0),
           backgroundColor: colors,
           hoverBackgroundColor: colors.map(color => color + 'CC'), // Add transparency on hover
           borderWidth: 2,
@@ -1046,6 +1067,26 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     return colors[index % colors.length];
   }
 
+  navigateToOrder(item: StagnantProductData): void {
+    if (!item.orderId) return;
+    
+    if (item.status === 'Đang đi') {
+      // Điều hướng tới Donhang
+      this.router.navigate(['/admin/donhang'], { 
+        queryParams: { id: item.orderId } 
+      });
+    } else {
+      // Điều hướng tới Dathang
+      this.router.navigate(['/admin/dathang'], { 
+        queryParams: { id: item.orderId } 
+      });
+    }
+  }
+
+  viewAllStagnant(): void {
+    this.router.navigate(['/admin/dashboard/stagnant-report']);
+  }
+
   // Navigation methods
   navigateToFullReport(): void {
     this.router.navigate(['/admin/dashboard/baocaodoanhthu'], {
@@ -1098,15 +1139,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   hasProductQuantityData(): boolean {
-    return this.topProductsData !== null && 
-           this.topProductsData.byQuantity !== null && 
-           this.topProductsData.byQuantity.length > 0;
+    return !!(this.topProductsData?.byQuantity && this.topProductsData.byQuantity.length > 0);
   }
 
   hasProductValueData(): boolean {
-    return this.topProductsData !== null && 
-           this.topProductsData.byValue !== null && 
-           this.topProductsData.byValue.length > 0;
+    return !!(this.topProductsData?.byValue && this.topProductsData.byValue.length > 0);
   }
 
   hasCustomersData(): boolean {
