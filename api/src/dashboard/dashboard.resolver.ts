@@ -47,6 +47,24 @@ export class DailyMonthlyReportItem {
 }
 
 @ObjectType()
+export class TopCustomerItem {
+  @Field(() => String)
+  id: string;
+
+  @Field(() => String)
+  ten: string;
+
+  @Field(() => String)
+  loai: string;
+
+  @Field(() => Float)
+  doanhthu: number;
+
+  @Field(() => String, { nullable: true })
+  ngay?: string;
+}
+
+@ObjectType()
 export class SanphamInfo {
   @Field(() => String)
   id: string;
@@ -319,6 +337,46 @@ export class DashboardResolver {
     }));
   }
 
+  @Query(() => [TopCustomerItem])
+  async topCustomers(
+    @Args('batdau') batdau: string,
+    @Args('ketthuc') ketthuc: string,
+    @Args('limit', { type: () => Int }) limit: number,
+  ): Promise<TopCustomerItem[]> {
+    const startDate = new Date(batdau);
+    const endDate = new Date(ketthuc);
+
+    const rawQuery = `
+      SELECT 
+        kh.id,
+        kh.name as ten,
+        CASE WHEN kh."isAgency" = true THEN 'Sỉ' ELSE 'Lẻ' END as loai,
+        SUM(dh.tongtien) as doanhthu,
+        MAX(dh.ngaygiao)::text as ngay
+      FROM "Donhang" dh
+      INNER JOIN "Khachhang" kh ON dh."khachhangId" = kh.id
+      WHERE dh."ngaygiao" >= $1 AND dh."ngaygiao" <= $2
+      GROUP BY kh.id, kh.name, kh."isAgency"
+      ORDER BY doanhthu DESC
+      LIMIT $3
+    `;
+
+    const result = await this.prisma.$queryRawUnsafe(
+      rawQuery,
+      startDate,
+      endDate,
+      limit,
+    ) as any[];
+
+    return result.map((item: any) => ({
+      id: item.id,
+      ten: item.ten,
+      loai: item.loai,
+      doanhthu: Number(item.doanhthu) || 0,
+      ngay: item.ngay
+    }));
+  }
+
   @Query(() => [StagnantProductItem])
   async getStagnantProducts(
     @Args('limit', { type: () => Int, nullable: true }) limit: number = 5
@@ -341,7 +399,7 @@ export class DashboardResolver {
       FROM "Donhangsanpham" dsp
       INNER JOIN "Donhang" dh ON dsp."donhangId" = dh.id
       INNER JOIN "Sanpham" sp ON dsp."idSP" = sp.id
-      WHERE dh.status IN ('dadat', 'dagiao', 'choxuly') 
+      WHERE dh.status IN ('dadat', 'dagiao') 
       ORDER BY dh.ngaygiao ASC
       LIMIT 100
     `) as any[];
@@ -362,7 +420,7 @@ export class DashboardResolver {
       FROM "Dathangsanpham" dsp
       INNER JOIN "Dathang" dh ON dsp."dathangId" = dh.id
       INNER JOIN "Sanpham" sp ON dsp."idSP" = sp.id
-      WHERE dh.status IN ('dadat', 'choxuly')
+      WHERE dh.status IN ('dadat')
       ORDER BY dh."createdAt" ASC
       LIMIT 100
     `) as any[];

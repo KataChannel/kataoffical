@@ -146,9 +146,23 @@ const GET_STAGNANT_PRODUCTS = gql`
         masp
       }
       status
+      realStatus
       hoursStagnant
+      orderId
       oldestOrderCode
       quantity
+    }
+  }
+`;
+
+const GET_TOP_CUSTOMERS = gql`
+  query GetTopCustomers($batdau: String!, $ketthuc: String!, $limit: Int!) {
+    topCustomers(batdau: $batdau, ketthuc: $ketthuc, limit: $limit) {
+      id
+      ten
+      loai
+      doanhthu
+      ngay
     }
   }
 `;
@@ -271,6 +285,28 @@ export class DashboardService {
       }
     }).pipe(
       map((result: any) => result.data.getStagnantProducts || [])
+    );
+  }
+
+  /**
+   * Danh sách top khách hàng theo doanh thu
+   */
+  getTopCustomers(batdau: string, ketthuc: string, limit: number = 10): Observable<any[]> {
+    const startDate = moment(batdau).startOf('day').utc().toISOString();
+    const endDate = moment(ketthuc).endOf('day').utc().toISOString();
+
+    return this.apollo.query({
+      query: GET_TOP_CUSTOMERS,
+      variables: {
+        batdau: startDate,
+        ketthuc: endDate,
+        limit: limit
+      },
+      context: {
+        headers: this.getHeaders()
+      }
+    }).pipe(
+      map((result: any) => result.data.topCustomers || [])
     );
   }
 

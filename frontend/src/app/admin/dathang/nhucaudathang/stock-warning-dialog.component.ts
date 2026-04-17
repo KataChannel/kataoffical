@@ -222,32 +222,33 @@ export interface StockWarningData {
                           <p class="text-[9px] uppercase font-bold text-slate-500 mb-2">Đơn hàng cần xử lý:</p>
                           <div class="flex gap-2 overflow-x-auto custom-scrollbar pb-2" style="white-space: nowrap;">
                              @for (order of item.pendingList; track order.id) {
-                                <button mat-button (click)="goToDetail(order)" class="!bg-white !border !border-slate-200 !rounded-lg !px-3 !py-1 !flex !items-center !gap-1 hover:!bg-slate-50 transition-all shadow-sm">
-                                  <mat-icon class="scale-50 !m-0" 
-                                            [class.text-blue-600]="order.type === 'dathang'" 
-                                            [class.text-orange-600]="order.type === 'donhang'">
-                                    {{ order.type === 'dathang' ? 'arrow_downward' : 'arrow_upward' }}
-                                  </mat-icon>
-                                  <div class="flex flex-col items-start leading-none">
-                                     <div class="flex items-center gap-1.5">
-                                        <span class="text-[10px] font-black" [class.text-blue-800]="order.type === 'dathang'" [class.text-orange-800]="order.type === 'donhang'">{{ order.code }}</span>
-                                        @if (order.soluong) {
-                                           <span class="text-[9px] font-bold text-slate-400">({{ order.soluong | number:'1.0-2' }} kg)</span>
-                                        }
-                                     </div>
-                                    @if (order.status) {
-                                      <span class="text-[7px] uppercase font-bold px-1 rounded-sm mt-0.5"
-                                            [class.bg-green-100]="order.status === 'danhan' || order.status === 'hoanthanh'"
-                                            [class.text-green-700]="order.status === 'danhan' || order.status === 'hoanthanh'"
-                                            [class.bg-amber-100]="order.status === 'dadat' || order.status === 'dagiao'"
-                                            [class.text-amber-700]="order.status === 'dadat' || order.status === 'dagiao'">
-                                        {{ order.status === 'dadat' ? 'Đã đặt' : 
-                                           order.status === 'dagiao' ? 'Đang giao' : 
-                                           order.status === 'danhan' ? 'Đã nhận' : order.status }}
-                                      </span>
-                                    }
-                                  </div>
-                                </button>
+                                <div (click)="goToDetail(order)" class="flex-shrink-0 flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 hover:bg-slate-50 transition-all shadow-sm cursor-pointer select-none">
+                                   <mat-icon class="scale-75 !m-0 -ml-1" 
+                                             [class.text-blue-600]="order.type === 'dathang'" 
+                                             [class.text-orange-600]="order.type === 'donhang'"
+                                             style="width: 18px; height: 18px; font-size: 18px">
+                                     {{ order.type === 'dathang' ? 'shopping_cart' : 'local_shipping' }}
+                                   </mat-icon>
+                                   <div class="flex flex-col items-start leading-tight">
+                                      <div class="flex items-center gap-1.5">
+                                         <span class="text-[10px] font-black" [class.text-blue-800]="order.type === 'dathang'" [class.text-orange-800]="order.type === 'donhang'">{{ order.code }}</span>
+                                         @if (order.soluong) {
+                                            <span class="text-[9px] font-bold text-slate-400">({{ order.soluong | number:'1.0-2' }} kg)</span>
+                                         }
+                                      </div>
+                                     @if (order.status) {
+                                       <span class="text-[8px] uppercase font-bold px-1 rounded-sm mt-0.5"
+                                             [class.bg-green-100]="order.status === 'danhan' || order.status === 'hoanthanh'"
+                                             [class.text-green-700]="order.status === 'danhan' || order.status === 'hoanthanh'"
+                                             [class.bg-amber-100]="order.status === 'dadat' || order.status === 'dagiao'"
+                                             [class.text-amber-700]="order.status === 'dadat' || order.status === 'dagiao'">
+                                         {{ order.status === 'dadat' ? 'Đã đặt' : 
+                                            order.status === 'dagiao' ? 'Đang giao' : 
+                                            order.status === 'danhan' ? 'Đã nhận' : order.status }}
+                                       </span>
+                                     }
+                                   </div>
+                                 </div>
                              }
                           </div>
                           @if (!item.pendingList?.length) {

@@ -5,27 +5,29 @@ const prisma = new PrismaClient();
 async function main() {
   const targetDate = new Date('2026-04-16T00:00:00.000Z');
 
-  console.log('--- ĐÓNG CÁC ĐƠN HÀNG CŨ (Trước 16/04/2026) ---');
-  
+  console.log('--- REPAIRING DATABASE: rausachfinal ---');
+  console.log('--- Target: Orders before 2026-04-16 in status dadat/dagiao ---');
+
+  // 1. Cập nhật trạng thái đơn hàng treo sang choxuly
   const dathangRes = await prisma.dathang.updateMany({
     where: {
       createdAt: { lt: targetDate },
-      status: { in: ['dadat', 'dagiao', 'choxuly'] }
+      status: { in: ['dadat', 'dagiao'] }
     },
-    data: { status: 'danhan' }
+    data: { status: 'choxuly' }
   });
-  console.log(`Đã cập nhật ${dathangRes.count} phiếu Đặt hàng sang Đã nhận.`);
+  console.log(`- Đã chuyển ${dathangRes.count} Đặt hàng sang 'choxuly'.`);
 
   const donhangRes = await prisma.donhang.updateMany({
     where: {
       createdAt: { lt: targetDate },
-      status: { in: ['dadat', 'dagiao', 'choxuly'] }
+      status: { in: ['dadat', 'dagiao'] }
     },
-    data: { status: 'hoanthanh' }
+    data: { status: 'choxuly' }
   });
-  console.log(`Đã cập nhật ${donhangRes.count} phiếu Đơn hàng sang Hoàn thành.`);
+  console.log(`- Đã chuyển ${donhangRes.count} Đơn hàng sang 'choxuly'.`);
 
-  console.log('--- ĐỒNG BỘ LẠI slchogiao VÀ slchonhap ---');
+  // 2. Đồng bộ lại các con số tổng hợp trong bảng TonKho
   const sanphams = await prisma.sanpham.findMany({
     include: {
       TonKho: true,
@@ -38,39 +40,44 @@ async function main() {
     }
   });
 
-  let fixed = 0;
-  for (const sanpham of sanphams) {
-    const pendingOut = sanpham.Donhangsanpham.reduce((sum, item) => sum + Number(item.slgiao || item.sldat || 0), 0);
-    const pendingIn = sanpham.Dathangsanpham.reduce((sum, item) => sum + Number(item.slgiao || item.sldat || 0), 0);
+  let fixedCount = 0;
+  for (const sp of sanphams) {
+    const pIn = sp.Dathangsanpham.reduce((sum, item) => sum + Number(item.slgiao || item.sldat || 0), 0);
+    const pOut = sp.Donhangsanpham.reduce((sum, item) => sum + Number(item.slgiao || item.sldat || 0), 0);
 
-    const correctedSlchogiao = Math.round(pendingOut * 1000) / 1000;
-    const correctedSlchonhap = Math.round(pendingIn * 1000) / 1000;
+    const targetIn = Math.round(pIn * 1000) / 1000;
+    const targetOut = Math.round(pOut * 1000) / 1000;
 
-    if (sanpham.TonKho) {
-      if (Number(sanpham.TonKho.slchogiao) !== correctedSlchogiao || Number(sanpham.TonKho.slchonhap) !== correctedSlchonhap) {
-         await prisma.tonKho.update({
-          where: { sanphamId: sanpham.id },
+    if (sp.TonKho) {
+      const curIn = Number(sp.TonKho.slchonhap || 0);
+      const curOut = Number(sp.TonKho.slchogiao || 0);
+
+      if (Math.abs(curIn - targetIn) > 0.001 || Math.abs(curOut - targetOut) > 0.001) {
+        await prisma.tonKho.update({
+          where: { id: sp.TonKho.id },
           data: {
-            slchogiao: correctedSlchogiao,
-            slchonhap: correctedSlchonhap
+            slchonhap: targetIn,
+            slchogiao: targetOut
           }
         });
-        fixed++;
+        fixedCount++;
       }
-    } else if (correctedSlchogiao > 0 || correctedSlchonhap > 0) {
+    } else if (targetIn > 0 || targetOut > 0) {
       await prisma.tonKho.create({
         data: {
-          sanphamId: sanpham.id,
+          sanphamId: sp.id,
           slton: 0,
-          slchogiao: correctedSlchogiao,
-          slchonhap: correctedSlchonhap,
-          sltontt: 0
+          sltontt: 0,
+          slchonhap: targetIn,
+          slchogiao: targetOut
         }
       });
-      fixed++;
+      fixedCount++;
     }
   }
-  console.log(`Đã đồng bộ lại ${fixed} bản ghi TonKho bị lệch dữ liệu treo.`);
+
+  console.log(`- Đã đồng bộ lại ${fixedCount} bản ghi tồn kho bị sai lệch.`);
+  console.log('--- HOÀN TẤT REPAIR ---');
 }
 
 main().catch(console.error).finally(() => prisma.$disconnect());

@@ -17,6 +17,13 @@ export declare class DailyMonthlyReportItem {
     totalRevenue: number;
     totalProfit: number;
 }
+export declare class TopCustomerItem {
+    id: string;
+    ten: string;
+    loai: string;
+    doanhthu: number;
+    ngay?: string;
+}
 export declare class SanphamInfo {
     id: string;
     title?: string;
@@ -38,6 +45,7 @@ export declare class DashboardResolver {
     dailyMonthlyReport(batdau: string, ketthuc: string, groupBy: string): Promise<DailyMonthlyReportItem[]>;
     topProductsByQuantity(batdau: string, ketthuc: string, limit: number): Promise<TopProductItem[]>;
     topProductsByValue(batdau: string, ketthuc: string, limit: number): Promise<TopProductItem[]>;
+    topCustomers(batdau: string, ketthuc: string, limit: number): Promise<TopCustomerItem[]>;
     getStagnantProducts(limit?: number): Promise<StagnantProductItem[]>;
 }
 export declare class StagnantProductItem {

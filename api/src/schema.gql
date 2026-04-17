@@ -115,6 +115,14 @@ type DailyMonthlyReportItem {
   totalProfit: Float!
 }
 
+type TopCustomerItem {
+  id: String!
+  ten: String!
+  loai: String!
+  doanhthu: Float!
+  ngay: String
+}
+
 type SanphamInfo {
   id: String!
   title: String
@@ -306,6 +314,7 @@ type Query {
   dailyMonthlyReport(batdau: String!, ketthuc: String!, groupBy: String!): [DailyMonthlyReportItem!]!
   topProductsByQuantity(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
   topProductsByValue(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
+  topCustomers(batdau: String!, ketthuc: String!, limit: Int!): [TopCustomerItem!]!
   getStagnantProducts(limit: Int): [StagnantProductItem!]!
 
   """

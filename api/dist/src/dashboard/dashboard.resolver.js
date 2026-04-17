@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StagnantProductItem = exports.DashboardResolver = exports.TopProductItem = exports.SanphamInfo = exports.DailyMonthlyReportItem = exports.AggregateResult = exports.AggregateSum = exports.AggregateCount = void 0;
+exports.StagnantProductItem = exports.DashboardResolver = exports.TopProductItem = exports.SanphamInfo = exports.TopCustomerItem = exports.DailyMonthlyReportItem = exports.AggregateResult = exports.AggregateSum = exports.AggregateCount = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const common_1 = require("@nestjs/common");
@@ -81,6 +81,32 @@ __decorate([
 exports.DailyMonthlyReportItem = DailyMonthlyReportItem = __decorate([
     (0, graphql_2.ObjectType)()
 ], DailyMonthlyReportItem);
+let TopCustomerItem = class TopCustomerItem {
+};
+exports.TopCustomerItem = TopCustomerItem;
+__decorate([
+    (0, graphql_2.Field)(() => String),
+    __metadata("design:type", String)
+], TopCustomerItem.prototype, "id", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => String),
+    __metadata("design:type", String)
+], TopCustomerItem.prototype, "ten", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => String),
+    __metadata("design:type", String)
+], TopCustomerItem.prototype, "loai", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => graphql_2.Float),
+    __metadata("design:type", Number)
+], TopCustomerItem.prototype, "doanhthu", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => String, { nullable: true }),
+    __metadata("design:type", String)
+], TopCustomerItem.prototype, "ngay", void 0);
+exports.TopCustomerItem = TopCustomerItem = __decorate([
+    (0, graphql_2.ObjectType)()
+], TopCustomerItem);
 let SanphamInfo = class SanphamInfo {
 };
 exports.SanphamInfo = SanphamInfo;
@@ -298,6 +324,32 @@ let DashboardResolver = class DashboardResolver {
             totalValue: Number(item.totalvalue) || 0,
         }));
     }
+    async topCustomers(batdau, ketthuc, limit) {
+        const startDate = new Date(batdau);
+        const endDate = new Date(ketthuc);
+        const rawQuery = `
+      SELECT 
+        kh.id,
+        kh.name as ten,
+        CASE WHEN kh."isAgency" = true THEN 'Sỉ' ELSE 'Lẻ' END as loai,
+        SUM(dh.tongtien) as doanhthu,
+        MAX(dh.ngaygiao)::text as ngay
+      FROM "Donhang" dh
+      INNER JOIN "Khachhang" kh ON dh."khachhangId" = kh.id
+      WHERE dh."ngaygiao" >= $1 AND dh."ngaygiao" <= $2
+      GROUP BY kh.id, kh.name, kh."isAgency"
+      ORDER BY doanhthu DESC
+      LIMIT $3
+    `;
+        const result = await this.prisma.$queryRawUnsafe(rawQuery, startDate, endDate, limit);
+        return result.map((item) => ({
+            id: item.id,
+            ten: item.ten,
+            loai: item.loai,
+            doanhthu: Number(item.doanhthu) || 0,
+            ngay: item.ngay
+        }));
+    }
     async getStagnantProducts(limit = 5) {
         const limitVal = limit || 5;
         const rawDonhang = await this.prisma.$queryRawUnsafe(`
@@ -315,7 +367,7 @@ let DashboardResolver = class DashboardResolver {
       FROM "Donhangsanpham" dsp
       INNER JOIN "Donhang" dh ON dsp."donhangId" = dh.id
       INNER JOIN "Sanpham" sp ON dsp."idSP" = sp.id
-      WHERE dh.status IN ('dadat', 'dagiao', 'choxuly') 
+      WHERE dh.status IN ('dadat', 'dagiao') 
       ORDER BY dh.ngaygiao ASC
       LIMIT 100
     `);
@@ -334,7 +386,7 @@ let DashboardResolver = class DashboardResolver {
       FROM "Dathangsanpham" dsp
       INNER JOIN "Dathang" dh ON dsp."dathangId" = dh.id
       INNER JOIN "Sanpham" sp ON dsp."idSP" = sp.id
-      WHERE dh.status IN ('dadat', 'choxuly')
+      WHERE dh.status IN ('dadat')
       ORDER BY dh."createdAt" ASC
       LIMIT 100
     `);
@@ -418,6 +470,15 @@ __decorate([
     __metadata("design:paramtypes", [String, String, Number]),
     __metadata("design:returntype", Promise)
 ], DashboardResolver.prototype, "topProductsByValue", null);
+__decorate([
+    (0, graphql_1.Query)(() => [TopCustomerItem]),
+    __param(0, (0, graphql_1.Args)('batdau')),
+    __param(1, (0, graphql_1.Args)('ketthuc')),
+    __param(2, (0, graphql_1.Args)('limit', { type: () => graphql_2.Int })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Number]),
+    __metadata("design:returntype", Promise)
+], DashboardResolver.prototype, "topCustomers", null);
 __decorate([
     (0, graphql_1.Query)(() => [StagnantProductItem]),
     __param(0, (0, graphql_1.Args)('limit', { type: () => graphql_2.Int, nullable: true })),

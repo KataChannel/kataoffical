@@ -430,11 +430,19 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     const startDateStr = moment(this.startDate).format('YYYY-MM-DD');
     const endDateStr = moment(this.endDate).format('YYYY-MM-DD');
 
-    // Mock data for now - replace with actual service call
-    setTimeout(() => {
-      this.topCustomersData = this.generateMockCustomers();
-      this.isCustomersLoading = false;
-    }, 1000);
+    const topCustomersSub = this.dashboardService.getTopCustomers(startDateStr, endDateStr, 10)
+      .subscribe({
+        next: (data) => {
+          this.topCustomersData = data;
+          this.isCustomersLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading top customers:', error);
+          this.isCustomersLoading = false;
+        }
+      });
+    
+    this.subscriptions.push(topCustomersSub);
   }
 
   private loadStagnantProducts(): void {
@@ -1068,23 +1076,24 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   navigateToOrder(item: StagnantProductData): void {
-    if (!item.orderId) return;
+    if (!item.orderId) {
+      this._snackBar.open('Không tìm thấy ID đơn hàng', 'Đóng', { duration: 2000 });
+      return;
+    }
     
     if (item.status === 'Đang đi') {
-      // Điều hướng tới Donhang
-      this.router.navigate(['/admin/donhang'], { 
-        queryParams: { id: item.orderId } 
-      });
+      // Điều hướng tới Donhang Detail: /admin/donhang/:id
+      this.router.navigate(['/admin/donhang', item.orderId]);
     } else {
-      // Điều hướng tới Dathang
-      this.router.navigate(['/admin/dathang'], { 
-        queryParams: { id: item.orderId } 
-      });
+      // Điều hướng tới Dathang Detail: /admin/dathang/:id
+      this.router.navigate(['/admin/dathang', item.orderId]);
     }
   }
 
   viewAllStagnant(): void {
-    this.router.navigate(['/admin/dashboard/stagnant-report']);
+    this.router.navigate(['/admin/donhang'], {
+      queryParams: { status: 'dagiao,dadat' }
+    });
   }
 
   getStatusLabel(status: string): string {
@@ -1140,9 +1149,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Calculate retail customer revenue
   private calculateRetailRevenue(): void {
-    // This would be calculated based on actual customer data
-    // For now, estimate as 30% of total revenue
-    this.retailCustomerRevenue = (this.comprehensiveData?.summary?.totalRevenue || 0) * 0.3;
+    // Tính toán từ thực tế: Tổng doanh thu trừ đi doanh thu của các khách hàng có trong danh sách top (thường là khách sỉ)
+    // Nếu không có dữ liệu khách hàng, dự phòng 30%
+    if (this.topCustomersData && this.topCustomersData.length > 0) {
+      const topRevenue = this.topCustomersData.reduce((sum, c) => sum + (c.doanhthu || 0), 0);
+      const totalRev = this.comprehensiveData?.summary?.totalRevenue || 0;
+      this.retailCustomerRevenue = Math.max(0, totalRev - topRevenue);
+    } else {
+      this.retailCustomerRevenue = (this.comprehensiveData?.summary?.totalRevenue || 0) * 0.35;
+    }
   }
 
   getMonthlyRevenue(): number {
@@ -1202,7 +1217,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   viewMoreCustomers(): void {
-    console.log('Navigate to detailed customers report');
-    // Implementation for detailed customer report navigation
+    this.router.navigate(['/admin/khachhang']);
   }
 }
