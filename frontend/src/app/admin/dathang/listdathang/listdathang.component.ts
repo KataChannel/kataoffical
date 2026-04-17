@@ -139,7 +139,7 @@ export class ListDathangComponent {
   total = this._DathangService.total;
   pageSize = this._DathangService.pageSize;
   dathangId = this._DathangService.dathangId;
-  dataSource = new MatTableDataSource([]);
+  dataSource = new MatTableDataSource<any>([]);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   suppliers: any[] = []; // List of suppliers for import
@@ -1157,19 +1157,6 @@ export class ListDathangComponent {
     }
   }
 
-  /**
-   * Lấy label hiển thị cho status
-   */
-  getStatusLabel(status: string): string {
-    const labels: { [key: string]: string } = {
-      'choxuly': 'Chờ xử lý',
-      'dangxuly': 'Đang xử lý',
-      'hoanthanh': 'Hoàn thành',
-      'huy': 'Đã hủy',
-      'dahuy': 'Đã hủy'
-    };
-    return labels[status] || status;
-  }
 
   /**
    * Lấy class CSS cho status badge
@@ -1641,4 +1628,67 @@ export class ListDathangComponent {
       });
     }
   }
+
+  /**
+   * Status style helper for New York badges
+   */
+  getStatusStyle(status: string): string {
+    const s = status?.toLowerCase();
+    switch (s) {
+      case 'dadat': return 'status-dadat';
+      case 'dagiao': return 'status-dagiao';
+      case 'danhan': return 'status-danhan';
+      case 'hoanthanh': return 'status-hoanthanh';
+      case 'choxuly': return 'status-choxuly';
+      case 'khonggiao': return 'status-khonggiao';
+      case 'huy':
+      case 'dahuy': return 'status-huy';
+      default: return 'status-khonggiao';
+    }
+  }
+
+  /**
+   * Get display label for status
+   */
+  getStatusLabel(status: string): string {
+    return (this.Trangthaidon as any)[status?.toLowerCase()] || status;
+  }
+
+  /**
+   * Count orders by status
+   */
+  countByStatus(status: string): number {
+    const orders = this.Listdathang();
+    if (!Array.isArray(orders)) return 0;
+    return orders.filter((item: any) => item.status === status).length;
+  }
+
+  /**
+   * Filter orders by status
+   */
+  filterByStatus(status: string): void {
+    const orders = this.Listdathang();
+    if (!Array.isArray(orders)) return;
+    
+    this.dataSource.data = orders.filter((item: any) => item.status === status);
+    
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+  }
+
+  /**
+   * Reset filter to show all orders
+   */
+  resetStatusFilter(): void {
+    const orders = this.Listdathang();
+    if (!Array.isArray(orders)) return;
+    
+    this.dataSource.data = orders;
+    
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+  }
 }
+

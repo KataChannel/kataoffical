@@ -70,7 +70,7 @@
                     @if (isBulkUpdating()) {
                     <mat-spinner diameter="20"></mat-spinner>
                     }
-                    <span>{{isBulkUpdating() ? 'Đang xử lý...' : 'Đã Nhận'}}</span>
+                    <span>{{isBulkUpdating() ? 'Đang xử lý...' : 'Hoàn thành'}}</span>
                   </button>
             </div>
         </div>
@@ -292,14 +292,16 @@
                         }
                         @case ('status') {
                         <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
-                          'text-blue-500': row[column] === 'dadat',
-                          'text-yellow-500': row[column] === 'dagiao',
-                          'text-green-500': row[column] === 'danhan',
-                          'text-purple-500': row[column] === 'hoanthanh',
-                          'text-red-500': row[column] === 'huy'
+                          'text-blue-600': row[column] === 'dadat',
+                          'text-yellow-600': row[column] === 'dagiao',
+                          'text-green-600': row[column] === 'danhan',
+                          'text-teal-600': row[column] === 'hoanthanh',
+                          'text-orange-600': row[column] === 'choxuly',
+                          'text-slate-500': row[column] === 'khonggiao',
+                          'text-red-600': row[column] === 'huy'
                         }
                         ">
-                            {{Trangthaidon[row[column]]}}
+                            {{Trangthaidon[row[column]] || row[column]}}
                         </span>
                         }
                         @case ('tongdon') {

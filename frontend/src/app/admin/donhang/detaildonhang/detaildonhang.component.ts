@@ -103,22 +103,44 @@ export class DetailDonhangComponent {
   private searchTerm: string = '';
   TrangThaiDon: any = TrangThaiDon;
 
-  getStatusStyle(status: string) {
-    const s = status?.toLowerCase();
-    switch (s) {
-      case 'dadat':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'dagiao':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'danhan':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'hoanthanh':
-        return 'bg-teal-100 text-teal-700 border-teal-200';
-      case 'huy':
-        return 'bg-red-100 text-red-800 border-red-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+
+  async changeStatus(newStatus: string) {
+    if (this.DetailDonhang()?.status === newStatus) return;
+    
+    try {
+      this._snackBar.open('Đang cập nhật trạng thái...', '', { duration: 1000 });
+      
+      const result = await this._GraphqlService.updateOne(
+        'donhang',
+        { id: this.DetailDonhang().id },
+        { status: newStatus }
+      );
+
+      if (result) {
+        this.DetailDonhang.update((v: any) => ({
+          ...v,
+          status: newStatus
+        }));
+        this._snackBar.open('Cập nhật trạng thái thành công', '', {
+          duration: 2000,
+          panelClass: ['snackbar-success'],
+        });
+      }
+    } catch (error) {
+      console.error('Lỗi khi đổi trạng thái:', error);
+      this._snackBar.open('Lỗi khi cập nhật trạng thái', '', {
+        duration: 2000,
+        panelClass: ['snackbar-error'],
+      });
     }
+  }
+
+  async Hoanthanhhang() {
+    await this.changeStatus('hoanthanh');
+  }
+
+  async GiaoDonhang() {
+    await this.changeStatus('dagiao');
   }
 
   // Get filtered products for display in dropdown
@@ -2049,4 +2071,38 @@ export class DetailDonhangComponent {
     this._ListdonhangComponent.drawer.close();
     setTimeout(() => this.isNavigating.set(false), 100);
   }
+
+  /**
+   * Get status label from global dictionary
+   */
+  getStatusLabel(status: string): string {
+    return (TrangThaiDon as any)[status?.toLowerCase()] || status;
+  }
+
+  /**
+   * get status style class for New York badges
+   */
+  getStatusStyle(status: string): string {
+    const s = status?.toLowerCase();
+    switch (s) {
+      case 'dadat':
+        return 'status-dadat';
+      case 'dagiao':
+        return 'status-dagiao';
+      case 'danhan':
+        return 'status-danhan';
+      case 'hoanthanh':
+        return 'status-hoanthanh';
+      case 'choxuly':
+        return 'status-choxuly';
+      case 'khonggiao':
+        return 'status-khonggiao';
+      case 'huy':
+      case 'dahuy':
+        return 'status-huy';
+      default:
+        return 'status-khonggiao';
+    }
+  }
 }
+

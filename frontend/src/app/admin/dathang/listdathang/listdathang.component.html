@@ -52,6 +52,57 @@
           </button>
         </div>
 
+        <div class="flex flex-row flex-wrap gap-2 items-center whitespace-nowrap overflow-x-auto pb-1 max-w-[calc(100vw-500px)]">
+          <div (click)="resetStatusFilter()" 
+               class="status-badge status-secondary !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+               matTooltip="Hiển thị tất cả đơn hàng">
+              <span class="status-dot"></span>
+              Tất cả: {{Listdathang().length}}
+          </div>
+          
+          <div (click)="filterByStatus('choxuly')" 
+               class="status-badge status-choxuly !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+               matTooltip="Đơn hàng chờ xử lý">
+              <span class="status-dot"></span>
+              Chờ xử lý: {{countByStatus('choxuly')}}
+          </div>
+    
+          <div (click)="filterByStatus('dadat')" 
+               class="status-badge status-dadat !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+               matTooltip="Đơn hàng mới">
+              <span class="status-dot"></span>
+              Mới: {{countByStatus('dadat')}}
+          </div>
+    
+          <div (click)="filterByStatus('dagiao')" 
+               class="status-badge status-dagiao !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+               matTooltip="Đơn hàng đang giao">
+              <span class="status-dot"></span>
+              Đang giao: {{countByStatus('dagiao')}}
+          </div>
+    
+          <div (click)="filterByStatus('danhan')" 
+               class="status-badge status-danhan !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+               matTooltip="Đơn hàng đã nhận">
+              <span class="status-dot"></span>
+              Đã nhận: {{countByStatus('danhan')}}
+          </div>
+    
+          <div (click)="filterByStatus('hoanthanh')" 
+               class="status-badge status-hoanthanh !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+               matTooltip="Đơn hàng đã hoàn thành">
+              <span class="status-dot"></span>
+              Hoàn thành: {{countByStatus('hoanthanh')}}
+          </div>
+    
+          <div (click)="filterByStatus('huy')" 
+               class="status-badge status-huy !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+               matTooltip="Đơn hàng đã hủy">
+              <span class="status-dot"></span>
+              Đã hủy: {{countByStatus('huy')}}
+          </div>
+        </div>
+
 
 
 
@@ -71,6 +122,8 @@
 
 
     </div>
+
+
     <div class="flex flex-row space-x-2 items-center">
       <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
         <mat-label>Bắt Đầu</mat-label>
@@ -134,16 +187,10 @@
             </span>
             }
             @case ('status') {
-            <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
-                          'text-blue-500': row[column] === 'dadat',
-                          'text-yellow-500': row[column] === 'dagiao',
-                          'text-green-500': row[column] === 'danhan',
-                          'text-purple-500': row[column] === 'hoanthanh',
-                          'text-red-500': row[column] === 'huy'
-                        }
-                        ">
-              {{Trangthaidon[row[column]]}}
-            </span>
+            <div class="status-badge shadow-sm" [ngClass]="getStatusStyle(row[column])">
+              <span class="status-dot"></span>
+              {{getStatusLabel(row[column])}}
+            </div>
             }
             @case ('isActive') {
             <span class="max-w-40 line-clamp-4">

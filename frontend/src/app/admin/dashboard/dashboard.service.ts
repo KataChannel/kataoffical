@@ -45,6 +45,7 @@ export interface StagnantProductData {
     masp: string;
   };
   status: string;
+  realStatus: string;
   hoursStagnant: number;
   orderId: string;
   oldestOrderCode: string;

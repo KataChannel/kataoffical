@@ -12,30 +12,40 @@ let StatusMachineService = class StatusMachineService {
     constructor() {
         this.validTransitions = {
             donhang: {
+                'choxuly': ['dadat', 'huy'],
                 'dadat': ['dagiao', 'danhan', 'huy'],
-                'dagiao': ['danhan', 'huy'],
+                'dagiao': ['danhan', 'huy', 'khonggiao'],
                 'danhan': ['hoanthanh'],
-                'huy': [],
+                'khonggiao': ['huy', 'dadat'],
+                'huy': ['choxuly', 'dadat'],
                 'hoanthanh': []
             },
             dathang: {
+                'choxuly': ['dadat', 'huy'],
                 'dadat': ['dagiao', 'danhan', 'huy'],
-                'dagiao': ['danhan', 'huy'],
+                'dagiao': ['danhan', 'huy', 'khonggiao'],
                 'danhan': ['hoanthanh'],
-                'huy': [],
+                'khonggiao': ['huy', 'dadat'],
+                'huy': ['choxuly', 'dadat'],
                 'hoanthanh': []
             }
         };
         this.reverseTransitions = {
             donhang: {
-                'dagiao': ['dadat'],
-                'danhan': ['dagiao'],
-                'huy': ['dadat', 'dagiao'],
+                'dadat': ['choxuly'],
+                'dagiao': ['dadat', 'choxuly'],
+                'danhan': ['dagiao', 'dadat', 'choxuly'],
+                'huy': ['dadat', 'dagiao', 'choxuly'],
+                'hoanthanh': ['danhan'],
+                'khonggiao': ['dagiao', 'choxuly']
             },
             dathang: {
-                'dagiao': ['dadat'],
-                'danhan': ['dagiao'],
-                'huy': ['dadat', 'dagiao'],
+                'dadat': ['choxuly'],
+                'dagiao': ['dadat', 'choxuly'],
+                'danhan': ['dagiao', 'dadat', 'choxuly'],
+                'huy': ['dadat', 'dagiao', 'choxuly'],
+                'hoanthanh': ['danhan'],
+                'khonggiao': ['dagiao', 'choxuly']
             }
         };
     }

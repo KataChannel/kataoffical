@@ -18,6 +18,8 @@ export enum StatusDonhang {
   DANHAN = 'danhan',
   HUY = 'huy',
   HOANTHANH = 'hoanthanh',
+  CHOXULY = 'choxuly',
+  KHONGGIAO = 'khonggiao',
 }
 
 // Register enums with GraphQL

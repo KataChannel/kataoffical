@@ -333,6 +333,7 @@ export class DashboardResolver {
         sp.title,
         sp.masp,
         'Đang đi' as status,
+        dh.status as "realStatus",
         dh.madonhang as "orderCode",
         dh.ngaygiao as "ngay",
         EXTRACT(EPOCH FROM (NOW() - dh.ngaygiao))/3600 as hours,
@@ -340,7 +341,7 @@ export class DashboardResolver {
       FROM "Donhangsanpham" dsp
       INNER JOIN "Donhang" dh ON dsp."donhangId" = dh.id
       INNER JOIN "Sanpham" sp ON dsp."idSP" = sp.id
-      WHERE dh.status = 'dagiao' 
+      WHERE dh.status IN ('dadat', 'dagiao', 'choxuly') 
       ORDER BY dh.ngaygiao ASC
       LIMIT 100
     `) as any[];
@@ -353,6 +354,7 @@ export class DashboardResolver {
         sp.title,
         sp.masp,
         'Đang về' as status,
+        dh.status as "realStatus",
         dh.madncc as "orderCode",
         dh."createdAt" as "ngay",
         EXTRACT(EPOCH FROM (NOW() - dh."createdAt"))/3600 as hours,
@@ -360,7 +362,7 @@ export class DashboardResolver {
       FROM "Dathangsanpham" dsp
       INNER JOIN "Dathang" dh ON dsp."dathangId" = dh.id
       INNER JOIN "Sanpham" sp ON dsp."idSP" = sp.id
-      WHERE dh.status = 'dadat'
+      WHERE dh.status IN ('dadat', 'choxuly')
       ORDER BY dh."createdAt" ASC
       LIMIT 100
     `) as any[];
@@ -377,6 +379,7 @@ export class DashboardResolver {
         masp: item.masp
       },
       status: item.status,
+      realStatus: item.realStatus,
       hoursStagnant: Math.round(item.hours),
       orderId: item.orderId,
       oldestOrderCode: item.orderCode,
@@ -398,6 +401,9 @@ export class StagnantProductItem {
   
   @Field(() => String, { nullable: true })
   oldestOrderCode?: string;
+
+  @Field(() => String, { nullable: true })
+  realStatus?: string;
 
   @Field(() => String, { nullable: true })
   orderId?: string;

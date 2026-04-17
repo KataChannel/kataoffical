@@ -1,6 +1,6 @@
 export type EntityType = 'donhang' | 'dathang';
-export type DonhangStatus = 'dadat' | 'dagiao' | 'danhan' | 'huy' | 'hoanthanh';
-export type DathangStatus = 'dadat' | 'dagiao' | 'danhan' | 'huy' | 'hoanthanh';
+export type DonhangStatus = 'dadat' | 'dagiao' | 'danhan' | 'huy' | 'hoanthanh' | 'choxuly' | 'khonggiao';
+export type DathangStatus = 'dadat' | 'dagiao' | 'danhan' | 'huy' | 'hoanthanh' | 'choxuly' | 'khonggiao';
 export interface StatusTransition {
     from: string;
     to: string;

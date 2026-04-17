@@ -598,7 +598,7 @@ let DathangService = class DathangService {
                 throw new common_1.NotFoundException('Đơn đặt hàng không tồn tại');
             }
             if (data.status && data.status !== oldDathang.status) {
-                const transition = this.statusMachine.validateTransition('dathang', oldDathang.status, data.status);
+                const transition = this.statusMachine.validateTransition('dathang', oldDathang.status, data.status, true);
                 if (!transition.isValid) {
                     throw new Error(`Invalid status transition: ${transition.reason}`);
                 }
@@ -924,16 +924,31 @@ let DathangService = class DathangService {
                     },
                 });
             }
-            if (data.status === 'huy') {
-                for (const sp of oldDathang.sanpham) {
-                    const incValue = parseFloat((sp.sldat ?? 0).toFixed(3));
-                    if (incValue > 0) {
-                        await prisma.tonKho.update({
-                            where: { sanphamId: sp.idSP },
-                            data: {
-                                slchonhap: { decrement: incValue },
-                            },
-                        });
+            if (['huy', 'choxuly', 'khonggiao'].includes(data.status)) {
+                if (oldDathang.status === 'danhan') {
+                    for (const sp of oldDathang.sanpham) {
+                        const slnhan = parseFloat((sp.slnhan ?? 0).toFixed(3));
+                        if (slnhan > 0) {
+                            await prisma.tonKho.update({
+                                where: { sanphamId: sp.idSP },
+                                data: {
+                                    slton: { decrement: slnhan },
+                                },
+                            });
+                        }
+                    }
+                }
+                if (['dadat', 'dagiao'].includes(oldDathang.status)) {
+                    for (const sp of oldDathang.sanpham) {
+                        const incValue = parseFloat((sp.sldat ?? 0).toFixed(3));
+                        if (incValue > 0) {
+                            await prisma.tonKho.update({
+                                where: { sanphamId: sp.idSP },
+                                data: {
+                                    slchonhap: { decrement: incValue },
+                                },
+                            });
+                        }
                     }
                 }
                 const maphieuOld = `PX-${oldDathang.madncc}`;
@@ -951,17 +966,17 @@ let DathangService = class DathangService {
                 return prisma.dathang.update({
                     where: { id },
                     data: {
-                        status: 'huy',
+                        status: data.status,
                         khoId: khoId,
-                        ghichu: data.ghichu || 'Đơn đặt hàng đã hủy',
+                        ghichu: data.ghichu || `Đơn đặt hàng chuyển sang ${data.status}`,
                         sanpham: {
                             updateMany: oldDathang.sanpham.map((sp) => ({
                                 where: { idSP: sp.idSP },
                                 data: {
                                     slgiao: 0,
                                     slnhan: 0,
-                                    slhuy: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                                    ghichu: sp.ghichu || 'Hủy đơn đặt hàng',
+                                    slhuy: data.status === 'huy' ? parseFloat((sp.sldat ?? 0).toFixed(3)) : 0,
+                                    ghichu: sp.ghichu || `Chuyển sang ${data.status}`,
                                 },
                             })),
                         },

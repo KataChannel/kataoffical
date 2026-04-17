@@ -3,31 +3,78 @@
     <mat-icon>arrow_back</mat-icon>
   </button>
   <!-- Cập nhật input title ở header -->
-  <div
-    class="flex items-center space-x-2 p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200">
-    {{ DetailPhieugiaohang()?.madonhang || 'Không có dữ liệu' }}
-<button color="primary" mat-icon-button [matMenuTriggerFor]="menu">
-  <mat-icon>info</mat-icon>
-</button>
-<mat-menu #menu="matMenu">
-  <div class="flex flex-col">
-    <a class="p-4 hover:bg-slate-100" target="_blank" href="admin/khachhang/{{DetailPhieugiaohang()?.khachhang?.id}}">{{DetailPhieugiaohang()?.khachhang?.name}} - {{DetailPhieugiaohang()?.khachhang?.makh}}</a>
-     <a class="p-4 hover:bg-slate-100" target="_blank" href="admin/banggia/{{DetailPhieugiaohang()?.banggia?.id}}">(Đơn Hàng) {{DetailPhieugiaohang()?.banggia?.mabanggia}} - {{DetailPhieugiaohang()?.banggia?.title}}</a>
-     <a class="p-4 hover:bg-slate-100" target="_blank" href="admin/banggia/{{DetailPhieugiaohang()?.khachhang?.banggia?.id}}">(Khách hàng) {{DetailPhieugiaohang()?.khachhang?.banggia?.mabanggia}} - {{DetailPhieugiaohang()?.khachhang?.banggia?.title}}</a>
-  </div>
-</mat-menu>
-  </div>
+    <div class="flex items-center space-x-2">
+      <span class="font-bold text-slate-800">{{ DetailPhieugiaohang()?.madonhang || 'Không có dữ liệu' }}</span>
+      
+      <!-- Interactive Status Badge -->
+
+      <button color="primary" mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>info</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <div class="flex flex-col">
+          <a class="p-4 hover:bg-slate-100" target="_blank" href="admin/khachhang/{{DetailPhieugiaohang()?.khachhang?.id}}">{{DetailPhieugiaohang()?.khachhang?.name}} - {{DetailPhieugiaohang()?.khachhang?.makh}}</a>
+           <a class="p-4 hover:bg-slate-100" target="_blank" href="admin/banggia/{{DetailPhieugiaohang()?.banggia?.id}}">(Đơn Hàng) {{DetailPhieugiaohang()?.banggia?.mabanggia}} - {{DetailPhieugiaohang()?.banggia?.title}}</a>
+           <a class="p-4 hover:bg-slate-100" target="_blank" href="admin/banggia/{{DetailPhieugiaohang()?.khachhang?.banggia?.id}}">(Khách hàng) {{DetailPhieugiaohang()?.khachhang?.banggia?.mabanggia}} - {{DetailPhieugiaohang()?.khachhang?.banggia?.title}}</a>
+        </div>
+      </mat-menu>
+    </div>
   <div class="flex flex-row space-x-2 items-center">
     <!-- <button *ngIf="DetailPhieugiaohang().status!=='danhan'" mat-flat-button color="primary"
       [disabled]="DetailPhieugiaohang().status=='dagiao'" (click)="GiaoDonhang()"> Đã Giao</button> -->
-    <button mat-flat-button color="primary" 
-            [disabled]="DetailPhieugiaohang().status=='danhan' || isUpdating() || isLoading()" 
-            (click)="Danhanhang()">
-      @if (isUpdating()) {
-        <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+     
+      <button [matMenuTriggerFor]="statusMenu" 
+              class="status-badge"
+              [ngClass]="getStatusStyle(DetailPhieugiaohang()?.status)">
+        <span class="status-dot"></span>
+        {{ getStatusLabel(DetailPhieugiaohang()?.status) }}
+        <mat-icon class="!text-[10px] !ml-1 !h-2.5 !w-2.5">expand_more</mat-icon>
+      </button>
+
+      <mat-menu #statusMenu="matMenu" class="shadcn-menu">
+        <button mat-menu-item (click)="changeStatus('dadat')">
+          <mat-icon class="text-blue-500">pending</mat-icon>
+          <span>Đã Đặt</span>
+        </button>
+        <button mat-menu-item (click)="changeStatus('choxuly')">
+          <mat-icon class="text-orange-500">hourglass_empty</mat-icon>
+          <span>Chờ Xử Lý</span>
+        </button>
+        <button mat-menu-item (click)="changeStatus('dagiao')">
+          <mat-icon class="text-amber-500">local_shipping</mat-icon>
+          <span>Đã Giao</span>
+        </button>
+        <button mat-menu-item (click)="changeStatus('danhan')">
+          <mat-icon class="text-green-500">check_circle</mat-icon>
+          <span>Đã Nhận</span>
+        </button>
+        <button mat-menu-item (click)="changeStatus('hoanthanh')">
+          <mat-icon class="text-teal-500">verified</mat-icon>
+          <span>Hoàn Thành</span>
+        </button>
+        <button mat-menu-item (click)="changeStatus('khonggiao')">
+          <mat-icon class="text-slate-500">block</mat-icon>
+          <span>Không Giao</span>
+        </button>
+        <button mat-menu-item (click)="changeStatus('huy')">
+          <mat-icon class="text-red-500">cancel</mat-icon>
+          <span>Đã Hủy</span>
+        </button>
+      </mat-menu>
+      
+      <!-- Primary Action Buttons (NY/Shadcn Style) -->
+      @if (DetailPhieugiaohang().status === 'dagiao' || DetailPhieugiaohang().status === 'danhan') {
+        <button class="btn-new-york btn-primary ml-2" [disabled]="isUpdating() || isLoading()" (click)="Hoanthanhhang()">
+          <span class="status-dot" *ngIf="!isUpdating()"></span>
+          <mat-spinner diameter="14" *ngIf="isUpdating()"></mat-spinner>
+          <span>{{ isUpdating() ? 'Đang xử lý...' : 'Hoàn thành' }}</span>
+        </button>
+      } @else if (DetailPhieugiaohang().status === 'dadat' || DetailPhieugiaohang().status === 'choxuly') {
+        <button class="btn-new-york btn-amber ml-2" [disabled]="isUpdating() || isLoading()" (click)="GiaoDonhang()">
+          <mat-icon class="!text-[14px] !h-3.5 !w-3.5">local_shipping</mat-icon>
+          <span>{{ isUpdating() ? 'Đang xử lý...' : 'Giao hàng' }}</span>
+        </button>
       }
-      {{ isUpdating() ? 'Đang xử lý...' : 'Đã Nhận' }}
-    </button>
 
     <!-- <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>

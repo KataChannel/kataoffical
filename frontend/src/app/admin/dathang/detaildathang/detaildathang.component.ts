@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
@@ -133,7 +134,62 @@ export class DetailDathangComponent {
   filterSanpham: any[] = [];
   dathangId: any = this._DathangService.dathangId;
   @ViewChild('menuTrigger') spMenuTrigger!: MatMenuTrigger;
+  TrangThaiDon: any = TrangThaiDon;
+
+  getStatusStyle(status: string) {
+    const s = status?.toLowerCase();
+    switch (s) {
+      case 'dadat':
+        return 'status-dadat';
+      case 'dagiao':
+        return 'status-dagiao';
+      case 'danhan':
+        return 'status-danhan';
+      case 'hoanthanh':
+        return 'status-hoanthanh';
+      case 'choxuly':
+        return 'status-choxuly';
+      case 'khonggiao':
+        return 'status-khonggiao';
+      case 'huy':
+        return 'status-huy';
+      default:
+        return '';
+    }
+  }
+
   async ngOnInit() {
+  }
+
+  async changeStatus(newStatus: string) {
+    if (this.DetailDathang()?.status === newStatus) return;
+    
+    try {
+      this._snackBar.open('Đang cập nhật trạng thái...', '', { duration: 1000 });
+      
+      const updatedData = {
+        ...this.DetailDathang(),
+        status: newStatus
+      };
+
+      await this._DathangService.updateDathang(updatedData);
+
+      this.DetailDathang.update((v: any) => ({
+        ...v,
+        status: newStatus
+      }));
+
+      this._snackBar.open('Cập nhật trạng thái thành công', '', {
+        duration: 2000,
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      console.error('Lỗi khi đổi trạng thái:', error);
+      this._snackBar.open('Lỗi khi cập nhật trạng thái', '', {
+        duration: 2000,
+        panelClass: ['snackbar-error'],
+      });
+    }
   }
   async handleDathangAction() {
     const data = this.DetailDathang();

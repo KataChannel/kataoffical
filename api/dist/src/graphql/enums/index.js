@@ -20,6 +20,8 @@ var StatusDonhang;
     StatusDonhang["DANHAN"] = "danhan";
     StatusDonhang["HUY"] = "huy";
     StatusDonhang["HOANTHANH"] = "hoanthanh";
+    StatusDonhang["CHOXULY"] = "choxuly";
+    StatusDonhang["KHONGGIAO"] = "khonggiao";
 })(StatusDonhang || (exports.StatusDonhang = StatusDonhang = {}));
 (0, graphql_1.registerEnumType)(AuditAction, {
     name: 'AuditAction',

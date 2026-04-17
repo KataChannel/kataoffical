@@ -132,6 +132,7 @@ type StagnantProductItem {
   status: String!
   hoursStagnant: Float!
   oldestOrderCode: String
+  realStatus: String
   orderId: String
   quantity: Float!
 }

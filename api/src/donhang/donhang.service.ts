@@ -2404,7 +2404,6 @@ export class DonhangService {
         await prisma.tonKho.upsert({
           where: { sanphamId: sp.idSP || sp.id },
           update: {
-            // ✅ HIỆU CHỈNH: Trừ tồn thực tế ngay khi vừa đặt hàng (dadat)
             slton: { decrement: incrementValue },
             slchogiao: { increment: incrementValue },
           },
@@ -2432,952 +2431,180 @@ export class DonhangService {
   }
 
   async update(id: string, data: any) {
-    const result = await this.prisma.$transaction(async (prisma) => {
-      // 1. Lấy đơn hàng cũ kèm chi tiết sản phẩm
+    return await this.prisma.safeTransaction(async (prisma) => {
+      // 1. Get original order with products
       const oldDonhang = await prisma.donhang.findUnique({
         where: { id },
-        include: { sanpham: true },
+        include: { sanpham: { include: { sanpham: true } } },
       });
+
       if (!oldDonhang) {
         throw new NotFoundException('Đơn hàng không tồn tại');
       }
 
-      // 2. Validate status transition if status is changing
-      if (data.status && data.status !== oldDonhang.status) {
-        const transition = this.statusMachine.validateTransition(
-          'donhang',
-          oldDonhang.status,
-          data.status,
-          true // Allow reverse transitions for corrections
-        );
-
-        if (!transition.isValid) {
-          throw new BadRequestException(
-            `Invalid status transition: ${oldDonhang.status} → ${data.status}. ${transition.reason}`
-          );
-        }
-      }
-
-      // 3. Handle status transitions with proper TonKho management
+      const isStatusChanged = data.status && data.status !== oldDonhang.status;
       const tonkhoOps: any[] = [];
 
-      // 3a. Rollback từ 'dagiao' về 'dadat'
-      if (oldDonhang.status === 'dagiao' && data.status === 'dadat') {
-        // Rollback tồn kho
-        for (const sp of oldDonhang.sanpham) {
-          const incValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
-          tonkhoOps.push({
-            sanphamId: sp.idSP,
-            operation: 'increment',
-            slchogiao: incValue,
-            // ❌ Không cộng lại slton ở đây vì khi rollback từ DAGIAO về DADAT, 
-            // số tồn vẫn phải giữ nguyên trạng thái bị trừ (vì trạng thái DADAT giờ cũng đã trừ tồn).
-            reason: `Rollback DAGIAO→DADAT for order ${oldDonhang.madonhang}`
-          });
-        }
-
-        // Execute TonKho updates atomically
-        await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps);
-
-        // Xóa phiếu kho
-        const maphieuOld = `PX-${oldDonhang.madonhang}`;
-        const phieuKho = await prisma.phieuKho.findUnique({
-          where: { maphieu: maphieuOld },
-        });
-        if (phieuKho) {
-          await prisma.phieuKhoSanpham.deleteMany({
-            where: { phieuKhoId: phieuKho.id },
-          });
-          await prisma.phieuKho.delete({
-            where: { maphieu: maphieuOld },
-          });
-        }
-        // Cập nhật đơn hàng
-        const updatedOrder = await prisma.donhang.update({
-          where: { id },
-          data: {
-            title: data.title,
-            type: data.type,
-            ngaygiao: new Date(data.ngaygiao),
-            khachhangId: data.khachhangId,
-            isActive: data.isActive,
-            order: data.order,
-            ghichu: data.ghichu,
-            status: 'dadat',
-            nhanvienchiahang: data.nhanvienchiahang,
-            shipper: data.shipper,
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
-            ...(data.sanpham && data.sanpham.length
-              ? {
-                  sanpham: {
-                    updateMany: data.sanpham.map((sp: any) => ({
-                      where: { idSP: sp.id },
-                      data: {
-                        ghichu: sp.ghichu,
-                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-                      },
-                    })),
-                  },
-                }
-              : {}),
-          },
-        });
-        // Cập nhật tồn kho theo chênh lệch số lượng giao mới/cũ
-        for (const sp of data.sanpham) {
-          const newSlgiao = parseFloat((sp.slgiao ?? 0).toFixed(3));
-          const oldItem = oldDonhang.sanpham.find((o: any) => o.idSP === sp.id);
-          const oldSlgiao = oldItem
-            ? parseFloat((oldItem.slgiao ?? 0).toFixed(3))
-            : 0;
-          const difference = newSlgiao - oldSlgiao;
-          if (difference !== 0) {
-            await prisma.tonKho.update({
-              where: { sanphamId: sp.id },
-              data: {
-                slchogiao:
-                  difference > 0
-                    ? { decrement: difference }
-                    : { increment: -difference },
-                // ✅ Luôn cập nhật slton tương ứng với slchogiao ở trạng thái DADAT/DAGIAO
-                slton:
-                  difference > 0
-                    ? { decrement: difference }
-                    : { increment: -difference },
-              },
-            });
-          }
-        }
-        return updatedOrder;
-      }
-
-      // 3. Sửa đơn hàng ở trạng thái 'dadat'
-      if (oldDonhang.status === 'dadat' && data.status === 'dadat') {
-        // Cập nhật tồn kho cho các sản phẩm có trong cả đơn hàng cũ và mới
-        for (const sp of data.sanpham) {
-          const newSldat = parseFloat((sp.sldat ?? 0).toFixed(3));
-          const oldItem = oldDonhang.sanpham.find((o: any) => o.idSP === sp.id);
-          if (oldItem) {
-            const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(3));
-            const difference = newSldat - oldSldat;
-            if (difference !== 0) {
-              await prisma.tonKho.update({
-                where: { sanphamId: sp.id },
-                data: {
-                  slton:
-                    difference > 0
-                      ? { decrement: difference }
-                      : { increment: Math.abs(difference) },
-                  slchogiao:
-                    difference > 0
-                      ? { increment: difference }
-                      : { decrement: Math.abs(difference) },
-                },
+      // 2. Handle Inventory Rollback (if moving AWAY from fulfilled states)
+      if (isStatusChanged) {
+        if (['dagiao', 'danhan', 'hoanthanh'].includes(oldDonhang.status)) {
+          // Re-add slton (because it was deducted during dagiao)
+          for (const sp of oldDonhang.sanpham) {
+            const val = parseFloat((sp.slgiao ?? 0).toFixed(3));
+            if (val > 0) {
+              tonkhoOps.push({
+                sanphamId: sp.idSP,
+                operation: 'increment',
+                slton: val,
+                slchogiao: val, // Re-add to reservation too so it can be handled by the next state
+                reason: `Rollback FROM ${oldDonhang.status} for order ${oldDonhang.madonhang}`
               });
             }
-          } else {
-            await prisma.tonKho.update({
-              where: { sanphamId: sp.id },
-              data: {
-                slton: { decrement: newSldat },
-                slchogiao: { increment: newSldat },
-              },
-            });
+          }
+        } else if (oldDonhang.status === 'dadat') {
+          // Just remove reservation
+          for (const sp of oldDonhang.sanpham) {
+            const val = parseFloat((sp.sldat ?? 0).toFixed(3));
+            if (val > 0) {
+              tonkhoOps.push({
+                sanphamId: sp.idSP,
+                operation: 'decrement',
+                slchogiao: val,
+                reason: `Rollback FROM DADAT for order ${oldDonhang.madonhang}`
+              });
+            }
           }
         }
-        // Xử lý các sản phẩm đã có trong đơn hàng cũ nhưng bị loại bỏ trong đơn hàng mới
-        for (const oldItem of oldDonhang.sanpham) {
-          const exists = data.sanpham.find((sp: any) => sp.id === oldItem.idSP);
-          if (!exists) {
-            const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(3));
-            await prisma.tonKho.update({
-              where: { sanphamId: oldItem.idSP },
-              data: {
-                slton: { increment: oldSldat },
-                slchogiao: { decrement: oldSldat },
-              },
-            });
-          }
-        }
-        return prisma.donhang.update({
-          where: { id },
-          data: {
-            title: data.title,
-            type: data.type,
-            ngaygiao: new Date(data.ngaygiao),
-            khachhangId: data.khachhangId,
-            isActive: data.isActive,
-            order: data.order,
-            ghichu: data.ghichu,
-            nhanvienchiahang: data.nhanvienchiahang,
-            shipper: data.shipper,
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
-            ...(data.sanpham && data.sanpham.length
-              ? {
-                  sanpham: {
-                    deleteMany: {},
-                    createMany: {
-                      data: data.sanpham.map((sp: any) => ({
-                        idSP: sp.id,
-                        ghichu: sp.ghichu,
-                        sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-                        slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
-                        ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
-                      })),
-                    },
-                  },
-                }
-              : {}),
-          },
-        });
       }
 
-      // 4. Chuyển sang 'dagiao'
-      if (oldDonhang.status === 'dadat' && data.status === 'dagiao') {
-        for (const sp of data.sanpham) {
-          // const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
-          // await this.updateTonKhoSafe(prisma, sp.id, {
-          //   slchogiao: { decrement: decValue },
-          //   // ❌ KHÔNG trừ slton ở đây nữa vì đã trừ khi ở trạng thái DADAT (Xác nhận)
-          // });
-          // 🚩 GIỮ NGUYÊN slchogiao ở bước DAGIAO (Đang đi) để phản ánh đúng thực tế đang trên đường.
-          // Sẽ giảm slchogiao khi sang bước DANHAN (Đã nhận/Hoàn tất).
+      // 3. Handle Inventory Deduction (if moving TO fulfilled states or updating DADAT)
+      const targetStatus = data.status || oldDonhang.status;
+      
+      if (isStatusChanged || targetStatus === 'dadat') {
+        if (['dagiao', 'danhan', 'hoanthanh'].includes(targetStatus)) {
+          // Deduct from slton
+          const products = data.sanpham || oldDonhang.sanpham.map(sp => ({ id: sp.idSP, slgiao: sp.slgiao || sp.sldat }));
+          for (const sp of products) {
+            const val = parseFloat((sp.slgiao ?? sp.sldat ?? 0).toFixed(3));
+            if (val > 0) {
+              tonkhoOps.push({
+                sanphamId: sp.id,
+                operation: 'decrement',
+                slton: val,
+                slchogiao: val, // Reserve it
+                reason: `Deduct for ${targetStatus} for order ${oldDonhang.madonhang}`
+              });
+            }
+          }
+        } else if (targetStatus === 'dadat') {
+          // Just reserve in slchogiao
+          const products = data.sanpham || oldDonhang.sanpham.map(sp => ({ id: sp.idSP, sldat: sp.sldat }));
+          for (const sp of products) {
+            const val = parseFloat((sp.sldat ?? 0).toFixed(3));
+            if (val > 0) {
+              tonkhoOps.push({
+                sanphamId: sp.id,
+                operation: 'increment',
+                slchogiao: val,
+                reason: `Reserve for DADAT for order ${oldDonhang.madonhang}`
+              });
+            }
+          }
         }
-        const maphieuNew = `PX-${data.madonhang}`;
-        const phieuPayload = {
-          ngay: new Date(data.ngaygiao),
+      }
+
+      // Execute inventory updates
+      if (tonkhoOps.length > 0) {
+        await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps);
+      }
+
+      // 4. Handle PhieuKho management
+      const maphieu = `PX-${oldDonhang.madonhang}`;
+      if (isStatusChanged && ['huy', 'choxuly', 'khonggiao', 'dadat'].includes(targetStatus)) {
+        // Delete PhieuKho
+        const existingPhieu = await prisma.phieuKho.findUnique({ where: { maphieu } });
+        if (existingPhieu) {
+          await prisma.phieuKhoSanpham.deleteMany({ where: { phieuKhoId: existingPhieu.id } });
+          await prisma.phieuKho.delete({ where: { id: existingPhieu.id } });
+        }
+      } else if (targetStatus === 'dagiao' || (isStatusChanged && targetStatus === 'danhan')) {
+        // Upsert PhieuKho
+        const phieuData = {
+          ngay: data.ngaygiao ? new Date(data.ngaygiao) : (oldDonhang.ngaygiao || new Date()),
           type: 'xuat',
           khoId: DEFAUL_KHO_ID,
-          ghichu: data.ghichu,
-          isActive: data.isActive ?? true,
-          sanpham: {
-            create: data.sanpham.map((sp: any) => ({
-              sanphamId: sp.id,
-              soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-              ghichu: sp.ghichu,
-            })),
-          },
+          ghichu: data.ghichu || oldDonhang.ghichu,
+          isActive: true,
         };
-
-        // Handle phieuKho upsert manually to avoid unique constraint violation
-        const existingPhieu = await prisma.phieuKho.findUnique({
-          where: { maphieu: maphieuNew },
-          include: { sanpham: true },
-        });
-
-        if (existingPhieu) {
-          // Delete existing sanpham records first
-          await prisma.phieuKhoSanpham.deleteMany({
-            where: { phieuKhoId: existingPhieu.id },
-          });
-
-          // Update the phieuKho and create new sanpham records
-          await prisma.phieuKho.update({
-            where: { maphieu: maphieuNew },
-            data: {
-              ngay: phieuPayload.ngay,
-              type: phieuPayload.type,
-              khoId: phieuPayload.khoId,
-              ghichu: phieuPayload.ghichu,
-              isActive: phieuPayload.isActive,
-              sanpham: {
-                create: data.sanpham.map((sp: any) => ({
-                  sanphamId: sp.id,
-                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-                  ghichu: sp.ghichu,
-                })),
-              },
-            },
-          });
-        } else {
-          // Create new phieuKho with sanpham
-          const uniqueSanpham = data.sanpham.reduce((acc: any[], sp: any) => {
-            const existing = acc.find((item) => item.sanphamId === sp.id);
-            if (existing) {
-              existing.soluong += parseFloat((sp.slgiao ?? 0).toFixed(3));
-            } else {
-              acc.push({
-                sanphamId: sp.id,
-                soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-                ghichu: sp.ghichu,
-              });
+        
+        const products = data.sanpham || oldDonhang.sanpham.map(sp => ({ id: sp.idSP, slgiao: sp.slgiao || sp.sldat, ghichu: sp.ghichu }));
+        
+        await prisma.phieuKho.upsert({
+          where: { maphieu },
+          create: {
+            maphieu,
+            ...phieuData,
+            sanpham: { create: products.map(p => ({ sanphamId: p.id, soluong: parseFloat(p.slgiao.toString()), ghichu: p.ghichu })) }
+          },
+          update: {
+            ...phieuData,
+            sanpham: {
+              deleteMany: {},
+              create: products.map(p => ({ sanphamId: p.id, soluong: parseFloat(p.slgiao.toString()), ghichu: p.ghichu }))
             }
-            return acc;
-          }, []);
-
-          await prisma.phieuKho.create({
-            data: {
-              maphieu: maphieuNew,
-              ngay: phieuPayload.ngay,
-              type: phieuPayload.type,
-              khoId: phieuPayload.khoId,
-              ghichu: phieuPayload.ghichu,
-              isActive: phieuPayload.isActive,
-              sanpham: {
-                create: uniqueSanpham,
-              },
-            },
-          });
-        }
-
-        return prisma.donhang.update({
-          where: { id },
-          data: {
-            status: 'dagiao',
-            nhanvienchiahang: data.nhanvienchiahang,
-            shipper: data.shipper,
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
-            sanpham: {
-              updateMany: data.sanpham.map((sp: any) => ({
-                where: { idSP: sp.id },
-                data: {
-                  ghichu: sp.ghichu,
-                  sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                  slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-                  slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
-                },
-              })),
-            },
-          },
-        });
-      }
-
-      // 5. Chuyển sang 'danhan'
-      if (oldDonhang.status === 'dagiao' && data.status === 'danhan') {
-        const shortageItems: {
-          sanphamId: string;
-          soluong: number;
-          ghichu?: string;
-        }[] = [];
-        
-        for (const item of data.sanpham) {
-          const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(3));
-          const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(3));
-          const donhangSanpham = oldDonhang.sanpham.find((sp: any) => sp.idSP === item.id);
-          
-          if (receivedQty < shippedQty) {
-            // Xử lý hao hụt: hoàn lại tồn kho cho phần thiếu
-            const shortage = shippedQty - receivedQty;
-            await prisma.tonKho.update({
-              where: { sanphamId: item.id },
-              data: { slton: { increment: shortage } }, // Hoàn lại số lượng thiếu vào tồn kho
-            });
-            
-            shortageItems.push({
-              sanphamId: item.id,
-              soluong: shortage,
-              ghichu: item.ghichu
-                ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
-                : `Thiếu ${shortage.toFixed(3)}`,
-            });
           }
-          
-          // ✅ CẬP NHẬT: Giảm slchogiao khi hoàn tất việc nhận hàng
-          const reservedQty = parseFloat((donhangSanpham?.slgiao ?? donhangSanpham?.sldat ?? 0).toFixed(3));
-          await prisma.tonKho.update({
-            where: { sanphamId: item.id },
-            data: { slchogiao: { decrement: reservedQty } },
-          });
-        }
-        if (shortageItems.length > 0) {
-          const maphieuNhap = `PN-${data.madonhang}-RET-${this.formatDateForFilename()}`;
-          const phieuKhoData = {
-            maphieu: maphieuNhap,
-            ngay: new Date(data.ngaygiao),
-            type: 'nhap',
-            khoId: DEFAUL_KHO_ID,
-            ghichu: 'Phiếu nhập hàng trả về do thiếu hàng khi nhận',
-            isActive: data.isActive ?? true,
-            sanpham: {
-              create: shortageItems.map((item) => ({
-                sanphamId: item.sanphamId,
-                soluong: item.soluong,
-                ghichu: item.ghichu,
-              })),
-            },
-          };
-          await prisma.phieuKho.create({ data: phieuKhoData });
-        }
-        // 🔥 Tính lại ttnhan, ttsauvat và tổng tiền cho đơn hàng
-        let tongchua = 0;
-        
-        // Update từng sản phẩm với tính toán lại giá trị
-        for (const item of data.sanpham) {
-          const received = parseFloat((item.slnhan ?? 0).toFixed(3));
-          const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
-          // Tìm sản phẩm trong DB để lấy giaban và vat
-          const donhangSanpham = oldDonhang.sanpham.find((sp: any) => sp.idSP === item.id);
-          if (!donhangSanpham) continue;
-          
-          const giaban = parseFloat((donhangSanpham.giaban ?? 0).toFixed(3));
-          const vat = oldDonhang.isshowvat ? (Number(donhangSanpham.vat) || 0) : 0;
-          
-          // 🔥 Tính lại ttnhan và ttsauvat dựa trên slnhan
-          const ttnhan = giaban * received;
-          const ttsauvat = ttnhan * (1 + vat);
-          
-          tongchua += ttnhan;
-          
-          const shortageNote =
-            received < delivered
-              ? item.ghichu
-                ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(3)}`
-                : `Thiếu ${(delivered - received).toFixed(3)}`
-              : item.ghichu || '';
-          
-          await prisma.donhangsanpham.update({
-            where: { id: donhangSanpham.id },
-            data: {
-              ghichu: shortageNote,
-              slnhan: received,
-              ttnhan: parseFloat(ttnhan.toFixed(3)),
-              ttsauvat: parseFloat(ttsauvat.toFixed(3)),
-            },
-          });
-        }
-        
-        // 🔥 Tính lại tổng tiền cho đơn hàng
-        const vatRate = oldDonhang.isshowvat ? parseFloat((oldDonhang.vat ?? 0).toFixed(3)) : 0;
-        const tongvat = tongchua * vatRate;
-        const tongtien = tongchua + tongvat;
-        
-        return prisma.donhang.update({
-          where: { id },
-          data: {
-            status: 'danhan',
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
-            tongtien: parseFloat(tongtien.toFixed(3)),
-            tongvat: parseFloat(tongvat.toFixed(3)),
-          },
         });
       }
 
-      // 5b. 🔥 Chuyển trực tiếp từ 'dadat' sang 'danhan' (skip dagiao - cho phép user thao tác nhanh)
-      if (oldDonhang.status === 'dadat' && data.status === 'danhan') {
-        // Xử lý tồn kho: giảm slchogiao và slton cho số lượng nhận
-        for (const sp of data.sanpham) {
-          const oldSp = oldDonhang.sanpham.find(o => o.idSP === sp.id);
-          const reservedQty = parseFloat((oldSp?.sldat ?? 0).toFixed(3));
-          const receivedQty = parseFloat((sp.slnhan ?? sp.slgiao ?? sp.sldat ?? 0).toFixed(3));
-          
-          await this.updateTonKhoSafe(prisma, sp.id, {
-            slchogiao: { decrement: reservedQty },
-            // slton already decremented at DADAT (create). 
-            // If receivedQty < reservedQty, we should increment slton back by the difference.
-            ...(receivedQty < reservedQty ? { slton: { increment: reservedQty - receivedQty } } : {})
-          });
-        }
+      // 5. Update Donhang and Products
+      const updatedDonhang = await prisma.donhang.update({
+        where: { id },
+        data: {
+          title: data.title,
+          type: data.type,
+          ngaygiao: data.ngaygiao ? new Date(data.ngaygiao) : undefined,
+          khachhangId: data.khachhangId,
+          banggiaId: data.banggiaId,
+          vat: data.vat !== undefined ? parseFloat(data.vat.toString()) : undefined,
+          isActive: data.isActive,
+          status: targetStatus,
+          ghichu: data.ghichu,
+          nhanvienchiahang: data.nhanvienchiahang,
+          shipper: data.shipper,
+          printCount: data.printCount,
+          sanpham: data.sanpham ? {
+            deleteMany: {},
+            create: data.sanpham.map((sp: any) => ({
+              idSP: sp.id,
+              sldat: sp.sldat !== undefined ? parseFloat(sp.sldat.toString()) : 0,
+              slgiao: sp.slgiao !== undefined ? parseFloat(sp.slgiao.toString()) : 0,
+              slnhan: sp.slnhan !== undefined ? parseFloat(sp.slnhan.toString()) : 0,
+              ghichu: sp.ghichu,
+              giaban: sp.giaban !== undefined ? parseFloat(sp.giaban.toString()) : 0,
+            }))
+          } : undefined
+        },
+        include: { sanpham: true }
+      });
 
-        // Tạo phiếu kho xuất
-        const maphieuNew = `PX-${data.madonhang}`;
-        const existingPhieu = await prisma.phieuKho.findUnique({
-          where: { maphieu: maphieuNew },
-        });
+      // 6. Final Task: Recalculate totals
+      const { tongvat, tongtien } = this.calculateDonhangTotals(
+        updatedDonhang.sanpham.map(sp => ({ giaban: sp.giaban, slnhan: sp.slnhan || sp.slgiao || sp.sldat })),
+        parseFloat((updatedDonhang.vat || 0).toString())
+      );
 
-        if (!existingPhieu) {
-          const uniqueSanpham = data.sanpham.reduce((acc: any[], sp: any) => {
-            const qty = parseFloat((sp.slnhan ?? sp.slgiao ?? sp.sldat ?? 0).toFixed(3));
-            const existing = acc.find((item) => item.sanphamId === sp.id);
-            if (existing) {
-              existing.soluong += qty;
-            } else {
-              acc.push({
-                sanphamId: sp.id,
-                soluong: qty,
-                ghichu: sp.ghichu,
-              });
-            }
-            return acc;
-          }, []);
-
-          await prisma.phieuKho.create({
-            data: {
-              maphieu: maphieuNew,
-              ngay: new Date(data.ngaygiao),
-              type: 'xuat',
-              khoId: DEFAUL_KHO_ID,
-              ghichu: data.ghichu || 'Phiếu xuất hàng (chuyển trực tiếp dadat→danhan)',
-              isActive: data.isActive ?? true,
-              sanpham: {
-                create: uniqueSanpham,
-              },
-            },
-          });
-        }
-
-        // Tính toán tổng tiền
-        let tongchua = 0;
-        
-        for (const item of data.sanpham) {
-          const received = parseFloat((item.slnhan ?? item.slgiao ?? item.sldat ?? 0).toFixed(3));
-          const donhangSanpham = oldDonhang.sanpham.find((sp: any) => sp.idSP === item.id);
-          if (!donhangSanpham) continue;
-          
-          const giaban = parseFloat((donhangSanpham.giaban ?? 0).toFixed(3));
-          const vat = parseFloat((donhangSanpham.vat ?? 0).toFixed(3));
-          
-          const ttnhan = giaban * received;
-          const ttsauvat = ttnhan * (1 + vat);
-          
-          tongchua += ttnhan;
-          
-          await prisma.donhangsanpham.update({
-            where: { id: donhangSanpham.id },
-            data: {
-              ghichu: item.ghichu || '',
-              slgiao: received,
-              slnhan: received,
-              ttgiao: parseFloat(ttnhan.toFixed(3)),
-              ttnhan: parseFloat(ttnhan.toFixed(3)),
-              ttsauvat: parseFloat(ttsauvat.toFixed(3)),
-            },
-          });
-        }
-        
-        const vatRate = parseFloat((oldDonhang.vat ?? 0).toFixed(3));
-        const tongvat = tongchua * vatRate;
-        const tongtien = tongchua + tongvat;
-        
-        return prisma.donhang.update({
-          where: { id },
-          data: {
-            status: 'danhan',
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
-            tongtien: parseFloat(tongtien.toFixed(3)),
-            tongvat: parseFloat(tongvat.toFixed(3)),
-            ghichu: data.ghichu ? `${data.ghichu} | [DIRECT] Chuyển trực tiếp dadat→danhan` : '[DIRECT] Chuyển trực tiếp dadat→danhan',
-          },
-        });
-      }
-
-      // 6. Chuyển sang 'hoanthanh'
-      if (data.status === 'hoanthanh') {
-        return prisma.donhang.update({
-          where: { id },
-          data: {
-            status: 'hoanthanh',
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
-          },
-        });
-      }
-
-      // 7. Chuyển từ 'danhan' về 'dadat'
-      if (oldDonhang.status === 'danhan' && data.status === 'dadat') {
-        for (const sp of oldDonhang.sanpham) {
-          const incValue = parseFloat((sp.slnhan ?? 0).toFixed(3));
-          await prisma.tonKho.update({
-            where: { sanphamId: sp.idSP },
-            data: {
-              slchogiao: { increment: incValue },
-              slton: { increment: incValue },
-            },
-          });
-        }
-        const maphieuNhap = `PN-${oldDonhang.madonhang}-RET-${this.formatDateForFilename()}`;
-        const phieuNhap = await prisma.phieuKho.findUnique({
-          where: { maphieu: maphieuNhap },
-        });
-        if (phieuNhap) {
-          await prisma.phieuKhoSanpham.deleteMany({
-            where: { phieuKhoId: phieuNhap.id },
-          });
-          await prisma.phieuKho.delete({
-            where: { maphieu: maphieuNhap },
-          });
-        }
-        const updatedOrder = await prisma.donhang.update({
-          where: { id },
-          data: {
-            title: data.title,
-            type: data.type,
-            ngaygiao: new Date(data.ngaygiao),
-            khachhangId: data.khachhangId,
-            isActive: data.isActive,
-            order: data.order,
-            ghichu: data.ghichu,
-            status: 'dadat',
-            ...(data.sanpham && data.sanpham.length
-              ? {
-                  sanpham: {
-                    updateMany: data.sanpham.map((sp: any) => ({
-                      where: { idSP: sp.id },
-                      data: {
-                        ghichu: sp.ghichu,
-                        sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-                        slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
-                        ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
-                        ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(3)),
-                      },
-                    })),
-                  },
-                }
-              : {}),
-          },
-        });
-        return updatedOrder;
-      }
-
-      // REMOVED: All invalid direct status transitions
-      // The status machine will prevent these automatically
-
-      // 4. DADAT → DAGIAO: Reserve inventory and create PhieuKho
-      if (oldDonhang.status === 'dadat' && data.status === 'dagiao') {
-        const tonkhoOpsGiao: any[] = [];
-        
-        for (const sp of data.sanpham) {
-          const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
-          tonkhoOpsGiao.push({
-            sanphamId: sp.id,
-            operation: 'decrement',
-            slchogiao: decValue,
-            slton: decValue,
-            reason: `DADAT→DAGIAO for order ${data.madonhang}`
-          });
-        }
-
-        // Execute TonKho updates atomically
-        await this.tonkhoManager.updateTonkhoAtomic(tonkhoOpsGiao);
-
-        // Create PhieuKho
-        const maphieuNew = `PX-${data.madonhang}`;
-        
-        // Check for existing phieu to prevent duplicates
-        const existingPhieu = await prisma.phieuKho.findUnique({
-          where: { maphieu: maphieuNew }
-        });
-
-        if (!existingPhieu) {
-          await prisma.phieuKho.create({
-            data: {
-              maphieu: maphieuNew,
-              ngay: new Date(data.ngaygiao),
-              type: 'xuat',
-              khoId: DEFAUL_KHO_ID,
-              ghichu: data.ghichu || 'Phiếu xuất hàng cho đơn hàng',
-              isActive: data.isActive ?? true,
-              sanpham: {
-                create: data.sanpham.map((sp: any) => ({
-                  sanphamId: sp.id,
-                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-                  ghichu: sp.ghichu,
-                })),
-              },
-            },
-          });
-        }
-
-        // Update order status
-        return prisma.donhang.update({
-          where: { id },
-          data: {
-            ...data,
-            status: 'dagiao',
-            ngaygiao: new Date(data.ngaygiao),
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
-            sanpham: {
-              updateMany: data.sanpham.map((sp: any) => ({
-                where: { idSP: sp.id },
-                data: {
-                  slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-                  ghichu: sp.ghichu,
-                },
-              })),
-            },
-          },
-        });
-      }
-
-      // 5. DAGIAO → DANHAN: Handle received quantities and shortages
-      if (oldDonhang.status === 'dagiao' && data.status === 'danhan') {
-        const tonkhoOpsNhan: any[] = [];
-        const shortageItems: any[] = [];
-        
-        for (const item of data.sanpham) {
-          const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(3));
-          const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(3));
-          
-          if (receivedQty < shippedQty) {
-            // Handle shortage - return excess to inventory
-            const shortage = shippedQty - receivedQty;
-            tonkhoOpsNhan.push({
-              sanphamId: item.id,
-              operation: 'increment',
-              slton: shortage,
-              reason: `Shortage return for order ${data.madonhang}: ${shortage.toFixed(3)}`
-            });
-            
-            shortageItems.push({
-              sanphamId: item.id,
-              soluong: shortage,
-              ghichu: item.ghichu
-                ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
-                : `Thiếu ${shortage.toFixed(3)}`,
-            });
-          }
-        }
-
-        // Execute TonKho updates for shortages
-        if (tonkhoOpsNhan.length > 0) {
-          await this.tonkhoManager.updateTonkhoAtomic(tonkhoOpsNhan);
-        }
-
-        // Create return phieukho for shortages if any
-        if (shortageItems.length > 0) {
-          const maphieuNhap = `PN-${data.madonhang}-RET-${this.formatDateForFilename()}`;
-          await prisma.phieuKho.create({
-            data: {
-              maphieu: maphieuNhap,
-              ngay: new Date(data.ngaygiao),
-              type: 'nhap',
-              khoId: DEFAUL_KHO_ID,
-              ghichu: 'Phiếu nhập hàng trả về do thiếu hàng khi nhận',
-              isActive: data.isActive ?? true,
-              sanpham: {
-                create: shortageItems,
-              },
-            },
-          });
-        }
-
-        // Update order with received quantities
-        return prisma.donhang.update({
-          where: { id },
-          data: {
-            ...data,
-            status: 'danhan',
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
-            sanpham: {
-              updateMany: data.sanpham.map((sp: any) => ({
-                where: { idSP: sp.id },
-                data: {
-                  slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
-                  ghichu: sp.ghichu,
-                },
-              })),
-            },
-          },
-        });
-      }
-
-      // 6. DANHAN → HOANTHANH: Final completion
-      if (oldDonhang.status === 'danhan' && data.status === 'hoanthanh') {
-        return prisma.donhang.update({
-          where: { id },
-          data: {
-            status: 'hoanthanh',
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
-          },
-        });
-      }
-
-      // 7. Cancel order (any status → HUY)
-      if (data.status === 'huy') {
-        const tonkhoOpsCancel: any[] = [];
-        
-        // Rollback inventory based on current status
-        if (oldDonhang.status === 'dadat') {
-          // Just remove slchogiao reservation
-          for (const sp of oldDonhang.sanpham) {
-            const incValue = parseFloat((sp.sldat ?? 0).toFixed(3));
-            tonkhoOpsCancel.push({
-              sanphamId: sp.idSP,
-              operation: 'decrement',
-              slchogiao: incValue,
-              reason: `Cancel order ${oldDonhang.madonhang} from DADAT`
-            });
-          }
-        } else if (oldDonhang.status === 'dagiao') {
-          // Return both slchogiao and slton
-          for (const sp of oldDonhang.sanpham) {
-            const incValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
-            tonkhoOpsCancel.push({
-              sanphamId: sp.idSP,
-              operation: 'increment',
-              slchogiao: incValue,
-              slton: incValue,
-              reason: `Cancel order ${oldDonhang.madonhang} from DAGIAO`
-            });
-          }
-        }
-
-        // Execute TonKho rollback
-        if (tonkhoOpsCancel.length > 0) {
-          await this.tonkhoManager.updateTonkhoAtomic(tonkhoOpsCancel);
-        }
-
-        // Remove related PhieuKho
-        const maphieu = `PX-${oldDonhang.madonhang}`;
-        const existingPhieu = await prisma.phieuKho.findUnique({
-          where: { maphieu }
-        });
-        
-        if (existingPhieu) {
-          await prisma.phieuKhoSanpham.deleteMany({
-            where: { phieuKhoId: existingPhieu.id }
-          });
-          await prisma.phieuKho.delete({
-            where: { id: existingPhieu.id }
-          });
-        }
-
-        return prisma.donhang.update({
-          where: { id },
-          data: {
-            status: 'huy',
-            ghichu: data.ghichu || 'Đơn hàng đã hủy',
-            printCount: data.printCount !== undefined ? data.printCount : undefined,
-          },
-        });
-      }
-
-      // 8. Regular update without status change
-      if (!data.status || data.status === oldDonhang.status) {
-        // 🔥 SPECIAL CASE: If order is in 'danhan' status and slnhan is being updated
-        if (oldDonhang.status === 'danhan' && data.sanpham && data.sanpham.length > 0) {
-          let tongchua = 0;
-          
-          // Update each product with recalculated values based on slnhan
-          for (const item of data.sanpham) {
-            const received = parseFloat((item.slnhan ?? 0).toFixed(3));
-            
-            // Find product in DB to get giaban and vat
-            const donhangSanpham = oldDonhang.sanpham.find((sp: any) => sp.idSP === item.id);
-            if (!donhangSanpham) continue;
-            
-            const giaban = parseFloat((donhangSanpham.giaban ?? 0).toFixed(3));
-            const vat = parseFloat((donhangSanpham.vat ?? 0).toFixed(3));
-            
-            // 🔥 Recalculate ttnhan and ttsauvat based on slnhan
-            const ttnhan = giaban * received;
-            const ttsauvat = ttnhan * (1 + vat);
-            
-            tongchua += ttnhan;
-            
-            await prisma.donhangsanpham.update({
-              where: { id: donhangSanpham.id },
-              data: {
-                slnhan: received,
-                ttnhan: parseFloat(ttnhan.toFixed(3)),
-                ttsauvat: parseFloat(ttsauvat.toFixed(3)),
-                ghichu: item.ghichu,
-              },
-            });
-          }
-          
-          // 🔥 Recalculate total amount for the order
-          const vatRate = parseFloat((oldDonhang.vat ?? 0).toFixed(3));
-          const tongvat = tongchua * vatRate;
-          const tongtien = tongchua + tongvat;
-          
-          console.log(`🔥 [danhan special case] tongchua=${tongchua}, tongvat=${tongvat}, tongtien=${tongtien}`);
-          
-          // Update order with recalculated totals
-          return prisma.donhang.update({
-            where: { id },
-            data: {
-              title: data.title,
-              type: data.type,
-              ngaygiao: data.ngaygiao ? new Date(data.ngaygiao) : undefined,
-              khachhangId: data.khachhangId,
-              banggiaId: data.banggiaId,
-              vat: data.vat ? parseFloat(data.vat.toString()) : undefined,
-              isActive: data.isActive,
-              order: data.order,
-              ghichu: data.ghichu,
-              status: data.status,
-              nhanvienchiahang: data.nhanvienchiahang,
-              shipper: data.shipper,
-              phieuve: data.phieuve,
-              giodi: data.giodi,
-              giove: data.giove,
-              kynhan: data.kynhan,
-              printCount: data.printCount !== undefined ? data.printCount : undefined,
-              tongtien: parseFloat(tongtien.toFixed(3)),
-              tongvat: parseFloat(tongvat.toFixed(3)),
-            },
-            include: {
-              sanpham: true,
-            },
-          });
-        }
-        
-        // Regular update for other cases
-        const updatedDonhang = await prisma.donhang.update({
-          where: { id },
-          data: {
-            ...(data.title !== undefined && { title: data.title }),
-            ...(data.type !== undefined && { type: data.type }),
-            ...(data.ngaygiao !== undefined && { ngaygiao: new Date(data.ngaygiao) }),
-            ...(data.khachhangId !== undefined && { khachhangId: data.khachhangId }),
-            ...(data.banggiaId !== undefined && { banggiaId: data.banggiaId }),
-            ...(data.vat !== undefined && { vat: parseFloat(data.vat.toString()) }),
-            ...(data.isActive !== undefined && { isActive: data.isActive }),
-            ...(data.order !== undefined && { order: data.order }),
-            ...(data.ghichu !== undefined && { ghichu: data.ghichu }),
-            ...(data.status !== undefined && { status: data.status }),
-            ...(data.nhanvienchiahang !== undefined && { nhanvienchiahang: data.nhanvienchiahang }),
-            ...(data.shipper !== undefined && { shipper: data.shipper }),
-            ...(data.phieuve !== undefined && { phieuve: data.phieuve }),
-            ...(data.giodi !== undefined && { giodi: data.giodi }),
-            ...(data.giove !== undefined && { giove: data.giove }),
-            ...(data.kynhan !== undefined && { kynhan: data.kynhan }),
-            ...(data.printCount !== undefined && { printCount: data.printCount }),
-          },
-          include: {
-            sanpham: true,
-          },
-        });
-
-        // Recalculate totals if sanpham data is provided or VAT rate changed
-        if (data.sanpham || data.vat) {
-          // 🔥 BUGFIX: Query lại để lấy sanpham mới nhất sau khi đã update các donhangsanpham records
-          // Vì updatedDonhang.sanpham được query TRƯỚC khi update donhangsanpham, nên có thể chứa slnhan cũ
-          const donhangWithLatestSanpham = await prisma.donhang.findUnique({
-            where: { id },
-            include: {
-              sanpham: true,
-            },
-          });
-          
-          if (!donhangWithLatestSanpham) {
-            throw new Error(`Không tìm thấy đơn hàng với id ${id}`);
-          }
-          
-          const sanphamForCalculation = data.sanpham || donhangWithLatestSanpham.sanpham.map(sp => ({
-            giaban: sp.giaban,
-            slnhan: sp.slnhan
-          }));
-          
-          const vatRate = data.vat ? parseFloat(data.vat.toString()) : parseFloat(updatedDonhang.vat.toString());
-          const { tongvat, tongtien } = this.calculateDonhangTotals(sanphamForCalculation, vatRate);
-
-          console.log(`🔥 [regular update] Recalculating with slnhan from latest data: tongvat=${tongvat}, tongtien=${tongtien}`);
-
-          await prisma.donhang.update({
-            where: { id },
-            data: {
-              tongvat,
-              tongtien,
-            },
-          });
-        }
-
-        return updatedDonhang;
-      }
-
-      // If no valid transition found, return error
-      throw new Error(`Invalid status transition from ${oldDonhang.status} to ${data.status}`);
+      return prisma.donhang.update({
+        where: { id },
+        data: { tongvat, tongtien },
+        include: { sanpham: true }
+      });
     });
   }
-
   async danhan(id: string, data: any) {
-    // Delegate to update method with status validation
     return this.update(id, { ...data, status: 'danhan' });
   }
 
   async dagiao(id: string, data: any) {
-    // Delegate to update method with status validation
     return this.update(id, { ...data, status: 'dagiao' });
   }
 

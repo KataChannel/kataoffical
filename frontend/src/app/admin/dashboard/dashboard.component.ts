@@ -1087,6 +1087,32 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/admin/dashboard/stagnant-report']);
   }
 
+  getStatusLabel(status: string): string {
+    const labels: { [key: string]: string } = {
+      'dadat': 'Đã Đặt',
+      'dagiao': 'Đang Giao',
+      'danhan': 'Đã Nhận',
+      'huy': 'Đã Hủy',
+      'hoanthanh': 'Hoàn Thành',
+      'choxuly': 'Chờ Xử Lý',
+      'khonggiao': 'Không Giao'
+    };
+    return labels[status] || status;
+  }
+
+  getStatusClass(status: string): string {
+    const classes: { [key: string]: string } = {
+      'dadat': 'bg-blue-100 text-blue-700 border-blue-200',
+      'dagiao': 'bg-indigo-100 text-indigo-700 border-indigo-200',
+      'danhan': 'bg-green-100 text-green-700 border-green-200',
+      'huy': 'bg-red-100 text-red-700 border-red-200',
+      'hoanthanh': 'bg-teal-100 text-teal-700 border-teal-200',
+      'choxuly': 'bg-amber-100 text-amber-700 border-amber-200',
+      'khonggiao': 'bg-slate-200 text-slate-700 border-slate-300'
+    };
+    return classes[status] || 'bg-gray-100 text-gray-700 border-gray-200';
+  }
+
   // Navigation methods
   navigateToFullReport(): void {
     this.router.navigate(['/admin/dashboard/baocaodoanhthu'], {

@@ -18,6 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
@@ -143,12 +144,66 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
   
   // Component key for loading utilities
   private readonly COMPONENT_KEY = 'detailphieugiaohang';
-  Trangthai: any = [
-    { value: 'dadat', title: 'Đã Đặt' },
-    { value: 'dagiao', title: 'Đã Giao' },
-    { value: 'danhan', title: 'Đã Nhận' },
-    { value: 'huy', title: 'Hủy' },
-  ];
+  TrangThaiDon: any = TrangThaiDon;
+
+  getStatusStyle(status: string): string {
+    const s = status?.toLowerCase();
+    switch (s) {
+      case 'dadat':
+        return 'status-dadat';
+      case 'dagiao':
+        return 'status-dagiao';
+      case 'danhan':
+        return 'status-danhan';
+      case 'hoanthanh':
+        return 'status-hoanthanh';
+      case 'choxuly':
+        return 'status-choxuly';
+      case 'khonggiao':
+        return 'status-khonggiao';
+      case 'huy':
+      case 'dahuy':
+        return 'status-huy';
+      default:
+        return 'status-khonggiao';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    return (this.TrangThaiDon as any)[status?.toLowerCase()] || status;
+  }
+
+
+  async changeStatus(newStatus: string) {
+    if (this.DetailPhieugiaohang()?.status === newStatus) return;
+    
+    try {
+      this._snackBar.open('Đang cập nhật trạng thái...', '', { duration: 1000 });
+      
+      const updatedData = {
+        ...this.DetailPhieugiaohang(),
+        status: newStatus
+      };
+
+      await this._PhieugiaohangService.updateDonhang(updatedData);
+
+      this.DetailPhieugiaohang.update((v: any) => ({
+        ...v,
+        status: newStatus
+      }));
+
+      this._snackBar.open('Cập nhật trạng thái thành công', '', {
+        duration: 2000,
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      console.error('Lỗi khi đổi trạng thái:', error);
+      this._snackBar.open('Lỗi khi cập nhật trạng thái', '', {
+        duration: 2000,
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
   constructor(
     private sharedInputService: SharedInputService
   ) {
@@ -201,7 +256,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
       const phieuGiaoHang = this.DetailPhieugiaohang();
 
       // Update edit mode based on status
-      this.isEdit.set(phieuGiaoHang.status !== 'danhan');
+      this.isEdit.set(phieuGiaoHang.status !== 'hoanthanh');
       
       // Process sanpham data with proper typing
       const processedSanpham = phieuGiaoHang?.sanpham?.map((item: any) => ({
@@ -246,7 +301,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
   }
 
   getTitle(item: any) {
-    return this.Trangthai.find((v:any) => v.value === item)?.title;
+    return this.TrangThaiDon[item] || item;
   }
 
   // Permission check methods
@@ -284,7 +339,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
       const phieuGiaoHang = this.DetailPhieugiaohang();
       
       // Set edit mode based on status
-      this.isEdit.set(phieuGiaoHang.status !== 'danhan');
+      this.isEdit.set(phieuGiaoHang.status !== 'hoanthanh');
 
       // Process sanpham data
       if (phieuGiaoHang?.sanpham?.length) {
@@ -841,14 +896,14 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
       });
     }
   }
-  async Danhanhang() {
+  async Hoanthanhhang() {
     try {
       this.DetailPhieugiaohang.update((v: any) => {
-        v.status = 'danhan';
+        v.status = 'hoanthanh';
         return v;
       });
       await this._PhieugiaohangService.updateDonhang(this.DetailPhieugiaohang());
-      this._snackBar.open('Đã Nhận đơn hàng thành công', '', {
+      this._snackBar.open('Hoàn thành đơn hàng thành công', '', {
         duration: 1000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
@@ -856,8 +911,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
       });
       this.isEdit.update((value) => !value);
     } catch (error) {
-      console.error('Lỗi khi nhận đơn hàng:', error);
-      this._snackBar.open('Nhận đơn hàng thất bại', '', {
+      console.error('Lỗi khi hoàn thành đơn hàng:', error);
+      this._snackBar.open('Hoàn thành đơn hàng thất bại', '', {
         duration: 1000,
         horizontalPosition: 'end',
         verticalPosition: 'top',

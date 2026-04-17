@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 export type EntityType = 'donhang' | 'dathang';
-export type DonhangStatus = 'dadat' | 'dagiao' | 'danhan' | 'huy' | 'hoanthanh';
-export type DathangStatus = 'dadat' | 'dagiao' | 'danhan' | 'huy' | 'hoanthanh';
+export type DonhangStatus = 'dadat' | 'dagiao' | 'danhan' | 'huy' | 'hoanthanh' | 'choxuly' | 'khonggiao';
+export type DathangStatus = 'dadat' | 'dagiao' | 'danhan' | 'huy' | 'hoanthanh' | 'choxuly' | 'khonggiao';
 
 export interface StatusTransition {
   from: string;
@@ -16,31 +16,41 @@ export interface StatusTransition {
 export class StatusMachineService {
   private readonly validTransitions = {
     donhang: {
-      'dadat': ['dagiao', 'danhan', 'huy'], // Cho phép dadat → danhan trực tiếp
-      'dagiao': ['danhan', 'huy'],
+      'choxuly': ['dadat', 'huy'],
+      'dadat': ['dagiao', 'danhan', 'huy'],
+      'dagiao': ['danhan', 'huy', 'khonggiao'],
       'danhan': ['hoanthanh'],
-      'huy': [],
+      'khonggiao': ['huy', 'dadat'],
+      'huy': ['choxuly', 'dadat'],
       'hoanthanh': []
     },
     dathang: {
-      'dadat': ['dagiao', 'danhan', 'huy'], // Cho phép dadat → danhan trực tiếp
-      'dagiao': ['danhan', 'huy'],
+      'choxuly': ['dadat', 'huy'],
+      'dadat': ['dagiao', 'danhan', 'huy'],
+      'dagiao': ['danhan', 'huy', 'khonggiao'],
       'danhan': ['hoanthanh'],
-      'huy': [],
+      'khonggiao': ['huy', 'dadat'],
+      'huy': ['choxuly', 'dadat'],
       'hoanthanh': []
     }
   };
 
   private readonly reverseTransitions = {
     donhang: {
-      'dagiao': ['dadat'],
-      'danhan': ['dagiao'],
-      'huy': ['dadat', 'dagiao'],
+      'dadat': ['choxuly'],
+      'dagiao': ['dadat', 'choxuly'],
+      'danhan': ['dagiao', 'dadat', 'choxuly'],
+      'huy': ['dadat', 'dagiao', 'choxuly'],
+      'hoanthanh': ['danhan'],
+      'khonggiao': ['dagiao', 'choxuly']
     },
     dathang: {
-      'dagiao': ['dadat'],
-      'danhan': ['dagiao'],
-      'huy': ['dadat', 'dagiao'],
+      'dadat': ['choxuly'],
+      'dagiao': ['dadat', 'choxuly'],
+      'danhan': ['dagiao', 'dadat', 'choxuly'],
+      'huy': ['dadat', 'dagiao', 'choxuly'],
+      'hoanthanh': ['danhan'],
+      'khonggiao': ['dagiao', 'choxuly']
     }
   };
 

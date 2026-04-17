@@ -694,6 +694,7 @@ async convertDathangImportToTransfer(
           'dathang',
           oldDathang.status as any,
           data.status as any,
+          true,
         );
         if (!transition.isValid) {
           throw new Error(`Invalid status transition: ${transition.reason}`);
@@ -1091,22 +1092,39 @@ async convertDathangImportToTransfer(
         });
       }
 
-      // 6. Chuyển sang 'huy'
-      if (data.status === 'huy') {
-        // 6.1. Hoàn lại slchonhap
-        for (const sp of oldDathang.sanpham) {
-          const incValue = parseFloat((sp.sldat ?? 0).toFixed(3));
-          if (incValue > 0) {
-            await prisma.tonKho.update({
-              where: { sanphamId: sp.idSP },
-              data: {
-                slchonhap: { decrement: incValue },
-              },
-            });
+      // 6. Chuyển sang 'huy', 'choxuly', hoặc 'khonggiao'
+      if (['huy', 'choxuly', 'khonggiao'].includes(data.status)) {
+        // 6.1. Hoàn lại slton nếu từ 'danhan'
+        if (oldDathang.status === 'danhan') {
+          for (const sp of oldDathang.sanpham) {
+            const slnhan = parseFloat((sp.slnhan ?? 0).toFixed(3));
+            if (slnhan > 0) {
+              await prisma.tonKho.update({
+                where: { sanphamId: sp.idSP },
+                data: {
+                  slton: { decrement: slnhan },
+                },
+              });
+            }
           }
         }
 
-        // 6.2. Xóa phiếu kho nếu có
+        // 6.2. Hoàn lại slchonhap nếu từ 'dadat' hoặc 'dagiao'
+        if (['dadat', 'dagiao'].includes(oldDathang.status)) {
+          for (const sp of oldDathang.sanpham) {
+            const incValue = parseFloat((sp.sldat ?? 0).toFixed(3));
+            if (incValue > 0) {
+              await prisma.tonKho.update({
+                where: { sanphamId: sp.idSP },
+                data: {
+                  slchonhap: { decrement: incValue },
+                },
+              });
+            }
+          }
+        }
+
+        // 6.3. Xóa phiếu kho nếu có
         const maphieuOld = `PX-${oldDathang.madncc}`;
         const phieuKho = await prisma.phieuKho.findUnique({
           where: { maphieu: maphieuOld },
@@ -1120,21 +1138,21 @@ async convertDathangImportToTransfer(
           });
         }
 
-        // 6.3. Cập nhật trạng thái đơn đặt hàng
+        // 6.4. Cập nhật trạng thái đơn đặt hàng
         return prisma.dathang.update({
           where: { id },
           data: {
-            status: 'huy',
+            status: data.status,
             khoId: khoId, // Update khoId
-            ghichu: data.ghichu || 'Đơn đặt hàng đã hủy',
+            ghichu: data.ghichu || `Đơn đặt hàng chuyển sang ${data.status}`,
             sanpham: {
               updateMany: oldDathang.sanpham.map((sp: any) => ({
                 where: { idSP: sp.idSP },
                 data: {
                   slgiao: 0,
                   slnhan: 0,
-                  slhuy: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                  ghichu: sp.ghichu || 'Hủy đơn đặt hàng',
+                  slhuy: data.status === 'huy' ? parseFloat((sp.sldat ?? 0).toFixed(3)) : 0,
+                  ghichu: sp.ghichu || `Chuyển sang ${data.status}`,
                 },
               })),
             },

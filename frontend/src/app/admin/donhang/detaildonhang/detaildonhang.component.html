@@ -4,10 +4,43 @@
   </button>
   <div class="p-2 font-bold truncate">{{ DetailDonhang()?.madonhang || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
-    <span *ngIf="DetailDonhang()?.status"
-      [class]="'px-3 py-1 rounded-full text-xs font-bold border ' + getStatusStyle(DetailDonhang()?.status)">
-      {{ TrangThaiDon[DetailDonhang()?.status] || DetailDonhang()?.status }}
-    </span>
+    <button [matMenuTriggerFor]="statusMenu" *ngIf="DetailDonhang()?.status"
+            class="status-badge"
+            [ngClass]="getStatusStyle(DetailDonhang()?.status)">
+      <span class="status-dot"></span>
+      {{ getStatusLabel(DetailDonhang()?.status) }}
+      <mat-icon class="!text-[10px] !ml-1 !h-2.5 !w-2.5">expand_more</mat-icon>
+    </button>
+    <mat-menu #statusMenu="matMenu" class="shadcn-menu">
+      <button mat-menu-item (click)="changeStatus('dadat')">
+        <mat-icon class="text-blue-500">pending</mat-icon>
+        <span>Đã Đặt</span>
+      </button>
+      <button mat-menu-item (click)="changeStatus('choxuly')">
+        <mat-icon class="text-orange-500">hourglass_empty</mat-icon>
+        <span>Chờ Xử Lý</span>
+      </button>
+      <button mat-menu-item (click)="changeStatus('dagiao')">
+        <mat-icon class="text-amber-500">local_shipping</mat-icon>
+        <span>Đã Giao</span>
+      </button>
+      <button mat-menu-item (click)="changeStatus('danhan')">
+        <mat-icon class="text-green-500">check_circle</mat-icon>
+        <span>Đã Nhận</span>
+      </button>
+      <button mat-menu-item (click)="changeStatus('hoanthanh')">
+        <mat-icon class="text-teal-500">verified</mat-icon>
+        <span>Hoàn Thành</span>
+      </button>
+      <button mat-menu-item (click)="changeStatus('khonggiao')">
+        <mat-icon class="text-slate-500">block</mat-icon>
+        <span>Không Giao</span>
+      </button>
+      <button mat-menu-item (click)="changeStatus('huy')">
+        <mat-icon class="text-red-500">cancel</mat-icon>
+        <span>Đã Hủy</span>
+      </button>
+    </mat-menu>
     <!-- <mat-slide-toggle [(ngModel)]="DetailDonhang().isActive" [disabled]="!isEdit()">{{DetailDonhang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle> -->
     <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>

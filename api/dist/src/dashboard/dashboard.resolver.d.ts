@@ -45,6 +45,7 @@ export declare class StagnantProductItem {
     status: string;
     hoursStagnant: number;
     oldestOrderCode?: string;
+    realStatus?: string;
     orderId?: string;
     quantity: number;
 }

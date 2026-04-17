@@ -1826,6 +1826,29 @@ export class ListDonhangComponent {
   }
   
   /**
+   * Count orders by status
+   */
+  countByStatus(status: string): number {
+    const orders = this.Listdonhang();
+    if (!Array.isArray(orders)) return 0;
+    return orders.filter((item: any) => item.status === status).length;
+  }
+
+  /**
+   * Filter orders by status
+   */
+  filterByStatus(status: string): void {
+    const orders = this.Listdonhang();
+    if (!Array.isArray(orders)) return;
+    
+    this.dataSource.data = orders.filter((item: any) => item.status === status);
+    
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  /**
    * Count delivered orders (dagiao, danhan, hoanthanh)
    * Safely handles signal value and ensures array type
    */
@@ -1838,26 +1861,26 @@ export class ListDonhangComponent {
   }
   
   /**
-   * Count undelivered orders (dadat)
+   * Count undelivered orders (dadat, choxuly, huy, khonggiao)
    * Safely handles signal value and ensures array type
    */
   countChuagiao(): number {
     const orders = this.Listdonhang();
     if (!Array.isArray(orders)) return 0;
     return orders.filter((item: any) => 
-      ['dadat', 'huy'].includes(item.status)
+      ['dadat', 'choxuly', 'huy', 'khonggiao', 'dangxuly'].includes(item.status)
     ).length;
   }
   
   /**
-   * Filter by delivered status (danhan, hoanthanh)
+   * Filter by delivered status (dagiao, danhan, hoanthanh)
    */
   filterDagiao(): void {
     const orders = this.Listdonhang();
     if (!Array.isArray(orders)) return;
     
     this.dataSource.data = orders.filter((item: any) => 
-      ['danhan', 'hoanthanh'].includes(item.status)
+      ['dagiao', 'danhan', 'hoanthanh'].includes(item.status)
     );
     
     if (this.dataSource.paginator) {
@@ -1866,14 +1889,14 @@ export class ListDonhangComponent {
   }
   
   /**
-   * Filter by undelivered status (dadat, dagiao, huy)
+   * Filter by undelivered status (dadat, choxuly, huy, khonggiao)
    */
   filterChuagiao(): void {
     const orders = this.Listdonhang();
     if (!Array.isArray(orders)) return;
     
     this.dataSource.data = orders.filter((item: any) => 
-      ['dadat', 'dagiao', 'huy'].includes(item.status)
+      ['dadat', 'choxuly', 'huy', 'khonggiao', 'dangxuly'].includes(item.status)
     );
     
     if (this.dataSource.paginator) {
@@ -1894,6 +1917,7 @@ export class ListDonhangComponent {
       this.dataSource.paginator.firstPage();
     }
   }
+
   
   /**
    * Format currency
@@ -2127,18 +2151,41 @@ export class ListDonhangComponent {
    * Lấy label hiển thị cho status
    */
   getStatusLabel(status: string): string {
-    const labels: { [key: string]: string } = {
-      'choxuly': 'Chờ xử lý',
-      'dangxuly': 'Đang xử lý',
-      'hoanthanh': 'Hoàn thành',
-      'huy': 'Đã hủy',
-      'dahuy': 'Đã hủy'
-    };
-    return labels[status] || status;
+    return (TrangThaiDon as any)[status?.toLowerCase()] || status;
   }
 
   /**
    * Lấy class CSS cho status badge
+   */
+  getStatusStyle(status: string): string {
+    const s = status?.toLowerCase();
+    switch (s) {
+      case 'dadat':
+        return 'status-dadat';
+      case 'dagiao':
+        return 'status-dagiao';
+      case 'danhan':
+        return 'status-danhan';
+      case 'hoanthanh':
+        return 'status-hoanthanh';
+      case 'choxuly':
+        return 'status-choxuly';
+      case 'dangxuly':
+        return 'status-choxuly'; // Same as pending
+      case 'khonggiao':
+        return 'status-khonggiao';
+      case 'huy':
+      case 'dahuy':
+        return 'status-huy';
+      case 'trahang':
+        return 'status-khonggiao';
+      default:
+        return 'status-khonggiao';
+    }
+  }
+
+  /**
+   * Lấy class CSS cho status badge (Legacy - preserved for compatibility)
    */
   getStatusClass(status: string): string {
     const classes: { [key: string]: string } = {

@@ -13,5 +13,7 @@ export declare enum StatusDonhang {
     DAGIAO = "dagiao",
     DANHAN = "danhan",
     HUY = "huy",
-    HOANTHANH = "hoanthanh"
+    HOANTHANH = "hoanthanh",
+    CHOXULY = "choxuly",
+    KHONGGIAO = "khonggiao"
 }
