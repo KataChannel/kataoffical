@@ -517,38 +517,41 @@ export class XuatnhaptonComponent implements OnDestroy {
             continue;
           }
 
-          const currentSltontt = Number(tonkho ? (tonkho.sltontt || 0) : 0);
+          const actualSysStock = Number(tonkho?.sltontt || 0);
+          const currentDbSlton = Number(tonkho?.slton || 0);
 
-          if (slton > currentSltontt) {
+          if (slton > actualSysStock) {
             phieuNhapDetails.push({
               sanphamId: sanpham.id,
-              soluong: slton - currentSltontt,
+              soluong: slton - actualSysStock,
             });
-          } else if (slton < currentSltontt) {
+          } else if (slton < actualSysStock) {
             phieuXuatDetails.push({
               sanphamId: sanpham.id,
-              soluong: currentSltontt - slton,
+              soluong: actualSysStock - slton,
             });
           } else {
             unchangedCount++;
           }
 
-          if (slton !== currentSltontt || slhuy > 0) {
+          // 🎯 FIX: Bao gồm cả các sản phẩm lệch giữa thực tế (Excel) và Sổ sách (DB slton) 
+          // để giải quyết các trường hợp "Ghost Stock" (Số ảo trong DB)
+          if (slton !== actualSysStock || slton !== currentDbSlton || slhuy > 0) {
             allChangedDetails.push({
               sanphamId: sanpham.id,
-              sltonhethong: currentSltontt,
+              sltonhethong: actualSysStock,
               sltonthucte: slton,
               slhuy: slhuy,
-              ghichu: slton > currentSltontt ? 'Điều chỉnh tăng từ Excel' : (slton < currentSltontt ? 'Điều chỉnh giảm từ Excel' : 'Cập nhật từ Excel'),
+              ghichu: slton !== currentDbSlton ? `✅ Fix lệch dữ liệu (Sổ cũ: ${currentDbSlton})` : (slton > actualSysStock ? 'Điều chỉnh tăng từ Excel' : (slton < actualSysStock ? 'Điều chỉnh giảm từ Excel' : 'Cập nhật từ Excel')),
             });
           }
 
-          if (slton !== currentSltontt) {
+          if (slton !== actualSysStock) {
             const warning = this.detectStockAnomalies(
               masp,
               sanpham.title || masp,
               slton,
-              currentSltontt
+              actualSysStock
             );
             if (warning) {
               danhSachCanhBao.push(warning);
@@ -561,16 +564,16 @@ export class XuatnhaptonComponent implements OnDestroy {
 
           if (slchonhap > 0 || slchogiao > 0) {
             // Kiểm tra rủi ro "Đếm lặp hàng đang về vào hàng tồn kho"
-            if (slchonhap > 0 && slton !== currentSltontt && slton >= (currentSltontt + slchonhap * 0.8)) {
+            if (slchonhap > 0 && slton !== actualSysStock && slton >= (actualSysStock + slchonhap * 0.8)) {
               danhSachCanhBao.push({
                 masp,
                 title: sanpham.title || sanpham.masp,
-                sltonCu: currentSltontt,
+                sltonCu: actualSysStock,
                 sltonMoi: slton,
-                chenhLech: slton - currentSltontt,
+                chenhLech: slton - actualSysStock,
                 loaiDieuChinh: 'tang',
                 mucDoNghiemTrong: 'cao',
-                lyDoCanhBao: `CẢNH BÁO ĐẾM LẶP: Đã chốt tăng ${slton - currentSltontt} kg trong khi có ${slchonhap} kg 'Hàng đang về' chưa xác nhận 'Đã nhận'. Rủi ro đếm lộn hàng trung chuyển!`,
+                lyDoCanhBao: `CẢNH BÁO ĐẾM LẶP: Đã chốt tăng ${slton - actualSysStock} kg trong khi có ${slchonhap} kg 'Hàng đang về' chưa xác nhận 'Đã nhận'. Rủi ro đếm lộn hàng trung chuyển!`,
                 slchonhap: slchonhap,
                 slchogiao: slchogiao
               });
@@ -643,9 +646,9 @@ export class XuatnhaptonComponent implements OnDestroy {
               danhSachCanhBao.push({
                 masp,
                 title: sanpham.title || sanpham.masp,
-                sltonCu: currentSltontt,
+                sltonCu: actualSysStock,
                 sltonMoi: slton,
-                chenhLech: Math.abs(slton - currentSltontt),
+                chenhLech: Math.abs(slton - actualSysStock),
                 loaiDieuChinh: 'khong_doi', 
                 mucDoNghiemTrong: (isLate || isSyncError) ? 'cao' : 'trung_binh', 
                 lyDoCanhBao: isLate ? `🚩 CẢNH BÁO TRỄ CHỨNG TỪ: ${warningMess} (Đơn cũ nhất từ ${new Date(oldestDate).toLocaleDateString('vi-VN')})` : warningMess,
@@ -848,6 +851,18 @@ export class XuatnhaptonComponent implements OnDestroy {
         masp, title, sltonCu, sltonMoi, chenhLech, loaiDieuChinh,
         mucDoNghiemTrong: 'trung_binh',
         lyDoCanhBao: `Giảm ${chenhLech.toLocaleString()} đơn vị → kiểm tra phiếu xuất kho`
+      };
+    }
+
+    // 🚩 CẢNH BÁO LỆCH SỔ SÁCH ÁO: Phát hiện lệch giữa Thực tế chốt và Sổ sách hiển thị
+    // Giúp người dùng nhận ra các sản phẩm bị "mất dấu"
+    if (Math.abs(sltonMoi - sltonCu) > 50) { 
+      return {
+        masp, title, sltonCu, sltonMoi, 
+        chenhLech: Math.abs(sltonMoi - sltonCu), 
+        loaiDieuChinh: sltonMoi > sltonCu ? 'tang' : 'giam',
+        mucDoNghiemTrong: 'cao',
+        lyDoCanhBao: `LỆCH DỮ LIỆU SỔ SÁCH: Thực tế chốt (${sltonMoi}) khác xa Sổ sách (${sltonCu}). Cần chốt để đồng bộ lại.`
       };
     }
 

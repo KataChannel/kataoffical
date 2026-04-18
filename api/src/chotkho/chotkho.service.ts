@@ -194,6 +194,65 @@ export class ChotkhoService {
         const sanphamMap = new Map(sanphams.map(s => [s.id, s]));
         const tonKhoMap = new Map(currentTonKhos.map(tk => [tk.sanphamId, tk]));
 
+        // 🚀 OPTIMIZATION 1: Fetch all SanphamKho in one go for all warehouses
+        const allSanphamKhoRecords = await prisma.sanphamKho.findMany({
+          where: { sanphamId: { in: sanphamIds } }
+        });
+        const spKhoBySanpham = new Map<string, any[]>();
+        allSanphamKhoRecords.forEach(r => {
+          const list = spKhoBySanpham.get(r.sanphamId) || [];
+          list.push(r);
+          spKhoBySanpham.set(r.sanphamId, list);
+        });
+
+        // 🚀 OPTIMIZATION 2: Group aggregator for pending inward/outward quantities
+        const [pendingInGroups, pendingOutGroups] = await Promise.all([
+          prisma.dathangsanpham.groupBy({
+            by: ['idSP'],
+            where: { dathang: { status: { in: ['dadat', 'dagiao'] } }, idSP: { in: sanphamIds } },
+            _sum: { slnhan: true, sldat: true }
+          }),
+          prisma.donhangsanpham.groupBy({
+            by: ['idSP'],
+            where: { donhang: { status: { in: ['dadat', 'dagiao'] } }, idSP: { in: sanphamIds } },
+            _sum: { slnhan: true, sldat: true }
+          })
+        ]);
+
+        const pendingInMap = new Map(pendingInGroups.map(g => [g.idSP, Math.max(0, Number(g._sum?.sldat || 0) - Number(g._sum?.slnhan || 0))]));
+        const pendingOutMap = new Map(pendingOutGroups.map(g => [g.idSP, Math.max(0, Number(g._sum?.sldat || 0) - Number(g._sum?.slnhan || 0))]));
+
+        // 🚀 OPTIMIZATION 3: Batch fetch oldest pending dates for all products
+        const [oldestInList, oldestOutList] = await Promise.all([
+          prisma.dathang.findMany({
+            where: {
+              status: { in: ['dadat', 'dagiao'] },
+              sanpham: { some: { idSP: { in: sanphamIds } } }
+            },
+            distinct: ['id'], // This is not quite right for finding oldest per product, 
+            // but we can fetch them and group in memory or just do a simpler approach.
+            orderBy: { createdAt: 'asc' },
+            select: { createdAt: true, sanpham: { select: { idSP: true } } }
+          }),
+          prisma.donhang.findMany({
+            where: {
+              status: { in: ['dadat', 'dagiao'] },
+              sanpham: { some: { idSP: { in: sanphamIds } } }
+            },
+            orderBy: { createdAt: 'asc' },
+            select: { createdAt: true, sanpham: { select: { idSP: true } } }
+          })
+        ]);
+
+        const oldestInMap = new Map<string, Date>();
+        oldestInList.forEach(o => o.sanpham.forEach(sp => {
+          if (!oldestInMap.has(sp.idSP)) oldestInMap.set(sp.idSP, o.createdAt);
+        }));
+        const oldestOutMap = new Map<string, Date>();
+        oldestOutList.forEach(o => o.sanpham.forEach(sp => {
+          if (!oldestOutMap.has(sp.idSP)) oldestOutMap.set(sp.idSP, o.createdAt);
+        }));
+
         // Validate sltonthucte is not negative and items exist
         for (const detail of details) {
           if (detail.sltonthucte < 0) {
@@ -265,48 +324,25 @@ export class ChotkhoService {
             }
           });
 
-          // 2. Cập nhật tồn kho tổng: Phải tính TỔNG từ tất cả các kho (Aggregate)
-          const allWarehouseStock = await prisma.sanphamKho.findMany({
-            where: { sanphamId: detail.sanphamId }
-          });
-          const totalStock = allWarehouseStock.reduce((acc, curr) => acc + Number(curr.soluong), 0);
+          // 2. Cập nhật tồn kho tổng: Sử dụng dữ liệu đã fetch sẵn + giá trị mới chốt
+          const currentSpKhoList = spKhoBySanpham.get(detail.sanphamId) || [];
+          
+          // Tính lại tổng tồn kho (ghi đè giá trị tại kho đang chốt)
+          let totalStock = 0;
+          let foundCurrentKho = false;
+          for (const sk of currentSpKhoList) {
+            if (sk.khoId === khoId) {
+              totalStock += Number(detail.sltonthucte);
+              foundCurrentKho = true;
+            } else {
+              totalStock += Number(sk.soluong);
+            }
+          }
+          if (!foundCurrentKho) totalStock += Number(detail.sltonthucte);
 
-          // 🎯 FIX: Tính toán lại slchonhap và slchogiao từ các đơn hàng thực tế
-          const [pendingInAgg, pendingOutAgg, oldestIn, oldestOut] = await Promise.all([
-            prisma.dathangsanpham.aggregate({
-              where: {
-                idSP: detail.sanphamId,
-                dathang: { status: { in: ['dadat', 'dagiao'] } }
-              },
-              _sum: { slnhan: true, sldat: true }
-            }),
-            prisma.donhangsanpham.aggregate({
-              where: {
-                idSP: detail.sanphamId,
-                donhang: { status: { in: ['dadat', 'dagiao'] } }
-              },
-              _sum: { slnhan: true, sldat: true }
-            }),
-            prisma.dathang.findFirst({
-                where: {
-                    status: { in: ['dadat', 'dagiao'] },
-                    sanpham: { some: { idSP: detail.sanphamId } }
-                },
-                orderBy: { createdAt: 'asc' },
-                select: { createdAt: true }
-            }),
-            prisma.donhang.findFirst({
-                where: {
-                    status: { in: ['dadat', 'dagiao'] },
-                    sanpham: { some: { idSP: detail.sanphamId } }
-                },
-                orderBy: { createdAt: 'asc' },
-                select: { createdAt: true }
-            })
-          ]);
-
-          const currentPendingIn = Number(pendingInAgg._sum?.sldat || 0) - Number(pendingInAgg._sum?.slnhan || 0);
-          const currentPendingOut = Number(pendingOutAgg._sum?.sldat || 0) - Number(pendingOutAgg._sum?.slnhan || 0);
+          // Lấy giá trị pending từ memory maps
+          const currentPendingIn = pendingInMap.get(detail.sanphamId) || 0;
+          const currentPendingOut = pendingOutMap.get(detail.sanphamId) || 0;
 
           const updatedTk = await prisma.tonKho.upsert({
             where: { sanphamId: detail.sanphamId },
@@ -314,21 +350,26 @@ export class ChotkhoService {
               sanphamId: detail.sanphamId,
               slton: new Decimal(totalStock),
               sltontt: new Decimal(totalStock),
-              slchogiao: new Decimal(Math.max(0, currentPendingOut)),
-              slchonhap: new Decimal(Math.max(0, currentPendingIn)),
+              slchogiao: new Decimal(currentPendingOut),
+              slchonhap: new Decimal(currentPendingIn),
             },
             update: {
               slton: new Decimal(totalStock),
               sltontt: new Decimal(totalStock),
-              slchogiao: new Decimal(Math.max(0, currentPendingOut)),
-              slchonhap: new Decimal(Math.max(0, currentPendingIn)),
+              slchogiao: new Decimal(currentPendingOut),
+              slchonhap: new Decimal(currentPendingIn),
               updatedAt: new Date()
             }
           });
 
-          // 🎯 GATHER WARNINGS (Optimized: No extra loop)
+          // 🎯 GATHER WARNINGS (Optimized: Using pre-fetched batch data)
           if (Number(updatedTk.slchonhap) > 0 || Number(updatedTk.slchogiao) > 0) {
-            const oldestDate = oldestIn?.createdAt || oldestOut?.createdAt;
+            const oldestDateIn = oldestInMap.get(detail.sanphamId);
+            const oldestDateOut = oldestOutMap.get(detail.sanphamId);
+            const oldestDate = (oldestDateIn && oldestDateOut) 
+              ? (oldestDateIn < oldestDateOut ? oldestDateIn : oldestDateOut)
+              : (oldestDateIn || oldestDateOut);
+
             const hoursDiff = oldestDate ? (Date.now() - new Date(oldestDate).getTime()) / (1000 * 60 * 60) : 0;
             
             pendingWarnings.push({
@@ -376,7 +417,7 @@ export class ChotkhoService {
           warnings: pendingWarnings
         };
       }, {
-        timeout: 30000,
+        timeout: 90000, // Tăng lên 90 giây cho các phiên chốt kho lớn (1000+ sản phẩm)
       });
 
       // Gửi Push Notification cho creator hoặc admin
