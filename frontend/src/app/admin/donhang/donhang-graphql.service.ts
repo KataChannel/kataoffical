@@ -542,7 +542,7 @@ export class DonhangGraphqlService {
       
       sieuThiOrders.forEach((order: any) => {
         (order.sanpham || []).forEach((sp: any) => {
-          if (!sp.isActive) return;
+          // Bỏ qua filter isActive
           const slGiao = Number(sp.slgiao || sp.sldat) || 0;
           hangSieuThiAOA.push([
             order.khachhang?.name || '',
@@ -559,7 +559,7 @@ export class DonhangGraphqlService {
       const thHangSieuThiMap = new Map<string, { title: string, dvt: string, qty: number }>();
       sieuThiOrders.forEach((order: any) => {
         (order.sanpham || []).forEach((sp: any) => {
-          if (!sp.isActive) return;
+          // Bỏ qua filter isActive
           const title = sp.sanpham?.title || 'Unknown';
           const slGiao = Number(sp.slgiao || sp.sldat) || 0;
           const existing = thHangSieuThiMap.get(title);
@@ -593,7 +593,7 @@ export class DonhangGraphqlService {
       
       khachLeOrders.forEach((order: any) => {
         (order.sanpham || []).forEach((sp: any) => {
-          if (!sp.isActive) return;
+          // Bỏ qua filter isActive
           const slGiao = Number(sp.slgiao || sp.sldat) || 0;
           hangKhachLeAOA.push([
             order.khachhang?.name || '',
@@ -608,14 +608,17 @@ export class DonhangGraphqlService {
 
       // --- SHEET 4: PHIẾU CHUYẾN (Tất cả đơn hàng) ---
       const phieuChuyenSheetData = allActiveOrders.map((order: any, index: number) => {
-        const activeProducts = (order.sanpham || []).filter((sp: any) => sp.isActive);
+        const activeProducts = (order.sanpham || []); // Không filter isActive để đảm bảo có số liệu
         const totalItems = activeProducts.length;
         
         // Số Lượng = Tổng SL Đặt
         const totalQty = activeProducts.reduce((sum: number, sp: any) => sum + (Number(sp.sldat) || 0), 0);
         
-        // Số Lượng TT = Tổng SL Giao (Thực Tế bốc đi)
-        const totalQtyTT = activeProducts.reduce((sum: number, sp: any) => sum + (Number(sp.slgiao || sp.sldat) || 0), 0);
+        // Số Lượng TT = Tổng SL Giao (Thực Tế bốc đi) - Ưu tiên slgiao, fallback sldat nếu slgiao chưa nhập (null/undefined)
+        const totalQtyTT = activeProducts.reduce((sum: number, sp: any) => {
+          const slActual = (sp.slgiao !== undefined && sp.slgiao !== null && sp.slgiao !== '') ? Number(sp.slgiao) : Number(sp.sldat);
+          return sum + (slActual || 0);
+        }, 0);
         
         // Trọng Tải = Tổng (loadpoint sản phẩm × SL Đặt)
         const totalLoadpoint = parseFloat(activeProducts.reduce((sum: number, sp: any) => sum + (Number(sp.sanpham?.loadpoint || 0) * Number(sp.sldat || 0)), 0).toFixed(3));
