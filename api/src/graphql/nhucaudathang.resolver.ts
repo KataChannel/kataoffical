@@ -140,7 +140,7 @@ export class NhuCauDatHangResolver {
         ngaygiao: { lte: end },
         status: { in: ['dadat', 'dagiao'] }, // Include pending and partially delivered
       },
-      select: { id: true, status: true },
+      select: { id: true, status: true, updatedAt: true },
     });
 
     const pendingDonhangIds = qualifyingDonhangs
@@ -347,15 +347,62 @@ export class NhuCauDatHangResolver {
 
           // Details
           Dathangs: dathangs,
-          Donhangs: [],
+          Donhangs: qualifyingDonhangs
+            .filter(dh => {
+              // Find if this order contains the current product
+              // We need to check the raw data or fetch it
+              // Actually, since we want to avoid N+1, we can pre-map Donhangs to products too
+              return true; // We'll filter this in the assembling part below
+            })
+            .map(dh => ({
+              id: dh.id,
+              status: dh.status,
+              // We'll add more fields if needed, but for now status is key
+            })),
           ghichu: sp.planningNote?.content || '',
         };
-      })
-      .sort((a, b) => b.Dathangs.length - a.Dathangs.length);
+      });
+
+    // ⚡ POST-PROCESSING: Since we have all qualifyingDonhangs, let's efficiently map them to products
+    // to avoid returning EVERY order for EVERY product (which would be huge)
+    const donhangsByProduct = new Map<string, any[]>();
+    
+    // We need the items to know which donhang belongs to which product
+    // Let's fetch the items for these qualifying donhangs
+    const donhangItems = await this.prisma.donhangsanpham.findMany({
+      where: { donhangId: { in: qualifyingDonhangs.map(d => d.id) } },
+      select: {
+        donhangId: true,
+        idSP: true,
+        slnhan: true,
+        sldat: true,
+      }
+    });
+
+    donhangItems.forEach(item => {
+      const dh = qualifyingDonhangs.find(d => d.id === item.donhangId);
+      if (dh) {
+        const arr = donhangsByProduct.get(item.idSP) || [];
+        arr.push({
+          id: dh.id,
+          status: dh.status,
+          slnhan: this.toNum(item.slnhan),
+          sldat: this.toNum(item.sldat),
+          updatedAt: dh.updatedAt
+        });
+        donhangsByProduct.set(item.idSP, arr);
+      }
+    });
+
+    // Re-assemble the final result with the correct Donhangs per product
+    const finalResult = result.map(item => ({
+      ...item,
+      Donhangs: donhangsByProduct.get(item.id) || []
+    }));
 
     return {
-      data: result,
-      totalCount: result.length,
+      data: finalResult,
+      totalCount: finalResult.length,
     };
   }
 

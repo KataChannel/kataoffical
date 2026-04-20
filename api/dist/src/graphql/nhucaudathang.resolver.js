@@ -97,7 +97,7 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
                 ngaygiao: { lte: end },
                 status: { in: ['dadat', 'dagiao'] },
             },
-            select: { id: true, status: true },
+            select: { id: true, status: true, updatedAt: true },
         });
         const pendingDonhangIds = qualifyingDonhangs
             .filter((d) => d.status === 'dadat')
@@ -247,14 +247,48 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
                 kho5: (kho5Id && skMap?.get(kho5Id)) || 0,
                 kho6: (kho6Id && skMap?.get(kho6Id)) || 0,
                 Dathangs: dathangs,
-                Donhangs: [],
+                Donhangs: qualifyingDonhangs
+                    .filter(dh => {
+                    return true;
+                })
+                    .map(dh => ({
+                    id: dh.id,
+                    status: dh.status,
+                })),
                 ghichu: sp.planningNote?.content || '',
             };
-        })
-            .sort((a, b) => b.Dathangs.length - a.Dathangs.length);
+        });
+        const donhangsByProduct = new Map();
+        const donhangItems = await this.prisma.donhangsanpham.findMany({
+            where: { donhangId: { in: qualifyingDonhangs.map(d => d.id) } },
+            select: {
+                donhangId: true,
+                idSP: true,
+                slnhan: true,
+                sldat: true,
+            }
+        });
+        donhangItems.forEach(item => {
+            const dh = qualifyingDonhangs.find(d => d.id === item.donhangId);
+            if (dh) {
+                const arr = donhangsByProduct.get(item.idSP) || [];
+                arr.push({
+                    id: dh.id,
+                    status: dh.status,
+                    slnhan: this.toNum(item.slnhan),
+                    sldat: this.toNum(item.sldat),
+                    updatedAt: dh.updatedAt
+                });
+                donhangsByProduct.set(item.idSP, arr);
+            }
+        });
+        const finalResult = result.map(item => ({
+            ...item,
+            Donhangs: donhangsByProduct.get(item.id) || []
+        }));
         return {
-            data: result,
-            totalCount: result.length,
+            data: finalResult,
+            totalCount: finalResult.length,
         };
     }
     async saveNhucauNote(sanphamId, content) {

@@ -5,6 +5,7 @@ export declare class NhuCauDatHangResolver {
     private toNum;
     getNhuCauDatHang(startDate: string, endDate: string): Promise<{
         data: {
+            Donhangs: any[];
             id: string;
             masp: string;
             title: string;
@@ -30,7 +31,6 @@ export declare class NhuCauDatHangResolver {
             kho5: number;
             kho6: number;
             Dathangs: any[];
-            Donhangs: never[];
             ghichu: string;
         }[];
         totalCount: number;

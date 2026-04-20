@@ -471,8 +471,11 @@ export class DonhangGraphqlService {
         return;
       }
 
-      // 1. FILTER: Lấy tất cả đơn hàng KHÔNG HỦY cho Vận Đơn & Phiếu Chuyển
-      let allActiveOrders = rawDonhangList.filter((order: any) => order.status !== 'huy');
+      // 1. FILTER: Chỉ lấy đơn hàng CHƯA HOÀN TẤT (Mới hoặc Đang giao) cho Vận Đơn & Phiếu Chuyển
+      // Lọc bỏ 'huy' (đã hủy), 'danhan' (khách đã nhận), 'hoanthanh' (đã xong hoàn toàn)
+      let allActiveOrders = rawDonhangList.filter((order: any) => 
+        !['huy', 'danhan', 'hoanthanh'].includes(order.status)
+      );
 
       // 🔥 LỌC THEO MÃ SẢN PHẨM (Nếu có truyền vào list mã)
       if (filterMaSPs && filterMaSPs.length > 0) {
@@ -709,8 +712,11 @@ export class DonhangGraphqlService {
           warehouses.forEach(w => khoValues[w.value] = 0);
           if (item.Dathangs) {
             item.Dathangs.forEach((dh: any) => {
-              const w = warehouses.find(kho => kho.makho === dh.makho);
-              if (w) khoValues[w.value] += (Number(dh.sldat) || 0);
+              // ⚡ CHỈ TÍNH HÀNG ĐANG VỀ (Chưa nhận)
+              if (dh.status === 'dadat' || dh.status === 'dagiao') {
+                const w = warehouses.find(kho => kho.makho === dh.makho);
+                if (w) khoValues[w.value] += (Number(dh.sldat) || 0);
+              }
             });
           }
 

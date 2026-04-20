@@ -1526,8 +1526,10 @@ export class NhucaudathangComponent {
             (kho: any) => kho.makho === dathang.makho
           );
           if (matchingKho) {
-            // Count regardless of status based on user request
-            khoValues[matchingKho.value] += dathang.sldat;
+            // ⚡ CHỈ TÍNH HÀNG ĐANG VỀ (Chưa nhận)
+            if (dathang.status === 'dadat' || dathang.status === 'dagiao') {
+              khoValues[matchingKho.value] += dathang.sldat;
+            }
           }
         });
       }
