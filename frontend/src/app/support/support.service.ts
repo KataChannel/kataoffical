@@ -153,6 +153,6 @@ export class SupportService {
     });
 
     // return this.http.post<any[]>(`${environment.APIURL}/support/upload`, formData, { headers });
-    return this.http.post<any[]>(`https://apitg.rausachtrangia.com/support/upload`, formData, { headers });
+    return this.http.post<any[]>(`https://apisandbox.rausachtrangia.com/support/upload`, formData, { headers });
   }
 }

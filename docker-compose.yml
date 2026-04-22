@@ -34,10 +34,10 @@ services:
     container_name: ${BE_CONTAINER_NAME:-rausach-backend}
     restart: always
     ports:
-      - "${BE_PORT:-53331}:3331"
+      - "${BE_PORT:-53333}:3331"
     environment:
       #- DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:5432/testdata?schema=public
-      - DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/rausachfinal?schema=public&connection_limit=25&pool_timeout=60&connect_timeout=20
+      - DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/testdata?schema=public&connection_limit=25&pool_timeout=60&connect_timeout=20
       - GOOGLE_CLIENT_ID=897974685698-efprsqffgop935h5d5l2lidle1go9i17.apps.googleusercontent.com
       - GOOGLE_CLIENT_SECRET=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
       - FACEBOOK_CLIENT_ID=your-facebook-client-id
@@ -45,7 +45,7 @@ services:
       - ZALO_APP_ID=your-zalo-app-id
       - ZALO_APP_SECRET=your-zalo-app-secret
       - BASE_URL=https://tg.rausachtrangia.com
-      - SERVER_URL=https://apitg.rausachtrangia.com
+      - SERVER_URL=https://apisandbox.rausachtrangia.com
       - PORT=3331
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -69,7 +69,7 @@ services:
     container_name: ${FE_CONTAINER_NAME:-rausach-frontend}
     restart: always
     ports:
-      - "${FE_PORT:-54301}:4301"
+      - "${FE_PORT:-54303}:4301"
     environment:
       - NODE_ENV=production
 

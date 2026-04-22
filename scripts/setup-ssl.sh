@@ -31,7 +31,7 @@ if systemctl is-active --quiet nginx; then
         echo "🔒 HTTPS is now enabled for:"
         echo "   - https://tg.rausachtrangia.com"
         echo "   - https://media.rausachtrangia.com"
-        echo "   - https://apitg.rausachtrangia.com"
+        echo "   - https://apisandbox.rausachtrangia.com"
         
         # Test HTTPS
         echo "🧪 Testing HTTPS connections..."
@@ -47,7 +47,7 @@ if systemctl is-active --quiet nginx; then
             echo "⚠️ HTTPS test failed for media.rausachtrangia.com"
         fi
         
-        if curl -Is https://apitg.rausachtrangia.com | head -1 | grep -q "200"; then
+        if curl -Is https://apisandbox.rausachtrangia.com | head -1 | grep -q "200"; then
             echo "✅ HTTPS working for apitg.rausachtrangia.com"
         else
             echo "⚠️ HTTPS test failed for apitg.rausachtrangia.com"
