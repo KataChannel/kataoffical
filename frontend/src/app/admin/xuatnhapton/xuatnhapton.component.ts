@@ -517,38 +517,44 @@ export class XuatnhaptonComponent implements OnDestroy {
             continue;
           }
 
+          // ✅ QUAN TRỌNG: Lấy cả 2 giá trị tồn kho để so sánh
+          const currentSlton = Number(tonkho ? (tonkho.slton || 0) : 0);
           const currentSltontt = Number(tonkho ? (tonkho.sltontt || 0) : 0);
 
-          if (slton > currentSltontt) {
+          // So sánh với slton (số lượng thực tế đang hiển thị trên bảng) để quyết định loại điều chỉnh
+          if (slton > currentSlton) {
             phieuNhapDetails.push({
               sanphamId: sanpham.id,
-              soluong: slton - currentSltontt,
+              soluong: slton - currentSlton,
             });
-          } else if (slton < currentSltontt) {
+          } else if (slton < currentSlton) {
             phieuXuatDetails.push({
               sanphamId: sanpham.id,
-              soluong: currentSltontt - slton,
+              soluong: currentSlton - slton,
             });
           } else {
             unchangedCount++;
           }
 
-          if (slton !== currentSltontt || slhuy > 0) {
+          // ✅ PHÁT HIỆN LỆCH: Nếu slton (Excel) khác slton (Hệ thống) HOẶC khác sltontt (Hệ thống)
+          // hoặc có số lượng hủy thì đều phải đưa vào danh sách cập nhật.
+          // Điều này giúp sửa lỗi âm kho khi slton = -668 nhưng sltontt = 0.
+          if (slton !== currentSlton || slton !== currentSltontt || slhuy > 0) {
             allChangedDetails.push({
               sanphamId: sanpham.id,
-              sltonhethong: currentSltontt,
+              sltonhethong: currentSlton, // Sử dụng slton làm baseline hệ thống để tính lệch
               sltonthucte: slton,
               slhuy: slhuy,
-              ghichu: slton > currentSltontt ? 'Điều chỉnh tăng từ Excel' : (slton < currentSltontt ? 'Điều chỉnh giảm từ Excel' : 'Cập nhật từ Excel'),
+              ghichu: slton > currentSlton ? 'Điều chỉnh tăng từ Excel' : (slton < currentSlton ? 'Điều chỉnh giảm từ Excel' : 'Cập nhật từ Excel'),
             });
           }
 
-          if (slton !== currentSltontt) {
+          if (slton !== currentSlton) {
             const warning = this.detectStockAnomalies(
               masp,
               sanpham.title || masp,
               slton,
-              currentSltontt
+              currentSlton
             );
             if (warning) {
               danhSachCanhBao.push(warning);

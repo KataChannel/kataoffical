@@ -123,8 +123,8 @@ export class NhuCauDatHangResolver {
     // Dathang summary based on date range + any pending older orders
     const summaryDathangs = await this.prisma.dathang.findMany({
       where: {
-        ngaynhan: { lte: end },
-        status: { in: ['dadat'] }, // Only include pending NCC orders (Hàng đang về)
+        ngaynhan: { gte: start, lte: end },
+        status: { in: ['dadat', 'dagiao', 'danhan'] }, // Include pending and delivered NCC orders
         isActive: true,
       },
       select: { id: true, status: true },
@@ -137,8 +137,8 @@ export class NhuCauDatHangResolver {
     // Filter for customer orders scheduled for or before today and not fully processed
     const qualifyingDonhangs = await this.prisma.donhang.findMany({
       where: {
-        ngaygiao: { lte: end },
-        status: { in: ['dadat', 'dagiao'] }, // Include pending and partially delivered
+        ngaygiao: { gte: start, lte: end },
+        status: { in: ['dadat', 'dagiao', 'danhan', 'hoanthanh'] }, // Include all relevant statuses for the range
       },
       select: { id: true, status: true, updatedAt: true },
     });
@@ -168,20 +168,20 @@ export class NhuCauDatHangResolver {
             `
           : Promise.resolve([]),
 
-        // Customer PENDING totals for this range
+        // Customer PENDING totals for this range (Subtract slhuy)
         pendingDonhangIds.length > 0
           ? this.prisma.$queryRaw<{ idSP: string; total: number }[]>`
-              SELECT "idSP", CAST(COALESCE(SUM("sldat"::numeric), 0) AS float8) as total
+              SELECT "idSP", CAST(COALESCE(SUM(("sldat"::numeric - "slhuy"::numeric)), 0) AS float8) as total
               FROM "Donhangsanpham"
               WHERE "donhangId" = ANY(${pendingDonhangIds})
               GROUP BY "idSP"
             `
           : Promise.resolve([]),
 
-        // Customer DELIVERED totals for this range
+        // Customer DELIVERED totals for this range (Use slnhan or sldat if slnhan is 0)
         deliveredDonhangIds.length > 0
           ? this.prisma.$queryRaw<{ idSP: string; total: number }[]>`
-              SELECT "idSP", CAST(COALESCE(SUM("sldat"::numeric), 0) AS float8) as total
+              SELECT "idSP", CAST(COALESCE(SUM(CASE WHEN "slnhan" > 0 THEN "slnhan" ELSE "sldat" END), 0) AS float8) as total
               FROM "Donhangsanpham"
               WHERE "donhangId" = ANY(${deliveredDonhangIds})
               GROUP BY "idSP"

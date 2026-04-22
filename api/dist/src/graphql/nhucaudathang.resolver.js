@@ -84,8 +84,8 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
         ]);
         const summaryDathangs = await this.prisma.dathang.findMany({
             where: {
-                ngaynhan: { lte: end },
-                status: { in: ['dadat'] },
+                ngaynhan: { gte: start, lte: end },
+                status: { in: ['dadat', 'dagiao', 'danhan'] },
                 isActive: true,
             },
             select: { id: true, status: true },
@@ -94,8 +94,8 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
         const qualifyingDathangIds = [...summaryDathangIds];
         const qualifyingDonhangs = await this.prisma.donhang.findMany({
             where: {
-                ngaygiao: { lte: end },
-                status: { in: ['dadat', 'dagiao'] },
+                ngaygiao: { gte: start, lte: end },
+                status: { in: ['dadat', 'dagiao', 'danhan', 'hoanthanh'] },
             },
             select: { id: true, status: true, updatedAt: true },
         });
@@ -116,7 +116,7 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
                 : Promise.resolve([]),
             pendingDonhangIds.length > 0
                 ? this.prisma.$queryRaw `
-              SELECT "idSP", CAST(COALESCE(SUM("sldat"::numeric), 0) AS float8) as total
+              SELECT "idSP", CAST(COALESCE(SUM(("sldat"::numeric - "slhuy"::numeric)), 0) AS float8) as total
               FROM "Donhangsanpham"
               WHERE "donhangId" = ANY(${pendingDonhangIds})
               GROUP BY "idSP"
@@ -124,7 +124,7 @@ let NhuCauDatHangResolver = class NhuCauDatHangResolver {
                 : Promise.resolve([]),
             deliveredDonhangIds.length > 0
                 ? this.prisma.$queryRaw `
-              SELECT "idSP", CAST(COALESCE(SUM("sldat"::numeric), 0) AS float8) as total
+              SELECT "idSP", CAST(COALESCE(SUM(CASE WHEN "slnhan" > 0 THEN "slnhan" ELSE "sldat" END), 0) AS float8) as total
               FROM "Donhangsanpham"
               WHERE "donhangId" = ANY(${deliveredDonhangIds})
               GROUP BY "idSP"

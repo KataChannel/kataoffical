@@ -877,11 +877,30 @@ let DathangService = class DathangService {
                         });
                     }
                 }
+                const maphieuNhapChuan = `PN-${oldDathang.madncc}-${this.formatDateForFilename()}`;
+                await prisma.phieuKho.create({
+                    data: {
+                        maphieu: maphieuNhapChuan,
+                        ngay: new Date(data.ngaynhan || new Date()),
+                        type: 'nhap',
+                        khoId: khoId,
+                        madncc: oldDathang.madncc,
+                        ghichu: `Nhập kho tự động từ đơn đặt hàng ${oldDathang.madncc}`,
+                        isActive: data.isActive ?? true,
+                        sanpham: {
+                            create: data.sanpham.map((item) => ({
+                                sanphamId: item.idSP,
+                                soluong: parseFloat((Number(item.slnhan) ?? 0).toFixed(3)),
+                                ghichu: item.ghichu,
+                            })),
+                        },
+                    },
+                });
                 if (shortageItems.length > 0) {
-                    const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
+                    const maphieuShortage = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
                     const phieuKhoData = {
-                        maphieu: maphieuNhap,
-                        ngay: new Date(data.ngaynhan),
+                        maphieu: maphieuShortage,
+                        ngay: new Date(data.ngaynhan || new Date()),
                         type: 'xuat',
                         khoId: khoId,
                         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
@@ -1082,11 +1101,30 @@ let DathangService = class DathangService {
                         });
                     }
                 }
+                const maphieuNhapChuan = `PN-${oldDathang.madncc}-${this.formatDateForFilename()}`;
+                await prisma.phieuKho.create({
+                    data: {
+                        maphieu: maphieuNhapChuan,
+                        ngay: new Date(data.ngaynhan || new Date()),
+                        type: 'nhap',
+                        khoId: khoId,
+                        madncc: oldDathang.madncc,
+                        ghichu: `Nhập kho tự động từ đơn đặt hàng ${oldDathang.madncc} (Bỏ qua bước Đã giao)`,
+                        isActive: data.isActive ?? true,
+                        sanpham: {
+                            create: data.sanpham.map((item) => ({
+                                sanphamId: item.idSP ?? item.id,
+                                soluong: parseFloat((Number(item.slnhan) ?? 0).toFixed(3)),
+                                ghichu: item.ghichu,
+                            })),
+                        },
+                    },
+                });
                 if (shortageItems.length > 0) {
-                    const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
+                    const maphieuShortage = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
                     const phieuKhoData = {
-                        maphieu: maphieuNhap,
-                        ngay: new Date(data.ngaynhan),
+                        maphieu: maphieuShortage,
+                        ngay: new Date(data.ngaynhan || new Date()),
                         type: 'xuat',
                         khoId: khoId,
                         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
