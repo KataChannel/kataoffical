@@ -91,6 +91,14 @@ let ChotkhoController = class ChotkhoController {
             throw new common_1.HttpException(error.message || 'Delete failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async getPendingOrders(khoId) {
+        try {
+            return await this.chotkhoService.getPendingOrders(khoId);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Get pending orders failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 };
 exports.ChotkhoController = ChotkhoController;
 __decorate([
@@ -222,6 +230,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ChotkhoController.prototype, "remove", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Get pending orders for quick reconciliation' }),
+    (0, swagger_1.ApiParam)({ name: 'khoId', type: String }),
+    (0, common_1.Get)('pending-orders/:khoId'),
+    __param(0, (0, common_1.Param)('khoId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "getPendingOrders", null);
 exports.ChotkhoController = ChotkhoController = __decorate([
     (0, swagger_1.ApiTags)('chotkho'),
     (0, common_1.Controller)('chotkho'),

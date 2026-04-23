@@ -222,6 +222,40 @@ let DashboardService = class DashboardService {
             },
         };
     }
+    async getInventoryDiscrepancies() {
+        const negativeStock = await this.prisma.tonKho.findMany({
+            where: { slton: { lt: 0 } },
+            include: { sanpham: true }
+        });
+        const recentDiscrepancies = await this.prisma.chotkhodetail.findMany({
+            where: {
+                chenhlech: { not: 0 },
+                chotkho: { isActive: true }
+            },
+            take: 20,
+            orderBy: { ngaychot: 'desc' },
+            include: { sanpham: true, chotkho: true }
+        });
+        return {
+            negativeStock: negativeStock.filter(item => item.sanphamId && item.sanpham).map(item => ({
+                id: item.sanphamId,
+                title: item.sanpham.title,
+                masp: item.sanpham.masp,
+                slton: Number(item.slton),
+                type: 'TỒN ÂM (QUÊN NHẬP)'
+            })),
+            discrepancies: recentDiscrepancies.filter(item => item.sanphamId && item.sanpham).map(item => ({
+                id: item.sanphamId,
+                title: item.sanpham.title,
+                masp: item.sanpham.masp,
+                chenhlech: Number(item.chenhlech),
+                sltonhethong: Number(item.sltonhethong),
+                sltonthucte: Number(item.sltonthucte),
+                ngaychot: item.ngaychot,
+                type: 'SAI LỆCH KIỂM KÊ'
+            }))
+        };
+    }
 };
 exports.DashboardService = DashboardService;
 exports.DashboardService = DashboardService = __decorate([

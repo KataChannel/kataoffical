@@ -88,6 +88,33 @@ export class TopProductItem {
   totalValue: number;
 }
 
+@ObjectType()
+export class InventoryDiscrepancyItem {
+  @Field(() => String)
+  id: string;
+
+  @Field(() => String)
+  title: string;
+
+  @Field(() => String, { nullable: true })
+  masp?: string;
+
+  @Field(() => Float)
+  chenhlech: number;
+
+  @Field(() => Float)
+  sltonhethong: number;
+
+  @Field(() => Float)
+  sltonthucte: number;
+
+  @Field(() => String)
+  type: string;
+
+  @Field(() => String, { nullable: true })
+  ngaychot?: string;
+}
+
 @Injectable()
 @Resolver('Dashboard')
 export class DashboardResolver {
@@ -443,6 +470,62 @@ export class DashboardResolver {
       oldestOrderCode: item.orderCode,
       quantity: Number(item.quantity) || 0
     }));
+  }
+
+  @Query(() => [InventoryDiscrepancyItem])
+  async getInventoryDiscrepancies(): Promise<InventoryDiscrepancyItem[]> {
+    // 1. Tìm các sản phẩm có tồn kho hệ thống bị âm (Dấu hiệu quên xác nhận nhập hàng)
+    const negativeStock = await this.prisma.tonKho.findMany({
+      where: { slton: { lt: 0 } },
+      include: { sanpham: true }
+    });
+
+    // 2. Tìm các sản phẩm có chênh lệch lớn trong lần chốt kho gần nhất
+    const recentDiscrepancies = await this.prisma.chotkhodetail.findMany({
+      where: {
+        chenhlech: { not: 0 },
+        chotkho: { isActive: true }
+      },
+      take: 20,
+      orderBy: { ngaychot: 'desc' },
+      include: { sanpham: true, chotkho: true }
+    });
+
+    const result: InventoryDiscrepancyItem[] = [];
+
+    // Add negative stocks
+    negativeStock.forEach(item => {
+      if (item.sanphamId && item.sanpham) {
+        result.push({
+          id: item.sanphamId,
+          title: item.sanpham.title,
+          masp: item.sanpham.masp,
+          chenhlech: 0,
+          sltonhethong: Number(item.slton),
+          sltonthucte: 0,
+          type: 'TỒN ÂM (QUÊN NHẬP)',
+          ngaychot: new Date().toISOString()
+        });
+      }
+    });
+
+    // Add discrepancies
+    recentDiscrepancies.forEach(item => {
+      if (item.sanphamId && item.sanpham && item.chotkho) {
+        result.push({
+          id: item.sanphamId,
+          title: item.sanpham.title,
+          masp: item.sanpham.masp,
+          chenhlech: Number(item.chenhlech),
+          sltonhethong: Number(item.sltonhethong),
+          sltonthucte: Number(item.sltonthucte),
+          type: 'SAI LỆCH KIỂM KÊ',
+          ngaychot: item.chotkho.ngaychot.toISOString()
+        });
+      }
+    });
+
+    return result;
   }
 }
 

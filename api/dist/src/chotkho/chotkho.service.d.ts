@@ -17,6 +17,80 @@ export declare class ChotkhoService {
         currentCalc: number;
         history: any[];
     }>;
+    getPendingOrders(khoId: string): Promise<({
+        sanpham: ({
+            sanpham: {
+                id: string;
+                title: string;
+                ghichu: string | null;
+                order: number | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                vat: Decimal | null;
+                subtitle: string | null;
+                giaban: Decimal;
+                title2: string | null;
+                slug: string | null;
+                masp: string;
+                giagoc: Decimal;
+                dvt: string | null;
+                hinhanh: string | null;
+                loadpoint: Decimal | null;
+                soluong: Decimal | null;
+                soluongkho: Decimal | null;
+                haohut: Decimal;
+            };
+        } & {
+            id: string;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            idSP: string;
+            sldat: Decimal;
+            slgiao: Decimal;
+            slnhan: Decimal;
+            slhuy: Decimal;
+            ttdat: Decimal;
+            ttgiao: Decimal;
+            ttnhan: Decimal;
+            dathangId: string;
+            gianhap: Decimal;
+        })[];
+        nhacungcap: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            isshowvat: boolean;
+            name: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            email: string | null;
+            tenfile: string | null;
+            mancc: string;
+            manccold: string | null;
+        } | null;
+    } & {
+        id: string;
+        title: string | null;
+        type: string | null;
+        ghichu: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        printCount: number | null;
+        order: number | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date | null;
+        lydohuy: string | null;
+        khoId: string | null;
+        subtitle: string | null;
+        madncc: string | null;
+        ngaynhan: Date | null;
+        ngaynhanEnd: Date | null;
+        nhacungcapId: string | null;
+    })[]>;
     create(inventoryData: {
         ngaychot?: Date;
         title?: string;

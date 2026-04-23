@@ -106,6 +106,27 @@ export class ChotkhoService {
   }
 
   /**
+   * 🎯 NEW: Lấy danh sách các đơn hàng chưa nhận (Dadat) để hỗ trợ chốt kho nhanh
+   */
+  async getPendingOrders(khoId: string) {
+    return await this.prisma.dathang.findMany({
+      where: {
+        khoId: khoId,
+        status: 'dadat'
+      },
+      include: {
+        sanpham: {
+          include: {
+            sanpham: true
+          }
+        },
+        nhacungcap: true
+      },
+      orderBy: { createdAt: 'asc' }
+    });
+  }
+
+  /**
    * 🎯 CREATE METHOD: Tạo chốt kho với master-detail structure
    * Master: Chotkho (ngaychot, title, ghichu, khoId, userId)
    * Details: Chotkhodetail (sanphamId, sltonhethong, sltonthucte, slhuy, chenhlech)

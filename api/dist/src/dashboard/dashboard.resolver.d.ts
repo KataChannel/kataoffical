@@ -34,6 +34,16 @@ export declare class TopProductItem {
     totalQuantity: number;
     totalValue: number;
 }
+export declare class InventoryDiscrepancyItem {
+    id: string;
+    title: string;
+    masp?: string;
+    chenhlech: number;
+    sltonhethong: number;
+    sltonthucte: number;
+    type: string;
+    ngaychot?: string;
+}
 export declare class DashboardResolver {
     private prisma;
     constructor(prisma: PrismaService);
@@ -47,6 +57,7 @@ export declare class DashboardResolver {
     topProductsByValue(batdau: string, ketthuc: string, limit: number): Promise<TopProductItem[]>;
     topCustomers(batdau: string, ketthuc: string, limit: number): Promise<TopCustomerItem[]>;
     getStagnantProducts(limit?: number): Promise<StagnantProductItem[]>;
+    getInventoryDiscrepancies(): Promise<InventoryDiscrepancyItem[]>;
 }
 export declare class StagnantProductItem {
     sanpham: SanphamInfo;

@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StagnantProductItem = exports.DashboardResolver = exports.TopProductItem = exports.SanphamInfo = exports.TopCustomerItem = exports.DailyMonthlyReportItem = exports.AggregateResult = exports.AggregateSum = exports.AggregateCount = void 0;
+exports.StagnantProductItem = exports.DashboardResolver = exports.InventoryDiscrepancyItem = exports.TopProductItem = exports.SanphamInfo = exports.TopCustomerItem = exports.DailyMonthlyReportItem = exports.AggregateResult = exports.AggregateSum = exports.AggregateCount = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const common_1 = require("@nestjs/common");
@@ -143,6 +143,44 @@ __decorate([
 exports.TopProductItem = TopProductItem = __decorate([
     (0, graphql_2.ObjectType)()
 ], TopProductItem);
+let InventoryDiscrepancyItem = class InventoryDiscrepancyItem {
+};
+exports.InventoryDiscrepancyItem = InventoryDiscrepancyItem;
+__decorate([
+    (0, graphql_2.Field)(() => String),
+    __metadata("design:type", String)
+], InventoryDiscrepancyItem.prototype, "id", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => String),
+    __metadata("design:type", String)
+], InventoryDiscrepancyItem.prototype, "title", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => String, { nullable: true }),
+    __metadata("design:type", String)
+], InventoryDiscrepancyItem.prototype, "masp", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => graphql_2.Float),
+    __metadata("design:type", Number)
+], InventoryDiscrepancyItem.prototype, "chenhlech", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => graphql_2.Float),
+    __metadata("design:type", Number)
+], InventoryDiscrepancyItem.prototype, "sltonhethong", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => graphql_2.Float),
+    __metadata("design:type", Number)
+], InventoryDiscrepancyItem.prototype, "sltonthucte", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => String),
+    __metadata("design:type", String)
+], InventoryDiscrepancyItem.prototype, "type", void 0);
+__decorate([
+    (0, graphql_2.Field)(() => String, { nullable: true }),
+    __metadata("design:type", String)
+], InventoryDiscrepancyItem.prototype, "ngaychot", void 0);
+exports.InventoryDiscrepancyItem = InventoryDiscrepancyItem = __decorate([
+    (0, graphql_2.ObjectType)()
+], InventoryDiscrepancyItem);
 let DashboardResolver = class DashboardResolver {
     constructor(prisma) {
         this.prisma = prisma;
@@ -407,6 +445,51 @@ let DashboardResolver = class DashboardResolver {
             quantity: Number(item.quantity) || 0
         }));
     }
+    async getInventoryDiscrepancies() {
+        const negativeStock = await this.prisma.tonKho.findMany({
+            where: { slton: { lt: 0 } },
+            include: { sanpham: true }
+        });
+        const recentDiscrepancies = await this.prisma.chotkhodetail.findMany({
+            where: {
+                chenhlech: { not: 0 },
+                chotkho: { isActive: true }
+            },
+            take: 20,
+            orderBy: { ngaychot: 'desc' },
+            include: { sanpham: true, chotkho: true }
+        });
+        const result = [];
+        negativeStock.forEach(item => {
+            if (item.sanphamId && item.sanpham) {
+                result.push({
+                    id: item.sanphamId,
+                    title: item.sanpham.title,
+                    masp: item.sanpham.masp,
+                    chenhlech: 0,
+                    sltonhethong: Number(item.slton),
+                    sltonthucte: 0,
+                    type: 'TỒN ÂM (QUÊN NHẬP)',
+                    ngaychot: new Date().toISOString()
+                });
+            }
+        });
+        recentDiscrepancies.forEach(item => {
+            if (item.sanphamId && item.sanpham && item.chotkho) {
+                result.push({
+                    id: item.sanphamId,
+                    title: item.sanpham.title,
+                    masp: item.sanpham.masp,
+                    chenhlech: Number(item.chenhlech),
+                    sltonhethong: Number(item.sltonhethong),
+                    sltonthucte: Number(item.sltonthucte),
+                    type: 'SAI LỆCH KIỂM KÊ',
+                    ngaychot: item.chotkho.ngaychot.toISOString()
+                });
+            }
+        });
+        return result;
+    }
 };
 exports.DashboardResolver = DashboardResolver;
 __decorate([
@@ -486,6 +569,12 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], DashboardResolver.prototype, "getStagnantProducts", null);
+__decorate([
+    (0, graphql_1.Query)(() => [InventoryDiscrepancyItem]),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], DashboardResolver.prototype, "getInventoryDiscrepancies", null);
 exports.DashboardResolver = DashboardResolver = __decorate([
     (0, common_1.Injectable)(),
     (0, graphql_1.Resolver)('Dashboard'),

@@ -43,4 +43,9 @@ export class DashboardController {
       return this.dashboardService.getDonhang(query);
   }
 
+  @Get('inventory-discrepancies') // 🎯 NEW
+  getInventoryDiscrepancies() {
+      return this.dashboardService.getInventoryDiscrepancies();
+  }
+
 }

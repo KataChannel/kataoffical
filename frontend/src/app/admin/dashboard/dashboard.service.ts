@@ -52,6 +52,17 @@ export interface StagnantProductData {
   quantity: number;
 }
 
+export interface InventoryDiscrepancyData {
+  id: string;
+  title: string;
+  masp: string;
+  chenhlech: number;
+  sltonhethong: number;
+  sltonthucte: number;
+  type: string;
+  ngaychot: string;
+}
+
 // GraphQL Queries
 const GET_COMPREHENSIVE_DASHBOARD = gql`
   query GetComprehensiveDashboard($batdau: String!, $ketthuc: String!) {
@@ -151,6 +162,21 @@ const GET_STAGNANT_PRODUCTS = gql`
       orderId
       oldestOrderCode
       quantity
+    }
+  }
+`;
+
+const GET_INVENTORY_DISCREPANCIES = gql`
+  query GetInventoryDiscrepancies {
+    getInventoryDiscrepancies {
+      id
+      title
+      masp
+      chenhlech
+      sltonhethong
+      sltonthucte
+      type
+      ngaychot
     }
   }
 `;
@@ -307,6 +333,20 @@ export class DashboardService {
       }
     }).pipe(
       map((result: any) => result.data.topCustomers || [])
+    );
+  }
+
+  /**
+   * Danh sách sai lệch tồn kho
+   */
+  getInventoryDiscrepancies(): Observable<InventoryDiscrepancyData[]> {
+    return this.apollo.query({
+      query: GET_INVENTORY_DISCREPANCIES,
+      context: {
+        headers: this.getHeaders()
+      }
+    }).pipe(
+      map((result: any) => result.data.getInventoryDiscrepancies || [])
     );
   }
 

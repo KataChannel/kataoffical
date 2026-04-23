@@ -745,11 +745,11 @@ export class DonhangGraphqlService {
             khachdat: khachdat,
             khachgiao: khachgiao,
             khachhuy: item.khachhuy || 0,
-            slton: parseFloat((tongkho - khachgiao).toFixed(3)),
+            slton: tongkho,
             tongkho: tongkho,
             sltontt: Number(item.sltontt) || 0,
             slsnapshot: Number(item.slsnapshot) || 0,
-            chenhlech: parseFloat((tongkho - khachgiao - (Number(item.sltontt) || 0)).toFixed(3)),
+            chenhlech: parseFloat((tongkho - (Number(item.sltontt) || 0)).toFixed(3)),
             ...khoValues,
             haohut: item.haohut || 0,
             slhaohut: slhaohut

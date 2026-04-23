@@ -148,13 +148,18 @@ let DathangService = class DathangService {
                 let computedGoiy = 0;
                 if (item.sanpham.TonKho && item.sanpham.TonKho[0]) {
                     const tonkho = item.sanpham.TonKho[0];
-                    computedGoiy = (Number(tonkho.slton) - Number(tonkho.slchogiao) + Number(tonkho.slchonhap))
-                        * (1 + Number(item.sanpham.haohut) / 100);
+                    const expectedStock = Number(tonkho.slton) - Number(tonkho.slchogiao) + Number(tonkho.slchonhap);
+                    if (expectedStock < 0) {
+                        computedGoiy = Math.abs(expectedStock) * (1 + Number(item.sanpham.haohut) / 100);
+                    }
+                    else {
+                        computedGoiy = 0;
+                    }
                 }
                 return {
                     ...item.sanpham,
                     idSP: item.idSP,
-                    goiy: Math.abs(computedGoiy),
+                    goiy: computedGoiy,
                     sldat: Number(item.sldat),
                     slgiao: Number(item.slgiao),
                     slnhan: Number(item.slnhan),

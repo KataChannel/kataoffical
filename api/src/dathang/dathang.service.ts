@@ -161,13 +161,22 @@ export class DathangService {
         let computedGoiy = 0;
         if (item.sanpham.TonKho && item.sanpham.TonKho[0]) {
           const tonkho = item.sanpham.TonKho[0];
-          computedGoiy = (Number(tonkho.slton) - Number(tonkho.slchogiao) + Number(tonkho.slchonhap))
-            * (1 + Number(item.sanpham.haohut) / 100);
+          // 🎯 FIX LOGIC GOIY: Mục tiêu là bù đắp phần còn thiếu để về 0 (hoặc tồn an toàn)
+          // Dự kiến tồn = Tồn hiện tại - Chờ giao + Chờ nhập
+          const expectedStock = Number(tonkho.slton) - Number(tonkho.slchogiao) + Number(tonkho.slchonhap);
+          
+          if (expectedStock < 0) {
+            // Nếu dự kiến âm, gợi ý nhập đúng phần âm đó + bù hao hụt
+            computedGoiy = Math.abs(expectedStock) * (1 + Number(item.sanpham.haohut) / 100);
+          } else {
+            // Nếu dự kiến vẫn còn dương, không cần gợi ý nhập thêm (tránh thừa hàng)
+            computedGoiy = 0;
+          }
         }
         return {
           ...item.sanpham,
           idSP: item.idSP,
-          goiy: Math.abs(computedGoiy),
+          goiy: computedGoiy, // 🎯 Đã bỏ Math.abs vì đã xử lý logic âm/dương ở trên
           sldat: Number(item.sldat),
           slgiao: Number(item.slgiao),
           slnhan: Number(item.slnhan),

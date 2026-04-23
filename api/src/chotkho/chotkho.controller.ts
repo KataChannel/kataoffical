@@ -160,4 +160,15 @@ export class ChotkhoController {
       throw new HttpException(error.message || 'Delete failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @ApiOperation({ summary: 'Get pending orders for quick reconciliation' })
+  @ApiParam({ name: 'khoId', type: String })
+  @Get('pending-orders/:khoId')
+  async getPendingOrders(@Param('khoId') khoId: string) {
+    try {
+      return await this.chotkhoService.getPendingOrders(khoId);
+    } catch (error) {
+      throw new HttpException(error.message || 'Get pending orders failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

@@ -135,6 +135,17 @@ type TopProductItem {
   totalValue: Float!
 }
 
+type InventoryDiscrepancyItem {
+  id: String!
+  title: String!
+  masp: String
+  chenhlech: Float!
+  sltonhethong: Float!
+  sltonthucte: Float!
+  type: String!
+  ngaychot: String
+}
+
 type StagnantProductItem {
   sanpham: SanphamInfo!
   status: String!
@@ -316,6 +327,7 @@ type Query {
   topProductsByValue(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
   topCustomers(batdau: String!, ketthuc: String!, limit: Int!): [TopCustomerItem!]!
   getStagnantProducts(limit: Int): [StagnantProductItem!]!
+  getInventoryDiscrepancies: [InventoryDiscrepancyItem!]!
 
   """
   Optimized aggregated query for Nhu Cau Dat Hang - replaces 4 heavy queries with server-side aggregation

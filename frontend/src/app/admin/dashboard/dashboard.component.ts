@@ -15,7 +15,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { DashboardService, ComprehensiveDashboardData, DailyMonthlyReport, TopProductsResponse, StagnantProductData } from './dashboard.service';
+import { DashboardService, ComprehensiveDashboardData, DailyMonthlyReport, TopProductsResponse, StagnantProductData, InventoryDiscrepancyData } from './dashboard.service';
 import moment from 'moment';
 
 // Chart.js imports
@@ -67,6 +67,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   topProductsData: TopProductsResponse | null = null;
   topCustomersData: TopCustomer[] = [];
   stagnantProductsData: StagnantProductData[] = [];
+  inventoryDiscrepanciesData: InventoryDiscrepancyData[] = [];
 
   // Chart instances
   ordersChart: any = null;
@@ -86,6 +87,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   isChartsLoading = false;
   isCustomersLoading = false;
   isStagnantLoading = false;
+  isDiscrepancyLoading = false;
 
   // Table columns for customers
   customerColumns: string[] = ['stt', 'loai', 'ten', 'ngay', 'doanhthu', 'action'];
@@ -355,6 +357,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Load stagnant products
     this.loadStagnantProducts();
+
+    // Load inventory discrepancies
+    this.loadInventoryDiscrepancies();
   }
 
   private loadComprehensiveData(): void {
@@ -459,6 +464,22 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     this.subscriptions.push(stagnantSub);
+  }
+
+  private loadInventoryDiscrepancies(): void {
+    this.isDiscrepancyLoading = true;
+    const discrepancySub = this.dashboardService.getInventoryDiscrepancies()
+      .subscribe({
+        next: (data) => {
+          this.inventoryDiscrepanciesData = data;
+          this.isDiscrepancyLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading inventory discrepancies:', error);
+          this.isDiscrepancyLoading = false;
+        }
+      });
+    this.subscriptions.push(discrepancySub);
   }
 
   private generateMockCustomers(): TopCustomer[] {

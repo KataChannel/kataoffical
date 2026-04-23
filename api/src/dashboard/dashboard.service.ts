@@ -254,6 +254,48 @@ export class DashboardService {
       },
     };
   }
+
+  /**
+   * 🎯 NEW: Phát hiện các sản phẩm có sai lệch tồn kho hoặc tồn âm (quên nhập hàng)
+   */
+  async getInventoryDiscrepancies() {
+    // 1. Tìm các sản phẩm có tồn kho hệ thống bị âm (Dấu hiệu quên xác nhận nhập hàng)
+    const negativeStock = await this.prisma.tonKho.findMany({
+      where: { slton: { lt: 0 } },
+      include: { sanpham: true }
+    });
+
+    // 2. Tìm các sản phẩm có chênh lệch lớn trong lần chốt kho gần nhất
+    const recentDiscrepancies = await this.prisma.chotkhodetail.findMany({
+      where: {
+        chenhlech: { not: 0 },
+        chotkho: { isActive: true }
+      },
+      take: 20,
+      orderBy: { ngaychot: 'desc' },
+      include: { sanpham: true, chotkho: true }
+    });
+
+    return {
+      negativeStock: negativeStock.filter(item => item.sanphamId && item.sanpham).map(item => ({
+        id: item.sanphamId!,
+        title: item.sanpham!.title,
+        masp: item.sanpham!.masp,
+        slton: Number(item.slton),
+        type: 'TỒN ÂM (QUÊN NHẬP)'
+      })),
+      discrepancies: recentDiscrepancies.filter(item => item.sanphamId && item.sanpham).map(item => ({
+        id: item.sanphamId!,
+        title: item.sanpham!.title,
+        masp: item.sanpham!.masp,
+        chenhlech: Number(item.chenhlech),
+        sltonhethong: Number(item.sltonhethong),
+        sltonthucte: Number(item.sltonthucte),
+        ngaychot: item.ngaychot,
+        type: 'SAI LỆCH KIỂM KÊ'
+      }))
+    };
+  }
   // async getDonhang(data: any) {
   //   console.log(data);
 

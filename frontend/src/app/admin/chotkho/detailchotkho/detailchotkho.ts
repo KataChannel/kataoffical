@@ -25,6 +25,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
 import * as XLSX from 'xlsx';
 import * as XLSXStyle from 'xlsx-js-style';
 import { UserService } from '../../user/user.service';
+import { KhoService } from '../../kho/kho.service';
   @Component({
     selector: 'app-detailchotkho',
     imports: [
@@ -61,6 +62,9 @@ import { UserService } from '../../user/user.service';
     _snackBar:MatSnackBar = inject(MatSnackBar)
     _dialog:MatDialog = inject(MatDialog)
     _UserService:UserService = inject(UserService)
+    _KhoService:KhoService = inject(KhoService)
+    
+    ListKho = signal<any[]>([]);
     
     @ViewChild(MatSort) sort!: MatSort;
     
@@ -90,6 +94,10 @@ import { UserService } from '../../user/user.service';
       details: []
     });
     
+    pendingOrders = signal<any[]>([]);
+    selectedOrderIds = signal<string[]>([]);
+    isPendingLoading = signal(false);
+    
     constructor(){
       this._route.paramMap.subscribe((params) => {
         const id = params.get('id');
@@ -118,6 +126,9 @@ import { UserService } from '../../user/user.service';
           // console.log('DetailChotkho updated from service:', serviceDetail);
         }
       });
+
+      // Load warehouses
+      this.loadWarehouses();
     }
     isEdit = signal(false);
     isDelete = signal(false);  
@@ -205,7 +216,10 @@ import { UserService } from '../../user/user.service';
     }
     private async createChotkho() {
       try {
-        const chotkhoData = this.DetailChotkho();   
+        const chotkhoData = {
+          ...this.DetailChotkho(),
+          confirmOrderIds: this.selectedOrderIds()
+        };   
         const result = await this._ChotkhoService.createChotkhoWithDetails(chotkhoData); 
         if(result && result.id){this._router.navigate(['/admin/chotkho', result.id])}
         this._snackBar.open('Tạo chốt kho thành công', '', {
@@ -341,6 +355,64 @@ import { UserService } from '../../user/user.service';
           verticalPosition: 'top',
           panelClass: ['snackbar-error'],
         });
+      }
+    }
+
+    async loadPendingOrders(khoId: string) {
+      if (!khoId) return;
+      this.isPendingLoading.set(true);
+      try {
+        const orders = await this._ChotkhoService.getPendingOrders(khoId);
+        this.pendingOrders.set(orders);
+      } catch (error) {
+        console.error('Error loading pending orders:', error);
+      } finally {
+        this.isPendingLoading.set(false);
+      }
+    }
+
+    toggleOrderSelection(orderId: string) {
+      const current = this.selectedOrderIds();
+      if (current.includes(orderId)) {
+        this.selectedOrderIds.set(current.filter(id => id !== orderId));
+      } else {
+        this.selectedOrderIds.set([...current, orderId]);
+      }
+    }
+
+    autoSelectRelevantOrders() {
+      // Auto-select orders that contain products with negative discrepancies
+      const details = this.DetailChotkho().details || [];
+      const negativeProductIds = details
+        .filter((d: any) => (Number(d.sltonhethong) - Number(d.sltonthucte) - Number(d.slhuy)) < 0)
+        .map((d: any) => d.sanphamId);
+      
+      if (negativeProductIds.length === 0) return;
+
+      const relevantOrders = this.pendingOrders().filter(order => 
+        order.sanpham.some((sp: any) => negativeProductIds.includes(sp.idSP))
+      );
+
+      const newIds = [...new Set([...this.selectedOrderIds(), ...relevantOrders.map(o => o.id)])];
+      this.selectedOrderIds.set(newIds);
+      
+      this._snackBar.open(`Đã tự động chọn ${relevantOrders.length} đơn hàng liên quan`, '', { duration: 2000 });
+    }
+
+    async loadWarehouses() {
+      try {
+        const warehouses = await this._KhoService.getAllKho();
+        this.ListKho.set(warehouses);
+      } catch (error) {
+        console.error('Error loading warehouses:', error);
+      }
+    }
+
+    onWarehouseChange(khoId: string) {
+      if (khoId) {
+        this.loadPendingOrders(khoId);
+        // Also reload products for this warehouse if needed
+        this.loadNewSanphamList();
       }
     }
 

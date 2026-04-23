@@ -252,6 +252,52 @@
         </p>
       </div>
 
+      <!-- Widget: Sai lệch tồn kho (Alert Area) -->
+      <div class="bg-white rounded-xl border-2 border-amber-500 shadow-[4px_4px_0px_0px_rgba(245,158,11,0.1)] overflow-hidden">
+        <div class="bg-amber-500 p-4 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <mat-icon class="text-white text-sm">warning</mat-icon>
+            <h3 class="text-[13px] font-black text-white uppercase tracking-widest">SAI LỆCH TỒN KHO</h3>
+          </div>
+          <span class="px-2 py-0.5 bg-white/20 text-white text-[10px] font-black rounded-full" *ngIf="inventoryDiscrepanciesData.length > 0">
+            {{ inventoryDiscrepanciesData.length }}
+          </span>
+        </div>
+        
+        <div class="p-0 max-h-[400px] overflow-y-auto">
+          <div class="divide-y divide-slate-100">
+            <div *ngFor="let item of inventoryDiscrepanciesData" 
+                 class="px-4 py-3 hover:bg-amber-50/30 transition-all cursor-pointer border-l-4 border-transparent hover:border-amber-500">
+              <div class="flex justify-between items-start">
+                <div class="flex-1 pr-2">
+                  <div class="text-[12px] font-black text-slate-900 leading-tight">{{ item.title }}</div>
+                  <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded border border-amber-100 bg-amber-50 text-amber-700 uppercase">
+                      {{ item.type }}
+                    </span>
+                    <span class="text-[9px] text-slate-400 font-mono tracking-tighter">{{ item.masp }}</span>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="text-[13px] font-black" [ngClass]="item.chenhlech < 0 ? 'text-red-600' : (item.chenhlech > 0 ? 'text-emerald-600' : 'text-slate-400')">
+                    {{ item.chenhlech > 0 ? '+' : '' }}{{ item.chenhlech }}
+                  </span>
+                  <span class="text-[9px] font-bold text-slate-500 mt-1">Hệ thống: {{ item.sltonhethong }}</span>
+                </div>
+              </div>
+              <div class="mt-2 text-[9px] text-slate-400 italic">
+                Cập nhật: {{ item.ngaychot | date:'dd/MM HH:mm' }}
+              </div>
+            </div>
+            
+            <div *ngIf="inventoryDiscrepanciesData.length === 0 && !isDiscrepancyLoading" class="p-8 text-center text-slate-400 italic">
+              <mat-icon class="text-slate-200 text-3xl mb-2 block mx-auto">verified</mat-icon>
+              <p class="text-[11px] font-medium">Dữ liệu khớp 100% ✨</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 

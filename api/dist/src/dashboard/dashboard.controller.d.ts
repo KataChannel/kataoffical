@@ -54,4 +54,23 @@ export declare class DashboardController {
             end: Date;
         };
     }>;
+    getInventoryDiscrepancies(): Promise<{
+        negativeStock: {
+            id: string;
+            title: string;
+            masp: string;
+            slton: number;
+            type: string;
+        }[];
+        discrepancies: {
+            id: string;
+            title: string;
+            masp: string;
+            chenhlech: number;
+            sltonhethong: number;
+            sltonthucte: number;
+            ngaychot: Date;
+            type: string;
+        }[];
+    }>;
 }

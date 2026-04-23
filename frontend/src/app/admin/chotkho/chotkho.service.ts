@@ -150,6 +150,28 @@ export class ChotkhoService {
     }
   }
 
+  /**
+   * 🎯 NEW: Lấy danh sách đơn hàng đang ở trạng thái 'Đã đặt' để hỗ trợ chốt kho nhanh
+   */
+  async getPendingOrders(khoId: string): Promise<any[]> {
+    try {
+      this.isLoading.set(true);
+      const response: any = await firstValueFrom(
+        this.http.get(`${environment.APIURL}/chotkho/pending-orders/${khoId}`, {
+          headers: {
+            Authorization: `Bearer ${this.storageService.getItem('token')}`,
+          },
+        })
+      );
+      return response || [];
+    } catch (error) {
+      console.error('Error getting pending orders:', error);
+      return [];
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
   async ChotkhoCodeId() {
     try {
       const maxOrderResult = await this.graphqlService.aggregate('chotkho', {
@@ -219,7 +241,8 @@ export class ChotkhoService {
           ghichu: data.ghichu,
           khoId: data.khoId,
           userId: currentUserId,
-          details: detailsData
+          details: detailsData,
+          confirmOrderIds: (data as any).confirmOrderIds || []
         }
       };
 

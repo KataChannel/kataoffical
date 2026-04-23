@@ -98,6 +98,23 @@ let ChotkhoService = class ChotkhoService {
             throw new Error('Phiên chốt kho không có thông tin khoId');
         return await this.calculateStockFromLogs(sanphamId, chotkho.khoId, chotkho.ngaychot);
     }
+    async getPendingOrders(khoId) {
+        return await this.prisma.dathang.findMany({
+            where: {
+                khoId: khoId,
+                status: 'dadat'
+            },
+            include: {
+                sanpham: {
+                    include: {
+                        sanpham: true
+                    }
+                },
+                nhacungcap: true
+            },
+            orderBy: { createdAt: 'asc' }
+        });
+    }
     async create(inventoryData) {
         try {
             const transactionResult = await this.prisma.$transaction(async (prisma) => {

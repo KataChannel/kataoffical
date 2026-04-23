@@ -41,6 +41,9 @@ let DashboardController = class DashboardController {
     getDonhang(query) {
         return this.dashboardService.getDonhang(query);
     }
+    getInventoryDiscrepancies() {
+        return this.dashboardService.getInventoryDiscrepancies();
+    }
 };
 exports.DashboardController = DashboardController;
 __decorate([
@@ -92,6 +95,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DashboardController.prototype, "getDonhang", null);
+__decorate([
+    (0, common_1.Get)('inventory-discrepancies'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], DashboardController.prototype, "getInventoryDiscrepancies", null);
 exports.DashboardController = DashboardController = __decorate([
     (0, common_1.Controller)('dashboard'),
     __metadata("design:paramtypes", [dashboard_service_1.DashboardService])
