@@ -96,12 +96,17 @@ export declare class DonhangService {
         id: string;
         madonhang: string;
         ngaygiao: Date | null;
-        tong: string;
-        soluong: string;
+        tongGiao: number;
+        tongNhan: number;
+        soluongGiao: number;
+        soluongNhan: number;
         tongtien: number;
+        tongtienGiao: number;
         tongvat: number;
+        chenhLech: number;
         name: string | null | undefined;
         makh: string | undefined;
+        isLệch: boolean;
     }[]>;
     downloadcongnokhachhang(params: any): Promise<{
         buffer: any;

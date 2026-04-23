@@ -1,0 +1,98 @@
+<div class="p-6">
+  <div class="flex flex-row justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold flex items-center">
+      <mat-icon class="mr-2">compare_arrows</mat-icon>
+      Đối Soát Nhập Hàng (NCC vs Kho)
+    </h1>
+  </div>
+
+  <div class="bg-white p-4 rounded-lg shadow mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Từ ngày</mat-label>
+      <input matInput [matDatepicker]="picker1" [(ngModel)]="filters().Batdau">
+      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Đến ngày</mat-label>
+      <input matInput [matDatepicker]="picker2" [(ngModel)]="filters().Ketthuc">
+      <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+      <mat-datepicker #picker2></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Kho Hàng</mat-label>
+      <mat-select [(ngModel)]="filters().khoId">
+        <mat-option value="">Tất cả kho</mat-option>
+        <mat-option *ngFor="let kho of warehouses()" [value]="kho.id">{{ kho.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" (click)="loadData()" class="h-[52px]">
+      <mat-icon>search</mat-icon> Tìm kiếm
+    </button>
+  </div>
+
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <table mat-table [dataSource]="dataSource" class="w-full">
+      <ng-container matColumnDef="ngaynhan">
+        <th mat-header-cell *matHeaderCellAt>Ngày nhận</th>
+        <td mat-cell *matCellAt="let row">{{ row.ngaynhan | date:'dd/MM/yyyy' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="madncc">
+        <th mat-header-cell *matHeaderCellAt>Mã đơn</th>
+        <td mat-cell *matCellAt="let row" class="font-medium">{{ row.madncc }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nhacungcap">
+        <th mat-header-cell *matHeaderCellAt>Nhà cung cấp</th>
+        <td mat-cell *matCellAt="let row">{{ row.nhacungcap }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="sanpham">
+        <th mat-header-cell *matHeaderCellAt>Sản phẩm</th>
+        <td mat-cell *matCellAt="let row">{{ row.sanpham }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="slgiao">
+        <th mat-header-cell *matHeaderCellAt>NCC Giao</th>
+        <td mat-cell *matCellAt="let row" class="text-right pr-4">{{ row.slgiao | number:'1.0-3' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="slnhan">
+        <th mat-header-cell *matHeaderCellAt>Kho Nhận</th>
+        <td mat-cell *matCellAt="let row" class="text-right pr-4 font-bold">{{ row.slnhan | number:'1.0-3' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="chenhlech">
+        <th mat-header-cell *matHeaderCellAt>Chênh lệch</th>
+        <td mat-cell *matCellAt="let row" class="text-right pr-4 font-bold" 
+            [class.text-red-600]="row.chenhlech !== 0"
+            [class.text-green-600]="row.chenhlech === 0">
+          {{ row.chenhlech | number:'1.0-3' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellAt>Trạng thái</th>
+        <td mat-cell *matCellAt="let row">
+          <span class="px-2 py-1 rounded text-xs font-bold" 
+                [class.bg-blue-100]="row.status === 'dadat'"
+                [class.bg-green-100]="row.status === 'dahoanthanh'"
+                [class.bg-yellow-100]="row.status === 'dagiao'">
+            {{ getStatusLabel(row.status) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50"></tr>
+    </table>
+
+    <div *ngIf="dataSource.data.length === 0" class="p-10 text-center text-gray-500">
+      Không tìm thấy dữ liệu đối soát trong khoảng thời gian này.
+    </div>
+  </div>
+</div>

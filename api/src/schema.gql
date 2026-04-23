@@ -226,6 +226,15 @@ type Query {
     filters: JSON
   ): JSON!
 
+  """📊 Báo cáo hàng hủy (Scrap Report)"""
+  chotkhoScrapReport(
+    """Filters: khoId, fromDate, toDate"""
+    filters: JSON
+  ): JSON!
+
+  """🚀 Báo cáo tồn kho Real-time trong ngày (YC2)"""
+  chotkhoDailyInventorySummary(khoId: String!, date: String): JSON!
+
   """
   Enhanced dynamic findMany with intelligent field selection and DataLoader optimization
   """
@@ -338,6 +347,8 @@ type Query {
   nhanvienStatistics: JSON!
   nhanvien(id: String!): JSON!
   nhanvienByMaNV(maNV: String!): JSON!
+  khotaskFindMany(filters: JSON): JSON!
+  khotaskDailyChecklist(khoId: String!, date: String): JSON!
 }
 
 input NhomkhachhangFilterInput {
@@ -403,6 +414,21 @@ type Mutation {
 
   """Delete chotkho record by ID"""
   chotkhoDelete(
+    """Chotkho ID"""
+    id: String!
+  ): JSON!
+
+  """🔒 Khóa sổ phiên chốt kho (Data Lock)"""
+  chotkhoLock(
+    """Chotkho ID"""
+    id: String!
+
+    """User ID perform lock"""
+    userId: String!
+  ): JSON!
+
+  """🔓 Mở khóa phiên chốt kho (Data Unlock)"""
+  chotkhoUnlock(
     """Chotkho ID"""
     id: String!
   ): JSON!
@@ -491,6 +517,9 @@ type Mutation {
   deleteNhanvien(id: String!): JSON!
   linkNhanvienToUser(nhanvienId: String!, userId: String!): JSON!
   unlinkNhanvienFromUser(nhanvienId: String!): JSON!
+  khotaskCreate(data: JSON!): JSON!
+  khotaskUpdate(id: String!, data: JSON!): JSON!
+  khotaskDelete(id: String!): JSON!
 }
 
 input CreateNhomkhachhangInput {

@@ -38,6 +38,10 @@ export declare class ChotkhoController {
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 chenhlech: import("@prisma/client/runtime/library").Decimal;
+                giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
+                giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
+                giaTriHuy: import("@prisma/client/runtime/library").Decimal;
+                isEstimated: boolean;
                 chotkhoId: string | null;
             })[];
         } & {
@@ -51,6 +55,9 @@ export declare class ChotkhoController {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            isLocked: boolean;
+            lockedAt: Date | null;
+            lockedBy: string | null;
             ngaychot: Date;
         }) | null;
         warnings: any[];
@@ -95,6 +102,10 @@ export declare class ChotkhoController {
             sltonthucte: import("@prisma/client/runtime/library").Decimal;
             sltonhethong: import("@prisma/client/runtime/library").Decimal;
             chenhlech: import("@prisma/client/runtime/library").Decimal;
+            giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
+            giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
+            giaTriHuy: import("@prisma/client/runtime/library").Decimal;
+            isEstimated: boolean;
             chotkhoId: string | null;
         })[];
     } & {
@@ -108,6 +119,9 @@ export declare class ChotkhoController {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        isLocked: boolean;
+        lockedAt: Date | null;
+        lockedBy: string | null;
         ngaychot: Date;
     }) | null>;
     findAll(page?: string, limit?: string): Promise<{
@@ -144,6 +158,10 @@ export declare class ChotkhoController {
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 chenhlech: import("@prisma/client/runtime/library").Decimal;
+                giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
+                giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
+                giaTriHuy: import("@prisma/client/runtime/library").Decimal;
+                isEstimated: boolean;
                 chotkhoId: string | null;
             })[];
         } & {
@@ -157,6 +175,9 @@ export declare class ChotkhoController {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            isLocked: boolean;
+            lockedAt: Date | null;
+            lockedBy: string | null;
             ngaychot: Date;
         })[];
         pagination: {
@@ -194,6 +215,10 @@ export declare class ChotkhoController {
             sltonthucte: import("@prisma/client/runtime/library").Decimal;
             sltonhethong: import("@prisma/client/runtime/library").Decimal;
             chenhlech: import("@prisma/client/runtime/library").Decimal;
+            giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
+            giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
+            giaTriHuy: import("@prisma/client/runtime/library").Decimal;
+            isEstimated: boolean;
             chotkhoId: string | null;
         })[];
     } & {
@@ -207,6 +232,9 @@ export declare class ChotkhoController {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        isLocked: boolean;
+        lockedAt: Date | null;
+        lockedBy: string | null;
         ngaychot: Date;
     }) | null>;
     update(id: string, data: any): Promise<{
@@ -220,6 +248,9 @@ export declare class ChotkhoController {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        isLocked: boolean;
+        lockedAt: Date | null;
+        lockedBy: string | null;
         ngaychot: Date;
     }>;
     remove(id: string): Promise<{
@@ -233,6 +264,9 @@ export declare class ChotkhoController {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        isLocked: boolean;
+        lockedAt: Date | null;
+        lockedBy: string | null;
         ngaychot: Date;
     }>;
 }

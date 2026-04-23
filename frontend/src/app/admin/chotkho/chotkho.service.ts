@@ -899,4 +899,119 @@ export class ChotkhoService {
       throw error;
     }
   }
+  // 🔒 Lock inventory check (Data Lock)
+  async lockChotkho(id: string, userId: string): Promise<any> {
+    const mutation = gql`
+      mutation ChotkhoLock($id: String!, $userId: String!) {
+        chotkhoLock(id: $id, userId: $userId)
+      }
+    `;
+
+    try {
+      this.isLoading.set(true);
+      const response = await firstValueFrom(
+        this.apollo.mutate<{ chotkhoLock: any }>({
+          mutation,
+          variables: { id, userId },
+        })
+      );
+      const result = response.data?.chotkhoLock;
+      if (result?.success) {
+        this.showSuccessMessage(result.message || 'Khóa sổ thành công');
+        await this.getChotkhoById(id);
+      } else {
+        this.showErrorMessage(result?.message || 'Lỗi khi khóa sổ');
+      }
+      return result;
+    } catch (error) {
+      console.error('Error locking chotkho:', error);
+      this.showErrorMessage('Lỗi hệ thống khi khóa sổ');
+      throw error;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  // 🔓 Unlock inventory check (Data Unlock)
+  async unlockChotkho(id: string): Promise<any> {
+    const mutation = gql`
+      mutation ChotkhoUnlock($id: String!) {
+        chotkhoUnlock(id: $id)
+      }
+    `;
+
+    try {
+      this.isLoading.set(true);
+      const response = await firstValueFrom(
+        this.apollo.mutate<{ chotkhoUnlock: any }>({
+          mutation,
+          variables: { id },
+        })
+      );
+      const result = response.data?.chotkhoUnlock;
+      if (result?.success) {
+        this.showSuccessMessage(result.message || 'Mở khóa thành công');
+        await this.getChotkhoById(id);
+      } else {
+        this.showErrorMessage(result?.message || 'Lỗi khi mở khóa');
+      }
+      return result;
+    } catch (error) {
+      console.error('Error unlocking chotkho:', error);
+      this.showErrorMessage('Lỗi hệ thống khi mở khóa');
+      throw error;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  // 📊 Get scrap report data (YC2)
+  async getScrapReport(filters: any): Promise<any> {
+    const query = gql`
+      query ChotkhoScrapReport($filters: JSON) {
+        chotkhoScrapReport(filters: $filters)
+      }
+    `;
+
+    try {
+      this.isLoading.set(true);
+      const response = await firstValueFrom(
+        this.apollo.query<{ chotkhoScrapReport: any }>({
+          query,
+          variables: { filters },
+        })
+      );
+      return response.data?.chotkhoScrapReport;
+    } catch (error) {
+      console.error('Error getting scrap report:', error);
+      throw error;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  // 🚀 Get daily inventory summary (Real-time YC2)
+  async getDailyInventorySummary(khoId: string, date?: string): Promise<any> {
+    const query = gql`
+      query ChotkhoDailyInventorySummary($khoId: String!, $date: String) {
+        chotkhoDailyInventorySummary(khoId: $khoId, date: $date)
+      }
+    `;
+
+    try {
+      this.isLoading.set(true);
+      const response = await firstValueFrom(
+        this.apollo.query<{ chotkhoDailyInventorySummary: any }>({
+          query,
+          variables: { khoId, date },
+        })
+      );
+      return response.data?.chotkhoDailyInventorySummary;
+    } catch (error) {
+      console.error('Error getting daily summary:', error);
+      throw error;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
 }

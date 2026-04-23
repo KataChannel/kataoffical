@@ -36,6 +36,10 @@ export declare class ChotkhoResolver {
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 chenhlech: import("@prisma/client/runtime/library").Decimal;
+                giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
+                giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
+                giaTriHuy: import("@prisma/client/runtime/library").Decimal;
+                isEstimated: boolean;
                 chotkhoId: string | null;
             })[];
         } & {
@@ -49,6 +53,9 @@ export declare class ChotkhoResolver {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            isLocked: boolean;
+            lockedAt: Date | null;
+            lockedBy: string | null;
             ngaychot: Date;
         })[];
         pagination: {
@@ -91,6 +98,10 @@ export declare class ChotkhoResolver {
             sltonthucte: import("@prisma/client/runtime/library").Decimal;
             sltonhethong: import("@prisma/client/runtime/library").Decimal;
             chenhlech: import("@prisma/client/runtime/library").Decimal;
+            giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
+            giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
+            giaTriHuy: import("@prisma/client/runtime/library").Decimal;
+            isEstimated: boolean;
             chotkhoId: string | null;
         })[];
     } & {
@@ -104,6 +115,9 @@ export declare class ChotkhoResolver {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        isLocked: boolean;
+        lockedAt: Date | null;
+        lockedBy: string | null;
         ngaychot: Date;
     }) | null>;
     getProductsByWarehouse(khoId: string): Promise<any[]>;
@@ -158,6 +172,10 @@ export declare class ChotkhoResolver {
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 chenhlech: import("@prisma/client/runtime/library").Decimal;
+                giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
+                giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
+                giaTriHuy: import("@prisma/client/runtime/library").Decimal;
+                isEstimated: boolean;
                 chotkhoId: string | null;
             })[];
         } & {
@@ -171,6 +189,9 @@ export declare class ChotkhoResolver {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            isLocked: boolean;
+            lockedAt: Date | null;
+            lockedBy: string | null;
             ngaychot: Date;
         }) | null;
         warnings: any[];
@@ -186,6 +207,9 @@ export declare class ChotkhoResolver {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        isLocked: boolean;
+        lockedAt: Date | null;
+        lockedBy: string | null;
         ngaychot: Date;
     }>;
     remove(id: string): Promise<{
@@ -199,6 +223,9 @@ export declare class ChotkhoResolver {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        isLocked: boolean;
+        lockedAt: Date | null;
+        lockedBy: string | null;
         ngaychot: Date;
     }>;
     search(filters?: {
@@ -242,6 +269,10 @@ export declare class ChotkhoResolver {
                 sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
                 chenhlech: import("@prisma/client/runtime/library").Decimal;
+                giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
+                giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
+                giaTriHuy: import("@prisma/client/runtime/library").Decimal;
+                isEstimated: boolean;
                 chotkhoId: string | null;
             })[];
         } & {
@@ -255,6 +286,9 @@ export declare class ChotkhoResolver {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            isLocked: boolean;
+            lockedAt: Date | null;
+            lockedBy: string | null;
             ngaychot: Date;
         })[];
         pagination: {
@@ -264,4 +298,78 @@ export declare class ChotkhoResolver {
             totalPages: number;
         };
     }>;
+    lock(id: string, userId: string): Promise<{
+        success: boolean;
+        message: string;
+        data: {
+            id: string;
+            title: string | null;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            khoId: string | null;
+            userId: string | null;
+            codeId: string | null;
+            isLocked: boolean;
+            lockedAt: Date | null;
+            lockedBy: string | null;
+            ngaychot: Date;
+        };
+    } | {
+        success: boolean;
+        message: string;
+        data?: undefined;
+    }>;
+    unlock(id: string): Promise<{
+        success: boolean;
+        message: string;
+        data: {
+            id: string;
+            title: string | null;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            khoId: string | null;
+            userId: string | null;
+            codeId: string | null;
+            isLocked: boolean;
+            lockedAt: Date | null;
+            lockedBy: string | null;
+            ngaychot: Date;
+        };
+    } | {
+        success: boolean;
+        message: string;
+        data?: undefined;
+    }>;
+    getScrapReport(filters?: {
+        khoId?: string;
+        fromDate?: string;
+        toDate?: string;
+    }): Promise<{
+        id: string;
+        ngay: Date | undefined;
+        kho: string | undefined;
+        sanpham: string | undefined;
+        masp: string | undefined;
+        slhuy: number;
+        giaGoc: number;
+        giaTriHuy: number;
+        nguoiChot: string | null | undefined;
+        ghichu: string | null;
+    }[]>;
+    getDailyInventorySummary(khoId: string, date?: string): Promise<{
+        tonDau?: number | undefined;
+        nhap?: number | undefined;
+        xuat?: number | undefined;
+        tonHienTai?: number | undefined;
+        id: string;
+        title: string;
+        masp: string;
+        dvt: string | null;
+    }[]>;
 }

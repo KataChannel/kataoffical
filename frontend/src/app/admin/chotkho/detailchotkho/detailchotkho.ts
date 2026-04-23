@@ -66,7 +66,7 @@ import { UserService } from '../../user/user.service';
     
     // Table configuration
     dataSource = signal(new MatTableDataSource<any>([]));
-    displayedColumns: string[] = ['STT', 'title', 'masp', 'dvt', 'sltonhethong', 'sltonthucte', 'slhuy', 'chenhlech'];
+    displayedColumns: string[] = ['STT', 'title', 'masp', 'dvt', 'sltonhethong', 'sltonthucte', 'slhuy', 'chenhlech', 'giaTriChenhLech', 'giaTriHuy'];
     ColumnName: any = {
       STT: 'STT',
       title: 'Tên Sản Phẩm',
@@ -75,7 +75,9 @@ import { UserService } from '../../user/user.service';
       sltonhethong: 'SL Hệ Thống',
       sltonthucte: 'SL Thực Tế',
       slhuy: 'SL Hủy',
-      chenhlech: 'Chênh Lệch'
+      chenhlech: 'Chênh Lệch',
+      giaTriChenhLech: 'Giá trị Lệch (VNĐ)',
+      giaTriHuy: 'Giá trị Hủy (VNĐ)'
     };
     
     // Initialize DetailChotkho with default structure
@@ -87,6 +89,8 @@ import { UserService } from '../../user/user.service';
       khoId: '',
       userId: '',
       isActive: true,
+      isLocked: false,
+      lockUser: null,
       details: []
     });
     
@@ -252,6 +256,37 @@ import { UserService } from '../../user/user.service';
           verticalPosition: 'top',
           panelClass: ['snackbar-error'],
         });
+      }
+    }
+
+    async lockChotkho() {
+      try {
+        const profile = await this._UserService.getProfile();
+        if (!profile?.id) {
+          this._snackBar.open('Vui lòng đăng nhập', '', { duration: 3000 });
+          return;
+        }
+        
+        const confirmed = window.confirm('Bạn có chắc chắn muốn KHÓA SỔ phiên chốt kho này? Sau khi khóa sẽ KHÔNG thể chỉnh sửa số liệu.');
+        if (!confirmed) return;
+
+        const id = this.DetailChotkho().id;
+        await this._ChotkhoService.lockChotkho(id, profile.id);
+        this.isEdit.set(false);
+      } catch (error) {
+        console.error('Lỗi khi khóa sổ:', error);
+      }
+    }
+
+    async unlockChotkho() {
+      try {
+        const confirmed = window.confirm('Bạn có chắc chắn muốn MỞ KHÓA phiên chốt kho này?');
+        if (!confirmed) return;
+
+        const id = this.DetailChotkho().id;
+        await this._ChotkhoService.unlockChotkho(id);
+      } catch (error) {
+        console.error('Lỗi khi mở khóa:', error);
       }
     }
     

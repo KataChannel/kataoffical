@@ -58,6 +58,7 @@ model User {
   nhanvien         Nhanvien?         @relation("UserNhanvien")
   PushSubscription PushSubscription[]
   notifications    Notification[]
+  KhoTask          KhoTask[]
 }
 
 model Role {
@@ -473,6 +474,7 @@ model Kho {
   phieukhoDi  PhieuKho[]   @relation("tuKhoRelation")
   phieukhoDen PhieuKho[]   @relation("denKhoRelation")
   sanphamKho  SanphamKho[]
+  KhoTask     KhoTask[]
 }
 
 model SanphamKho {
@@ -545,6 +547,9 @@ model Chotkho {
   khoId     String?
   ghichu    String?
   isActive  Boolean         @default(true)
+  isLocked  Boolean         @default(false)
+  lockedAt  DateTime?
+  lockedBy  String?
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
   codeId    String?         @unique
@@ -569,6 +574,10 @@ model Chotkhodetail {
   sltonthucte  Decimal  @default(0) @postgres.Decimal(20, 3)
   slhuy        Decimal  @default(0) @postgres.Decimal(20, 3)
   chenhlech    Decimal  @default(0) @postgres.Decimal(20, 3)
+  giaGocSnapshot  Decimal @default(0) @postgres.Decimal(20, 3)
+  giaTriChenhLech Decimal @default(0) @postgres.Decimal(20, 3)
+  giaTriHuy       Decimal @default(0) @postgres.Decimal(20, 3)
+  isEstimated     Boolean @default(false)
   ghichu       String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -963,3 +972,22 @@ model NhucauPlanningNote {
   sanpham   Sanpham  @relation(fields: [sanphamId], references: [id], onDelete: Cascade)
 }
 
+
+model KhoTask {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  type        String   // 'NHAP', 'XUAT', 'CHOTKHO', 'OTHER'
+  status      String   @default("PENDING") // 'PENDING', 'IN_PROGRESS', 'COMPLETED'
+  khoId       String?
+  userId      String?
+  ngaythuchien DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  kho         Kho?     @relation(fields: [khoId], references: [id])
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@index([khoId])
+  @@index([userId])
+  @@index([ngaythuchien])
+}

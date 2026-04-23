@@ -48,6 +48,7 @@ import { CacheModule } from './cache/cache.module';
 import { PhongbanModule } from './phongban/phongban.module';
 import { NhanvienModule } from './nhanvien/nhanvien.module';
 import { NotificationModule } from './notification/notification.module';
+import { KhotaskModule } from './khotask/khotask.module';
 
 @Module({
   imports: [
@@ -110,6 +111,7 @@ import { NotificationModule } from './notification/notification.module';
     PhongbanModule,
     NhanvienModule,
     NotificationModule,
+    KhotaskModule,
   ],
   controllers: [AppController],
   providers: [

@@ -350,13 +350,13 @@ export class DashboardResolver {
       SELECT 
         kh.id,
         kh.name as ten,
-        CASE WHEN kh."isAgency" = true THEN 'Sỉ' ELSE 'Lẻ' END as loai,
+        CASE WHEN kh."loaikh" = 'khachsi' THEN 'Sỉ' ELSE 'Lẻ' END as loai,
         SUM(dh.tongtien) as doanhthu,
         MAX(dh.ngaygiao)::text as ngay
       FROM "Donhang" dh
       INNER JOIN "Khachhang" kh ON dh."khachhangId" = kh.id
       WHERE dh."ngaygiao" >= $1 AND dh."ngaygiao" <= $2
-      GROUP BY kh.id, kh.name, kh."isAgency"
+      GROUP BY kh.id, kh.name, kh."loaikh"
       ORDER BY doanhthu DESC
       LIMIT $3
     `;

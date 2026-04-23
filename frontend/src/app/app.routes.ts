@@ -606,6 +606,13 @@ export const routes: Routes = [
               import('./admin/chotkho/chotkho.route').then(m => m.ChotkhoRoutingModule),
       },
       {
+        path: 'khotask',
+        canActivate: [PermissionGuard],
+        data: { permission: 'chotkho.view' },
+        loadComponent: () =>
+          import('./admin/khotask/khotask').then(m => m.KhotaskComponent),
+      },
+      {
         path: 'congnokhachhang',
         canActivate: [PermissionGuard],
         data: { permission: 'congnokhachhang.view' },

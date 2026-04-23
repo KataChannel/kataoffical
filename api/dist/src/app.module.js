@@ -55,6 +55,7 @@ const cache_module_1 = require("./cache/cache.module");
 const phongban_module_1 = require("./phongban/phongban.module");
 const nhanvien_module_1 = require("./nhanvien/nhanvien.module");
 const notification_module_1 = require("./notification/notification.module");
+const khotask_module_1 = require("./khotask/khotask.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
@@ -121,6 +122,7 @@ exports.AppModule = AppModule = __decorate([
             phongban_module_1.PhongbanModule,
             nhanvien_module_1.NhanvienModule,
             notification_module_1.NotificationModule,
+            khotask_module_1.KhotaskModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

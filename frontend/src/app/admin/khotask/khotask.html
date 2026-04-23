@@ -1,0 +1,61 @@
+<div class="p-6">
+  <div class="flex flex-row justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold flex items-center">
+      <mat-icon class="mr-2">assignment_turned_in</mat-icon>
+      Checklist Vận Hành Kho Hàng (SOP)
+    </h1>
+    
+    <mat-form-field appearance="outline" class="min-w-[250px]">
+      <mat-label>Chọn Kho Hàng</mat-label>
+      <mat-select [(ngModel)]="selectedKhoId" (selectionChange)="loadTasks()">
+        <mat-option *ngFor="let kho of warehouses()" [value]="kho.id">
+          {{ kho.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="isLoading()" class="flex justify-center p-10">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+
+  <div *ngIf="!isLoading()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <mat-card *ngFor="let task of tasks()" class="hover:shadow-lg transition-shadow">
+      <mat-card-header>
+        <div mat-card-avatar class="flex items-center justify-center bg-blue-100 rounded-full">
+          <mat-icon color="primary">{{ task.isCompleted ? 'check_circle' : 'pending' }}</mat-icon>
+        </div>
+        <mat-card-title>{{ task.title }}</mat-card-title>
+        <mat-card-subtitle>{{ task.type }}</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content class="pt-4">
+        <p class="text-sm text-gray-600 mb-4">
+          Quy trình bắt buộc cần thực hiện mỗi ngày để đảm bảo tính chính xác của dữ liệu kho.
+        </p>
+        
+        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+          <mat-checkbox 
+            [(ngModel)]="task.isCompleted" 
+            (change)="toggleTask(task)"
+            color="primary"
+            class="font-medium">
+            Đã hoàn thành công việc
+          </mat-checkbox>
+        </div>
+      </mat-card-content>
+      
+      <mat-card-footer class="px-4 py-2 bg-gray-100 text-xs text-gray-500 flex justify-between">
+        <span>Cập nhật: {{ task.updatedAt ? (task.updatedAt | date:'HH:mm dd/MM') : 'Chưa thực hiện' }}</span>
+        <span [class]="task.isCompleted ? 'text-green-600 font-bold' : 'text-orange-500 font-bold'">
+          {{ task.isCompleted ? 'HOÀN THÀNH' : 'CHƯA XỬ LÝ' }}
+        </span>
+      </mat-card-footer>
+    </mat-card>
+  </div>
+
+  <div *ngIf="!isLoading() && tasks().length === 0" class="text-center p-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+    <mat-icon class="text-6xl text-gray-300 mb-4" style="height: 64px; width: 64px; font-size: 64px;">inventory_2</mat-icon>
+    <p class="text-xl text-gray-500">Không có nhiệm vụ nào được thiết lập cho kho này.</p>
+  </div>
+</div>

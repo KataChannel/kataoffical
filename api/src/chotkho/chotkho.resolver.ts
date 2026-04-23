@@ -142,4 +142,62 @@ export class ChotkhoResolver {
   ) {
     return await this.chotkhoService.search(filters || {});
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Mutation(() => GraphQLJSON, { 
+    name: 'chotkhoLock',
+    description: '🔒 Khóa sổ phiên chốt kho (Data Lock)'
+  })
+  @Audit({ entity: 'Chotkho', action: AuditAction.UPDATE, includeResponse: true })
+  async lock(
+    @Args('id', { type: () => String, description: 'Chotkho ID' }) 
+    id: string,
+    @Args('userId', { type: () => String, description: 'User ID perform lock' }) 
+    userId: string
+  ) {
+    return await this.chotkhoService.lock(id, userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Mutation(() => GraphQLJSON, { 
+    name: 'chotkhoUnlock',
+    description: '🔓 Mở khóa phiên chốt kho (Data Unlock)'
+  })
+  @Audit({ entity: 'Chotkho', action: AuditAction.UPDATE, includeResponse: true })
+  async unlock(
+    @Args('id', { type: () => String, description: 'Chotkho ID' }) 
+    id: string
+  ) {
+    return await this.chotkhoService.unlock(id);
+  }
+
+  @Query(() => GraphQLJSON, { 
+    name: 'chotkhoScrapReport',
+    description: '📊 Báo cáo hàng hủy (Scrap Report)'
+  })
+  async getScrapReport(
+    @Args('filters', { 
+      type: () => GraphQLJSON,
+      nullable: true,
+      description: 'Filters: khoId, fromDate, toDate'
+    }) 
+    filters?: {
+      khoId?: string;
+      fromDate?: string;
+      toDate?: string;
+    }
+  ) {
+    return await this.chotkhoService.getScrapReport(filters || {});
+  }
+
+  @Query(() => GraphQLJSON, { 
+    name: 'chotkhoDailyInventorySummary',
+    description: '🚀 Báo cáo tồn kho Real-time trong ngày (YC2)'
+  })
+  async getDailyInventorySummary(
+    @Args('khoId', { type: () => String }) khoId: string,
+    @Args('date', { type: () => String, nullable: true }) date?: string
+  ) {
+    return await this.chotkhoService.getDailyInventorySummary(khoId, date ? new Date(date) : new Date());
+  }
 }

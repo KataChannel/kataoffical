@@ -51,6 +51,18 @@ let ChotkhoResolver = class ChotkhoResolver {
     async search(filters) {
         return await this.chotkhoService.search(filters || {});
     }
+    async lock(id, userId) {
+        return await this.chotkhoService.lock(id, userId);
+    }
+    async unlock(id) {
+        return await this.chotkhoService.unlock(id);
+    }
+    async getScrapReport(filters) {
+        return await this.chotkhoService.getScrapReport(filters || {});
+    }
+    async getDailyInventorySummary(khoId, date) {
+        return await this.chotkhoService.getDailyInventorySummary(khoId, date ? new Date(date) : new Date());
+    }
 };
 exports.ChotkhoResolver = ChotkhoResolver;
 __decorate([
@@ -156,6 +168,56 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ChotkhoResolver.prototype, "search", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
+        name: 'chotkhoLock',
+        description: '🔒 Khóa sổ phiên chốt kho (Data Lock)'
+    }),
+    (0, audit_decorator_1.Audit)({ entity: 'Chotkho', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    __param(0, (0, graphql_1.Args)('id', { type: () => String, description: 'Chotkho ID' })),
+    __param(1, (0, graphql_1.Args)('userId', { type: () => String, description: 'User ID perform lock' })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], ChotkhoResolver.prototype, "lock", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
+        name: 'chotkhoUnlock',
+        description: '🔓 Mở khóa phiên chốt kho (Data Unlock)'
+    }),
+    (0, audit_decorator_1.Audit)({ entity: 'Chotkho', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    __param(0, (0, graphql_1.Args)('id', { type: () => String, description: 'Chotkho ID' })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ChotkhoResolver.prototype, "unlock", null);
+__decorate([
+    (0, graphql_1.Query)(() => graphql_type_json_1.GraphQLJSON, {
+        name: 'chotkhoScrapReport',
+        description: '📊 Báo cáo hàng hủy (Scrap Report)'
+    }),
+    __param(0, (0, graphql_1.Args)('filters', {
+        type: () => graphql_type_json_1.GraphQLJSON,
+        nullable: true,
+        description: 'Filters: khoId, fromDate, toDate'
+    })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ChotkhoResolver.prototype, "getScrapReport", null);
+__decorate([
+    (0, graphql_1.Query)(() => graphql_type_json_1.GraphQLJSON, {
+        name: 'chotkhoDailyInventorySummary',
+        description: '🚀 Báo cáo tồn kho Real-time trong ngày (YC2)'
+    }),
+    __param(0, (0, graphql_1.Args)('khoId', { type: () => String })),
+    __param(1, (0, graphql_1.Args)('date', { type: () => String, nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], ChotkhoResolver.prototype, "getDailyInventorySummary", null);
 exports.ChotkhoResolver = ChotkhoResolver = __decorate([
     (0, common_1.Injectable)(),
     (0, graphql_1.Resolver)('Chotkho'),

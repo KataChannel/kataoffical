@@ -251,6 +251,7 @@ let DonhangService = class DonhangService {
                     sanpham: {
                         select: {
                             slnhan: true,
+                            slgiao: true,
                             giaban: true,
                         },
                     },
@@ -258,29 +259,40 @@ let DonhangService = class DonhangService {
                 orderBy: { createdAt: 'desc' },
             });
             const result = donhangs.map((donhang) => {
-                let tong = 0;
-                let soluong = 0;
+                let tongNhan = 0;
+                let tongGiao = 0;
+                let soluongNhan = 0;
+                let soluongGiao = 0;
                 for (const item of donhang.sanpham) {
                     const slnhan = Number(item.slnhan) || 0;
-                    if (slnhan === 0)
-                        continue;
+                    const slgiao = Number(item.slgiao) || 0;
                     const giaban = Number(item.giaban) || 0;
-                    tong += slnhan * giaban;
-                    soluong += slnhan;
+                    tongNhan += slnhan * giaban;
+                    tongGiao += slgiao * giaban;
+                    soluongNhan += slnhan;
+                    soluongGiao += slgiao;
                 }
                 const vatRate = donhang.isshowvat ? (Number(donhang.vat) || 0) : 0;
-                const tongvat = tong * vatRate;
-                const tongtien = tong + tongvat;
+                const tongVatNhan = tongNhan * vatRate;
+                const tongTienNhan = tongNhan + tongVatNhan;
+                const tongVatGiao = tongGiao * vatRate;
+                const tongTienGiao = tongGiao + tongVatGiao;
+                const chenhLech = tongTienGiao - tongTienNhan;
                 return {
                     id: donhang.id,
                     madonhang: donhang.madonhang,
                     ngaygiao: donhang.ngaygiao,
-                    tong: tong.toFixed(3),
-                    soluong: soluong.toFixed(3),
-                    tongtien: parseFloat(tongtien.toFixed(3)),
-                    tongvat: parseFloat(tongvat.toFixed(3)),
+                    tongGiao: parseFloat(tongGiao.toFixed(3)),
+                    tongNhan: parseFloat(tongNhan.toFixed(3)),
+                    soluongGiao: parseFloat(soluongGiao.toFixed(3)),
+                    soluongNhan: parseFloat(soluongNhan.toFixed(3)),
+                    tongtien: parseFloat(tongTienNhan.toFixed(3)),
+                    tongtienGiao: parseFloat(tongTienGiao.toFixed(3)),
+                    tongvat: parseFloat(tongVatNhan.toFixed(3)),
+                    chenhLech: parseFloat(chenhLech.toFixed(3)),
                     name: donhang.khachhang?.name,
                     makh: donhang.khachhang?.makh,
+                    isLệch: Math.abs(chenhLech) > 0.01
                 };
             });
             console.timeEnd('congnokhachhang-query');

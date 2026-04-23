@@ -122,6 +122,7 @@ export class ChotkhoService {
       sltonhethong: number;
       sltonthucte: number;
       slhuy: number;
+      isEstimated?: boolean;
       ghichu?: string;
     }>;
   }) {
@@ -228,8 +229,11 @@ export class ChotkhoService {
           const analysis = await this.calculateStockFromLogs(detail.sanphamId, khoId, chotkhoMaster.ngaychot, prisma);
           const sltonhethong_chuan = analysis.currentCalc;
           const sanpham = sanphamMap.get(detail.sanphamId);
+          const giaGoc = Number(sanpham?.giagoc || 0);
 
           const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
+          const giaTriChenhLech = chenhlech * giaGoc;
+          const giaTriHuy = Number(detail.slhuy) * giaGoc;
 
           await prisma.chotkhodetail.create({
             data: {
@@ -239,6 +243,10 @@ export class ChotkhoService {
               sltonthucte: new Decimal(detail.sltonthucte),
               slhuy: new Decimal(detail.slhuy),
               chenhlech: new Decimal(chenhlech),
+              giaGocSnapshot: new Decimal(giaGoc),
+              giaTriChenhLech: new Decimal(giaTriChenhLech),
+              giaTriHuy: new Decimal(giaTriHuy),
+              isEstimated: !!detail.isEstimated,
               ghichu: detail.ghichu || (analysis.currentCalc !== Number(detail.sltonhethong) ? `⚠️ Đã chuẩn hóa từ log (Báo cáo cũ: ${detail.sltonhethong})` : ''),
               userId,
               ngaychot: chotkhoMaster.ngaychot
@@ -450,25 +458,57 @@ export class ChotkhoService {
    * Lấy danh sách tất cả kho
    */
   async getAllKho(): Promise<any[]> {
-    try {
-      return await this.prisma.kho.findMany({
-        where: {
-          isActive: true
-        },
-        select: {
-          id: true,
-          name: true,
-          makho: true,
-          diachi: true
-        },
-        orderBy: {
-          name: 'asc'
-        }
-      });
-    } catch (error) {
-      console.error('Error getting all kho:', error);
-      throw error;
+    return this.prisma.kho.findMany({
+      where: { isActive: true },
+      orderBy: { name: 'asc' }
+    });
+  }
+
+  /**
+   * 📊 NEW: Báo cáo hàng hủy (Scrap Report)
+   */
+  async getScrapReport(filters: any) {
+    const where: any = {
+      slhuy: { gt: 0 }
+    };
+
+    if (filters.khoId) {
+      where.chotkho = { khoId: filters.khoId };
     }
+
+    if (filters.fromDate || filters.toDate) {
+      where.chotkho = {
+        ...where.chotkho,
+        ngaychot: {
+          ...(filters.fromDate && { gte: new Date(filters.fromDate) }),
+          ...(filters.toDate && { lte: new Date(filters.toDate) })
+        }
+      };
+    }
+
+    const details = await this.prisma.chotkhodetail.findMany({
+      where,
+      include: {
+        sanpham: true,
+        chotkho: {
+          include: { kho: true, user: true }
+        }
+      },
+      orderBy: { chotkho: { ngaychot: 'desc' } }
+    });
+
+    return details.map(d => ({
+      id: d.id,
+      ngay: d.chotkho?.ngaychot,
+      kho: d.chotkho?.kho?.name,
+      sanpham: d.sanpham?.title,
+      masp: d.sanpham?.masp,
+      slhuy: Number(d.slhuy),
+      giaGoc: Number(d.giaGocSnapshot || d.sanpham?.giagoc || 0),
+      giaTriHuy: Number(d.giaTriHuy || 0),
+      nguoiChot: d.chotkho?.user?.name,
+      ghichu: d.ghichu
+    }));
   }
 
   /**
@@ -514,6 +554,83 @@ export class ChotkhoService {
       console.error('Error getting all products:', error);
       throw error;
     }
+  }
+
+  /**
+   * 🚀 NEW: Báo cáo tồn kho Real-time trong ngày (YC2)
+   * Tổng hợp Nhập - Xuất - Hủy - Tồn mà không cần bấm Chốt kho
+   */
+  async getDailyInventorySummary(khoId: string, date: Date = new Date()) {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // 1. Lấy phiên chốt gần nhất để làm mốc tồn đầu
+    const lastChotkho = await this.prisma.chotkho.findFirst({
+      where: { khoId, ngaychot: { lt: startOfDay } },
+      orderBy: { ngaychot: 'desc' },
+      include: { details: true }
+    });
+
+    const startStockMap = new Map<string, number>();
+    if (lastChotkho) {
+      lastChotkho.details.forEach(d => {
+        startStockMap.set(d.sanphamId!, Number(d.sltonthucte));
+      });
+    }
+
+    // 2. Lấy tất cả giao dịch Nhập/Xuất trong ngày
+    const [nhap, xuat] = await Promise.all([
+      this.prisma.dathangsanpham.findMany({
+        where: { dathang: { khoId, status: 'danhan', updatedAt: { gte: startOfDay, lte: endOfDay } } },
+        select: { idSP: true, slnhan: true, slgiao: true }
+      }),
+      this.prisma.donhangsanpham.findMany({
+        where: { donhang: { khoId, status: { in: ['dagiao', 'danhan'] }, updatedAt: { gte: startOfDay, lte: endOfDay } } },
+        select: { idSP: true, slnhan: true, slgiao: true }
+      })
+    ]);
+
+    // 3. Tổng hợp theo sản phẩm
+    const summary = new Map<string, { tonDau: number; nhap: number; xuat: number; tonHienTai: number }>();
+    
+    // Khởi tạo từ tồn đầu
+    startStockMap.forEach((val, id) => {
+      summary.set(id, { tonDau: val, nhap: 0, xuat: 0, tonHienTai: val });
+    });
+
+    // Cộng dồn Nhập
+    nhap.forEach(n => {
+      const id = n.idSP!;
+      const qty = Number(n.slnhan || n.slgiao || 0);
+      const curr = summary.get(id) || { tonDau: 0, nhap: 0, xuat: 0, tonHienTai: 0 };
+      curr.nhap += qty;
+      curr.tonHienTai += qty;
+      summary.set(id, curr);
+    });
+
+    // Trừ dần Xuất
+    xuat.forEach(x => {
+      const id = x.idSP!;
+      const qty = Number(x.slnhan || x.slgiao || 0);
+      const curr = summary.get(id) || { tonDau: 0, nhap: 0, xuat: 0, tonHienTai: 0 };
+      curr.xuat += qty;
+      curr.tonHienTai -= qty;
+      summary.set(id, curr);
+    });
+
+    // 4. Lấy thông tin sản phẩm để trả về
+    const sanphamIds = Array.from(summary.keys());
+    const sanphams = await this.prisma.sanpham.findMany({
+      where: { id: { in: sanphamIds } },
+      select: { id: true, title: true, masp: true, dvt: true }
+    });
+
+    return sanphams.map(s => ({
+      ...s,
+      ...summary.get(s.id)
+    }));
   }
 
   async findAll(page: number = 1, limit: number = 10) {
@@ -606,13 +723,70 @@ export class ChotkhoService {
   }
 
   async update(id: string, updateData: any) {
+    const existing = await this.prisma.chotkho.findUnique({ where: { id } });
+    if (existing?.isLocked && updateData.isLocked !== false) {
+      throw new Error('⚠️ Không thể cập nhật: Phiên chốt kho này đã được KHÓA SỔ.');
+    }
+
     return this.prisma.chotkho.update({
       where: { id },
       data: updateData
     });
   }
 
+  async lock(id: string, userId: string) {
+    try {
+      const result = await this.prisma.chotkho.update({
+        where: { id },
+        data: {
+          isLocked: true,
+          lockedAt: new Date(),
+          lockedBy: userId
+        }
+      });
+      return {
+        success: true,
+        message: 'Khóa sổ thành công',
+        data: result
+      };
+    } catch (error) {
+      console.error('Error locking chotkho:', error);
+      return {
+        success: false,
+        message: 'Lỗi khi khóa sổ: ' + error.message
+      };
+    }
+  }
+
+  async unlock(id: string) {
+    try {
+      const result = await this.prisma.chotkho.update({
+        where: { id },
+        data: {
+          isLocked: false,
+          lockedAt: null,
+          lockedBy: null
+        }
+      });
+      return {
+        success: true,
+        message: 'Mở khóa thành công',
+        data: result
+      };
+    } catch (error) {
+      console.error('Error unlocking chotkho:', error);
+      return {
+        success: false,
+        message: 'Lỗi khi mở khóa: ' + error.message
+      };
+    }
+  }
+
   async remove(id: string) {
+    const existing = await this.prisma.chotkho.findUnique({ where: { id } });
+    if (existing?.isLocked) {
+      throw new Error('⚠️ Không thể xóa: Phiên chốt kho này đã được KHÓA SỔ.');
+    }
     return this.prisma.chotkho.delete({
       where: { id }
     });
@@ -705,11 +879,17 @@ export class ChotkhoService {
         sltonhethong: number;
         sltonthucte: number;
         slhuy: number;
+        isEstimated?: boolean;
         ghichu?: string;
       }>;
     }
   ) {
     try {
+      const existing = await this.prisma.chotkho.findUnique({ where: { id } });
+      if (existing?.isLocked) {
+        throw new Error('⚠️ Không thể cập nhật chi tiết: Phiên chốt kho này đã được KHÓA SỔ.');
+      }
+
       const transactionResult = await this.prisma.$transaction(async (prisma) => {
         // Update master record
       const updatedMaster = await prisma.chotkho.update({
@@ -736,6 +916,11 @@ export class ChotkhoService {
           where: { chotkhoId: id }
         });
 
+        // 🚀 OPTIMIZATION: Fetch sanpham prices
+        const sanphamIds = data.details.map(d => d.sanphamId);
+        const sanphams = await prisma.sanpham.findMany({ where: { id: { in: sanphamIds } } });
+        const sanphamMap = new Map(sanphams.map(s => [s.id, s]));
+
         // Create new details
         for (const detail of data.details) {
           if (!updatedMaster.khoId) throw new Error('Không thể tính toán log: phiên chốt kho thiếu khoId');
@@ -743,8 +928,12 @@ export class ChotkhoService {
           // 🎯 CHUẨN HÓA LOGIC: Kiểm tra lại tồn kho hệ thống từ log (Standardization)
           const analysis = await this.calculateStockFromLogs(detail.sanphamId, updatedMaster.khoId, updatedMaster.ngaychot, prisma);
           const sltonhethong_chuan = analysis.currentCalc;
+          const sanpham = sanphamMap.get(detail.sanphamId);
+          const giaGoc = Number(sanpham?.giagoc || 0);
 
           const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
+          const giaTriChenhLech = chenhlech * giaGoc;
+          const giaTriHuy = Number(detail.slhuy) * giaGoc;
 
           await prisma.chotkhodetail.create({
             data: {
@@ -754,6 +943,10 @@ export class ChotkhoService {
               sltonthucte: new Decimal(detail.sltonthucte),
               slhuy: new Decimal(detail.slhuy),
               chenhlech: new Decimal(chenhlech),
+              giaGocSnapshot: new Decimal(giaGoc),
+              giaTriChenhLech: new Decimal(giaTriChenhLech),
+              giaTriHuy: new Decimal(giaTriHuy),
+              isEstimated: !!detail.isEstimated,
               ghichu: detail.ghichu || (analysis.currentCalc !== Number(detail.sltonhethong) ? `⚠️ Đã chuẩn hóa từ log (Báo cáo cũ: ${detail.sltonhethong})` : ''),
               ngaychot: updatedMaster.ngaychot
             }

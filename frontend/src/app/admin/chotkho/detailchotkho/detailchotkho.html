@@ -5,12 +5,15 @@
   <div class="font-bold">{{ DetailChotkho()?.title || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
     <!-- <mat-slide-toggle [(ngModel)]="DetailChotkho().isActive" [disabled]="!isEdit()">{{DetailChotkho().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle> -->
-    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleChotkhoAction()">
+    <button mat-icon-button color="primary" *ngIf="isEdit() && !DetailChotkho()?.isLocked" (click)="handleChotkhoAction()">
       <mat-icon>save</mat-icon>
     </button>
-    <!-- <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
-      <mat-icon>edit</mat-icon>
-    </button> -->
+    <button mat-flat-button color="warn" *ngIf="DetailChotkho()?.id && !DetailChotkho()?.isLocked" (click)="lockChotkho()">
+      <mat-icon>lock</mat-icon> Khóa sổ
+    </button>
+    <button mat-flat-button color="accent" *ngIf="DetailChotkho()?.isLocked" (click)="unlockChotkho()">
+      <mat-icon>lock_open</mat-icon> Mở khóa
+    </button>
   </div>
 </div>
 
@@ -32,19 +35,19 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Tiêu Đề</mat-label>
-          <input matInput [(ngModel)]="DetailChotkho().title" [disabled]="!isEdit()" placeholder="Vui lòng nhập tiêu đề"/>
+          <input matInput [(ngModel)]="DetailChotkho().title" [disabled]="!isEdit() || DetailChotkho()?.isLocked" placeholder="Vui lòng nhập tiêu đề"/>
         </mat-form-field>
         
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Ngày Chốt</mat-label>
-          <input matInput [matDatepicker]="picker" [(ngModel)]="DetailChotkho().ngaychot" [disabled]="!isEdit()" placeholder="Chọn ngày chốt">
+          <input matInput [matDatepicker]="picker" [(ngModel)]="DetailChotkho().ngaychot" [disabled]="!isEdit() || DetailChotkho()?.isLocked" placeholder="Chọn ngày chốt">
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="md:col-span-2">
           <mat-label>Ghi Chú</mat-label>
-          <textarea matInput [(ngModel)]="DetailChotkho().ghichu" [disabled]="!isEdit()" 
+          <textarea matInput [(ngModel)]="DetailChotkho().ghichu" [disabled]="!isEdit() || DetailChotkho()?.isLocked" 
                     placeholder="Vui lòng nhập ghi chú" rows="2"></textarea>
         </mat-form-field>
       </div>
@@ -52,7 +55,7 @@
 
     <!-- Detail Items -->
     <div class="bg-white p-4 rounded-lg border" *ngIf="DetailChotkho()">
-      <div *ngIf="isEdit()" class="w-full flex flex-col overflow-y-auto mb-4">
+      <div *ngIf="isEdit() && !DetailChotkho()?.isLocked" class="w-full flex flex-col overflow-y-auto mb-4">
         @defer () {
         <div
           class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
@@ -153,32 +156,32 @@
                   @case ('STT') {
                     <span class="max-w-20 line-clamp-4 flex flex-row items-center">
                       <span>{{ idx + 1 }} </span>
-                      <button [disabled]="!isEdit()" mat-icon-button color="warn" (click)="RemoveSanpham(row)">
+                      <button [disabled]="!isEdit() || DetailChotkho()?.isLocked" mat-icon-button color="warn" (click)="RemoveSanpham(row)">
                         <mat-icon>delete</mat-icon>
                       </button>
                     </span>
                   }
                   @case ('sltonthucte') {
-                    <div *ngIf="isEdit()"
+                    <div *ngIf="isEdit() && !DetailChotkho()?.isLocked"
                          [contentEditable]="true"
                          (blur)="updateValue($event, idx, row, 'sltonthucte', 'number')"
                          (keydown.enter)="updateValue($event, idx, row, 'sltonthucte', 'number')"
                          class="sltonthucte-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none cursor-text">
                       {{ row[column] || 0 | number:'1.0-3' }}
                     </div>
-                    <span *ngIf="!isEdit()" class="max-w-20 line-clamp-4">
+                    <span *ngIf="!isEdit() || DetailChotkho()?.isLocked" class="max-w-20 line-clamp-4">
                       {{ row[column] | number:'1.0-3' }}
                     </span>
                   }
                   @case ('slhuy') {
-                    <div *ngIf="isEdit() && _UserService.hasPermission('slhuyedit')"
+                    <div *ngIf="isEdit() && _UserService.hasPermission('slhuyedit') && !DetailChotkho()?.isLocked"
                          [contentEditable]="true"
                          (blur)="updateValue($event, idx, row, 'slhuy', 'number')"
                          (keydown.enter)="updateValue($event, idx, row, 'slhuy', 'number')"
                          class="slhuy-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none cursor-text">
                       {{ row[column] || 0 | number:'1.0-3' }}
                     </div>
-                    <span *ngIf="!isEdit() || !_UserService.hasPermission('slhuyedit')" class="max-w-20 line-clamp-4">
+                    <span *ngIf="!isEdit() || !_UserService.hasPermission('slhuyedit') || DetailChotkho()?.isLocked" class="max-w-20 line-clamp-4">
                       {{ row[column] | number:'1.0-3' }}
                     </span>
                   }
@@ -186,6 +189,17 @@
                     <span class="max-w-20 line-clamp-4" 
                           [class]="row[column] > 0 ? 'text-green-600' : (row[column] < 0 ? 'text-red-600' : 'text-yellow-600')">
                       {{ row[column] | number:'1.0-3' }}
+                    </span>
+                  }
+                  @case ('giaTriChenhLech') {
+                    <span class="max-w-32 line-clamp-4 font-bold"
+                          [class]="row[column] > 0 ? 'text-green-600' : (row[column] < 0 ? 'text-red-600' : 'text-yellow-600')">
+                      {{ row[column] | number:'1.0-0' }} đ
+                    </span>
+                  }
+                  @case ('giaTriHuy') {
+                    <span class="max-w-32 line-clamp-4 text-red-600 font-bold">
+                      {{ row[column] | number:'1.0-0' }} đ
                     </span>
                   }
                   @case ('title') {
