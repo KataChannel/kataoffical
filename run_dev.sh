@@ -30,9 +30,10 @@ echo "8. 🔧 Sửa lỗi 'too many open files'"
 echo "9. 🚀 Triển khai An toàn (Build Local -> Server)"
 echo "10. ⏫ Cập nhật Schema Database (Push)"
 echo "11. 🔄 Phục hồi dữ liệu từ Local lên VPS (rausachfinal)"
+echo "12. 🔄 Phục hồi dữ liệu từ Local lên VPS (testdata)"
 echo "0. Thoát"
 echo "-----------------------------------"
-read -p "Vui lòng chọn chức năng (0-11): " choice
+read -p "Vui lòng chọn chức năng (0-12): " choice
 
 case $choice in
     1)
@@ -75,8 +76,13 @@ case $choice in
         exit 0
         ;;
     11)
-        echo "=> 🔄 Khởi chạy trình Phục hồi dữ liệu từ Local lên VPS..."
-        bash scripts/restore_to_vps.sh
+        echo "=> 🔄 Khởi chạy trình Phục hồi dữ liệu từ Local lên VPS (rausachfinal)..."
+        bash scripts/restore_to_vps.sh rausachfinal
+        exit 0
+        ;;
+    12)
+        echo "=> 🔄 Khởi chạy trình Phục hồi dữ liệu từ Local lên VPS (testdata)..."
+        bash scripts/restore_to_vps.sh testdata
         exit 0
         ;;
     0)

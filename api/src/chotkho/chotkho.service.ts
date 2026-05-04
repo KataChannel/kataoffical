@@ -328,24 +328,28 @@ export class ChotkhoService {
 
           const currentPendingIn = Number(pendingInAgg._sum?.sldat || 0) - Number(pendingInAgg._sum?.slnhan || 0);
           const currentPendingOut = Number(pendingOutAgg._sum?.sldat || 0) - Number(pendingOutAgg._sum?.slnhan || 0);
+          
+          // Available stock (slton) = Physical Stock (totalStock) - Pending Out + Pending In
+          const availableStock = totalStock - currentPendingOut + currentPendingIn;
 
           const updatedTk = await prisma.tonKho.upsert({
             where: { sanphamId: detail.sanphamId },
             create: {
               sanphamId: detail.sanphamId,
-              slton: new Decimal(totalStock),
+              slton: new Decimal(availableStock),
               sltontt: new Decimal(totalStock),
               slchogiao: new Decimal(Math.max(0, currentPendingOut)),
               slchonhap: new Decimal(Math.max(0, currentPendingIn)),
             },
             update: {
-              slton: new Decimal(totalStock),
+              slton: new Decimal(availableStock),
               sltontt: new Decimal(totalStock),
               slchogiao: new Decimal(Math.max(0, currentPendingOut)),
               slchonhap: new Decimal(Math.max(0, currentPendingIn)),
               updatedAt: new Date()
             }
           });
+
 
           // 🎯 GATHER WARNINGS (Optimized: No extra loop)
           if (Number(updatedTk.slchonhap) > 0 || Number(updatedTk.slchogiao) > 0) {

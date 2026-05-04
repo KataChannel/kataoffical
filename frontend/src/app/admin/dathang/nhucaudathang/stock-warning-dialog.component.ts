@@ -29,6 +29,7 @@ export interface StockWarningData {
   danhSachCanhBao: StockWarningItem[];   // Danh sách cảnh báo
   danhSachNhap: { sanphamId: string; soluong: number }[];
   danhSachXuat: { sanphamId: string; soluong: number }[];
+  danhSachLoi?: string[];        // 🚩 Bổ sung: Danh sách mã SP không tồn tại trong hệ thống
 }
 
 @Component({
@@ -41,7 +42,7 @@ export interface StockWarningData {
           <div class="flex flex-col gap-0.5">
             <h2 class="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
               <mat-icon class="text-amber-500 scale-110">auto_graph</mat-icon>
-              {{ data.title }}
+              {{ data.title || 'Đối soát tồn kho' }}
             </h2>
             <p class="text-[12px] text-slate-500 font-medium italic">Đối soát dữ liệu nhập từ Excel - Phát hiện các điểm cần lưu ý</p>
           </div>
@@ -78,6 +79,16 @@ export interface StockWarningData {
             <span class="w-px h-2.5 bg-rose-200"></span>
             <span class="text-xs font-black leading-none">{{ data.danhSachCanhBao.length }}</span>
           </div>
+
+          @if (data.danhSachLoi && data.danhSachLoi.length > 0) {
+            <div (click)="setFilter('error')" 
+                 class="cursor-pointer hover:ring-2 hover:ring-red-200 flex items-center gap-2 px-3 py-1 bg-red-50 text-red-600 rounded-full border border-red-200 transition-all shadow-sm select-none">
+              <mat-icon style="font-size: 12px; width: 12px; height: 12px" class="text-red-500">error_outline</mat-icon>
+              <span class="text-[9px] font-black uppercase tracking-tight">Mã SP Lỗi</span>
+              <span class="w-px h-2.5 bg-red-200"></span>
+              <span class="text-xs font-black leading-none">{{ data.danhSachLoi.length }}</span>
+            </div>
+          }
         </div>
         <!-- QUICK FILTER & SEARCH: Responsive -->
         <div class="flex flex-col gap-3 mt-4">
@@ -90,6 +101,15 @@ export interface StockWarningData {
                               (selectedFilter === 'all' ? 'bg-slate-800 text-white border-slate-800 shadow-md' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400 shadow-sm')">
                 Tất cả ({{ data.danhSachCanhBao.length }})
              </button>
+
+             @if (data.danhSachLoi && data.danhSachLoi.length > 0) {
+               <button (click)="setFilter('error')" 
+                       matTooltip="Các mã sản phẩm trong Excel nhưng không tồn tại trong hệ thống"
+                       [class]="'px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border flex items-center gap-1.5 whitespace-nowrap ' + 
+                                (selectedFilter === 'error' ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white text-red-600 border-red-100 hover:bg-red-50 shadow-sm')">
+                  ❌ Mã SP Lỗi ({{ data.danhSachLoi.length }})
+               </button>
+             }
   
              <button (click)="setFilter('late')" 
                      matTooltip="Các sản phẩm có chứng từ treo chưa xử lý quá 24h"
@@ -148,7 +168,26 @@ export interface StockWarningData {
 
       <!-- CONTENT: Scrollable with better spacing -->
       <div class="flex-1 overflow-y-auto px-6 py-4 custom-scrollbar bg-slate-50/30 shadow-inner">
-        @if (filteredList.length === 0) {
+        @if (selectedFilter === 'error') {
+          <div class="grid grid-cols-1 gap-3">
+            @for (masp of data.danhSachLoi || []; track masp) {
+              <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3">
+                  <div class="bg-red-100 p-2 rounded-full">
+                    <mat-icon class="text-red-600">error</mat-icon>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-red-900 text-sm">Mã sản phẩm không tồn tại: <span class="text-rose-600 underline">{{ masp }}</span></h4>
+                    <p class="text-xs text-red-700 mt-0.5">Vui lòng kiểm tra lại file Excel hoặc thêm mới sản phẩm này vào hệ thống trước khi chốt kho.</p>
+                  </div>
+                </div>
+                <button (click)="onConfirm()" class="px-3 py-1.5 bg-red-600 text-white text-[10px] font-bold rounded-md hover:bg-red-700 transition-colors shadow-sm">
+                  OK, Bỏ qua mã này
+                </button>
+              </div>
+            }
+          </div>
+        } @else if (filteredList.length === 0) {
           <div class="flex flex-col items-center justify-center h-full text-slate-400 py-20">
              <div class="bg-slate-100 p-4 rounded-full mb-4">
                 <mat-icon class="text-slate-400 scale-150">search_off</mat-icon>
@@ -221,7 +260,7 @@ export interface StockWarningData {
                        <div class="mt-2 border-t border-slate-200/50 pt-2">
                           <p class="text-[9px] uppercase font-bold text-slate-500 mb-2">Đơn hàng cần xử lý:</p>
                           <div class="flex gap-2 overflow-x-auto custom-scrollbar pb-2" style="white-space: nowrap;">
-                             @for (order of item.pendingList; track order.id) {
+                             @for (order of item.pendingList || []; track order.id) {
                                 <div (click)="goToDetail(order)" class="flex-shrink-0 flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 hover:bg-slate-50 transition-all shadow-sm cursor-pointer select-none">
                                    <mat-icon class="scale-75 !m-0 -ml-1" 
                                              [class.text-blue-600]="order.type === 'dathang'" 
@@ -311,11 +350,14 @@ export class StockWarningDialogComponent {
   selectedFilter: string = 'all';
 
   get filteredList() {
-    let list = this.data.danhSachCanhBao;
+    let list = this.data.danhSachCanhBao || [];
     
     // 1. Filter by Category
     if (this.selectedFilter !== 'all') {
       switch (this.selectedFilter) {
+        case 'error':
+          // For 'error' filter, we don't use list but display data.danhSachLoi separately in template
+          return [];
         case 'late':
           list = list.filter(item => item.isLate);
           break;
@@ -351,6 +393,9 @@ export class StockWarningDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: StockWarningData
   ) {
     this.hasCriticalWarnings = data.danhSachCanhBao.some(w => w.mucDoNghiemTrong === 'cao');
+    if (data.danhSachLoi && data.danhSachLoi.length > 0) {
+      this.selectedFilter = 'error'; // Mặc định mở tab lỗi nếu có
+    }
   }
 
   setFilter(filter: string) {
@@ -369,6 +414,9 @@ export class StockWarningDialogComponent {
     const url = order.type === 'dathang' 
       ? `/admin/dathang/${order.id}` 
       : `/admin/phieugiaohang/${order.id}`;
-    window.open(url, '_blank');
+    
+    if (typeof window !== 'undefined') {
+      window.open(url, '_blank');
+    }
   }
 }

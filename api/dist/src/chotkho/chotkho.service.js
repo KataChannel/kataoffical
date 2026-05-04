@@ -267,17 +267,18 @@ let ChotkhoService = class ChotkhoService {
                     ]);
                     const currentPendingIn = Number(pendingInAgg._sum?.sldat || 0) - Number(pendingInAgg._sum?.slnhan || 0);
                     const currentPendingOut = Number(pendingOutAgg._sum?.sldat || 0) - Number(pendingOutAgg._sum?.slnhan || 0);
+                    const availableStock = totalStock - currentPendingOut + currentPendingIn;
                     const updatedTk = await prisma.tonKho.upsert({
                         where: { sanphamId: detail.sanphamId },
                         create: {
                             sanphamId: detail.sanphamId,
-                            slton: new library_1.Decimal(totalStock),
+                            slton: new library_1.Decimal(availableStock),
                             sltontt: new library_1.Decimal(totalStock),
                             slchogiao: new library_1.Decimal(Math.max(0, currentPendingOut)),
                             slchonhap: new library_1.Decimal(Math.max(0, currentPendingIn)),
                         },
                         update: {
-                            slton: new library_1.Decimal(totalStock),
+                            slton: new library_1.Decimal(availableStock),
                             sltontt: new library_1.Decimal(totalStock),
                             slchogiao: new library_1.Decimal(Math.max(0, currentPendingOut)),
                             slchonhap: new library_1.Decimal(Math.max(0, currentPendingIn)),

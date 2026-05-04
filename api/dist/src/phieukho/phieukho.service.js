@@ -325,8 +325,11 @@ let PhieukhoService = class PhieukhoService {
                             if (data.type === 'nhap') {
                                 await prisma.tonKho.upsert({
                                     where: { sanphamId: sp.sanphamId },
-                                    update: { slton: { increment: soluong } },
-                                    create: { sanphamId: sp.sanphamId, slton: soluong, slchogiao: 0, slchonhap: 0 }
+                                    update: {
+                                        slton: { increment: soluong },
+                                        sltontt: { increment: soluong }
+                                    },
+                                    create: { sanphamId: sp.sanphamId, slton: soluong, sltontt: soluong, slchogiao: 0, slchonhap: 0 }
                                 });
                                 await prisma.sanphamKho.upsert({
                                     where: {
@@ -342,8 +345,11 @@ let PhieukhoService = class PhieukhoService {
                             else if (data.type === 'xuat') {
                                 await prisma.tonKho.upsert({
                                     where: { sanphamId: sp.sanphamId },
-                                    update: { slton: { decrement: soluong } },
-                                    create: { sanphamId: sp.sanphamId, slton: -soluong, slchogiao: 0, slchonhap: 0 }
+                                    update: {
+                                        slton: { decrement: soluong },
+                                        sltontt: { decrement: soluong }
+                                    },
+                                    create: { sanphamId: sp.sanphamId, slton: -soluong, sltontt: -soluong, slchogiao: 0, slchonhap: 0 }
                                 });
                                 await prisma.sanphamKho.upsert({
                                     where: {
@@ -494,8 +500,14 @@ let PhieukhoService = class PhieukhoService {
                     }
                 });
                 const tonkhoUpdate = data.type === 'nhap'
-                    ? { slton: { increment: data.soluong } }
-                    : { slton: { decrement: data.soluong } };
+                    ? {
+                        slton: { increment: data.soluong },
+                        sltontt: { increment: data.soluong }
+                    }
+                    : {
+                        slton: { decrement: data.soluong },
+                        sltontt: { decrement: data.soluong }
+                    };
                 await this.updateTonKhoSafely(data.sanphamId, tonkhoUpdate);
                 if (data.chothkhoId) {
                     console.log(`📝 Inventory adjustment logged: Product ${data.sanphamId}, Type: ${data.type}, Amount: ${data.soluong}, PhieuKho: ${maphieu}`);
@@ -532,6 +544,7 @@ let PhieukhoService = class PhieukhoService {
                     data: {
                         sanphamId,
                         slton: initialValue.slton,
+                        sltontt: initialValue.slton,
                         slchogiao: 0,
                         slchonhap: 0
                     }

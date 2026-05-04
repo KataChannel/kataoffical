@@ -2478,15 +2478,21 @@ export class DonhangService {
             }
           }
         } else if (oldDonhang.status === 'dadat') {
-          // Just remove reservation
+          // Rollback reservation: Decrease slchogiao and restore slton
           for (const sp of oldDonhang.sanpham) {
             const val = parseFloat((sp.sldat ?? 0).toFixed(3));
             if (val > 0) {
               tonkhoOps.push({
                 sanphamId: sp.idSP,
+                operation: 'increment',
+                slton: val,
+                reason: `Rollback reservation FROM DADAT for order ${oldDonhang.madonhang}`
+              });
+              tonkhoOps.push({
+                sanphamId: sp.idSP,
                 operation: 'decrement',
                 slchogiao: val,
-                reason: `Rollback FROM DADAT for order ${oldDonhang.madonhang}`
+                reason: `Clear reservation FROM DADAT for order ${oldDonhang.madonhang}`
               });
             }
           }
@@ -2506,9 +2512,9 @@ export class DonhangService {
               tonkhoOps.push({
                 sanphamId: sp.id,
                 operation: 'decrement',
+                sltontt: val,
                 slton: val,
-                slchogiao: val, // Reserve it
-                reason: `Deduct for ${targetStatus} for order ${oldDonhang.madonhang}`
+                reason: `Physical and Available deduction for ${targetStatus} for order ${oldDonhang.madonhang}`
               });
             }
           }
@@ -3107,8 +3113,9 @@ export class DonhangService {
           const shortage = oldSlgiao - newSlnhan;
           
           await this.updateTonKhoSafely(sp.idSP, {
-            slchogiao: { decrement: oldSlgiao }, // Giảm về 0
-            ...(shortage > 0 && { slton: { increment: shortage } }) // Hoàn lại nếu thiếu
+            sltontt: { decrement: newSlnhan },
+            slchogiao: { decrement: oldSlgiao }, // Release reservation
+            slton: { increment: shortage } // Restore slton ONLY if there was a shortage (ordered > delivered)
           });
         }
         
@@ -3234,6 +3241,7 @@ export class DonhangService {
               await this.tonkhoManager.updateTonkhoAtomic([{
                 sanphamId: sp.idSP,
                 operation: 'decrement',
+                sltontt: parseFloat(sp.slgiao.toString()),
                 slchogiao: parseFloat(sp.slgiao.toString()),
                 reason: `Auto-complete pending delivery for order ${order.madonhang}`
               }]);

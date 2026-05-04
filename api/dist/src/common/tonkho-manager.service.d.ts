@@ -3,6 +3,7 @@ export interface TonkhoOperation {
     sanphamId: string;
     operation: 'increment' | 'decrement' | 'set';
     slton?: number;
+    sltontt?: number;
     slchogiao?: number;
     slchonhap?: number;
     reason?: string;

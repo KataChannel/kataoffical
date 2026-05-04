@@ -58,12 +58,12 @@ export declare class PerformanceController {
         error: string | null;
         id: string;
         name: string;
+        url: string | null;
         timestamp: Date;
         success: boolean;
         duration: number;
         context: import("@prisma/client/runtime/library").JsonValue | null;
         method: string | null;
-        url: string | null;
         statusCode: number | null;
         memoryUsage: number | null;
     }[]>;

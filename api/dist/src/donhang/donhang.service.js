@@ -1973,9 +1973,15 @@ let DonhangService = class DonhangService {
                         if (val > 0) {
                             tonkhoOps.push({
                                 sanphamId: sp.idSP,
+                                operation: 'increment',
+                                slton: val,
+                                reason: `Rollback reservation FROM DADAT for order ${oldDonhang.madonhang}`
+                            });
+                            tonkhoOps.push({
+                                sanphamId: sp.idSP,
                                 operation: 'decrement',
                                 slchogiao: val,
-                                reason: `Rollback FROM DADAT for order ${oldDonhang.madonhang}`
+                                reason: `Clear reservation FROM DADAT for order ${oldDonhang.madonhang}`
                             });
                         }
                     }
@@ -1991,9 +1997,9 @@ let DonhangService = class DonhangService {
                             tonkhoOps.push({
                                 sanphamId: sp.id,
                                 operation: 'decrement',
+                                sltontt: val,
                                 slton: val,
-                                slchogiao: val,
-                                reason: `Deduct for ${targetStatus} for order ${oldDonhang.madonhang}`
+                                reason: `Physical and Available deduction for ${targetStatus} for order ${oldDonhang.madonhang}`
                             });
                         }
                     }
@@ -2452,8 +2458,9 @@ let DonhangService = class DonhangService {
                     const oldSlgiao = parseFloat((sp.slgiao || 0).toString());
                     const shortage = oldSlgiao - newSlnhan;
                     await this.updateTonKhoSafely(sp.idSP, {
+                        sltontt: { decrement: newSlnhan },
                         slchogiao: { decrement: oldSlgiao },
-                        ...(shortage > 0 && { slton: { increment: shortage } })
+                        slton: { increment: shortage }
                     });
                 }
                 const vatRate = parseFloat((donhang.vat || 0).toString());
@@ -2550,6 +2557,7 @@ let DonhangService = class DonhangService {
                             await this.tonkhoManager.updateTonkhoAtomic([{
                                     sanphamId: sp.idSP,
                                     operation: 'decrement',
+                                    sltontt: parseFloat(sp.slgiao.toString()),
                                     slchogiao: parseFloat(sp.slgiao.toString()),
                                     reason: `Auto-complete pending delivery for order ${order.madonhang}`
                                 }]);

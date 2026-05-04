@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
+import { DonhangService } from './donhang.service';
 
 @Injectable()
 export class DonhangCronService {
@@ -9,16 +10,17 @@ export class DonhangCronService {
 
   constructor(
     private readonly prisma: PrismaService,
+    private readonly donhangService: DonhangService,
   ) {}
 
 
-  @Cron('0 13 * * *', {
+  @Cron('0 14 * * *', {
     name: 'auto-complete-orders',
     timeZone: 'Asia/Ho_Chi_Minh', // Giờ Việt Nam
   })
   async autoCompleteOrdersDaily() {
     try {
-      this.logger.log('Starting auto-complete orders cron job at 13:00 Vietnam time');
+      this.logger.log('Starting auto-complete orders cron job at 14:00 Vietnam time');
 
       // Lấy ngày hiện tại và tạo startOfDay/endOfDay trực tiếp (UTC)
       const now = new Date();
@@ -29,11 +31,11 @@ export class DonhangCronService {
 
       this.logger.log(`Processing all pending orders with delivery date up to ${endOfDay}`);
 
-      // Tìm các đơn hàng có status 'dagiao' trong ngày hôm nay
+      // Tìm các đơn hàng có status 'dagiao' hoặc 'dadat' trong ngày hôm nay
       const ordersToUpdate = await this.prisma.donhang.findMany({
         where: {
           status: {
-            in: ['dagiao']
+            in: ['dagiao', 'dadat']
           },
           ngaygiao: {
             lte: endOfDay,
@@ -66,18 +68,16 @@ export class DonhangCronService {
       
       for (const order of ordersToUpdate) {
         try {
-          await this.prisma.donhang.update({
-            where: { id: order.id },
-            data: {
-              status: 'danhan',
-              ghichu: `${order.ghichu ? order.ghichu + ' | ' : ''}[AUTOCOMPLETE] Tự động chuyển trạng thái lúc ${currentTime}`,
-              updatedAt: new Date(),
-            },
+          // 🔥 USE DonhangService.update to ensure all inventory logic and audit logs are triggered
+          await this.donhangService.update(order.id, {
+            status: 'danhan',
+            ghichu: `${order.ghichu ? order.ghichu + ' | ' : ''}[AUTOCOMPLETE] Tự động chuyển trạng thái lúc ${currentTime}`
           });
+          
           updateCount++;
           
           this.logger.log(
-            `Order updated: ${order.madonhang} - Customer: ${order.khachhang?.name || 'N/A'} - Delivery Date: ${order.ngaygiao}`
+            `Order updated: ${order.madonhang} - Customer: ${order.khachhang?.name || 'N/A'}`
           );
         } catch (error) {
           this.logger.error(`Failed to update order ${order.madonhang}:`, error);
@@ -134,7 +134,7 @@ export class DonhangCronService {
           entityId: null,
           oldValues: {
             cronJobName: 'auto-complete-orders',
-            status: 'dagiao',
+            status: 'dagiao, dadat',
             scheduledTime: '14:00 Vietnam Time',
             timezone: 'Asia/Ho_Chi_Minh',
             executionType: 'CRON_EXECUTION'
@@ -174,7 +174,7 @@ export class DonhangCronService {
             entityName: 'Donhang',
             entityId: order.id,
             oldValues: {
-              status: 'dagiao',
+              status: order.status,
               madonhang: order.madonhang,
               ngaygiao: order.ngaygiao,
               customer: order.khachhang?.name || 'Unknown',
@@ -254,7 +254,9 @@ export class DonhangCronService {
 
       const ordersToUpdate = await this.prisma.donhang.findMany({
         where: {
-          status: 'dagiao',
+          status: {
+            in: ['dagiao', 'dadat']
+          },
           ngaygiao: {
             lte: endOfDay,
           },
@@ -279,7 +281,7 @@ export class DonhangCronService {
             oldValues: {
               executionType: 'MANUAL_EXECUTION',
               targetDate: vietnamDateString,
-              status: 'dagiao'
+              status: 'dagiao, dadat'
             },
             newValues: {
               result: 'NO_ORDERS_FOUND',
@@ -304,25 +306,27 @@ export class DonhangCronService {
         };
       }
 
-      const updateResult = await this.prisma.donhang.updateMany({
-        where: {
-          id: {
-            in: ordersToUpdate.map(order => order.id),
-          },
-        },
-        data: {
-          status: 'danhan',
-          updatedAt: new Date(),
-        },
-      });
+      // Use loop with DonhangService.update for manual execution too
+      let successCount = 0;
+      for (const order of ordersToUpdate) {
+        try {
+          await this.donhangService.update(order.id, {
+            status: 'danhan',
+            ghichu: (order.ghichu || '') + ' | Manual auto-complete execution'
+          });
+          successCount++;
+        } catch (err) {
+          this.logger.error(`Manual update failed for ${order.madonhang}:`, err);
+        }
+      }
 
       // Tạo detailed audit logs cho manual execution
-      await this.createManualAuditLog(ordersToUpdate, updateResult.count, vietnamDateString);
+      await this.createManualAuditLog(ordersToUpdate, successCount, vietnamDateString);
 
       const result = {
         success: true,
-        message: `Successfully updated ${updateResult.count} orders to 'danhan' status`,
-        count: updateResult.count,
+        message: `Successfully updated ${successCount} orders to 'danhan' status`,
+        count: successCount,
         orders: ordersToUpdate.map(order => ({
           id: order.id,
           madonhang: order.madonhang,
@@ -331,7 +335,7 @@ export class DonhangCronService {
         })),
       };
 
-      this.logger.log(`Manual auto-complete completed: ${updateResult.count} orders updated`);
+      this.logger.log(`Manual auto-complete completed: ${result.count} orders updated`);
       return result;
 
     } catch (error) {
@@ -387,7 +391,7 @@ export class DonhangCronService {
           entityId: null,
           oldValues: {
             executionType: 'MANUAL_EXECUTION',
-            status: 'dagiao',
+            status: 'dagiao, dadat',
             targetDate: vietnamDate,
             trigger: 'Manual testing/execution'
           },
@@ -422,7 +426,7 @@ export class DonhangCronService {
               entityName: 'Donhang',
               entityId: order.id,
               oldValues: {
-                status: 'dagiao',
+                status: order.status,
                 madonhang: order.madonhang,
                 processedBy: 'manual-auto-complete'
               },

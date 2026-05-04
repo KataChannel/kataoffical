@@ -398,8 +398,11 @@ export class PhieukhoService {
               if (data.type === 'nhap') {
                 await prisma.tonKho.upsert({
                   where: { sanphamId: sp.sanphamId },
-                  update: { slton: { increment: soluong } },
-                  create: { sanphamId: sp.sanphamId, slton: soluong, slchogiao: 0, slchonhap: 0 }
+                  update: { 
+                    slton: { increment: soluong },
+                    sltontt: { increment: soluong }
+                  },
+                  create: { sanphamId: sp.sanphamId, slton: soluong, sltontt: soluong, slchogiao: 0, slchonhap: 0 }
                 });
                 
                 // Update specific warehouse
@@ -416,8 +419,11 @@ export class PhieukhoService {
               } else if (data.type === 'xuat') {
                 await prisma.tonKho.upsert({
                   where: { sanphamId: sp.sanphamId },
-                  update: { slton: { decrement: soluong } },
-                  create: { sanphamId: sp.sanphamId, slton: -soluong, slchogiao: 0, slchonhap: 0 }
+                  update: { 
+                    slton: { decrement: soluong },
+                    sltontt: { decrement: soluong }
+                  },
+                  create: { sanphamId: sp.sanphamId, slton: -soluong, sltontt: -soluong, slchogiao: 0, slchonhap: 0 }
                 });
 
                 // Update specific warehouse
@@ -602,8 +608,14 @@ export class PhieukhoService {
 
         // Cập nhật TonKho
         const tonkhoUpdate = data.type === 'nhap' 
-          ? { slton: { increment: data.soluong } }
-          : { slton: { decrement: data.soluong } };
+          ? { 
+              slton: { increment: data.soluong },
+              sltontt: { increment: data.soluong }
+            }
+          : { 
+              slton: { decrement: data.soluong },
+              sltontt: { decrement: data.soluong }
+            };
 
         await this.updateTonKhoSafely(data.sanphamId, tonkhoUpdate);
 
@@ -650,6 +662,7 @@ export class PhieukhoService {
           data: {
             sanphamId,
             slton: initialValue.slton,
+            sltontt: initialValue.slton, // Use same initial value
             slchogiao: 0,
             slchonhap: 0
           }

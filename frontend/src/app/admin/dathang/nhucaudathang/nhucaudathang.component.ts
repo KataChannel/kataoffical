@@ -1545,15 +1545,18 @@ export class NhucaudathangComponent {
       // console.log('Donhangs', Donhangs);
 
       // khachgiao = Đơn đã giao + đã nhận + hoàn thành -> đã xong
+      // ✅ FIX: Dùng slnhan (số thực nhận) thay vì sldat (số đặt) cho đơn đã giao
+      // Khớp với logic backend (SQL: CASE WHEN slnhan > 0 THEN slnhan ELSE sldat END)
       const khachgiao = Donhangs.filter(
         (v: any) => v.status === 'dagiao' || v.status === 'danhan' || v.status === 'hoanthanh'
       ).reduce((acc: number, curr: any) => {
-        return Number((acc + Number(curr.sldat || 0)).toFixed(2)) || 0;
+        const slThucGiao = Number(curr.slnhan || 0) > 0 ? Number(curr.slnhan) : Number(curr.sldat || 0);
+        return Number((acc + slThucGiao).toFixed(2)) || 0;
       }, 0);
 
       return {
         khachdat,
-        khachgiao,
+        khachgiao: baseItem.khachgiao || khachgiao, // Ưu tiên giá trị server-side đã aggregate
         ...baseItem,
         Dathangs, // Giữ lại để tính toán Reliable Stock sau này
         Donhangs, // Giữ lại để tính toán Reliable Stock sau này

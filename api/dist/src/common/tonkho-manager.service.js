@@ -27,6 +27,7 @@ let TonkhoManagerService = class TonkhoManagerService {
                         data: {
                             sanphamId: op.sanphamId,
                             slton: op.slton || 0,
+                            sltontt: op.sltontt || 0,
                             slchogiao: op.slchogiao || 0,
                             slchonhap: op.slchonhap || 0,
                         }
@@ -44,6 +45,19 @@ let TonkhoManagerService = class TonkhoManagerService {
                             break;
                         case 'set':
                             updateData.slton = op.slton;
+                            break;
+                    }
+                }
+                if (op.sltontt !== undefined) {
+                    switch (op.operation) {
+                        case 'increment':
+                            updateData.sltontt = { increment: op.sltontt };
+                            break;
+                        case 'decrement':
+                            updateData.sltontt = { decrement: op.sltontt };
+                            break;
+                        case 'set':
+                            updateData.sltontt = op.sltontt;
                             break;
                     }
                 }

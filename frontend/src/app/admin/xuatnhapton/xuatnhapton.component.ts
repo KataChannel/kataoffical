@@ -390,14 +390,20 @@ export class XuatnhaptonComponent implements OnDestroy {
 
           // ✅ ĐIỀU CHỈNH 3: Phân biệt slton trống và slton bằng 0
           const rawSlton = row.slton ?? row.QUANTITY;
-          let slton: number | null = (rawSlton === undefined || rawSlton === null || rawSlton === '') ? null : parseFloat(rawSlton);
-          let slhuy = parseFloat(row.slhuy || '0');
-
-          // Nếu slton không phải trống nhưng là số âm hoặc không phải số, đưa về 0
-          if (slton !== null && (isNaN(slton) || slton < 0)) {
-            slton = 0;
+          
+          // Kiểm tra nếu rawSlton là một chuỗi không phải số (ví dụ: "abc", "N/A")
+          const parsedSlton = parseFloat(rawSlton);
+          let slton: number | null = null;
+          
+          if (rawSlton === undefined || rawSlton === null || rawSlton === '' || isNaN(parsedSlton)) {
+            // Nếu trống hoặc KHÔNG PHẢI LÀ SỐ: Giữ nguyên số lượng đang có trong hệ thống (null)
+            slton = null;
+          } else {
+            // Nếu là số, đảm bảo không âm
+            slton = Math.max(0, parsedSlton);
           }
-
+          
+          let slhuy = parseFloat(row.slhuy || '0');
           if (isNaN(slhuy) || slhuy == null || slhuy < 0) {
             slhuy = 0;
           }
@@ -485,6 +491,7 @@ export class XuatnhaptonComponent implements OnDestroy {
         const sanphamMap = new Map(allSanpham.map((sp: any) => [sp.masp, sp]));
 
         const processErrors: string[] = [];
+        const danhSachMaspLoi: string[] = []; // 🎯 Bổ sung: Danh sách mã SP không tìm thấy
         const validDataMap = new Map(validData.map(item => [item.masp, { slton: item.slton, slhuy: item.slhuy }]));
 
         const phieuNhapDetails: any[] = [];
@@ -499,6 +506,7 @@ export class XuatnhaptonComponent implements OnDestroy {
           const sanpham = sanphamMap.get(masp);
 
           if (!sanpham) {
+            danhSachMaspLoi.push(masp); // Thu thập mã lỗi để báo người dùng
             processErrors.push(`Không tìm thấy sản phẩm với mã: ${masp}`);
             continue;
           }
@@ -658,6 +666,46 @@ export class XuatnhaptonComponent implements OnDestroy {
           }
         }
 
+        // ✅ BỔ SUNG: Xử lý các sản phẩm KHÔNG có trong Excel nhưng đang bị ÂM KHO (< 0)
+        // Yêu cầu: Tự động đưa về 0 để làm sạch dữ liệu
+        for (const [masp, tonkho] of tonkhoMap.entries()) {
+          // Nếu đã xử lý trong Excel rồi thì bỏ qua
+          if (validDataMap.has(masp)) continue;
+
+          const currentSlton = Number(tonkho.slton || 0);
+          const currentSltontt = Number(tonkho.sltontt || 0);
+          const sanpham = sanphamMap.get(masp);
+
+          if (currentSlton < 0 && sanpham) {
+            const sltonReset = 0;
+            
+            // Tính là phiếu nhập để bù vào phần âm
+            phieuNhapDetails.push({
+              sanphamId: sanpham.id,
+              soluong: Math.abs(currentSlton), // Ví dụ: -5 -> +5 để về 0
+            });
+
+            allChangedDetails.push({
+              sanphamId: sanpham.id,
+              sltonhethong: currentSlton,
+              sltonthucte: sltonReset,
+              slhuy: 0,
+              ghichu: `Tự động reset kho âm (không có trong Excel)`,
+            });
+
+            danhSachCanhBao.push({
+              masp,
+              title: sanpham.title || masp,
+              sltonCu: currentSlton,
+              sltonMoi: sltonReset,
+              chenhLech: Math.abs(currentSlton),
+              loaiDieuChinh: 'tang',
+              mucDoNghiemTrong: 'trung_binh',
+              lyDoCanhBao: `⚠️ RESET KHO ÂM: Sản phẩm không có trong file Excel nhưng hệ thống đang bị âm (${currentSlton} kg). Hệ thống tự động đưa về 0.`,
+            });
+          }
+        }
+
         this._snackBar.dismiss();
 
         const spBinhThuong = (phieuNhapDetails.length + phieuXuatDetails.length) - danhSachCanhBao.length;
@@ -670,6 +718,7 @@ export class XuatnhaptonComponent implements OnDestroy {
           danhSachCanhBao,
           danhSachNhap: phieuNhapDetails,
           danhSachXuat: phieuXuatDetails,
+          danhSachLoi: danhSachMaspLoi, // 🎯 Bổ sung danh sách lỗi vào dialog
         };
 
         const dialogRef = this._dialog.open(StockWarningDialogComponent, {
