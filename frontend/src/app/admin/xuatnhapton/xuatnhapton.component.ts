@@ -385,28 +385,27 @@ export class XuatnhaptonComponent implements OnDestroy {
         }
 
         // Validate và transform dữ liệu
-        const validData: Array<{ masp: string; slton: number; slhuy: number }> = [];
+        const validData: Array<{ masp: string; slton: number | null; slhuy: number }> = [];
         const errors: string[] = [];
         console.log(excelData);
 
         excelData.forEach((row: any, index: number) => {
           const masp = row.masp?.toString().trim() || row.ITEMCODE?.toString().trim();
-          let slton = parseFloat(row.slton || row.QUANTITY || '0');
-          let slhuy = parseFloat(row.slhuy || '0');
-
-          // Validate required fields
+          
+          // ✅ ĐIỀU CHỈNH 1: Nếu thiếu mã sản phẩm, bỏ qua dòng này (không báo lỗi cả file)
           if (!masp) {
-            errors.push(`Dòng ${index + 1}: Thiếu mã sản phẩm`);
+            console.warn(`Bỏ qua dòng ${index + 1}: Thiếu mã sản phẩm`);
             return;
           }
 
-          // Xử lý slton: nếu NaN, null, undefined hoặc <= 0 thì set về 0
-          if (isNaN(slton) || slton == null || slton <= 0) {
+          // ✅ ĐIỀU CHỈNH 3: Phân biệt slton trống và slton bằng 0
+          const rawSlton = row.slton ?? row.QUANTITY;
+          let slton: number | null = (rawSlton === undefined || rawSlton === null || rawSlton === '') ? null : parseFloat(rawSlton);
+          let slhuy = parseFloat(row.slhuy || '0');
+
+          // Nếu slton không phải trống nhưng là số âm hoặc không phải số, đưa về 0
+          if (slton !== null && (isNaN(slton) || slton < 0)) {
             slton = 0;
-            console.log(
-              `Dòng ${index + 1} - ${masp}: slton được set về 0 (giá trị gốc: ${row.slton
-              })`
-            );
           }
           
           if (isNaN(slhuy) || slhuy == null || slhuy < 0) {
@@ -419,7 +418,7 @@ export class XuatnhaptonComponent implements OnDestroy {
         if (errors.length > 0) {
           this._snackBar.dismiss();
           this._snackBar.open(
-            `Có ${errors.length} lỗi trong file. Xem console để biết chi tiết.`,
+            `Có lỗi định dạng dữ liệu. Xem console để biết chi tiết.`,
             'Đóng',
             {
               duration: 5000,
@@ -506,9 +505,6 @@ export class XuatnhaptonComponent implements OnDestroy {
         const danhSachCanhBao: StockWarningItem[] = [];
 
         for (const [masp, parsedData] of validDataMap.entries()) {
-          const slton = parsedData.slton;
-          const slhuy = parsedData.slhuy;
-          
           const tonkho = tonkhoMap.get(masp);
           const sanpham = sanphamMap.get(masp);
 
@@ -517,9 +513,16 @@ export class XuatnhaptonComponent implements OnDestroy {
             continue;
           }
 
-          // ✅ QUAN TRỌNG: Lấy cả 2 giá trị tồn kho để so sánh
+          // ✅ Lấy các giá trị tồn kho hiện tại
           const currentSlton = Number(tonkho ? (tonkho.slton || 0) : 0);
           const currentSltontt = Number(tonkho ? (tonkho.sltontt || 0) : 0);
+
+          // ✅ ĐIỀU CHỈNH 3: Nếu slton trong Excel trống, lấy giá trị hiện tại của hệ thống (giữ nguyên)
+          let slton = parsedData.slton;
+          if (slton === null) {
+            slton = currentSlton;
+          }
+          const slhuy = parsedData.slhuy;
 
           // So sánh với slton (số lượng thực tế đang hiển thị trên bảng) để quyết định loại điều chỉnh
           if (slton > currentSlton) {

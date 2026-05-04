@@ -1723,6 +1723,18 @@ let DonhangService = class DonhangService {
         const tongtien = tong + tongvat;
         return { tong, tongvat, tongtien };
     }
+    deduplicateSanpham(sanpham) {
+        if (!Array.isArray(sanpham))
+            return [];
+        const seen = new Set();
+        return sanpham.filter((sp) => {
+            const idSP = sp.idSP || sp.id;
+            if (!idSP || seen.has(idSP))
+                return false;
+            seen.add(idSP);
+            return true;
+        });
+    }
     async create(dto) {
         const maxOrderResult = await this.prisma.donhang.aggregate({
             _max: {
@@ -1779,7 +1791,8 @@ let DonhangService = class DonhangService {
                             else {
                                 sanphamArray = [];
                             }
-                            return sanphamArray.map((sp) => {
+                            const uniqueSanpham = this.deduplicateSanpham(sanphamArray);
+                            return uniqueSanpham.map((sp) => {
                                 return {
                                     idSP: sp.idSP || sp.id,
                                     giaban: parseFloat((sp.giaban || 0).toString()),
@@ -2053,8 +2066,8 @@ let DonhangService = class DonhangService {
                     printCount: data.printCount,
                     sanpham: data.sanpham ? {
                         deleteMany: {},
-                        create: data.sanpham.map((sp) => ({
-                            idSP: sp.id,
+                        create: this.deduplicateSanpham(data.sanpham).map((sp) => ({
+                            idSP: sp.id || sp.idSP,
                             sldat: sp.sldat !== undefined ? parseFloat(sp.sldat.toString()) : 0,
                             slgiao: sp.slgiao !== undefined ? parseFloat(sp.slgiao.toString()) : 0,
                             slnhan: sp.slnhan !== undefined ? parseFloat(sp.slnhan.toString()) : 0,

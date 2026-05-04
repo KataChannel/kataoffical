@@ -104,10 +104,14 @@ export class DetailDonhangComponent {
   TrangThaiDon: any = TrangThaiDon;
 
 
+  isSaving = signal(false);
+
   async changeStatus(newStatus: string) {
+    if (this.isSaving()) return;
     if (this.DetailDonhang()?.status === newStatus) return;
     
     try {
+      this.isSaving.set(true);
       this._snackBar.open('Đang cập nhật trạng thái...', '', { duration: 1000 });
       
       const result = await this._GraphqlService.updateOne(
@@ -132,6 +136,8 @@ export class DetailDonhangComponent {
         duration: 2000,
         panelClass: ['snackbar-error'],
       });
+    } finally {
+      this.isSaving.set(false);
     }
   }
 
@@ -343,6 +349,8 @@ export class DetailDonhangComponent {
   }
 
   async handleDonhangAction() {
+    if (this.isSaving()) return;
+
     // Validate dữ liệu trước khi xử lý
     const validationError: any = this.validateDonhang();
     if (validationError) {
@@ -391,13 +399,24 @@ export class DetailDonhangComponent {
   }
 
   private async proceedWithSave() {
-    // ✅ FIX: Ensure DetailDonhang.sanpham is properly synchronized with ListFilter
-    this.synchronizeProductData();
+    this.isSaving.set(true);
+    try {
+      // ✅ FIX: Ensure DetailDonhang.sanpham is properly synchronized with ListFilter
+      this.synchronizeProductData();
 
-    if (this.donhangId() === 'new') {
-      await this.createDonhang();
-    } else {
-      await this.updateDonhang();
+      if (this.donhangId() === 'new') {
+        await this.createDonhang();
+      } else {
+        await this.updateDonhang();
+      }
+    } catch (error: any) {
+      console.error('Error during save:', error);
+      this._snackBar.open('Lỗi khi lưu đơn hàng: ' + (error.message || 'Lỗi không xác định'), '', {
+        duration: 3000,
+        panelClass: ['snackbar-error']
+      });
+    } finally {
+      this.isSaving.set(false);
     }
   }
 

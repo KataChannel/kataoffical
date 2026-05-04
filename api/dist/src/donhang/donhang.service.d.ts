@@ -511,6 +511,7 @@ export declare class DonhangService {
     DonhangcodeToNumber(code: any): Promise<number>;
     DonhangnumberToCode(number: any): Promise<string>;
     private calculateDonhangTotals;
+    private deduplicateSanpham;
     create(dto: any): Promise<{
         sanpham: {
             id: string;

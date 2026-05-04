@@ -2182,6 +2182,19 @@ export class DonhangService {
 
     return { tong, tongvat, tongtien };
   }
+
+  // Helper method to deduplicate sanpham by idSP
+  private deduplicateSanpham(sanpham: any[]) {
+    if (!Array.isArray(sanpham)) return [];
+    const seen = new Set();
+    return sanpham.filter((sp) => {
+      const idSP = sp.idSP || sp.id;
+      if (!idSP || seen.has(idSP)) return false;
+      seen.add(idSP);
+      return true;
+    });
+  }
+
   
   async create(dto: any) {
 
@@ -2255,7 +2268,10 @@ export class DonhangService {
                 sanphamArray = [];
               }
               
-              return sanphamArray.map((sp) => {
+              // ✅ FIX: Deduplicate sanpham before mapping to prevent x2/x3 items
+              const uniqueSanpham = this.deduplicateSanpham(sanphamArray);
+              
+              return uniqueSanpham.map((sp) => {
                 return {
                   idSP: sp.idSP || sp.id,
                   giaban: parseFloat((sp.giaban || 0).toString()),
@@ -2574,8 +2590,8 @@ export class DonhangService {
           printCount: data.printCount,
           sanpham: data.sanpham ? {
             deleteMany: {},
-            create: data.sanpham.map((sp: any) => ({
-              idSP: sp.id,
+            create: this.deduplicateSanpham(data.sanpham).map((sp: any) => ({
+              idSP: sp.id || sp.idSP,
               sldat: sp.sldat !== undefined ? parseFloat(sp.sldat.toString()) : 0,
               slgiao: sp.slgiao !== undefined ? parseFloat(sp.slgiao.toString()) : 0,
               slnhan: sp.slnhan !== undefined ? parseFloat(sp.slnhan.toString()) : 0,

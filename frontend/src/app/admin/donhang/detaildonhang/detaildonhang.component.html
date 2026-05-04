@@ -12,31 +12,31 @@
       <mat-icon class="!text-[10px] !ml-1 !h-2.5 !w-2.5">expand_more</mat-icon>
     </button>
     <mat-menu #statusMenu="matMenu" class="shadcn-menu">
-      <button mat-menu-item (click)="changeStatus('dadat')">
+      <button mat-menu-item (click)="changeStatus('dadat')" [disabled]="isSaving()">
         <mat-icon class="text-blue-500">pending</mat-icon>
         <span>Đã Đặt</span>
       </button>
-      <button mat-menu-item (click)="changeStatus('choxuly')">
+      <button mat-menu-item (click)="changeStatus('choxuly')" [disabled]="isSaving()">
         <mat-icon class="text-orange-500">hourglass_empty</mat-icon>
         <span>Chờ Xử Lý</span>
       </button>
-      <button mat-menu-item (click)="changeStatus('dagiao')">
+      <button mat-menu-item (click)="changeStatus('dagiao')" [disabled]="isSaving()">
         <mat-icon class="text-amber-500">local_shipping</mat-icon>
         <span>Đã Giao</span>
       </button>
-      <button mat-menu-item (click)="changeStatus('danhan')">
+      <button mat-menu-item (click)="changeStatus('danhan')" [disabled]="isSaving()">
         <mat-icon class="text-green-500">check_circle</mat-icon>
         <span>Đã Nhận</span>
       </button>
-      <button mat-menu-item (click)="changeStatus('hoanthanh')">
+      <button mat-menu-item (click)="changeStatus('hoanthanh')" [disabled]="isSaving()">
         <mat-icon class="text-teal-500">verified</mat-icon>
         <span>Hoàn Thành</span>
       </button>
-      <button mat-menu-item (click)="changeStatus('khonggiao')">
+      <button mat-menu-item (click)="changeStatus('khonggiao')" [disabled]="isSaving()">
         <mat-icon class="text-slate-500">block</mat-icon>
         <span>Không Giao</span>
       </button>
-      <button mat-menu-item (click)="changeStatus('huy')">
+      <button mat-menu-item (click)="changeStatus('huy')" [disabled]="isSaving()">
         <mat-icon class="text-red-500">cancel</mat-icon>
         <span>Đã Hủy</span>
       </button>
@@ -49,8 +49,9 @@
       <mat-icon>print</mat-icon>
     </button> -->
     <!-- @if(!DetailDonhang().status || DetailDonhang().status === 'dadat' || DetailDonhang().status === 'dagiao') { -->
-    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleDonhangAction()">
-      <mat-icon>save</mat-icon>
+    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleDonhangAction()" [disabled]="isSaving()">
+      <mat-icon *ngIf="!isSaving()">save</mat-icon>
+      <mat-progress-spinner *ngIf="isSaving()" diameter="24" mode="indeterminate"></mat-progress-spinner>
     </button>
     <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>
