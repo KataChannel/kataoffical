@@ -5,7 +5,7 @@
     "ng": "ng",
     "dev": "ng serve --configuration development --port 4301 --host 0.0.0.0 --disable-host-check",
     "start": "ng serve --watch --configuration development --no-hmr --port 4301 --host 0.0.0.0 --disable-host-check",
-    "build": "ng build",
+    "build": "ng build && node scripts/create-manifest.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs"

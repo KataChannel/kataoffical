@@ -29,9 +29,10 @@ echo "7. 🧹 Dọn dẹp Database"
 echo "8. 🔧 Sửa lỗi 'too many open files'"
 echo "9. 🚀 Triển khai An toàn (Build Local -> Server)"
 echo "10. ⏫ Cập nhật Schema Database (Push)"
+echo "11. 🔄 Phục hồi dữ liệu từ Local lên VPS (rausachfinal)"
 echo "0. Thoát"
 echo "-----------------------------------"
-read -p "Vui lòng chọn chức năng (0-10): " choice
+read -p "Vui lòng chọn chức năng (0-11): " choice
 
 case $choice in
     1)
@@ -70,7 +71,12 @@ case $choice in
         ;;
     10)
         echo "=> ⏫ Tiến hành Push Database (prisma db push)..."
-        (cd api && npx prisma db push)
+        (cd api && bunx prisma db push)
+        exit 0
+        ;;
+    11)
+        echo "=> 🔄 Khởi chạy trình Phục hồi dữ liệu từ Local lên VPS..."
+        bash scripts/restore_to_vps.sh
         exit 0
         ;;
     0)

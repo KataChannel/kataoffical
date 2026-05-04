@@ -141,6 +141,10 @@ export declare class ChotkhoService {
                 sltonthucte: Decimal;
                 sltonhethong: Decimal;
                 chenhlech: Decimal;
+                giaGocSnapshot: Decimal;
+                giaTriChenhLech: Decimal;
+                giaTriHuy: Decimal;
+                isEstimated: boolean;
                 chotkhoId: string | null;
             })[];
         } & {
@@ -154,6 +158,9 @@ export declare class ChotkhoService {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            isLocked: boolean;
+            lockedAt: Date | null;
+            lockedBy: string | null;
             ngaychot: Date;
         }) | null;
         warnings: any[];
@@ -195,6 +202,10 @@ export declare class ChotkhoService {
                 sltonthucte: Decimal;
                 sltonhethong: Decimal;
                 chenhlech: Decimal;
+                giaGocSnapshot: Decimal;
+                giaTriChenhLech: Decimal;
+                giaTriHuy: Decimal;
+                isEstimated: boolean;
                 chotkhoId: string | null;
             })[];
         } & {
@@ -208,6 +219,9 @@ export declare class ChotkhoService {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            isLocked: boolean;
+            lockedAt: Date | null;
+            lockedBy: string | null;
             ngaychot: Date;
         })[];
         pagination: {
@@ -250,6 +264,10 @@ export declare class ChotkhoService {
             sltonthucte: Decimal;
             sltonhethong: Decimal;
             chenhlech: Decimal;
+            giaGocSnapshot: Decimal;
+            giaTriChenhLech: Decimal;
+            giaTriHuy: Decimal;
+            isEstimated: boolean;
             chotkhoId: string | null;
         })[];
     } & {
@@ -263,6 +281,9 @@ export declare class ChotkhoService {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        isLocked: boolean;
+        lockedAt: Date | null;
+        lockedBy: string | null;
         ngaychot: Date;
     }) | null>;
     update(id: string, updateData: any): Promise<{
@@ -276,6 +297,9 @@ export declare class ChotkhoService {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        isLocked: boolean;
+        lockedAt: Date | null;
+        lockedBy: string | null;
         ngaychot: Date;
     }>;
     remove(id: string): Promise<{
@@ -289,6 +313,9 @@ export declare class ChotkhoService {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        isLocked: boolean;
+        lockedAt: Date | null;
+        lockedBy: string | null;
         ngaychot: Date;
     }>;
     search(searchParams: any): Promise<{
@@ -325,6 +352,10 @@ export declare class ChotkhoService {
                 sltonthucte: Decimal;
                 sltonhethong: Decimal;
                 chenhlech: Decimal;
+                giaGocSnapshot: Decimal;
+                giaTriChenhLech: Decimal;
+                giaTriHuy: Decimal;
+                isEstimated: boolean;
                 chotkhoId: string | null;
             })[];
         } & {
@@ -338,6 +369,9 @@ export declare class ChotkhoService {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            isLocked: boolean;
+            lockedAt: Date | null;
+            lockedBy: string | null;
             ngaychot: Date;
         })[];
         pagination: {
@@ -387,6 +421,10 @@ export declare class ChotkhoService {
             sltonthucte: Decimal;
             sltonhethong: Decimal;
             chenhlech: Decimal;
+            giaGocSnapshot: Decimal;
+            giaTriChenhLech: Decimal;
+            giaTriHuy: Decimal;
+            isEstimated: boolean;
             chotkhoId: string | null;
         })[];
     } & {
@@ -400,6 +438,9 @@ export declare class ChotkhoService {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        isLocked: boolean;
+        lockedAt: Date | null;
+        lockedBy: string | null;
         ngaychot: Date;
     }) | null>;
 }

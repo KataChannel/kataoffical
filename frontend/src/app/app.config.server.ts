@@ -6,8 +6,7 @@ import { appConfig } from './app.config';
 
 const serverConfig: ApplicationConfig = {
   providers: [
-    provideServerRendering(),
-    provideRouter([]) // 💡 HACK: Provide empty routes to bypass route extraction crash
+    provideServerRendering()
   ]
 };
 

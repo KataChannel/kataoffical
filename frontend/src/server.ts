@@ -4,21 +4,35 @@ import {
   isMainModule,
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
+import { ɵsetAngularAppEngineManifest, ɵsetAngularAppManifest } from '@angular/ssr';
 import express from 'express';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
 const app = express();
+
 let angularApp: any;
-try {
-  angularApp = new AngularNodeAppEngine();
-} catch (e) {
-  console.error('CRITICAL ERROR: Failed to initialize AngularNodeAppEngine', e);
-  throw e;
-}
+const initPromise = (async () => {
+  try {
+    // Load manifests manually before initializing the engine
+    const manifestPath = resolve(serverDistFolder, 'angular-app-manifest.mjs');
+    const engineManifestPath = resolve(serverDistFolder, 'angular-app-engine-manifest.mjs');
+
+    // Use pathToFileURL to ensure valid file URLs on all platforms
+    const { default: manifest } = await import(pathToFileURL(manifestPath).href);
+    const { default: engineManifest } = await import(pathToFileURL(engineManifestPath).href);
+
+    ɵsetAngularAppManifest(manifest);
+    ɵsetAngularAppEngineManifest(engineManifest);
+
+    angularApp = new AngularNodeAppEngine();
+  } catch (e) {
+    console.error('CRITICAL ERROR: Failed to initialize AngularNodeAppEngine', e);
+  }
+})();
 
 /**
  * Example Express Rest API endpoints can be defined here.
@@ -49,12 +63,17 @@ app.use(
  * Handle all other requests by rendering the Angular application.
  */
 app.use('/**', (req, res, next) => {
-  angularApp
-    .handle(req)
-    .then((response: any) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
-    .catch(next);
+  initPromise.then(() => {
+    if (!angularApp) {
+      return next(new Error('AngularNodeAppEngine not initialized'));
+    }
+    angularApp
+      .handle(req)
+      .then((response: any) =>
+        response ? writeResponseToNodeResponse(response, res) : next(),
+      )
+      .catch(next);
+  });
 });
 
 /**

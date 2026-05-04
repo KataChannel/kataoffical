@@ -545,6 +545,9 @@ model Chotkho {
   khoId     String?
   ghichu    String?
   isActive  Boolean         @default(true)
+  isLocked  Boolean         @default(false)
+  lockedAt  DateTime?
+  lockedBy  String?
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
   codeId    String?         @unique
@@ -569,6 +572,10 @@ model Chotkhodetail {
   sltonthucte  Decimal  @default(0) @postgres.Decimal(20, 3)
   slhuy        Decimal  @default(0) @postgres.Decimal(20, 3)
   chenhlech    Decimal  @default(0) @postgres.Decimal(20, 3)
+  giaGocSnapshot  Decimal @default(0) @postgres.Decimal(20, 3)
+  giaTriChenhLech Decimal @default(0) @postgres.Decimal(20, 3)
+  giaTriHuy       Decimal @default(0) @postgres.Decimal(20, 3)
+  isEstimated     Boolean @default(false)
   ghichu       String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
