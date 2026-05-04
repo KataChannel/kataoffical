@@ -81,15 +81,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'performance',
-        canActivate: [PermissionGuard],
-        data: { permission: 'admin.view' },
-        loadComponent: () =>
-          import('./admin/performance/performance.component').then(
-            (c) => c.PerformanceComponent
-          ),
-      },
-      {
         path: 'lienheadmin',
         loadComponent: () =>
           import('./site/lienheadmin/lienheadmin.component').then(
@@ -790,6 +781,11 @@ export const routes: Routes = [
       ),
   },
   {
+    path: ':slug',
+    loadComponent: () => import('./site/sitemain/sitemain.component').then((c) => c.SitemainComponent),
+    resolve: { component: DynamicComponentResolver }
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./site/sitemain/sitemain.component').then(
@@ -811,11 +807,12 @@ export const routes: Routes = [
             (c) => c.LienheComponent
           ),
       },
+/*
       {
         path: ':slug',
         resolve: { componentType: DynamicComponentResolver },
         loadComponent: async () => {
-          const componentType = history?.state?.componentType;
+          const componentType = typeof history !== 'undefined' ? history?.state?.componentType : null;
           if (componentType) {
             switch (componentType) {
               case 'danhmucbaiviet':
@@ -853,6 +850,7 @@ export const routes: Routes = [
           }
         },
       },
+*/
     ],
   },
 ];

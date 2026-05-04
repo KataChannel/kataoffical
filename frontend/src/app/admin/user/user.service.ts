@@ -316,15 +316,21 @@ export class UserService {
   }
   loadPermissions() {
     const permissions = this._StorageService.getItem('permissions');
-    this.permissionsSubject.next(permissions);
+    if (permissions) {
+      this.permissionsSubject.next(permissions);
+    }
     return permissions;
   }
 
   hasPermission(permission: string): boolean {
-    if (!this.permissionsSubject?.getValue()) {
-      this.logout()
+    const permissions = this.permissionsSubject.getValue();
+    if (!permissions || permissions.length === 0) {
+      if (this.isBrowser) {
+        this.logout();
+      }
+      return false;
     }
-    return this.permissionsSubject?.getValue()?.includes(permission);
+    return permissions.includes(permission);
   }
   async register(user: any) {
     try {
@@ -412,10 +418,14 @@ export class UserService {
   }
 
   async logout() {
-    this._StorageService.removeItem('token');
-    this._StorageService.removeItem('permissions');
-    this.permissionsSubject.next([]);
-    this.router.navigate(['/']);
+    if (this.isBrowser) {
+      this._StorageService.removeItem('token');
+      this._StorageService.removeItem('permissions');
+      this.permissionsSubject.next([]);
+    }
+    if (this.isBrowser) {
+      this.router.navigate(['/']);
+    }
     return true
   }
 

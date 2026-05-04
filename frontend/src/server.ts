@@ -12,7 +12,13 @@ const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
 const app = express();
-const angularApp = new AngularNodeAppEngine();
+let angularApp: any;
+try {
+  angularApp = new AngularNodeAppEngine();
+} catch (e) {
+  console.error('CRITICAL ERROR: Failed to initialize AngularNodeAppEngine', e);
+  throw e;
+}
 
 /**
  * Example Express Rest API endpoints can be defined here.
@@ -45,7 +51,7 @@ app.use(
 app.use('/**', (req, res, next) => {
   angularApp
     .handle(req)
-    .then((response) =>
+    .then((response: any) =>
       response ? writeResponseToNodeResponse(response, res) : next(),
     )
     .catch(next);

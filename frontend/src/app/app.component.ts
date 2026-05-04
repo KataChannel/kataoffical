@@ -17,7 +17,7 @@ export class AppComponent {
     
   ) { }
   ngOnInit() {
-   this._UserService.loadPermissions();
+    this._UserService.loadPermissions();
   //   this._UserService.getProfile().then((data)=>{
   //     console.log(data);
       

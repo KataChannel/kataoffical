@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import {
   ActivatedRouteSnapshot,
   CanActivate,
@@ -18,6 +19,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private _UserService: UserService,
     private _router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
     //  private _spinner: NgxSpinnerService
   ) { }
 
@@ -49,11 +51,16 @@ export class AuthGuard implements CanActivate {
   }
 
   private _check(redirectURL: string): Observable<boolean> {
+    if (!isPlatformBrowser(this.platformId)) {
+      return of(true);
+    }
     // this._spinner.show();
     return this._UserService.checkDangnhap().pipe(
       switchMap((authenticated) => {
         if (!authenticated) {
-          this._router.navigate(['/login'], { queryParams: { redirectURL } });
+          if (isPlatformBrowser(this.platformId)) {
+            this._router.navigate(['/login'], { queryParams: { redirectURL } });
+          }
           return of(false);
         }
         return of(true);

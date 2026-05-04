@@ -1,17 +1,25 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Resolve, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 import { Observable, of } from 'rxjs';
 import { routeMap } from './shared/mockdata/routeMap';
 
 @Injectable({ providedIn: 'root' })
 export class DynamicComponentResolver implements Resolve<string> {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) { }
   resolve(route: ActivatedRouteSnapshot): Observable<string | any> {
     const slug: any = route.paramMap.get('slug'); // Lấy giá trị slug từ URL
     const lastPart = slug.slice(slug.lastIndexOf('-') + 1); // Lấy phần sau dấu "-" cuối cùng
     const componentType = routeMap[lastPart] || 'notfound';
     console.log(componentType);
-    history.replaceState({ componentType }, ''); // Lưu kết quả vào history.state
+    
+    if (isPlatformBrowser(this.platformId)) {
+      history.replaceState({ componentType }, ''); // Lưu kết quả vào history.state
+    }
+    
     return of(componentType); // Trả về kết quả dưới dạng Observable
   }
   private determineComponentType(slug: any): any {
