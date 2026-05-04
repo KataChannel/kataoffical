@@ -94,9 +94,9 @@ export class XuatnhaptonComponent implements OnDestroy {
   private _KhoService: KhoService = inject(KhoService);
   private _ChotkhoService: ChotkhoService = inject(ChotkhoService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
-  Xuatnhapton:any = this._PhieukhoService.ListPhieukho;
+  Xuatnhapton: any = this._PhieukhoService.ListPhieukho;
   dataSource = new MatTableDataSource([]);
-  _snackBar: MatSnackBar = inject(MatSnackBar);  CountItem: any = 0;
+  _snackBar: MatSnackBar = inject(MatSnackBar); CountItem: any = 0;
   isUpdatingStock = false;
   SearchParams: any = {
     Batdau: DateHelpers.format(DateHelpers.now(), 'YYYY-MM-DD'),
@@ -138,8 +138,7 @@ export class XuatnhaptonComponent implements OnDestroy {
     }
   }
 
-  async LoadDondathang()
-  {
+  async LoadDondathang() {
     const ListSLChogiao = await this._DonhangService.getSLChogiao(this.SearchParams);
     const ListSLChonhap = await this._DathangService.getSLChonhap(this.SearchParams);
     this.dataSource.data.forEach((v: any) => {
@@ -159,34 +158,34 @@ export class XuatnhaptonComponent implements OnDestroy {
     this.dataSource.data = this.dataSource.data.filter((v: any) => v.slchogiaott > 0 || v.slchonhaptt > 0);
     this.dataSource.sort = this.sort;
   }
-  
 
 
-  async ngOnInit(): Promise<void> {    
+
+  async ngOnInit(): Promise<void> {
     // await this._SanphamService.getAllSanpham() 
     this.LoadXuatnhapton();
     this._KhoService.getTonKho('1', '99999').then((res) => {
-    this.Xuatnhapton.set(res.data);
-    this.dataSource.data = this.Xuatnhapton();
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.initializeColumns();
-    this.setupDrawer();
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
+      this.Xuatnhapton.set(res.data);
+      this.dataSource.data = this.Xuatnhapton();
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.initializeColumns();
+      this.setupDrawer();
+      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+      this.paginator._intl.previousPageLabel = 'Về Trước';
+      this.paginator._intl.firstPageLabel = 'Trang Đầu';
+      this.paginator._intl.lastPageLabel = 'Trang Cuối';
     });
     this._GraphqlService
     this.CountItem = this.Xuatnhapton().length;
   }
 
-  async LoadXuatnhapton(){
-    const ListXuatnhapton = await this._GraphqlService.findAll('tonkho',{
-      aggressiveCache:true,
-      enableParallelFetch:true,
-      take:99999
+  async LoadXuatnhapton() {
+    const ListXuatnhapton = await this._GraphqlService.findAll('tonkho', {
+      aggressiveCache: true,
+      enableParallelFetch: true,
+      take: 99999
     })
     console.log(ListXuatnhapton);
     this.Xuatnhapton.set(ListXuatnhapton.data);
@@ -202,7 +201,7 @@ export class XuatnhaptonComponent implements OnDestroy {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('TonkhoColFilter',JSON.stringify(this.FilterColumns)
+      localStorage.setItem('TonkhoColFilter', JSON.stringify(this.FilterColumns)
       );
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -241,7 +240,7 @@ export class XuatnhaptonComponent implements OnDestroy {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('TonkhoColFilter',JSON.stringify(this.FilterColumns)
+    localStorage.setItem('TonkhoColFilter', JSON.stringify(this.FilterColumns)
     );
   }
   doFilterColumns(event: any): void {
@@ -251,79 +250,70 @@ export class XuatnhaptonComponent implements OnDestroy {
     );
   }
   @memoize()
-  FilterHederColumn(list:any,column:any)
-  {
-    const uniqueList = list.filter((obj: any, index: number, self: any) => 
+  FilterHederColumn(list: any, column: any) {
+    const uniqueList = list.filter((obj: any, index: number, self: any) =>
       index === self.findIndex((t: any) => t[column] === obj[column])
     );
     return uniqueList
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    const query = event.target.value.toLowerCase();  
+    const query = event.target.value.toLowerCase();
     console.log(query);
     console.log(column);
 
-    this.dataSource.filteredData = this.Xuatnhapton().filter((v: any) => 
-      
+    this.dataSource.filteredData = this.Xuatnhapton().filter((v: any) =>
+
       removeVietnameseAccents(v[column]).includes(query) || v[column].toLowerCase().includes(query)
-  );
+    );
 
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
-  ListFilter:any[] =[]
-  ChosenItem(item:any,column:any)
-  {
-    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
-    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
-    if(CheckItem1.length>0)
-    {
+  ListFilter: any[] = []
+  ChosenItem(item: any, column: any) {
+    const CheckItem = this.dataSource.filteredData.filter((v: any) => v[column] === item[column]);
+    const CheckItem1 = this.ListFilter.filter((v: any) => v[column] === item[column]);
+    if (CheckItem1.length > 0) {
       this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
     }
-    else{
-      this.ListFilter = [...this.ListFilter,...CheckItem];
+    else {
+      this.ListFilter = [...this.ListFilter, ...CheckItem];
     }
   }
-  ChosenAll(list:any)
-  {
-    list.forEach((v:any) => {
-      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
-      if(CheckItem)
-        {
-          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
-        }
-        else{
-          this.ListFilter.push(v);
-        }
+  ChosenAll(list: any) {
+    list.forEach((v: any) => {
+      const CheckItem = this.ListFilter.find((v1) => v1.id === v.id) ? true : false;
+      if (CheckItem) {
+        this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
+      }
+      else {
+        this.ListFilter.push(v);
+      }
     });
   }
-  ResetFilter()
-  {
+  ResetFilter() {
     this.ListFilter = this.Xuatnhapton();
     this.dataSource.data = this.Xuatnhapton();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-  EmptyFiter()
-  {
+  EmptyFiter() {
     this.ListFilter = [];
   }
-  CheckItem(item:any)
-  {
-    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  CheckItem(item: any) {
+    return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
-  ApplyFilterColum(menu:any)
-  {    
+  ApplyFilterColum(menu: any) {
     this.dataSource.data = this.Xuatnhapton().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;    
+    this.dataSource.sort = this.sort;
     menu.closeMenu();
   }
 
   async ExportExcel(data: any, title: any) {
-   await this._SanphamService.getAllSanpham() 
+    await this._SanphamService.getAllSanpham()
     const SP = this._SanphamService.ListSanpham().map((v: any) => ({
       subtitle: v.subtitle,
       masp: v.masp,
@@ -336,7 +326,7 @@ export class XuatnhaptonComponent implements OnDestroy {
       dvt: v.dvt,
       slton: v.slton,
     }))
-    writeExcelMultiple({SP, XNT}, title);
+    writeExcelMultiple({ SP, XNT }, title);
   }
 
   async Capnhattonkho() {
@@ -391,7 +381,7 @@ export class XuatnhaptonComponent implements OnDestroy {
 
         excelData.forEach((row: any, index: number) => {
           const masp = row.masp?.toString().trim() || row.ITEMCODE?.toString().trim();
-          
+
           // ✅ ĐIỀU CHỈNH 1: Nếu thiếu mã sản phẩm, bỏ qua dòng này (không báo lỗi cả file)
           if (!masp) {
             console.warn(`Bỏ qua dòng ${index + 1}: Thiếu mã sản phẩm`);
@@ -407,7 +397,7 @@ export class XuatnhaptonComponent implements OnDestroy {
           if (slton !== null && (isNaN(slton) || slton < 0)) {
             slton = 0;
           }
-          
+
           if (isNaN(slhuy) || slhuy == null || slhuy < 0) {
             slhuy = 0;
           }
@@ -594,10 +584,10 @@ export class XuatnhaptonComponent implements OnDestroy {
               // 🚩 Tính toán độ trễ chứng từ (Chỉ tính cho các đơn thực sự chưa nhận/giao: dadat, dagiao)
               const dList = tonkho?.sanpham?.Dathangsanpham || tonkho?.sanpham?.dathangsanpham || [];
               const donList = tonkho?.sanpham?.Donhangsanpham || tonkho?.sanpham?.donhangsanpham || [];
-              
+
               const dActive = dList.filter((i: any) => i.dathang?.status === 'dadat' || i.dathang?.status === 'dagiao');
               const donActive = donList.filter((i: any) => i.donhang?.status === 'dadat' || i.donhang?.status === 'dagiao');
-              
+
               const dathangOldest = dActive[0]?.dathang?.createdAt;
               const donhangOldest = donActive[0]?.donhang?.createdAt;
               const oldestDate = dathangOldest || donhangOldest;
@@ -612,10 +602,10 @@ export class XuatnhaptonComponent implements OnDestroy {
                   if (item.dathang && (item.dathang.status === 'dadat' || item.dathang.status === 'dagiao')) {
                     const slValue = Number(item.slgiao || item.sldat || 0);
                     sumSlchonhapRecord += slValue;
-                    pendingList.push({ 
-                      id: item.dathang.id, 
-                      code: item.dathang.madncc || 'ĐN-' + item.dathang.id.split('-')[0], 
-                      date: new Date(item.dathang.createdAt), 
+                    pendingList.push({
+                      id: item.dathang.id,
+                      code: item.dathang.madncc || 'ĐN-' + item.dathang.id.split('-')[0],
+                      date: new Date(item.dathang.createdAt),
                       type: 'dathang',
                       status: item.dathang.status,
                       soluong: slValue
@@ -628,10 +618,10 @@ export class XuatnhaptonComponent implements OnDestroy {
                   if (item.donhang && (item.donhang.status === 'dadat' || item.donhang.status === 'dagiao')) {
                     const slValue = Number(item.slgiao || item.sldat || 0);
                     sumSlchogiaoRecord += slValue;
-                    pendingList.push({ 
-                      id: item.donhang.id, 
-                      code: item.donhang.madonhang || 'DH-' + item.donhang.id.split('-')[0], 
-                      date: new Date(item.donhang.createdAt), 
+                    pendingList.push({
+                      id: item.donhang.id,
+                      code: item.donhang.madonhang || 'DH-' + item.donhang.id.split('-')[0],
+                      date: new Date(item.donhang.createdAt),
                       type: 'donhang',
                       status: item.donhang.status,
                       soluong: slValue
@@ -641,9 +631,9 @@ export class XuatnhaptonComponent implements OnDestroy {
               }
 
               // ✅ PHÁT HIỆN DỮ LIỆU ẢO (OUT OF SYNC)
-              const isSyncError = (slchonhap > 0 && Math.abs(slchonhap - sumSlchonhapRecord) > 0.01) || 
-                                (slchogiao > 0 && Math.abs(slchogiao - sumSlchogiaoRecord) > 0.01);
-              
+              const isSyncError = (slchonhap > 0 && Math.abs(slchonhap - sumSlchonhapRecord) > 0.01) ||
+                (slchogiao > 0 && Math.abs(slchogiao - sumSlchogiaoRecord) > 0.01);
+
               if (isSyncError) {
                 const ghostMess = `⚠️ LỖI ĐỒNG BỘ: Hệ thống ghi nhận treo (${slchonhap}/${slchogiao} kg) nhưng thực tế chỉ tìm thấy (${sumSlchonhapRecord.toFixed(2)}/${sumSlchogiaoRecord.toFixed(2)} kg) đơn hàng tương ứng. Có thể do đơn hàng cũ đã bị xóa hoặc thay đổi trạng thái nhưng kho chưa cập nhật.`;
                 warningMess = ghostMess + " " + warningMess;
@@ -655,8 +645,8 @@ export class XuatnhaptonComponent implements OnDestroy {
                 sltonCu: currentSltontt,
                 sltonMoi: slton,
                 chenhLech: Math.abs(slton - currentSltontt),
-                loaiDieuChinh: 'khong_doi', 
-                mucDoNghiemTrong: (isLate || isSyncError) ? 'cao' : 'trung_binh', 
+                loaiDieuChinh: 'khong_doi',
+                mucDoNghiemTrong: (isLate || isSyncError) ? 'cao' : 'trung_binh',
                 lyDoCanhBao: isLate ? `🚩 CẢNH BÁO TRỄ CHỨNG TỪ: ${warningMess} (Đơn cũ nhất từ ${new Date(oldestDate).toLocaleDateString('vi-VN')})` : warningMess,
                 isLate: isLate,
                 oldestPendingDate: oldestDate ? new Date(oldestDate) : null,
@@ -711,7 +701,7 @@ export class XuatnhaptonComponent implements OnDestroy {
         });
 
         if (allChangedDetails.length > 0) {
-          const defaultKhoId = '4cc01811-61f5-4bdc-83de-a493764e9258'; 
+          const defaultKhoId = '4cc01811-61f5-4bdc-83de-a493764e9258';
 
           const ckResult = await this._ChotkhoService.createChotkhoWithDetails({
             ngaychot: DateHelpers.now(),
@@ -864,46 +854,46 @@ export class XuatnhaptonComponent implements OnDestroy {
   }
 
   private _dialog: MatDialog = inject(MatDialog);
-  Trangthaidon:any = TrangThaiDon
-  ListDathang:any[] = [];
-  ListDonhang:any[] = [];
-  
+  Trangthaidon: any = TrangThaiDon
+  ListDathang: any[] = [];
+  ListDonhang: any[] = [];
+
   // Enhanced filtering and sorting properties
   FilteredDathang: any[] = [];
   FilteredDonhang: any[] = [];
-  
+
   // Sort properties for Dathang
   dathangSortField: string = '';
   dathangSortDirection: 'asc' | 'desc' = 'asc';
   selectedDathangStatus: string = '';
-  
+
   // Sort properties for Donhang
   donhangSortField: string = '';
   donhangSortDirection: 'asc' | 'desc' = 'asc';
   selectedDonhangStatus: string = '';
-  
+
   // Date filtering properties
   dathangStartDate: string = '';
   dathangEndDate: string = '';
   donhangStartDate: string = '';
   donhangEndDate: string = '';
-  
+
   // Debounce timers for optimized search
   private dathangSearchTimeout: any;
   private donhangSearchTimeout: any;
-  
+
   Object = Object; // For template access
   async XemDathang(row: any, template: TemplateRef<any>) {
-   this.ListDathang =  await this._DathangService.findbysanpham(row.sanphamId);
-   console.log(this.ListDathang);
-   
-   // Initialize filtered array and reset filters
-   this.FilteredDathang = [...this.ListDathang];
-   this.selectedDathangStatus = '';
-   this.dathangSortField = '';
-   this.dathangSortDirection = 'asc';
-   this.dathangStartDate = '';
-   this.dathangEndDate = '';
+    this.ListDathang = await this._DathangService.findbysanpham(row.sanphamId);
+    console.log(this.ListDathang);
+
+    // Initialize filtered array and reset filters
+    this.FilteredDathang = [...this.ListDathang];
+    this.selectedDathangStatus = '';
+    this.dathangSortField = '';
+    this.dathangSortDirection = 'asc';
+    this.dathangStartDate = '';
+    this.dathangEndDate = '';
 
     const dialogDeleteRef = this._dialog.open(template, {
       hasBackdrop: true,
@@ -911,15 +901,15 @@ export class XuatnhaptonComponent implements OnDestroy {
     });
     dialogDeleteRef.afterClosed().subscribe((result) => {
       if (result === "true") {
-      
+
       }
     });
   }
 
   async XemDonhang(row: any, template: TemplateRef<any>) {
-    this.ListDonhang =  await this._DonhangService.findbysanpham(row.sanphamId);
+    this.ListDonhang = await this._DonhangService.findbysanpham(row.sanphamId);
     console.log(this.ListDonhang);
-    
+
     // Initialize filtered array and reset filters
     this.FilteredDonhang = [...this.ListDonhang];
     this.selectedDonhangStatus = '';
@@ -933,7 +923,7 @@ export class XuatnhaptonComponent implements OnDestroy {
     });
     dialogDeleteRef.afterClosed().subscribe((result) => {
       if (result === "true") {
-      
+
       }
     });
   }
@@ -942,7 +932,7 @@ export class XuatnhaptonComponent implements OnDestroy {
       items?.reduce((sum: any, item: any) => sum + (Number(item?.sanpham[fieldTong]) || 0), 0) || 0
     );
   }
-  gotoDexuat(){
+  gotoDexuat() {
     this.DexuatEmit.emit(false);
   }
 
@@ -957,13 +947,13 @@ export class XuatnhaptonComponent implements OnDestroy {
   }
 
   // ================== DATHANG FILTERING AND SORTING METHODS ==================
-  
+
   filterDathangList(event: any) {
     // Clear previous timeout
     if (this.dathangSearchTimeout) {
       clearTimeout(this.dathangSearchTimeout);
     }
-    
+
     // Debounce search for better performance
     this.dathangSearchTimeout = setTimeout(() => {
       const searchTerm = event.target.value?.toLowerCase() || '';
@@ -1012,10 +1002,10 @@ export class XuatnhaptonComponent implements OnDestroy {
   // Optimized date range filter method
   private applyDateRangeFilter(items: any[], startDate: string, endDate: string): any[] {
     if (!startDate && !endDate) return items;
-    
+
     const start = startDate ? new Date(startDate + 'T00:00:00') : null;
     const end = endDate ? new Date(endDate + 'T23:59:59') : null;
-    
+
     return items.filter(item => {
       const itemDate = new Date(item.createdAt);
       if (start && itemDate < start) return false;
@@ -1027,25 +1017,25 @@ export class XuatnhaptonComponent implements OnDestroy {
   // Optimized search filter method
   private applySearchFilter(items: any[], searchTerm: string, type: 'dathang' | 'donhang'): any[] {
     const lowerSearchTerm = searchTerm.toLowerCase();
-    
+
     return items.filter(item => {
-      const searchableFields = type === 'dathang' 
+      const searchableFields = type === 'dathang'
         ? [
-            item.title,
-            item.madathang || item.madncc,
-            item.khachhang?.name || item.nhacungcap?.name,
-            item.sanpham?.sanpham?.title,
-            this.Trangthaidon[item.status]
-          ]
+          item.title,
+          item.madathang || item.madncc,
+          item.khachhang?.name || item.nhacungcap?.name,
+          item.sanpham?.sanpham?.title,
+          this.Trangthaidon[item.status]
+        ]
         : [
-            item.title,
-            item.madonhang,
-            item.khachhang?.name,
-            item.sanpham?.sanpham?.title,
-            this.Trangthaidon[item.status]
-          ];
-      
-      return searchableFields.some(field => 
+          item.title,
+          item.madonhang,
+          item.khachhang?.name,
+          item.sanpham?.sanpham?.title,
+          this.Trangthaidon[item.status]
+        ];
+
+      return searchableFields.some(field =>
         field?.toString().toLowerCase().includes(lowerSearchTerm)
       );
     });
@@ -1126,7 +1116,7 @@ export class XuatnhaptonComponent implements OnDestroy {
     if (this.donhangSearchTimeout) {
       clearTimeout(this.donhangSearchTimeout);
     }
-    
+
     // Debounce search for better performance
     this.donhangSearchTimeout = setTimeout(() => {
       const searchTerm = event.target.value?.toLowerCase() || '';
@@ -1270,10 +1260,10 @@ export class XuatnhaptonComponent implements OnDestroy {
   setDathangDateFilter(days: number) {
     const today = DateHelpers.format(DateHelpers.now(), 'YYYY-MM-DD');
     const startDate = DateHelpers.format(
-      DateHelpers.subtract(DateHelpers.now(), days, 'day'), 
+      DateHelpers.subtract(DateHelpers.now(), days, 'day'),
       'YYYY-MM-DD'
     );
-    
+
     this.dathangStartDate = startDate;
     this.dathangEndDate = today;
     this.filterDathangByDateRange();
@@ -1283,10 +1273,10 @@ export class XuatnhaptonComponent implements OnDestroy {
   setDonhangDateFilter(days: number) {
     const today = DateHelpers.format(DateHelpers.now(), 'YYYY-MM-DD');
     const startDate = DateHelpers.format(
-      DateHelpers.subtract(DateHelpers.now(), days, 'day'), 
+      DateHelpers.subtract(DateHelpers.now(), days, 'day'),
       'YYYY-MM-DD'
     );
-    
+
     this.donhangStartDate = startDate;
     this.donhangEndDate = today;
     this.filterDonhangByDateRange();
@@ -1322,13 +1312,13 @@ export class XuatnhaptonComponent implements OnDestroy {
 
     const headers = Object.keys(data[0]);
     const csvHeaders = headers.join(',');
-    
-    const csvRows = data.map(row => 
+
+    const csvRows = data.map(row =>
       headers.map(header => {
         const value = row[header];
         // Escape commas and quotes in CSV
-        return typeof value === 'string' && (value.includes(',') || value.includes('"')) 
-          ? `"${value.replace(/"/g, '""')}"` 
+        return typeof value === 'string' && (value.includes(',') || value.includes('"'))
+          ? `"${value.replace(/"/g, '""')}"`
           : value;
       }).join(',')
     );

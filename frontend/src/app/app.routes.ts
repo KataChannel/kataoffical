@@ -20,7 +20,7 @@ export const routes: Routes = [
         (c) => c.AdminmainComponent
       ),
     children: [
-            {
+      {
         path: 'bulk-price-update',
         loadComponent: () => import('./admin/banggia/bulk-price-update/bulk-price-update.component')
           .then(m => m.BulkPriceUpdateComponent)
@@ -41,11 +41,11 @@ export const routes: Routes = [
           .then(m => m.PriceComparisonComponent)
       },
       {
-          path: 'auditlog',
-          canActivate: [PermissionGuard],
-          data: { permission: 'auditlog.view' },
-          loadChildren: () =>
-            import('./admin/auditlog/auditlog.route').then(m => m.AuditlogRoutingModule),
+        path: 'auditlog',
+        canActivate: [PermissionGuard],
+        data: { permission: 'auditlog.view' },
+        loadChildren: () =>
+          import('./admin/auditlog/auditlog.route').then(m => m.AuditlogRoutingModule),
       },
       {
         path: 'performance',
@@ -238,12 +238,12 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./admin/nhanvien/nhanvien.route').then(m => m.nhanvienRoutes),
       },
-    {
-            path: 'importdata',
-            canActivate: [PermissionGuard],
-            data: { permission: 'importdata.view' },
-            loadChildren: () =>
-              import('./admin/importdata/importdata.route').then(m => m.ImportdataRoutingModule),
+      {
+        path: 'importdata',
+        canActivate: [PermissionGuard],
+        data: { permission: 'importdata.view' },
+        loadChildren: () =>
+          import('./admin/importdata/importdata.route').then(m => m.ImportdataRoutingModule),
       },
       {
         path: 'danhmuc',
@@ -335,12 +335,12 @@ export const routes: Routes = [
         ],
       },
       {
-            path: 'khachhang',
-            canActivate: [PermissionGuard],
-            data: { permission: 'khachhang.view' },
-            loadChildren: () =>
-              import('./admin/khachhang/khachhang.route').then(m => m.KhachhangRoutingModule),
-      },     
+        path: 'khachhang',
+        canActivate: [PermissionGuard],
+        data: { permission: 'khachhang.view' },
+        loadChildren: () =>
+          import('./admin/khachhang/khachhang.route').then(m => m.KhachhangRoutingModule),
+      },
       // {
       //   path: 'khachhang',
       //   canActivate: [PermissionGuard],
@@ -392,18 +392,18 @@ export const routes: Routes = [
         ],
       },
       {
-            path: 'nhacungcap',
-            canActivate: [PermissionGuard],
-            data: { permission: 'nhacungcap.view' },
-            loadChildren: () =>
-              import('./admin/nhacungcap/nhacungcap.route').then(m => m.NhacungcapRoutingModule),
+        path: 'nhacungcap',
+        canActivate: [PermissionGuard],
+        data: { permission: 'nhacungcap.view' },
+        loadChildren: () =>
+          import('./admin/nhacungcap/nhacungcap.route').then(m => m.NhacungcapRoutingModule),
       },
       {
-            path: 'nhomncc',
-            canActivate: [PermissionGuard],
-            data: { permission: 'nhomncc.view' },
-            loadChildren: () =>
-              import('./admin/nhomncc/nhomncc.route').then(m => m.NhomnccRoutingModule),
+        path: 'nhomncc',
+        canActivate: [PermissionGuard],
+        data: { permission: 'nhomncc.view' },
+        loadChildren: () =>
+          import('./admin/nhomncc/nhomncc.route').then(m => m.NhomnccRoutingModule),
       },
       {
         path: 'dathang',
@@ -598,12 +598,12 @@ export const routes: Routes = [
         //   },
         // ],
       },
-       {
-            path: 'chotkho',
-            canActivate: [PermissionGuard],
-            data: { permission: 'chotkho.view' },
-            loadChildren: () =>
-              import('./admin/chotkho/chotkho.route').then(m => m.ChotkhoRoutingModule),
+      {
+        path: 'chotkho',
+        canActivate: [PermissionGuard],
+        data: { permission: 'chotkho.view' },
+        loadChildren: () =>
+          import('./admin/chotkho/chotkho.route').then(m => m.ChotkhoRoutingModule),
       },
       {
         path: 'congnokhachhang',

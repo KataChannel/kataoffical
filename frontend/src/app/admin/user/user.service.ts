@@ -1,4 +1,4 @@
-import { inject, Inject, Injectable, PLATFORM_ID, signal,Signal } from '@angular/core';
+import { inject, Inject, Injectable, PLATFORM_ID, signal, Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
@@ -50,24 +50,24 @@ export class UserService {
   async CreateUser(dulieu: any) {
     try {
       const options = {
-          method:'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(dulieu),
-        };
-        const response = await fetch(`${environment.APIURL}/users`, options);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (!response.ok) {
-          this.handleError(response.status);
-        }
-        this.getAllUser()
-        this.userId.set(data.id)
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dulieu),
+      };
+      const response = await fetch(`${environment.APIURL}/users`, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      this.getAllUser()
+      this.userId.set(data.id)
     } catch (error) {
-        return console.error(error);
+      return console.error(error);
     }
   }
 
@@ -77,14 +77,14 @@ export class UserService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer '+this._StorageService.getItem('token')
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
         },
       };
       const response = await fetch(`${environment.APIURL}/users`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }
-      const data = await response.json();           
+      const data = await response.json();
       this.ListUser.set(data)
     } catch (error) {
       return console.error(error);
@@ -98,11 +98,11 @@ export class UserService {
           'Content-Type': 'application/json',
         },
       };
-      const response = await fetch(`${environment.APIURL}/users/findid/${id}`, options);      
+      const response = await fetch(`${environment.APIURL}/users/findid/${id}`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }
-      const data = await response.json();      
+      const data = await response.json();
       this.DetailUser.set(data)
     } catch (error) {
       return console.error(error);
@@ -111,90 +111,90 @@ export class UserService {
   async updateUser(dulieu: any) {
     try {
       const options = {
-          method:'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
-          },
-          body: JSON.stringify(dulieu),
-        };
-        const response = await fetch(`${environment.APIURL}/users/${dulieu.id}`, options);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (!response.ok) {
-          this.handleError(response.status);
-        }
-        this.getAllUser()
-        this.getUserByid(dulieu.id)
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+        body: JSON.stringify(dulieu),
+      };
+      const response = await fetch(`${environment.APIURL}/users/${dulieu.id}`, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      this.getAllUser()
+      this.getUserByid(dulieu.id)
     } catch (error) {
-        return console.error(error);
+      return console.error(error);
     }
   }
   async assignRoleToUser(dulieu: any) {
     try {
       console.log(dulieu);
-      
+
       const options = {
-          method:'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(dulieu),
-        };
-        const response = await fetch(`${environment.APIURL}/users/assign`, options);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (!response.ok) {
-          this.handleError(response.status);
-        }
-        this.getUserByid(dulieu.userId)
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dulieu),
+      };
+      const response = await fetch(`${environment.APIURL}/users/assign`, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      this.getUserByid(dulieu.userId)
     } catch (error) {
-        return console.error(error);
+      return console.error(error);
     }
   }
-  async removeRoleFromUser(dulieu:any) {    
+  async removeRoleFromUser(dulieu: any) {
     try {
       console.log(dulieu);
-        const options = {
-            method:'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
-            },
-            body: JSON.stringify(dulieu),
-          };
-          const response = await fetch(`${environment.APIURL}/users/remove`, options);
-          if (!response.ok) {
-              // this.handleError(response.status);
-          }
-          console.log(dulieu);
-          
-          this.getUserByid(dulieu.userId)
-      } catch (error) {
-          return console.error(error);
+      const options = {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+        body: JSON.stringify(dulieu),
+      };
+      const response = await fetch(`${environment.APIURL}/users/remove`, options);
+      if (!response.ok) {
+        // this.handleError(response.status);
       }
+      console.log(dulieu);
+
+      this.getUserByid(dulieu.userId)
+    } catch (error) {
+      return console.error(error);
+    }
   }
-  async DeleteUser(item:any) {    
+  async DeleteUser(item: any) {
     try {
-        const options = {
-            method:'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + this._StorageService.getItem('token')
-            },
-          };
-          const response = await fetch(`${environment.APIURL}/users/${item.id}`, options);
-          if (!response.ok) {
-            this.handleError(response.status);
-          }
-          this.getAllUser()
-      } catch (error) {
-          return console.error(error);
+      const options = {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+      };
+      const response = await fetch(`${environment.APIURL}/users/${item.id}`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
       }
+      this.getAllUser()
+    } catch (error) {
+      return console.error(error);
+    }
   }
 
 
@@ -218,7 +218,7 @@ export class UserService {
       return console.error(error);
     }
   }
-  async Randompass(data: any){
+  async Randompass(data: any) {
     try {
       const options = {
         method: 'POST',
@@ -245,7 +245,7 @@ export class UserService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer '+ this._StorageService.getItem('token')
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
         },
       };
       const response = await fetch(`${environment.APIURL}/users/profile`, options);
@@ -255,14 +255,14 @@ export class UserService {
         return null;
       }
       const data = await response.json();
-      
+
       // Safe check for permissions array
-      const permissions = data.permissions && Array.isArray(data.permissions) 
-        ? data.permissions.map((p: any) => p.name || p) 
+      const permissions = data.permissions && Array.isArray(data.permissions)
+        ? data.permissions.map((p: any) => p.name || p)
         : [];
-        
+
       this.profile.set(data);
-      if(permissions.length > 0) {
+      if (permissions.length > 0) {
         this._StorageService.setItem('permissions', JSON.stringify(permissions));
       } else {
         // Clear permissions if none found
@@ -302,15 +302,14 @@ export class UserService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      if(data)
-      {
+      if (data) {
         this._authenticated = true;
         this.accessToken = data.access_token;
-        this._StorageService.setItem('permissions', JSON.stringify(data?.user?.permissions||[]));
+        this._StorageService.setItem('permissions', JSON.stringify(data?.user?.permissions || []));
         this.permissionsSubject.next(data?.user?.permissions);
-        return [true,data]
+        return [true, data]
       }
-      return  [false, 'Đăng Nhập Thất Bại']
+      return [false, 'Đăng Nhập Thất Bại']
     } catch (error) {
       return console.error(error);
     }
@@ -323,7 +322,7 @@ export class UserService {
 
   hasPermission(permission: string): boolean {
     if (!this.permissionsSubject?.getValue()) {
-     this.logout()
+      this.logout()
     }
     return this.permissionsSubject?.getValue()?.includes(permission);
   }
@@ -368,7 +367,7 @@ export class UserService {
       this._authenticated = true;
       this.accessToken = data[1].access_token;
       console.log(data);
-      return [true,this.accessToken]
+      return [true, this.accessToken]
     } catch (error) {
       return console.error(error);
     }
@@ -420,7 +419,7 @@ export class UserService {
     return true
   }
 
-  private _snackBar:MatSnackBar = inject(MatSnackBar);
+  private _snackBar: MatSnackBar = inject(MatSnackBar);
   private handleError(status: number) {
     let message = 'Lỗi không xác định';
     switch (status) {
@@ -456,7 +455,7 @@ export class UserService {
         break;
       case 500:
         message = 'Lỗi máy chủ, vui lòng thử lại sau';
-          this._snackBar.open(message, '', {
+        this._snackBar.open(message, '', {
           duration: 1000,
           horizontalPosition: "end",
           verticalPosition: "top",

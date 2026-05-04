@@ -46,7 +46,7 @@ import { SanphamService } from '../sanpham.service';
 export class ListSanphamComponent implements OnInit {
   displayedColumns: string[] = [];
   ColumnName: any = {
-    stt:'#',
+    stt: '#',
     masp: 'Mã Sản Phẩm',
     title: 'Tên Sản Phẩm',
     title2: 'Tên Sản Phẩm 2',
@@ -77,10 +77,10 @@ export class ListSanphamComponent implements OnInit {
   total = this._SanphamService.total;
   pageSize = this._SanphamService.pageSize;
   sanphamId = this._SanphamService.sanphamId;
-  dataSource:any = new MatTableDataSource([]);
+  dataSource: any = new MatTableDataSource([]);
   EditList: any[] = [];
   isSearch = signal<boolean>(false);
-  searchParam:any={};
+  searchParam: any = {};
   constructor() {
     effect(() => {
       this.dataSource.data = this.Listsanpham();
@@ -95,7 +95,7 @@ export class ListSanphamComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this._SanphamService.listenSanphamUpdates();
-    await this._SanphamService.getAllSanpham(this.searchParam,true);
+    await this._SanphamService.getAllSanpham(this.searchParam, true);
     this.displayedColumns = Object.keys(this.ColumnName);
     this.dataSource = new MatTableDataSource(this.Listsanpham());
     this.dataSource.sort = this.sort;
@@ -108,11 +108,11 @@ export class ListSanphamComponent implements OnInit {
     this.FilterColumns = this.FilterColumns.length ? this.FilterColumns : this.Columns;
     localStorage.setItem('SanphamColFilter', JSON.stringify(this.FilterColumns));
     this.displayedColumns = this.FilterColumns.filter(col => col.isShow).map(col => col.key);
-    this.ColumnName = this.FilterColumns.reduce((acc, { key, value, isShow }) => 
+    this.ColumnName = this.FilterColumns.reduce((acc, { key, value, isShow }) =>
       isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
   }
   @Debounce(100)
-    applyFilter(event: Event) {
+  applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     if (!filterValue) {
       this.searchParam = {};
@@ -148,7 +148,7 @@ export class ListSanphamComponent implements OnInit {
   }
   @memoize()
   FilterHederColumn(list: any, column: any) {
-    const uniqueList = list.filter((obj: any, index: number, self: any) => 
+    const uniqueList = list.filter((obj: any, index: number, self: any) =>
       index === self.findIndex((t: any) => t[column] === obj[column])
     );
     return uniqueList;
@@ -180,7 +180,7 @@ export class ListSanphamComponent implements OnInit {
     this._router.navigate(['admin/sanpham', 'new']);
   }
   CheckSelect(item: any): boolean {
-    return this.EditList.some((v: any) => v.id === item.id)? true : false;
+    return this.EditList.some((v: any) => v.id === item.id) ? true : false;
   }
   openDeleteDialog(template: TemplateRef<any>) {
     const dialogDeleteRef = this._dialog.open(template, {
@@ -247,15 +247,15 @@ export class ListSanphamComponent implements OnInit {
     this._SanphamService.getAllSanpham(this.searchParam, true);
     menuHienthi.closeMenu();
   }
-  
-  onPreviousPage(){
+
+  onPreviousPage() {
     if (this.page() > 1) {
       this._SanphamService.page.set(this.page() - 1);
       this._SanphamService.getAllSanpham(this.searchParam, true);
     }
   }
 
-  onNextPage(){
+  onNextPage() {
     if (this.page() < this.totalPages()) {
       this._SanphamService.page.set(this.page() + 1);
       this._SanphamService.getAllSanpham(this.searchParam, true);

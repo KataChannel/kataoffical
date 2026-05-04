@@ -5,7 +5,7 @@ import { routeMap } from './shared/mockdata/routeMap';
 
 @Injectable({ providedIn: 'root' })
 export class DynamicComponentResolver implements Resolve<string> {
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
   resolve(route: ActivatedRouteSnapshot): Observable<string | any> {
     const slug: any = route.paramMap.get('slug'); // Lấy giá trị slug từ URL
     const lastPart = slug.slice(slug.lastIndexOf('-') + 1); // Lấy phần sau dấu "-" cuối cùng

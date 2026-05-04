@@ -18,8 +18,8 @@ export class AuthGuard implements CanActivate {
   constructor(
     private _UserService: UserService,
     private _router: Router,
-  //  private _spinner: NgxSpinnerService
-  ) {}
+    //  private _spinner: NgxSpinnerService
+  ) { }
 
   canActivate(
     route: ActivatedRouteSnapshot,
@@ -49,7 +49,7 @@ export class AuthGuard implements CanActivate {
   }
 
   private _check(redirectURL: string): Observable<boolean> {
-   // this._spinner.show();
+    // this._spinner.show();
     return this._UserService.checkDangnhap().pipe(
       switchMap((authenticated) => {
         if (!authenticated) {
@@ -59,7 +59,7 @@ export class AuthGuard implements CanActivate {
         return of(true);
       }),
       finalize(() => {
-     //   this._spinner.hide();
+        //   this._spinner.hide();
       })
     );
   }
