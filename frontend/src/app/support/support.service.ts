@@ -3,7 +3,7 @@ import { Apollo, gql } from 'apollo-angular';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { StorageService } from '../shared/utils/storage.service';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 
 const TICKETS_QUERY = gql`
   query Tickets($status: String, $priority: String) {
@@ -153,6 +153,6 @@ export class SupportService {
     });
 
     // return this.http.post<any[]>(`${environment.APIURL}/support/upload`, formData, { headers });
-    return this.http.post<any[]>(`https://apitg.rausachtrangia.com/support/upload`, formData, { headers });
+    return this.http.post<any[]>(`${environment.APIURL}/support/upload`, formData, { headers });
   }
 }

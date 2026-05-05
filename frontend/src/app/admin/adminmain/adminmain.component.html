@@ -141,8 +141,16 @@
           <span class="font-bold">Quy Trình</span>
        </div>
        <div class="relative flex w-full overflow-auto">
-        Không có dữ liệu
-        <!-- <app-commonuserguide [Detail]="DetailUserguide()"></app-commonuserguide> -->
+        <mat-list class="w-full">
+          <mat-list-item *ngFor="let item of listQuytrinh" (click)="openQuytrinhDialog(item)" class="cursor-pointer hover:bg-gray-100 rounded-lg mb-2 border border-gray-100">
+            <mat-icon matListItemIcon class="!text-[#0B9444]">{{ item.icon }}</mat-icon>
+            <div matListItemTitle class="font-bold text-[#0B9444]">{{ item.title }}</div>
+            <div matListItemLine class="text-xs text-gray-500">{{ item.description }}</div>
+            <button mat-icon-button matListItemMeta>
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </mat-list-item>
+        </mat-list>
        </div>
     </div>
 

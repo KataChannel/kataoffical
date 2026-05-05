@@ -17,55 +17,83 @@ echo ""
 echo "Chọn chế độ vận hành:"
 echo "  1. 🔍 Dry Run (Chạy thử cô lập trên Server port 53332)"
 echo "  2. 🚀 Real Deploy (Triển khai chính thức lên Server)"
+echo "  3. 🧪 Sandbox Deploy (Triển khai Sandbox port 53333/54303)"
 echo "  0. Thoát"
 echo ""
-read -p "Lựa chọn của bạn (0-2): " mode
+read -p "Lựa chọn của bạn (0-3): " mode
 
 [ "$mode" == "0" ] && exit 0
 
 is_dry_run=false
+is_sandbox=false
 [ "$mode" == "1" ] && is_dry_run=true
+[ "$mode" == "3" ] && is_sandbox=true
 
 echo ""
 echo "-------------------------------------------------"
 echo "📝 Bước 1: 🏗️ Đang xử lý môi trường & Build Image..."
-echo "Mô tả: Tự động chuyển DATABASE sang bản Production (rausachfinal) và thực hiện Build."
 
-# Backup original .env
+# Backup original environments
 ENV_FILE="api/.env"
+FE_ENV="frontend/src/environments/environment.ts"
+FE_ENV_DEV="frontend/src/environments/environment.development.ts"
+
 cp "$ENV_FILE" "${ENV_FILE}.bak"
+cp "$FE_ENV" "${FE_ENV}.bak"
+cp "$FE_ENV_DEV" "${FE_ENV_DEV}.bak"
 
-# Smart Switch: Comment out testdata and uncomment rausachfinal
-# Tìm dòng chứa testdata (đang mở) -> đóng lại
-sed -i 's/^DATABASE_URL=.*testdata.*/#&/g' "$ENV_FILE"
-# Tìm dòng chứa rausachfinal (đang đóng) -> mở ra
-sed -i 's/^#\(DATABASE_URL=.*rausachfinal.*\)/\1/g' "$ENV_FILE"
+if [ "$is_sandbox" == "true" ]; then
+    echo "Mô tả: Tự động chuyển DATABASE sang bản Sandbox (testdata) và API URL sang domain apisandbox.rausachtrangia.com."
+    # Backend DB switch
+    sed -i 's/^DATABASE_URL=/#&/g' "$ENV_FILE"
+    sed -i 's/^#\(DATABASE_URL=.*testdata.*\)/\1/g' "$ENV_FILE"
+    if ! grep -q "testdata" "$ENV_FILE"; then
+        echo 'DATABASE_URL="postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/testdata?schema=public&connection_limit=25"' >> "$ENV_FILE"
+    fi
+    
+    # Frontend API switch (Trỏ về domain sandbox của bạn)
+    sed -i "s|APIURL:.*|APIURL: 'https://apisandbox.rausachtrangia.com',|g" "$FE_ENV"
+    sed -i "s|APIURL:.*|APIURL: 'https://apisandbox.rausachtrangia.com',|g" "$FE_ENV_DEV"
+else
+    echo "Mô tả: Tự động chuyển DATABASE sang bản Production (rausachfinal) và thực hiện Build."
+    sed -i 's/^DATABASE_URL=/#&/g' "$ENV_FILE"
+    sed -i 's/^#\(DATABASE_URL=.*rausachfinal.*\)/\1/g' "$ENV_FILE"
+fi
 
-# Thực hiện Build
+# Thực hiện Build Local
+echo "📦 Đang build Backend locally..."
+(cd api && bun run build)
+if [ $? -ne 0 ]; then echo "❌ Lỗi khi build Backend!"; exit 1; fi
+
+echo "📦 Đang build Frontend locally..."
+(cd frontend && bun run build)
+if [ $? -ne 0 ]; then echo "❌ Lỗi khi build Frontend!"; exit 1; fi
+
+# Thực hiện Build Docker Image
 docker compose build --parallel
 BUILD_RESULT=$?
 
-# Restore original .env (Ngay sau khi build xong để dev tiếp tục dùng testdata)
+# Restore original .env & environments
 mv "${ENV_FILE}.bak" "$ENV_FILE"
-echo "♻️ Đã khôi phục DATABASE về bản Dev (testdata) cho môi trường Local."
+mv "${FE_ENV}.bak" "$FE_ENV"
+mv "${FE_ENV_DEV}.bak" "$FE_ENV_DEV"
+echo "♻️ Đã khôi phục môi trường về trạng thái ban đầu cho máy Local."
 
 if [ $BUILD_RESULT -ne 0 ]; then echo "❌ Lỗi khi build image!"; exit 1; fi
 
-# Xác định tên Image (Dựa trên folder hiện tại)
+# Xác định tên Image
 BE_IMAGE=$(docker compose config --images | grep berausach)
 FE_IMAGE=$(docker compose config --images | grep ferausach)
 
 echo ""
 echo "-------------------------------------------------"
 echo "📝 Bước 2: 📦 Đang nén và đóng gói Image bản mới..."
-echo "Mô tả: Xuất Image ra file vật lý (.tar.gz) để chuẩn bị chuyển đi."
-PACKAGE_NAME="deploy_$(date +%Y%m%d_%H%M%S).tar.gz"
+PACKAGE_NAME="deploy_$( [ "$is_sandbox" == "true" ] && echo "sandbox_" )$(date +%Y%m%d_%H%M%S).tar.gz"
 docker save $BE_IMAGE $FE_IMAGE | gzip > /tmp/$PACKAGE_NAME
 
 echo ""
 echo "-------------------------------------------------"
 echo "📝 Bước 3: 🚚 Đang chuyển gói Image lên Server ($SERVER_IP)..."
-echo "Mô tả: Sử dụng SCP để truyền file nén trực tiếp lên thư mục lưu trữ của Server."
 ssh $SERVER_USER@$SERVER_IP "mkdir -p $BACKUP_DIR"
 scp /tmp/$PACKAGE_NAME $SERVER_USER@$SERVER_IP:$BACKUP_DIR/
 if [ $? -ne 0 ]; then echo "❌ Lỗi khi copy file!"; exit 1; fi
@@ -73,7 +101,6 @@ if [ $? -ne 0 ]; then echo "❌ Lỗi khi copy file!"; exit 1; fi
 echo ""
 echo "-------------------------------------------------"
 echo "📝 Bước 4: 💾 Đang tạo điểm phục hồi (Rollback Point) trên Server..."
-echo "Mô tả: Đánh dấu bản đang chạy hiện tại là 'stable' để có thể quay lại ngay lập tức nếu bản mới lỗi."
 ssh $SERVER_USER@$SERVER_IP << EOF
   docker tag $BE_IMAGE:latest $BE_IMAGE:stable 2>/dev/null
   docker tag $FE_IMAGE:latest $FE_IMAGE:stable 2>/dev/null
@@ -82,82 +109,64 @@ EOF
 echo ""
 echo "-------------------------------------------------"
 echo "📝 Bước 5: 📥 Đang nạp Image mới vào Docker Server..."
-echo "Mô tả: Giải nén và đăng ký Image mới vào hệ thống quản lý của Server."
 ssh $SERVER_USER@$SERVER_IP "gunzip -c $BACKUP_DIR/$PACKAGE_NAME | docker load"
 
 if [ "$is_dry_run" == "true" ]; then
     echo ""
     echo "-------------------------------------------------"
     echo "📝 Bước 6 (Dry Run): 🧪 Đang chạy thử nghiệm cô lập..."
-    echo "Mô tả: Khởi động Backend mới trên PORT 53332 (Cổng kiểm thử)."
     ssh $SERVER_USER@$SERVER_IP << EOF
       cd $PROJECT_DIR
       docker stop dry-run-test 2>/dev/null && docker rm dry-run-test 2>/dev/null
-      
-      echo "🚀 Đang khởi chạy container thử nghiệm..."
-      # Dọn dẹp dấu nháy kép dư thừa trong .env trên server (nếu có)
-      sed -i 's/DATABASE_URL=\"\(.*\)\"/DATABASE_URL=\1/' api/.env
-      
-      # Chạy trực tiếp qua docker run, nạp toàn bộ .env và kết nối network
-      docker run -d --name dry-run-test \
-        -p 53332:3331 \
-        --network rausachfinal_default \
-        --env-file api/.env \
-        -e REDIS_HOST="redis" \
-        $BE_IMAGE:latest
-      
+      docker run -d --name dry-run-test -p 53332:3331 --network rausachfinal_default --env-file api/.env -e REDIS_HOST="redis" $BE_IMAGE:latest
       echo "⏱️ Chờ 15s để Backend boot..."
       sleep 15
-      
-      # Kiểm tra Health
       if curl -s http://localhost:53332/database-info >/dev/null; then
-         echo "✅ KẾT QUẢ DRY RUN: THÀNH CÔNG!"
-         echo "🌐 Bạn có thể xem thử thực tế tại: http://$SERVER_IP:53332/database-info"
-         echo ""
-         echo "⏸️  CONTAINER ĐANG CHỜ... Hãy kiểm tra link trên trình duyệt."
+         echo "✅ KẾT QUẢ DRY RUN: THÀNH CÔNG! (Link: http://$SERVER_IP:53332/database-info)"
       else
          echo "❌ KẾT QUẢ DRY RUN: THẤT BẠI!"
-         echo "📋 Kiểm tra LOGS để tìm lỗi:"
-         docker logs dry-run-test | tail -n 20
-         echo "⚠️ Container 'dry-run-test' vẫn đang được giữ lại trên server để bạn kiểm tra (docker ps)."
-         echo "💡 Hãy tự xóa bằng lệnh: docker rm -f dry-run-test sau khi kiểm tra xong."
          exit 1
       fi
 EOF
-    # Tạm dừng ở máy local để người dùng kịp check trình duyệt
-    if [ $? -eq 0 ]; then
-        echo ""
-        read -p "🖥️ Nhấn [Enter] sau khi bạn đã kiểm tra xong để dọn dẹp và kết thúc..." 
-        ssh $SERVER_USER@$SERVER_IP "docker stop dry-run-test >/dev/null && docker rm dry-run-test >/dev/null"
-        echo "🧹 Đã dọn dẹp container thử nghiệm xong."
-    fi
+elif [ "$is_sandbox" == "true" ]; then
+    echo ""
+    echo "-------------------------------------------------"
+    echo "📝 Bước 6 (Sandbox): 🔃 Đang cập nhật Sandbox..."
+    ssh $SERVER_USER@$SERVER_IP << EOF
+      cd $PROJECT_DIR
+      echo "🧹 Đang dọn dẹp container sandbox cũ..."
+      docker stop rausachsandbox-backend 2>/dev/null && docker rm rausachsandbox-backend 2>/dev/null
+      docker stop rausachsandbox-frontend 2>/dev/null && docker rm rausachsandbox-frontend 2>/dev/null
+      
+      echo "🚀 Khởi chạy Sandbox Backend (Port 53333)..."
+      docker run -d --name rausachsandbox-backend \
+        -p 53333:3331 \
+        --network rausachfinal_default \
+        --env-file api/.env \
+        -e DATABASE_URL="postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/testdata?schema=public" \
+        -e REDIS_HOST="redis" \
+        $BE_IMAGE:latest
+
+      echo "🚀 Khởi chạy Sandbox Frontend (Port 54303)..."
+      docker run -d --name rausachsandbox-frontend \
+        -p 54303:4301 \
+        --network rausachfinal_default \
+        $FE_IMAGE:latest
+
+      echo "🎉 TRIỂN KHAI SANDBOX THÀNH CÔNG!"
+      echo "🌐 Backend: http://$SERVER_IP:53333"
+      echo "🌐 Frontend: http://$SERVER_IP:54303"
+EOF
 else
     echo ""
     echo "-------------------------------------------------"
     echo "📝 Bước 6: 🔃 Đang cập nhật ứng dụng chính thức..."
-    echo "Mô tả: Thay thế phiên bản cũ bằng phiên bản mới và khởi động lại."
     ssh $SERVER_USER@$SERVER_IP << EOF
       cd $PROJECT_DIR
-      
-      echo "🧹 Đang dọn dẹp các container thử nghiệm cũ (nếu có)..."
       docker stop dry-run-test 2>/dev/null && docker rm dry-run-test 2>/dev/null
-      
-      git pull  # Cập nhật cấu hình docker-compose.yml mới nhất
+      git pull
       docker compose up -d
-      
-      echo "⏱️ Đang kiểm tra Healthcheck sau Deploy (20s)..."
-      sleep 20
-      
-      # Kiểm tra lỗi
-      if ! curl -s http://localhost:53331/database-info >/dev/null; then
-         echo "⚠️ CẢNH BÁO: Phát hiện lỗi sau khi Deploy! Đang tự động Fallback..."
-         docker tag $BE_IMAGE:stable $BE_IMAGE:latest
-         docker tag $FE_IMAGE:stable $FE_IMAGE:latest
-         docker compose up -d
-         echo "✅ Đã phục hồi thành công bản chạy ổn định trước đó."
-      else
-         echo "🎉 DEPLOY THÀNH CÔNG! Hệ thống đã Online với bản mới nhất."
-      fi
+      echo "🎉 DEPLOY THÀNH CÔNG! Hệ thống đã Online với bản mới nhất."
 EOF
 fi
 

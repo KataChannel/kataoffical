@@ -20,6 +20,6 @@ export default {
     }
   },
   entryPointToBrowserMapping: {
-    '': ['main-RCBJEPYI.js']
+    '': ['main-EFQLDLBA.js']
   }
 };

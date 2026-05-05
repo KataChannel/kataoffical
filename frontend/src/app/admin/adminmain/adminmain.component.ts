@@ -32,6 +32,8 @@ import { UserguideService } from '../userguide/userguide.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AdvancedSearchDialogComponent } from '../../components/advanced-search-dialog/advanced-search-dialog.component';
 import { environment } from '../../../environments/environment.development';
+import { QuytrinhDialogComponent } from './quytrinh-dialog/quytrinh-dialog.component';
+
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -70,7 +72,16 @@ export class AdminmainComponent {
   unreadCount: number = 0;
   isSubscribed: boolean = false;
   notificationSearchTerm: string = '';
+  listQuytrinh: any[] = [
+    {
+      title: 'Quy Trình Order',
+      url: '/assets/quytrinh/order.html',
+      icon: 'shopping_cart',
+      description: 'Quy trình lên đơn và kiểm soát đơn hàng'
+    }
+  ];
   readonly VAPID_PUBLIC_KEY = "BAvPai7WQsKJEriy6QzNwR8PilSz-BugoT221pgKAgXQb7CH55KLe8WbEP23a7GdNsppktd0IR9lTmpLPsgJuyE";
+
   private _transformer = (node: any, level: number) => {
     return {
       expandable: !!node?.children && node?.children.length > 0,
@@ -201,6 +212,20 @@ export class AdminmainComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log('Search dialog closed with result:', result);
+      }
+    });
+  }
+
+  openQuytrinhDialog(item: any): void {
+    const dialogRef = this.dialog.open(QuytrinhDialogComponent, {
+      width: '100vw',
+      maxWidth: '100vw',
+      height: '100vh',
+      maxHeight: '100vh',
+      panelClass: 'quytrinh-dialog-container',
+      data: {
+        title: item.title,
+        url: item.url
       }
     });
   }
