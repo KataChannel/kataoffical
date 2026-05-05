@@ -221,9 +221,9 @@ export class ChotkhoService {
       const detailsData = data.details && data.details.length > 0
         ? data.details.map((detail) => ({
           sanphamId: detail.sanphamId,
-          sltonhethong: detail.sltonhethong || 0,
-          sltonthucte: detail.sltonthucte || 0,
-          slhuy: detail.slhuy || 0,
+          sltonhethong: Number(detail.sltonhethong) || 0,
+          sltonthucte: Math.max(0, Number(detail.sltonthucte) || 0),
+          slhuy: Math.max(0, Number(detail.slhuy) || 0),
           ghichu: detail.ghichu || '',
         }))
         : [];
@@ -472,9 +472,9 @@ export class ChotkhoService {
         isActive: data.isActive,
         details: data.details?.map((detail) => ({
           sanphamId: detail.sanphamId,
-          sltonhethong: detail.sltonhethong || 0,
-          sltonthucte: detail.sltonthucte || 0,
-          slhuy: detail.slhuy || 0,
+          sltonhethong: Number(detail.sltonhethong) || 0,
+          sltonthucte: Math.max(0, Number(detail.sltonthucte) || 0),
+          slhuy: Math.max(0, Number(detail.slhuy) || 0),
           ghichu: detail.ghichu || '',
         })),
       };

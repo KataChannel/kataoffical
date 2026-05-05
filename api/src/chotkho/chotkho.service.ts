@@ -245,9 +245,9 @@ export class ChotkhoService {
         const pendingWarnings: any[] = [];
 
         for (const detail of details) {
-          // 🎯 CHUẨN HÓA LOGIC: Lấy tồn kho hệ thống thực tế từ Log (Standardization)
-          const analysis = await this.calculateStockFromLogs(detail.sanphamId, khoId, chotkhoMaster.ngaychot, prisma);
-          const sltonhethong_chuan = analysis.currentCalc;
+          // 🎯 OPTIMIZATION: Use the provided system stock instead of recalculating from logs for every product
+          // This prevents N+1 query performance issues and transaction timeouts
+          const sltonhethong_chuan = Number(detail.sltonhethong);
           const sanpham = sanphamMap.get(detail.sanphamId);
 
           const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
@@ -260,14 +260,13 @@ export class ChotkhoService {
               sltonthucte: new Decimal(detail.sltonthucte),
               slhuy: new Decimal(detail.slhuy),
               chenhlech: new Decimal(chenhlech),
-              ghichu: detail.ghichu || (analysis.currentCalc !== Number(detail.sltonhethong) ? `⚠️ Đã chuẩn hóa từ log (Báo cáo cũ: ${detail.sltonhethong})` : ''),
+              ghichu: detail.ghichu || '',
               userId,
               ngaychot: chotkhoMaster.ngaychot
             }
           });
 
           // 🎯 SYNC TO REALITY: Cập nhật tồn kho vật lý trong hệ thống
-          
           await prisma.sanphamKho.upsert({
             where: {
               sanphamId_khoId: {
@@ -286,86 +285,26 @@ export class ChotkhoService {
             }
           });
 
-          // 2. Cập nhật tồn kho tổng: Phải tính TỔNG từ tất cả các kho (Aggregate)
+          // 2. Cập nhật tồn kho tổng (TonKho)
+          // Lấy tổng từ tất cả các kho
           const allWarehouseStock = await prisma.sanphamKho.findMany({
             where: { sanphamId: detail.sanphamId }
           });
           const totalStock = allWarehouseStock.reduce((acc, curr) => acc + Number(curr.soluong), 0);
 
-          // 🎯 FIX: Tính toán lại slchonhap và slchogiao từ các đơn hàng thực tế
-          const [pendingInAgg, pendingOutAgg, oldestIn, oldestOut] = await Promise.all([
-            prisma.dathangsanpham.aggregate({
-              where: {
-                idSP: detail.sanphamId,
-                dathang: { status: { in: ['dadat', 'dagiao'] } }
-              },
-              _sum: { slnhan: true, sldat: true }
-            }),
-            prisma.donhangsanpham.aggregate({
-              where: {
-                idSP: detail.sanphamId,
-                donhang: { status: { in: ['dadat', 'dagiao'] } }
-              },
-              _sum: { slnhan: true, sldat: true }
-            }),
-            prisma.dathang.findFirst({
-                where: {
-                    status: { in: ['dadat', 'dagiao'] },
-                    sanpham: { some: { idSP: detail.sanphamId } }
-                },
-                orderBy: { createdAt: 'asc' },
-                select: { createdAt: true }
-            }),
-            prisma.donhang.findFirst({
-                where: {
-                    status: { in: ['dadat', 'dagiao'] },
-                    sanpham: { some: { idSP: detail.sanphamId } }
-                },
-                orderBy: { createdAt: 'asc' },
-                select: { createdAt: true }
-            })
-          ]);
-
-          const currentPendingIn = Number(pendingInAgg._sum?.sldat || 0) - Number(pendingInAgg._sum?.slnhan || 0);
-          const currentPendingOut = Number(pendingOutAgg._sum?.sldat || 0) - Number(pendingOutAgg._sum?.slnhan || 0);
-          
-          // Available stock (slton) = Physical Stock (totalStock) - Pending Out + Pending In
-          const availableStock = totalStock - currentPendingOut + currentPendingIn;
-
-          const updatedTk = await prisma.tonKho.upsert({
+          await prisma.tonKho.upsert({
             where: { sanphamId: detail.sanphamId },
             create: {
               sanphamId: detail.sanphamId,
-              slton: new Decimal(availableStock),
+              slton: new Decimal(totalStock),
               sltontt: new Decimal(totalStock),
-              slchogiao: new Decimal(Math.max(0, currentPendingOut)),
-              slchonhap: new Decimal(Math.max(0, currentPendingIn)),
             },
             update: {
-              slton: new Decimal(availableStock),
+              slton: new Decimal(totalStock),
               sltontt: new Decimal(totalStock),
-              slchogiao: new Decimal(Math.max(0, currentPendingOut)),
-              slchonhap: new Decimal(Math.max(0, currentPendingIn)),
               updatedAt: new Date()
             }
           });
-
-
-          // 🎯 GATHER WARNINGS (Optimized: No extra loop)
-          if (Number(updatedTk.slchonhap) > 0 || Number(updatedTk.slchogiao) > 0) {
-            const oldestDate = oldestIn?.createdAt || oldestOut?.createdAt;
-            const hoursDiff = oldestDate ? (Date.now() - new Date(oldestDate).getTime()) / (1000 * 60 * 60) : 0;
-            
-            pendingWarnings.push({
-              masp: sanpham?.masp,
-              title: sanpham?.title,
-              slchonhap: Number(updatedTk.slchonhap),
-              slchogiao: Number(updatedTk.slchogiao),
-              oldestPendingDate: oldestDate,
-              isLate: hoursDiff > 24, // T+1 detection
-              message: `⚠️ Sản phẩm có ${updatedTk.slchonhap}kg hàng đang về và ${updatedTk.slchogiao}kg đơn đang chờ giao.`
-            });
-          }
 
           detailCount++;
         }
@@ -401,7 +340,8 @@ export class ChotkhoService {
           warnings: pendingWarnings
         };
       }, {
-        timeout: 30000,
+        timeout: 90000,
+        maxWait: 15000,
       });
 
       // Gửi Push Notification cho creator hoặc admin

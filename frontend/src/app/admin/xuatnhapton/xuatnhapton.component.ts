@@ -352,7 +352,6 @@ export class XuatnhaptonComponent implements OnDestroy {
           return;
         }
 
-        // Hiển thị loading
         this._snackBar.open('Đang xử lý file Excel...', '', {
           duration: 0,
           horizontalPosition: 'end',
@@ -360,7 +359,6 @@ export class XuatnhaptonComponent implements OnDestroy {
           panelClass: ['snackbar-info'],
         });
 
-        // Đọc file Excel (không sử dụng worker)
         const excelData = await readExcelFileNoWorkerArray(event);
 
         if (!excelData || excelData.length === 0) {
@@ -374,434 +372,206 @@ export class XuatnhaptonComponent implements OnDestroy {
           return;
         }
 
-        // Validate và transform dữ liệu
         const validData: Array<{ masp: string; slton: number | null; slhuy: number }> = [];
-        const errors: string[] = [];
-        console.log(excelData);
-
         excelData.forEach((row: any, index: number) => {
           const masp = row.masp?.toString().trim() || row.ITEMCODE?.toString().trim();
+          if (!masp) return;
 
-          // ✅ ĐIỀU CHỈNH 1: Nếu thiếu mã sản phẩm, bỏ qua dòng này (không báo lỗi cả file)
-          if (!masp) {
-            console.warn(`Bỏ qua dòng ${index + 1}: Thiếu mã sản phẩm`);
-            return;
-          }
-
-          // ✅ ĐIỀU CHỈNH 3: Phân biệt slton trống và slton bằng 0
           const rawSlton = row.slton ?? row.QUANTITY;
-          
-          // Kiểm tra nếu rawSlton là một chuỗi không phải số (ví dụ: "abc", "N/A")
           const parsedSlton = parseFloat(rawSlton);
-          let slton: number | null = null;
-          
-          if (rawSlton === undefined || rawSlton === null || rawSlton === '' || isNaN(parsedSlton)) {
-            // Nếu trống hoặc KHÔNG PHẢI LÀ SỐ: Giữ nguyên số lượng đang có trong hệ thống (null)
-            slton = null;
-          } else {
-            // Nếu là số, đảm bảo không âm
-            slton = Math.max(0, parsedSlton);
-          }
+          let slton: number | null = (rawSlton === undefined || rawSlton === null || rawSlton === '' || isNaN(parsedSlton)) ? null : Math.max(0, parsedSlton);
           
           let slhuy = parseFloat(row.slhuy || '0');
-          if (isNaN(slhuy) || slhuy == null || slhuy < 0) {
-            slhuy = 0;
-          }
+          if (isNaN(slhuy) || slhuy < 0) slhuy = 0;
 
           validData.push({ masp, slton, slhuy });
         });
 
-        if (errors.length > 0) {
-          this._snackBar.dismiss();
-          this._snackBar.open(
-            `Có lỗi định dạng dữ liệu. Xem console để biết chi tiết.`,
-            'Đóng',
-            {
-              duration: 5000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['snackbar-error'],
-            }
-          );
-          console.error('Validation errors:', errors);
-          return;
-        }
+        const dsMaspFromExcel = validData.map(item => item.masp);
 
-        // Get all existing TonKho and Sanpham data
-        const [tonkhoResponse, sanphamResponse] = await Promise.all([
+        // 🚀 OPTIMIZED: Parallel queries for performance
+        const [tonkhoBasicResponse, tonkhoDetailResponse, sanphamResponse] = await Promise.all([
           this._GraphqlService.findAll('tonkho', {
-            take: 999999,
+            take: 99999,
+            select: {
+              id: true, sanphamId: true, slton: true, sltontt: true, slchogiao: true, slchonhap: true,
+              sanpham: { select: { id: true, masp: true, title: true } },
+            },
+          }),
+          this._GraphqlService.findAll('tonkho', {
+            where: { sanpham: { masp: { in: dsMaspFromExcel } } },
+            take: 5000,
             select: {
               id: true,
-              sanphamId: true,
-              slton: true,
-              sltontt: true,
-              slchogiao: true,
-              slchonhap: true,
               sanpham: {
                 select: {
-                  id: true,
-                  masp: true,
-                  title: true,
                   Dathangsanpham: {
                     where: { dathang: { status: { in: ['dadat', 'dagiao'] } } },
-                    orderBy: { dathang: { createdAt: 'desc' } },
-                    take: 500,
-                    select: {
-                      sldat: true,
-                      slgiao: true,
-                      dathang: {
-                        select: { id: true, madncc: true, createdAt: true, status: true }
-                      }
-                    }
+                    orderBy: { dathang: { createdAt: 'desc' } }, take: 100,
+                    select: { sldat: true, slgiao: true, dathang: { select: { id: true, madncc: true, createdAt: true, status: true } } }
                   },
                   Donhangsanpham: {
                     where: { donhang: { status: { in: ['dadat', 'dagiao'] } } },
-                    orderBy: { donhang: { createdAt: 'desc' } },
-                    take: 500,
-                    select: {
-                      sldat: true,
-                      slgiao: true,
-                      donhang: {
-                        select: { id: true, madonhang: true, createdAt: true, status: true }
-                      }
-                    }
+                    orderBy: { donhang: { createdAt: 'desc' } }, take: 100,
+                    select: { sldat: true, slgiao: true, donhang: { select: { id: true, madonhang: true, createdAt: true, status: true } } }
                   }
                 },
               },
             },
           }),
           this._GraphqlService.findAll('sanpham', {
-            take: 999999,
-            select: {
-              id: true,
-              masp: true,
-              title: true,
-            },
+            where: { OR: [{ masp: { in: dsMaspFromExcel } }, { isActive: true }] },
+            take: 10000,
+            select: { id: true, masp: true, title: true },
           }),
         ]);
 
-        const allTonkho = tonkhoResponse.data || [];
+        const allTonkhoBasic = tonkhoBasicResponse.data || [];
+        const allTonkhoDetails = tonkhoDetailResponse.data || [];
         const allSanpham = sanphamResponse.data || [];
 
-        // Create maps for quick lookup
-        const tonkhoMap = new Map(
-          allTonkho.map((tk: any) => [tk.sanpham?.masp, tk])
-        );
+        const detailMap = new Map(allTonkhoDetails.map((tk: any) => [tk.id, tk.sanpham]));
+        const allTonkho = allTonkhoBasic.map((tk: any) => {
+          const details = detailMap.get(tk.id);
+          return details ? { ...tk, sanpham: { ...tk.sanpham, ...details } } : tk;
+        });
+
+        const tonkhoMap = new Map(allTonkho.map((tk: any) => [tk.sanpham?.masp, tk]));
         const sanphamMap = new Map(allSanpham.map((sp: any) => [sp.masp, sp]));
 
         const processErrors: string[] = [];
-        const danhSachMaspLoi: string[] = []; // 🎯 Bổ sung: Danh sách mã SP không tìm thấy
+        const danhSachMaspLoi: string[] = []; 
         const validDataMap = new Map(validData.map(item => [item.masp, { slton: item.slton, slhuy: item.slhuy }]));
 
         const phieuNhapDetails: any[] = [];
         const phieuXuatDetails: any[] = [];
         const allChangedDetails: any[] = [];
         let unchangedCount = 0;
-
         const danhSachCanhBao: StockWarningItem[] = [];
 
+        // --- BƯỚC 1: Xử lý các sản phẩm CÓ trong Excel ---
         for (const [masp, parsedData] of validDataMap.entries()) {
           const tonkho = tonkhoMap.get(masp);
           const sanpham = sanphamMap.get(masp);
 
           if (!sanpham) {
-            danhSachMaspLoi.push(masp); // Thu thập mã lỗi để báo người dùng
-            processErrors.push(`Không tìm thấy sản phẩm với mã: ${masp}`);
+            danhSachMaspLoi.push(masp); 
+            processErrors.push(`Không tìm thấy sản phẩm: ${masp}`);
             continue;
           }
 
-          // ✅ Lấy các giá trị tồn kho hiện tại
           const currentSlton = Number(tonkho ? (tonkho.slton || 0) : 0);
           const currentSltontt = Number(tonkho ? (tonkho.sltontt || 0) : 0);
-
-          // ✅ ĐIỀU CHỈNH 3: Nếu slton trong Excel trống, lấy giá trị hiện tại của hệ thống (giữ nguyên)
-          let slton = parsedData.slton;
-          if (slton === null) {
-            slton = currentSlton;
-          }
+          let slton = parsedData.slton ?? currentSlton;
           const slhuy = parsedData.slhuy;
 
-          // So sánh với slton (số lượng thực tế đang hiển thị trên bảng) để quyết định loại điều chỉnh
           if (slton > currentSlton) {
-            phieuNhapDetails.push({
-              sanphamId: sanpham.id,
-              soluong: slton - currentSlton,
-            });
+            phieuNhapDetails.push({ sanphamId: sanpham.id, soluong: slton - currentSlton });
           } else if (slton < currentSlton) {
-            phieuXuatDetails.push({
-              sanphamId: sanpham.id,
-              soluong: currentSlton - slton,
-            });
+            phieuXuatDetails.push({ sanphamId: sanpham.id, soluong: currentSlton - slton });
           } else {
             unchangedCount++;
           }
 
-          // ✅ PHÁT HIỆN LỆCH: Nếu slton (Excel) khác slton (Hệ thống) HOẶC khác sltontt (Hệ thống)
-          // hoặc có số lượng hủy thì đều phải đưa vào danh sách cập nhật.
-          // Điều này giúp sửa lỗi âm kho khi slton = -668 nhưng sltontt = 0.
-          if (slton !== currentSlton || slton !== currentSltontt || slhuy > 0) {
-            allChangedDetails.push({
-              sanphamId: sanpham.id,
-              sltonhethong: currentSlton, // Sử dụng slton làm baseline hệ thống để tính lệch
-              sltonthucte: slton,
-              slhuy: slhuy,
-              ghichu: slton > currentSlton ? 'Điều chỉnh tăng từ Excel' : (slton < currentSlton ? 'Điều chỉnh giảm từ Excel' : 'Cập nhật từ Excel'),
-            });
-          }
+          allChangedDetails.push({
+            sanphamId: sanpham.id, sltonhethong: currentSlton, sltonthucte: slton, slhuy: slhuy,
+            ghichu: slton > currentSlton ? 'Điều chỉnh tăng từ Excel' : (slton < currentSlton ? 'Điều chỉnh giảm từ Excel' : 'Cập nhật từ Excel'),
+          });
 
           if (slton !== currentSlton) {
-            const warning = this.detectStockAnomalies(
-              masp,
-              sanpham.title || masp,
-              slton,
-              currentSlton
-            );
-            if (warning) {
-              danhSachCanhBao.push(warning);
-            }
+            const warning = this.detectStockAnomalies(masp, sanpham.title || masp, slton, currentSlton);
+            if (warning) danhSachCanhBao.push(warning);
           }
 
-          // ✅ CẢNH BÁO HÀNG TRUNG CHUYỂN: Kiểm tra độc lập (ngay cả khi khách nhập số khớp với kho hiện tại)
           const slchonhap = Number(tonkho?.slchonhap || 0);
           const slchogiao = Number(tonkho?.slchogiao || 0);
-
           if (slchonhap > 0 || slchogiao > 0) {
-            // Kiểm tra rủi ro "Đếm lặp hàng đang về vào hàng tồn kho"
-            if (slchonhap > 0 && slton !== currentSltontt && slton >= (currentSltontt + slchonhap * 0.8)) {
-              danhSachCanhBao.push({
-                masp,
-                title: sanpham.title || sanpham.masp,
-                sltonCu: currentSltontt,
-                sltonMoi: slton,
-                chenhLech: slton - currentSltontt,
-                loaiDieuChinh: 'tang',
-                mucDoNghiemTrong: 'cao',
-                lyDoCanhBao: `CẢNH BÁO ĐẾM LẶP: Đã chốt tăng ${slton - currentSltontt} kg trong khi có ${slchonhap} kg 'Hàng đang về' chưa xác nhận 'Đã nhận'. Rủi ro đếm lộn hàng trung chuyển!`,
-                slchonhap: slchonhap,
-                slchogiao: slchogiao
-              });
-            } else {
-              // Cảnh báo thông thường về việc chốt kho lên lô hàng có phát sinh giao dịch bị treo
-              let warningMess = `Sản phẩm này đang có `;
-              if (slchonhap > 0) warningMess += `${slchonhap} kg 'Hàng đang về' `;
-              if (slchonhap > 0 && slchogiao > 0) warningMess += `và `;
-              if (slchogiao > 0) warningMess += `${slchogiao} kg 'Đơn đang đi' `;
-              warningMess += `chưa hoàn tất. Vui lòng kiểm tra kỹ số thực tế.`;
+            let warningMess = `Hàng đang treo (${slchonhap}/${slchogiao} kg). `;
+            const dList = tonkho?.sanpham?.Dathangsanpham || [];
+            const donList = tonkho?.sanpham?.Donhangsanpham || [];
+            const oldestDate = dList[0]?.dathang?.createdAt || donList[0]?.donhang?.createdAt;
+            const isLate = oldestDate ? (new Date().getTime() - new Date(oldestDate).getTime()) > (24 * 60 * 60 * 1000) : false;
 
-              // 🚩 Tính toán độ trễ chứng từ (Chỉ tính cho các đơn thực sự chưa nhận/giao: dadat, dagiao)
-              const dList = tonkho?.sanpham?.Dathangsanpham || tonkho?.sanpham?.dathangsanpham || [];
-              const donList = tonkho?.sanpham?.Donhangsanpham || tonkho?.sanpham?.donhangsanpham || [];
-
-              const dActive = dList.filter((i: any) => i.dathang?.status === 'dadat' || i.dathang?.status === 'dagiao');
-              const donActive = donList.filter((i: any) => i.donhang?.status === 'dadat' || i.donhang?.status === 'dagiao');
-
-              const dathangOldest = dActive[0]?.dathang?.createdAt;
-              const donhangOldest = donActive[0]?.donhang?.createdAt;
-              const oldestDate = dathangOldest || donhangOldest;
-              const isLate = oldestDate ? (new Date().getTime() - new Date(oldestDate).getTime()) > (24 * 60 * 60 * 1000) : false;
-
-              const pendingList: any[] = [];
-              let sumSlchonhapRecord = 0;
-              let sumSlchogiaoRecord = 0;
-
-              if (dList?.length) {
-                dList.forEach((item: any) => {
-                  if (item.dathang && (item.dathang.status === 'dadat' || item.dathang.status === 'dagiao')) {
-                    const slValue = Number(item.slgiao || item.sldat || 0);
-                    sumSlchonhapRecord += slValue;
-                    pendingList.push({
-                      id: item.dathang.id,
-                      code: item.dathang.madncc || 'ĐN-' + item.dathang.id.split('-')[0],
-                      date: new Date(item.dathang.createdAt),
-                      type: 'dathang',
-                      status: item.dathang.status,
-                      soluong: slValue
-                    });
-                  }
-                });
-              }
-              if (donList?.length) {
-                donList.forEach((item: any) => {
-                  if (item.donhang && (item.donhang.status === 'dadat' || item.donhang.status === 'dagiao')) {
-                    const slValue = Number(item.slgiao || item.sldat || 0);
-                    sumSlchogiaoRecord += slValue;
-                    pendingList.push({
-                      id: item.donhang.id,
-                      code: item.donhang.madonhang || 'DH-' + item.donhang.id.split('-')[0],
-                      date: new Date(item.donhang.createdAt),
-                      type: 'donhang',
-                      status: item.donhang.status,
-                      soluong: slValue
-                    });
-                  }
-                });
-              }
-
-              // ✅ PHÁT HIỆN DỮ LIỆU ẢO (OUT OF SYNC)
-              const isSyncError = (slchonhap > 0 && Math.abs(slchonhap - sumSlchonhapRecord) > 0.01) ||
-                (slchogiao > 0 && Math.abs(slchogiao - sumSlchogiaoRecord) > 0.01);
-
-              if (isSyncError) {
-                const ghostMess = `⚠️ LỖI ĐỒNG BỘ: Hệ thống ghi nhận treo (${slchonhap}/${slchogiao} kg) nhưng thực tế chỉ tìm thấy (${sumSlchonhapRecord.toFixed(2)}/${sumSlchogiaoRecord.toFixed(2)} kg) đơn hàng tương ứng. Có thể do đơn hàng cũ đã bị xóa hoặc thay đổi trạng thái nhưng kho chưa cập nhật.`;
-                warningMess = ghostMess + " " + warningMess;
-              }
-
-              danhSachCanhBao.push({
-                masp,
-                title: sanpham.title || sanpham.masp,
-                sltonCu: currentSltontt,
-                sltonMoi: slton,
-                chenhLech: Math.abs(slton - currentSltontt),
-                loaiDieuChinh: 'khong_doi',
-                mucDoNghiemTrong: (isLate || isSyncError) ? 'cao' : 'trung_binh',
-                lyDoCanhBao: isLate ? `🚩 CẢNH BÁO TRỄ CHỨNG TỪ: ${warningMess} (Đơn cũ nhất từ ${new Date(oldestDate).toLocaleDateString('vi-VN')})` : warningMess,
-                isLate: isLate,
-                oldestPendingDate: oldestDate ? new Date(oldestDate) : null,
-                slchonhap: slchonhap,
-                slchogiao: slchogiao,
-                pendingList: pendingList
-              });
-            }
+            danhSachCanhBao.push({
+              masp, title: sanpham.title || sanpham.masp, sltonCu: currentSltontt, sltonMoi: slton,
+              chenhLech: Math.abs(slton - currentSltontt), loaiDieuChinh: 'khong_doi',
+              mucDoNghiemTrong: isLate ? 'cao' : 'trung_binh',
+              lyDoCanhBao: isLate ? `🚩 TRỄ CHỨNG TỪ: ${warningMess}` : warningMess,
+              isLate, slchonhap, slchogiao
+            });
           }
         }
 
-        // ✅ BỔ SUNG: Xử lý các sản phẩm KHÔNG có trong Excel nhưng đang bị ÂM KHO (< 0)
-        // Yêu cầu: Tự động đưa về 0 để làm sạch dữ liệu
+        // --- BƯỚC 2: Xử lý các sản phẩm KHÔNG có trong Excel ---
         for (const [masp, tonkho] of tonkhoMap.entries()) {
-          // Nếu đã xử lý trong Excel rồi thì bỏ qua
           if (validDataMap.has(masp)) continue;
+          const sanpham = sanphamMap.get(masp);
+          if (!sanpham) continue;
 
           const currentSlton = Number(tonkho.slton || 0);
-          const currentSltontt = Number(tonkho.sltontt || 0);
-          const sanpham = sanphamMap.get(masp);
-
-          if (currentSlton < 0 && sanpham) {
+          if (currentSlton < 0) {
             const sltonReset = 0;
-            
-            // Tính là phiếu nhập để bù vào phần âm
-            phieuNhapDetails.push({
-              sanphamId: sanpham.id,
-              soluong: Math.abs(currentSlton), // Ví dụ: -5 -> +5 để về 0
-            });
-
+            phieuNhapDetails.push({ sanphamId: sanpham.id, soluong: Math.abs(currentSlton) });
             allChangedDetails.push({
-              sanphamId: sanpham.id,
-              sltonhethong: currentSlton,
-              sltonthucte: sltonReset,
-              slhuy: 0,
+              sanphamId: sanpham.id, sltonhethong: currentSlton, sltonthucte: sltonReset, slhuy: 0,
               ghichu: `Tự động reset kho âm (không có trong Excel)`,
             });
-
             danhSachCanhBao.push({
-              masp,
-              title: sanpham.title || masp,
-              sltonCu: currentSlton,
-              sltonMoi: sltonReset,
-              chenhLech: Math.abs(currentSlton),
-              loaiDieuChinh: 'tang',
-              mucDoNghiemTrong: 'trung_binh',
-              lyDoCanhBao: `⚠️ RESET KHO ÂM: Sản phẩm không có trong file Excel nhưng hệ thống đang bị âm (${currentSlton} kg). Hệ thống tự động đưa về 0.`,
+              masp, title: sanpham.title || masp, sltonCu: currentSlton, sltonMoi: sltonReset,
+              chenhLech: Math.abs(currentSlton), loaiDieuChinh: 'tang', mucDoNghiemTrong: 'trung_binh',
+              lyDoCanhBao: `⚠️ RESET KHO ÂM: Hệ thống tự động đưa về 0.`,
             });
+          } else {
+            allChangedDetails.push({
+              sanphamId: sanpham.id, sltonhethong: currentSlton, sltonthucte: currentSlton, slhuy: 0,
+              ghichu: `Lấy từ hệ thống chuyển qua (không có trong Excel)`,
+            });
+            unchangedCount++;
           }
         }
 
         this._snackBar.dismiss();
-
-        const spBinhThuong = (phieuNhapDetails.length + phieuXuatDetails.length) - danhSachCanhBao.length;
 
         const dialogData: StockWarningData = {
           title: '⚠️ Xác Nhận Cập Nhật Chốt Kho',
           tongSanPham: validDataMap.size,
-          spBinhThuong: Math.max(0, spBinhThuong),
+          spBinhThuong: (phieuNhapDetails.length + phieuXuatDetails.length) - danhSachCanhBao.length,
           spKhongThayDoi: unchangedCount,
           danhSachCanhBao,
           danhSachNhap: phieuNhapDetails,
           danhSachXuat: phieuXuatDetails,
-          danhSachLoi: danhSachMaspLoi, // 🎯 Bổ sung danh sách lỗi vào dialog
+          danhSachLoi: danhSachMaspLoi,
         };
 
         const dialogRef = this._dialog.open(StockWarningDialogComponent, {
-          width: '90vw',
-          height: '90vh',
-          maxWidth: '1600px',
-          disableClose: true,
-          data: dialogData
+          width: '90vw', height: '90vh', maxWidth: '1600px', disableClose: true, data: dialogData
         });
 
         const confirmed = await dialogRef.afterClosed().toPromise();
-
         if (!confirmed) {
-          this._snackBar.open('Đã hủy cập nhật chốt kho.', 'Đóng', {
-            duration: 3000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['snackbar-info'],
-          });
+          this._snackBar.open('Đã hủy cập nhật chốt kho.', 'Đóng', { duration: 3000 });
           this.isUpdatingStock = false;
           return;
         }
 
-        this._snackBar.open('Đang lưu dữ liệu chốt kho...', '', {
-          duration: 0,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-info'],
-        });
-
+        this._snackBar.open('Đang lưu dữ liệu chốt kho...', '', { duration: 0 });
         if (allChangedDetails.length > 0) {
           const defaultKhoId = '4cc01811-61f5-4bdc-83de-a493764e9258';
-
-          const ckResult = await this._ChotkhoService.createChotkhoWithDetails({
+          await this._ChotkhoService.createChotkhoWithDetails({
             ngaychot: DateHelpers.now(),
             title: `ĐIỀU CHỈNH CHỐT KHO TỰ ĐỘNG [EXCEL]`,
             khoId: defaultKhoId,
-            ghichu: `Chốt kho từ Excel (${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm) lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY')}`,
+            ghichu: `Chốt kho từ Excel (${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm)`,
             details: allChangedDetails
           });
-
-          if (!ckResult || ckResult === false) {
-            throw new Error("Tạo chốt kho thất bại từ API. Vui lòng kiểm tra lại log hệ thống.");
-          }
         }
 
         this._snackBar.dismiss();
-
-        if (processErrors.length > 0) {
-          console.error('Process errors:', processErrors);
-          this._snackBar.open(
-            `Hoàn thành với ${processErrors.length} lỗi. ${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm, ${unchangedCount} giữ nguyên. Xem console.`,
-            'Đóng',
-            {
-              duration: 5000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['snackbar-warning'],
-            }
-          );
-        } else {
-          this._snackBar.open(
-            `✅ Cập nhật TonKho thành công: ${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm, ${unchangedCount} giữ nguyên.`,
-            'Đóng',
-            {
-              duration: 4000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['snackbar-success'],
-            }
-          );
-        }
-
+        this._snackBar.open(`✅ Cập nhật TonKho thành công.`, 'Đóng', { duration: 4000 });
         this.ngOnInit();
       } catch (error: any) {
         this._snackBar.dismiss();
-        this._snackBar.open(`Lỗi xử lý file: ${error.message}`, 'Đóng', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-error'],
-        });
-        console.error('Error processing Excel file:', error);
+        this._snackBar.open(`Lỗi: ${error.message}`, 'Đóng', { duration: 3000 });
       } finally {
         this.isUpdatingStock = false;
       }

@@ -118,7 +118,7 @@ if [ "$is_dry_run" == "true" ]; then
     ssh $SERVER_USER@$SERVER_IP << EOF
       cd $PROJECT_DIR
       docker stop dry-run-test 2>/dev/null && docker rm dry-run-test 2>/dev/null
-      docker run -d --name dry-run-test -p 53332:3331 --network rausachfinal_default --env-file api/.env -e REDIS_HOST="redis" $BE_IMAGE:latest
+      docker run -d --name dry-run-test -p 53332:3331 --network rausachfinal_default --env-file api/.env -e REDIS_HOST="redis" -e REDIS_PORT="6379" $BE_IMAGE:latest
       echo "⏱️ Chờ 15s để Backend boot..."
       sleep 15
       if curl -s http://localhost:53332/database-info >/dev/null; then
@@ -145,6 +145,7 @@ elif [ "$is_sandbox" == "true" ]; then
         --env-file api/.env \
         -e DATABASE_URL="postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/testdata?schema=public" \
         -e REDIS_HOST="redis" \
+        -e REDIS_PORT="6379" \
         $BE_IMAGE:latest
 
       echo "🚀 Khởi chạy Sandbox Frontend (Port 54303)..."

@@ -22,8 +22,7 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter123/se
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { SanphamService } from '../../sanpham/sanpham.service';
-import * as XLSX from 'xlsx';
-import * as XLSXStyle from 'xlsx-js-style';
+// Remove static XLSX imports to fix SSR issues
 import { UserService } from '../../user/user.service';
 import { KhoService } from '../../kho/kho.service';
   @Component({
@@ -539,8 +538,8 @@ import { KhoService } from '../../kho/kho.service';
                 dongia: sp.dongia
               },
               sltonhethong: Number(sp.sltonhethong) || 0,
-              sltonthucte: Number(sp.sltonthucte) || 0,
-              slhuy: Number(sp.slhuy) || 0,
+              sltonthucte: Math.max(0, Number(sp.sltonthucte) || 0),
+              slhuy: Math.max(0, Number(sp.slhuy) || 0),
               chenhlech: Number(sp.chenhlech) || 0,
               ghichu: sp.ghichu || '',
               isActive: true,
@@ -703,7 +702,7 @@ import { KhoService } from '../../kho/kho.service';
         
         // Cọc rào: Tồn thực tế và SL Hủy không được âm
         if (field === 'sltonthucte' || field === 'slhuy') {
-          value = Math.max(0, value);
+          value = Math.max(0, Number(value) || 0);
         }
       }
       
@@ -1020,8 +1019,9 @@ import { KhoService } from '../../kho/kho.service';
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         
-        reader.onload = (e: any) => {
+        reader.onload = async (e: any) => {
           try {
+            const XLSX = await import('xlsx');
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, { type: 'array' });
             
@@ -1062,9 +1062,9 @@ import { KhoService } from '../../kho/kho.service';
         );
         
         const columnIndices = {
-          masp: this.findColumnIndex(headers, ['masp', 'ma sp', 'ma san pham', 'product code']),
-          sltonthucte: this.findColumnIndex(headers, ['sltonthucte', 'sl ton thuc te', 'so luong ton thuc te', 'actual stock']),
-          slhuy: this.findColumnIndex(headers, ['slhuy', 'sl huy', 'so luong huy', 'damaged quantity'])
+          masp: this.findColumnIndex(headers, ['masp', 'ma sp', 'ma san pham', 'product code', 'ma hang']),
+          sltonthucte: this.findColumnIndex(headers, ['sltonthucte', 'slton', 'ton', 'kiem ke', 'sl ton thuc te', 'so luong ton thuc te', 'actual stock']),
+          slhuy: this.findColumnIndex(headers, ['slhuy', 'huy', 'sl huy', 'so luong huy', 'damaged quantity'])
         };
 
         // Validate required columns
@@ -1093,12 +1093,22 @@ import { KhoService } from '../../kho/kho.service';
             continue;
           }
 
-          // Extract quantities from Excel
-          const sltonthucte = this.parseNumber(row[columnIndices.sltonthucte]);
-          const slhuy = this.parseNumber(row[columnIndices.slhuy]);
+          // Extract quantities from Excel - Default to system stock if empty or invalid
+          const rawSlton = columnIndices.sltonthucte !== -1 ? row[columnIndices.sltonthucte] : undefined;
+          const rawSlhuy = columnIndices.slhuy !== -1 ? row[columnIndices.slhuy] : undefined;
           
           // Use server data for sltonhethong (system stock)
           const sltonhethong = serverProduct.sltonhethong || 0;
+
+          // Determine sltonthucte: if valid in Excel use it, otherwise use system stock (min 0)
+          const sltonthucte = this.isValidNumber(rawSlton) 
+            ? this.parseNumber(rawSlton) 
+            : Math.max(0, sltonhethong);
+
+          const slhuy = this.isValidNumber(rawSlhuy) 
+            ? this.parseNumber(rawSlhuy) 
+            : 0;
+
 
           // Calculate chenhlech
           const chenhlech = this.calculateChenhLech(sltonhethong, sltonthucte, slhuy);
@@ -1152,6 +1162,13 @@ import { KhoService } from '../../kho/kho.service';
       }
     }
 
+    private isValidNumber(value: any): boolean {
+      if (value === undefined || value === null || value === '' || String(value).trim() === '') return false;
+      const stringValue = String(value).replace(/,/g, '').replace(/\s/g, '').trim();
+      const parsed = parseFloat(stringValue);
+      return !isNaN(parsed);
+    }
+
     private findColumnIndex(headers: string[], possibleNames: string[]): number {
       for (const name of possibleNames) {
         const normalizedName = removeVietnameseAccents(name.toLowerCase().trim());
@@ -1162,14 +1179,16 @@ import { KhoService } from '../../kho/kho.service';
     }
 
     private parseNumber(value: any): number {
-      if (value === undefined || value === null || value === '') return 0;
+      if (value === undefined || value === null || value === '' || String(value).trim() === '') return 0;
       
-      // Convert to string and remove commas, spaces
-      const stringValue = String(value).replace(/,/g, '').replace(/\s/g, '');
+      // Convert to string and remove commas, spaces, and handle potential non-numeric junk
+      const stringValue = String(value).replace(/,/g, '').replace(/\s/g, '').trim();
       
-      // Parse as float and return integer
+      // Parse as float and return integer (Ensure non-negative and handle NaN)
       const parsed = parseFloat(stringValue);
-      return isNaN(parsed) ? 0 : Math.floor(parsed);
+      if (isNaN(parsed)) return 0;
+      
+      return Math.max(0, Math.floor(parsed));
     }
 
     private calculateChenhLech(sltonhethong: number, sltonthucte: number, slhuy: number): number {
@@ -1178,6 +1197,14 @@ import { KhoService } from '../../kho/kho.service';
 
     async ExportExample() {
       try {
+        const XLSX = await import('xlsx');
+        let XLSXStyle: any;
+        try {
+          XLSXStyle = await import('xlsx-js-style');
+        } catch (e) {
+          console.warn('xlsx-js-style not available, using standard XLSX');
+        }
+
         // Load sample products if not already loaded
         if (this.ListSanpham.length === 0) {
           await this.loadNewSanphamList();
@@ -1287,7 +1314,11 @@ import { KhoService } from '../../kho/kho.service';
 
         // Write and download the file using XLSXStyle for better formatting
         try {
-          XLSXStyle.writeFile(workbook, filename);
+          if (XLSXStyle && XLSXStyle.writeFile) {
+            XLSXStyle.writeFile(workbook, filename);
+          } else {
+            XLSX.writeFile(workbook, filename);
+          }
         } catch (styleError) {
           // Fallback to regular XLSX if styling fails
           console.warn('Styled export failed, using regular export:', styleError);
