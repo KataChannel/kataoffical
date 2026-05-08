@@ -11,7 +11,7 @@ const common_1 = require("@nestjs/common");
 const nhomkhachhang_service_1 = require("./nhomkhachhang.service");
 const nhomkhachhang_controller_1 = require("./nhomkhachhang.controller");
 const nhomkhachhang_resolver_1 = require("./nhomkhachhang.resolver");
-const prisma_module_1 = require("prisma/prisma.module");
+const prisma_module_1 = require("../../prisma/prisma.module");
 const auth_module_1 = require("../auth/auth.module");
 let NhomkhachhangModule = class NhomkhachhangModule {
 };

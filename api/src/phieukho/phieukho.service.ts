@@ -557,6 +557,10 @@ export class PhieukhoService {
               phieuKho.type === 'nhap'
                 ? { decrement: item.soluong ?? 0 }
                 : { increment: item.soluong ?? 0 },
+            sltontt:
+              phieuKho.type === 'nhap'
+                ? { decrement: item.soluong ?? 0 }
+                : { increment: item.soluong ?? 0 },
           },
         });
       }

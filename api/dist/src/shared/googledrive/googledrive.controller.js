@@ -17,7 +17,7 @@ const common_1 = require("@nestjs/common");
 const googledrive_service_1 = require("./googledrive.service");
 const platform_express_1 = require("@nestjs/platform-express");
 const chatbot_service_1 = require("../../chatbot/chatbot.service");
-const prisma_service_1 = require("prisma/prisma.service");
+const prisma_service_1 = require("../../../prisma/prisma.service");
 let GoogleDriveController = class GoogleDriveController {
     constructor(googleDriveService, _ChatbotService, prisma) {
         this.googleDriveService = googleDriveService;

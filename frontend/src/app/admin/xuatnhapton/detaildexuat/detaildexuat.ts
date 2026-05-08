@@ -152,6 +152,9 @@ export class DetaildexuatComponent implements OnDestroy {
       } else {
         v.slchonhaptt = 0;
       }
+      
+      // Vận hành nhanh: Tồn kho <= 0 và lượng xuất chờ > lượng nhập chờ
+      v.isVanhannhanh = (v.slton <= 0) && (v.slchogiaott > v.slchonhaptt);
     });
     this.dataSource.data = this.dataSource.data.filter((v: any) => v.slchogiaott > 0 || v.slchonhaptt > 0);
     this.dataSource.sort = this.sort;

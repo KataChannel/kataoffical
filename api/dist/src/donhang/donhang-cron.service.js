@@ -14,7 +14,7 @@ exports.DonhangCronService = void 0;
 const common_1 = require("@nestjs/common");
 const schedule_1 = require("@nestjs/schedule");
 const moment = require("moment-timezone");
-const prisma_service_1 = require("prisma/prisma.service");
+const prisma_service_1 = require("../../prisma/prisma.service");
 const donhang_service_1 = require("./donhang.service");
 let DonhangCronService = DonhangCronService_1 = class DonhangCronService {
     constructor(prisma, donhangService) {
@@ -386,7 +386,7 @@ let DonhangCronService = DonhangCronService_1 = class DonhangCronService {
 };
 exports.DonhangCronService = DonhangCronService;
 __decorate([
-    (0, schedule_1.Cron)('0 14 * * *', {
+    (0, schedule_1.Cron)('0 13 * * *', {
         name: 'auto-complete-orders',
         timeZone: 'Asia/Ho_Chi_Minh',
     }),

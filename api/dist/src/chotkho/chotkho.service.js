@@ -35,11 +35,13 @@ let ChotkhoService = class ChotkhoService {
         });
         const startTime = lastChot ? lastChot.ngaychot : new Date(0);
         const initialQty = lastChot ? Number(lastChot.sltonthucte) : 0;
+        const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
+        const isMainWarehouse = khoId === KHO_TONG_ID;
         const xuat = await prisma.donhangsanpham.findMany({
             where: {
                 idSP: sanphamId,
                 donhang: {
-                    khoId: khoId,
+                    ...(isMainWarehouse ? {} : { khoId: khoId }),
                     status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
                     updatedAt: { gt: startTime, lte: endTime }
                 }
@@ -50,7 +52,7 @@ let ChotkhoService = class ChotkhoService {
             where: {
                 idSP: sanphamId,
                 dathang: {
-                    khoId: khoId,
+                    ...(isMainWarehouse ? {} : { khoId: khoId }),
                     status: 'danhan',
                     updatedAt: { gt: startTime, lte: endTime }
                 }
@@ -211,6 +213,12 @@ let ChotkhoService = class ChotkhoService {
                             ngaychot: chotkhoMaster.ngaychot
                         }
                     });
+                    const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
+                    const currentSpKho = await prisma.sanphamKho.findUnique({
+                        where: { sanphamId_khoId: { sanphamId: detail.sanphamId, khoId } }
+                    });
+                    const oldQty = Number(currentSpKho?.soluong || 0);
+                    const delta = Number(detail.sltonthucte) - oldQty;
                     await prisma.sanphamKho.upsert({
                         where: {
                             sanphamId_khoId: {
@@ -228,20 +236,57 @@ let ChotkhoService = class ChotkhoService {
                             updatedAt: new Date()
                         }
                     });
-                    const allWarehouseStock = await prisma.sanphamKho.findMany({
-                        where: { sanphamId: detail.sanphamId }
+                    if (khoId !== KHO_TONG_ID) {
+                        await prisma.sanphamKho.upsert({
+                            where: {
+                                sanphamId_khoId: {
+                                    sanphamId: detail.sanphamId,
+                                    khoId: KHO_TONG_ID
+                                }
+                            },
+                            create: {
+                                sanphamId: detail.sanphamId,
+                                khoId: KHO_TONG_ID,
+                                soluong: new library_1.Decimal(delta),
+                            },
+                            update: {
+                                soluong: { increment: delta },
+                                updatedAt: new Date()
+                            }
+                        });
+                    }
+                    const khoTongRecord = await prisma.sanphamKho.findUnique({
+                        where: {
+                            sanphamId_khoId: {
+                                sanphamId: detail.sanphamId,
+                                khoId: KHO_TONG_ID
+                            }
+                        }
                     });
-                    const totalStock = allWarehouseStock.reduce((acc, curr) => acc + Number(curr.soluong), 0);
+                    let finalTotal = Number(khoTongRecord?.soluong || 0);
+                    if (finalTotal < 0) {
+                        console.warn(`⚠️ [CHOTKHO-SYNC] Product ${detail.sanphamId} has negative KHO_TONG (${finalTotal}). Clamping to 0.`);
+                        finalTotal = 0;
+                        await prisma.sanphamKho.update({
+                            where: {
+                                sanphamId_khoId: {
+                                    sanphamId: detail.sanphamId,
+                                    khoId: KHO_TONG_ID
+                                }
+                            },
+                            data: { soluong: new library_1.Decimal(0) }
+                        });
+                    }
                     await prisma.tonKho.upsert({
                         where: { sanphamId: detail.sanphamId },
                         create: {
                             sanphamId: detail.sanphamId,
-                            slton: new library_1.Decimal(totalStock),
-                            sltontt: new library_1.Decimal(totalStock),
+                            slton: new library_1.Decimal(finalTotal),
+                            sltontt: new library_1.Decimal(finalTotal),
                         },
                         update: {
-                            slton: new library_1.Decimal(totalStock),
-                            sltontt: new library_1.Decimal(totalStock),
+                            slton: new library_1.Decimal(finalTotal),
+                            sltontt: new library_1.Decimal(finalTotal),
                             updatedAt: new Date()
                         }
                     });
@@ -317,15 +362,19 @@ let ChotkhoService = class ChotkhoService {
             });
             const products = await Promise.all(sanphamKhoRecords.map(async (item) => {
                 const analysis = await this.calculateStockFromLogs(item.sanphamId, khoId);
+                const sltonhethong = Math.max(0, analysis.currentCalc);
+                const isAbnormal = analysis.currentCalc < 0;
                 return {
                     sanphamId: item.sanphamId,
                     sanpham: item.sanpham,
                     sltonhethong_db: Number(item.soluong),
-                    sltonhethong: analysis.currentCalc,
+                    sltonhethong: sltonhethong,
+                    sltonhethong_raw: analysis.currentCalc,
+                    isAbnormal: isAbnormal,
                     sltonthucte: 0,
                     slhuy: 0,
-                    chenhlech: analysis.currentCalc,
-                    isSynced: analysis.currentCalc === Number(item.soluong),
+                    chenhlech: sltonhethong,
+                    isSynced: sltonhethong === Number(item.soluong),
                     lastClosingDate: analysis.lastClosingDate
                 };
             }));
@@ -602,16 +651,23 @@ let ChotkhoService = class ChotkhoService {
                                 ngaychot: updatedMaster.ngaychot
                             }
                         });
+                        const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
+                        const currentKhoId = updatedMaster.khoId;
+                        const currentSpKho = await prisma.sanphamKho.findUnique({
+                            where: { sanphamId_khoId: { sanphamId: detail.sanphamId, khoId: currentKhoId } }
+                        });
+                        const oldQty = Number(currentSpKho?.soluong || 0);
+                        const delta = Number(detail.sltonthucte) - oldQty;
                         await prisma.sanphamKho.upsert({
                             where: {
                                 sanphamId_khoId: {
                                     sanphamId: detail.sanphamId,
-                                    khoId: updatedMaster.khoId
+                                    khoId: currentKhoId
                                 }
                             },
                             create: {
                                 sanphamId: detail.sanphamId,
-                                khoId: updatedMaster.khoId,
+                                khoId: currentKhoId,
                                 soluong: new library_1.Decimal(detail.sltonthucte),
                             },
                             update: {
@@ -619,10 +675,34 @@ let ChotkhoService = class ChotkhoService {
                                 updatedAt: new Date()
                             }
                         });
-                        const allWarehouseStock = await prisma.sanphamKho.findMany({
-                            where: { sanphamId: detail.sanphamId }
+                        if (currentKhoId !== KHO_TONG_ID) {
+                            await prisma.sanphamKho.upsert({
+                                where: {
+                                    sanphamId_khoId: {
+                                        sanphamId: detail.sanphamId,
+                                        khoId: KHO_TONG_ID
+                                    }
+                                },
+                                create: {
+                                    sanphamId: detail.sanphamId,
+                                    khoId: KHO_TONG_ID,
+                                    soluong: new library_1.Decimal(delta),
+                                },
+                                update: {
+                                    soluong: { increment: delta },
+                                    updatedAt: new Date()
+                                }
+                            });
+                        }
+                        const khoTongRecord = await prisma.sanphamKho.findUnique({
+                            where: {
+                                sanphamId_khoId: {
+                                    sanphamId: detail.sanphamId,
+                                    khoId: KHO_TONG_ID
+                                }
+                            }
                         });
-                        const totalStock = allWarehouseStock.reduce((acc, curr) => acc + Number(curr.soluong), 0);
+                        const finalTotal = Number(khoTongRecord?.soluong || 0);
                         const [pendingInAgg, pendingOutAgg] = await Promise.all([
                             prisma.dathangsanpham.aggregate({
                                 where: {
@@ -645,14 +725,14 @@ let ChotkhoService = class ChotkhoService {
                             where: { sanphamId: detail.sanphamId },
                             create: {
                                 sanphamId: detail.sanphamId,
-                                slton: new library_1.Decimal(totalStock),
-                                sltontt: new library_1.Decimal(totalStock),
+                                slton: new library_1.Decimal(finalTotal),
+                                sltontt: new library_1.Decimal(finalTotal),
                                 slchogiao: new library_1.Decimal(Math.max(0, currentPendingOut)),
                                 slchonhap: new library_1.Decimal(Math.max(0, currentPendingIn)),
                             },
                             update: {
-                                slton: new library_1.Decimal(totalStock),
-                                sltontt: new library_1.Decimal(totalStock),
+                                slton: new library_1.Decimal(finalTotal),
+                                sltontt: new library_1.Decimal(finalTotal),
                                 slchogiao: new library_1.Decimal(Math.max(0, currentPendingOut)),
                                 slchonhap: new library_1.Decimal(Math.max(0, currentPendingIn)),
                                 updatedAt: new Date()

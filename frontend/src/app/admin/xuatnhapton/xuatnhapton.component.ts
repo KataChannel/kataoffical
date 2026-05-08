@@ -35,6 +35,7 @@ import {
   readExcelFileNoWorker
 } from "../../shared/utils/exceldrive.utils";
 import { StockWarningDialogComponent, StockWarningItem, StockWarningData } from "../dathang/nhucaudathang/stock-warning-dialog.component";
+import { DetaildexuatComponent } from "./detaildexuat/detaildexuat";
 @Component({
   selector: 'app-xuatnhapton',
   templateUrl: './xuatnhapton.component.html',
@@ -55,12 +56,14 @@ import { StockWarningDialogComponent, StockWarningItem, StockWarningData } from 
     FormsModule,
     MatTooltipModule,
     MatDatepickerModule,
-    MatDialogModule
+    MatDialogModule,
+    DetaildexuatComponent
   ],
   // providers:[provideNativeDateAdapter()]
 })
 export class XuatnhaptonComponent implements OnDestroy {
   @Output() DexuatEmit = new EventEmitter<any>();
+  isDexuat: boolean = false;
   Detail: any = {};
   displayedColumns: string[] = [
     'title',

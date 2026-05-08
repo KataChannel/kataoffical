@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TonkhoManagerService = void 0;
 const common_1 = require("@nestjs/common");
-const prisma_service_1 = require("prisma/prisma.service");
+const prisma_service_1 = require("../../prisma/prisma.service");
 let TonkhoManagerService = class TonkhoManagerService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -32,65 +32,124 @@ let TonkhoManagerService = class TonkhoManagerService {
                             slchonhap: op.slchonhap || 0,
                         }
                     });
-                    continue;
                 }
-                const updateData = {};
-                if (op.slton !== undefined) {
-                    switch (op.operation) {
-                        case 'increment':
-                            updateData.slton = { increment: op.slton };
-                            break;
-                        case 'decrement':
-                            updateData.slton = { decrement: op.slton };
-                            break;
-                        case 'set':
-                            updateData.slton = op.slton;
-                            break;
+                else {
+                    const updateData = {};
+                    if (op.slton !== undefined) {
+                        switch (op.operation) {
+                            case 'increment':
+                                updateData.slton = { increment: op.slton };
+                                break;
+                            case 'decrement':
+                                updateData.slton = { decrement: op.slton };
+                                break;
+                            case 'set':
+                                updateData.slton = op.slton;
+                                break;
+                        }
                     }
-                }
-                if (op.sltontt !== undefined) {
-                    switch (op.operation) {
-                        case 'increment':
-                            updateData.sltontt = { increment: op.sltontt };
-                            break;
-                        case 'decrement':
-                            updateData.sltontt = { decrement: op.sltontt };
-                            break;
-                        case 'set':
-                            updateData.sltontt = op.sltontt;
-                            break;
+                    if (op.sltontt !== undefined) {
+                        switch (op.operation) {
+                            case 'increment':
+                                updateData.sltontt = { increment: op.sltontt };
+                                break;
+                            case 'decrement':
+                                updateData.sltontt = { decrement: op.sltontt };
+                                break;
+                            case 'set':
+                                updateData.sltontt = op.sltontt;
+                                break;
+                        }
                     }
-                }
-                if (op.slchogiao !== undefined) {
-                    switch (op.operation) {
-                        case 'increment':
-                            updateData.slchogiao = { increment: op.slchogiao };
-                            break;
-                        case 'decrement':
-                            updateData.slchogiao = { decrement: op.slchogiao };
-                            break;
-                        case 'set':
-                            updateData.slchogiao = op.slchogiao;
-                            break;
+                    if (op.slchogiao !== undefined) {
+                        switch (op.operation) {
+                            case 'increment':
+                                updateData.slchogiao = { increment: op.slchogiao };
+                                break;
+                            case 'decrement':
+                                updateData.slchogiao = { decrement: op.slchogiao };
+                                break;
+                            case 'set':
+                                updateData.slchogiao = op.slchogiao;
+                                break;
+                        }
                     }
-                }
-                if (op.slchonhap !== undefined) {
-                    switch (op.operation) {
-                        case 'increment':
-                            updateData.slchonhap = { increment: op.slchonhap };
-                            break;
-                        case 'decrement':
-                            updateData.slchonhap = { decrement: op.slchonhap };
-                            break;
-                        case 'set':
-                            updateData.slchonhap = op.slchonhap;
-                            break;
+                    if (op.slchonhap !== undefined) {
+                        switch (op.operation) {
+                            case 'increment':
+                                updateData.slchonhap = { increment: op.slchonhap };
+                                break;
+                            case 'decrement':
+                                updateData.slchonhap = { decrement: op.slchonhap };
+                                break;
+                            case 'set':
+                                updateData.slchonhap = op.slchonhap;
+                                break;
+                        }
                     }
+                    await tx.tonKho.update({
+                        where: { sanphamId: op.sanphamId },
+                        data: updateData
+                    });
                 }
-                await tx.tonKho.update({
-                    where: { sanphamId: op.sanphamId },
-                    data: updateData
-                });
+                const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
+                const effectiveKhoId = op.khoId || KHO_TONG_ID;
+                if (op.slton !== undefined || op.sltontt !== undefined) {
+                    const movement = op.slton !== undefined ? op.slton : (op.sltontt || 0);
+                    await tx.sanphamKho.upsert({
+                        where: {
+                            sanphamId_khoId: {
+                                sanphamId: op.sanphamId,
+                                khoId: effectiveKhoId
+                            }
+                        },
+                        update: {
+                            soluong: op.operation === 'increment' ? { increment: Number(movement) } :
+                                op.operation === 'decrement' ? { decrement: Number(movement) } :
+                                    Number(movement)
+                        },
+                        create: {
+                            sanphamId: op.sanphamId,
+                            khoId: effectiveKhoId,
+                            soluong: op.operation === 'decrement' ? -Number(movement) : Number(movement)
+                        }
+                    });
+                    if (effectiveKhoId !== KHO_TONG_ID && op.operation !== 'set') {
+                        await tx.sanphamKho.upsert({
+                            where: {
+                                sanphamId_khoId: {
+                                    sanphamId: op.sanphamId,
+                                    khoId: KHO_TONG_ID
+                                }
+                            },
+                            update: {
+                                soluong: op.operation === 'increment' ? { increment: Number(movement) } :
+                                    { decrement: Number(movement) }
+                            },
+                            create: {
+                                sanphamId: op.sanphamId,
+                                khoId: KHO_TONG_ID,
+                                soluong: op.operation === 'decrement' ? -Number(movement) : Number(movement)
+                            }
+                        });
+                    }
+                    const khoTongRecord = await tx.sanphamKho.findUnique({
+                        where: {
+                            sanphamId_khoId: {
+                                sanphamId: op.sanphamId,
+                                khoId: KHO_TONG_ID
+                            }
+                        }
+                    });
+                    const totalPhysicalStock = Number(khoTongRecord?.soluong || 0);
+                    await tx.tonKho.update({
+                        where: { sanphamId: op.sanphamId },
+                        data: {
+                            slton: totalPhysicalStock,
+                            sltontt: totalPhysicalStock
+                        }
+                    });
+                }
             }
         });
     }

@@ -135,6 +135,7 @@ let CancelOrderService = class CancelOrderService {
                 where: { id: orderId },
                 data: {
                     status: 'huy',
+                    isActive: false,
                     lydohuy: lydohuy.trim(),
                     updatedAt: new Date()
                 },
@@ -250,6 +251,7 @@ let CancelOrderService = class CancelOrderService {
                 where: { id: orderId },
                 data: {
                     status: 'huy',
+                    isActive: false,
                     lydohuy: lydohuy.trim(),
                     updatedAt: new Date()
                 },

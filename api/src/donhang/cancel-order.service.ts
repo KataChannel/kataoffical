@@ -184,6 +184,7 @@ export class CancelOrderService {
         where: { id: orderId },
         data: {
           status: 'huy',
+          isActive: false,
           lydohuy: lydohuy.trim(),
           updatedAt: new Date()
         },
@@ -349,6 +350,7 @@ export class CancelOrderService {
         where: { id: orderId },
         data: {
           status: 'huy',
+          isActive: false,
           lydohuy: lydohuy.trim(),
           updatedAt: new Date()
         },

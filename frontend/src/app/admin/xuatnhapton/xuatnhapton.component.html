@@ -3,6 +3,9 @@
         <router-outlet></router-outlet>
     </mat-drawer>
     <div class="flex flex-col space-y-4 h-screen-14 w-full p-3 sm:p-4 bg-slate-50/50">
+        @if (isDexuat) {
+            <app-detaildexuat (DexuatEmit)="isDexuat = $event"></app-detaildexuat>
+        } @else {
         <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-white p-3 rounded-xl shadow-sm border border-slate-200">      
             <div class="relative flex-1">
                 <input type="text" (keyup)="applyFilter($event)"
@@ -12,6 +15,11 @@
                     <span class="material-symbols-outlined text-slate-400">search</span>
                 </div>
             </div>
+            
+            <button (click)="isDexuat = true" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm shrink-0">
+                <mat-icon class="text-[18px] w-5 h-5">bolt</mat-icon>
+                <span class="text-xs font-bold uppercase tracking-wider">Vận hành nhanh</span>
+            </button>
             
             <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
                 <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu"
@@ -67,8 +75,16 @@
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
                     <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
-                        <span class="max-w-40 line-clamp-4 me-4">
-                            {{ ColumnName[column] }}
+                        <span class="flex flex-col me-4">
+                            <span class="max-w-40 line-clamp-4">
+                                {{ ColumnName[column] }}
+                            </span>
+                            @if (column === 'slton') {
+                                <span class="text-[10px] font-normal text-slate-500 mt-0.5 leading-tight whitespace-break-spaces">Tồn theo sổ sách<br/>hệ thống</span>
+                            }
+                            @if (column === 'sltontt') {
+                                <span class="text-[10px] font-normal text-slate-500 mt-0.5 leading-tight whitespace-break-spaces">Thực tế đếm<br/>cuối ngày</span>
+                            }
                         </span>
                         <span class="z-10 material-symbols-outlined text-gray-500" [matMenuTriggerFor]="menu"
                             #menuTrigger="matMenuTrigger">
@@ -199,5 +215,6 @@
             </table>
         </div>
         <mat-paginator [pageSizeOptions]="[10, 25, 100,dataSource.data.length]"></mat-paginator>
+        }
     </div>
 </mat-drawer-container>

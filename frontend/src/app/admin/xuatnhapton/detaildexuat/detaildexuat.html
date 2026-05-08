@@ -158,6 +158,11 @@
                         @default {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column] }}
+                            @if (column === 'title' && row.isVanhannhanh) {
+                                <span class="ml-1 px-1.5 py-0.5 text-[10px] bg-red-100 text-red-600 font-bold rounded border border-red-200 uppercase tracking-tighter">
+                                    Vận hành nhanh
+                                </span>
+                            }
                         </span>
                         }
                         }

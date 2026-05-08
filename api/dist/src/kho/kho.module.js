@@ -10,7 +10,7 @@ exports.khoModule = void 0;
 const common_1 = require("@nestjs/common");
 const kho_service_1 = require("./kho.service");
 const kho_controller_1 = require("./kho.controller");
-const prisma_module_1 = require("prisma/prisma.module");
+const prisma_module_1 = require("../../prisma/prisma.module");
 const auth_module_1 = require("../auth/auth.module");
 let khoModule = class khoModule {
 };

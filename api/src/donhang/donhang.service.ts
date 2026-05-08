@@ -2446,8 +2446,17 @@ export class DonhangService {
     return result;
   }
 
-  async update(id: string, data: any) {
-    return await this.prisma.safeTransaction(async (prisma) => {
+  async update(id: string, data: any, tx?: any) {
+    const prisma = tx || this.prisma;
+    if ((prisma as any).safeTransaction) {
+      return (prisma as any).safeTransaction(async (p: any) => {
+        return this._updateInternal(id, data, p);
+      });
+    }
+    return this._updateInternal(id, data, prisma);
+  }
+
+  private async _updateInternal(id: string, data: any, prisma: any) {
       // 1. Get original order with products
       const oldDonhang = await prisma.donhang.findUnique({
         where: { id },
@@ -2470,6 +2479,7 @@ export class DonhangService {
             if (val > 0) {
               tonkhoOps.push({
                 sanphamId: sp.idSP,
+                khoId: oldDonhang.khoId,
                 operation: 'increment',
                 slton: val,
                 slchogiao: val, // Re-add to reservation too so it can be handled by the next state
@@ -2511,6 +2521,7 @@ export class DonhangService {
             if (val > 0) {
               tonkhoOps.push({
                 sanphamId: sp.id,
+                khoId: data.khoId || oldDonhang.khoId,
                 operation: 'decrement',
                 sltontt: val,
                 slton: val,
@@ -2559,23 +2570,64 @@ export class DonhangService {
           isActive: true,
         };
         
-        const products = data.sanpham || oldDonhang.sanpham.map(sp => ({ id: sp.idSP, slgiao: sp.slgiao || sp.sldat, ghichu: sp.ghichu }));
+        const productsRaw = data.sanpham || oldDonhang.sanpham.map(sp => ({ id: sp.idSP, slgiao: sp.slgiao || sp.sldat, ghichu: sp.ghichu }));
+        
+        // Aggregation to prevent Unique constraint failed on (phieuKhoId, sanphamId)
+        const productsMap = new Map();
+        for (const p of productsRaw) {
+          const sanphamId = p.id || p.idSP;
+          // ✅ Defensive fix: Use Number() and ensure 3 decimal places to avoid float precision issues
+          const soluong = parseFloat((Number(p.slgiao ?? p.sldat ?? 0)).toFixed(3));
+          
+          if (productsMap.has(sanphamId)) {
+            const existing = productsMap.get(sanphamId);
+            existing.soluong = parseFloat((Number(existing.soluong) + soluong).toFixed(3));
+            if (p.ghichu) existing.ghichu = (existing.ghichu ? existing.ghichu + ' | ' : '') + p.ghichu;
+          } else {
+            productsMap.set(sanphamId, { sanphamId, soluong: soluong, ghichu: p.ghichu });
+          }
+        }
+        const products = Array.from(productsMap.values());
         
         await prisma.phieuKho.upsert({
           where: { maphieu },
           create: {
             maphieu,
             ...phieuData,
-            sanpham: { create: products.map(p => ({ sanphamId: p.id, soluong: parseFloat(p.slgiao.toString()), ghichu: p.ghichu })) }
+            sanpham: { create: products }
           },
           update: {
             ...phieuData,
             sanpham: {
               deleteMany: {},
-              create: products.map(p => ({ sanphamId: p.id, soluong: parseFloat(p.slgiao.toString()), ghichu: p.ghichu }))
+              create: products
             }
           }
         });
+      }
+
+      // 🎯 NEW: Điều chỉnh số lượng tồn kho nếu ĐÃ ở trạng thái 'dagiao'/'danhan' và có thay đổi slgiao
+      if (!isStatusChanged && ['dagiao', 'danhan', 'hoanthanh'].includes(targetStatus) && data.sanpham) {
+        for (const item of data.sanpham) {
+          const oldSp = oldDonhang.sanpham.find(o => o.idSP === item.id || o.idSP === item.idSP);
+          if (oldSp) {
+            const oldGiao = parseFloat((Number(oldSp.slgiao || oldSp.sldat) ?? 0).toFixed(3));
+            const newGiao = parseFloat((Number(item.slgiao || item.sldat) ?? 0).toFixed(3));
+            const delta = newGiao - oldGiao;
+
+            if (delta !== 0) {
+              await this.tonkhoManager.updateTonkhoAtomic([{
+                sanphamId: oldSp.idSP,
+                khoId: data.khoId || oldDonhang.khoId,
+                operation: delta > 0 ? 'decrement' : 'increment',
+                slton: Math.abs(delta),
+                sltontt: Math.abs(delta),
+                reason: `Điều chỉnh số lượng xuất cho đơn ${oldDonhang.madonhang} (${oldGiao} -> ${newGiao})`
+              }]);
+              console.log(`📌 [DONHANG-UPDATE] Adjusted stock for ${oldSp.idSP}: delta ${delta}`);
+            }
+          }
+        }
       }
 
       // 5. Update Donhang and Products
@@ -2588,7 +2640,9 @@ export class DonhangService {
           khachhangId: data.khachhangId,
           banggiaId: data.banggiaId,
           vat: data.vat !== undefined ? parseFloat(data.vat.toString()) : undefined,
-          isActive: data.isActive,
+          isActive: data.isActive !== undefined 
+            ? data.isActive 
+            : (['huy', 'danhan', 'hoanthanh'].includes(targetStatus) ? false : oldDonhang.isActive),
           status: targetStatus,
           ghichu: data.ghichu,
           nhanvienchiahang: data.nhanvienchiahang,
@@ -2620,7 +2674,6 @@ export class DonhangService {
         data: { tongvat, tongtien },
         include: { sanpham: true }
       });
-    });
   }
   async danhan(id: string, data: any) {
     return this.update(id, { ...data, status: 'danhan' });
@@ -2714,153 +2767,25 @@ export class DonhangService {
   }
 
   async updateBulk(ids: string[], status: string) {
-    const BATCH_SIZE = 10;
+    const BATCH_SIZE = 5;
     let totalSuccess = 0;
     let totalFail = 0;
 
-    // Process in smaller batches to prevent timeout
     for (let i = 0; i < ids.length; i += BATCH_SIZE) {
       const batch = ids.slice(i, i + BATCH_SIZE);
       
       try {
-        const batchResult = await this.prisma.safeTransaction(async (prisma) => {
-          let success = 0;
-          let fail = 0;
-
-          // Process batch items concurrently instead of sequentially
-          const batchPromises = batch.map(async (id) => {
-            try {
-              // 1. Lấy đơn hàng cũ kèm chi tiết sản phẩm
-              const oldDonhang = await prisma.donhang.findUnique({
-                where: { id },
-                include: { sanpham: true },
-              });
-
-              if (!oldDonhang) {
-                return { success: 0, fail: 1 };
-              }
-
-              // 2. Chuyển từ 'dadat' sang 'danhan'
-              if (oldDonhang.status === 'dadat' && status === 'danhan') {
-                // Batch inventory updates
-                const inventoryUpdates = oldDonhang.sanpham.map(sp => {
-                  const decValue = parseFloat((sp.sldat ?? 0).toFixed(3));
-                  return prisma.tonKho.update({
-                    where: { sanphamId: sp.idSP },
-                    data: {
-                      slchogiao: { decrement: decValue },
-                      slton: { decrement: decValue },
-                    },
-                  });
-                });
-
-                await Promise.all(inventoryUpdates);
-
-                // Deduplicate products and aggregate quantities
-                const uniqueSanpham = oldDonhang.sanpham.reduce(
-                  (acc: any[], sp: any) => {
-                    const existing = acc.find((item) => item.sanphamId === sp.idSP);
-                    if (existing) {
-                      existing.soluong += parseFloat((sp.sldat ?? 0).toFixed(3));
-                    } else {
-                      acc.push({
-                        sanphamId: sp.idSP,
-                        soluong: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                        ghichu: sp.ghichu,
-                      });
-                    }
-                    return acc;
-                  },
-                  [],
-                );
-
-                // Create phieu xuat kho
-                const maphieuNew = `PX-${oldDonhang.madonhang}-${this.formatDateForFilename()}`;
-                const phieuPayload = {
-                  ngay: oldDonhang.ngaygiao
-                    ? new Date(oldDonhang.ngaygiao)
-                    : new Date(),
-                  type: 'xuat',
-                  khoId: 'DEFAUL_KHO_ID', // Define this constant
-                  ghichu: oldDonhang.ghichu || 'Xuất kho hàng loạt',
-                  isActive: true,
-                };
-
-                // Handle phieuKho upsert
-                const existingPhieu = await prisma.phieuKho.findUnique({
-                  where: { maphieu: maphieuNew },
-                  include: { sanpham: true },
-                });
-
-                if (existingPhieu) {
-                  await prisma.phieuKhoSanpham.deleteMany({
-                    where: { phieuKhoId: existingPhieu.id },
-                  });
-
-                  await prisma.phieuKho.update({
-                    where: { maphieu: maphieuNew },
-                    data: {
-                      ...phieuPayload,
-                      sanpham: {
-                        create: uniqueSanpham,
-                      },
-                    },
-                  });
-                } else {
-                  await prisma.phieuKho.create({
-                    data: {
-                      maphieu: maphieuNew,
-                      ...phieuPayload,
-                      sanpham: {
-                        create: uniqueSanpham,
-                      },
-                    },
-                  });
-                }
-
-                // Update order status and quantities
-                await prisma.donhang.update({
-                  where: { id },
-                  data: {
-                    status: 'danhan',
-                    sanpham: {
-                      updateMany: oldDonhang.sanpham.map((sp: any) => ({
-                        where: { idSP: sp.idSP },
-                        data: {
-                          slgiao: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                          slnhan: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                        },
-                      })),
-                    },
-                  },
-                });
-              }
-
-              return { success: 1, fail: 0 };
-            } catch (error) {
-              console.error(`Error updating donhang ${id}:`, error);
-              return { success: 0, fail: 1 };
-            }
-          });
-
-          const results = await Promise.all(batchPromises);
-          
-          results.forEach(result => {
-            success += result.success;
-            fail += result.fail;
-          });
-
-          return { success, fail };
+        await this.prisma.safeTransaction(async (prisma) => {
+          for (const id of batch) {
+            await this.update(id, { status }, prisma);
+            totalSuccess++;
+          }
         }, {
-          timeout: 60000,  // 60 seconds for bulk operations
+          timeout: 60000,
           maxWait: 10000,
-          retries: 2
+          retries: 1
         });
-
-        totalSuccess += batchResult.success;
-        totalFail += batchResult.fail;
         
-        // Add small delay between batches to prevent overwhelming database
         if (i + BATCH_SIZE < ids.length) {
           await new Promise(resolve => setTimeout(resolve, 100));
         }

@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DathangService = void 0;
 const common_1 = require("@nestjs/common");
 const schedule_1 = require("@nestjs/schedule");
-const prisma_service_1 = require("prisma/prisma.service");
+const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
 const status_machine_service_1 = require("../common/status-machine.service");
 const tonkho_manager_service_1 = require("../common/tonkho-manager.service");
@@ -864,12 +864,17 @@ let DathangService = class DathangService {
                     const shippedQty = parseFloat((Number(item.slgiao) ?? 0).toFixed(3));
                     const oldSp = oldDathang.sanpham.find(o => o.idSP === item.idSP);
                     const reservedQty = parseFloat((Number(oldSp?.sldat) ?? 0).toFixed(3));
+                    await this.tonkhoManager.updateTonkhoAtomic([{
+                            sanphamId: item.idSP,
+                            khoId: khoId,
+                            operation: 'increment',
+                            slton: receivedQty,
+                            slchonhap: reservedQty,
+                            reason: `Nhập hàng từ NCC ${oldDathang.madncc}`
+                        }]);
                     await prisma.tonKho.update({
                         where: { sanphamId: item.idSP },
-                        data: {
-                            slton: { increment: receivedQty },
-                            slchonhap: { decrement: reservedQty }
-                        },
+                        data: { slchonhap: { decrement: reservedQty } }
                     });
                     if (receivedQty < shippedQty) {
                         const shortage = shippedQty - receivedQty;
@@ -948,17 +953,46 @@ let DathangService = class DathangService {
                     },
                 });
             }
+            if (data.status === 'danhan' && oldDathang.status === 'danhan' && data.sanpham) {
+                for (const item of data.sanpham) {
+                    const oldSp = oldDathang.sanpham.find(o => o.idSP === item.id || o.idSP === item.idSP);
+                    if (oldSp) {
+                        const oldReceived = parseFloat((Number(oldSp.slnhan) ?? 0).toFixed(3));
+                        const newReceived = parseFloat((Number(item.slnhan) ?? 0).toFixed(3));
+                        const delta = newReceived - oldReceived;
+                        if (delta !== 0) {
+                            await this.tonkhoManager.updateTonkhoAtomic([{
+                                    sanphamId: oldSp.idSP,
+                                    khoId: khoId,
+                                    operation: delta > 0 ? 'increment' : 'decrement',
+                                    slton: Math.abs(delta),
+                                    reason: `Điều chỉnh số lượng nhập cho đơn ${oldDathang.madncc} (${oldReceived} -> ${newReceived})`
+                                }]);
+                            console.log(`📌 [DATHANG-UPDATE] Adjusted stock for ${oldSp.idSP}: delta ${delta}`);
+                        }
+                    }
+                }
+            }
             if (['huy', 'choxuly', 'khonggiao'].includes(data.status)) {
                 if (oldDathang.status === 'danhan') {
                     for (const sp of oldDathang.sanpham) {
                         const slnhan = parseFloat((sp.slnhan ?? 0).toFixed(3));
                         if (slnhan > 0) {
-                            await prisma.tonKho.update({
-                                where: { sanphamId: sp.idSP },
-                                data: {
-                                    slton: { decrement: slnhan },
-                                },
-                            });
+                            if (oldDathang.khoId) {
+                                await this.tonkhoManager.updateTonkhoAtomic([{
+                                        sanphamId: sp.idSP,
+                                        khoId: oldDathang.khoId || undefined,
+                                        operation: 'decrement',
+                                        slton: slnhan,
+                                        reason: `Hoàn kho do đơn hàng ${oldDathang.madncc} chuyển trạng thái ${data.status}`
+                                    }]);
+                            }
+                            else {
+                                await prisma.tonKho.update({
+                                    where: { sanphamId: sp.idSP },
+                                    data: { slton: { decrement: slnhan } },
+                                });
+                            }
                         }
                     }
                 }

@@ -32,12 +32,15 @@ export class ChotkhoService {
     const startTime = lastChot ? lastChot.ngaychot : new Date(0);
     const initialQty = lastChot ? Number(lastChot.sltonthucte) : 0;
 
+    const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
+    const isMainWarehouse = khoId === KHO_TONG_ID;
+
     // 2. Lấy tất cả các phiếu xuất (Donhangsanpham)
     const xuat = await prisma.donhangsanpham.findMany({
       where: {
         idSP: sanphamId,
         donhang: {
-          khoId: khoId, // Lọc chính xác theo kho đang đối soát
+          ...(isMainWarehouse ? {} : { khoId: khoId }), // Nếu là kho tổng, lấy tất cả biến động
           status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
           updatedAt: { gt: startTime, lte: endTime }
         }
@@ -50,7 +53,7 @@ export class ChotkhoService {
       where: {
         idSP: sanphamId,
         dathang: {
-          khoId: khoId, // Lọc chính xác theo kho đang đối soát
+          ...(isMainWarehouse ? {} : { khoId: khoId }), // Nếu là kho tổng, lấy tất cả biến động
           status: 'danhan',
           updatedAt: { gt: startTime, lte: endTime }
         }
@@ -267,6 +270,16 @@ export class ChotkhoService {
           });
 
           // 🎯 SYNC TO REALITY: Cập nhật tồn kho vật lý trong hệ thống
+          const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
+          
+          // 1. Lấy tồn kho hiện tại để tính toán Delta trước khi update
+          const currentSpKho = await prisma.sanphamKho.findUnique({
+            where: { sanphamId_khoId: { sanphamId: detail.sanphamId, khoId } }
+          });
+          const oldQty = Number(currentSpKho?.soluong || 0);
+          const delta = Number(detail.sltonthucte) - oldQty;
+
+          // 2. Cập nhật tồn tại kho cụ thể (Source Tracking)
           await prisma.sanphamKho.upsert({
             where: {
               sanphamId_khoId: {
@@ -285,23 +298,66 @@ export class ChotkhoService {
             }
           });
 
-          // 2. Cập nhật tồn kho tổng (TonKho)
-          // Lấy tổng từ tất cả các kho
-          const allWarehouseStock = await prisma.sanphamKho.findMany({
-            where: { sanphamId: detail.sanphamId }
+          // 3. Nếu không phải KHO TỔNG, thực hiện Mirror Delta vào KHO TỔNG
+          if (khoId !== KHO_TONG_ID) {
+            await prisma.sanphamKho.upsert({
+              where: {
+                sanphamId_khoId: {
+                  sanphamId: detail.sanphamId,
+                  khoId: KHO_TONG_ID
+                }
+              },
+              create: {
+                sanphamId: detail.sanphamId,
+                khoId: KHO_TONG_ID,
+                soluong: new Decimal(delta), // Nếu chưa có thì khởi tạo bằng delta
+              },
+              update: {
+                soluong: { increment: delta },
+                updatedAt: new Date()
+              }
+            });
+          }
+
+          // 4. Đồng bộ Tồn kho tổng (TonKho) từ KHO TỔNG - HCM
+          const khoTongRecord = await prisma.sanphamKho.findUnique({
+            where: {
+              sanphamId_khoId: {
+                sanphamId: detail.sanphamId,
+                khoId: KHO_TONG_ID
+              }
+            }
           });
-          const totalStock = allWarehouseStock.reduce((acc, curr) => acc + Number(curr.soluong), 0);
+
+          let finalTotal = Number(khoTongRecord?.soluong || 0);
+          
+          // 🛡️ SAFETY CHECK: Hàng hóa không thể tồn âm ở kho vật lý
+          if (finalTotal < 0) {
+            console.warn(`⚠️ [CHOTKHO-SYNC] Product ${detail.sanphamId} has negative KHO_TONG (${finalTotal}). Clamping to 0.`);
+            finalTotal = 0;
+            
+            // Cập nhật lại KHO_TONG về 0 nếu bị âm
+            await prisma.sanphamKho.update({
+              where: {
+                sanphamId_khoId: {
+                  sanphamId: detail.sanphamId,
+                  khoId: KHO_TONG_ID
+                }
+              },
+              data: { soluong: new Decimal(0) }
+            });
+          }
 
           await prisma.tonKho.upsert({
             where: { sanphamId: detail.sanphamId },
             create: {
               sanphamId: detail.sanphamId,
-              slton: new Decimal(totalStock),
-              sltontt: new Decimal(totalStock),
+              slton: new Decimal(finalTotal),
+              sltontt: new Decimal(finalTotal),
             },
             update: {
-              slton: new Decimal(totalStock),
-              sltontt: new Decimal(totalStock),
+              slton: new Decimal(finalTotal),
+              sltontt: new Decimal(finalTotal),
               updatedAt: new Date()
             }
           });
@@ -391,15 +447,20 @@ export class ChotkhoService {
         // Chuẩn hóa: Thay vì lấy item.soluong trực tiếp, ta tính toán lại từ log để đối soát
         const analysis = await this.calculateStockFromLogs(item.sanphamId, khoId);
         
+        const sltonhethong = Math.max(0, analysis.currentCalc);
+        const isAbnormal = analysis.currentCalc < 0;
+        
         return {
           sanphamId: item.sanphamId,
           sanpham: item.sanpham,
-          sltonhethong_db: Number(item.soluong), // Số trong DB hiện tại
-          sltonhethong: analysis.currentCalc,    // Số thực tế tính từ log (Chuẩn hóa)
+          sltonhethong_db: Number(item.soluong), 
+          sltonhethong: sltonhethong,
+          sltonhethong_raw: analysis.currentCalc, // Giá trị gốc chưa clamp
+          isAbnormal: isAbnormal,                 // Đánh dấu bất thường (âm)
           sltonthucte: 0,
           slhuy: 0,
-          chenhlech: analysis.currentCalc,
-          isSynced: analysis.currentCalc === Number(item.soluong),
+          chenhlech: sltonhethong,
+          isSynced: sltonhethong === Number(item.soluong),
           lastClosingDate: analysis.lastClosingDate
         };
       }));
@@ -725,18 +786,27 @@ export class ChotkhoService {
           });
 
           // 🎯 SYNC TO REALITY: Cập nhật tồn kho vật lý trong hệ thống
-          
-          // 1. Cập nhật tồn tại kho cụ thể
+          const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
+          const currentKhoId = updatedMaster.khoId;
+
+          // 1. Lấy tồn kho cũ để tính Delta
+          const currentSpKho = await prisma.sanphamKho.findUnique({
+            where: { sanphamId_khoId: { sanphamId: detail.sanphamId, khoId: currentKhoId } }
+          });
+          const oldQty = Number(currentSpKho?.soluong || 0);
+          const delta = Number(detail.sltonthucte) - oldQty;
+
+          // 2. Cập nhật tồn tại kho cụ thể
           await prisma.sanphamKho.upsert({
             where: {
               sanphamId_khoId: {
                 sanphamId: detail.sanphamId,
-                khoId: updatedMaster.khoId
+                khoId: currentKhoId
               }
             },
             create: {
               sanphamId: detail.sanphamId,
-              khoId: updatedMaster.khoId,
+              khoId: currentKhoId,
               soluong: new Decimal(detail.sltonthucte),
             },
             update: {
@@ -745,13 +815,40 @@ export class ChotkhoService {
             }
           });
 
-          // 2. Cập nhật tồn kho tổng: Phải tính TỔNG từ tất cả các kho
-          const allWarehouseStock = await prisma.sanphamKho.findMany({
-            where: { sanphamId: detail.sanphamId }
-          });
-          const totalStock = allWarehouseStock.reduce((acc, curr) => acc + Number(curr.soluong), 0);
+          // 3. Mirror Delta vào KHO TỔNG nếu cần
+          if (currentKhoId !== KHO_TONG_ID) {
+            await prisma.sanphamKho.upsert({
+              where: {
+                sanphamId_khoId: {
+                  sanphamId: detail.sanphamId,
+                  khoId: KHO_TONG_ID
+                }
+              },
+              create: {
+                sanphamId: detail.sanphamId,
+                khoId: KHO_TONG_ID,
+                soluong: new Decimal(delta),
+              },
+              update: {
+                soluong: { increment: delta },
+                updatedAt: new Date()
+              }
+            });
+          }
 
-          // 🎯 FIX: Tính toán lại slchonhap và slchogiao từ các đơn hàng thực tế thay vì ép về 0
+          // 4. Đồng bộ Tồn kho tổng từ KHO TỔNG - HCM
+          const khoTongRecord = await prisma.sanphamKho.findUnique({
+            where: {
+              sanphamId_khoId: {
+                sanphamId: detail.sanphamId,
+                khoId: KHO_TONG_ID
+              }
+            }
+          });
+
+          const finalTotal = Number(khoTongRecord?.soluong || 0);
+
+          // 🎯 FIX: Tính toán lại slchonhap và slchogiao từ các đơn hàng thực tế
           const [pendingInAgg, pendingOutAgg] = await Promise.all([
             prisma.dathangsanpham.aggregate({
               where: {
@@ -776,14 +873,14 @@ export class ChotkhoService {
             where: { sanphamId: detail.sanphamId },
             create: {
               sanphamId: detail.sanphamId,
-              slton: new Decimal(totalStock),
-              sltontt: new Decimal(totalStock),
+              slton: new Decimal(finalTotal),
+              sltontt: new Decimal(finalTotal),
               slchogiao: new Decimal(Math.max(0, currentPendingOut)),
               slchonhap: new Decimal(Math.max(0, currentPendingIn)),
             },
             update: {
-              slton: new Decimal(totalStock),
-              sltontt: new Decimal(totalStock),
+              slton: new Decimal(finalTotal),
+              sltontt: new Decimal(finalTotal),
               slchogiao: new Decimal(Math.max(0, currentPendingOut)),
               slchonhap: new Decimal(Math.max(0, currentPendingIn)),
               updatedAt: new Date()

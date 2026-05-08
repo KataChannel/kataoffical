@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MinioService = void 0;
 const common_1 = require("@nestjs/common");
 const minio_1 = require("minio");
-const prisma_service_1 = require("prisma/prisma.service");
+const prisma_service_1 = require("../../prisma/prisma.service");
 const common_2 = require("@nestjs/common");
 let MinioService = class MinioService {
     constructor(prisma) {

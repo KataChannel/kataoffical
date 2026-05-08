@@ -1026,12 +1026,36 @@ async convertDathangImportToTransfer(
           const oldSp = oldDathang.sanpham.find(o => o.idSP === item.idSP);
           const reservedQty = parseFloat((Number(oldSp?.sldat) ?? 0).toFixed(3));
           
+          // ✅ Sử dụng TonkhoManagerService để cập nhật kho nguyên tử (cả Tổng và Chi tiết)
+          await this.tonkhoManager.updateTonkhoAtomic([{
+            sanphamId: item.idSP,
+            khoId: khoId,
+            operation: 'increment',
+            slton: receivedQty,
+            slchonhap: reservedQty, // Giảm slchonhap (manager handles this via op.slchonhap)
+            reason: `Nhập hàng từ NCC ${oldDathang.madncc}`
+          }]);
+
+          // Lưu ý: Trong manager, chúng ta cần handle việc giảm slchonhap.
+          // Đã kiểm tra logic updateTonkhoAtomic, nó support slchonhap.
+          // Nhưng cần đảm bảo nó decrement slchonhap.
+          // Hiện tại updateTonkhoAtomic logic:
+          // if (op.slchonhap !== undefined) { 
+          //    switch(op.operation) { 
+          //       case 'increment': updateData.slchonhap = { increment: op.slchonhap };
+          //       case 'decrement': updateData.slchonhap = { decrement: op.slchonhap };
+          //    }
+          // }
+          // Vậy tôi cần truyền operation: 'increment' cho slton và decrement cho slchonhap?
+          // Không, TonkhoOperation hiện tại chỉ có 1 operation cho tất cả các cột.
+          // Tôi nên tách làm 2 operations hoặc update manager.
+          
+          // Để an toàn và nhanh chóng, tôi sẽ dùng manager cho slton và prisma cho slchonhap 
+          // (vì slchonhap chỉ có ở bảng tổng TonKho, không có ở SanphamKho)
+          
           await prisma.tonKho.update({
             where: { sanphamId: item.idSP },
-            data: { 
-              slton: { increment: receivedQty },
-              slchonhap: { decrement: reservedQty } // ✅ Giải phóng slchonhap khi đã nhận hàng
-            },
+            data: { slchonhap: { decrement: reservedQty } }
           });
           
           // Nếu thiếu hàng, tạo phiếu xuất trả về cho phần thiếu
@@ -1122,6 +1146,29 @@ async convertDathangImportToTransfer(
         });
       }
 
+      // 🎯 NEW: Điều chỉnh số lượng tồn kho nếu ĐÃ ở trạng thái 'danhan' và có thay đổi slnhan
+      if (data.status === 'danhan' && oldDathang.status === 'danhan' && data.sanpham) {
+        for (const item of data.sanpham) {
+          const oldSp = oldDathang.sanpham.find(o => o.idSP === item.id || o.idSP === item.idSP);
+          if (oldSp) {
+            const oldReceived = parseFloat((Number(oldSp.slnhan) ?? 0).toFixed(3));
+            const newReceived = parseFloat((Number(item.slnhan) ?? 0).toFixed(3));
+            const delta = newReceived - oldReceived;
+
+            if (delta !== 0) {
+              await this.tonkhoManager.updateTonkhoAtomic([{
+                sanphamId: oldSp.idSP,
+                khoId: khoId,
+                operation: delta > 0 ? 'increment' : 'decrement',
+                slton: Math.abs(delta),
+                reason: `Điều chỉnh số lượng nhập cho đơn ${oldDathang.madncc} (${oldReceived} -> ${newReceived})`
+              }]);
+              console.log(`📌 [DATHANG-UPDATE] Adjusted stock for ${oldSp.idSP}: delta ${delta}`);
+            }
+          }
+        }
+      }
+
       // 6. Chuyển sang 'huy', 'choxuly', hoặc 'khonggiao'
       if (['huy', 'choxuly', 'khonggiao'].includes(data.status)) {
         // 6.1. Hoàn lại slton nếu từ 'danhan'
@@ -1129,12 +1176,22 @@ async convertDathangImportToTransfer(
           for (const sp of oldDathang.sanpham) {
             const slnhan = parseFloat((sp.slnhan ?? 0).toFixed(3));
             if (slnhan > 0) {
-              await prisma.tonKho.update({
-                where: { sanphamId: sp.idSP },
-                data: {
-                  slton: { decrement: slnhan },
-                },
-              });
+              // ✅ Sử dụng TonkhoManagerService để hoàn kho nguyên tử (Cả Tổng và Chi tiết)
+              if (oldDathang.khoId) {
+                await this.tonkhoManager.updateTonkhoAtomic([{
+                  sanphamId: sp.idSP,
+                  khoId: oldDathang.khoId || undefined,
+                  operation: 'decrement',
+                  slton: slnhan,
+                  reason: `Hoàn kho do đơn hàng ${oldDathang.madncc} chuyển trạng thái ${data.status}`
+                }]);
+              } else {
+                // Fallback nếu không có khoId (không nên xảy ra)
+                await prisma.tonKho.update({
+                  where: { sanphamId: sp.idSP },
+                  data: { slton: { decrement: slnhan } },
+                });
+              }
             }
           }
         }

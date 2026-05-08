@@ -1,6 +1,7 @@
 import { PrismaService } from 'prisma/prisma.service';
 export interface TonkhoOperation {
     sanphamId: string;
+    khoId?: string;
     operation: 'increment' | 'decrement' | 'set';
     slton?: number;
     sltontt?: number;

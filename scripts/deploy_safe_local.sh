@@ -22,7 +22,10 @@ echo "  0. Thoát"
 echo ""
 read -p "Lựa chọn của bạn (0-3): " mode
 
-[ "$mode" == "0" ] && exit 0
+if [[ "$mode" != "1" && "$mode" != "2" && "$mode" != "3" ]]; then
+    echo "⚠️ Lựa chọn không hợp lệ hoặc đã thoát."
+    exit 0
+fi
 
 is_dry_run=false
 is_sandbox=false
@@ -45,19 +48,29 @@ cp "$FE_ENV_DEV" "${FE_ENV_DEV}.bak"
 if [ "$is_sandbox" == "true" ]; then
     echo "Mô tả: Tự động chuyển DATABASE sang bản Sandbox (testdata) và API URL sang domain apisandbox.rausachtrangia.com."
     # Backend DB switch
-    sed -i 's/^DATABASE_URL=/#&/g' "$ENV_FILE"
-    sed -i 's/^#\(DATABASE_URL=.*testdata.*\)/\1/g' "$ENV_FILE"
-    if ! grep -q "testdata" "$ENV_FILE"; then
-        echo 'DATABASE_URL="postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/testdata?schema=public&connection_limit=25"' >> "$ENV_FILE"
+    sed -i 's/^DATABASE_URL=/#DATABASE_URL=/g' "$ENV_FILE"
+    if grep -q "testdata" "$ENV_FILE"; then
+        sed -i 's/^#\(DATABASE_URL=.*testdata.*\)/\1/g' "$ENV_FILE"
+    else
+        echo 'DATABASE_URL="postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/testdata?schema=public&connection_limit=25&pool_timeout=60&connect_timeout=20"' >> "$ENV_FILE"
     fi
     
-    # Frontend API switch (Trỏ về domain sandbox của bạn)
+    # Frontend API switch
     sed -i "s|APIURL:.*|APIURL: 'https://apisandbox.rausachtrangia.com',|g" "$FE_ENV"
     sed -i "s|APIURL:.*|APIURL: 'https://apisandbox.rausachtrangia.com',|g" "$FE_ENV_DEV"
 else
     echo "Mô tả: Tự động chuyển DATABASE sang bản Production (rausachfinal) và thực hiện Build."
-    sed -i 's/^DATABASE_URL=/#&/g' "$ENV_FILE"
-    sed -i 's/^#\(DATABASE_URL=.*rausachfinal.*\)/\1/g' "$ENV_FILE"
+    # Backend DB switch
+    sed -i 's/^DATABASE_URL=/#DATABASE_URL=/g' "$ENV_FILE"
+    if grep -q "rausachfinal" "$ENV_FILE"; then
+        sed -i 's/^#\(DATABASE_URL=.*rausachfinal.*\)/\1/g' "$ENV_FILE"
+    else
+        echo 'DATABASE_URL="postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/rausachfinal?schema=public&connection_limit=25&pool_timeout=60&connect_timeout=20"' >> "$ENV_FILE"
+    fi
+
+    # Frontend API switch (Đảm bảo về Production)
+    sed -i "s|APIURL:.*|APIURL: 'https://apitg.rausachtrangia.com',|g" "$FE_ENV"
+    sed -i "s|APIURL:.*|APIURL: 'https://apitg.rausachtrangia.com',|g" "$FE_ENV_DEV"
 fi
 
 # Thực hiện Build Local
