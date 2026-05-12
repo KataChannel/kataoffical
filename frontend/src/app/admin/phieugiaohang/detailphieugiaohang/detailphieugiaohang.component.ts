@@ -117,6 +117,10 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
   @ViewChild('confirmRemoveDialog') confirmRemoveDialog!: TemplateRef<any>;
   DetailPhieugiaohang: any = this._PhieugiaohangService.DetailDonhang;
   profile: any = this._UserService.profile;
+  isAccountant = computed(() => {
+    const roles = this.profile()?.roles || [];
+    return roles.includes('Kế Toán') || roles.includes('Admin');
+  });
   // ListKhachhang: any = this._KhachhangService.ListKhachhang;
   isEdit = signal(true);
   isDelete = signal(false);

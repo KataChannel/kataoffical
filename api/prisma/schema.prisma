@@ -268,6 +268,7 @@ model Donhang {
   vat              Decimal          @default(0.5) @postgres.Decimal(20, 3)
   lydohuy          String?
   phieuve          String?
+  nsthuve          String?
   giodi            String?
   giove            String?
   kynhan           String?

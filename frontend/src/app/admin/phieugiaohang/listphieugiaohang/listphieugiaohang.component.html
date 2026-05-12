@@ -54,16 +54,33 @@
               <span (click)="ToggleAll()" class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{total()}} Phiếu giao hàng
                 </span>
-                   <span (click)="filterDagiao()" 
-                          class="p-2 rounded-lg text-white bg-blue-600 cursor-pointer hover:bg-blue-700 transition-colors"
-                          matTooltip="Click để lọc đơn đã giao">
-                        Đã Giao {{countDagiao()}}
+                   <div class="flex flex-row flex-wrap gap-1.5 items-center">
+                    <span (click)="filterByStatus('all')" 
+                          class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold cursor-pointer hover:bg-slate-200 transition-all shadow-sm border border-slate-200 uppercase tracking-tighter"
+                          matTooltip="Hiển thị tất cả">
+                        Tất cả
                     </span>
-                    <span (click)="filterChuagiao()" 
-                          class="p-2 rounded-lg text-white bg-yellow-600 cursor-pointer hover:bg-yellow-700 transition-colors"
-                          matTooltip="Click để lọc đơn chưa giao">
-                        Chưa Giao {{countChuagiao()}}
+                    <span (click)="filterByStatus('dadat')" 
+                          class="px-2.5 py-1 rounded-lg bg-orange-50 text-orange-700 text-xs font-bold cursor-pointer hover:bg-orange-100 transition-all shadow-sm border border-orange-200 uppercase tracking-tighter"
+                          matTooltip="Lọc đơn mới đặt">
+                        Mới ({{countByStatus('dadat')}})
                     </span>
+                    <span (click)="filterByStatus('dagiao')" 
+                          class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-bold cursor-pointer hover:bg-blue-100 transition-all shadow-sm border border-blue-200 uppercase tracking-tighter"
+                          matTooltip="Lọc đơn đang giao">
+                        Đang giao ({{countByStatus('dagiao')}})
+                    </span>
+                    <span (click)="filterByStatus('danhan')" 
+                          class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 text-xs font-bold cursor-pointer hover:bg-purple-100 transition-all shadow-sm border border-purple-200 uppercase tracking-tighter"
+                          matTooltip="Lọc đơn đã nhận">
+                        Đã nhận ({{countByStatus('danhan')}})
+                    </span>
+                    <span (click)="filterByStatus('hoanthanh')" 
+                          class="px-2.5 py-1 rounded-lg bg-green-50 text-green-700 text-xs font-bold cursor-pointer hover:bg-green-100 transition-all shadow-sm border border-green-200 uppercase tracking-tighter"
+                          matTooltip="Lọc đơn hoàn thành">
+                        Hoàn thành ({{countByStatus('hoanthanh')}})
+                    </span>
+                   </div>
                   <button (click)="UpdateBulk()" *ngIf="EditList.length > 0" 
                     [disabled]="isBulkUpdating() || isLoading()"
                     class="flex flex-row items-center space-x-2" color="primary" mat-flat-button>
@@ -72,6 +89,20 @@
                     }
                     <span>{{isBulkUpdating() ? 'Đang xử lý...' : 'Hoàn thành'}}</span>
                   </button>
+
+                  <!-- Button Upload NS Thu Về -->
+                  <button matTooltip="Upload NS Thu Về (Excel)" 
+                          (click)="uploadNSThuVe.click()" 
+                          color="accent" 
+                          [disabled]="isLoading() || isImporting()"
+                          mat-icon-button>
+                      @if (isImporting()) {
+                        <mat-spinner diameter="24"></mat-spinner>
+                      } @else {
+                        <mat-icon>upload_file</mat-icon>
+                      }
+                  </button>
+                  <input class="hidden" (change)="ImportNSThuVeExcel($event)" type="file" #uploadNSThuVe accept=".xlsx, .xls">
             </div>
         </div>
         <div *ngIf="isSearch" class="py-2 w-full flex flex-row space-x-2 items-center">
@@ -302,6 +333,11 @@
                         }
                         ">
                             {{Trangthaidon[row[column]] || row[column]}}
+                        </span>
+                        }
+                        @case ('nsthuve') {
+                        <span class="max-w-40 line-clamp-4 font-bold text-purple-600">
+                            {{ row[column] || '---' }}
                         </span>
                         }
                         @case ('tongdon') {

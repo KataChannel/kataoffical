@@ -2553,7 +2553,7 @@ export class DonhangService {
           await prisma.phieuKhoSanpham.deleteMany({ where: { phieuKhoId: existingPhieu.id } });
           await prisma.phieuKho.delete({ where: { id: existingPhieu.id } });
         }
-      } else if (targetStatus === 'dagiao' || (isStatusChanged && targetStatus === 'danhan')) {
+      } else if (targetStatus === 'dagiao' || (isStatusChanged && ['danhan', 'hoanthanh'].includes(targetStatus))) {
         // Upsert PhieuKho
         const phieuData = {
           ngay: data.ngaygiao ? new Date(data.ngaygiao) : (oldDonhang.ngaygiao || new Date()),

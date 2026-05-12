@@ -109,6 +109,7 @@ export declare class CancelOrderService {
         vat: Prisma.Decimal;
         lydohuy: string | null;
         phieuve: string | null;
+        nsthuve: string | null;
         giodi: string | null;
         giove: string | null;
         kynhan: string | null;

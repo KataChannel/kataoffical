@@ -128,8 +128,8 @@ export class DonhangController {
   @UseGuards(JwtAuthGuard)
   @Audit({entity: 'Update bulk Donhang', action: AuditAction.UPDATE, includeResponse: true})
   @CacheInvalidate(['donhang', 'khachhang'])
-  updateBulk(@Body() data: any[]) {
-    return this.donhangService.updateBulk(data,'danhan');
+  updateBulk(@Body() body: { ids: string[], status: string }) {
+    return this.donhangService.updateBulk(body.ids, body.status || 'danhan');
   }
   
   @Patch(':id')

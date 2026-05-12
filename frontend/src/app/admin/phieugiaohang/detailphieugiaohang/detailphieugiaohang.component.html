@@ -63,7 +63,8 @@
       </mat-menu>
       
       <!-- Primary Action Buttons (NY/Shadcn Style) -->
-      @if (DetailPhieugiaohang().status === 'dagiao' || DetailPhieugiaohang().status === 'danhan') {
+      @if (DetailPhieugiaohang().status === 'dagiao' || DetailPhieugiaohang().status === 'danhan' || 
+          (['dadat', 'choxuly'].includes(DetailPhieugiaohang().status) && isAccountant())) {
         <button class="btn-new-york btn-primary ml-2" [disabled]="isUpdating() || isLoading()" (click)="Hoanthanhhang()">
           <span class="status-dot" *ngIf="!isUpdating()"></span>
           <mat-spinner diameter="14" *ngIf="isUpdating()"></mat-spinner>

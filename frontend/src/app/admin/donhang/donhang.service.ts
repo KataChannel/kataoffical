@@ -573,7 +573,7 @@ export class DonhangService {
   }
 
   
-  async UpdateBulkDonhang(items:any[]) {    
+  async UpdateBulkDonhang(ids: string[], status: string = 'danhan') {    
     try {
         const options = {
             method:'PATCH',
@@ -581,7 +581,7 @@ export class DonhangService {
               'Content-Type': 'application/json',
               'Authorization': 'Bearer ' + this._StorageService.getItem('token')
             },
-            body: JSON.stringify(items),
+            body: JSON.stringify({ ids, status }),
           };
           const response = await fetch(`${environment.APIURL}/donhang/bulk`, options);
           if (!response.ok) {

@@ -81,6 +81,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     'tongdon',
     'ngaygiao',
     'status',
+    'nsthuve',
     'ghichu',
     'createdAt',
     'updatedAt',
@@ -93,6 +94,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     tongdon: 'Tổng Đơn',
     ngaygiao: 'Ngày Giao',
     status: 'Trạng Thái',
+    nsthuve: 'NS Thu Về',
     ghichu: 'Ghi Chú',
     createdAt: 'Ngày Tạo',
     updatedAt: 'Ngày Cập Nhật',
@@ -318,6 +320,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
         tongtien:true,
         tongvat:true,
         status:true,
+        nsthuve:true,
         ghichu:true,
         createdAt:true,
         updatedAt:true,
@@ -646,7 +649,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     this.isBulkUpdating.set(true);
     try {
       const result: any = await this._DonhangService.UpdateBulkDonhang(
-        this.EditList.map((v: any) => v.id)
+        this.EditList.map((v: any) => v.id), 'hoanthanh'
       );
       this._snackBar.open(
         `Cập nhật thành công ${result.success} đơn hàng${result.fail ? `, ${result.fail} lỗi` : ''}`,
@@ -681,6 +684,12 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     return item.printCount && item.printCount > 0;
   }
 
+  countByStatus(status: string): number {
+    const orders = this.Listphieugiaohang();
+    if (!Array.isArray(orders)) return 0;
+    return orders.filter((item: any) => item.status === status).length;
+  }
+
   /**
    * Count delivered orders (danhan, hoanthanh)
    * Safely handles signal value and ensures array type
@@ -706,19 +715,28 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * Filter by delivered status (danhan, hoanthanh)
+   * Filter by status
    */
-  filterDagiao(): void {
+  filterByStatus(status: string): void {
     const orders = this.Listphieugiaohang();
     if (!Array.isArray(orders)) return;
     
-    this.dataSource.data = orders.filter((item: any) => 
-      ['danhan','dagiao', 'hoanthanh'].includes(item.status)
-    );
+    if (status === 'all') {
+      this.dataSource.data = orders;
+    } else {
+      this.dataSource.data = orders.filter((item: any) => item.status === status);
+    }
     
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  /**
+   * Filter by delivered status (danhan, hoanthanh)
+   */
+  filterDagiao(): void {
+    this.filterByStatus('dagiao');
   }
   
   /**
@@ -832,6 +850,83 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     return Promise.resolve();
   }
   
+  async ImportNSThuVeExcel(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      this.isImporting.set(true);
+      this._snackBar.open('🚀 Đang xử lý file...', '', { duration: 2000 });
+      
+      const data = await readExcelFile(event);
+      if (!data || data.length === 0) {
+        this._snackBar.open('⚠️ File không có dữ liệu', 'Đóng', { duration: 3000 });
+        return;
+      }
+
+      const updates: any[] = [];
+      const currentList = this.dataSource.data;
+
+      for (const row of data) {
+        const madonhang = row['MÃ ĐƠN HÀNG']?.toString().trim();
+        const nsThuVeExcel = row['NS THU VỀ']?.toString().trim();
+
+        if (!madonhang) continue;
+
+        // Tìm đơn hàng trong danh sách hiện tại
+        const donhang = currentList.find(d => d.madonhang === madonhang);
+        
+        if (donhang) {
+          const currentNS = donhang.nsthuve?.toString().trim() || '';
+          
+          let shouldUpdate = false;
+          let newValue = currentNS;
+
+          // Rule 2 implementation:
+          // 1. Nếu Cột "NS Thu Về" ban đầu chưa có, file excel có thông tin thì ghi nhận vào.
+          // 2. Nếu Cột "NS Thu Về" đã có thông tin, file excel không có thông tin thì vẫn giữ nguyên.
+          // 3. Nếu Cột "NS Thu Về" Có thông tin, file excel có thông tin mới thì ghi nhận thông tin mới.
+          
+          if (!currentNS && nsThuVeExcel) {
+            newValue = nsThuVeExcel;
+            shouldUpdate = true;
+          } else if (currentNS && nsThuVeExcel && currentNS !== nsThuVeExcel) {
+            newValue = nsThuVeExcel;
+            shouldUpdate = true;
+          }
+
+          if (shouldUpdate) {
+            updates.push({
+              id: donhang.id,
+              nsthuve: newValue
+            });
+          }
+        }
+      }
+
+      if (updates.length > 0) {
+        // Thực hiện update bulk qua GraphQL
+        const operations = updates.map(u => ({
+          where: { id: u.id },
+          data: { nsthuve: u.nsthuve }
+        }));
+        await this._GraphqlService.batchUpdate('donhang', operations);
+        
+        this._snackBar.open(`✅ Đã cập nhật ${updates.length} đơn hàng`, 'Đóng', { duration: 3000 });
+        await this.LoadData(); // Reload data to show changes
+      } else {
+        this._snackBar.open('ℹ️ Không có thay đổi nào cần cập nhật', 'Đóng', { duration: 3000 });
+      }
+
+    } catch (error) {
+      console.error('Lỗi import NS Thu Về:', error);
+      this._snackBar.open('❌ Lỗi khi xử lý file', 'Đóng', { duration: 3000 });
+    } finally {
+      this.isImporting.set(false);
+      event.target.value = ''; // Reset input
+    }
+  }
+
   async ImporExcel(event: any) {
     this.isImporting.set(true);
     try {
