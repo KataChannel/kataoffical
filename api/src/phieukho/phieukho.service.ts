@@ -286,6 +286,8 @@ export class PhieukhoService {
             khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
             tuKhoId: data.tuKhoId,
             denKhoId: data.denKhoId,
+            madonhang: data.madonhang,
+            madncc: data.madncc,
             ghichu: data.ghichu,
             isActive: data.isActive ?? true,
             sanpham: {
@@ -507,6 +509,8 @@ export class PhieukhoService {
           type: data.type,
           khoId: data.khoId,
           ghichu: data.ghichu,
+          madonhang: data.madonhang,
+          madncc: data.madncc,
           isActive: data.isActive ?? true,
           sanpham: {
             deleteMany: {}, // Xóa sản phẩm cũ trước khi thêm mới

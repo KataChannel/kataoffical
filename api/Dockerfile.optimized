@@ -1,0 +1,36 @@
+# stage 1: base
+FROM oven/bun:slim AS base
+WORKDIR /app
+
+# stage 2: build
+FROM base AS build
+COPY package.json bun.lockb tsconfig.json ./
+RUN bun install
+
+COPY prisma/schema.prisma ./prisma/
+RUN bunx prisma generate
+
+COPY . .
+# Giả sử bạn muốn build trực tiếp trong docker thay vì copy dist từ ngoài
+# Nếu bạn vẫn muốn copy dist từ ngoài, hãy dùng stage 3 luôn.
+RUN bun run build
+
+# stage 3: production
+FROM base AS runner
+RUN apt-get update -y && apt-get install -y openssl libssl-dev && rm -rf /var/lib/apt/lists/*
+
+ENV NODE_ENV=production
+WORKDIR /app
+
+# Chỉ copy những gì cần thiết để chạy
+COPY --from=build /app/package.json /app/bun.lockb ./
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/prisma ./prisma
+
+# Tạo user không phải root để bảo mật
+RUN useradd -m bunuser
+USER bunuser
+
+EXPOSE 3331
+CMD ["bun", "run", "dist/src/main.js"]

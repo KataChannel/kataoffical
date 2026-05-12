@@ -1918,12 +1918,11 @@ let DonhangService = class DonhangService {
                 await prisma.tonKho.upsert({
                     where: { sanphamId: sp.idSP || sp.id },
                     update: {
-                        slton: { decrement: incrementValue },
                         slchogiao: { increment: incrementValue },
                     },
                     create: {
                         sanphamId: sp.idSP || sp.id,
-                        slton: -incrementValue,
+                        slton: 0,
                         slchogiao: incrementValue,
                     },
                 });
@@ -1980,12 +1979,6 @@ let DonhangService = class DonhangService {
                 for (const sp of oldDonhang.sanpham) {
                     const val = parseFloat((sp.sldat ?? 0).toFixed(3));
                     if (val > 0) {
-                        tonkhoOps.push({
-                            sanphamId: sp.idSP,
-                            operation: 'increment',
-                            slton: val,
-                            reason: `Rollback reservation FROM DADAT for order ${oldDonhang.madonhang}`
-                        });
                         tonkhoOps.push({
                             sanphamId: sp.idSP,
                             operation: 'decrement',
@@ -2047,6 +2040,7 @@ let DonhangService = class DonhangService {
                 khoId: DEFAUL_KHO_ID,
                 ghichu: data.ghichu || oldDonhang.ghichu,
                 isActive: true,
+                madonhang: oldDonhang.madonhang,
             };
             const productsRaw = data.sanpham || oldDonhang.sanpham.map(sp => ({ id: sp.idSP, slgiao: sp.slgiao || sp.sldat, ghichu: sp.ghichu }));
             const productsMap = new Map();

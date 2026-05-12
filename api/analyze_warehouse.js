@@ -103,6 +103,10 @@ async function main() {
           });
         }
         const stats = productStats.get(pks.sanphamId);
+        // Only count internal (manual) transactions. 
+        // Vouchers linked to orders or starting with PX-TG- (automated) are ignored to avoid double counting with Sales/Purchases.
+        if (pk.madonhang || pk.madncc || pk.maphieu?.startsWith('PX-TG-')) continue;
+
         if (pk.type === 'nhap') {
           stats.nhap += Number(pks.soluong || 0);
         } else if (pk.type === 'xuat') {

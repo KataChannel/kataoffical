@@ -60,8 +60,8 @@ async function main() {
                 }
                 const s = stats.get(pks.sanphamId);
                 // We only count PhieuKho if they ARE NOT linked to DonHang or DatHang to avoid double counting
-                // Assuming PhieuKho linked to orders are already reflected in Sales/Purchases
-                if (!pk.madonhang && !pk.madncc) {
+                // We also exclude automated 'PX-TG-' vouchers which are logically linked to sales orders
+                if (!pk.madonhang && !pk.madncc && !pk.maphieu?.startsWith('PX-TG-')) {
                     if (pk.type === 'nhap') s.nhap_internal += Number(pks.soluong || 0);
                     else if (pk.type === 'xuat') s.xuat_internal += Number(pks.soluong || 0);
                 }
