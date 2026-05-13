@@ -303,15 +303,19 @@ export class UserService {
       }
       const data = await response.json();
       if (data) {
-        this._authenticated = true;
-        this.accessToken = data.access_token;
-        this._StorageService.setItem('permissions', JSON.stringify(data?.user?.permissions || []));
-        this.permissionsSubject.next(data?.user?.permissions);
+        if (this.isBrowser) {
+          this._authenticated = true;
+          this.accessToken = data.access_token;
+          this._StorageService.setItem('permissions', JSON.stringify(data?.user?.permissions || []));
+          this.permissionsSubject.next(data?.user?.permissions);
+        }
         return [true, data]
+      } else {
+        return [false, 'Đăng Nhập Thất Bại']
       }
-      return [false, 'Đăng Nhập Thất Bại']
     } catch (error) {
-      return console.error(error);
+      console.error(error);
+      return [false, 'Lỗi kết nối']
     }
   }
   loadPermissions() {
@@ -397,20 +401,28 @@ export class UserService {
 
 
   loginWithGoogle() {
-    window.location.href = `${this.BASE_URL}/google`; // Chuyển hướng đến Google OAuth
+    if (this.isBrowser) {
+      window.location.href = `${this.BASE_URL}/google`;
+    }
   }
 
   loginWithFacebook() {
-    window.location.href = `${this.BASE_URL}/facebook`;
+    if (this.isBrowser) {
+      window.location.href = `${this.BASE_URL}/facebook`;
+    }
   }
 
   loginWithZalo() {
-    window.location.href = `${this.BASE_URL}/zalo`;
+    if (this.isBrowser) {
+      window.location.href = `${this.BASE_URL}/zalo`;
+    }
   }
 
   handleOAuthCallback(token: string) {
-    localStorage.setItem('access_token', token);
-    this.router.navigate(['/dashboard']);
+    if (this.isBrowser) {
+      this._StorageService.setItem('token', token);
+      this.router.navigate(['/dashboard']);
+    }
   }
 
   getToken() {

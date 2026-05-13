@@ -84,8 +84,8 @@ services:
       - PORT=3331
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - MINIO_ENDPOINT=storage.rausachtrangia.com
-      - MINIO_PORT=59000
+      - MINIO_ENDPOINT=minio_rausach
+      - MINIO_PORT=9000
       - MINIO_USE_SSL=false
       - MINIO_ACCESS_KEY=RC4hWSS4V6QIcfl
       - MINIO_SECRET_KEY=LEOZHZwjaasTTKk

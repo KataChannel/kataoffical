@@ -65,9 +65,7 @@ export class ListKhoComponent {
     updatedAt:'Ngày Cập Nhật'
   };
 
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('KhoColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   isFilter: boolean = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -93,6 +91,18 @@ export class ListKhoComponent {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
     });
+    
+    // Safe localStorage access
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('KhoColFilter');
+        if (saved) {
+          this.FilterColumns = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.error('Error loading KhoColFilter:', e);
+      }
+    }
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {

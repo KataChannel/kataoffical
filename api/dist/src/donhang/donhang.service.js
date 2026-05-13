@@ -1941,13 +1941,12 @@ let DonhangService = class DonhangService {
         return result;
     }
     async update(id, data, tx) {
-        const prisma = tx || this.prisma;
-        if (prisma.safeTransaction) {
-            return prisma.safeTransaction(async (p) => {
-                return this._updateInternal(id, data, p);
-            });
+        if (tx) {
+            return this._updateInternal(id, data, tx);
         }
-        return this._updateInternal(id, data, prisma);
+        return this.prisma.safeTransaction(async (p) => {
+            return this._updateInternal(id, data, p);
+        });
     }
     async _updateInternal(id, data, prisma) {
         const oldDonhang = await prisma.donhang.findUnique({
@@ -2023,7 +2022,7 @@ let DonhangService = class DonhangService {
             }
         }
         if (tonkhoOps.length > 0) {
-            await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps);
+            await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps, prisma);
         }
         const maphieu = `PX-${oldDonhang.madonhang}`;
         if (isStatusChanged && ['huy', 'choxuly', 'khonggiao', 'dadat'].includes(targetStatus)) {
@@ -2033,7 +2032,7 @@ let DonhangService = class DonhangService {
                 await prisma.phieuKho.delete({ where: { id: existingPhieu.id } });
             }
         }
-        else if (targetStatus === 'dagiao' || (isStatusChanged && targetStatus === 'danhan')) {
+        else if (targetStatus === 'dagiao' || (isStatusChanged && ['danhan', 'hoanthanh'].includes(targetStatus))) {
             const phieuData = {
                 ngay: data.ngaygiao ? new Date(data.ngaygiao) : (oldDonhang.ngaygiao || new Date()),
                 type: 'xuat',
@@ -2089,7 +2088,7 @@ let DonhangService = class DonhangService {
                                 slton: Math.abs(delta),
                                 sltontt: Math.abs(delta),
                                 reason: `Điều chỉnh số lượng xuất cho đơn ${oldDonhang.madonhang} (${oldGiao} -> ${newGiao})`
-                            }]);
+                            }], prisma);
                         console.log(`📌 [DONHANG-UPDATE] Adjusted stock for ${oldSp.idSP}: delta ${delta}`);
                     }
                 }

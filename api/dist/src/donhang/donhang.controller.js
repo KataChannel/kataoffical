@@ -92,8 +92,8 @@ let DonhangController = class DonhangController {
         const result = await this.donhangService.updatePhieugiao(id, updateDonhangDto);
         return result;
     }
-    updateBulk(data) {
-        return this.donhangService.updateBulk(data, 'danhan');
+    updateBulk(body) {
+        return this.donhangService.updateBulk(body.ids, body.status || 'danhan');
     }
     update(id, updateDonhangDto) {
         return this.donhangService.update(id, updateDonhangDto);
@@ -308,7 +308,7 @@ __decorate([
     (0, cache_interceptor_1.CacheInvalidate)(['donhang', 'khachhang']),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DonhangController.prototype, "updateBulk", null);
 __decorate([

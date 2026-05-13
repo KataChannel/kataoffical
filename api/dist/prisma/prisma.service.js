@@ -83,6 +83,9 @@ let PrismaService = PrismaService_1 = class PrismaService extends client_1.Prism
     }
     async safeTransaction(fn, options) {
         const { timeout = 30000, maxWait = 5000, retries = 2 } = options || {};
+        if (typeof this.$transaction !== 'function') {
+            return fn(this);
+        }
         return this.executeWithRetry(async (prisma) => {
             return prisma.$transaction(fn, {
                 timeout,

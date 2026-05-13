@@ -118,6 +118,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   ): Promise<T> {
     const { timeout = 30000, maxWait = 5000, retries = 2 } = options || {};
     
+    // Check if we're already in a transaction (transactional clients don't have $transaction)
+    if (typeof (this as any).$transaction !== 'function') {
+      return fn(this);
+    }
+
     return this.executeWithRetry(async (prisma) => {
       return prisma.$transaction(fn as any, {
         timeout,

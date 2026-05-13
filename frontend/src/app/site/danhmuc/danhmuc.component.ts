@@ -52,21 +52,22 @@ export class DanhmucComponent {
       {name: 'Danh sách sản phẩm', link: '/listsanpham'},
     ]
     
-    const ListSheets = JSON.parse(localStorage.getItem('ListSheets') || '[]');
+    const savedSheets = (typeof localStorage !== 'undefined') ? localStorage.getItem('ListSheets') : null;
+    const ListSheets = savedSheets ? JSON.parse(savedSheets) : [];
     if (ListSheets.length > 0) {
       const CheckSheet = ListSheets.find((v:any) => v.SheetName === 'Danhmuc');
       if (CheckSheet) {
         this._GoogleSheetService.getDrive(CheckSheet).then(result => {
-          if(result.values.length>0)
+          if(result && result.values && result.values.length > 0)
           {
-            this.Danhmucs = ConvertDriveData(result.values).filter((v:any)=>v.Type=="sanpham");;
+            this.Danhmucs = ConvertDriveData(result.values).filter((v:any)=>v.Type=="sanpham");
           }
-        });
+        }).catch(err => console.error('Error getting drive data:', err));
       }
     }
 
     const slugDM = this.route.snapshot.paramMap.get('slug');
-    const result = slugDM?.split("-v2")[0];
+    const result = slugDM ? slugDM.split("-v2")[0] : null;
     console.log(result); 
     const Danhmuc = this.Danhmucs.find(v=>v.Slug==result);
     console.log(Danhmuc);

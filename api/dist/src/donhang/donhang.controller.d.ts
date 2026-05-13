@@ -621,7 +621,10 @@ export declare class DonhangController {
         shipper: string | null;
         khoId: string | null;
     }>;
-    updateBulk(data: any[]): Promise<{
+    updateBulk(body: {
+        ids: string[];
+        status: string;
+    }): Promise<{
         success: number;
         fail: number;
     }>;

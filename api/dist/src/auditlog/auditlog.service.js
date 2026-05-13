@@ -23,7 +23,7 @@ let AuditService = class AuditService {
     }
     async logActivity(data) {
         try {
-            if (!data.userId) {
+            if (!data.userId && !['LOGIN', 'LOGOUT'].includes(data.action)) {
                 console.warn(`AUDIT SERVICE: Logging activity without userId - Entity: ${data.entityName}, Action: ${data.action}, IP: ${data.ipAddress}`);
             }
             const changedFields = data.changedFields || this.getChangedFields(data.oldValues, data.newValues);

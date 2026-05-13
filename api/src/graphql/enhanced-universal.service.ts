@@ -681,7 +681,7 @@ export class EnhancedUniversalService {
           // For updates, we need to process individually or use transaction
           const updatePromises = items.map(item => 
             model.update({
-              where: { id: item.id },
+              where: item.where || { id: item.id },
               data: item.data
             })
           );

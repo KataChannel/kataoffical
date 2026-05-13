@@ -413,6 +413,40 @@ export class EnhancedUniversalResolver {
   }
 
   @Mutation(() => GraphQLJSON, {
+    name: 'batchUpdate',
+    description: 'Enhanced batch update for multiple records',
+  })
+  async batchUpdate(
+    @Args('modelName', {
+      type: () => String,
+      description: 'Model name (case-insensitive)',
+    })
+    modelName: string,
+
+    @Args('operations', {
+      type: () => [GraphQLJSON],
+      description: 'Array of update operations { where: JSON, data: JSON }',
+    })
+    operations: any[],
+  ) {
+    console.log(`📦 Enhanced batch update:`, {
+      model: modelName,
+      count: operations?.length || 0,
+    });
+
+    try {
+      return await this.enhancedService.batchOperation(
+        modelName,
+        'update',
+        operations,
+      );
+    } catch (error) {
+      console.error(`❌ Enhanced batch update error:`, error);
+      throw error;
+    }
+  }
+
+  @Mutation(() => GraphQLJSON, {
     name: 'batchDelete',
     description: 'Enhanced batch delete for multiple records',
   })

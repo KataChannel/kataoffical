@@ -17,7 +17,7 @@ export interface TonkhoValidationResult {
 export declare class TonkhoManagerService {
     private prisma;
     constructor(prisma: PrismaService);
-    updateTonkhoAtomic(operations: TonkhoOperation[]): Promise<void>;
+    updateTonkhoAtomic(operations: TonkhoOperation[], tx?: any): Promise<void>;
     validateTonkhoConsistency(): Promise<TonkhoValidationResult>;
     getTonkhoSummary(khoId?: string): Promise<any[]>;
     recalculateTonkho(sanphamIds?: string[]): Promise<{

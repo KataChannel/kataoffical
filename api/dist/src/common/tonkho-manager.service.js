@@ -16,14 +16,14 @@ let TonkhoManagerService = class TonkhoManagerService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async updateTonkhoAtomic(operations) {
-        return this.prisma.$transaction(async (tx) => {
+    async updateTonkhoAtomic(operations, tx) {
+        const execute = async (prisma) => {
             for (const op of operations) {
-                const currentTonkho = await tx.tonKho.findUnique({
+                const currentTonkho = await prisma.tonKho.findUnique({
                     where: { sanphamId: op.sanphamId }
                 });
                 if (!currentTonkho) {
-                    await tx.tonKho.create({
+                    await prisma.tonKho.create({
                         data: {
                             sanphamId: op.sanphamId,
                             slton: op.slton || 0,
@@ -87,7 +87,7 @@ let TonkhoManagerService = class TonkhoManagerService {
                                 break;
                         }
                     }
-                    await tx.tonKho.update({
+                    await prisma.tonKho.update({
                         where: { sanphamId: op.sanphamId },
                         data: updateData
                     });
@@ -96,7 +96,7 @@ let TonkhoManagerService = class TonkhoManagerService {
                 const effectiveKhoId = op.khoId || KHO_TONG_ID;
                 if (op.slton !== undefined || op.sltontt !== undefined) {
                     const movement = op.slton !== undefined ? op.slton : (op.sltontt || 0);
-                    await tx.sanphamKho.upsert({
+                    await prisma.sanphamKho.upsert({
                         where: {
                             sanphamId_khoId: {
                                 sanphamId: op.sanphamId,
@@ -115,7 +115,7 @@ let TonkhoManagerService = class TonkhoManagerService {
                         }
                     });
                     if (effectiveKhoId !== KHO_TONG_ID && op.operation !== 'set') {
-                        await tx.sanphamKho.upsert({
+                        await prisma.sanphamKho.upsert({
                             where: {
                                 sanphamId_khoId: {
                                     sanphamId: op.sanphamId,
@@ -133,7 +133,7 @@ let TonkhoManagerService = class TonkhoManagerService {
                             }
                         });
                     }
-                    const khoTongRecord = await tx.sanphamKho.findUnique({
+                    const khoTongRecord = await prisma.sanphamKho.findUnique({
                         where: {
                             sanphamId_khoId: {
                                 sanphamId: op.sanphamId,
@@ -142,7 +142,7 @@ let TonkhoManagerService = class TonkhoManagerService {
                         }
                     });
                     const totalPhysicalStock = Number(khoTongRecord?.soluong || 0);
-                    await tx.tonKho.update({
+                    await prisma.tonKho.update({
                         where: { sanphamId: op.sanphamId },
                         data: {
                             slton: totalPhysicalStock,
@@ -151,7 +151,10 @@ let TonkhoManagerService = class TonkhoManagerService {
                     });
                 }
             }
-        });
+        };
+        if (tx)
+            return execute(tx);
+        return this.prisma.safeTransaction(execute);
     }
     async validateTonkhoConsistency() {
         const errors = [];

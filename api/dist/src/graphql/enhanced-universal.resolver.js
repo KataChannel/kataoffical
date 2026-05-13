@@ -144,6 +144,19 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
             throw error;
         }
     }
+    async batchUpdate(modelName, operations) {
+        console.log(`📦 Enhanced batch update:`, {
+            model: modelName,
+            count: operations?.length || 0,
+        });
+        try {
+            return await this.enhancedService.batchOperation(modelName, 'update', operations);
+        }
+        catch (error) {
+            console.error(`❌ Enhanced batch update error:`, error);
+            throw error;
+        }
+    }
     async batchDelete(modelName, ids) {
         console.log(`🗑️ Enhanced batch delete:`, {
             model: modelName,
@@ -445,6 +458,23 @@ __decorate([
     __metadata("design:paramtypes", [String, Array]),
     __metadata("design:returntype", Promise)
 ], EnhancedUniversalResolver.prototype, "batchCreate", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
+        name: 'batchUpdate',
+        description: 'Enhanced batch update for multiple records',
+    }),
+    __param(0, (0, graphql_1.Args)('modelName', {
+        type: () => String,
+        description: 'Model name (case-insensitive)',
+    })),
+    __param(1, (0, graphql_1.Args)('operations', {
+        type: () => [graphql_type_json_1.GraphQLJSON],
+        description: 'Array of update operations { where: JSON, data: JSON }',
+    })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Array]),
+    __metadata("design:returntype", Promise)
+], EnhancedUniversalResolver.prototype, "batchUpdate", null);
 __decorate([
     (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
         name: 'batchDelete',

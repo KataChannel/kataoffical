@@ -206,25 +206,27 @@ export class StorageService {
     }
   }
       deleteAllIndexedDBs() {
-        // Lấy danh sách tất cả cơ sở dữ liệu
-        indexedDB.databases().then(databases => {
-          if (databases.length === 0) {
-            console.log("Không có cơ sở dữ liệu IndexedDB nào để xóa.");
-            return;
-          }
+        if (isPlatformBrowser(this.platformId)) {
+          // Lấy danh sách tất cả cơ sở dữ liệu
+          (indexedDB as any).databases().then((databases: any) => {
+            if (databases.length === 0) {
+              console.log("Không có cơ sở dữ liệu IndexedDB nào để xóa.");
+              return;
+            }
 
-          // Lặp qua từng cơ sở dữ liệu và xóa
-          databases.forEach((db:any) => {
-            indexedDB.deleteDatabase(db.name).onsuccess = () => {
-              console.log(`Đã xóa cơ sở dữ liệu: ${db.name}`);
-            };
-            indexedDB.deleteDatabase(db.name).onerror = (event:any) => {
-              console.error(`Lỗi khi xóa cơ sở dữ liệu ${db.name}:`, event.target.error);
-            };
+            // Lặp qua từng cơ sở dữ liệu và xóa
+            databases.forEach((db:any) => {
+              indexedDB.deleteDatabase(db.name).onsuccess = () => {
+                console.log(`Đã xóa cơ sở dữ liệu: ${db.name}`);
+              };
+              indexedDB.deleteDatabase(db.name).onerror = (event:any) => {
+                console.error(`Lỗi khi xóa cơ sở dữ liệu ${db.name}:`, event.target.error);
+              };
+            });
+          }).catch((error: any) => {
+            console.error("Lỗi khi lấy danh sách cơ sở dữ liệu:", error);
           });
-        }).catch(error => {
-          console.error("Lỗi khi lấy danh sách cơ sở dữ liệu:", error);
-        });
+        }
       }
   // Close database explicitly
   closeDB(): void {

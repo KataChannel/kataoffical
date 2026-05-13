@@ -35,7 +35,8 @@ export class AuditService {
   async logActivity(data: AuditLogData): Promise<void> {
     try {
       // Log warning if userId is null for tracking purposes
-      if (!data.userId) {
+      // EXCEPTION: LOGIN/LOGOUT actions are expected to have null userId in some states
+      if (!data.userId && !['LOGIN', 'LOGOUT'].includes(data.action)) {
         console.warn(`AUDIT SERVICE: Logging activity without userId - Entity: ${data.entityName}, Action: ${data.action}, IP: ${data.ipAddress}`);
       }
       

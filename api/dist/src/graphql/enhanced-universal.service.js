@@ -426,7 +426,7 @@ let EnhancedUniversalService = class EnhancedUniversalService {
                     });
                 case 'update':
                     const updatePromises = items.map(item => model.update({
-                        where: { id: item.id },
+                        where: item.where || { id: item.id },
                         data: item.data
                     }));
                     return await Promise.all(updatePromises);

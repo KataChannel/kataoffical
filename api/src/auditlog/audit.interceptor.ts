@@ -37,7 +37,11 @@ export class AuditInterceptor implements NestInterceptor {
           const dynamicConfig = request.auditConfig || {};
 
           // Log warning if user is not authenticated for audit action
-          if (!request.user?.id) {
+          // EXCEPTION: Don't warn for LOGIN/LOGOUT as they naturally handle auth state
+          const userId = request.user?.id || (auditConfig.action === 'LOGIN' ? result?.user?.id : null);
+          const userEmail = request.user?.email || (auditConfig.action === 'LOGIN' ? result?.user?.email : null);
+
+          if (!userId && !['LOGIN', 'LOGOUT'].includes(auditConfig.action)) {
             console.warn(`AUDIT WARNING: Action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url || 'GraphQL'}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
           }
 
@@ -45,8 +49,8 @@ export class AuditInterceptor implements NestInterceptor {
             entityName: auditConfig.entity,
             entityId: dynamicConfig.entityId || this.extractEntityId(request, result, auditConfig),
             action: auditConfig.action,
-            userId: request.user?.id || null,
-            userEmail: request.user?.email || null,
+            userId: userId || null,
+            userEmail: userEmail || null,
             oldValues: dynamicConfig.changes?.oldValues || request.auditOldValues || null,
             newValues: dynamicConfig.changes?.newValues || this.extractNewValues(result, auditConfig),
             changedFields: this.getChangedFields(
@@ -74,7 +78,8 @@ export class AuditInterceptor implements NestInterceptor {
         const dynamicConfig = request.auditConfig || {};
 
         // Log warning if user is not authenticated for audit action (error case)
-        if (!request.user?.id) {
+        // EXCEPTION: Don't warn for LOGIN errors as the user is by definition not authenticated yet
+        if (!request.user?.id && !['LOGIN', 'LOGOUT'].includes(auditConfig.action)) {
           console.warn(`AUDIT WARNING: Error in action '${auditConfig.action}' on entity '${auditConfig.entity}' performed without authenticated user. IP: ${this.getClientIp(request)}, Endpoint: ${request.url || 'GraphQL'}, Error: ${error.message}${request.auditMissingAuth ? ' [FLAGGED BY VALIDATION]' : ''}`);
         }
 

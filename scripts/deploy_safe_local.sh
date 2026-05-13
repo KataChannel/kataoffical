@@ -130,7 +130,7 @@ if [ "$is_dry_run" == "true" ]; then
     echo "📝 Bước 6 (Dry Run): 🧪 Đang chạy thử nghiệm cô lập..."
     ssh $SERVER_USER@$SERVER_IP << EOF
       cd $PROJECT_DIR
-      docker stop dry-run-test 2>/dev/null && docker rm dry-run-test 2>/dev/null
+      docker rm -f dry-run-test 2>/dev/null || true
       docker run -d --name dry-run-test -p 53332:3331 --network rausachfinal_default --env-file api/.env -e REDIS_HOST="redis" -e REDIS_PORT="6379" $BE_IMAGE:latest
       echo "⏱️ Chờ 15s để Backend boot..."
       sleep 15
@@ -148,8 +148,7 @@ elif [ "$is_sandbox" == "true" ]; then
     ssh $SERVER_USER@$SERVER_IP << EOF
       cd $PROJECT_DIR
       echo "🧹 Đang dọn dẹp container sandbox cũ..."
-      docker stop rausachsandbox-backend 2>/dev/null && docker rm rausachsandbox-backend 2>/dev/null
-      docker stop rausachsandbox-frontend 2>/dev/null && docker rm rausachsandbox-frontend 2>/dev/null
+      docker rm -f rausachsandbox-backend rausachsandbox-frontend 2>/dev/null || true
       
       echo "🚀 Khởi chạy Sandbox Backend (Port 53333)..."
       docker run -d --name rausachsandbox-backend \
@@ -179,7 +178,17 @@ else
       cd $PROJECT_DIR
       docker stop dry-run-test 2>/dev/null && docker rm dry-run-test 2>/dev/null
       git pull
-      docker compose up -d
+      # 🛠️ Tự động dọn dẹp các container lỗi hoặc cũ để tránh lỗi 'Conflict Name'
+      echo "🧹 Đang dọn dẹp các container xung đột..."
+      # Dừng và xóa các container có thể gây xung đột tên
+      docker rm -f rausach-backend rausach-frontend rausach-redis rausach-postgres rausach-minio 2>/dev/null || true
+      docker compose -p rausachfinal down --remove-orphans 2>/dev/null || true
+      
+      echo "🚀 Đang khởi chạy hệ thống chính thức..."
+      docker compose -p rausachfinal up -d --remove-orphans
+      
+      # 🧹 Dọn dẹp các image cũ để tiết kiệm dung lượng server
+      docker image prune -f
       echo "🎉 DEPLOY THÀNH CÔNG! Hệ thống đã Online với bản mới nhất."
 EOF
 fi

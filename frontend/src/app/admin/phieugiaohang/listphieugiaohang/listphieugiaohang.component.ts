@@ -28,6 +28,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import {
   readExcelFile,
+  readExcelFileNoWorkerArray,
   writeExcelFile,
 } from '../../../shared/utils/exceldrive.utils';
 import {
@@ -44,6 +45,9 @@ import { SharepaginationComponent } from '../../../shared/common/sharepagination
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GraphqlService } from '../../../shared/services/graphql.service';
 import { LoadingUtils } from '../../../shared/utils/loading.utils';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ImportNSThuVeSummaryDialogComponent, ImportSummaryItem } from '../import-nsthuv-summary-dialog/import-nsthuv-summary-dialog.component';
+
 @Component({
   selector: 'app-listphieugiaohang',
   templateUrl: './listphieugiaohang.component.html',
@@ -67,6 +71,8 @@ import { LoadingUtils } from '../../../shared/utils/loading.utils';
     MatDatepickerModule,
     SharepaginationComponent,
     MatProgressSpinnerModule,
+    MatDialogModule,
+    ImportNSThuVeSummaryDialogComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   // providers: [provideNativeDateAdapter()],
@@ -99,9 +105,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     createdAt: 'Ngày Tạo',
     updatedAt: 'Ngày Cập Nhật',
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('PhieugiaohangColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   isFilter: boolean = false;
   isLoading = signal<boolean>(false);
@@ -123,11 +127,13 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
   dataSource = new MatTableDataSource<any>([]);
   donhangId: any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
+  private _dialog: MatDialog = inject(MatDialog);
   isSearch: boolean = false;
   CountItem: any = 0;
   page = signal<number>(1);
   pageCount = signal<number>(1);
-  total = signal<number>(0);  pageSize = signal<number>(10);
+  total = signal<number>(0);
+  pageSize = signal<number>(10);
   Trangthaidon: any = TrangThaiDon;
   SearchParams: any = {
     Batdau: moment().startOf('day').toDate(),  // 00:00:00 ngày hiện tại
@@ -137,6 +143,19 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     pageSize: 10,
     pageNumber: 1,
   };
+  nsthuveFilterState = signal<number>(0); // 0: All, 1: Empty, 2: Has Data
+
+  countHasNSThuVe = computed(() => {
+    const orders = this.Listphieugiaohang();
+    if (!Array.isArray(orders)) return 0;
+    return orders.filter((item: any) => item.nsthuve && item.nsthuve.toString().trim() !== '').length;
+  });
+
+  countEmptyNSThuVe = computed(() => {
+    const orders = this.Listphieugiaohang();
+    if (!Array.isArray(orders)) return 0;
+    return orders.filter((item: any) => !item.nsthuve || item.nsthuve.toString().trim() === '').length;
+  });
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
     { id: 2, Title: '1 Tuần', value: 'week' },
@@ -148,6 +167,18 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
+    
+    // Move localStorage access here and protect it
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('PhieugiaohangColFilter');
+        if (saved) {
+          this.FilterColumns = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.error('Error loading FilterColumns:', e);
+      }
+    }
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -248,12 +279,19 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
         
         this.Listphieugiaohang.set(data);
         this.total.set(Number(data.length || 0));
-        this.pageSize.set(10);
-        this.page.set(1);
-        this.pageCount.set(1);
+        this.nsthuveFilterState.set(0); // Reset filter state when loading new data
+        const pSize = this.SearchParams.pageSize || 10;
+        this.pageSize.set(pSize);
+        this.page.set(this.SearchParams.pageNumber);
+        this.pageCount.set(Math.ceil(data.length / pSize) || 1);
         
-        // Set data to table without client-side pagination since we're using server-side
-        this.dataSource = new MatTableDataSource(data);
+        // Since we fetch everything (take: 999999), we must slice for client-side display
+        // to match the pagination UI
+        const startIndex = (this.SearchParams.pageNumber - 1) * pSize;
+        const pagedData = data.slice(startIndex, startIndex + pSize);
+
+        // Set data to table
+        this.dataSource = new MatTableDataSource(pagedData);
         // Keep sorting enabled for client-side, but disable pagination
         this.dataSource.paginator = null;
         if (this.sort) {
@@ -434,6 +472,13 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
+      // Bổ sung các cột mới (như nsthuve) nếu chưa có trong localStorage
+      this.Columns.forEach(col => {
+        const exists = this.FilterColumns.find(f => f.key === col.key);
+        if (!exists) {
+          this.FilterColumns.push(col);
+        }
+      });
       localStorage.setItem(
         'PhieugiaohangColFilter',
         JSON.stringify(this.FilterColumns)
@@ -614,7 +659,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     if (existingItem) {
       this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
     } else {
-      this.EditList.push(item);
+      this.EditList = [...this.EditList, item];
     }
     console.log(this.EditList);
   }
@@ -622,6 +667,10 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     this.EditList.length == this.dataSource.data.length
       ? (this.EditList = [])
       : (this.EditList = [...this.dataSource.data]);
+  }
+
+  canShowBulkComplete(): boolean {
+    return this.EditList.length > 0 && this.EditList.some((v: any) => v.status !== 'hoanthanh');
   }
 
   togglePhieugiaohang(row: any): void {
@@ -648,9 +697,18 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
 
     this.isBulkUpdating.set(true);
     try {
-      const result: any = await this._DonhangService.UpdateBulkDonhang(
-        this.EditList.map((v: any) => v.id), 'hoanthanh'
-      );
+      // Chỉ cập nhật các đơn chưa hoàn thành
+      const targetIds = this.EditList
+        .filter((v: any) => v.status !== 'hoanthanh')
+        .map((v: any) => v.id);
+
+      if (targetIds.length === 0) {
+        this.isBulkUpdating.set(false);
+        this.EditList = [];
+        return;
+      }
+
+      const result: any = await this._DonhangService.UpdateBulkDonhang(targetIds, 'hoanthanh');
       this._snackBar.open(
         `Cập nhật thành công ${result.success} đơn hàng${result.fail ? `, ${result.fail} lỗi` : ''}`,
         '',
@@ -764,10 +822,48 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
     if (!Array.isArray(orders)) return;
     
     this.dataSource.data = orders;
+  }
+
+  cycleNSThuVeFilter(): void {
+    this.nsthuveFilterState.update(s => (s + 1) % 3);
+    this.applyNSThuVeFilter();
+  }
+
+  applyNSThuVeFilter(): void {
+    const orders = this.Listphieugiaohang();
+    if (!Array.isArray(orders)) return;
     
+    const state = this.nsthuveFilterState();
+    let filtered = orders;
+    
+    if (state === 1) { // Empty
+      filtered = orders.filter((item: any) => !item.nsthuve || item.nsthuve.toString().trim() === '');
+    } else if (state === 2) { // Has Data
+      filtered = orders.filter((item: any) => item.nsthuve && item.nsthuve.toString().trim() !== '');
+    }
+    
+    this.dataSource.data = filtered;
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  getNSThuVeLabel(): string {
+    const state = this.nsthuveFilterState();
+    const total = this.total();
+    if (state === 1) {
+      return `Trống NS Thu Về (${this.countEmptyNSThuVe()}/${total})`;
+    } else if (state === 2) {
+      return `Có NS Thu Về (${this.countHasNSThuVe()}/${total})`;
+    }
+    return `NS Thu Về (${total}/${total})`;
+  }
+
+  getNSThuVeTooltip(): string {
+    const state = this.nsthuveFilterState();
+    if (state === 1) return 'Đang lọc: Chỉ đơn trống NS Thu Về';
+    if (state === 2) return 'Đang lọc: Chỉ đơn có NS Thu Về';
+    return 'Hiển thị tất cả NS Thu Về (Nhấn để lọc)';
   }
 
   ApplyFilterColum(menu: any) {
@@ -858,14 +954,32 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
       this.isImporting.set(true);
       this._snackBar.open('🚀 Đang xử lý file...', '', { duration: 2000 });
       
-      const data = await readExcelFile(event);
+      // Sử dụng readExcelFileNoWorkerArray để đọc từ sheet 'template' (hoặc sheet đầu tiên nếu không có 'template')
+      const data = await readExcelFileNoWorkerArray(event, 'template');
       if (!data || data.length === 0) {
         this._snackBar.open('⚠️ File không có dữ liệu', 'Đóng', { duration: 3000 });
         return;
       }
 
+      // 1. Thu thập tất cả mã đơn hàng từ Excel để fetch 1 lần từ DB
+      const excelMadonhangs = data
+        .map((row: any) => row['MÃ ĐƠN HÀNG']?.toString().trim())
+        .filter((m: string) => !!m);
+
+      if (excelMadonhangs.length === 0) {
+        this._snackBar.open('⚠️ File không có mã đơn hàng hợp lệ', 'Đóng', { duration: 3000 });
+        return;
+      }
+
+      // 2. Fetch thông tin đơn hàng từ database (không phụ thuộc vào list đang hiển thị trên màn hình)
+      const dbResult: any = await this._GraphqlService.findAll('donhang', {
+        where: { madonhang: { in: excelMadonhangs } },
+        select: { id: true, madonhang: true, nsthuve: true }
+      });
+      const dbOrders = dbResult.data || [];
+
       const updates: any[] = [];
-      const currentList = this.dataSource.data;
+      const summaryItems: ImportSummaryItem[] = [];
 
       for (const row of data) {
         const madonhang = row['MÃ ĐƠN HÀNG']?.toString().trim();
@@ -873,8 +987,8 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
 
         if (!madonhang) continue;
 
-        // Tìm đơn hàng trong danh sách hiện tại
-        const donhang = currentList.find(d => d.madonhang === madonhang);
+        // Tìm đơn hàng trong kết quả fetch từ DB
+        const donhang = dbOrders.find((d: any) => d.madonhang === madonhang);
         
         if (donhang) {
           const currentNS = donhang.nsthuve?.toString().trim() || '';
@@ -882,7 +996,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
           let shouldUpdate = false;
           let newValue = currentNS;
 
-          // Rule 2 implementation:
+          // Rule implementation:
           // 1. Nếu Cột "NS Thu Về" ban đầu chưa có, file excel có thông tin thì ghi nhận vào.
           // 2. Nếu Cột "NS Thu Về" đã có thông tin, file excel không có thông tin thì vẫn giữ nguyên.
           // 3. Nếu Cột "NS Thu Về" Có thông tin, file excel có thông tin mới thì ghi nhận thông tin mới.
@@ -900,7 +1014,27 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
               id: donhang.id,
               nsthuve: newValue
             });
+            summaryItems.push({
+              madonhang,
+              nsThuVeExcel: nsThuVeExcel || '',
+              status: 'updated',
+              message: `Cập nhật: ${currentNS || '(Trống)'} -> ${newValue}`
+            });
+          } else {
+            summaryItems.push({
+              madonhang,
+              nsThuVeExcel: nsThuVeExcel || '',
+              status: 'no_change',
+              message: 'Thông tin không đổi hoặc Excel không có dữ liệu mới'
+            });
           }
+        } else {
+          summaryItems.push({
+            madonhang,
+            nsThuVeExcel: nsThuVeExcel || '',
+            status: 'not_found',
+            message: 'Không tìm thấy mã đơn hàng này trên hệ thống'
+          });
         }
       }
 
@@ -911,12 +1045,16 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
           data: { nsthuve: u.nsthuve }
         }));
         await this._GraphqlService.batchUpdate('donhang', operations);
-        
-        this._snackBar.open(`✅ Đã cập nhật ${updates.length} đơn hàng`, 'Đóng', { duration: 3000 });
-        await this.LoadData(); // Reload data to show changes
-      } else {
-        this._snackBar.open('ℹ️ Không có thay đổi nào cần cập nhật', 'Đóng', { duration: 3000 });
+        await this.LoadData(); // Reload data to show changes if they are in current view
       }
+
+      // Mở dialog hiển thị tổng hợp kết quả
+      this._dialog.open(ImportNSThuVeSummaryDialogComponent, {
+        data: { items: summaryItems },
+        width: '800px',
+        maxWidth: '95vw',
+        disableClose: false
+      });
 
     } catch (error) {
       console.error('Lỗi import NS Thu Về:', error);

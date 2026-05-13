@@ -57,9 +57,7 @@ export class ListNhomnccComponent {
     createdAt:'Ngày Tạo',
     updatedAt:'Ngày Cập Nhật'
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('NhomnccColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   Columns: any[] = [];
   isFilter: boolean = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -80,6 +78,18 @@ export class ListNhomnccComponent {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
     });
+    
+    // Safe localStorage access
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('NhomnccColFilter');
+        if (saved) {
+          this.FilterColumns = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.error('Error loading NhomnccColFilter:', e);
+      }
+    }
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {

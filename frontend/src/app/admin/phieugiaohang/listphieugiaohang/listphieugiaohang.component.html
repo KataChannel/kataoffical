@@ -80,8 +80,18 @@
                           matTooltip="Lọc đơn hoàn thành">
                         Hoàn thành ({{countByStatus('hoanthanh')}})
                     </span>
+                    <span (click)="cycleNSThuVeFilter()" 
+                          class="px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all shadow-sm border uppercase tracking-tighter"
+                          [ngClass]="{
+                            'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100': nsthuveFilterState() === 0,
+                            'bg-red-50 text-red-700 border-red-200 hover:bg-red-100': nsthuveFilterState() === 1,
+                            'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100': nsthuveFilterState() === 2
+                          }"
+                          [matTooltip]="getNSThuVeTooltip()">
+                        {{ getNSThuVeLabel() }}
+                    </span>
                    </div>
-                  <button (click)="UpdateBulk()" *ngIf="EditList.length > 0" 
+                  <button (click)="UpdateBulk()" *ngIf="canShowBulkComplete()" 
                     [disabled]="isBulkUpdating() || isLoading()"
                     class="flex flex-row items-center space-x-2" color="primary" mat-flat-button>
                     @if (isBulkUpdating()) {

@@ -100,9 +100,7 @@ export class ListcongnokhachhangComponent {
     tongvat: 'Tổng VAT',
     tongtien: 'Tổng Tiền',
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('CongnoColFilter') || '[]'
-  );
+  FilterColumns: any[] = [];
   exampleExport:any={}
   Columns: any[] = [];
   isFilter: boolean = false;
@@ -148,6 +146,18 @@ export class ListcongnokhachhangComponent {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
+    
+    // Safe localStorage access
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('CongnoColFilter');
+        if (saved) {
+          this.FilterColumns = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.error('Error loading CongnoColFilter:', e);
+      }
+    }
   }
 
   // Display function for customer names in chips

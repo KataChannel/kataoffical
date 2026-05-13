@@ -2446,13 +2446,12 @@ export class DonhangService {
   }
 
   async update(id: string, data: any, tx?: any) {
-    const prisma = tx || this.prisma;
-    if ((prisma as any).safeTransaction) {
-      return (prisma as any).safeTransaction(async (p: any) => {
-        return this._updateInternal(id, data, p);
-      });
+    if (tx) {
+      return this._updateInternal(id, data, tx);
     }
-    return this._updateInternal(id, data, prisma);
+    return this.prisma.safeTransaction(async (p: any) => {
+      return this._updateInternal(id, data, p);
+    });
   }
 
   private async _updateInternal(id: string, data: any, prisma: any) {
@@ -2541,7 +2540,7 @@ export class DonhangService {
 
       // Execute inventory updates
       if (tonkhoOps.length > 0) {
-        await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps);
+        await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps, prisma);
       }
 
       // 4. Handle PhieuKho management
@@ -2617,7 +2616,7 @@ export class DonhangService {
                 slton: Math.abs(delta),
                 sltontt: Math.abs(delta),
                 reason: `Điều chỉnh số lượng xuất cho đơn ${oldDonhang.madonhang} (${oldGiao} -> ${newGiao})`
-              }]);
+              }], prisma);
               console.log(`📌 [DONHANG-UPDATE] Adjusted stock for ${oldSp.idSP}: delta ${delta}`);
             }
           }
