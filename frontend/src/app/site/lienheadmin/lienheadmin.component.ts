@@ -16,15 +16,15 @@ export class LienheadminComponent {
     
   }
   ngOnInit(): void {
-   const permission = this._StorageService.getItem('permissions');
-   console.log(JSON.parse(permission));
-   const target = JSON.parse(permission)[0]
-   console.log(target);
-    if(target !== null){
-      const path = typeof target === 'string' ? target : (target.name || target.path || '');
-      if (path && typeof path === 'string') {
-        this._route.navigate(['admin/', path.split('.')[0]]);
+    const permissions = this._StorageService.getItem('permissions');
+    if (permissions && Array.isArray(permissions) && permissions.length > 0) {
+      const target = permissions[0];
+      if (target) {
+        const path = typeof target === 'string' ? target : (target.name || target.path || '');
+        if (path && typeof path === 'string') {
+          this._route.navigate(['admin/', path.split('.')[0]]);
+        }
       }
     }
-}
+  }
 }

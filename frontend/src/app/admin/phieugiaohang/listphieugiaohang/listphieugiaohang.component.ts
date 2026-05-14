@@ -133,14 +133,14 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
   page = signal<number>(1);
   pageCount = signal<number>(1);
   total = signal<number>(0);
-  pageSize = signal<number>(10);
+  pageSize = signal<number>(200);
   Trangthaidon: any = TrangThaiDon;
   SearchParams: any = {
     Batdau: moment().startOf('day').toDate(),  // 00:00:00 ngày hiện tại
     Ketthuc: moment().endOf('day').toDate(),   // 23:59:59 ngày hiện tại
     Type: 'all',
     Status: ['dadat', 'dagiao','danhan','hoanthanh'],
-    pageSize: 10,
+    pageSize: 200,
     pageNumber: 1,
   };
   nsthuveFilterState = signal<number>(0); // 0: All, 1: Empty, 2: Has Data
@@ -280,7 +280,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
         this.Listphieugiaohang.set(data);
         this.total.set(Number(data.length || 0));
         this.nsthuveFilterState.set(0); // Reset filter state when loading new data
-        const pSize = this.SearchParams.pageSize || 10;
+        const pSize = this.SearchParams.pageSize || 200;
         this.pageSize.set(pSize);
         this.page.set(this.SearchParams.pageNumber);
         this.pageCount.set(Math.ceil(data.length / pSize) || 1);
@@ -324,7 +324,7 @@ export class ListPhieugiaohangComponent implements AfterViewInit, OnDestroy {
 
         // Set empty state on error
         this.total.set(0);
-        this.pageSize.set(10);
+        this.pageSize.set(200);
         this.page.set(1);
         this.pageCount.set(0);
         this.dataSource = new MatTableDataSource<any>([]);

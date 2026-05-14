@@ -158,6 +158,8 @@ elif [ "$is_sandbox" == "true" ]; then
         -e DATABASE_URL="postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/testdata?schema=public" \
         -e REDIS_HOST="redis" \
         -e REDIS_PORT="6379" \
+        -e MINIO_ENDPOINT="rausach-minio" \
+        -e MINIO_PORT="9000" \
         $BE_IMAGE:latest
 
       echo "🚀 Khởi chạy Sandbox Frontend (Port 54303)..."

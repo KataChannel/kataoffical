@@ -289,9 +289,8 @@ export class DetailDonhangComponent {
   }
   async ngOnInit() {
     await this._UserService.getProfile();
-    this.permissions = this._UserService
-      .profile()
-      .permissions.map((v: any) => v.name);
+    this.permissions = (this._UserService.profile()?.permissions || [])
+      .map((v: any) => v.name);
     await this._BanggiaService.getAllBanggia();
     this.filterBanggia = this._BanggiaService.ListBanggia();
 
@@ -402,7 +401,11 @@ export class DetailDonhangComponent {
     this.isSaving.set(true);
     try {
       // ✅ FIX: Ensure DetailDonhang.sanpham is properly synchronized with ListFilter
+      console.log('--- Order Save Audit ---');
+      console.log('Initial ListFilter count:', this.ListFilter.length);
       this.synchronizeProductData();
+      console.log('Final product count to save:', this.DetailDonhang().sanpham.length);
+      console.log('------------------------');
 
       if (this.donhangId() === 'new') {
         await this.createDonhang();
@@ -813,16 +816,18 @@ export class DetailDonhangComponent {
         }
       );
 
-      const currentSanphamList = currentDonhang.sanpham || [];
+      // 1. DEDUPLICATE: Ensure current list has no duplicates before processing
+      const currentSanphamList = this.removeDuplicateProducts(this.ListFilter);
+      this.ListFilter = [...currentSanphamList]; // Sync local state
 
-      // 1. SCENARIO: Thay đổi khách hàng hoặc bảng giá
+      // 2. SCENARIO: Thay đổi khách hàng hoặc bảng giá
       // Need to recalculate prices for all products
       if (this.hasCustomerOrPriceListChanged(currentDonhang)) {
         await this.updateAllSanphamPrices(currentDonhang, currentSanphamList);
         return; // Complete price recalculation, no need for other updates
       }
 
-      // 2. SCENARIO: Thêm/bớt sản phẩm
+      // 3. SCENARIO: Thêm/bớt sản phẩm
       // Compare existing vs current product lists
       const { toAdd, toUpdate, toDelete } = this.compareSanphamLists(
         existingSanpham,
@@ -951,19 +956,33 @@ export class DetailDonhangComponent {
     const toUpdate: any[] = [];
     const toDelete: any[] = [];
 
-    // Find products to add (in current but not in existing)
+    // Track which existing records we've already matched to avoid reusing them
+    // and to identify orphans for deletion
+    const matchedExistingIds = new Set<string>();
+
+    // Process current products (from the UI)
     current.forEach((currentSP) => {
-      const existingSP = existing.find((e) => e.idSP === currentSP.id);
+      // Find an existing record for this product that hasn't been matched yet
+      // This handles cases where the database might already have duplicates
+      const existingSP = existing.find(
+        (e) => e.idSP === currentSP.id && !matchedExistingIds.has(e.id)
+      );
+
       if (!existingSP) {
+        // No matching existing record, so add it
         toAdd.push(currentSP);
       } else {
+        // Found a match, mark it as matched
+        matchedExistingIds.add(existingSP.id);
+
         // Check if product needs update (sldat, ghichu changes)
         const needsUpdate =
           this.parseNumericValue(existingSP.sldat) !==
             this.parseNumericValue(currentSP.sldat) ||
           existingSP.ghichu !== (currentSP.ghichu || null) ||
           this.parseNumericValue(existingSP.giaban) !==
-            this.parseNumericValue(currentSP.giaban);
+            this.parseNumericValue(currentSP.giaban) ||
+          (currentSP.order !== undefined && existingSP.order !== currentSP.order);
 
         if (needsUpdate) {
           toUpdate.push({
@@ -974,10 +993,10 @@ export class DetailDonhangComponent {
       }
     });
 
-    // Find products to delete (in existing but not in current)
+    // Any existing record that wasn't matched should be deleted
+    // This effectively cleans up duplicates and removes products deleted from UI
     existing.forEach((existingSP) => {
-      const currentSP = current.find((c) => c.id === existingSP.idSP);
-      if (!currentSP) {
+      if (!matchedExistingIds.has(existingSP.id)) {
         toDelete.push(existingSP);
       }
     });

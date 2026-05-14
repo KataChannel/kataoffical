@@ -30,6 +30,7 @@ let MinioService = class MinioService {
             secretKey: process.env.MINIO_SECRET_KEY?.trim() ||
                 process.env.MINIO_ROOT_PASSWORD?.trim() ||
                 'password',
+            pathStyle: true,
         };
         this.client = new minio_1.Client(this.options);
         this.ensureBucketExists().catch(err => {
