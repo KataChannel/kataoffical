@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const library_1 = require("@prisma/client/runtime/library");
 const notification_service_1 = require("../notification/notification.service");
+const crypto_1 = require("crypto");
 let ChotkhoService = class ChotkhoService {
     constructor(prisma, notificationService) {
         this.prisma = prisma;
@@ -214,61 +215,32 @@ let ChotkhoService = class ChotkhoService {
                 console.log(`📦 Created master chotkho record: ${chotkhoMaster.id}`);
                 let detailCount = 0;
                 const pendingWarnings = [];
+                const detailRecordsToCreate = [];
+                const sanphamKhoUpserts = [];
+                const tonKhoUpserts = [];
                 for (const detail of details) {
                     const sltonhethong_chuan = Number(detail.sltonhethong);
                     const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
-                    await prisma.chotkhodetail.create({
-                        data: {
-                            chotkhoId: chotkhoMaster.id,
-                            sanphamId: detail.sanphamId,
-                            sltonhethong: new library_1.Decimal(sltonhethong_chuan),
-                            sltonthucte: new library_1.Decimal(detail.sltonthucte),
-                            slhuy: new library_1.Decimal(detail.slhuy),
-                            chenhlech: new library_1.Decimal(chenhlech),
-                            ghichu: detail.ghichu || '',
-                            userId,
-                            ngaychot: chotkhoMaster.ngaychot
-                        }
+                    detailRecordsToCreate.push({
+                        id: (0, crypto_1.randomUUID)(),
+                        chotkhoId: chotkhoMaster.id,
+                        sanphamId: detail.sanphamId,
+                        sltonhethong: new library_1.Decimal(sltonhethong_chuan),
+                        sltonthucte: new library_1.Decimal(detail.sltonthucte),
+                        slhuy: new library_1.Decimal(detail.slhuy),
+                        chenhlech: new library_1.Decimal(chenhlech),
+                        ghichu: detail.ghichu || '',
+                        userId,
+                        ngaychot: chotkhoMaster.ngaychot
+                    });
+                    sanphamKhoUpserts.push({
+                        sanphamId: detail.sanphamId,
+                        khoId: khoId,
+                        soluong: new library_1.Decimal(detail.sltonthucte)
                     });
                     const currentSpKho = sanphamKhoMap.get(`${detail.sanphamId}_${khoId}`);
                     const oldQty = Number(currentSpKho?.soluong || 0);
                     const delta = Number(detail.sltonthucte) - oldQty;
-                    await prisma.sanphamKho.upsert({
-                        where: {
-                            sanphamId_khoId: {
-                                sanphamId: detail.sanphamId,
-                                khoId: khoId
-                            }
-                        },
-                        create: {
-                            sanphamId: detail.sanphamId,
-                            khoId: khoId,
-                            soluong: new library_1.Decimal(detail.sltonthucte),
-                        },
-                        update: {
-                            soluong: new library_1.Decimal(detail.sltonthucte),
-                            updatedAt: new Date()
-                        }
-                    });
-                    if (khoId !== KHO_TONG_ID) {
-                        await prisma.sanphamKho.upsert({
-                            where: {
-                                sanphamId_khoId: {
-                                    sanphamId: detail.sanphamId,
-                                    khoId: KHO_TONG_ID
-                                }
-                            },
-                            create: {
-                                sanphamId: detail.sanphamId,
-                                khoId: KHO_TONG_ID,
-                                soluong: new library_1.Decimal(delta),
-                            },
-                            update: {
-                                soluong: { increment: delta },
-                                updatedAt: new Date()
-                            }
-                        });
-                    }
                     const currentKhoTongRecord = sanphamKhoMap.get(`${detail.sanphamId}_${KHO_TONG_ID}`);
                     let finalTotal = (khoId === KHO_TONG_ID)
                         ? Number(detail.sltonthucte)
@@ -276,35 +248,75 @@ let ChotkhoService = class ChotkhoService {
                     if (finalTotal < 0) {
                         console.warn(`⚠️ [CHOTKHO-SYNC] Product ${detail.sanphamId} has negative calculation (${finalTotal}). Clamping to 0.`);
                         finalTotal = 0;
-                        await prisma.sanphamKho.upsert({
-                            where: {
-                                sanphamId_khoId: {
-                                    sanphamId: detail.sanphamId,
-                                    khoId: KHO_TONG_ID
-                                }
-                            },
-                            create: {
+                        if (khoId !== KHO_TONG_ID) {
+                            sanphamKhoUpserts.push({
                                 sanphamId: detail.sanphamId,
                                 khoId: KHO_TONG_ID,
-                                soluong: new library_1.Decimal(0),
-                            },
-                            update: { soluong: new library_1.Decimal(0) }
-                        });
-                    }
-                    await prisma.tonKho.upsert({
-                        where: { sanphamId: detail.sanphamId },
-                        create: {
-                            sanphamId: detail.sanphamId,
-                            slton: new library_1.Decimal(finalTotal),
-                            sltontt: new library_1.Decimal(finalTotal),
-                        },
-                        update: {
-                            slton: new library_1.Decimal(finalTotal),
-                            sltontt: new library_1.Decimal(finalTotal),
-                            updatedAt: new Date()
+                                soluong: new library_1.Decimal(0)
+                            });
                         }
+                    }
+                    else {
+                        if (khoId !== KHO_TONG_ID) {
+                            sanphamKhoUpserts.push({
+                                sanphamId: detail.sanphamId,
+                                khoId: KHO_TONG_ID,
+                                soluong: new library_1.Decimal(Number(currentKhoTongRecord?.soluong || 0) + delta)
+                            });
+                        }
+                    }
+                    tonKhoUpserts.push({
+                        sanphamId: detail.sanphamId,
+                        slton: new library_1.Decimal(finalTotal),
+                        sltontt: new library_1.Decimal(finalTotal)
                     });
                     detailCount++;
+                }
+                if (detailRecordsToCreate.length > 0) {
+                    await prisma.chotkhodetail.createMany({
+                        data: detailRecordsToCreate
+                    });
+                }
+                if (sanphamKhoUpserts.length > 0) {
+                    const valuesSql = [];
+                    const params = [];
+                    let paramIdx = 1;
+                    for (const item of sanphamKhoUpserts) {
+                        valuesSql.push(`($${paramIdx++}, $${paramIdx++}, $${paramIdx++}, $${paramIdx++}::numeric, NOW(), NOW())`);
+                        params.push((0, crypto_1.randomUUID)());
+                        params.push(item.khoId);
+                        params.push(item.sanphamId);
+                        params.push(item.soluong.toString());
+                    }
+                    const sql = `
+            INSERT INTO "SanphamKho" (id, "khoId", "sanphamId", soluong, "createdAt", "updatedAt")
+            VALUES ${valuesSql.join(', ')}
+            ON CONFLICT ("sanphamId", "khoId") DO UPDATE SET
+              soluong = EXCLUDED.soluong,
+              "updatedAt" = EXCLUDED."updatedAt"
+          `;
+                    await prisma.$executeRawUnsafe(sql, ...params);
+                }
+                if (tonKhoUpserts.length > 0) {
+                    const valuesSql = [];
+                    const params = [];
+                    let paramIdx = 1;
+                    for (const item of tonKhoUpserts) {
+                        valuesSql.push(`($${paramIdx++}, $${paramIdx++}, $${paramIdx++}::numeric, $${paramIdx++}::numeric, NOW(), NOW())`);
+                        params.push((0, crypto_1.randomUUID)());
+                        params.push(item.sanphamId);
+                        params.push(item.slton.toString());
+                        params.push(item.sltontt.toString());
+                    }
+                    const sql = `
+            INSERT INTO "TonKho" (id, "sanphamId", slton, sltontt, "createdAt", "updatedAt")
+            VALUES ${valuesSql.join(', ')}
+            ON CONFLICT ("sanphamId") DO UPDATE SET
+              slton = EXCLUDED.slton,
+              sltontt = EXCLUDED.sltontt,
+              "updatedAt" = EXCLUDED."updatedAt"
+          `;
+                    await prisma.$executeRawUnsafe(sql, ...params);
                 }
                 const result = await prisma.chotkho.findUnique({
                     where: { id: chotkhoMaster.id },
@@ -792,88 +804,116 @@ let ChotkhoService = class ChotkhoService {
                     allSanphamKho.forEach((sk) => sanphamKhoMap.set(`${sk.sanphamId}_${sk.khoId}`, sk));
                     const pendingInMap = new Map(pendingInAggs.map((agg) => [agg.idSP, agg]));
                     const pendingOutMap = new Map(pendingOutAggs.map((agg) => [agg.idSP, agg]));
+                    const detailRecordsToCreate = [];
+                    const sanphamKhoUpserts = [];
+                    const tonKhoUpserts = [];
                     for (const detail of data.details) {
-                        if (!updatedMaster.khoId)
-                            throw new Error('Không thể tính toán log: phiên chốt kho thiếu khoId');
-                        const analysis = await this.calculateStockFromLogs(detail.sanphamId, currentKhoId, updatedMaster.ngaychot, prisma);
-                        const sltonhethong_chuan = analysis.currentCalc;
+                        const sltonhethong_chuan = Number(detail.sltonhethong);
                         const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
-                        await prisma.chotkhodetail.create({
-                            data: {
-                                chotkhoId: id,
-                                sanphamId: detail.sanphamId,
-                                sltonhethong: new library_1.Decimal(sltonhethong_chuan),
-                                sltonthucte: new library_1.Decimal(detail.sltonthucte),
-                                slhuy: new library_1.Decimal(detail.slhuy),
-                                chenhlech: new library_1.Decimal(chenhlech),
-                                ghichu: detail.ghichu || (analysis.currentCalc !== Number(detail.sltonhethong) ? `⚠️ Đã chuẩn hóa từ log (Báo cáo cũ: ${detail.sltonhethong})` : ''),
-                                ngaychot: updatedMaster.ngaychot
-                            }
+                        detailRecordsToCreate.push({
+                            id: (0, crypto_1.randomUUID)(),
+                            chotkhoId: id,
+                            sanphamId: detail.sanphamId,
+                            sltonhethong: new library_1.Decimal(sltonhethong_chuan),
+                            sltonthucte: new library_1.Decimal(detail.sltonthucte),
+                            slhuy: new library_1.Decimal(detail.slhuy),
+                            chenhlech: new library_1.Decimal(chenhlech),
+                            ghichu: detail.ghichu || '',
+                            ngaychot: updatedMaster.ngaychot
+                        });
+                        sanphamKhoUpserts.push({
+                            sanphamId: detail.sanphamId,
+                            khoId: currentKhoId,
+                            soluong: new library_1.Decimal(detail.sltonthucte)
                         });
                         const currentSpKho = sanphamKhoMap.get(`${detail.sanphamId}_${currentKhoId}`);
                         const oldQty = Number(currentSpKho?.soluong || 0);
                         const delta = Number(detail.sltonthucte) - oldQty;
-                        await prisma.sanphamKho.upsert({
-                            where: {
-                                sanphamId_khoId: {
-                                    sanphamId: detail.sanphamId,
-                                    khoId: currentKhoId
-                                }
-                            },
-                            create: {
-                                sanphamId: detail.sanphamId,
-                                khoId: currentKhoId,
-                                soluong: new library_1.Decimal(detail.sltonthucte),
-                            },
-                            update: {
-                                soluong: new library_1.Decimal(detail.sltonthucte),
-                                updatedAt: new Date()
-                            }
-                        });
-                        if (currentKhoId !== KHO_TONG_ID) {
-                            await prisma.sanphamKho.upsert({
-                                where: {
-                                    sanphamId_khoId: {
-                                        sanphamId: detail.sanphamId,
-                                        khoId: KHO_TONG_ID
-                                    }
-                                },
-                                create: {
-                                    sanphamId: detail.sanphamId,
-                                    khoId: KHO_TONG_ID,
-                                    soluong: new library_1.Decimal(delta),
-                                },
-                                update: {
-                                    soluong: { increment: delta },
-                                    updatedAt: new Date()
-                                }
-                            });
-                        }
                         const currentKhoTongRecord = sanphamKhoMap.get(`${detail.sanphamId}_${KHO_TONG_ID}`);
-                        const finalTotal = (currentKhoId === KHO_TONG_ID)
+                        let finalTotal = (currentKhoId === KHO_TONG_ID)
                             ? Number(detail.sltonthucte)
                             : (Number(currentKhoTongRecord?.soluong || 0) + delta);
+                        if (finalTotal < 0) {
+                            console.warn(`⚠️ [CHOTKHO-SYNC] Product ${detail.sanphamId} has negative calculation (${finalTotal}). Clamping to 0.`);
+                            finalTotal = 0;
+                            if (currentKhoId !== KHO_TONG_ID) {
+                                sanphamKhoUpserts.push({
+                                    sanphamId: detail.sanphamId,
+                                    khoId: KHO_TONG_ID,
+                                    soluong: new library_1.Decimal(0)
+                                });
+                            }
+                        }
+                        else {
+                            if (currentKhoId !== KHO_TONG_ID) {
+                                sanphamKhoUpserts.push({
+                                    sanphamId: detail.sanphamId,
+                                    khoId: KHO_TONG_ID,
+                                    soluong: new library_1.Decimal(Number(currentKhoTongRecord?.soluong || 0) + delta)
+                                });
+                            }
+                        }
                         const pIn = pendingInMap.get(detail.sanphamId);
                         const pOut = pendingOutMap.get(detail.sanphamId);
                         const currentPendingIn = Number(pIn?._sum?.sldat || 0) - Number(pIn?._sum?.slnhan || 0);
                         const currentPendingOut = Number(pOut?._sum?.sldat || 0) - Number(pOut?._sum?.slnhan || 0);
-                        await prisma.tonKho.upsert({
-                            where: { sanphamId: detail.sanphamId },
-                            create: {
-                                sanphamId: detail.sanphamId,
-                                slton: new library_1.Decimal(finalTotal),
-                                sltontt: new library_1.Decimal(finalTotal),
-                                slchogiao: new library_1.Decimal(Math.max(0, currentPendingOut)),
-                                slchonhap: new library_1.Decimal(Math.max(0, currentPendingIn)),
-                            },
-                            update: {
-                                slton: new library_1.Decimal(finalTotal),
-                                sltontt: new library_1.Decimal(finalTotal),
-                                slchogiao: new library_1.Decimal(Math.max(0, currentPendingOut)),
-                                slchonhap: new library_1.Decimal(Math.max(0, currentPendingIn)),
-                                updatedAt: new Date()
-                            }
+                        tonKhoUpserts.push({
+                            sanphamId: detail.sanphamId,
+                            slton: new library_1.Decimal(finalTotal),
+                            sltontt: new library_1.Decimal(finalTotal),
+                            slchogiao: new library_1.Decimal(Math.max(0, currentPendingOut)),
+                            slchonhap: new library_1.Decimal(Math.max(0, currentPendingIn))
                         });
+                    }
+                    if (detailRecordsToCreate.length > 0) {
+                        await prisma.chotkhodetail.createMany({
+                            data: detailRecordsToCreate
+                        });
+                    }
+                    if (sanphamKhoUpserts.length > 0) {
+                        const valuesSql = [];
+                        const params = [];
+                        let paramIdx = 1;
+                        for (const item of sanphamKhoUpserts) {
+                            valuesSql.push(`($${paramIdx++}, $${paramIdx++}, $${paramIdx++}, $${paramIdx++}::numeric, NOW(), NOW())`);
+                            params.push((0, crypto_1.randomUUID)());
+                            params.push(item.khoId);
+                            params.push(item.sanphamId);
+                            params.push(item.soluong.toString());
+                        }
+                        const sql = `
+              INSERT INTO "SanphamKho" (id, "khoId", "sanphamId", soluong, "createdAt", "updatedAt")
+              VALUES ${valuesSql.join(', ')}
+              ON CONFLICT ("sanphamId", "khoId") DO UPDATE SET
+                soluong = EXCLUDED.soluong,
+                "updatedAt" = EXCLUDED."updatedAt"
+            `;
+                        await prisma.$executeRawUnsafe(sql, ...params);
+                    }
+                    if (tonKhoUpserts.length > 0) {
+                        const valuesSql = [];
+                        const params = [];
+                        let paramIdx = 1;
+                        for (const item of tonKhoUpserts) {
+                            valuesSql.push(`($${paramIdx++}, $${paramIdx++}, $${paramIdx++}::numeric, $${paramIdx++}::numeric, $${paramIdx++}::numeric, $${paramIdx++}::numeric, NOW(), NOW())`);
+                            params.push((0, crypto_1.randomUUID)());
+                            params.push(item.sanphamId);
+                            params.push(item.slton.toString());
+                            params.push(item.sltontt.toString());
+                            params.push(item.slchogiao.toString());
+                            params.push(item.slchonhap.toString());
+                        }
+                        const sql = `
+              INSERT INTO "TonKho" (id, "sanphamId", slton, sltontt, slchogiao, slchonhap, "createdAt", "updatedAt")
+              VALUES ${valuesSql.join(', ')}
+              ON CONFLICT ("sanphamId") DO UPDATE SET
+                slton = EXCLUDED.slton,
+                sltontt = EXCLUDED.sltontt,
+                slchogiao = EXCLUDED.slchogiao,
+                slchonhap = EXCLUDED.slchonhap,
+                "updatedAt" = EXCLUDED."updatedAt"
+            `;
+                        await prisma.$executeRawUnsafe(sql, ...params);
                     }
                 }
                 return await prisma.chotkho.findUnique({

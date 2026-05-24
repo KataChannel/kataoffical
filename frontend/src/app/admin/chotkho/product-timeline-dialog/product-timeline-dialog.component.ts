@@ -287,13 +287,11 @@ export class ProductTimelineDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Default to last 7 days
+    // Default to current date
     const now = new Date();
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(now.getDate() - 7);
 
     // Format local timezone dates YYYY-MM-DD
-    this.fromDate = this.formatLocalDate(sevenDaysAgo);
+    this.fromDate = this.formatLocalDate(now);
     this.toDate = this.formatLocalDate(now);
 
     this.loadTimeline();

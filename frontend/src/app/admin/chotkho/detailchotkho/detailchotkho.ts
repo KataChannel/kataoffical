@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal, ViewChild } from '@angular/core';
+import { Component, effect, inject, signal, ViewChild, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -49,7 +49,7 @@ import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconcil
     templateUrl: './detailchotkho.html',
     styleUrl: './detailchotkho.scss'
   })
-  export class DetailChotkhoComponent {
+  export class DetailChotkhoComponent implements AfterViewInit {
     public ColumnDesc: any = {
       sltonhethong: 'Số liệu Snapshot',
       sltonthucte: 'Số kiểm đếm',
@@ -72,7 +72,7 @@ import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconcil
     
     // Table configuration
     dataSource = signal(new MatTableDataSource<any>([]));
-    displayedColumns: string[] = ['STT', 'title', 'masp', 'dvt', 'sltonhethong', 'sltonthucte', 'slhuy', 'chenhlech'];
+    displayedColumns: string[] = ['STT', 'title', 'masp', 'dvt', 'sltonhethong', 'sltonthucte', 'slhuy', 'chenhlech', 'ghichu'];
     ColumnName: any = {
       STT: 'STT',
       title: 'Tên Sản Phẩm',
@@ -81,7 +81,8 @@ import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconcil
       sltonhethong: 'SL Hệ Thống',
       sltonthucte: 'SL Thực Tế',
       slhuy: 'SL Hủy',
-      chenhlech: 'Chênh Lệch'
+      chenhlech: 'Chênh Lệch',
+      ghichu: 'Ghi Chú'
     };
     
     // Initialize DetailChotkho with default structure
@@ -207,6 +208,29 @@ import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconcil
             this._router.navigate(['/admin/chotkho', id]);
         }   
         // Load sanpham list for product selection
+    }
+
+    ngAfterViewInit() {
+      this.dataSource().sort = this.sort;
+      this.dataSource().sortingDataAccessor = (item, property) => {
+        switch (property) {
+          case 'title':
+            return item.title || item.sanpham?.title || '';
+          case 'masp':
+            return item.masp || item.sanpham?.masp || '';
+          case 'dvt':
+            return item.dvt || item.sanpham?.dvt || '';
+          default:
+            return item[property];
+        }
+      };
+      this.dataSource().filterPredicate = (data, filter) => {
+        const term = filter.trim().toLowerCase();
+        const title = (data.title || data.sanpham?.title || '').toLowerCase();
+        const masp = (data.masp || data.sanpham?.masp || '').toLowerCase();
+        const dvt = (data.dvt || data.sanpham?.dvt || '').toLowerCase();
+        return title.includes(term) || masp.includes(term) || dvt.includes(term);
+      };
     }
 
     async handleChotkhoAction() {

@@ -16,11 +16,6 @@
                 </div>
             </div>
             
-            <button (click)="isDexuat = true" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm shrink-0">
-                <mat-icon class="text-[18px] w-5 h-5">bolt</mat-icon>
-                <span class="text-xs font-bold uppercase tracking-wider">Vận hành nhanh</span>
-            </button>
-            
             <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
                 <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu"
                     class="!bg-blue-50 !rounded-lg shrink-0">
@@ -30,24 +25,30 @@
                 <div class="h-6 w-px bg-slate-200 mx-1 shrink-0"></div>
 
                 <button (click)="!isUpdatingStock && Capnhattonkho()" 
-                      [class]="'whitespace-nowrap px-4 py-2.5 rounded-lg border flex items-center gap-2 text-sm font-bold transition-all shrink-0 shadow-sm ' + 
-                                (isUpdatingStock ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed' : 'bg-slate-900 text-white border-slate-900 hover:bg-slate-800')" 
                       [disabled]="isUpdatingStock"
-                      matTooltip="Cập nhật tồn kho từ Excel">
+                      mat-icon-button
+                      class="shrink-0 shadow-sm !rounded-lg transition-all"
+                      [class]="isUpdatingStock ? '!bg-slate-100 !text-slate-400 border border-slate-200 cursor-not-allowed' : '!bg-slate-900 !text-white border border-slate-900 hover:!bg-slate-800'"
+                      matTooltip="Chốt Kho Excel">
                     @if (isUpdatingStock) {
-                        <mat-icon class="animate-spin !h-4 !w-4 text-[16px]">sync</mat-icon>
-                        <span>Đang xử lý...</span>
+                        <mat-icon class="animate-spin text-[18px]">sync</mat-icon>
                     } @else {
-                        <mat-icon class="!h-4 !w-4 text-[16px]">upload_file</mat-icon>
-                        <span>Chốt Kho Excel</span>
+                        <mat-icon class="text-[18px]">upload_file</mat-icon>
                     }
                 </button>
                 
                 <button (click)="downloadTonkhoTemplate()" 
-                        class="whitespace-nowrap px-4 py-2.5 bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm transition-all shrink-0" 
-                        matTooltip="Tải file mẫu">
-                    <mat-icon class="!h-4 !w-4 text-[16px]">description</mat-icon>
-                    <span class="hidden xs:inline">Mẫu Excel</span>
+                        mat-icon-button
+                        class="!bg-white !text-slate-600 border border-slate-200 hover:!bg-slate-50 hover:!text-slate-900 !rounded-lg shadow-sm transition-all shrink-0" 
+                        matTooltip="Tải file mẫu Excel">
+                    <mat-icon>description</mat-icon>
+                </button>
+
+                <button (click)="openManualReconciliation()" 
+                        mat-icon-button
+                        class="!bg-blue-600 hover:!bg-blue-700 !text-white !rounded-lg shadow-sm transition-all shrink-0" 
+                        matTooltip="Đối soát & Điều chỉnh thủ công">
+                    <mat-icon>balance</mat-icon>
                 </button>
             </div>
 

@@ -72,6 +72,20 @@ function createMcpServer() {
                         type: "object",
                         properties: {},
                     },
+                },
+                {
+                    name: "query_postgres",
+                    description: "Chạy câu lệnh truy vấn SQL SELECT trực tiếp trên cơ sở dữ liệu PostgreSQL của Sandbox (Chỉ đọc để đảm bảo an toàn).",
+                    inputSchema: {
+                        type: "object",
+                        properties: {
+                            sql: {
+                                type: "string",
+                                description: "Câu lệnh SQL SELECT để thực hiện truy vấn dữ liệu (Ví dụ: SELECT * FROM \"Sanpham\" LIMIT 10;)"
+                            }
+                        },
+                        required: ["sql"]
+                    }
                 }
             ],
         };
@@ -202,6 +216,30 @@ function createMcpServer() {
                         }]
                 };
             }
+            if (name === "query_postgres") {
+                const sql = args?.sql;
+                if (!sql) {
+                    return {
+                        isError: true,
+                        content: [{ type: "text", text: "Lỗi: Thiếu tham số 'sql' chứa câu lệnh SQL cần truy vấn." }]
+                    };
+                }
+                const normalizedSql = sql.trim().toLowerCase();
+                const isSelect = normalizedSql.startsWith("select") || normalizedSql.startsWith("with");
+                if (!isSelect) {
+                    return {
+                        isError: true,
+                        content: [{ type: "text", text: "Từ chối thực thi: Để đảm bảo an toàn dữ liệu Sandbox, chỉ cho phép các câu lệnh truy vấn đọc dữ liệu (SELECT hoặc WITH)." }]
+                    };
+                }
+                const result = await prisma.$queryRawUnsafe(sql);
+                return {
+                    content: [{
+                            type: "text",
+                            text: JSON.stringify(result, null, 2)
+                        }]
+                };
+            }
             throw new Error(`Tool không hợp lệ: ${name}`);
         }
         catch (error) {
@@ -262,7 +300,7 @@ async function start() {
                 });
                 return;
             }
-            await session.transport.handleMessage(req, res);
+            await session.transport.handleMessage(req.body, res);
         });
         app.get("/health", (_req, res) => {
             res.json({

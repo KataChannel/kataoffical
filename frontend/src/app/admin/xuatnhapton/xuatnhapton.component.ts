@@ -168,10 +168,10 @@ export class XuatnhaptonComponent implements OnDestroy {
 
   async ngOnInit(): Promise<void> {
     // await this._SanphamService.getAllSanpham() 
-    this.LoadXuatnhapton();
     this._KhoService.getTonKho('1', '99999').then((res) => {
       this.Xuatnhapton.set(res.data);
       this.dataSource.data = this.Xuatnhapton();
+      this.CountItem = this.Xuatnhapton().length;
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.initializeColumns();
@@ -182,18 +182,6 @@ export class XuatnhaptonComponent implements OnDestroy {
       this.paginator._intl.firstPageLabel = 'Trang Đầu';
       this.paginator._intl.lastPageLabel = 'Trang Cuối';
     });
-    this._GraphqlService
-    this.CountItem = this.Xuatnhapton().length;
-  }
-
-  async LoadXuatnhapton() {
-    const ListXuatnhapton = await this._GraphqlService.findAll('tonkho', {
-      aggressiveCache: true,
-      enableParallelFetch: true,
-      take: 99999
-    })
-    console.log(ListXuatnhapton);
-    this.Xuatnhapton.set(ListXuatnhapton.data);
   }
 
 
@@ -650,6 +638,69 @@ export class XuatnhaptonComponent implements OnDestroy {
     document.body.appendChild(fileInput);
     fileInput.click();
     document.body.removeChild(fileInput);
+  }
+
+  async openManualReconciliation() {
+    if (!this.Xuatnhapton() || this.Xuatnhapton().length === 0) {
+      this._snackBar.open('Không có dữ liệu tồn kho để đối soát.', 'Đóng', { duration: 3000 });
+      return;
+    }
+
+    const dialogItems = this.Xuatnhapton().map((item: any) => {
+      const sltonhethong = Number(item.slton) || 0;
+      const sltonthucte = Number(item.sltontt) || 0;
+      const chenhlech = sltonhethong - sltonthucte;
+      return {
+        sanphamId: item.sanphamId,
+        masp: item.masp || item.sanpham?.masp || '',
+        title: item.title || item.sanpham?.title || '',
+        dvt: item.dvt || item.sanpham?.dvt || '',
+        sltonhethong: sltonhethong,
+        sltonthucte: sltonthucte,
+        slhuy: 0,
+        chenhlech: chenhlech,
+        slDieuChinh: sltonthucte,
+        ghichuDieuChinh: ''
+      };
+    });
+
+    const dialogRef = this._dialog.open(ReconciliationDialogComponent, {
+      data: { items: dialogItems },
+      width: '900px',
+      disableClose: true
+    });
+
+    const result = await dialogRef.afterClosed().toPromise();
+    if (result) {
+      this._snackBar.open('Đang lưu dữ liệu đối soát thủ công...', '', { duration: 0 });
+      try {
+        const defaultKhoId = '4cc01811-61f5-4bdc-83de-a493764e9258';
+        
+        // Prepare details to save
+        const allChangedDetails = result.map((item: any) => ({
+          sanphamId: item.sanphamId,
+          sltonhethong: Number(item.sltonhethong) || 0,
+          sltonthucte: Number(item.slDieuChinh) || 0,
+          slhuy: Number(item.slhuy) || 0,
+          ghichu: item.ghichuDieuChinh || 'Điều chỉnh thủ công',
+        }));
+
+        await this._ChotkhoService.createChotkhoWithDetails({
+          ngaychot: DateHelpers.now(),
+          title: `ĐIỀU CHỈNH CHỐT KHO THỦ CÔNG`,
+          khoId: defaultKhoId,
+          ghichu: `Chốt kho đối soát thủ công`,
+          details: allChangedDetails
+        });
+
+        this._snackBar.dismiss();
+        this._snackBar.open(`✅ Điều chỉnh tồn kho thủ công thành công.`, 'Đóng', { duration: 4000 });
+        this.ngOnInit();
+      } catch (err: any) {
+        this._snackBar.dismiss();
+        this._snackBar.open(`Lỗi: ${err.message}`, 'Đóng', { duration: 3000 });
+      }
+    }
   }
 
   async downloadTonkhoTemplate() {
