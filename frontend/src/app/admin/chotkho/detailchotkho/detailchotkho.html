@@ -5,8 +5,9 @@
   <div class="font-bold">{{ DetailChotkho()?.title || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
     <!-- <mat-slide-toggle [(ngModel)]="DetailChotkho().isActive" [disabled]="!isEdit()">{{DetailChotkho().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle> -->
-    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleChotkhoAction()">
-      <mat-icon>save</mat-icon>
+    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleChotkhoAction()" [disabled]="isSaving()">
+      <mat-icon *ngIf="!isSaving()">save</mat-icon>
+      <mat-spinner diameter="24" *ngIf="isSaving()"></mat-spinner>
     </button>
     <!-- <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>

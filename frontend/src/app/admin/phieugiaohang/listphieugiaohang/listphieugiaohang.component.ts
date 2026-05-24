@@ -72,7 +72,6 @@ import { ImportNSThuVeSummaryDialogComponent, ImportSummaryItem } from '../impor
     SharepaginationComponent,
     MatProgressSpinnerModule,
     MatDialogModule,
-    ImportNSThuVeSummaryDialogComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   // providers: [provideNativeDateAdapter()],

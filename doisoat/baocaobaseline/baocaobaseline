@@ -1,0 +1,72 @@
+# BÁO CÁO TỔNG HỢP ĐỐI SOÁT & CHỐT KHO BASELINE - 23/05/2026
+
+Báo cáo ghi nhận toàn bộ các công việc cải tiến giao diện người dùng (Frontend UI/UX) và kết quả thực thi đồng bộ dữ liệu chốt kho Baseline (Database Stock Closing) ngày **23/05/2026** vào cơ sở dữ liệu `rausachfinal`.
+
+---
+
+## 🛠️ PHẦN 1: CẢI TIẾN GIAO DIỆN ĐỐI SOÁT KHO (FRONTEND)
+
+Chúng ta đã tiến hành tái cấu trúc luồng nhập file Excel chốt kho và nâng cấp toàn diện giao diện đối soát để mang lại trải nghiệm chuyên nghiệp, tinh tế nhất.
+
+### 1. Tối Ưu Luồng Đối Soát (Lưu Trước - Đối Soát Sau)
+* **Quy trình cũ**: Chỉ cảnh báo thô và lưu tự động các điều chỉnh ẩn.
+* **Quy trình mới**: 
+  1. Khi Admin nhấn **Xác nhận** nhập từ file Excel, hệ thống sẽ thực hiện lưu chốt kho tạm thời lên database trước để lấy số liệu tồn hệ thống mới nhất (`SL Hệ Thống`).
+  2. Ngay sau đó, hộp thoại đối soát `ReconciliationDialogComponent` được kích hoạt để hiển thị bảng đối chiếu dựa trên số tồn mới cập nhật. Cột `SL Hệ Thống` và `SL Thực Tế` lúc này đã khớp nhau (chênh lệch mặc định về `0`).
+  3. Admin có thể chủ động nhập số lượng **Điều Chỉnh** (tăng/giảm) và điền **Ghi Chú** lý do.
+  4. Nhấn **Xác Nhận & Điều Chỉnh** để cập nhật bổ sung các thông tin tinh chỉnh và ghi chú lên DB.
+
+### 2. Thiết Kế Giao Diện Cao Cấp Shadcn UI Vega Style
+* Nâng cấp giao diện mặc định từ Dark Mode sang **Light Mode phong cách Shadcn UI** cực kỳ thanh lịch và hiện đại.
+* Sử dụng bảng phối màu pastel dịu mắt với các chỉ báo chênh lệch rõ ràng:
+  - **Màu Amber (Vàng Cam)**: Cảnh báo số lượng hao hụt.
+  - **Màu Emerald (Xanh Lá)**: Chỉ thị tăng tồn kho.
+  - **Màu Rose (Đỏ Nhạt)**: Chỉ thị giảm tồn kho/hủy.
+* Bổ sung các micro-animation mượt mà khi hover và tương tác với các dòng sản phẩm.
+
+### 3. Bộ Lọc Thông Minh & Tự Động Hóa Trải Nghiệm
+* **Ẩn dòng khớp (Lệch = 0)**: Bảng đối soát tự động ẩn hoàn toàn các sản phẩm có chênh lệch bằng `0`, chỉ hiển thị những sản phẩm thực sự phát sinh hao hụt hoặc hư hỏng (ví dụ: sản phẩm có `SL Hủy > 0` cần ghi chú).
+* **Tự động phê duyệt ngầm**: Trường hợp toàn bộ sản phẩm sau khi chốt kho đều khớp tuyệt đối (không có bất kỳ lệch nào), hộp thoại đối soát sẽ **tự động xác nhận và đóng ngay lập tức trong nền**, giúp tối giản hóa thao tác cho Admin.
+
+---
+
+## 💾 PHẦN 2: THỰC THI CHỐT KHO BASELINE TRÊN DATABASE (23/05/2026)
+
+Vào lúc **19:17 ngày 23/05/2026**, script chốt kho Baseline `process_baseline_23_5.js` đã được chạy thành công trên cơ sở dữ liệu production `rausachfinal` với mốc thời gian Cut-off chốt số là **17:00 ngày 23/05/2026** (`2026-05-23T17:00:00+07:00`).
+
+### 1. Nhật Ký Kết Quả Thực Thi Chi Tiết
+
+> [!NOTE]
+> * **Mã Chốt Kho Master**: `fcc97ab3-89b8-4695-9b0f-c2ef4bfa266a`
+> * **Tên Bản Ghi**: `Chốt kho Base Line 23-05-2026`
+> * **Kho Áp Dụng**: Kho HCM (`4cc01811-61f5-4bdc-83de-a493764e9258`)
+
+| Chỉ số / Thao tác | Số lượng bản ghi | Mô tả chi tiết |
+| :--- | :---: | :--- |
+| **Tổng số sản phẩm trong DB** | **1.024** | Quét toàn bộ danh mục sản phẩm từ hệ thống để chuẩn bị chốt sổ. |
+| **Số sản phẩm từ Excel kiểm kê** | **140** | Số lượng mặt hàng được ghi nhận tồn kho thực tế trong file Excel `Ton-Huy 23-5.xlsx`. |
+| **Số sản phẩm tự động Reset về 0** | **884** | Các sản phẩm không xuất hiện trong file Excel kiểm kê đã được tự động đưa về tồn kho bằng `0` theo quy tắc Baseline. |
+| **Số lượng đơn hàng (`Donhang`) cập nhật** | **3** | Tìm thấy và chuyển đổi **3 đơn hàng** có trạng thái `dadat` hoặc `dagiao` được tạo trước mốc Cut-off về trạng thái `'choxuly'` để giải phóng tồn kho tính toán. |
+| **Số lượng đặt hàng (`Dathang`) cập nhật** | **0** | Không có yêu cầu đặt hàng nào cần chuyển đổi trước mốc Cut-off. |
+| **Bản ghi chi tiết (`Chotkhodetail`) được tạo** | **1.024** | Tạo thành công 1.024 dòng ghi nhận chênh lệch chi tiết cho từng sản phẩm. |
+| **Đồng bộ bảng tồn kho thực tế** | **Thành công** | Cập nhật đồng loạt trạng thái tồn thực tế mới nhất vào bảng `SanphamKho` (Kho HCM) và `TonKho` (Global) của toàn bộ 1.024 sản phẩm. |
+
+### 2. Trích Xuất Log Đầu Ra Từ Hệ Thống
+```bash
+Starting Full Baseline Process for 23/05/2026 at Cut-off: 17:00:00 23/5/2026
+Fetching all products from DB...
+Prepared 1024 products. Products from Excel: 140. Resetting others to 0.
+Updated 3 Donhang to 'choxuly'.
+Updated 0 Dathang to 'choxuly'.
+Created Chotkho Master: fcc97ab3-89b8-4695-9b0f-c2ef4bfa266a
+Created 1024 Chotkhodetail records.
+Stock levels (SanphamKho and TonKho) updated successfully for all products.
+Full Baseline Process COMPLETED Successfully.
+```
+
+---
+
+## 🏁 KẾT LUẬN
+
+* **Đồng bộ Frontend & Backend**: Các cải tiến giao diện giúp kiểm soát chênh lệch kho chặt chẽ, dễ sử dụng đã đi vào hoạt động trơn tru.
+* **Nhất quán dữ liệu**: Số liệu tồn kho ngày 23/05/2026 của toàn bộ danh mục sản phẩm đã được đồng bộ chuẩn xác theo kiểm kê thực tế tại Kho HCM, đảm bảo hệ thống vận hành chính xác ở các chu kỳ tiếp theo.

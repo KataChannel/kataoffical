@@ -1,0 +1,144 @@
+=== COMPREHENSIVE STOCK FLOW AUDIT (20/05 Baseline to 21/05 Close) ===
+
+--------------------------------------------------
+PRODUCT: I100676 - Me Hộp | DVT: Hộp
+-> [1] Baseline Physical Stock (20/05 Close): 23
+-> [2] Purchases/Imports today (Dathang DB): 0
+-> [3] PhieuKho Receipt (PN): 0
+-> [4] Sales/Orders today (Donhang DB): 0
+-> [5] PhieuKho Issue (PX): 0
+-> [6] Calculated Expected System Stock (Baseline + PN - PX): 23
+-> [7] Current DB Stock: 23
+-> [8] Physical Stock Counted (21/05): 23
+-> [9] DISCREPANCY (Expected System - Physical): 0.000
+=> ANALYSIS: HỆ THỐNG VÀ VẬN HÀNH KHỚP TUYỆT ĐỐI! Lệch ở file báo cáo là do thủ kho bỏ sót khi khai báo Excel.
+
+--------------------------------------------------
+PRODUCT: I100815 - Hoa décor (Hoa trang trí 12g) | DVT: Hộp
+-> [1] Baseline Physical Stock (20/05 Close): 10
+-> [2] Purchases/Imports today (Dathang DB): 0
+-> [3] PhieuKho Receipt (PN): 0
+-> [4] Sales/Orders today (Donhang DB): 1
+   - Order: TG-AA43042 | Status: danhan | Qty: 1
+-> [5] PhieuKho Issue (PX): 1
+-> [6] Calculated Expected System Stock (Baseline + PN - PX): 9
+-> [7] Current DB Stock: -9
+-> [8] Physical Stock Counted (21/05): 9
+-> [9] DISCREPANCY (Expected System - Physical): 0.000
+=> ANALYSIS: HỆ THỐNG VÀ VẬN HÀNH KHỚP TUYỆT ĐỐI! Lệch ở file báo cáo là do thủ kho bỏ sót khi khai báo Excel.
+
+--------------------------------------------------
+PRODUCT: I100613 - Xoài tứ quý | DVT: Kg
+-> [1] Baseline Physical Stock (20/05 Close): 8
+-> [2] Purchases/Imports today (Dathang DB): 0
+-> [3] PhieuKho Receipt (PN): 0
+-> [4] Sales/Orders today (Donhang DB): 0
+-> [5] PhieuKho Issue (PX): 0
+-> [6] Calculated Expected System Stock (Baseline + PN - PX): 8
+-> [7] Current DB Stock: 0.3
+-> [8] Physical Stock Counted (21/05): 8
+-> [9] DISCREPANCY (Expected System - Physical): 0.000
+=> ANALYSIS: HỆ THỐNG VÀ VẬN HÀNH KHỚP TUYỆT ĐỐI! Lệch ở file báo cáo là do thủ kho bỏ sót khi khai báo Excel.
+
+--------------------------------------------------
+PRODUCT: I100891 - Thơm chín | DVT: Trái
+-> [1] Baseline Physical Stock (20/05 Close): 12
+-> [2] Purchases/Imports today (Dathang DB): 0
+-> [3] PhieuKho Receipt (PN): 0
+-> [4] Sales/Orders today (Donhang DB): 8
+   - Order: TG-AA43001 | Status: danhan | Qty: 2
+   - Order: TG-AA42945 | Status: danhan | Qty: 1
+   - Order: TG-AA42943 | Status: danhan | Qty: 3
+   - Order: TG-AA42959 | Status: danhan | Qty: 2
+-> [5] PhieuKho Issue (PX): 8
+-> [6] Calculated Expected System Stock (Baseline + PN - PX): 4
+-> [7] Current DB Stock: 4
+-> [8] Physical Stock Counted (21/05): 4
+-> [9] DISCREPANCY (Expected System - Physical): 0.000
+=> ANALYSIS: HỆ THỐNG VÀ VẬN HÀNH KHỚP TUYỆT ĐỐI! Lệch ở file báo cáo là do thủ kho bỏ sót khi khai báo Excel.
+
+--------------------------------------------------
+PRODUCT: I101133 - Kèo nèo bó | DVT: Bó
+-> [1] Baseline Physical Stock (20/05 Close): 0
+-> [2] Purchases/Imports today (Dathang DB): 2
+   - Supplier Order: TGNCC-WX00006 | Status: danhan | Qty: 2
+-> [3] PhieuKho Receipt (PN): 2
+-> [4] Sales/Orders today (Donhang DB): 0
+-> [5] PhieuKho Issue (PX): 0
+-> [6] Calculated Expected System Stock (Baseline + PN - PX): 2
+-> [7] Current DB Stock: 2
+-> [8] Physical Stock Counted (21/05): 2
+-> [9] DISCREPANCY (Expected System - Physical): 0.000
+=> ANALYSIS: HỆ THỐNG VÀ VẬN HÀNH KHỚP TUYỆT ĐỐI! Lệch ở file báo cáo là do thủ kho bỏ sót khi khai báo Excel.
+
+--------------------------------------------------
+PRODUCT: I100129 - Khoai Tây TQ | DVT: Kg
+-> [1] Baseline Physical Stock (20/05 Close): 5
+-> [2] Purchases/Imports today (Dathang DB): 0
+-> [3] PhieuKho Receipt (PN): 0
+-> [4] Sales/Orders today (Donhang DB): 3
+   - Order: TG-AA43000 | Status: danhan | Qty: 3
+-> [5] PhieuKho Issue (PX): 3
+-> [6] Calculated Expected System Stock (Baseline + PN - PX): 2
+-> [7] Current DB Stock: 2
+-> [8] Physical Stock Counted (21/05): 2
+-> [9] DISCREPANCY (Expected System - Physical): 0.000
+=> ANALYSIS: HỆ THỐNG VÀ VẬN HÀNH KHỚP TUYỆT ĐỐI! Lệch ở file báo cáo là do thủ kho bỏ sót khi khai báo Excel.
+
+--------------------------------------------------
+PRODUCT: I100508 - Xoài cát Hòa Lộc | DVT: Kg
+-> [1] Baseline Physical Stock (20/05 Close): 0
+-> [2] Purchases/Imports today (Dathang DB): 1.4
+   - Supplier Order: TGNCC-WX03110 | Status: danhan | Qty: 1.4
+-> [3] PhieuKho Receipt (PN): 0.6
+-> [4] Sales/Orders today (Donhang DB): 0.89
+   - Order: TG-AA42988 | Status: danhan | Qty: 0.5
+   - Order: TG-AA43012 | Status: danhan | Qty: 0.39
+-> [5] PhieuKho Issue (PX): 0.89
+-> [6] Calculated Expected System Stock (Baseline + PN - PX): -0.29000000000000004
+-> [7] Current DB Stock: 8
+-> [8] Physical Stock Counted (21/05): 0.71
+-> [9] DISCREPANCY (Expected System - Physical): -1.000
+=> ANALYSIS: CÓ SAI LỆCH THỰC TẾ GIỮA HỆ THỐNG VÀ VẬN HÀNH VẬT LÝ!
+   - Lý do: Thực tế nhiều hơn hệ thống. Có thể nhập hàng thực tế chưa làm phiếu nhập, hoặc giao dịch bán bị hủy/không xuất được hàng nhưng hệ thống vẫn ghi nhận.
+
+--------------------------------------------------
+PRODUCT: I100470 - Dưa lưới | DVT: Kg
+-> [1] Baseline Physical Stock (20/05 Close): 2.9
+-> [2] Purchases/Imports today (Dathang DB): 0
+-> [3] PhieuKho Receipt (PN): 0
+-> [4] Sales/Orders today (Donhang DB): 2.6
+   - Order: TG-AA42966 | Status: danhan | Qty: 2.6
+-> [5] PhieuKho Issue (PX): 2.6
+-> [6] Calculated Expected System Stock (Baseline + PN - PX): 0.2999999999999998
+-> [7] Current DB Stock: 10
+-> [8] Physical Stock Counted (21/05): 0.3
+-> [9] DISCREPANCY (Expected System - Physical): -0.000
+=> ANALYSIS: Sai lệch rất nhỏ (hao hụt hao phí tự nhiên hoặc làm tròn số).
+
+--------------------------------------------------
+PRODUCT: I100316 - Chả quế | DVT: Kg
+-> [1] Baseline Physical Stock (20/05 Close): 0
+-> [2] Purchases/Imports today (Dathang DB): 0
+-> [3] PhieuKho Receipt (PN): 0
+-> [4] Sales/Orders today (Donhang DB): 0
+-> [5] PhieuKho Issue (PX): 0
+-> [6] Calculated Expected System Stock (Baseline + PN - PX): 0
+-> [7] Current DB Stock: 0.3
+-> [8] Physical Stock Counted (21/05): 0.2
+-> [9] DISCREPANCY (Expected System - Physical): -0.200
+=> ANALYSIS: CÓ SAI LỆCH THỰC TẾ GIỮA HỆ THỐNG VÀ VẬN HÀNH VẬT LÝ!
+   - Lý do: Thực tế nhiều hơn hệ thống. Có thể nhập hàng thực tế chưa làm phiếu nhập, hoặc giao dịch bán bị hủy/không xuất được hàng nhưng hệ thống vẫn ghi nhận.
+
+--------------------------------------------------
+PRODUCT: I100030 - Bông so đũa | DVT: Kg
+-> [1] Baseline Physical Stock (20/05 Close): 0.1
+-> [2] Purchases/Imports today (Dathang DB): 0
+-> [3] PhieuKho Receipt (PN): 0
+-> [4] Sales/Orders today (Donhang DB): 0
+-> [5] PhieuKho Issue (PX): 0
+-> [6] Calculated Expected System Stock (Baseline + PN - PX): 0.1
+-> [7] Current DB Stock: 0.5
+-> [8] Physical Stock Counted (21/05): 0.1
+-> [9] DISCREPANCY (Expected System - Physical): 0.000
+=> ANALYSIS: HỆ THỐNG VÀ VẬN HÀNH KHỚP TUYỆT ĐỐI! Lệch ở file báo cáo là do thủ kho bỏ sót khi khai báo Excel.

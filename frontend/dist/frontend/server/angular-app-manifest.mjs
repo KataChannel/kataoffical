@@ -13,13 +13,13 @@ export default {
       size: 0,
       hash: 'manual'
     },
-    'styles-XIC7B7I7.css': {
-      text: () => import('node:fs/promises').then(fs => fs.readFile(new URL('../browser/styles-XIC7B7I7.css', import.meta.url), 'utf-8')),
+    'styles-R42TKHLE.css': {
+      text: () => import('node:fs/promises').then(fs => fs.readFile(new URL('../browser/styles-R42TKHLE.css', import.meta.url), 'utf-8')),
       size: 0,
       hash: 'manual'
     }
   },
   entryPointToBrowserMapping: {
-    '': ['main-QWM5LFAW.js']
+    '': ['main-AZSLKLNW.js']
   }
 };

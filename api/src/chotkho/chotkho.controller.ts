@@ -65,6 +65,24 @@ export class ChotkhoController {
     }
   }
 
+  @ApiOperation({ summary: 'Get timeline of a specific product with imports, exports, and closings' })
+  @Get('products/:sanphamId/timeline')
+  async getProductTimeline(
+    @Param('sanphamId') sanphamId: string,
+    @Query('khoId') khoId: string,
+    @Query('fromDate') fromDate: string,
+    @Query('toDate') toDate: string
+  ) {
+    try {
+      if (!khoId || !fromDate || !toDate) {
+        throw new HttpException('Missing required queries: khoId, fromDate, toDate', HttpStatus.BAD_REQUEST);
+      }
+      return await this.chotkhoService.getProductTimeline(sanphamId, khoId, fromDate, toDate);
+    } catch (error) {
+      throw new HttpException(error.message || 'Get product timeline failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @ApiOperation({ summary: 'Get all products with inventory by warehouse' })
   @ApiParam({ name: 'khoId', type: String, description: 'Warehouse ID' })
   @Get('products/by-warehouse/:khoId')

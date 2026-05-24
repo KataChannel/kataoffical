@@ -473,6 +473,15 @@ type Mutation {
     data: [JSON!]!
   ): JSON!
 
+  """Enhanced batch update for multiple records"""
+  batchUpdate(
+    """Model name (case-insensitive)"""
+    modelName: String!
+
+    """Array of update operations { where: JSON, data: JSON }"""
+    operations: [JSON!]!
+  ): JSON!
+
   """Enhanced batch delete for multiple records"""
   batchDelete(
     """Model name (case-insensitive)"""

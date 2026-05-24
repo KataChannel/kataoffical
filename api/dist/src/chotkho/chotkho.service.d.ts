@@ -165,6 +165,10 @@ export declare class ChotkhoService {
         }) | null;
         warnings: any[];
     }>;
+    getProductTimeline(sanphamId: string, khoId: string, fromDateStr: string, toDateStr: string): Promise<{
+        startQty: number;
+        timeline: any[];
+    }>;
     getAllProductsByKho(khoId: string): Promise<any[]>;
     getAllKho(): Promise<any[]>;
     getAllProducts(): Promise<any[]>;

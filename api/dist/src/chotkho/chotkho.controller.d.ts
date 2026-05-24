@@ -68,6 +68,10 @@ export declare class ChotkhoController {
         currentCalc: number;
         history: any[];
     }>;
+    getProductTimeline(sanphamId: string, khoId: string, fromDate: string, toDate: string): Promise<{
+        startQty: number;
+        timeline: any[];
+    }>;
     getAllProductsByKho(khoId: string): Promise<any[]>;
     findOne(id: string): Promise<({
         kho: {

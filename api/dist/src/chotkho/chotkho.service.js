@@ -120,7 +120,8 @@ let ChotkhoService = class ChotkhoService {
     async create(inventoryData) {
         try {
             const transactionResult = await this.prisma.$transaction(async (prisma) => {
-                const { ngaychot, title, ghichu, khoId, userId, details, confirmOrderIds } = inventoryData;
+                const { ngaychot, title, ghichu, khoId, userId, details: inputDetails, confirmOrderIds } = inventoryData;
+                const details = inputDetails;
                 if (confirmOrderIds && confirmOrderIds.length > 0) {
                     console.log(`📝 Processing auto-reception for ${confirmOrderIds.length} orders...`);
                     for (const orderId of confirmOrderIds) {
@@ -182,6 +183,23 @@ let ChotkhoService = class ChotkhoService {
                         throw new Error(`Sản phẩm với ID ${detail.sanphamId} không tồn tại trong hệ thống`);
                     }
                 }
+                const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
+                const [allSanphamKho, allTonKho] = await Promise.all([
+                    prisma.sanphamKho.findMany({
+                        where: {
+                            sanphamId: { in: sanphamIds },
+                            khoId: { in: [khoId, KHO_TONG_ID] }
+                        }
+                    }),
+                    prisma.tonKho.findMany({
+                        where: { sanphamId: { in: sanphamIds } }
+                    })
+                ]);
+                const sanphamKhoMap = new Map();
+                allSanphamKho.forEach((sk) => {
+                    sanphamKhoMap.set(`${sk.sanphamId}_${sk.khoId}`, sk);
+                });
+                const tonKhoMapFinal = new Map(allTonKho.map((tk) => [tk.sanphamId, tk]));
                 const chotkhoMaster = await prisma.chotkho.create({
                     data: {
                         ngaychot: ngaychot || new Date(),
@@ -198,7 +216,6 @@ let ChotkhoService = class ChotkhoService {
                 const pendingWarnings = [];
                 for (const detail of details) {
                     const sltonhethong_chuan = Number(detail.sltonhethong);
-                    const sanpham = sanphamMap.get(detail.sanphamId);
                     const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
                     await prisma.chotkhodetail.create({
                         data: {
@@ -213,10 +230,7 @@ let ChotkhoService = class ChotkhoService {
                             ngaychot: chotkhoMaster.ngaychot
                         }
                     });
-                    const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
-                    const currentSpKho = await prisma.sanphamKho.findUnique({
-                        where: { sanphamId_khoId: { sanphamId: detail.sanphamId, khoId } }
-                    });
+                    const currentSpKho = sanphamKhoMap.get(`${detail.sanphamId}_${khoId}`);
                     const oldQty = Number(currentSpKho?.soluong || 0);
                     const delta = Number(detail.sltonthucte) - oldQty;
                     await prisma.sanphamKho.upsert({
@@ -255,26 +269,26 @@ let ChotkhoService = class ChotkhoService {
                             }
                         });
                     }
-                    const khoTongRecord = await prisma.sanphamKho.findUnique({
-                        where: {
-                            sanphamId_khoId: {
-                                sanphamId: detail.sanphamId,
-                                khoId: KHO_TONG_ID
-                            }
-                        }
-                    });
-                    let finalTotal = Number(khoTongRecord?.soluong || 0);
+                    const currentKhoTongRecord = sanphamKhoMap.get(`${detail.sanphamId}_${KHO_TONG_ID}`);
+                    let finalTotal = (khoId === KHO_TONG_ID)
+                        ? Number(detail.sltonthucte)
+                        : (Number(currentKhoTongRecord?.soluong || 0) + delta);
                     if (finalTotal < 0) {
-                        console.warn(`⚠️ [CHOTKHO-SYNC] Product ${detail.sanphamId} has negative KHO_TONG (${finalTotal}). Clamping to 0.`);
+                        console.warn(`⚠️ [CHOTKHO-SYNC] Product ${detail.sanphamId} has negative calculation (${finalTotal}). Clamping to 0.`);
                         finalTotal = 0;
-                        await prisma.sanphamKho.update({
+                        await prisma.sanphamKho.upsert({
                             where: {
                                 sanphamId_khoId: {
                                     sanphamId: detail.sanphamId,
                                     khoId: KHO_TONG_ID
                                 }
                             },
-                            data: { soluong: new library_1.Decimal(0) }
+                            create: {
+                                sanphamId: detail.sanphamId,
+                                khoId: KHO_TONG_ID,
+                                soluong: new library_1.Decimal(0),
+                            },
+                            update: { soluong: new library_1.Decimal(0) }
                         });
                     }
                     await prisma.tonKho.upsert({
@@ -337,6 +351,124 @@ let ChotkhoService = class ChotkhoService {
             console.error('Error in create chotkho:', error);
             throw error;
         }
+    }
+    async getProductTimeline(sanphamId, khoId, fromDateStr, toDateStr) {
+        const fromDate = new Date(fromDateStr);
+        const toDate = new Date(toDateStr);
+        const lastChot = await this.prisma.chotkhodetail.findFirst({
+            where: {
+                sanphamId,
+                ngaychot: { lt: fromDate },
+                chotkho: {
+                    khoId,
+                    isActive: true
+                }
+            },
+            orderBy: { ngaychot: 'desc' },
+            include: { chotkho: true }
+        });
+        const anchorTime = lastChot ? lastChot.ngaychot : new Date(0);
+        let startQty = lastChot ? Number(lastChot.sltonthucte) : 0;
+        const prePhieuKhos = await this.prisma.phieuKhoSanpham.findMany({
+            where: {
+                sanphamId,
+                phieuKho: {
+                    khoId,
+                    createdAt: { gt: anchorTime, lt: fromDate },
+                    isActive: true
+                }
+            },
+            include: { phieuKho: true }
+        });
+        prePhieuKhos.forEach(item => {
+            if (item.phieuKho.type === 'nhap') {
+                startQty += Number(item.soluong);
+            }
+            else if (item.phieuKho.type === 'xuat') {
+                startQty -= Number(item.soluong);
+            }
+        });
+        const phieuKhos = await this.prisma.phieuKhoSanpham.findMany({
+            where: {
+                sanphamId,
+                phieuKho: {
+                    khoId,
+                    createdAt: { gte: fromDate, lte: toDate },
+                    isActive: true
+                }
+            },
+            include: {
+                phieuKho: true
+            }
+        });
+        const chotKhos = await this.prisma.chotkhodetail.findMany({
+            where: {
+                sanphamId,
+                ngaychot: { gte: fromDate, lte: toDate },
+                chotkho: {
+                    khoId,
+                    isActive: true
+                }
+            },
+            include: {
+                chotkho: true
+            }
+        });
+        const timeline = [];
+        phieuKhos.forEach(item => {
+            timeline.push({
+                id: item.id,
+                time: item.phieuKho.createdAt,
+                type: item.phieuKho.type === 'nhap' ? 'NHẬP' : 'XUẤT',
+                code: item.phieuKho.maphieu || '',
+                qty: Number(item.soluong),
+                ghichu: item.phieuKho.ghichu || ''
+            });
+        });
+        chotKhos.forEach(item => {
+            timeline.push({
+                id: item.id,
+                time: item.ngaychot,
+                type: 'CHỐT KHO',
+                code: item.chotkho?.title || 'Chốt kho',
+                qty: Number(item.sltonthucte),
+                sltonhethong: Number(item.sltonhethong),
+                chenhlech: Number(item.chenhlech),
+                slhuy: Number(item.slhuy),
+                ghichu: item.ghichu || ''
+            });
+        });
+        timeline.sort((a, b) => a.time.getTime() - b.time.getTime());
+        let runningQty = startQty;
+        const resultTimeline = [];
+        resultTimeline.push({
+            id: 'START',
+            time: fromDate,
+            type: 'TỒN ĐẦU KỲ',
+            code: 'START',
+            qty: 0,
+            balance: runningQty,
+            ghichu: `Tồn đầu kỳ tại mốc ${fromDate.toLocaleDateString('vi-VN')}`
+        });
+        timeline.forEach(event => {
+            if (event.type === 'NHẬP') {
+                runningQty += event.qty;
+            }
+            else if (event.type === 'XUẤT') {
+                runningQty -= event.qty;
+            }
+            else if (event.type === 'CHỐT KHO') {
+                runningQty = event.qty;
+            }
+            resultTimeline.push({
+                ...event,
+                balance: runningQty
+            });
+        });
+        return {
+            startQty,
+            timeline: resultTimeline
+        };
     }
     async getAllProductsByKho(khoId) {
         try {
@@ -633,10 +765,37 @@ let ChotkhoService = class ChotkhoService {
                     await prisma.chotkhodetail.deleteMany({
                         where: { chotkhoId: id }
                     });
+                    const sanphamIds = data.details.map(d => d.sanphamId);
+                    const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
+                    const currentKhoId = updatedMaster.khoId;
+                    if (!currentKhoId)
+                        throw new Error('Không thể tính toán log: phiên chốt kho thiếu khoId');
+                    const [allSanphamKho, pendingInAggs, pendingOutAggs] = await Promise.all([
+                        prisma.sanphamKho.findMany({
+                            where: {
+                                sanphamId: { in: sanphamIds },
+                                khoId: { in: [currentKhoId, KHO_TONG_ID] }
+                            }
+                        }),
+                        prisma.dathangsanpham.groupBy({
+                            by: ['idSP'],
+                            where: { idSP: { in: sanphamIds }, dathang: { status: { in: ['dadat', 'dagiao'] } } },
+                            _sum: { slnhan: true, sldat: true }
+                        }),
+                        prisma.donhangsanpham.groupBy({
+                            by: ['idSP'],
+                            where: { idSP: { in: sanphamIds }, donhang: { status: { in: ['dadat', 'dagiao'] } } },
+                            _sum: { slnhan: true, sldat: true }
+                        })
+                    ]);
+                    const sanphamKhoMap = new Map();
+                    allSanphamKho.forEach((sk) => sanphamKhoMap.set(`${sk.sanphamId}_${sk.khoId}`, sk));
+                    const pendingInMap = new Map(pendingInAggs.map((agg) => [agg.idSP, agg]));
+                    const pendingOutMap = new Map(pendingOutAggs.map((agg) => [agg.idSP, agg]));
                     for (const detail of data.details) {
                         if (!updatedMaster.khoId)
                             throw new Error('Không thể tính toán log: phiên chốt kho thiếu khoId');
-                        const analysis = await this.calculateStockFromLogs(detail.sanphamId, updatedMaster.khoId, updatedMaster.ngaychot, prisma);
+                        const analysis = await this.calculateStockFromLogs(detail.sanphamId, currentKhoId, updatedMaster.ngaychot, prisma);
                         const sltonhethong_chuan = analysis.currentCalc;
                         const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
                         await prisma.chotkhodetail.create({
@@ -651,11 +810,7 @@ let ChotkhoService = class ChotkhoService {
                                 ngaychot: updatedMaster.ngaychot
                             }
                         });
-                        const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
-                        const currentKhoId = updatedMaster.khoId;
-                        const currentSpKho = await prisma.sanphamKho.findUnique({
-                            where: { sanphamId_khoId: { sanphamId: detail.sanphamId, khoId: currentKhoId } }
-                        });
+                        const currentSpKho = sanphamKhoMap.get(`${detail.sanphamId}_${currentKhoId}`);
                         const oldQty = Number(currentSpKho?.soluong || 0);
                         const delta = Number(detail.sltonthucte) - oldQty;
                         await prisma.sanphamKho.upsert({
@@ -694,33 +849,14 @@ let ChotkhoService = class ChotkhoService {
                                 }
                             });
                         }
-                        const khoTongRecord = await prisma.sanphamKho.findUnique({
-                            where: {
-                                sanphamId_khoId: {
-                                    sanphamId: detail.sanphamId,
-                                    khoId: KHO_TONG_ID
-                                }
-                            }
-                        });
-                        const finalTotal = Number(khoTongRecord?.soluong || 0);
-                        const [pendingInAgg, pendingOutAgg] = await Promise.all([
-                            prisma.dathangsanpham.aggregate({
-                                where: {
-                                    idSP: detail.sanphamId,
-                                    dathang: { status: { in: ['dadat', 'dagiao'] } }
-                                },
-                                _sum: { slnhan: true, sldat: true }
-                            }),
-                            prisma.donhangsanpham.aggregate({
-                                where: {
-                                    idSP: detail.sanphamId,
-                                    donhang: { status: { in: ['dadat', 'dagiao'] } }
-                                },
-                                _sum: { slnhan: true, sldat: true }
-                            })
-                        ]);
-                        const currentPendingIn = Number(pendingInAgg._sum?.sldat || 0) - Number(pendingInAgg._sum?.slnhan || 0);
-                        const currentPendingOut = Number(pendingOutAgg._sum?.sldat || 0) - Number(pendingOutAgg._sum?.slnhan || 0);
+                        const currentKhoTongRecord = sanphamKhoMap.get(`${detail.sanphamId}_${KHO_TONG_ID}`);
+                        const finalTotal = (currentKhoId === KHO_TONG_ID)
+                            ? Number(detail.sltonthucte)
+                            : (Number(currentKhoTongRecord?.soluong || 0) + delta);
+                        const pIn = pendingInMap.get(detail.sanphamId);
+                        const pOut = pendingOutMap.get(detail.sanphamId);
+                        const currentPendingIn = Number(pIn?._sum?.sldat || 0) - Number(pIn?._sum?.slnhan || 0);
+                        const currentPendingOut = Number(pOut?._sum?.sldat || 0) - Number(pOut?._sum?.slnhan || 0);
                         await prisma.tonKho.upsert({
                             where: { sanphamId: detail.sanphamId },
                             create: {
@@ -760,7 +896,7 @@ let ChotkhoService = class ChotkhoService {
                     }
                 });
             }, {
-                timeout: 30000,
+                timeout: 60000,
             });
             if (transactionResult && transactionResult.userId) {
                 this.notificationService.sendNotificationToUser(transactionResult.userId, {

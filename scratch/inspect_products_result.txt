@@ -1,0 +1,140 @@
+--- Inspecting Products and Transactions for 21/05/2026 ---
+Found 26 matching products in database:
+- MASP: I100712 | Title: Khoai tây chiên | DVT: Kg | Active: true
+  Stock (SanphamKho): 0
+  TonKho Table: slton=0, sltontt=0, slchogiao=0, slchonhap=0
+- MASP: I100815 | Title: Hoa décor (Hoa trang trí 12g) | DVT: Hộp | Active: true
+  Stock (SanphamKho): -9, 9
+  TonKho Table: slton=9, sltontt=9, slchogiao=3, slchonhap=0
+- MASP: I101129 | Title: Thơm chín (kg) | DVT: Kg | Active: true
+  Stock (SanphamKho): 0
+  TonKho Table: slton=0, sltontt=0, slchogiao=34.4, slchonhap=0
+- MASP: I100600 | Title: Thơm trái hườm | DVT: Trái | Active: true
+  Stock (SanphamKho): 30
+  TonKho Table: slton=30, sltontt=30, slchogiao=33, slchonhap=0
+- MASP: I100220 | Title: Thơm trái xanh | DVT: Trái | Active: true
+  Stock (SanphamKho): -15, 270
+  TonKho Table: slton=270, sltontt=270, slchogiao=71, slchonhap=0
+- MASP: I100128 | Title: Khoai Tây DL lớn | DVT: Kg | Active: true
+  Stock (SanphamKho): 20, 7, 7
+  TonKho Table: slton=7, sltontt=7, slchogiao=133, slchonhap=100
+- MASP: I100115 | Title: Kèo nèo | DVT: Kg | Active: true
+  Stock (SanphamKho): 0
+  TonKho Table: slton=0, sltontt=0, slchogiao=0.9, slchonhap=0
+- MASP: I100601 | Title: Thơm bông | DVT: Trái | Active: true
+  Stock (SanphamKho): 0
+  TonKho Table: slton=0, sltontt=0, slchogiao=0, slchonhap=0
+- MASP: I100350 | Title: Khoai tây (lỡ) | DVT: Kg | Active: true
+  Stock (SanphamKho): -4, 19
+  TonKho Table: slton=19, sltontt=19, slchogiao=3.1, slchonhap=0
+- MASP: I100676 | Title: Me Hộp | DVT: Hộp | Active: true
+  Stock (SanphamKho): 23, 23
+  TonKho Table: slton=23, sltontt=23, slchogiao=0, slchonhap=0
+- MASP: I101126 | Title: Thơm gọt (kg) | DVT: Kg | Active: true
+  Stock (SanphamKho): 0
+  TonKho Table: slton=0, sltontt=0, slchogiao=0, slchonhap=0
+- MASP: I100891 | Title: Thơm chín | DVT: Trái | Active: true
+  Stock (SanphamKho): 4
+  TonKho Table: slton=4, sltontt=4, slchogiao=24, slchonhap=0
+- MASP: I100613 | Title: Xoài tứ quý | DVT: Kg | Active: true
+  Stock (SanphamKho): 0.3, 8
+  TonKho Table: slton=8, sltontt=8, slchogiao=0, slchonhap=0
+- MASP: I100470 | Title: Dưa lưới | DVT: Kg | Active: true
+  Stock (SanphamKho): 10, 0.3
+  TonKho Table: slton=0.3, sltontt=0.3, slchogiao=6.6, slchonhap=0
+- MASP: I101133 | Title: Kèo nèo bó | DVT: Bó | Active: true
+  Stock (SanphamKho): 2
+  TonKho Table: slton=2, sltontt=2, slchogiao=0, slchonhap=0
+- MASP: I100777 | Title: Khoai tây hồng hai da | DVT: Kg | Active: true
+  Stock (SanphamKho): 10
+  TonKho Table: slton=10, sltontt=10, slchogiao=0, slchonhap=0
+- MASP: I100127 | Title: Khoai tây bi | DVT: Kg | Active: true
+  Stock (SanphamKho): 51.7, 15
+  TonKho Table: slton=15, sltontt=15, slchogiao=11.1, slchonhap=0
+- MASP: I101237 | Title: Khoai tây bi gọt vỏ | DVT: Kg | Active: true
+  Stock (SanphamKho): 0
+  TonKho Table: slton=0, sltontt=0, slchogiao=0, slchonhap=0
+- MASP: I100931 | Title: Khoai tây gọt vỏ | DVT: Kg | Active: true
+  Stock (SanphamKho): 0
+  TonKho Table: slton=0, sltontt=0, slchogiao=0, slchonhap=0
+- MASP: I100316 | Title: Chả quế | DVT: Kg | Active: true
+  Stock (SanphamKho): 0.3, 0.2
+  TonKho Table: slton=0.2, sltontt=0.2, slchogiao=0, slchonhap=0
+- MASP: I100508 | Title: Xoài cát Hòa Lộc | DVT: Kg | Active: true
+  Stock (SanphamKho): 8, 0.71
+  TonKho Table: slton=0.71, sltontt=0.71, slchogiao=2.69, slchonhap=0
+- MASP: I100221 | Title: Thơm gọt | DVT: Trái | Active: true
+  Stock (SanphamKho): 0
+  TonKho Table: slton=0, sltontt=0, slchogiao=51, slchonhap=0
+- MASP: I101128 | Title: Thơm hườm (kg) | DVT: Kg | Active: true
+  Stock (SanphamKho): 0
+  TonKho Table: slton=0, sltontt=0, slchogiao=0, slchonhap=0
+- MASP: I100129 | Title: Khoai Tây TQ | DVT: Kg | Active: true
+  Stock (SanphamKho): 2
+  TonKho Table: slton=2, sltontt=2, slchogiao=9, slchonhap=0
+- MASP: I101127 | Title: Thơm xanh (kg) | DVT: Kg | Active: true
+  Stock (SanphamKho): 0
+  TonKho Table: slton=0, sltontt=0, slchogiao=0, slchonhap=0
+- MASP: I100030 | Title: Bông so đũa | DVT: Kg | Active: true
+  Stock (SanphamKho): 0.5, 0.1
+  TonKho Table: slton=0.1, sltontt=0.1, slchogiao=0, slchonhap=0
+
+Analyzing transactions between 2026-05-20T17:00:00.000Z and 2026-05-21T16:59:59.000Z
+
+--- SALES (Donhangsanpham) TODAY (37 records) ---
+- I100128 (Khoai Tây DL lớn): sldat=43.3, slgiao=45.900000000000006, slnhan=45.900000000000006, count=18
+- I100470 (Dưa lưới): sldat=2, slgiao=2.6, slnhan=2.6, count=1
+- I100508 (Xoài cát Hòa Lộc): sldat=0.6, slgiao=0.89, slnhan=0.89, count=2
+- I100129 (Khoai Tây TQ): sldat=3, slgiao=3, slnhan=3, count=1
+- I100260 (Đậu hủ miếng trắng): sldat=218, slgiao=218, slnhan=218, count=10
+- I100815 (Hoa décor (Hoa trang trí 12g)): sldat=1, slgiao=1, slnhan=1, count=1
+- I100891 (Thơm chín): sldat=8, slgiao=8, slnhan=8, count=4
+
+--- IMPORTS (Dathangsanpham) TODAY (4 records) ---
+- I101133 (Kèo nèo bó): sldat=2, slgiao=2, slnhan=2, count=1
+- I100508 (Xoài cát Hòa Lộc): sldat=0.6, slgiao=0.6, slnhan=1.4, count=1
+- I100128 (Khoai Tây DL lớn): sldat=30, slgiao=30, slnhan=30, count=1
+- I100260 (Đậu hủ miếng trắng): sldat=218, slgiao=218, slnhan=218, count=1
+
+--- STOCK RECEIPTS / RELEASES (PhieuKhoSanpham) TODAY (41 records) ---
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 1.2 | Type: xuat | Maphieu: PX-TG-AA42934 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 0.4 | Type: xuat | Maphieu: PX-TG-AA42936 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 2 | Type: xuat | Maphieu: PX-TG-AA42990 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 1 | Type: xuat | Maphieu: PX-TG-AA42991 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 0.7 | Type: xuat | Maphieu: PX-TG-AA43024 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100260 (Đậu hủ miếng trắng) | Qty: 10 | Type: xuat | Maphieu: PX-TG-AA43077 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100891 (Thơm chín) | Qty: 2 | Type: xuat | Maphieu: PX-TG-AA43001 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 2 | Type: xuat | Maphieu: PX-TG-AA42949 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100260 (Đậu hủ miếng trắng) | Qty: 5 | Type: xuat | Maphieu: PX-TG-AA43023 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 30 | Type: nhap | Maphieu: PN-TGNCC-WW00002-20260520_230001 | Note: Nhập kho tự động từ đơn đặt hàng TGNCC-WW00002 (Bỏ qua bước Đã giao)
+- SP: I100891 (Thơm chín) | Qty: 1 | Type: xuat | Maphieu: PX-TG-AA42945 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 5.5 | Type: xuat | Maphieu: PX-TG-AA42968 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I101133 (Kèo nèo bó) | Qty: 2 | Type: nhap | Maphieu: PN-TGNCC-WX00006-20260520_230002 | Note: Nhập kho tự động từ đơn đặt hàng TGNCC-WX00006 (Bỏ qua bước Đã giao)
+- SP: I100260 (Đậu hủ miếng trắng) | Qty: 218 | Type: nhap | Maphieu: PN-TGNCC-WX00075-20260520_230002 | Note: Nhập kho tự động từ đơn đặt hàng TGNCC-WX00075 (Bỏ qua bước Đã giao)
+- SP: I100508 (Xoài cát Hòa Lộc) | Qty: 0.6 | Type: nhap | Maphieu: PN-TGNCC-WX03110-20260520_230002 | Note: Nhập kho tự động từ đơn đặt hàng TGNCC-WX03110 (Bỏ qua bước Đã giao)
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 10 | Type: xuat | Maphieu: PX-TG-AA42974 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100260 (Đậu hủ miếng trắng) | Qty: 40 | Type: xuat | Maphieu: PX-TG-AA43069 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100891 (Thơm chín) | Qty: 3 | Type: xuat | Maphieu: PX-TG-AA42943 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 2 | Type: xuat | Maphieu: PX-TG-AA42963 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 5 | Type: xuat | Maphieu: PX-TG-AA42973 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100815 (Hoa décor (Hoa trang trí 12g)) | Qty: 1 | Type: xuat | Maphieu: PX-TG-AA43042 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100260 (Đậu hủ miếng trắng) | Qty: 25 | Type: xuat | Maphieu: PX-TG-AA43070 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100260 (Đậu hủ miếng trắng) | Qty: 10 | Type: xuat | Maphieu: PX-TG-AA43034 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 2.4 | Type: xuat | Maphieu: PX-TG-AA42999 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100129 (Khoai Tây TQ) | Qty: 3 | Type: xuat | Maphieu: PX-TG-AA43000 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 0.5 | Type: xuat | Maphieu: PX-TG-AA43066 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100260 (Đậu hủ miếng trắng) | Qty: 20 | Type: xuat | Maphieu: PX-TG-AA43066 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 2.2 | Type: xuat | Maphieu: PX-TG-AA42959 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100891 (Thơm chín) | Qty: 2 | Type: xuat | Maphieu: PX-TG-AA42959 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 0.6 | Type: xuat | Maphieu: PX-TG-AA42964 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100470 (Dưa lưới) | Qty: 2.6 | Type: xuat | Maphieu: PX-TG-AA42966 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 5.7 | Type: xuat | Maphieu: PX-TG-AA42972 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100260 (Đậu hủ miếng trắng) | Qty: 3 | Type: xuat | Maphieu: PX-TG-AA42984 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 0.5 | Type: xuat | Maphieu: PX-TG-AA42988 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100508 (Xoài cát Hòa Lộc) | Qty: 0.5 | Type: xuat | Maphieu: PX-TG-AA42988 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100508 (Xoài cát Hòa Lộc) | Qty: 0.39 | Type: xuat | Maphieu: PX-TG-AA43012 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100260 (Đậu hủ miếng trắng) | Qty: 15 | Type: xuat | Maphieu: PX-TG-AA43009 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 3.8 | Type: xuat | Maphieu: PX-TG-AA43033 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100260 (Đậu hủ miếng trắng) | Qty: 15 | Type: xuat | Maphieu: PX-TG-AA43038 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100260 (Đậu hủ miếng trắng) | Qty: 75 | Type: xuat | Maphieu: PX-TG-AA43068 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026
+- SP: I100128 (Khoai Tây DL lớn) | Qty: 0.4 | Type: xuat | Maphieu: PX-TG-AA43068 | Note: [AUTOCOMPLETE] Tự động chuyển trạng thái lúc 13:00:01 21/5/2026

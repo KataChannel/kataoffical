@@ -1497,7 +1497,8 @@ async convertDathangImportToTransfer(
           const newGianhap = parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0;
 
           if (oldItem) {
-            // Sản phẩm đã tồn tại - cập nhật slton theo chênh lệch
+            // ❌ ĐÃ BỎ: Không tự cập nhật slton ở đây nữa vì đã được điều chỉnh nguyên tử qua TonkhoManager ở dòng 1159 (Sửa lỗi Double Update)
+            /*
             const oldSlnhan = parseFloat((oldItem.slnhan ?? 0).toFixed(3));
             const diff = newSlnhan - oldSlnhan;
             if (diff !== 0) {
@@ -1508,6 +1509,7 @@ async convertDathangImportToTransfer(
                 },
               });
             }
+            */
 
             // Đảm bảo slchonhap luôn được dọn sạch cho đơn Đã nhận
             await prisma.tonKho.update({
@@ -1558,6 +1560,61 @@ async convertDathangImportToTransfer(
                 isActive: true,
               }
             });
+          }
+        }
+
+        // 🎯 NEW: Đồng bộ lại phiếu nhập kho tự động (Traceability & Stock Voucher Sync)
+        const phieuKhoNhap = await prisma.phieuKho.findFirst({
+          where: {
+            madncc: oldDathang.madncc,
+            type: 'nhap',
+          },
+        });
+
+        if (phieuKhoNhap) {
+          // Xóa các sản phẩm đã bị xóa khỏi đơn NCC khỏi phiếu nhập kho
+          if (deletedProductIds.length > 0) {
+            await prisma.phieuKhoSanpham.deleteMany({
+              where: {
+                phieuKhoId: phieuKhoNhap.id,
+                sanphamId: { in: deletedProductIds },
+              },
+            });
+          }
+
+          // Cập nhật hoặc thêm các sản phẩm trong phiếu nhập kho theo slnhan mới
+          for (const sp of data.sanpham) {
+            const spId = sp.idSP ?? sp.id;
+            const newSlnhan = parseFloat((sp.slnhan ?? 0).toFixed(3));
+
+            if (newSlnhan > 0) {
+              await prisma.phieuKhoSanpham.upsert({
+                where: {
+                  phieuKhoId_sanphamId: {
+                    phieuKhoId: phieuKhoNhap.id,
+                    sanphamId: spId,
+                  },
+                },
+                update: {
+                  soluong: newSlnhan,
+                  ghichu: sp.ghichu,
+                },
+                create: {
+                  phieuKhoId: phieuKhoNhap.id,
+                  sanphamId: spId,
+                  soluong: newSlnhan,
+                  ghichu: sp.ghichu,
+                },
+              });
+            } else {
+              // Nếu số nhận = 0, xóa khỏi phiếu nhập kho
+              await prisma.phieuKhoSanpham.deleteMany({
+                where: {
+                  phieuKhoId: phieuKhoNhap.id,
+                  sanphamId: spId,
+                },
+              });
+            }
           }
         }
 

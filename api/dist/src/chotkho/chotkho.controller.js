@@ -41,6 +41,17 @@ let ChotkhoController = class ChotkhoController {
             throw new common_1.HttpException(error.message || 'Get trace log failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async getProductTimeline(sanphamId, khoId, fromDate, toDate) {
+        try {
+            if (!khoId || !fromDate || !toDate) {
+                throw new common_1.HttpException('Missing required queries: khoId, fromDate, toDate', common_1.HttpStatus.BAD_REQUEST);
+            }
+            return await this.chotkhoService.getProductTimeline(sanphamId, khoId, fromDate, toDate);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Get product timeline failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async getAllProductsByKho(khoId) {
         try {
             return await this.chotkhoService.getAllProductsByKho(khoId);
@@ -148,6 +159,17 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], ChotkhoController.prototype, "getTraceLog", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Get timeline of a specific product with imports, exports, and closings' }),
+    (0, common_1.Get)('products/:sanphamId/timeline'),
+    __param(0, (0, common_1.Param)('sanphamId')),
+    __param(1, (0, common_1.Query)('khoId')),
+    __param(2, (0, common_1.Query)('fromDate')),
+    __param(3, (0, common_1.Query)('toDate')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "getProductTimeline", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get all products with inventory by warehouse' }),
     (0, swagger_1.ApiParam)({ name: 'khoId', type: String, description: 'Warehouse ID' }),

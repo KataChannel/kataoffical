@@ -1257,16 +1257,6 @@ let DathangService = class DathangService {
                     const newSlnhan = parseFloat((sp.slnhan ?? 0).toFixed(3));
                     const newGianhap = parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0;
                     if (oldItem) {
-                        const oldSlnhan = parseFloat((oldItem.slnhan ?? 0).toFixed(3));
-                        const diff = newSlnhan - oldSlnhan;
-                        if (diff !== 0) {
-                            await prisma.tonKho.update({
-                                where: { sanphamId: spId },
-                                data: {
-                                    slton: { increment: diff },
-                                },
-                            });
-                        }
                         await prisma.tonKho.update({
                             where: { sanphamId: spId },
                             data: {
@@ -1313,6 +1303,54 @@ let DathangService = class DathangService {
                                 isActive: true,
                             }
                         });
+                    }
+                }
+                const phieuKhoNhap = await prisma.phieuKho.findFirst({
+                    where: {
+                        madncc: oldDathang.madncc,
+                        type: 'nhap',
+                    },
+                });
+                if (phieuKhoNhap) {
+                    if (deletedProductIds.length > 0) {
+                        await prisma.phieuKhoSanpham.deleteMany({
+                            where: {
+                                phieuKhoId: phieuKhoNhap.id,
+                                sanphamId: { in: deletedProductIds },
+                            },
+                        });
+                    }
+                    for (const sp of data.sanpham) {
+                        const spId = sp.idSP ?? sp.id;
+                        const newSlnhan = parseFloat((sp.slnhan ?? 0).toFixed(3));
+                        if (newSlnhan > 0) {
+                            await prisma.phieuKhoSanpham.upsert({
+                                where: {
+                                    phieuKhoId_sanphamId: {
+                                        phieuKhoId: phieuKhoNhap.id,
+                                        sanphamId: spId,
+                                    },
+                                },
+                                update: {
+                                    soluong: newSlnhan,
+                                    ghichu: sp.ghichu,
+                                },
+                                create: {
+                                    phieuKhoId: phieuKhoNhap.id,
+                                    sanphamId: spId,
+                                    soluong: newSlnhan,
+                                    ghichu: sp.ghichu,
+                                },
+                            });
+                        }
+                        else {
+                            await prisma.phieuKhoSanpham.deleteMany({
+                                where: {
+                                    phieuKhoId: phieuKhoNhap.id,
+                                    sanphamId: spId,
+                                },
+                            });
+                        }
                     }
                 }
                 await prisma.importHistory.create({

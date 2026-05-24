@@ -11,7 +11,10 @@ import {
   signal,
   ViewChild,
   TemplateRef,
+  NgZone,
+  PLATFORM_ID,
 } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -19,11 +22,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
-import { ActivatedRoute, Route, Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
 import { ListPhieugiaohangComponent } from '../listphieugiaohang/listphieugiaohang.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import {
@@ -48,6 +50,8 @@ import { UserService } from '../../user/user.service';
 import { SharedInputService } from '../../../shared/services/shared-input.service';
 import { LoadingUtils } from '../../../shared/utils/loading.utils';
 import { Title } from '@angular/platform-browser';
+import { Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-detailphieugiaohang',
   imports: [
@@ -142,6 +146,10 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
   filterSanpham: any[] = [];
   phieugiaohangId: any = this._PhieugiaohangService.donhangId;
   ListSanpham: any = this._SanphamService.ListSanpham;
+
+  // RxJS for optimized updates
+  private updateSubject = new Subject<any>();
+  private destroy$ = new Subject<void>();
   
   // Store item to be removed for dialog
   itemToRemove: any = null;
@@ -211,14 +219,18 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
   constructor(
     private sharedInputService: SharedInputService
   ) {
-    this._route.paramMap
-      .pipe(takeUntilDestroyed())
-      .subscribe((params) => {
-        const id = params.get('id');
-        this._PhieugiaohangService.setDonhangId(id);
-        // Load products in smaller batches to prevent memory issues
-        this.loadProductsAsync();
-      });
+    this._route.paramMap.subscribe((params) => {
+      const id = params.get('id');
+      this._PhieugiaohangService.setDonhangId(id);
+    });
+
+    // Initialize update stream with debounce
+    this.updateSubject.pipe(
+      debounceTime(this.UPDATE_DEBOUNCE_TIME),
+      takeUntil(this.destroy$)
+    ).subscribe(data => {
+      this.executeUpdate(data);
+    });
 
     effect(() => {
       const user = this._UserService.profile();
@@ -226,7 +238,10 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
       
       if (user && id && id !== '0') {
         // Use timeout to prevent blocking
-        setTimeout(() => this.loadPhieugiaohangData(id), 0);
+        setTimeout(() => {
+            this.loadProductsAsync();
+            this.loadPhieugiaohangData(id);
+        }, 0);
       } else if (id === '0') {
         this._router.navigate(['/admin/phieugiaohang']);
         this._ListphieugiaohangComponent.drawer.close();
@@ -290,7 +305,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
       // Set up paginator and sort after view init
       this.setupDataSource();
       this._ListphieugiaohangComponent.drawer.open();
-      this._router.navigate(['/admin/phieugiaohang', id]);
+      // this._router.navigate(['/admin/phieugiaohang', id]);
     } catch (error) {
       console.error('Error loading phieugiaohang data:', error);
       this._snackBar.open('Lỗi khi tải dữ liệu phiếu giao hàng', '', {
@@ -336,46 +351,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
     this.canEditSlnhan();
     const phieugiaohangId = this.phieugiaohangId();
     if (!phieugiaohangId) return;
-
-    try {
-      await this._PhieugiaohangService.Phieugiaohang({ id: phieugiaohangId });
-      
-      const phieuGiaoHang = this.DetailPhieugiaohang();
-      
-      // Set edit mode based on status
-      this.isEdit.set(phieuGiaoHang.status !== 'hoanthanh');
-
-      // Process sanpham data
-      if (phieuGiaoHang?.sanpham?.length) {
-      const processedSanpham = phieuGiaoHang.sanpham.map((item: any) => ({
-        ...item,
-        ttgiao: (Number(item.slgiao) || 0) * (Number(item.giaban) || 0)
-      }));
-
-      // Sort by title A-Z
-      processedSanpham.sort((a: any, b: any) => {
-        const titleA = a.sanpham?.title || a.title || '';
-        const titleB = b.sanpham?.title || b.title || '';
-        return titleA.localeCompare(titleB, 'vi', { sensitivity: 'base' });
-      });
-
-      // Update signal with processed data
-      this.DetailPhieugiaohang.update((data: any) => ({
-        ...data,
-        sanpham: processedSanpham
-      }));
-      }
-    } catch (error) {
-      console.error('Error loading phieu giao hang:', error);
-      this._snackBar.open('Lỗi khi tải phiếu giao hàng', '', {
-      duration: 2000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-error']
-      });
-    }
-    this.dataSource = new MatTableDataSource(this.DetailPhieugiaohang().sanpham);
-   // Sort by title A-Z
+    
+    // Sort by title A-Z
     this.dataSource.sortingDataAccessor = (item: any, property: string) => {
       console.log(item, property);
       
@@ -427,11 +404,9 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
      if(this.DetailPhieugiaohang()?.madonhang){
       this.titleService.setTitle(`${this.DetailPhieugiaohang()?.madonhang}`);
     }
-    // this.setupDataSource();
   }
 
   ngAfterViewInit() {
-    // Setup paginator và sort sau khi view được khởi tạo
     this.setupDataSource();
   }
 
@@ -464,10 +439,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
     }
     return '';
   }
-  // Thêm method để setup datasource
 
   async handlePhieugiaohangAction() {
-    // Prevent multiple rapid updates
     if (this.isSaving() || this.isUpdating()) {
       console.warn('Update already in progress, skipping...');
       return;
@@ -475,42 +448,26 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
 
     this.isSaving.set(true);
     try {
-      if (this.phieugiaohangId() === '0') {
-        // await this.createPhieugiaohang();
-      } else {
         await this.updatePhieugiaohangOptimized();
-      }
     } finally {
       this.isSaving.set(false);
     }
   }
 
-  // Optimized update method with debouncing and request limiting
   private async updatePhieugiaohangOptimized() {
     const phieugiaohangId = this.phieugiaohangId();
     if (!phieugiaohangId || phieugiaohangId === '0') {
       return;
     }
 
-    // Add to queue and debounce
-    this.updateQueue.set(phieugiaohangId, {
-      data: this.prepareUpdateData(),
-      timestamp: Date.now()
-    });
-
-    // Clear existing timer and set new one
-    if (this.updateDebounceTimer) {
-      clearTimeout(this.updateDebounceTimer);
-    }
-
-    this.updateDebounceTimer = setTimeout(() => {
-      this.processUpdateQueue();
-    }, this.UPDATE_DEBOUNCE_TIME);
+    const data = this.prepareUpdateData();
+    this.originalData = { ...this.DetailPhieugiaohang() };
+    this.DetailPhieugiaohang.set(data);
+    this.updateSubject.next(data);
   }
 
   private prepareUpdateData() {
     try {
-      // Calculate values once and reuse
       const sanphamWithCalculations = this.DetailPhieugiaohang().sanpham?.map((v: any) => {
         const slgiao = Number(v.slgiao) || 0;
         const giaban = Number(v.giaban) || 0;
@@ -538,93 +495,31 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
     }
   }
 
-  private async processUpdateQueue() {
-    if (this.activeUpdateRequests >= this.MAX_CONCURRENT_UPDATES) {
-      // Retry after a short delay if too many concurrent requests
-      setTimeout(() => this.processUpdateQueue(), 100);
-      return;
-    }
-
-    const entries = Array.from(this.updateQueue.entries());
-    if (entries.length === 0) return;
-
-    // Process the most recent update for each ID
-    const latestUpdates = new Map();
-    entries.forEach(([id, data]) => {
-      if (!latestUpdates.has(id) || data.timestamp > latestUpdates.get(id).timestamp) {
-        latestUpdates.set(id, data);
-      }
-    });
-
-    // Clear the queue
-    this.updateQueue.clear();
-
-    // Process updates
-    for (const [id, updateData] of latestUpdates) {
-      if (this.activeUpdateRequests >= this.MAX_CONCURRENT_UPDATES) {
-        // Re-queue remaining updates
-        this.updateQueue.set(id, updateData);
-        setTimeout(() => this.processUpdateQueue(), 200);
-        break;
-      }
-
-      this.executeUpdate(updateData.data);
-    }
-  }
 
   private async executeUpdate(data: any) {
-    if (this.activeUpdateRequests >= this.MAX_CONCURRENT_UPDATES) {
-      console.warn('Max concurrent updates reached, queuing...');
-      return;
-    }
-
-    this.activeUpdateRequests++;
     this.isUpdating.set(true);
 
     try {
-      // Update UI optimistically
-      this.updateUIOptimistically(data);
-
-      // Send update request with timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
       await this._PhieugiaohangService.updatePhieugiao(data);
 
-      clearTimeout(timeoutId);
-
       this._snackBar.open('Cập Nhật Thành Công', '', {
-        duration: 2000,
+        duration: 1000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-success'],
       });
-
-      this.isEdit.update((value) => !value);
-
     } catch (error) {
-      console.error('Lỗi khi cập nhật phieugiaohang:', error);
+      console.error('Lỗi khi cập nhật phiếu giao hàng:', error);
       
-      // Rollback optimistic updates on error
       this.rollbackOptimisticUpdate();
 
-      if (error instanceof Error && error.name === 'AbortError') {
-        this._snackBar.open('Timeout - Vui lòng thử lại', '', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-warning'],
-        });
-      } else {
-        this._snackBar.open('Lỗi khi cập nhật phiếu giao hàng', '', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-error'],
-        });
-      }
+      this._snackBar.open('Lỗi Cập Nhật - Đã hoàn tác thay đổi', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
     } finally {
-      this.activeUpdateRequests--;
       this.isUpdating.set(false);
     }
   }
@@ -686,6 +581,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
 
   // Cleanup method to prevent memory leaks
   ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
     if (this.updateDebounceTimer) {
       clearTimeout(this.updateDebounceTimer);
     }
@@ -901,6 +798,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
     }
   }
   async Hoanthanhhang() {
+    if (this.isUpdating()) return;
+    this.isUpdating.set(true);
     try {
       this.DetailPhieugiaohang.update((v: any) => {
         v.status = 'hoanthanh';
@@ -913,7 +812,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
         verticalPosition: 'top',
         panelClass: ['snackbar-success']
       });
-      this.isEdit.update((value) => !value);
+      this.isEdit.update((value) => false);
     } catch (error) {
       console.error('Lỗi khi hoàn thành đơn hàng:', error);
       this._snackBar.open('Hoàn thành đơn hàng thất bại', '', {
@@ -922,9 +821,13 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
         verticalPosition: 'top',
         panelClass: ['snackbar-error']
       });
+    } finally {
+      this.isUpdating.set(false);
     }
   }
   async Dagiaohang() {
+    if (this.isUpdating()) return;
+    this.isUpdating.set(true);
     try {
       this.DetailPhieugiaohang.update((v: any) => {
         v.status = 'dagiao';
@@ -937,7 +840,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
         verticalPosition: 'top',
         panelClass: ['snackbar-success']
       });
-      this.isEdit.update((value) => !value);
+      this.isEdit.update((value) => false);
     } catch (error) {
       console.error('Lỗi khi nhận đơn hàng:', error);
       this._snackBar.open('Nhận đơn hàng thất bại', '', {
@@ -946,6 +849,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
         verticalPosition: 'top',
         panelClass: ['snackbar-error']
       });
+    } finally {
+      this.isUpdating.set(false);
     }
   }
 
@@ -1117,54 +1022,70 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
         });
       }
     }
+    // Đảm bảo đang ở chế độ xem trước khi in để lấy đủ header và layout đẹp
+    const wasEditing = this.isEdit();
+    if (wasEditing) {
+      this.isEdit.set(false);
+      this._cdr.detectChanges();
+    }
 
-    const printContent = document.getElementById('printContent');
-    if (printContent) {
-      const newWindow = window.open('', '_blank');
-    const tailwindCSS =  `
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: { extend: {} }
-      };
-    </script>
-  `
-      if (newWindow) {
-        newWindow.document.write(`
-          <html>
-          <head>
-            <title>${this.DetailPhieugiaohang()?.madonhang}</title>
-             ${tailwindCSS}
-            <style>
-              body { font-size: 12px; 'Times New Roman', Times, serif !important; }
-              table { width: 100%; border-collapse: collapse; }
-              th, td { border: 1px solid #000; padding: 4px; text-align: left; }
-              .font-times {font-family: 'Times New Roman', Times, serif !important;}
-              @media print { 
-              body { margin: 0; font-family: 'Times New Roman', Times, serif !important;} 
-              img {height:80px}
-             .font-times {font-family: 'Times New Roman', Times, serif !important;}
-              }
-            </style>
-          </head>
-          <body>
-            ${printContent.outerHTML}
-            <script>
-              window.onload = function() { window.print(); window.close(); }
-            </script>
-          </body>
-          </html>
-        `);
-        newWindow.document.close();
-        if(this.DetailPhieugiaohang().status === 'dadat') {
-         this.Dagiaohang();
+    // Thực hiện in sau khi đã chuyển sang chế độ xem
+    setTimeout(async () => {
+      const printContentElement = document.getElementById('printContent');
+      if (printContentElement) {
+        const newWindow = window.open('', '_blank');
+        const tailwindCSS = `
+          <script src="https://cdn.tailwindcss.com"></script>
+          <script>
+            tailwind.config = {
+              theme: { extend: {} }
+            };
+          </script>
+        `;
+        if (newWindow) {
+          newWindow.document.write(`
+            <html>
+            <head>
+              <title>${this.DetailPhieugiaohang()?.madonhang}</title>
+               ${tailwindCSS}
+              <style>
+                body { font-size: 12px; font-family: 'Times New Roman', Times, serif !important; }
+                table { width: 100%; border-collapse: collapse; }
+                th, td { border: 1px solid #000; padding: 4px; text-align: left; }
+                .font-times {font-family: 'Times New Roman', Times, serif !important;}
+                @media print { 
+                body { margin: 0; font-family: 'Times New Roman', Times, serif !important;} 
+                img {height:80px}
+               .font-times {font-family: 'Times New Roman', Times, serif !important;}
+                }
+              </style>
+            </head>
+            <body>
+              ${printContentElement.outerHTML}
+              <script>
+                window.onload = function() { window.print(); window.close(); }
+              </script>
+            </body>
+            </html>
+          `);
+          newWindow.document.close();
+          if (this.DetailPhieugiaohang().status === 'dadat') {
+            this.Dagiaohang();
+          }
+        } else {
+          console.error('Không thể mở cửa sổ in');
         }
       } else {
-        console.error('Không thể mở cửa sổ in');
+        console.error('Không tìm thấy phần tử printContent');
       }
-    } else {
-      console.error('Không tìm thấy phần tử printContent');
-    }
+
+      // Trả lại trạng thái edit nếu trước đó đang edit
+      if (wasEditing) {
+        this.isEdit.set(true);
+        this._cdr.detectChanges();
+      }
+    }, 150);
+
 
 
 

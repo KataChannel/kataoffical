@@ -98,16 +98,38 @@ if (typeof global !== 'undefined') {
   windowMock.top = windowMock;
   windowMock.parent = windowMock;
 
-  (global as any).window = windowMock;
-  (global as any).document = windowMock.document;
-  (global as any).localStorage = windowMock.localStorage;
-  (global as any).sessionStorage = windowMock.sessionStorage;
-  (global as any).navigator = windowMock.navigator;
-  (global as any).location = windowMock.location;
-  (global as any).history = windowMock.history;
-  (global as any).getSelection = windowMock.getSelection;
-  (global as any).addEventListener = windowMock.addEventListener;
-  (global as any).removeEventListener = windowMock.removeEventListener;
+  const safeDefineOnGlobal = (key: string, value: any) => {
+    try {
+      Object.defineProperty(global, key, {
+        value: value,
+        writable: true,
+        configurable: true
+      });
+    } catch (e) {
+      try {
+        (global as any)[key] = value;
+      } catch (err) {
+        try {
+          if ((global as any)[key] && typeof (global as any)[key] === 'object') {
+            Object.assign((global as any)[key], value);
+          }
+        } catch (assignErr) {
+          console.warn(`Could not set or extend global.${key}:`, assignErr);
+        }
+      }
+    }
+  };
+
+  safeDefineOnGlobal('window', windowMock);
+  safeDefineOnGlobal('document', windowMock.document);
+  safeDefineOnGlobal('localStorage', windowMock.localStorage);
+  safeDefineOnGlobal('sessionStorage', windowMock.sessionStorage);
+  safeDefineOnGlobal('navigator', windowMock.navigator);
+  safeDefineOnGlobal('location', windowMock.location);
+  safeDefineOnGlobal('history', windowMock.history);
+  safeDefineOnGlobal('getSelection', windowMock.getSelection);
+  safeDefineOnGlobal('addEventListener', windowMock.addEventListener);
+  safeDefineOnGlobal('removeEventListener', windowMock.removeEventListener);
 }
 
 const bootstrap = () => bootstrapApplication(AppComponent, config);

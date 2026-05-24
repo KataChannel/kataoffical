@@ -28,6 +28,8 @@ import { PhieukhoService } from "../phieukho/phieukho.service";
 import { SanphamService } from "../sanpham/sanpham.service";
 import { GraphqlService } from "../../shared/services/graphql.service";
 import { ChotkhoService } from "../chotkho/chotkho.service";
+import { ReconciliationDialogComponent } from "../chotkho/reconciliation-dialog/reconciliation-dialog.component";
+import { ProductTimelineDialogComponent } from "../chotkho/product-timeline-dialog/product-timeline-dialog.component";
 import {
   readExcelFileNoWorkerArray,
   writeExcelFile,
@@ -57,7 +59,8 @@ import { DetaildexuatComponent } from "./detaildexuat/detaildexuat";
     MatTooltipModule,
     MatDatepickerModule,
     MatDialogModule,
-    DetaildexuatComponent
+    DetaildexuatComponent,
+    ProductTimelineDialogComponent
   ],
   // providers:[provideNativeDateAdapter()]
 })
@@ -398,7 +401,7 @@ export class XuatnhaptonComponent implements OnDestroy {
             take: 99999,
             select: {
               id: true, sanphamId: true, slton: true, sltontt: true, slchogiao: true, slchonhap: true,
-              sanpham: { select: { id: true, masp: true, title: true } },
+              sanpham: { select: { id: true, masp: true, title: true, dvt: true } },
             },
           }),
           this._GraphqlService.findAll('tonkho', {
@@ -425,7 +428,7 @@ export class XuatnhaptonComponent implements OnDestroy {
           this._GraphqlService.findAll('sanpham', {
             where: { OR: [{ masp: { in: dsMaspFromExcel } }, { isActive: true }] },
             take: 10000,
-            select: { id: true, masp: true, title: true },
+            select: { id: true, masp: true, title: true, dvt: true },
           }),
         ]);
 
@@ -557,16 +560,77 @@ export class XuatnhaptonComponent implements OnDestroy {
           return;
         }
 
+        // --- BƯỚC 1: LƯU DỰ LIỆU CHỐT KHO THEO FILE TRƯỚC ---
         this._snackBar.open('Đang lưu dữ liệu chốt kho...', '', { duration: 0 });
+        let ckResult: any = null;
         if (allChangedDetails.length > 0) {
           const defaultKhoId = '4cc01811-61f5-4bdc-83de-a493764e9258';
-          await this._ChotkhoService.createChotkhoWithDetails({
+          ckResult = await this._ChotkhoService.createChotkhoWithDetails({
             ngaychot: DateHelpers.now(),
             title: `ĐIỀU CHỈNH CHỐT KHO TỰ ĐỘNG [EXCEL]`,
             khoId: defaultKhoId,
             ghichu: `Chốt kho từ Excel (${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm)`,
             details: allChangedDetails
           });
+        }
+        this._snackBar.dismiss();
+
+        // --- BƯỚC 2: SAU KHI CHỐT KHO THEO FILE, HIỂN THỊ DIALOG ĐỐI SOÁT THEO SỐ MỚI ĐÓ ---
+        const discrepantItems = allChangedDetails.filter((item: any) => {
+          const diff = Number(item.sltonhethong) - Number(item.sltonthucte) - Number(item.slhuy);
+          return Math.abs(diff) > 0.001;
+        });
+
+        if (discrepantItems.length > 0 && ckResult && ckResult.id) {
+          const dialogItems = discrepantItems.map((item: any) => {
+            const tk = allTonkho.find((t: any) => t.sanphamId === item.sanphamId);
+            const sp = allSanpham.find((s: any) => s.id === item.sanphamId);
+            const sltonhethong = Number(item.sltonhethong) || 0;
+            const sltonthucte = Number(item.sltonthucte) || 0;
+            const slhuy = Number(item.slhuy) || 0;
+            const chenhlech = sltonhethong - sltonthucte - slhuy;
+            return {
+              sanphamId: item.sanphamId,
+              masp: sp?.masp || tk?.sanpham?.masp || '',
+              title: sp?.title || tk?.sanpham?.title || '',
+              dvt: sp?.dvt || tk?.sanpham?.dvt || '',
+              sltonhethong: sltonhethong,
+              sltonthucte: sltonthucte,
+              slhuy: slhuy,
+              chenhlech: chenhlech,
+              slDieuChinh: sltonthucte,
+              ghichuDieuChinh: ''
+            };
+          });
+
+          const reconDialogRef = this._dialog.open(ReconciliationDialogComponent, {
+            data: { items: dialogItems },
+            width: '900px',
+            disableClose: true
+          });
+
+          const reconResult = await reconDialogRef.afterClosed().toPromise();
+          if (reconResult) {
+            const finalDetailsToSave = allChangedDetails.map((detailItem: any) => {
+              const adjustedItem = reconResult.find((item: any) => item.sanphamId === detailItem.sanphamId);
+              if (adjustedItem) {
+                return {
+                  ...detailItem,
+                  sltonthucte: adjustedItem.slDieuChinh,
+                  slhuy: adjustedItem.slhuy,
+                  ghichu: adjustedItem.ghichuDieuChinh || detailItem.ghichu,
+                };
+              }
+              return detailItem;
+            });
+
+            this._snackBar.open('Đang cập nhật số liệu đối soát mới...', '', { duration: 0 });
+            await this._ChotkhoService.updateChotkhoWithDetails(ckResult.id, {
+              ...ckResult,
+              details: finalDetailsToSave
+            });
+            this._snackBar.dismiss();
+          }
         }
 
         this._snackBar.dismiss();
@@ -1146,6 +1210,23 @@ export class XuatnhaptonComponent implements OnDestroy {
     );
 
     return [csvHeaders, ...csvRows].join('\n');
+  }
+
+  openProductTimeline(row: any): void {
+    if (!row || !row.sanphamId) return;
+    const defaultKhoId = '4cc01811-61f5-4bdc-83de-a493764e9258';
+    this._dialog.open(ProductTimelineDialogComponent, {
+      width: '95vw',
+      maxWidth: '1200px',
+      height: '90vh',
+      data: {
+        sanphamId: row.sanphamId,
+        masp: row.masp,
+        title: row.title,
+        dvt: row.dvt,
+        khoId: defaultKhoId
+      }
+    });
   }
 
 }

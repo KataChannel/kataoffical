@@ -80,7 +80,7 @@
     <!-- <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>
     </button> -->
-    <button *ngIf="!isEdit()" mat-icon-button color="primary" 
+    <button mat-icon-button color="primary" 
             [disabled]="isLoading()" 
             (click)="printContent()">
       <mat-icon>print</mat-icon>
@@ -95,9 +95,8 @@
         <mat-icon>save</mat-icon>
       }
     </button>
-    <!-- @if(this.DetailPhieugiaohang().status !=='danhan' || this.profile().roles.includes('Admin')){ -->
-    <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
-      <mat-icon>edit</mat-icon>
+    <button mat-icon-button color="primary" (click)="toggleEdit()">
+      <mat-icon>{{ isEdit() ? 'visibility' : 'edit' }}</mat-icon>
     </button>
     <!-- } -->
   </div>

@@ -1,4 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, Inject, PLATFORM_ID, NgZone } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Apollo, gql } from 'apollo-angular';
 import { ApolloQueryResult } from '@apollo/client/core';
 import { firstValueFrom } from 'rxjs';
@@ -294,9 +295,17 @@ export class GraphqlService {
   // Loading states
   private loadingStates = new Map<string, boolean>();
   
-  constructor(private apollo: Apollo) {
-    this.initializeCacheCleanup();
-    this.performHealthCheck();
+  constructor(
+    private apollo: Apollo,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private ngZone: NgZone
+  ) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.ngZone.runOutsideAngular(() => {
+        this.initializeCacheCleanup();
+      });
+      this.performHealthCheck();
+    }
   }
 
   // ========================= CACHE MANAGEMENT =========================

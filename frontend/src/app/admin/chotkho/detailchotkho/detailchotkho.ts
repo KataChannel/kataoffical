@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 import { ListChotkhoComponent } from '../listchotkho/listchotkho';
 import { ChotkhoService } from '../chotkho.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProductSelectionDialogComponent, ProductSelectionResult } from '../product-selection-dialog/product-selection-dialog.component';
 import { SearchfilterComponent } from '../../../shared/common/searchfilter123/searchfilter.component';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
@@ -25,6 +26,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
 // Remove static XLSX imports to fix SSR issues
 import { UserService } from '../../user/user.service';
 import { KhoService } from '../../kho/kho.service';
+import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconciliation-dialog.component';
   @Component({
     selector: 'app-detailchotkho',
     imports: [
@@ -41,7 +43,8 @@ import { KhoService } from '../../kho/kho.service';
       MatSortModule,
       MatMenuModule,
       CommonModule,
-      MatSlideToggleModule
+      MatSlideToggleModule,
+      MatProgressSpinnerModule
     ],
     templateUrl: './detailchotkho.html',
     styleUrl: './detailchotkho.scss'
@@ -96,6 +99,7 @@ import { KhoService } from '../../kho/kho.service';
     pendingOrders = signal<any[]>([]);
     selectedOrderIds = signal<string[]>([]);
     isPendingLoading = signal(false);
+    isSaving = signal(false);
     
     constructor(){
       this._route.paramMap.subscribe((params) => {
@@ -206,11 +210,84 @@ import { KhoService } from '../../kho/kho.service';
     }
 
     async handleChotkhoAction() {
-      if (this.chotkhoId() === 'new') {
-        await this.createChotkho();
+      if (this.isSaving()) return;
+      
+      const details = this.DetailChotkho()?.details || [];
+      const discrepantItems = details.filter((item: any) => (item.chenhlech || 0) !== 0);
+
+      if (discrepantItems.length > 0) {
+        // Map elements to ReconciliationItem format
+        const dialogItems = discrepantItems.map((item: any) => ({
+          sanphamId: item.sanphamId,
+          masp: item.masp || item.sanpham?.masp || '',
+          title: item.title || item.sanpham?.title || '',
+          dvt: item.dvt || item.sanpham?.dvt || '',
+          sltonhethong: Number(item.sltonhethong) || 0,
+          sltonthucte: Number(item.sltonthucte) || 0,
+          slhuy: Number(item.slhuy) || 0,
+          chenhlech: Number(item.chenhlech) || 0,
+          slDieuChinh: Number(item.sltonthucte) || 0, // Default is sltonthucte
+          ghichuDieuChinh: ''
+        }));
+
+        // Open Dialog
+        const result = await new Promise<any[]>((resolve) => {
+          const dialogRef = this._dialog.open(ReconciliationDialogComponent, {
+            data: { items: dialogItems },
+            width: '900px',
+            disableClose: true
+          });
+          dialogRef.afterClosed().subscribe((res) => {
+            resolve(res);
+          });
+        });
+
+        // If user cancelled, abort saving
+        if (!result) {
+          return;
+        }
+
+        // Apply adjustments back to DetailChotkho and other internal structures
+        this.DetailChotkho.update((v: any) => {
+          const updatedDetails = (v.details || []).map((detailItem: any) => {
+            const adjustedItem = result.find((item: any) => item.sanphamId === detailItem.sanphamId);
+            if (adjustedItem) {
+              return {
+                ...detailItem,
+                sltonthucte: adjustedItem.slDieuChinh,
+                ghichu: adjustedItem.ghichuDieuChinh || detailItem.ghichu,
+                chenhlech: adjustedItem.chenhlech
+              };
+            }
+            return detailItem;
+          });
+          return {
+            ...v,
+            details: updatedDetails
+          };
+        });
+
+        // Update dataSource for table display
+        this.dataSource.update(ds => {
+          ds.data = [...this.DetailChotkho().details];
+          ds.sort = this.sort;
+          return ds;
+        });
+
+        // Update ListFilter for consistency
+        this.ListFilter = this.DetailChotkho().details || [];
       }
-      else {
-        await this.updateChotkho();
+
+      this.isSaving.set(true);
+      try {
+        if (this.chotkhoId() === 'new') {
+          await this.createChotkho();
+        }
+        else {
+          await this.updateChotkho();
+        }
+      } finally {
+        this.isSaving.set(false);
       }
     }
     private async createChotkho() {

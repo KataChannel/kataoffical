@@ -364,8 +364,9 @@ export class SanphamService {
   }
 
   async findby(param: any) {
-    const { page = 1, pageSize: rawPageSize = 50, isOne, ...where } = param;
-    const pageSize = Math.min(Math.max(Number(rawPageSize) || 50, 1), 1000); // 🛡️ CAP at 1000 to prevent OOM
+    const { page = 1, pageSize: rawPageSize = 50, isOne, bypassLimit, ...where } = param;
+    const maxPageSize = bypassLimit ? 100000 : 1000;
+    const pageSize = Math.min(Math.max(Number(rawPageSize) || 50, 1), maxPageSize);
     const whereClause: any = {};
     if (where.id) {
       whereClause.id = where.id;

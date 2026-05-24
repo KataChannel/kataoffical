@@ -241,11 +241,11 @@ export class ListImportdataComponent implements OnInit {
       };
 
       this.loadingMessage.set('Đang tải danh sách sản phẩm...');
-      await this._SanphamService.getSanphamBy({ pageSize: 99999 });
+      await this._SanphamService.getSanphamBy({ pageSize: 99999, bypassLimit: true });
       this.rawListSP = this._SanphamService.ListSanpham();
 
       this.loadingMessage.set('Đang tải danh sách khách hàng...');
-      await this._KhachhangService.getKhachhangBy({ pageSize: 99999 });
+      await this._KhachhangService.getKhachhangBy({ pageSize: 99999, bypassLimit: true });
       this.rawListKH = this._KhachhangService.ListKhachhang();
 
       this.loadingMessage.set('Đang tải danh sách nhà cung cấp...');

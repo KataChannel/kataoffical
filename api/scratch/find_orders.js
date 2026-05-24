@@ -1,23 +1,35 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function findOrders() {
-    const orders = await prisma.donhang.findMany({
+async function main() {
+    const masp = 'I100480';
+    console.log(`=== SEARCHING ALL HISTORICAL ORDERS FOR ${masp} ===`);
+
+    const sp = await prisma.sanpham.findUnique({ where: { masp } });
+    if (!sp) {
+        console.error('Product not found!');
+        return;
+    }
+
+    const orderItems = await prisma.donhangsanpham.findMany({
         where: {
-            OR: [
-                { khachhang: { name: { contains: 'SIAM' } } },
-                { khachhang: { name: { contains: 'Anh Sơn' } } }
-            ]
+            idSP: sp.id
         },
         include: {
-            khachhang: true,
-            sanpham: { include: { sanpham: true } }
+            donhang: true
         },
-        orderBy: { createdAt: 'desc' },
-        take: 20
+        orderBy: {
+            donhang: {
+                createdAt: 'desc'
+            }
+        },
+        take: 30
     });
 
-    console.log(JSON.stringify(orders, null, 2));
+    console.log(`Found ${orderItems.length} orders total.`);
+    orderItems.forEach(item => {
+        console.log(`Order: ${item.donhang.madonhang} | Trạng thái: ${item.donhang.status} | Đặt: ${item.sldat} | Giao: ${item.slgiao} | Nhận: ${item.slnhan} | Khách: ${item.donhang.tenkhachhang} | Ngày giao: ${item.donhang.ngaygiao?.toLocaleString('vi-VN')} | CreatedAt: ${item.donhang.createdAt.toLocaleString('vi-VN')} | UpdatedAt: ${item.donhang.updatedAt.toLocaleString('vi-VN')}`);
+    });
 }
 
-findOrders().catch(console.error).finally(() => prisma.$disconnect());
+main().catch(console.error).finally(() => prisma.$disconnect());

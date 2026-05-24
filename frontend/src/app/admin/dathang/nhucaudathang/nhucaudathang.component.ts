@@ -58,6 +58,7 @@ import {
 } from './nested-data-dialog/nested-data-dialog.component';
 import moment from 'moment';
 import { StockWarningDialogComponent, StockWarningItem, StockWarningData } from './stock-warning-dialog.component';
+import { ReconciliationDialogComponent } from '../../chotkho/reconciliation-dialog/reconciliation-dialog.component';
 import { MagicConfirmDialogComponent } from './magic-confirm-dialog.component';
 import { firstValueFrom } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -1138,6 +1139,7 @@ export class NhucaudathangComponent {
                   id: true,
                   masp: true,
                   title: true,
+                  dvt: true,
                   Dathangsanpham: {
                     where: { dathang: { status: { in: ['dadat', 'dagiao'] } } },
                     orderBy: { dathang: { createdAt: 'asc' } },
@@ -1168,6 +1170,7 @@ export class NhucaudathangComponent {
               id: true,
               masp: true,
               title: true,
+              dvt: true,
             },
           }),
         ]);
@@ -1351,9 +1354,7 @@ export class NhucaudathangComponent {
           return;
         }
 
-        // ================================================================
-        // BƯỚC XỬ LÝ: Chỉ lưu khi đã xác nhận
-        // ================================================================
+        // --- BƯỚC 1: LƯU DỰ LIỆU CHỐT KHO THEO FILE TRƯỚC ---
         this._snackBar.open('Đang lưu dữ liệu chốt kho...', '', {
           duration: 0,
           horizontalPosition: 'end',
@@ -1361,12 +1362,11 @@ export class NhucaudathangComponent {
           panelClass: ['snackbar-info'],
         });
 
-        // ✅ MIGRATION: Gửi request gọi `ChotkhoService` thay vì `PhieukhoService` 
-        // Luồng mới ghi lại đầy đủ lịch sử Master-Detail và có Audit Log tự động
+        let ckResult: any = null;
         if (allChangedDetails.length > 0) {
           const defaultKhoId = '4cc01811-61f5-4bdc-83de-a493764e9258'; // KHO TỔNG - HCM (fallback)
 
-          const ckResult = await this._ChotkhoService.createChotkhoWithDetails({
+          ckResult = await this._ChotkhoService.createChotkhoWithDetails({
             ngaychot: DateHelpers.now(),
             title: `ĐIỀU CHỈNH CHỐT KHO TỰ ĐỘNG [EXCEL]`,
             khoId: defaultKhoId,
@@ -1376,6 +1376,71 @@ export class NhucaudathangComponent {
 
           if (!ckResult || ckResult === false) {
             throw new Error("Tạo chốt kho thất bại từ API. Vui lòng kiểm tra lại log hệ thống.");
+          }
+        }
+        this._snackBar.dismiss();
+
+        // --- BƯỚC 2: SAU KHI CHỐT KHO THEO FILE, HIỂN THỊ DIALOG ĐỐI SOÁT THEO SỐ MỚI ĐÓ ---
+        const discrepantItems = allChangedDetails.filter((item: any) => {
+          const diff = Number(item.sltonhethong) - Number(item.sltonthucte) - Number(item.slhuy);
+          return Math.abs(diff) > 0.001;
+        });
+
+        if (discrepantItems.length > 0 && ckResult && ckResult.id) {
+          const dialogItems = discrepantItems.map((item: any) => {
+            const tk = allTonkho.find((t: any) => t.sanphamId === item.sanphamId);
+            const sp = allSanpham.find((s: any) => s.id === item.sanphamId);
+            const sltonhethong = Number(item.sltonhethong) || 0;
+            const sltonthucte = Number(item.sltonthucte) || 0;
+            const slhuy = Number(item.slhuy) || 0;
+            const chenhlech = sltonhethong - sltonthucte - slhuy;
+            return {
+              sanphamId: item.sanphamId,
+              masp: sp?.masp || tk?.sanpham?.masp || '',
+              title: sp?.title || tk?.sanpham?.title || '',
+              dvt: sp?.dvt || tk?.sanpham?.dvt || '',
+              sltonhethong: sltonhethong,
+              sltonthucte: sltonthucte,
+              slhuy: slhuy,
+              chenhlech: chenhlech,
+              slDieuChinh: sltonthucte,
+              ghichuDieuChinh: ''
+            };
+          });
+
+          const reconDialogRef = this._dialog.open(ReconciliationDialogComponent, {
+            data: { items: dialogItems },
+            width: '900px',
+            disableClose: true
+          });
+
+          const reconResult = await reconDialogRef.afterClosed().toPromise();
+          if (reconResult) {
+            const finalDetailsToSave = allChangedDetails.map((detailItem: any) => {
+              const adjustedItem = reconResult.find((item: any) => item.sanphamId === detailItem.sanphamId);
+              if (adjustedItem) {
+                return {
+                  ...detailItem,
+                  sltonthucte: adjustedItem.slDieuChinh,
+                  slhuy: adjustedItem.slhuy,
+                  ghichu: adjustedItem.ghichuDieuChinh || detailItem.ghichu,
+                };
+              }
+              return detailItem;
+            });
+
+            this._snackBar.open('Đang cập nhật số liệu đối soát mới...', '', {
+              duration: 0,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-info'],
+            });
+
+            await this._ChotkhoService.updateChotkhoWithDetails(ckResult.id, {
+              ...ckResult,
+              details: finalDetailsToSave
+            });
+            this._snackBar.dismiss();
           }
         }
 
