@@ -148,7 +148,7 @@ elif [ "$is_sandbox" == "true" ]; then
     ssh $SERVER_USER@$SERVER_IP << EOF
       cd $PROJECT_DIR
       echo "🧹 Đang dọn dẹp container sandbox cũ..."
-      docker rm -f rausachsandbox-backend rausachsandbox-frontend 2>/dev/null || true
+      docker rm -f rausachsandbox-backend rausachsandbox-frontend rausachsandbox-mcp 2>/dev/null || true
       
       echo "🚀 Khởi chạy Sandbox Backend (Port 53333)..."
       docker run -d --name rausachsandbox-backend \
@@ -162,6 +162,15 @@ elif [ "$is_sandbox" == "true" ]; then
         -e MINIO_PORT="9000" \
         $BE_IMAGE:latest
 
+      echo "🚀 Khởi chạy Sandbox MCP Server (Port 53002)..."
+      docker run -d --name rausachsandbox-mcp \
+        -p 53002:3002 \
+        --network rausachfinal_default \
+        --env-file api/.env \
+        -e DATABASE_URL="postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/testdata?schema=public" \
+        --entrypoint bun \
+        $BE_IMAGE:latest run scripts/mcp_server.ts --sse
+
       echo "🚀 Khởi chạy Sandbox Frontend (Port 54303)..."
       docker run -d --name rausachsandbox-frontend \
         -p 54303:4301 \
@@ -170,6 +179,7 @@ elif [ "$is_sandbox" == "true" ]; then
 
       echo "🎉 TRIỂN KHAI SANDBOX THÀNH CÔNG!"
       echo "🌐 Backend: http://$SERVER_IP:53333"
+      echo "🌐 MCP Server (SSE): http://$SERVER_IP:53002/sse"
       echo "🌐 Frontend: http://$SERVER_IP:54303"
 EOF
 else

@@ -17,6 +17,9 @@ RUN bunx prisma generate
 #    Như vậy /app/src và /app/prisma sẽ chứa file .js, giúp require() absolute paths chạy chuẩn xác!
 COPY dist/ ./
 
+# 4. Copy scripts folder for developer tooling (MCP)
+COPY scripts/ ./scripts/
+
 # Verify
 RUN test -f src/main.js \
     && test -f prisma/prisma.service.js \

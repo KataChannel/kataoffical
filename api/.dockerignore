@@ -75,4 +75,6 @@ rausach_json
 !tsconfig.build.json
 !nest-cli.json
 !eslint.config.mjs
+!scripts/
+!scripts/mcp_server.ts
 

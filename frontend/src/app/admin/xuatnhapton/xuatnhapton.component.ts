@@ -59,8 +59,7 @@ import { DetaildexuatComponent } from "./detaildexuat/detaildexuat";
     MatTooltipModule,
     MatDatepickerModule,
     MatDialogModule,
-    DetaildexuatComponent,
-    ProductTimelineDialogComponent
+    DetaildexuatComponent
   ],
   // providers:[provideNativeDateAdapter()]
 })

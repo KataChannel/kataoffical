@@ -22,6 +22,7 @@
   "dependencies": {
     "@apollo/server": "^4.11.3",
     "@google/generative-ai": "^0.24.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@katachanneloffical/kata-snippets": "^1.0.18",
     "@nestjs/apollo": "^10.2.1",
     "@nestjs/common": "^10.0.0",

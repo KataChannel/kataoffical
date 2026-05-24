@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
-  //APIURL: 'http://localhost:3331',
-  APIURL: 'http://localhost:3331',
+  //APIURL: 'https://apisandbox.rausachtrangia.com',
+  APIURL: 'https://apisandbox.rausachtrangia.com',
   ImageURL: 'https://media.rausachtrangia.com/',
   app_id: '1416835846626859002',
   secret_key: 'HLBWj23hToA9fuiQvQY4',
