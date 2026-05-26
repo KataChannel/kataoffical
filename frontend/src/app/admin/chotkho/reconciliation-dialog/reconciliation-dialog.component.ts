@@ -105,10 +105,18 @@ export interface ReconciliationItem {
                     </mat-icon>
                   </span>
                 </th>
-                <th (click)="changeSort('sltonthucte')" class="p-3 text-xs font-semibold uppercase tracking-wider text-slate-500 text-right cursor-pointer hover:bg-slate-100/80 transition-colors">
-                  <span class="flex items-center justify-end gap-1">
+                <th (click)="changeSort('sltonthucte')" class="p-3 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center w-28 cursor-pointer hover:bg-slate-100/80 transition-colors">
+                  <span class="flex items-center justify-center gap-1">
                     SL Thực Tế
                     <mat-icon class="text-[14px] !w-3.5 !h-3.5 leading-none !m-0" *ngIf="sortField === 'sltonthucte'">
+                      {{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+                    </mat-icon>
+                  </span>
+                </th>
+                <th (click)="changeSort('slhuy')" class="p-3 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center w-24 cursor-pointer hover:bg-slate-100/80 transition-colors">
+                  <span class="flex items-center justify-center gap-1">
+                    SL Hủy
+                    <mat-icon class="text-[14px] !w-3.5 !h-3.5 leading-none !m-0" *ngIf="sortField === 'slhuy'">
                       {{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
                     </mat-icon>
                   </span>
@@ -140,18 +148,27 @@ export interface ReconciliationItem {
                 <td (click)="openProductTimeline(item)" class="p-3 text-sm font-semibold text-slate-800 hover:text-indigo-600 hover:underline cursor-pointer">{{ item.title }}</td>
                 <td class="p-3 text-sm text-slate-500 text-center">{{ item.dvt || '-' }}</td>
                 <td class="p-3 text-sm text-slate-600 text-right font-mono">{{ item.sltonhethong | number:'1.0-3' }}</td>
-                <td class="p-3 text-sm text-slate-600 text-right font-mono">{{ item.sltonthucte | number:'1.0-3' }}</td>
+                <td class="p-2">
+                  <input 
+                    type="number" 
+                    [(ngModel)]="item.sltonthucte" 
+                    (ngModelChange)="onAdjustmentChange(item)"
+                    class="w-full px-2.5 py-1 bg-white border border-slate-200 rounded-md text-sm text-slate-800 font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none text-center font-mono shadow-sm">
+                </td>
+                <td class="p-2">
+                  <input 
+                    type="number" 
+                    [(ngModel)]="item.slhuy" 
+                    (ngModelChange)="onAdjustmentChange(item)"
+                    class="w-full px-2.5 py-1 bg-white border border-slate-200 rounded-md text-sm text-rose-700 font-bold focus:border-rose-500 focus:ring-1 focus:ring-rose-500 focus:outline-none text-center font-mono shadow-sm">
+                </td>
                 <td class="p-3 text-sm text-right font-mono font-bold">
                   <span [ngClass]="item.chenhlech > 0 ? 'text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded' : (item.chenhlech < 0 ? 'text-rose-700 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded' : 'text-slate-500 bg-slate-50 px-2 py-0.5 rounded')">
                     {{ item.chenhlech | number:'1.0-3' }}
                   </span>
                 </td>
-                <td class="p-2">
-                  <input 
-                    type="number" 
-                    [(ngModel)]="item.slDieuChinh" 
-                    (ngModelChange)="onAdjustmentChange(item)"
-                    class="w-full px-2.5 py-1 bg-white border border-slate-200 rounded-md text-sm text-emerald-700 font-bold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none text-center font-mono shadow-sm">
+                <td class="p-3 text-sm text-emerald-700 font-bold text-center font-mono bg-emerald-50/40 border-x border-emerald-100/50">
+                  {{ item.slDieuChinh | number:'1.0-3' }}
                 </td>
                 <td class="p-2">
                   <input 
@@ -162,7 +179,7 @@ export interface ReconciliationItem {
                 </td>
               </tr>
               <tr *ngIf="filteredItems.length === 0">
-                <td colspan="8" class="p-6 text-center text-sm text-slate-500">
+                <td colspan="9" class="p-6 text-center text-sm text-slate-500">
                   Không tìm thấy sản phẩm trùng khớp.
                 </td>
               </tr>
@@ -215,11 +232,16 @@ export class ReconciliationDialogComponent implements OnInit {
     if (data?.items) {
       this.items = data.items
         .filter(item => (Number(item.sltonhethong) || 0) > 0)
-        .map(item => ({
-          ...item,
-          slDieuChinh: item.slDieuChinh !== undefined ? item.slDieuChinh : item.sltonthucte,
-          ghichuDieuChinh: item.ghichuDieuChinh || ''
-        }));
+        .map(item => {
+          const slhuy = item.slhuy !== undefined ? Number(item.slhuy) : 0;
+          const sltonthucte = Number(item.sltonthucte) || 0;
+          return {
+            ...item,
+            slhuy: slhuy,
+            slDieuChinh: sltonthucte,
+            ghichuDieuChinh: item.ghichuDieuChinh || ''
+          };
+        });
       this.applyFilterAndSort();
     }
   }
@@ -286,10 +308,12 @@ export class ReconciliationDialogComponent implements OnInit {
   }
 
   onAdjustmentChange(item: ReconciliationItem) {
-    const sltonhethong = Number(item.sltonhethong) || 0;
-    const slDieuChinh = Number(item.slDieuChinh) || 0;
+    const sltonthucte = Number(item.sltonthucte) || 0;
     const slhuy = Number(item.slhuy) || 0;
-    item.chenhlech = sltonhethong - slDieuChinh - slhuy;
+    item.slDieuChinh = sltonthucte;
+
+    const sltonhethong = Number(item.sltonhethong) || 0;
+    item.chenhlech = sltonhethong - item.slDieuChinh;
   }
 
   onCancel() {

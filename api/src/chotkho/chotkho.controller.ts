@@ -38,7 +38,7 @@ export class ChotkhoController {
   @Post()
   @Audit({ entity: 'Chotkho', action: AuditAction.CREATE, includeResponse: true })
   @SmartCache({
-    invalidate: ['chotkho'],
+    invalidate: ['chotkho', 'kho'],
     get: { ttl: 600, keyPrefix: 'chotkho' },
     updateCache: true
   })
@@ -132,7 +132,7 @@ export class ChotkhoController {
   @Patch(':id/with-details')
   @Audit({ entity: 'Chotkho', action: AuditAction.UPDATE, includeResponse: true })
   @SmartCache({
-    invalidate: ['chotkho'],
+    invalidate: ['chotkho', 'kho'],
     get: { ttl: 600, keyPrefix: 'chotkho' },
     updateCache: true
   })
@@ -152,7 +152,7 @@ export class ChotkhoController {
   @Patch(':id')
   @Audit({ entity: 'Chotkho', action: AuditAction.UPDATE, includeResponse: true })
   @SmartCache({
-    invalidate: ['chotkho'],
+    invalidate: ['chotkho', 'kho'],
     get: { ttl: 600, keyPrefix: 'chotkho' },
     updateCache: true
   })
@@ -170,7 +170,7 @@ export class ChotkhoController {
   @UseGuards(JwtAuthGuard) 
   @Delete(':id')
   @Audit({ entity: 'Chotkho', action: AuditAction.DELETE, includeResponse: true })
-  @CacheInvalidate(['chotkho'])
+  @CacheInvalidate(['chotkho', 'kho'])
   async remove(@Param('id') id: string) {
     try {
       return await this.chotkhoService.remove(id);

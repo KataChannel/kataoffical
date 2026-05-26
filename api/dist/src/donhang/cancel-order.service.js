@@ -13,9 +13,11 @@ exports.CancelOrderService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const ioredis_1 = require("ioredis");
+const tonkho_manager_service_1 = require("../common/tonkho-manager.service");
 let CancelOrderService = class CancelOrderService {
-    constructor(prisma) {
+    constructor(prisma, tonkhoManager) {
         this.prisma = prisma;
+        this.tonkhoManager = tonkhoManager;
         this.redis = new ioredis_1.default({
             host: process.env.REDIS_HOST || 'localhost',
             port: parseInt(process.env.REDIS_PORT || '6379'),
@@ -96,24 +98,13 @@ let CancelOrderService = class CancelOrderService {
                     const slgiao = Number(item.slgiao || 0);
                     if (item.sanpham && slgiao > 0) {
                         const sanphamId = item.sanpham.id;
-                        await tx.tonKho.upsert({
-                            where: { sanphamId },
-                            create: {
+                        await this.tonkhoManager.updateTonkhoAtomic([{
                                 sanphamId,
+                                khoId: donhang.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+                                operation: 'increment',
                                 slton: slgiao,
-                                sltontt: slgiao,
-                                slchogiao: 0,
-                                slchonhap: 0,
-                            },
-                            update: {
-                                slton: {
-                                    increment: slgiao
-                                },
-                                sltontt: {
-                                    increment: slgiao
-                                }
-                            }
-                        });
+                                reason: `Hoàn kho do hủy đơn hàng ${donhang.madonhang}`
+                            }], tx);
                         restoredItems.push({
                             masp: item.sanpham.masp,
                             tensanpham: item.sanpham.title,
@@ -217,25 +208,23 @@ let CancelOrderService = class CancelOrderService {
                         const currentTonKho = await tx.tonKho.findUnique({
                             where: { sanphamId }
                         });
-                        if (currentTonKho) {
-                            const newSlton = Math.max(0, Number(currentTonKho.slton) - slnhan);
-                            const newSltontt = Math.max(0, Number(currentTonKho.sltontt) - slnhan);
-                            await tx.tonKho.update({
-                                where: { sanphamId },
-                                data: {
-                                    slton: newSlton,
-                                    sltontt: newSltontt
-                                }
-                            });
-                            restoredItems.push({
-                                masp: item.sanpham.masp,
-                                tensanpham: item.sanpham.title,
-                                soluong: slnhan,
-                                oldTonkho: Number(currentTonKho.slton),
-                                newTonkho: newSlton
-                            });
-                            console.log(`[CancelOrder] Trừ ${slnhan} ${item.sanpham.masp} khỏi kho (Tồn kho: ${currentTonKho.slton} → ${newSlton})`);
-                        }
+                        const oldStock = currentTonKho ? Number(currentTonKho.slton) : 0;
+                        const newStock = Math.max(0, oldStock - slnhan);
+                        await this.tonkhoManager.updateTonkhoAtomic([{
+                                sanphamId,
+                                khoId: dathang.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+                                operation: 'decrement',
+                                slton: slnhan,
+                                reason: `Trừ kho do hủy đơn đặt hàng ${dathang.madncc}`
+                            }], tx);
+                        restoredItems.push({
+                            masp: item.sanpham.masp,
+                            tensanpham: item.sanpham.title,
+                            soluong: slnhan,
+                            oldTonkho: oldStock,
+                            newTonkho: newStock
+                        });
+                        console.log(`[CancelOrder] Trừ ${slnhan} ${item.sanpham.masp} khỏi kho (Tồn kho: ${oldStock} → ${newStock})`);
                     }
                 }
                 await tx.phieuKho.deleteMany({
@@ -349,6 +338,7 @@ let CancelOrderService = class CancelOrderService {
 exports.CancelOrderService = CancelOrderService;
 exports.CancelOrderService = CancelOrderService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        tonkho_manager_service_1.TonkhoManagerService])
 ], CancelOrderService);
 //# sourceMappingURL=cancel-order.service.js.map

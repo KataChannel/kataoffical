@@ -279,6 +279,7 @@ import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconcil
               return {
                 ...detailItem,
                 sltonthucte: adjustedItem.slDieuChinh,
+                slhuy: adjustedItem.slhuy,
                 ghichu: adjustedItem.ghichuDieuChinh || detailItem.ghichu,
                 chenhlech: adjustedItem.chenhlech
               };
@@ -820,8 +821,7 @@ import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconcil
             if (field === 'sltonthucte' || field === 'slhuy') {
               const sltonhethong = Number(updatedDetail.sltonhethong) || 0;
               const sltonthucte = Number(updatedDetail.sltonthucte) || 0;
-              const slhuy = Number(updatedDetail.slhuy) || 0;
-              updatedDetail.chenhlech = sltonhethong - sltonthucte - slhuy;
+              updatedDetail.chenhlech = sltonhethong - sltonthucte;
             }
             
             return updatedDetail;
@@ -1293,7 +1293,7 @@ import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconcil
     }
 
     private calculateChenhLech(sltonhethong: number, sltonthucte: number, slhuy: number): number {
-      return (sltonhethong || 0) - (sltonthucte || 0) - (slhuy || 0);
+      return (sltonhethong || 0) - (sltonthucte || 0);
     }
 
     async ExportExample() {

@@ -260,19 +260,22 @@ export class SharedInputService {
       if (nextInput) {
         if (nextInput instanceof HTMLInputElement) {
           nextInput.focus();
-          nextInput.select();
+          setTimeout(() => {
+            nextInput.select();
+          }, 10);
+        } else {
+          nextInput.focus();
+          // Use Range API for content editable elements
+          setTimeout(() => {
+            if (document.createRange && window.getSelection) {
+              const range = document.createRange();
+              range.selectNodeContents(nextInput);
+              const selection = window.getSelection();
+              selection?.removeAllRanges();
+              selection?.addRange(range);
+            }
+          }, 10);
         }
-        
-        // Use Range API for content editable elements
-        setTimeout(() => {
-          if (document.createRange && window.getSelection) {
-            const range = document.createRange();
-            range.selectNodeContents(nextInput);
-            const selection = window.getSelection();
-            selection?.removeAllRanges();
-            selection?.addRange(range);
-          }
-        }, 10);
       }
     }
   }
@@ -291,6 +294,10 @@ export class SharedInputService {
           selection?.removeAllRanges();
           selection?.addRange(range);
         }
+      }, 10);
+    } else if (target instanceof HTMLInputElement) {
+      setTimeout(() => {
+        target.select();
       }, 10);
     }
   }
@@ -312,10 +319,11 @@ export class SharedInputService {
     const target = event.target as HTMLElement;
     let newValue: any;
     
+    const rawValue = (target instanceof HTMLInputElement) ? target.value : target.innerText;
     if (type === 'number') {
-      newValue = this.parseDecimalValue(target.innerText.trim());
+      newValue = this.parseDecimalValue(rawValue.trim());
     } else {
-      newValue = target.innerText.trim();
+      newValue = rawValue.trim();
     }
 
     // Handle keyboard events
@@ -373,10 +381,11 @@ export class SharedInputService {
     const target = event.target as HTMLElement;
     let newValue: any;
     
+    const rawValue = (target instanceof HTMLInputElement) ? target.value : target.innerText;
     if (type === 'number') {
-      newValue = this.parseDecimalValue(target.innerText.trim());
+      newValue = this.parseDecimalValue(rawValue.trim());
     } else {
-      newValue = target.innerText.trim();
+      newValue = rawValue.trim();
     }
 
     // Get field configuration

@@ -2,12 +2,14 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from '../importdata/importdata.service';
 import { convertXuatnhapton } from '../shared/utils/xuatnhapton.utils';
+import { TonkhoManagerService } from '../common/tonkho-manager.service';
 
 @Injectable()
 export class PhieukhoService {
   constructor(
     private readonly prisma: PrismaService,
     private _ImportdataService: ImportdataService,
+    private readonly tonkhoManager: TonkhoManagerService,
   ) {}
 
   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
@@ -396,50 +398,14 @@ export class PhieukhoService {
 
               // NOTE: If we want to keep TonKho (global) updated, transfers don't change global total.
             } else {
-              // Regular Inventory movement (Import/Export)
-              if (data.type === 'nhap') {
-                await prisma.tonKho.upsert({
-                  where: { sanphamId: sp.sanphamId },
-                  update: { 
-                    slton: { increment: soluong },
-                    sltontt: { increment: soluong }
-                  },
-                  create: { sanphamId: sp.sanphamId, slton: soluong, sltontt: soluong, slchogiao: 0, slchonhap: 0 }
-                });
-                
-                // Update specific warehouse
-                await prisma.sanphamKho.upsert({
-                  where: {
-                    sanphamId_khoId: {
-                      sanphamId: sp.sanphamId,
-                      khoId: data.khoId
-                    }
-                  },
-                  update: { soluong: { increment: soluong } },
-                  create: { khoId: data.khoId, sanphamId: sp.sanphamId, soluong: soluong }
-                });
-              } else if (data.type === 'xuat') {
-                await prisma.tonKho.upsert({
-                  where: { sanphamId: sp.sanphamId },
-                  update: { 
-                    slton: { decrement: soluong },
-                    sltontt: { decrement: soluong }
-                  },
-                  create: { sanphamId: sp.sanphamId, slton: -soluong, sltontt: -soluong, slchogiao: 0, slchonhap: 0 }
-                });
-
-                // Update specific warehouse
-                await prisma.sanphamKho.upsert({
-                  where: {
-                    sanphamId_khoId: {
-                      sanphamId: sp.sanphamId,
-                      khoId: data.khoId
-                    }
-                  },
-                  update: { soluong: { decrement: soluong } },
-                  create: { khoId: data.khoId, sanphamId: sp.sanphamId, soluong: -soluong }
-                });
-              }
+              // Regular Inventory movement (Import/Export) using atomic manager
+              await this.tonkhoManager.updateTonkhoAtomic([{
+                sanphamId: sp.sanphamId,
+                khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+                operation: data.type === 'nhap' ? 'increment' : 'decrement',
+                slton: soluong,
+                reason: `Phiếu kho ${data.type}: ${maphieukho}`
+              }], prisma);
             }
           }
         }
@@ -490,17 +456,19 @@ export class PhieukhoService {
       });
 
       if (!oldPhieuKho) throw new NotFoundException('Phiếu kho không tồn tại');
-      for (const oldSP of oldPhieuKho.sanpham) {
-        await prisma.sanpham.update({
-          where: { id: oldSP.sanphamId },
-          data: {
-            soluongkho:
-              oldPhieuKho.type === 'nhap'
-                ? { decrement: Number(oldSP.soluong) || 0 }
-                : { increment: Number(oldSP.soluong) || 0 },
-          },
-        });
+      
+      // 1. Revert old stock levels atomically
+      const revertOps = oldPhieuKho.sanpham.map(sp => ({
+        sanphamId: sp.sanphamId,
+        khoId: oldPhieuKho.khoId || undefined,
+        operation: (oldPhieuKho.type === 'nhap' ? 'decrement' : 'increment') as 'decrement' | 'increment',
+        slton: Number(sp.soluong) || 0,
+        reason: `Hoàn tồn để cập nhật phiếu kho: ${oldPhieuKho.maphieu}`
+      }));
+      if (revertOps.length > 0) {
+        await this.tonkhoManager.updateTonkhoAtomic(revertOps, prisma);
       }
+
       const updatedPhieuKho = await prisma.phieuKho.update({
         where: { id },
         data: {
@@ -516,8 +484,8 @@ export class PhieukhoService {
             deleteMany: {}, // Xóa sản phẩm cũ trước khi thêm mới
             create: data.sanpham.map((sp: any) => ({
               sanphamId: sp.sanphamId,
-              soluong: sp.soluong,
-              sldat: sp.sldat,
+              soluong: Number(sp.soluong) || 0,
+              sldat: Number(sp.sldat) || 0,
               ghichu: sp.ghichu,
             })),
           },
@@ -525,18 +493,18 @@ export class PhieukhoService {
         include: { sanpham: true },
       });
 
-      // Cập nhật tồn kho theo loại phiếu mới
-      for (const newSP of data.sanpham) {
-        await prisma.sanpham.update({
-          where: { id: newSP.sanphamId },
-          data: {
-            soluongkho:
-              data.type === 'nhap'
-                ? { increment: newSP.soluong } // Tăng kho nếu là phiếu nhập
-                : { decrement: newSP.soluong }, // Giảm kho nếu là phiếu xuất
-          },
-        });
+      // 2. Apply new stock levels atomically
+      const applyOps = data.sanpham.map((sp: any) => ({
+        sanphamId: sp.sanphamId,
+        khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+        operation: (data.type === 'nhap' ? 'increment' : 'decrement') as 'increment' | 'decrement',
+        slton: Number(sp.soluong) || 0,
+        reason: `Áp dụng tồn mới khi cập nhật phiếu kho: ${data.maphieu}`
+      }));
+      if (applyOps.length > 0) {
+        await this.tonkhoManager.updateTonkhoAtomic(applyOps, prisma);
       }
+
       return updatedPhieuKho;
     });
   }
@@ -551,22 +519,16 @@ export class PhieukhoService {
         throw new NotFoundException('Phiếu kho không tồn tại');
       }
 
-      // Điều chỉnh tồn kho (tonkho) ngược lại theo loại phiếu: 
-      // Nếu là phiếu nhập thì giảm tồn, nếu là phiếu xuất thì tăng tồn
-      for (const item of phieuKho.sanpham) {
-        await prisma.tonKho.update({
-          where: { sanphamId: item.sanphamId },
-          data: {
-            slton:
-              phieuKho.type === 'nhap'
-                ? { decrement: item.soluong ?? 0 }
-                : { increment: item.soluong ?? 0 },
-            sltontt:
-              phieuKho.type === 'nhap'
-                ? { decrement: item.soluong ?? 0 }
-                : { increment: item.soluong ?? 0 },
-          },
-        });
+      // Revert stock levels atomically for all products in PhieuKho
+      const tonkhoOps = phieuKho.sanpham.map(item => ({
+        sanphamId: item.sanphamId,
+        khoId: phieuKho.khoId || undefined,
+        operation: (phieuKho.type === 'nhap' ? 'decrement' : 'increment') as 'decrement' | 'increment',
+        slton: Number(item.soluong) || 0,
+        reason: `Hoàn tồn do xóa phiếu kho ${phieuKho.maphieu}`
+      }));
+      if (tonkhoOps.length > 0) {
+        await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps, prisma);
       }
 
       await prisma.phieuKhoSanpham.deleteMany({ where: { phieuKhoId: id } });
@@ -614,18 +576,14 @@ export class PhieukhoService {
           }
         });
 
-        // Cập nhật TonKho
-        const tonkhoUpdate = data.type === 'nhap' 
-          ? { 
-              slton: { increment: data.soluong },
-              sltontt: { increment: data.soluong }
-            }
-          : { 
-              slton: { decrement: data.soluong },
-              sltontt: { decrement: data.soluong }
-            };
-
-        await this.updateTonKhoSafely(data.sanphamId, tonkhoUpdate);
+        // Cập nhật TonKho & SanphamKho bằng updateTonkhoAtomic
+        await this.tonkhoManager.updateTonkhoAtomic([{
+          sanphamId: data.sanphamId,
+          khoId: data.khoId,
+          operation: data.type === 'nhap' ? 'increment' : 'decrement',
+          slton: data.soluong,
+          reason: `Áp dụng tồn điều chỉnh: ${maphieu}`
+        }], prisma);
 
         // Note: ChotkhoDetail table removed - adjustment logging simplified
         if (data.chothkhoId) {

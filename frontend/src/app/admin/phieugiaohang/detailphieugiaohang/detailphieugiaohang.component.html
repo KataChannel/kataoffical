@@ -81,7 +81,7 @@
       <mat-icon>content_copy</mat-icon>
     </button> -->
     <button mat-icon-button color="primary" 
-            [disabled]="isLoading()" 
+            [disabled]="isLoading() || isSaving() || isUpdating()" 
             (click)="printContent()">
       <mat-icon>print</mat-icon>
     </button>
@@ -206,14 +206,13 @@
                   }
                   @case ('sldat') {
                   @if (canEditSldat()) {
-                    <div [contentEditable]="true" (focus)="onInputFocus($event)"
+                    <input type="text" (focus)="onInputFocus($event)"
                       (blur)="updateBlurValue($event,idx, row, 'sldat','number')"
                       (keydown.enter)="updateValue($event,idx, row, 'sldat','number')"
                       (keydown)="validateKeyInput($event, 'number')"
-                      class="sldat-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
-                      [attr.data-index]="idx" [attr.data-id]="row.id">
-                      {{ row[column]||0|number:'1.0-2' }}
-                    </div>
+                      class="sldat-input p-2 min-w-28 bg-slate-200 border border-transparent focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200 w-full"
+                      [attr.data-index]="idx" [attr.data-id]="row.id"
+                      [value]="row[column] || 0">
                   } @else {
                     <div class="text-end p-2 min-w-28 bg-gray-100 rounded-lg text-gray-600">
                       {{ row[column]||0|number:'1.0-2' }}
@@ -233,14 +232,13 @@
                   @case ('slgiao') {
                   @if (canEditSlgiao()) {
                     <!-- @if(DetailPhieugiaohang().status!='dagiao') { -->
-                    <div [contentEditable]="true" (focus)="onInputFocus($event)"
+                    <input type="text" (focus)="onInputFocus($event)"
                       (blur)="updateBlurValue($event,idx, row, 'slgiao','number')"
                       (keydown.enter)="updateValue($event,idx, row, 'slgiao','number')"
                       (keydown)="validateKeyInput($event, 'number')"
-                      class="slgiao-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
-                      [attr.data-index]="idx" [attr.data-id]="row.id">
-                      {{ row[column]||0|number:'1.0-2' }}
-                    </div>
+                      class="slgiao-input p-2 min-w-28 bg-slate-200 border border-transparent focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200 w-full"
+                      [attr.data-index]="idx" [attr.data-id]="row.id"
+                      [value]="row[column] || 0">
                     <!-- } -->
                   } @else {
                     <div class="text-end p-2 min-w-28 bg-gray-100 rounded-lg text-gray-600">
@@ -250,14 +248,13 @@
                   }
                   @case ('slnhan') {
                   @if (canEditSlnhan()) {
-                    <div [contentEditable]="true" (focus)="onInputFocus($event)"
-                      (blur)="updateBlurValue($event,idx, row, 'slnhan','number')"
-                      (keydown.enter)="updateValue($event,idx, row, 'slnhan','number')"
+                    <input type="text" (focus)="onInputFocus($event)"
+                      (blur)="onSlnhanBlur($event,idx, row)"
+                      (keydown.enter)="onSlnhanEnter($event,idx, row)"
                       (keydown)="validateKeyInput($event, 'number')"
-                      class="slnhan-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
-                      [attr.data-index]="idx" [attr.data-id]="row.id">
-                      {{ row[column]||0|number:'1.0-2' }}
-                    </div>
+                      class="slnhan-input p-2 min-w-28 bg-slate-200 border border-transparent focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200 w-full"
+                      [attr.data-index]="idx" [attr.data-id]="row.id"
+                      [value]="row[column] || 0">
                   } @else {
                     <div class="text-end p-2 min-w-28 bg-gray-100 rounded-lg text-gray-600">
                       {{ row[column]||0|number:'1.0-2' }}
@@ -265,14 +262,13 @@
                   }
                   }
                   @case ('ghichu') {
-                  <div [contentEditable]="true" (focus)="onInputFocus($event)"
+                  <input type="text" (focus)="onInputFocus($event)"
                     (blur)="updateBlurValue($event,idx, row, 'ghichu','string')"
                     (keydown.enter)="updateValue($event,idx, row, 'ghichu','string')"
                     (keydown)="validateKeyInput($event, 'string')"
-                    class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
-                    [attr.data-index]="idx" [attr.data-id]="row.id">
-                    {{ row[column]||'' }}
-                  </div>
+                    class="ghichu-input p-2 min-w-28 bg-slate-200 border border-transparent focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200 w-full"
+                    [attr.data-index]="idx" [attr.data-id]="row.id"
+                    [value]="row[column] || ''">
                   }
                   @default {
                   <span class="max-w-40 line-clamp-4">
@@ -403,4 +399,90 @@
       </button>
     </div>
   </mat-dialog-content>
+</ng-template>
+
+<ng-template #confirmReceivedDialog>
+  <div class="p-6 rounded-2xl bg-white flex flex-col space-y-5 max-w-[450px]">
+    <!-- Header -->
+    <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
+      <div class="bg-amber-50 p-2.5 rounded-lg text-amber-600 flex items-center justify-center">
+        <mat-icon class="scale-110">warning</mat-icon>
+      </div>
+      <div>
+        <h3 class="text-base font-bold m-0 tracking-tight text-slate-900">Xác nhận lệch số lượng thực nhận</h3>
+        <p class="text-xs text-slate-500 m-0 mt-0.5" *ngIf="dialogShortageProduct">
+          Sản phẩm: <span class="font-semibold text-slate-800">{{ dialogShortageProduct.title || dialogShortageProduct.sanpham?.title }}</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Body Info -->
+    <div class="flex flex-col space-y-4">
+      <div class="grid grid-cols-3 gap-2 text-center bg-slate-50 p-3 rounded-xl border border-slate-100">
+        <div>
+          <div class="text-[10px] text-slate-400 uppercase font-semibold">Số giao</div>
+          <div class="text-sm font-bold text-slate-700">{{ dialogShortageProduct?.slgiao }}</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-slate-400 uppercase font-semibold">Thực nhận</div>
+          <div class="text-sm font-bold text-blue-600">{{ dialogSlnhan }}</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-slate-400 uppercase font-semibold">Thiếu hụt</div>
+          <div class="text-sm font-bold text-rose-600">{{ dialogShortageQty }}</div>
+        </div>
+      </div>
+
+      <!-- Inputs -->
+      <div class="flex flex-col space-y-3">
+        <div class="flex flex-col space-y-1">
+          <label class="text-xs font-semibold text-slate-600 flex justify-between">
+            <span>Nhập lại về kho (Trả kho)</span>
+            <span class="text-slate-400 font-normal">Tối đa: {{ dialogShortageQty }}</span>
+          </label>
+          <div class="relative">
+            <input type="number" 
+                   [(ngModel)]="dialogSlnhapkho" 
+                   (ngModelChange)="onDialogSlnhapkhoChange()"
+                   [max]="dialogShortageQty"
+                   min="0"
+                   step="0.01"
+                   class="w-full pl-3 pr-12 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:bg-white focus:border-blue-500 focus:outline-none transition-all shadow-sm font-semibold font-mono">
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400 text-xs font-bold font-mono">
+              {{ dialogShortageProduct?.dvt }}
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col space-y-1">
+          <label class="text-xs font-semibold text-slate-600 flex justify-between">
+            <span>Số lượng hủy (Hao hụt/Hư hỏng)</span>
+            <span class="text-slate-400 font-normal">Tối đa: {{ dialogShortageQty }}</span>
+          </label>
+          <div class="relative">
+            <input type="number" 
+                   [(ngModel)]="dialogSlhuy" 
+                   (ngModelChange)="onDialogSlhuyChange()"
+                   [max]="dialogShortageQty"
+                   min="0"
+                   step="0.01"
+                   class="w-full pl-3 pr-12 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:bg-white focus:border-rose-500 focus:outline-none transition-all shadow-sm font-semibold text-rose-700 font-mono">
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-rose-400 text-xs font-bold font-mono">
+              {{ dialogShortageProduct?.dvt }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
+      <button mat-flat-button mat-dialog-close="cancel" class="!bg-slate-100 !text-slate-700 hover:!bg-slate-200 font-semibold text-xs py-2 px-4 rounded-lg">
+        Hủy bỏ
+      </button>
+      <button mat-flat-button mat-dialog-close="confirm" class="!bg-blue-600 !text-white hover:!bg-blue-700 font-semibold text-xs py-2 px-5 rounded-lg shadow-md hover:shadow-blue-500/25">
+        Xác nhận
+      </button>
+    </div>
+  </div>
 </ng-template>

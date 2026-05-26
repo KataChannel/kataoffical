@@ -13,8 +13,8 @@ export default {
       size: 0,
       hash: 'manual'
     },
-    'styles-KKWI4QUX.css': {
-      text: () => import('node:fs/promises').then(fs => fs.readFile(new URL('../browser/styles-KKWI4QUX.css', import.meta.url), 'utf-8')),
+    'styles-CPUUF6NM.css': {
+      text: () => import('node:fs/promises').then(fs => fs.readFile(new URL('../browser/styles-CPUUF6NM.css', import.meta.url), 'utf-8')),
       size: 0,
       hash: 'manual'
     }

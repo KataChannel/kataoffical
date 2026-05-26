@@ -14,6 +14,7 @@ const prisma_module_1 = require("../../prisma/prisma.module");
 const importdata_module_1 = require("../importdata/importdata.module");
 const shared_module_1 = require("../shared/shared.module");
 const auth_module_1 = require("../auth/auth.module");
+const tonkho_manager_service_1 = require("../common/tonkho-manager.service");
 let PhieukhoModule = class PhieukhoModule {
 };
 exports.PhieukhoModule = PhieukhoModule;
@@ -21,7 +22,7 @@ exports.PhieukhoModule = PhieukhoModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule, importdata_module_1.ImportdataModule, shared_module_1.SharedModule, auth_module_1.AuthModule],
         controllers: [phieukho_controller_1.PhieukhoController],
-        providers: [phieukho_service_1.PhieukhoService],
+        providers: [phieukho_service_1.PhieukhoService, tonkho_manager_service_1.TonkhoManagerService],
         exports: [phieukho_service_1.PhieukhoService]
     })
 ], PhieukhoModule);

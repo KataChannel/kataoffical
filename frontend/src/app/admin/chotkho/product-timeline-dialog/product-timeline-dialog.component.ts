@@ -164,6 +164,7 @@ export interface ProductTimelineDialogData {
                   <th class="py-2 px-3 w-[100px] text-center">Hành Động</th>
                   <th class="py-2 px-3 w-[180px]">Số Chứng Từ / Mã</th>
                   <th class="py-2 px-3 text-right w-[110px]">Số Lượng</th>
+                  <th class="py-2 px-3 text-right w-[100px]">SL Hủy</th>
                   <th class="py-2 px-3 text-right w-[120px]">Tồn Lũy Kế</th>
                   <th class="py-2 px-3">Ghi Chú</th>
                 </tr>
@@ -223,6 +224,17 @@ export interface ProductTimelineDialogData {
                       }
                     </td>
 
+                    <!-- SL Hủy -->
+                    <td class="py-1.5 px-3 text-xs text-right font-mono font-bold text-rose-650">
+                      @if (item.slhuy > 0) {
+                        <span class="text-rose-600">{{ item.slhuy | number:'1.0-3' }}</span>
+                      } @else if (item.type === 'CHỐT KHO') {
+                        <span class="text-slate-300">0</span>
+                      } @else {
+                        <span class="text-slate-400 font-normal">-</span>
+                      }
+                    </td>
+
                     <!-- Running Balance -->
                     <td class="py-1.5 px-3 text-xs text-right font-mono font-bold text-slate-800">
                       {{ item.balance | number:'1.0-3' }}
@@ -234,7 +246,7 @@ export interface ProductTimelineDialogData {
                         <div class="flex items-center gap-1.5">
                           <span class="text-slate-600 font-medium truncate max-w-[120px]">{{ item.ghichu || 'Chốt điều chỉnh' }}</span>
                           <span class="text-[9px] text-slate-400 font-mono">
-                            (Hệ:{{ item.sltonhethong | number:'1.0-2' }}|Thực:{{ item.qty | number:'1.0-2' }}|Lệch:{{ item.chenhlech | number:'1.0-2' }})
+                            (Hệ:{{ item.sltonhethong | number:'1.0-2' }}|Thực:{{ item.qty | number:'1.0-2' }}|Hủy:{{ item.slhuy | number:'1.0-2' }}|Lệch:{{ item.chenhlech | number:'1.0-2' }})
                           </span>
                         </div>
                       } @else {

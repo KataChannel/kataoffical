@@ -1,9 +1,11 @@
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from '../importdata/importdata.service';
+import { TonkhoManagerService } from '../common/tonkho-manager.service';
 export declare class PhieukhoService {
     private readonly prisma;
     private _ImportdataService;
-    constructor(prisma: PrismaService, _ImportdataService: ImportdataService);
+    private readonly tonkhoManager;
+    constructor(prisma: PrismaService, _ImportdataService: ImportdataService, tonkhoManager: TonkhoManagerService);
     private formatDateForFilename;
     generateNextOrderCode(type: any): Promise<string>;
     private incrementOrderCode;

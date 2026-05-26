@@ -13,10 +13,12 @@ exports.PhieukhoService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
+const tonkho_manager_service_1 = require("../common/tonkho-manager.service");
 let PhieukhoService = class PhieukhoService {
-    constructor(prisma, _ImportdataService) {
+    constructor(prisma, _ImportdataService, tonkhoManager) {
         this.prisma = prisma;
         this._ImportdataService = _ImportdataService;
+        this.tonkhoManager = tonkhoManager;
     }
     formatDateForFilename() {
         const now = new Date();
@@ -324,46 +326,13 @@ let PhieukhoService = class PhieukhoService {
                             });
                         }
                         else {
-                            if (data.type === 'nhap') {
-                                await prisma.tonKho.upsert({
-                                    where: { sanphamId: sp.sanphamId },
-                                    update: {
-                                        slton: { increment: soluong },
-                                        sltontt: { increment: soluong }
-                                    },
-                                    create: { sanphamId: sp.sanphamId, slton: soluong, sltontt: soluong, slchogiao: 0, slchonhap: 0 }
-                                });
-                                await prisma.sanphamKho.upsert({
-                                    where: {
-                                        sanphamId_khoId: {
-                                            sanphamId: sp.sanphamId,
-                                            khoId: data.khoId
-                                        }
-                                    },
-                                    update: { soluong: { increment: soluong } },
-                                    create: { khoId: data.khoId, sanphamId: sp.sanphamId, soluong: soluong }
-                                });
-                            }
-                            else if (data.type === 'xuat') {
-                                await prisma.tonKho.upsert({
-                                    where: { sanphamId: sp.sanphamId },
-                                    update: {
-                                        slton: { decrement: soluong },
-                                        sltontt: { decrement: soluong }
-                                    },
-                                    create: { sanphamId: sp.sanphamId, slton: -soluong, sltontt: -soluong, slchogiao: 0, slchonhap: 0 }
-                                });
-                                await prisma.sanphamKho.upsert({
-                                    where: {
-                                        sanphamId_khoId: {
-                                            sanphamId: sp.sanphamId,
-                                            khoId: data.khoId
-                                        }
-                                    },
-                                    update: { soluong: { decrement: soluong } },
-                                    create: { khoId: data.khoId, sanphamId: sp.sanphamId, soluong: -soluong }
-                                });
-                            }
+                            await this.tonkhoManager.updateTonkhoAtomic([{
+                                    sanphamId: sp.sanphamId,
+                                    khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+                                    operation: data.type === 'nhap' ? 'increment' : 'decrement',
+                                    slton: soluong,
+                                    reason: `Phiếu kho ${data.type}: ${maphieukho}`
+                                }], prisma);
                         }
                     }
                 }
@@ -412,15 +381,15 @@ let PhieukhoService = class PhieukhoService {
             });
             if (!oldPhieuKho)
                 throw new common_1.NotFoundException('Phiếu kho không tồn tại');
-            for (const oldSP of oldPhieuKho.sanpham) {
-                await prisma.sanpham.update({
-                    where: { id: oldSP.sanphamId },
-                    data: {
-                        soluongkho: oldPhieuKho.type === 'nhap'
-                            ? { decrement: Number(oldSP.soluong) || 0 }
-                            : { increment: Number(oldSP.soluong) || 0 },
-                    },
-                });
+            const revertOps = oldPhieuKho.sanpham.map(sp => ({
+                sanphamId: sp.sanphamId,
+                khoId: oldPhieuKho.khoId || undefined,
+                operation: (oldPhieuKho.type === 'nhap' ? 'decrement' : 'increment'),
+                slton: Number(sp.soluong) || 0,
+                reason: `Hoàn tồn để cập nhật phiếu kho: ${oldPhieuKho.maphieu}`
+            }));
+            if (revertOps.length > 0) {
+                await this.tonkhoManager.updateTonkhoAtomic(revertOps, prisma);
             }
             const updatedPhieuKho = await prisma.phieuKho.update({
                 where: { id },
@@ -437,23 +406,23 @@ let PhieukhoService = class PhieukhoService {
                         deleteMany: {},
                         create: data.sanpham.map((sp) => ({
                             sanphamId: sp.sanphamId,
-                            soluong: sp.soluong,
-                            sldat: sp.sldat,
+                            soluong: Number(sp.soluong) || 0,
+                            sldat: Number(sp.sldat) || 0,
                             ghichu: sp.ghichu,
                         })),
                     },
                 },
                 include: { sanpham: true },
             });
-            for (const newSP of data.sanpham) {
-                await prisma.sanpham.update({
-                    where: { id: newSP.sanphamId },
-                    data: {
-                        soluongkho: data.type === 'nhap'
-                            ? { increment: newSP.soluong }
-                            : { decrement: newSP.soluong },
-                    },
-                });
+            const applyOps = data.sanpham.map((sp) => ({
+                sanphamId: sp.sanphamId,
+                khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+                operation: (data.type === 'nhap' ? 'increment' : 'decrement'),
+                slton: Number(sp.soluong) || 0,
+                reason: `Áp dụng tồn mới khi cập nhật phiếu kho: ${data.maphieu}`
+            }));
+            if (applyOps.length > 0) {
+                await this.tonkhoManager.updateTonkhoAtomic(applyOps, prisma);
             }
             return updatedPhieuKho;
         });
@@ -467,18 +436,15 @@ let PhieukhoService = class PhieukhoService {
             if (!phieuKho) {
                 throw new common_1.NotFoundException('Phiếu kho không tồn tại');
             }
-            for (const item of phieuKho.sanpham) {
-                await prisma.tonKho.update({
-                    where: { sanphamId: item.sanphamId },
-                    data: {
-                        slton: phieuKho.type === 'nhap'
-                            ? { decrement: item.soluong ?? 0 }
-                            : { increment: item.soluong ?? 0 },
-                        sltontt: phieuKho.type === 'nhap'
-                            ? { decrement: item.soluong ?? 0 }
-                            : { increment: item.soluong ?? 0 },
-                    },
-                });
+            const tonkhoOps = phieuKho.sanpham.map(item => ({
+                sanphamId: item.sanphamId,
+                khoId: phieuKho.khoId || undefined,
+                operation: (phieuKho.type === 'nhap' ? 'decrement' : 'increment'),
+                slton: Number(item.soluong) || 0,
+                reason: `Hoàn tồn do xóa phiếu kho ${phieuKho.maphieu}`
+            }));
+            if (tonkhoOps.length > 0) {
+                await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps, prisma);
             }
             await prisma.phieuKhoSanpham.deleteMany({ where: { phieuKhoId: id } });
             return prisma.phieuKho.delete({ where: { id } });
@@ -506,16 +472,13 @@ let PhieukhoService = class PhieukhoService {
                         ghichu: data.ghichu
                     }
                 });
-                const tonkhoUpdate = data.type === 'nhap'
-                    ? {
-                        slton: { increment: data.soluong },
-                        sltontt: { increment: data.soluong }
-                    }
-                    : {
-                        slton: { decrement: data.soluong },
-                        sltontt: { decrement: data.soluong }
-                    };
-                await this.updateTonKhoSafely(data.sanphamId, tonkhoUpdate);
+                await this.tonkhoManager.updateTonkhoAtomic([{
+                        sanphamId: data.sanphamId,
+                        khoId: data.khoId,
+                        operation: data.type === 'nhap' ? 'increment' : 'decrement',
+                        slton: data.soluong,
+                        reason: `Áp dụng tồn điều chỉnh: ${maphieu}`
+                    }], prisma);
                 if (data.chothkhoId) {
                     console.log(`📝 Inventory adjustment logged: Product ${data.sanphamId}, Type: ${data.type}, Amount: ${data.soluong}, PhieuKho: ${maphieu}`);
                 }
@@ -583,6 +546,7 @@ exports.PhieukhoService = PhieukhoService;
 exports.PhieukhoService = PhieukhoService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        importdata_service_1.ImportdataService])
+        importdata_service_1.ImportdataService,
+        tonkho_manager_service_1.TonkhoManagerService])
 ], PhieukhoService);
 //# sourceMappingURL=phieukho.service.js.map

@@ -378,7 +378,7 @@ export class NhucaudathangComponent {
   }
 
   GetGoiy(item: any) {
-    const suggestion = Number(item.khachdat) + Number(item.khachgiao) - Number(item.tongkho);
+    const suggestion = Number(item.khachdat) + Number(item.slhaohut || 0) + Number(item.khachgiao) - Number(item.tongkho);
     return suggestion.toFixed(3);
   }
 

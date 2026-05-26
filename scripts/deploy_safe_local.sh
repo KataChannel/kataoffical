@@ -167,7 +167,7 @@ elif [ "$is_sandbox" == "true" ]; then
         -p 53002:3002 \
         --network rausachfinal_default \
         --env-file api/.env \
-        -e DATABASE_URL="postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/testdata?schema=public" \
+        -e DATABASE_URL="postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/rausachfinal?schema=public" \
         --entrypoint bun \
         $BE_IMAGE:latest run scripts/mcp_server.ts --sse
 

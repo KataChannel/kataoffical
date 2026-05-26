@@ -139,7 +139,7 @@ __decorate([
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Chotkho', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
-        invalidate: ['chotkho'],
+        invalidate: ['chotkho', 'kho'],
         get: { ttl: 600, keyPrefix: 'chotkho' },
         updateCache: true
     }),
@@ -210,7 +210,7 @@ __decorate([
     (0, common_1.Patch)(':id/with-details'),
     (0, audit_decorator_1.Audit)({ entity: 'Chotkho', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
-        invalidate: ['chotkho'],
+        invalidate: ['chotkho', 'kho'],
         get: { ttl: 600, keyPrefix: 'chotkho' },
         updateCache: true
     }),
@@ -229,7 +229,7 @@ __decorate([
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Chotkho', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     (0, smart_cache_decorator_1.SmartCache)({
-        invalidate: ['chotkho'],
+        invalidate: ['chotkho', 'kho'],
         get: { ttl: 600, keyPrefix: 'chotkho' },
         updateCache: true
     }),
@@ -246,7 +246,7 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Chotkho', action: client_1.AuditAction.DELETE, includeResponse: true }),
-    (0, cache_interceptor_1.CacheInvalidate)(['chotkho']),
+    (0, cache_interceptor_1.CacheInvalidate)(['chotkho', 'kho']),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

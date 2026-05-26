@@ -602,6 +602,20 @@ let DathangService = class DathangService {
             if (!oldDathang) {
                 throw new common_1.NotFoundException('Đơn đặt hàng không tồn tại');
             }
+            const ngaynhanToCheck = oldDathang.ngaynhan || oldDathang.createdAt;
+            if (ngaynhanToCheck) {
+                const lastLockedChotkho = await prisma.chotkho.findFirst({
+                    where: {
+                        khoId: oldDathang.khoId || '4cc01811-61f5-4bdc-83de-a493764e9258',
+                        isLocked: true,
+                        ngaychot: { gte: ngaynhanToCheck }
+                    },
+                    orderBy: { ngaychot: 'desc' }
+                });
+                if (lastLockedChotkho) {
+                    throw new common_1.BadRequestException(`Đơn hàng đã thuộc kỳ chốt kho đã khóa ngày ${new Date(lastLockedChotkho.ngaychot).toLocaleDateString('vi-VN')}. Không thể chỉnh sửa.`);
+                }
+            }
             if (data.status && data.status !== oldDathang.status) {
                 const transition = this.statusMachine.validateTransition('dathang', oldDathang.status, data.status, true);
                 if (!transition.isValid) {
@@ -1045,12 +1059,13 @@ let DathangService = class DathangService {
                 for (const sp of oldDathang.sanpham) {
                     const slnhan = parseFloat((sp.slnhan ?? 0).toFixed(3));
                     if (slnhan > 0) {
-                        await prisma.tonKho.update({
-                            where: { sanphamId: sp.idSP },
-                            data: {
-                                slton: { decrement: slnhan },
-                            },
-                        });
+                        await this.tonkhoManager.updateTonkhoAtomic([{
+                                sanphamId: sp.idSP,
+                                khoId: oldDathang.khoId || undefined,
+                                operation: 'decrement',
+                                slton: slnhan,
+                                reason: `Hoàn kho khi rollback đơn hàng ${oldDathang.madncc} từ Đã nhận về Đã đặt`
+                            }], prisma);
                     }
                 }
                 const maphieuReturn = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
@@ -1113,14 +1128,19 @@ let DathangService = class DathangService {
             }
             if (oldDathang.status === 'dadat' && data.status === 'danhan') {
                 for (const sp of data.sanpham) {
-                    const slnhan = parseFloat((Number(sp.slnhan) ?? 0).toFixed(3));
                     const receivedQty = parseFloat((Number(sp.slnhan) ?? 0).toFixed(3));
                     const oldSp = oldDathang.sanpham.find(o => o.idSP === (sp.idSP ?? sp.id));
                     const reservedQty = parseFloat((Number(oldSp?.sldat) ?? 0).toFixed(3));
+                    await this.tonkhoManager.updateTonkhoAtomic([{
+                            sanphamId: sp.idSP ?? sp.id,
+                            khoId: khoId,
+                            operation: 'increment',
+                            slton: receivedQty,
+                            reason: `Nhập kho tự động từ đơn đặt hàng ${oldDathang.madncc} (Bỏ qua bước Đã giao)`
+                        }], prisma);
                     await prisma.tonKho.update({
                         where: { sanphamId: sp.idSP ?? sp.id },
                         data: {
-                            slton: { increment: receivedQty },
                             slchonhap: { decrement: reservedQty },
                         },
                     });
@@ -1234,13 +1254,15 @@ let DathangService = class DathangService {
                 const deletedProductIds = oldProductIds.filter((id) => !newProductIds.includes(id));
                 for (const deletedId of deletedProductIds) {
                     const deletedItem = oldDathang.sanpham.find((sp) => sp.idSP === deletedId);
-                    if (deletedItem && Number(deletedItem.slnhan) > 0) {
-                        await prisma.tonKho.update({
-                            where: { sanphamId: deletedId },
-                            data: {
-                                slton: { decrement: parseFloat((deletedItem.slnhan ?? 0).toFixed(3)) },
-                            },
-                        });
+                    const slnhan = deletedItem ? parseFloat((deletedItem.slnhan ?? 0).toFixed(3)) : 0;
+                    if (slnhan > 0) {
+                        await this.tonkhoManager.updateTonkhoAtomic([{
+                                sanphamId: deletedId,
+                                khoId: oldDathang.khoId || undefined,
+                                operation: 'decrement',
+                                slton: slnhan,
+                                reason: `Trừ kho do xóa sản phẩm khỏi đơn đặt hàng đã nhận ${oldDathang.madncc}`
+                            }], prisma);
                     }
                 }
                 if (deletedProductIds.length > 0) {

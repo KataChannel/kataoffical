@@ -729,8 +729,8 @@ export class DonhangGraphqlService {
           const khachdat = Number(item.khachdat) || 0;
           const khachgiao = Number(item.khachgiao) || 0;
 
-          const goiy = parseFloat((khachdat + khachgiao - tongkho).toFixed(3));
           const slhaohut = khachdat > 0 ? parseFloat(((khachdat * (item.haohut || 0)) / 100).toFixed(3)) : 0;
+          const goiy = parseFloat((khachdat + slhaohut + khachgiao - tongkho).toFixed(3));
 
           return {
             ngaynhan: item.Dathangs && item.Dathangs.length > 0 ? moment(item.Dathangs[0].ngaynhan).format('YYYY-MM-DD') : '',

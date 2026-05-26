@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import Redis from 'ioredis';
+import { TonkhoManagerService } from '../common/tonkho-manager.service';
 
 export interface CancelOrderDto {
   orderId: string;
@@ -13,7 +14,10 @@ export interface CancelOrderDto {
 export class CancelOrderService {
   private redis: Redis;
 
-  constructor(private prisma: PrismaService) {
+  constructor(
+    private prisma: PrismaService,
+    private readonly tonkhoManager: TonkhoManagerService,
+  ) {
     this.redis = new Redis({
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || '6379'),
@@ -135,25 +139,14 @@ export class CancelOrderService {
             // Lấy sanphamId từ relation
             const sanphamId = item.sanpham.id;
             
-            // Cập nhật TonKho: tăng lại số lượng đã xuất
-            await tx.tonKho.upsert({
-              where: { sanphamId },
-              create: {
-                sanphamId,
-                slton: slgiao,
-                sltontt: slgiao,
-                slchogiao: 0,
-                slchonhap: 0,
-              },
-              update: {
-                slton: {
-                  increment: slgiao
-                },
-                sltontt: {
-                  increment: slgiao
-                }
-              }
-            });
+            // Cập nhật TonKho và SanphamKho: tăng lại số lượng đã xuất (hoàn kho) atomically
+            await this.tonkhoManager.updateTonkhoAtomic([{
+              sanphamId,
+              khoId: donhang.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+              operation: 'increment',
+              slton: slgiao,
+              reason: `Hoàn kho do hủy đơn hàng ${donhang.madonhang}`
+            }], tx);
 
             restoredItems.push({
               masp: item.sanpham.masp,
@@ -301,35 +294,32 @@ export class CancelOrderService {
           if (item.sanpham && slnhan > 0) {
             const sanphamId = item.sanpham.id;
             
-            // Cập nhật TonKho: giảm lại số lượng đã nhập
+            // Cập nhật TonKho và SanphamKho: giảm lại số lượng đã nhập (revert nhập kho)
             const currentTonKho = await tx.tonKho.findUnique({
               where: { sanphamId }
             });
+            const oldStock = currentTonKho ? Number(currentTonKho.slton) : 0;
+            const newStock = Math.max(0, oldStock - slnhan);
 
-            if (currentTonKho) {
-              const newSlton = Math.max(0, Number(currentTonKho.slton) - slnhan);
-              const newSltontt = Math.max(0, Number(currentTonKho.sltontt) - slnhan);
-              
-              await tx.tonKho.update({
-                where: { sanphamId },
-                data: {
-                  slton: newSlton,
-                  sltontt: newSltontt
-                }
-              });
+            await this.tonkhoManager.updateTonkhoAtomic([{
+              sanphamId,
+              khoId: dathang.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+              operation: 'decrement',
+              slton: slnhan,
+              reason: `Trừ kho do hủy đơn đặt hàng ${dathang.madncc}`
+            }], tx);
 
-              restoredItems.push({
-                masp: item.sanpham.masp,
-                tensanpham: item.sanpham.title,
-                soluong: slnhan,
-                oldTonkho: Number(currentTonKho.slton),
-                newTonkho: newSlton
-              });
+            restoredItems.push({
+              masp: item.sanpham.masp,
+              tensanpham: item.sanpham.title,
+              soluong: slnhan,
+              oldTonkho: oldStock,
+              newTonkho: newStock
+            });
 
-              console.log(
-                `[CancelOrder] Trừ ${slnhan} ${item.sanpham.masp} khỏi kho (Tồn kho: ${currentTonKho.slton} → ${newSlton})`
-              );
-            }
+            console.log(
+              `[CancelOrder] Trừ ${slnhan} ${item.sanpham.masp} khỏi kho (Tồn kho: ${oldStock} → ${newStock})`
+            );
           }
         }
 

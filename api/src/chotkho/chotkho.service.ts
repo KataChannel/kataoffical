@@ -277,7 +277,7 @@ export class ChotkhoService {
 
         for (const detail of details) {
           const sltonhethong_chuan = Number(detail.sltonhethong);
-          const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
+          const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte);
 
           detailRecordsToCreate.push({
             id: randomUUID(),
@@ -463,6 +463,8 @@ export class ChotkhoService {
   ) {
     const fromDate = new Date(fromDateStr);
     const toDate = new Date(toDateStr);
+    const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
+    const isKhoTong = khoId === KHO_TONG_ID;
 
     // 1. Tìm phiên chốt kho gần nhất ngay trước fromDate
     const lastChot = await this.prisma.chotkhodetail.findFirst({
@@ -470,7 +472,7 @@ export class ChotkhoService {
         sanphamId,
         ngaychot: { lt: fromDate },
         chotkho: {
-          khoId,
+          khoId: isKhoTong ? KHO_TONG_ID : khoId,
           isActive: true
         }
       },
@@ -486,7 +488,7 @@ export class ChotkhoService {
       where: {
         sanphamId,
         phieuKho: {
-          khoId,
+          khoId: isKhoTong ? undefined : khoId,
           createdAt: { gt: anchorTime, lt: fromDate },
           isActive: true
         }
@@ -502,12 +504,30 @@ export class ChotkhoService {
       }
     });
 
+    // 2.5 Lấy chốt kho chi tiết của virtual warehouses từ sau anchorTime đến trước fromDate để cộng dồn vào tồn đầu kỳ (chỉ khi xem Kho Tổng)
+    if (isKhoTong) {
+      const preChotKhos = await this.prisma.chotkhodetail.findMany({
+        where: {
+          sanphamId,
+          ngaychot: { gt: anchorTime, lt: fromDate },
+          chotkho: {
+            khoId: { not: KHO_TONG_ID },
+            isActive: true
+          }
+        }
+      });
+      preChotKhos.forEach(item => {
+        const delta = Number(item.sltonthucte) - Number(item.sltonhethong);
+        startQty += delta;
+      });
+    }
+
     // 3. Lấy phiếu kho chi tiết trong khoảng từ fromDate đến toDate
     const phieuKhos = await this.prisma.phieuKhoSanpham.findMany({
       where: {
         sanphamId,
         phieuKho: {
-          khoId,
+          khoId: isKhoTong ? undefined : khoId,
           createdAt: { gte: fromDate, lte: toDate },
           isActive: true
         }
@@ -523,12 +543,16 @@ export class ChotkhoService {
         sanphamId,
         ngaychot: { gte: fromDate, lte: toDate },
         chotkho: {
-          khoId,
+          khoId: isKhoTong ? undefined : khoId,
           isActive: true
         }
       },
       include: {
-        chotkho: true
+        chotkho: {
+          include: {
+            kho: true
+          }
+        }
       }
     });
 
@@ -536,27 +560,38 @@ export class ChotkhoService {
     const timeline: any[] = [];
 
     phieuKhos.forEach(item => {
+      let slhuy = 0;
+      if (item.ghichu && item.ghichu.includes('Hủy:')) {
+        const match = item.ghichu.match(/Hủy:\s*([0-9.]+)/);
+        if (match) {
+          slhuy = parseFloat(match[1]) || 0;
+        }
+      }
+
       timeline.push({
         id: item.id,
         time: item.phieuKho.createdAt,
         type: item.phieuKho.type === 'nhap' ? 'NHẬP' : 'XUẤT',
         code: item.phieuKho.maphieu || '',
         qty: Number(item.soluong),
-        ghichu: item.phieuKho.ghichu || ''
+        slhuy: slhuy,
+        ghichu: item.ghichu || item.phieuKho.ghichu || ''
       });
     });
 
     chotKhos.forEach(item => {
+      const khoName = item.chotkho?.kho?.name || '';
       timeline.push({
         id: item.id,
         time: item.ngaychot,
         type: 'CHỐT KHO',
-        code: item.chotkho?.title || 'Chốt kho',
+        code: `${isKhoTong && item.chotkho?.khoId !== KHO_TONG_ID ? '[' + khoName + '] ' : ''}${item.chotkho?.title || 'Chốt kho'}`,
         qty: Number(item.sltonthucte),
         sltonhethong: Number(item.sltonhethong),
         chenhlech: Number(item.chenhlech),
         slhuy: Number(item.slhuy),
-        ghichu: item.ghichu || ''
+        ghichu: item.ghichu || '',
+        khoId: item.chotkho?.khoId
       });
     });
 
@@ -582,7 +617,16 @@ export class ChotkhoService {
       } else if (event.type === 'XUẤT') {
         runningQty -= event.qty;
       } else if (event.type === 'CHỐT KHO') {
-        runningQty = event.qty;
+        if (isKhoTong) {
+          if (event.khoId === KHO_TONG_ID) {
+            runningQty = event.qty;
+          } else {
+            const delta = event.qty - event.sltonhethong;
+            runningQty += delta;
+          }
+        } else {
+          runningQty = event.qty;
+        }
       }
 
       resultTimeline.push({
@@ -590,7 +634,6 @@ export class ChotkhoService {
         balance: runningQty
       });
     });
-
     return {
       startQty,
       timeline: resultTimeline
@@ -981,7 +1024,7 @@ export class ChotkhoService {
           // Create new details
           for (const detail of data.details) {
             const sltonhethong_chuan = Number(detail.sltonhethong);
-            const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
+            const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte);
 
             detailRecordsToCreate.push({
               id: randomUUID(),

@@ -220,7 +220,7 @@ let ChotkhoService = class ChotkhoService {
                 const tonKhoUpserts = [];
                 for (const detail of details) {
                     const sltonhethong_chuan = Number(detail.sltonhethong);
-                    const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
+                    const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte);
                     detailRecordsToCreate.push({
                         id: (0, crypto_1.randomUUID)(),
                         chotkhoId: chotkhoMaster.id,
@@ -367,12 +367,14 @@ let ChotkhoService = class ChotkhoService {
     async getProductTimeline(sanphamId, khoId, fromDateStr, toDateStr) {
         const fromDate = new Date(fromDateStr);
         const toDate = new Date(toDateStr);
+        const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
+        const isKhoTong = khoId === KHO_TONG_ID;
         const lastChot = await this.prisma.chotkhodetail.findFirst({
             where: {
                 sanphamId,
                 ngaychot: { lt: fromDate },
                 chotkho: {
-                    khoId,
+                    khoId: isKhoTong ? KHO_TONG_ID : khoId,
                     isActive: true
                 }
             },
@@ -385,7 +387,7 @@ let ChotkhoService = class ChotkhoService {
             where: {
                 sanphamId,
                 phieuKho: {
-                    khoId,
+                    khoId: isKhoTong ? undefined : khoId,
                     createdAt: { gt: anchorTime, lt: fromDate },
                     isActive: true
                 }
@@ -400,11 +402,27 @@ let ChotkhoService = class ChotkhoService {
                 startQty -= Number(item.soluong);
             }
         });
+        if (isKhoTong) {
+            const preChotKhos = await this.prisma.chotkhodetail.findMany({
+                where: {
+                    sanphamId,
+                    ngaychot: { gt: anchorTime, lt: fromDate },
+                    chotkho: {
+                        khoId: { not: KHO_TONG_ID },
+                        isActive: true
+                    }
+                }
+            });
+            preChotKhos.forEach(item => {
+                const delta = Number(item.sltonthucte) - Number(item.sltonhethong);
+                startQty += delta;
+            });
+        }
         const phieuKhos = await this.prisma.phieuKhoSanpham.findMany({
             where: {
                 sanphamId,
                 phieuKho: {
-                    khoId,
+                    khoId: isKhoTong ? undefined : khoId,
                     createdAt: { gte: fromDate, lte: toDate },
                     isActive: true
                 }
@@ -418,36 +436,50 @@ let ChotkhoService = class ChotkhoService {
                 sanphamId,
                 ngaychot: { gte: fromDate, lte: toDate },
                 chotkho: {
-                    khoId,
+                    khoId: isKhoTong ? undefined : khoId,
                     isActive: true
                 }
             },
             include: {
-                chotkho: true
+                chotkho: {
+                    include: {
+                        kho: true
+                    }
+                }
             }
         });
         const timeline = [];
         phieuKhos.forEach(item => {
+            let slhuy = 0;
+            if (item.ghichu && item.ghichu.includes('Hủy:')) {
+                const match = item.ghichu.match(/Hủy:\s*([0-9.]+)/);
+                if (match) {
+                    slhuy = parseFloat(match[1]) || 0;
+                }
+            }
             timeline.push({
                 id: item.id,
                 time: item.phieuKho.createdAt,
                 type: item.phieuKho.type === 'nhap' ? 'NHẬP' : 'XUẤT',
                 code: item.phieuKho.maphieu || '',
                 qty: Number(item.soluong),
-                ghichu: item.phieuKho.ghichu || ''
+                slhuy: slhuy,
+                ghichu: item.ghichu || item.phieuKho.ghichu || ''
             });
         });
         chotKhos.forEach(item => {
+            const khoName = item.chotkho?.kho?.name || '';
             timeline.push({
                 id: item.id,
                 time: item.ngaychot,
                 type: 'CHỐT KHO',
-                code: item.chotkho?.title || 'Chốt kho',
+                code: `${isKhoTong && item.chotkho?.khoId !== KHO_TONG_ID ? '[' + khoName + '] ' : ''}${item.chotkho?.title || 'Chốt kho'}`,
                 qty: Number(item.sltonthucte),
                 sltonhethong: Number(item.sltonhethong),
                 chenhlech: Number(item.chenhlech),
                 slhuy: Number(item.slhuy),
-                ghichu: item.ghichu || ''
+                ghichu: item.ghichu || '',
+                khoId: item.chotkho?.khoId
             });
         });
         timeline.sort((a, b) => a.time.getTime() - b.time.getTime());
@@ -470,7 +502,18 @@ let ChotkhoService = class ChotkhoService {
                 runningQty -= event.qty;
             }
             else if (event.type === 'CHỐT KHO') {
-                runningQty = event.qty;
+                if (isKhoTong) {
+                    if (event.khoId === KHO_TONG_ID) {
+                        runningQty = event.qty;
+                    }
+                    else {
+                        const delta = event.qty - event.sltonhethong;
+                        runningQty += delta;
+                    }
+                }
+                else {
+                    runningQty = event.qty;
+                }
             }
             resultTimeline.push({
                 ...event,
@@ -809,7 +852,7 @@ let ChotkhoService = class ChotkhoService {
                     const tonKhoUpserts = [];
                     for (const detail of data.details) {
                         const sltonhethong_chuan = Number(detail.sltonhethong);
-                        const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte) - Number(detail.slhuy);
+                        const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte);
                         detailRecordsToCreate.push({
                             id: (0, crypto_1.randomUUID)(),
                             chotkhoId: id,

@@ -1,5 +1,6 @@
 import { PrismaService } from '../../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { TonkhoManagerService } from '../common/tonkho-manager.service';
 export interface CancelOrderDto {
     orderId: string;
     lydohuy: string;
@@ -7,8 +8,9 @@ export interface CancelOrderDto {
 }
 export declare class CancelOrderService {
     private prisma;
+    private readonly tonkhoManager;
     private redis;
-    constructor(prisma: PrismaService);
+    constructor(prisma: PrismaService, tonkhoManager: TonkhoManagerService);
     private invalidateDonhangCache;
     private invalidateDathangCache;
     cancelDonhang(dto: CancelOrderDto): Promise<any>;
