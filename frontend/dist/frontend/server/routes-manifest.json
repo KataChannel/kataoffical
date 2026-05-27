@@ -1,9 +1,0 @@
-{
-  "version": 1,
-  "routes": [
-    {
-      "path": "/**",
-      "renderMode": "server"
-    }
-  ]
-}

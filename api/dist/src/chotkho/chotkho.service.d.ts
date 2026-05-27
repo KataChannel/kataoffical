@@ -447,4 +447,15 @@ export declare class ChotkhoService {
         lockedBy: string | null;
         ngaychot: Date;
     }) | null>;
+    getNegativeStockReport(): Promise<{
+        latestChotkho: null;
+        products: never[];
+    } | {
+        latestChotkho: {
+            id: string;
+            title: string | null;
+            ngaychot: Date;
+        };
+        products: any[];
+    }>;
 }

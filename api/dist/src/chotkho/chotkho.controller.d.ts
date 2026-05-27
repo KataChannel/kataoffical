@@ -73,6 +73,17 @@ export declare class ChotkhoController {
         timeline: any[];
     }>;
     getAllProductsByKho(khoId: string): Promise<any[]>;
+    getNegativeStockReport(): Promise<{
+        latestChotkho: null;
+        products: never[];
+    } | {
+        latestChotkho: {
+            id: string;
+            title: string | null;
+            ngaychot: Date;
+        };
+        products: any[];
+    }>;
     findOne(id: string): Promise<({
         kho: {
             id: string;

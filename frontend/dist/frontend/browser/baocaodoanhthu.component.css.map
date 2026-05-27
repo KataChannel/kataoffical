@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["baocaodoanhthu.component.ts"],
+  "sourcesContent": ["\n    .revenue-report-container {\n      padding: 24px;\n      max-width: 800px;\n      margin: 0 auto;\n    }\n    \n    .report-info {\n      background-color: #f5f5f5;\n      padding: 16px;\n      border-radius: 8px;\n      margin-bottom: 24px;\n    }\n    \n    .under-development {\n      text-align: center;\n      padding: 48px 24px;\n      color: #666;\n    }\n    \n    .under-development mat-icon {\n      font-size: 64px;\n      width: 64px;\n      height: 64px;\n      color: #ff9800;\n      margin-bottom: 16px;\n    }\n    \n    .under-development h3 {\n      color: #333;\n      margin-bottom: 16px;\n    }\n    \n    .under-development ul {\n      text-align: left;\n      display: inline-block;\n      margin-top: 16px;\n    }\n    \n    .under-development li {\n      margin-bottom: 8px;\n    }\n  "],
+  "mappings": ";AACI,CAAA;AACE,WAAA;AACA,aAAA;AACA,UAAA,EAAA;;AAGF,CAAA;AACE,oBAAA;AACA,WAAA;AACA,iBAAA;AACA,iBAAA;;AAGF,CAAA;AACE,cAAA;AACA,WAAA,KAAA;AACA,SAAA;;AAGF,CANA,kBAMA;AACE,aAAA;AACA,SAAA;AACA,UAAA;AACA,SAAA;AACA,iBAAA;;AAGF,CAdA,kBAcA;AACE,SAAA;AACA,iBAAA;;AAGF,CAnBA,kBAmBA;AACE,cAAA;AACA,WAAA;AACA,cAAA;;AAGF,CAzBA,kBAyBA;AACE,iBAAA;;",
+  "names": []
+}

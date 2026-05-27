@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["user-roles-info.component.ts"],
+  "sourcesContent": ["\n    .roles-info {\n      border-left: 4px solid #2196f3;\n    }\n    \n    .roles-info mat-card-header {\n      padding-bottom: 8px;\n    }\n    \n    .roles-info mat-card-content {\n      font-size: 12px;\n    }\n    \n    .roles-info .border:hover {\n      border-color: #2196f3;\n      background-color: #f3f4f6;\n    }\n  "],
+  "mappings": ";AACI,CAAA;AACE,eAAA,IAAA,MAAA;;AAGF,CAJA,WAIA;AACE,kBAAA;;AAGF,CARA,WAQA;AACE,aAAA;;AAGF,CAZA,WAYA,CAAA,MAAA;AACE,gBAAA;AACA,oBAAA;;",
+  "names": []
+}

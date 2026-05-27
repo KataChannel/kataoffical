@@ -1196,4 +1196,133 @@ export class ChotkhoService {
       throw error;
     }
   }
+
+  /**
+   * 🎯 BÁO CÁO TỒN ÂM HỆ THỐNG TRONG NGÀY
+   * Tính toán từ thời điểm chốt kho Excel gần nhất đến hiện tại
+   */
+  async getNegativeStockReport() {
+    // 1. Tìm phiên chốt kho Excel hoặc Base Line gần nhất trong quá khứ
+    const latestChot = await this.prisma.chotkho.findFirst({
+      where: {
+        isActive: true,
+        ngaychot: { lt: new Date() },
+        OR: [
+          { title: { contains: 'Base Line', mode: 'insensitive' } },
+          { title: { contains: 'EXCEL', mode: 'insensitive' } },
+          { title: { contains: 'Chốt kho', mode: 'insensitive' } }
+        ]
+      },
+      orderBy: { ngaychot: 'desc' }
+    });
+
+    if (!latestChot) {
+      return {
+        latestChotkho: null,
+        products: []
+      };
+    }
+
+    const startTime = latestChot.ngaychot;
+
+    // 2. Lấy tất cả các sản phẩm
+    const products = await this.prisma.sanpham.findMany({
+      select: {
+        id: true,
+        masp: true,
+        title: true,
+        dvt: true
+      }
+    });
+
+    // 3. Lấy tồn đầu kỳ từ phiên chốt kho gần nhất
+    const chotDetails = await this.prisma.chotkhodetail.findMany({
+      where: { chotkhoId: latestChot.id },
+      select: {
+        sanphamId: true,
+        sltonthucte: true
+      }
+    });
+
+    const initialQtyMap = new Map<string, number>();
+    chotDetails.forEach(d => {
+      if (d.sanphamId) {
+        initialQtyMap.set(d.sanphamId, Number(d.sltonthucte || 0));
+      }
+    });
+
+    // 4. Lấy tất cả các phiếu nhập (Dathangsanpham) kể từ startTime
+    const imports = await this.prisma.dathangsanpham.findMany({
+      where: {
+        dathang: {
+          status: 'danhan',
+          updatedAt: { gt: startTime }
+        }
+      },
+      select: {
+        idSP: true,
+        slnhan: true,
+        slgiao: true
+      }
+    });
+
+    const importMap = new Map<string, number>();
+    imports.forEach(imp => {
+      const qty = Number(imp.slnhan || imp.slgiao || 0);
+      importMap.set(imp.idSP, (importMap.get(imp.idSP) || 0) + qty);
+    });
+
+    // 5. Lấy tất cả các phiếu xuất (Donhangsanpham) kể từ startTime
+    const exports = await this.prisma.donhangsanpham.findMany({
+      where: {
+        donhang: {
+          status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
+          updatedAt: { gt: startTime }
+        }
+      },
+      select: {
+        idSP: true,
+        slnhan: true,
+        slgiao: true,
+        sldat: true
+      }
+    });
+
+    const exportMap = new Map<string, number>();
+    exports.forEach(exp => {
+      const qty = Number(exp.slnhan || exp.slgiao || exp.sldat || 0);
+      exportMap.set(exp.idSP, (exportMap.get(exp.idSP) || 0) + qty);
+    });
+
+    // 6. Tính toán tồn hiện tại và lọc các sản phẩm bị âm hệ thống (< -0.001)
+    const negativeProducts: any[] = [];
+    products.forEach(p => {
+      const initialQty = initialQtyMap.get(p.id) || 0;
+      const receivedQty = importMap.get(p.id) || 0;
+      const shippedQty = exportMap.get(p.id) || 0;
+      const systemQty = initialQty + receivedQty - shippedQty;
+
+      if (systemQty < -0.001) {
+        negativeProducts.push({
+          id: p.id,
+          masp: p.masp,
+          title: p.title,
+          dvt: p.dvt,
+          initialQty,
+          receivedQty,
+          shippedQty,
+          systemQty
+        });
+      }
+    });
+
+    return {
+      latestChotkho: {
+        id: latestChot.id,
+        title: latestChot.title,
+        ngaychot: latestChot.ngaychot
+      },
+      products: negativeProducts
+    };
+  }
 }

@@ -606,7 +606,7 @@ let DathangService = class DathangService {
             if (ngaynhanToCheck) {
                 const lastLockedChotkho = await prisma.chotkho.findFirst({
                     where: {
-                        khoId: oldDathang.khoId || '4cc01811-61f5-4bdc-83de-a493764e9258',
+                        khoId: '4cc01811-61f5-4bdc-83de-a493764e9258',
                         isLocked: true,
                         ngaychot: { gte: ngaynhanToCheck }
                     },

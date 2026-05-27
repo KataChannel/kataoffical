@@ -56,7 +56,29 @@ Chúng tôi đã sửa đổi và biên dịch thành công mã nguồn Backend 
 
 ---
 
-## 5. Vá lỗi Docker & Docker Compose thành công
+## 5. Phân Tích Tác Động và Xung Đột Khi Sửa Đơn Hàng Cũ trong Quá Khứ
+Nhằm làm rõ ý kiến về việc *"sửa số lượng hoặc giá tiền đơn hàng cũ không liên quan đến kho thực tại"*, chúng tôi đã phân tích chi tiết tác động và các xung đột hệ thống phát sinh nếu cho phép kế toán tự ý thực hiện hành động này:
+
+### 5.1. Xung đột trực tiếp với Logic Kho tự động (System & Warehouse Conflict)
+Dù kế toán hoặc cấp trên có thể giả định rằng việc sửa đổi này *"chỉ để khớp số liệu tài chính trên giấy tờ, không động vào hàng vật lý tại kho"*, hệ thống phần mềm lại được thiết kế theo mô hình **dữ liệu liên kết nhất quán (Data Integrity)**:
+*   **Cơ chế kích hoạt tự động (Auto-trigger):** Khi sửa đổi số lượng thực nhận (`slnhan`) trên đơn hàng đã hoàn thành, hệ thống lập tức tính toán lượng chênh lệch:
+    $$\Delta = \text{Số lượng nhận mới} - \text{Số lượng nhận cũ}$$
+    Và tự động gọi hàm `updateTonkhoAtomic` để cộng/trừ chênh lệch này vào kho vệ tinh.
+*   **Hệ quả Lệch tồn âm thầm:** Do cơ chế **Mirror Logic** của hệ thống, lượng $\Delta$ này tự động được cộng/trừ thẳng vào **Kho Tổng HCM** mà không hề sinh ra phiếu kho vật lý hay thẻ kho tại HCM. Điều này trực tiếp gây ra sự lệch số liệu nghiêm trọng giữa tồn kho hệ thống và tồn kho thực tế đếm tại kho (như đã xảy ra vào ngày 26/05/2026 với mã `I100263` và `I100259`).
+
+### 5.2. Sai lệch về Kế toán & Tài chính (Accounting & Financial Impact)
+Việc sửa ngược lịch sử (Retroactive changes) vi phạm nghiêm trọng nguyên tắc kế toán bất biến và gây ra **hiệu ứng cánh bướm (Butterfly Effect)** lên số liệu báo cáo tài chính:
+*   **Giá trị tồn kho & Giá vốn hàng bán (COGS):** Hệ thống tính giá trị tồn kho theo phương pháp **Bình quân gia quyền** hoặc **FIFO**. Khi thay đổi giá tiền hoặc số lượng nhập hàng của một đơn cũ trong quá khứ, giá trị đầu vào của sản phẩm đó tại thời điểm đó thay đổi. Hệ thống sẽ tự động tính toán lại toàn bộ giá trị tồn kho và giá vốn hàng bán của các kỳ sau đó. Điều này làm thay đổi biên lợi nhuận gộp của các tháng trước vốn đã được chốt số liệu và báo cáo thuế.
+*   **Xung đột chứng từ gốc:** Số liệu sửa đổi trên phần mềm sẽ hoàn toàn lệch so với hóa đơn VAT, biên bản giao nhận gốc đã ký tá với nhà cung cấp hoặc khách hàng vào thời điểm đó.
+*   **Công nợ nhà cung cấp:** Thay đổi giá trị đơn hàng cũ làm sai lệch số dư công nợ của kỳ trước, gây tranh chấp số liệu khi đối chiếu công nợ cuối tháng.
+
+### 5.3. Kết luận
+*   **Giải pháp kỹ thuật đã chặn:** Đây là lý do tại sao hệ thống bắt buộc phải triển khai giải pháp chặn cập nhật đơn hàng cũ nằm trong kỳ đã khóa (`isLocked = true`) ở các file dịch vụ `dathang.service.ts` và `donhang.service.ts`.
+*   **Khuyến nghị vận hành:** Kế toán tuyệt đối **không được sửa trực tiếp** vào đơn cũ. Mọi điều chỉnh về kho hoặc tài chính phải được thực hiện bằng các chứng từ phát sinh ở **thời điểm hiện tại** (như Phiếu điều chỉnh kho, Bút toán điều chỉnh tài chính/bù trừ công nợ của kỳ hiện tại) kèm ghi chú đối chiếu rõ ràng với mã đơn cũ trong quá khứ.
+
+---
+
+## 6. Vá lỗi Docker & Docker Compose thành công
 Chúng tôi đã rà soát và xử lý triệt để 2 lỗi phát sinh khi build Docker của dự án:
 1.  **Lỗi cảnh báo lỗi thời (`obsolete version`):**
     *   **Nguyên nhân:** Dòng cấu hình `version: '3.8'` ở đầu tệp `docker-compose.yml` đã lỗi thời và không còn khuyến nghị trong Docker Compose V2.

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["magic-confirm-dialog.component.ts"],
+  "sourcesContent": ["\n    :host { display: block; }\n    .mat-mdc-dialog-container { padding: 0 !important; }\n  "],
+  "mappings": ";AACI;AAAQ,WAAA;;AACR,CAAA;AAA4B,WAAA;;",
+  "names": []
+}

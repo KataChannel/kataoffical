@@ -95,6 +95,16 @@ export class ChotkhoController {
     }
   }
 
+  @ApiOperation({ summary: 'Get report of products with negative system stock' })
+  @Get('negative-stock-report')
+  async getNegativeStockReport() {
+    try {
+      return await this.chotkhoService.getNegativeStockReport();
+    } catch (error) {
+      throw new HttpException(error.message || 'Get negative stock report failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @ApiOperation({ summary: 'Find chotkho by ID' })
   @ApiParam({ name: 'id', type: String }) 
   @Get(':id')

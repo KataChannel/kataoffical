@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/admin/phieukho/detailphieukho/detailphieukho.component.scss"],
+  "sourcesContent": [":host {\n  display: block;\n  height: 100%;\n}\n\n::ng-deep {\n  .mat-mdc-form-field {\n    width: 100%;\n  }\n  \n  .mat-mdc-form-field-subscript-wrapper {\n    display: none;\n  }\n\n  .mat-mdc-select-value {\n    font-size: 14px;\n  }\n\n  .mat-mdc-option .mdc-list-item__primary-text {\n    font-size: 14px;\n  }\n}\n\ntable {\n  th {\n    white-space: nowrap;\n  }\n  td {\n    vertical-align: middle;\n  }\n}\n\n.bg-gray-100 {\n  background-color: #f5f5f5 !important;\n}\n\nbutton.mat-mdc-flat-button.mat-primary {\n  background-color: #2e7d32 !important;\n}\n\nlabel {\n  color: #666;\n  font-weight: 500;\n}\n"],
+  "mappings": ";AAAA;AACE,WAAA;AACA,UAAA;;AAIA,UAAA,CAAA;AACE,SAAA;;AAGF,UAAA,CAAA;AACE,WAAA;;AAGF,UAAA,CAAA;AACE,aAAA;;AAGF,UAAA,CAAA,eAAA,CAAA;AACE,aAAA;;AAKF,MAAA;AACE,eAAA;;AAEF,MAAA;AACE,kBAAA;;AAIJ,CAAA;AACE,oBAAA;;AAGF,MAAA,CAAA,mBAAA,CAAA;AACE,oBAAA;;AAGF;AACE,SAAA;AACA,eAAA;;",
+  "names": []
+}

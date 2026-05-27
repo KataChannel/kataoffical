@@ -1331,6 +1331,10 @@ export class NhucaudathangComponent {
           danhSachCanhBao,
           danhSachNhap: phieuNhapDetails,
           danhSachXuat: phieuXuatDetails,
+          danhSachExcel: validData.map(item => {
+            const sp = sanphamMap.get(item.masp);
+            return { sanphamId: sp ? sp.id : '', soluong: Number(item.slton || 0) };
+          }).filter(item => item.sanphamId),
         };
 
         const dialogRef = this._dialog.open(StockWarningDialogComponent, {

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["magic-progress-dialog.component.ts"],
+  "sourcesContent": ["\n    :host { display: block; }\n    mat-progress-bar { --mdc-linear-progress-active-indicator-color: #2563eb; }\n  "],
+  "mappings": ";AACI;AAAQ,WAAA;;AACR;AAAmB,gDAAA;;",
+  "names": []
+}

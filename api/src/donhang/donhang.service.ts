@@ -2471,7 +2471,7 @@ export class DonhangService {
       if (ngaygiaoToCheck) {
         const lastLockedChotkho = await prisma.chotkho.findFirst({
           where: {
-            khoId: oldDonhang.khoId || '4cc01811-61f5-4bdc-83de-a493764e9258', // KHO - HCM làm mặc định
+            khoId: '4cc01811-61f5-4bdc-83de-a493764e9258', // Luôn check khóa kỳ theo Kho Tổng HCM do Mirror Logic
             isLocked: true,
             ngaychot: { gte: ngaygiaoToCheck }
           },

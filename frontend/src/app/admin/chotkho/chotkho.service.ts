@@ -180,6 +180,25 @@ export class ChotkhoService {
     }
   }
 
+  async getNegativeStockReport(): Promise<any> {
+    try {
+      this.isLoading.set(true);
+      const response = await firstValueFrom(
+        this.http.get(`${environment.APIURL}/chotkho/negative-stock-report`, {
+          headers: {
+            Authorization: `Bearer ${this.storageService.getItem('token')}`,
+          },
+        })
+      );
+      return response;
+    } catch (error) {
+      console.error('Error getting negative stock report:', error);
+      return null;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
   /**
    * 🎯 NEW: Lấy danh sách đơn hàng đang ở trạng thái 'Đã đặt' để hỗ trợ chốt kho nhanh
    */

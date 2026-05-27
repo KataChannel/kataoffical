@@ -534,6 +534,10 @@ export class XuatnhaptonComponent implements OnDestroy {
           danhSachNhap: phieuNhapDetails,
           danhSachXuat: phieuXuatDetails,
           danhSachLoi: danhSachMaspLoi,
+          danhSachExcel: validData.map(item => {
+            const sp = sanphamMap.get(item.masp);
+            return { sanphamId: sp ? sp.id : '', soluong: Number(item.slton || 0) };
+          }).filter(item => item.sanphamId),
         };
 
         const dialogRef = this._dialog.open(StockWarningDialogComponent, {

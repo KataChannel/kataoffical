@@ -60,6 +60,14 @@ let ChotkhoController = class ChotkhoController {
             throw new common_1.HttpException(error.message || 'Get products failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async getNegativeStockReport() {
+        try {
+            return await this.chotkhoService.getNegativeStockReport();
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Get negative stock report failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async findOne(id) {
         try {
             return await this.chotkhoService.findOne(id);
@@ -180,6 +188,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ChotkhoController.prototype, "getAllProductsByKho", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Get report of products with negative system stock' }),
+    (0, common_1.Get)('negative-stock-report'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "getNegativeStockReport", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Find chotkho by ID' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: String }),
