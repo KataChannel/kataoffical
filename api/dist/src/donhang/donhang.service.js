@@ -1941,6 +1941,31 @@ let DonhangService = class DonhangService {
         }
         return result;
     }
+    async shouldSkipInventory(donhang, prisma) {
+        const targetKhoId = donhang.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258";
+        let latestChot = await prisma.chotkho.findFirst({
+            where: { khoId: targetKhoId, isActive: true },
+            orderBy: { ngaychot: 'desc' },
+            select: { ngaychot: true }
+        });
+        if (!latestChot && targetKhoId !== "4cc01811-61f5-4bdc-83de-a493764e9258") {
+            latestChot = await prisma.chotkho.findFirst({
+                where: { khoId: "4cc01811-61f5-4bdc-83de-a493764e9258", isActive: true },
+                orderBy: { ngaychot: 'desc' },
+                select: { ngaychot: true }
+            });
+        }
+        if (!latestChot)
+            return false;
+        const effectiveDate = donhang.ngaygiao || donhang.createdAt;
+        const toVNDateStr = (date) => {
+            const d = new Date(new Date(date).getTime() + 7 * 60 * 60 * 1000);
+            return d.toISOString().split('T')[0];
+        };
+        const orderDateStr = toVNDateStr(effectiveDate);
+        const chotkhoDateStr = toVNDateStr(latestChot.ngaychot);
+        return orderDateStr <= chotkhoDateStr;
+    }
     async update(id, data, tx) {
         if (tx) {
             return this._updateInternal(id, data, tx);
@@ -1956,20 +1981,6 @@ let DonhangService = class DonhangService {
         });
         if (!oldDonhang) {
             throw new common_1.NotFoundException('Đơn hàng không tồn tại');
-        }
-        const ngaygiaoToCheck = oldDonhang.ngaygiao || oldDonhang.createdAt;
-        if (ngaygiaoToCheck) {
-            const lastLockedChotkho = await prisma.chotkho.findFirst({
-                where: {
-                    khoId: '4cc01811-61f5-4bdc-83de-a493764e9258',
-                    isLocked: true,
-                    ngaychot: { gte: ngaygiaoToCheck }
-                },
-                orderBy: { ngaychot: 'desc' }
-            });
-            if (lastLockedChotkho) {
-                throw new common_1.BadRequestException(`Đơn hàng đã thuộc kỳ chốt kho đã khóa ngày ${new Date(lastLockedChotkho.ngaychot).toLocaleDateString('vi-VN')}. Không thể chỉnh sửa.`);
-            }
         }
         const isStatusChanged = data.status && data.status !== oldDonhang.status;
         const tonkhoOps = [];
@@ -2054,7 +2065,8 @@ let DonhangService = class DonhangService {
                 }
             }
         }
-        if (tonkhoOps.length > 0) {
+        const skipInventory = await this.shouldSkipInventory(oldDonhang, prisma);
+        if (tonkhoOps.length > 0 && !skipInventory) {
             await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps, prisma);
         }
         const maphieu = `PX-${oldDonhang.madonhang}`;
@@ -2134,7 +2146,7 @@ let DonhangService = class DonhangService {
                         newVal = parseFloat((Number(item.slnhan ?? 0) + Number(item.slhuy ?? 0)).toFixed(3));
                     }
                     const delta = newVal - oldVal;
-                    if (delta !== 0) {
+                    if (delta !== 0 && !skipInventory) {
                         await this.tonkhoManager.updateTonkhoAtomic([{
                                 sanphamId: oldSp.idSP,
                                 khoId: data.khoId || oldDonhang.khoId,
@@ -2165,6 +2177,11 @@ let DonhangService = class DonhangService {
                 nhanvienchiahang: data.nhanvienchiahang,
                 shipper: data.shipper,
                 printCount: data.printCount,
+                ngayHoanThanhThucte: isStatusChanged
+                    ? (['dagiao', 'danhan', 'hoanthanh'].includes(targetStatus)
+                        ? (oldDonhang.ngayHoanThanhThucte || new Date())
+                        : null)
+                    : undefined,
                 sanpham: data.sanpham ? {
                     deleteMany: {},
                     create: this.deduplicateSanpham(data.sanpham).map((sp) => ({
@@ -2298,7 +2315,8 @@ let DonhangService = class DonhangService {
                             });
                         }
                     }
-                    if (tonkhoOps.length > 0) {
+                    const skipInventory = await this.shouldSkipInventory(finalDonhang, prisma);
+                    if (tonkhoOps.length > 0 && !skipInventory) {
                         await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps, prisma);
                         console.log(`📌 [PHIEUGIAO-UPDATE] Adjusted stock for ${tonkhoOps.length} items`);
                     }
@@ -2522,10 +2540,12 @@ let DonhangService = class DonhangService {
                     data: {
                         status: 'danhan',
                         ghichu: data.ghichu,
+                        ngayHoanThanhThucte: donhang.ngayHoanThanhThucte || new Date(),
                         updatedAt: new Date()
                     }
                 });
                 let tongchua = 0;
+                const skipInventory = await this.shouldSkipInventory(donhang, prisma);
                 for (const sp of donhang.sanpham) {
                     const giaban = parseFloat((sp.giaban || 0).toString());
                     const vat = parseFloat((sp.vat || 0).toString());
@@ -2544,11 +2564,13 @@ let DonhangService = class DonhangService {
                     });
                     const oldSlgiao = parseFloat((sp.slgiao || 0).toString());
                     const shortage = oldSlgiao - newSlnhan;
-                    await this.updateTonKhoSafely(sp.idSP, {
-                        sltontt: { decrement: newSlnhan },
-                        slchogiao: { decrement: oldSlgiao },
-                        slton: { increment: shortage }
-                    });
+                    if (!skipInventory) {
+                        await this.updateTonKhoSafely(sp.idSP, {
+                            sltontt: { decrement: newSlnhan },
+                            slchogiao: { decrement: oldSlgiao },
+                            slton: { increment: shortage }
+                        });
+                    }
                 }
                 const vatRate = parseFloat((donhang.vat || 0).toString());
                 const tongvat = tongchua * vatRate;
@@ -2626,6 +2648,7 @@ let DonhangService = class DonhangService {
                                 tongtien: parseFloat(tongtien.toFixed(3)),
                                 tongvat: parseFloat(tongvat.toFixed(3)),
                                 ghichu: (order.ghichu || '') + ' | Tự động hoàn tất trước chốt kho',
+                                ngayHoanThanhThucte: order.ngayHoanThanhThucte || new Date(),
                                 updatedAt: new Date()
                             }
                         });
@@ -2640,14 +2663,17 @@ let DonhangService = class DonhangService {
                                 }
                             });
                         }
-                        for (const sp of order.sanpham) {
-                            await this.tonkhoManager.updateTonkhoAtomic([{
-                                    sanphamId: sp.idSP,
-                                    operation: 'decrement',
-                                    sltontt: parseFloat(sp.slgiao.toString()),
-                                    slchogiao: parseFloat(sp.slgiao.toString()),
-                                    reason: `Auto-complete pending delivery for order ${order.madonhang}`
-                                }]);
+                        const skipInventory = await this.shouldSkipInventory(order, prisma);
+                        if (!skipInventory) {
+                            for (const sp of order.sanpham) {
+                                await this.tonkhoManager.updateTonkhoAtomic([{
+                                        sanphamId: sp.idSP,
+                                        operation: 'decrement',
+                                        sltontt: parseFloat(sp.slgiao.toString()),
+                                        slchogiao: parseFloat(sp.slgiao.toString()),
+                                        reason: `Auto-complete pending delivery for order ${order.madonhang}`
+                                    }]);
+                            }
                         }
                         batchCount += order.sanpham.length;
                     }

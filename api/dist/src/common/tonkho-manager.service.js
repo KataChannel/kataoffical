@@ -96,7 +96,7 @@ let TonkhoManagerService = class TonkhoManagerService {
                 const effectiveKhoId = op.khoId || KHO_TONG_ID;
                 if (op.slton !== undefined || op.sltontt !== undefined) {
                     const movement = op.slton !== undefined ? op.slton : (op.sltontt || 0);
-                    await prisma.sanphamKho.upsert({
+                    const updatedSpKho = await prisma.sanphamKho.upsert({
                         where: {
                             sanphamId_khoId: {
                                 sanphamId: op.sanphamId,
@@ -115,7 +115,7 @@ let TonkhoManagerService = class TonkhoManagerService {
                         }
                     });
                     if (effectiveKhoId !== KHO_TONG_ID && op.operation !== 'set') {
-                        await prisma.sanphamKho.upsert({
+                        const updatedKhoTong = await prisma.sanphamKho.upsert({
                             where: {
                                 sanphamId_khoId: {
                                     sanphamId: op.sanphamId,
@@ -141,7 +141,7 @@ let TonkhoManagerService = class TonkhoManagerService {
                             }
                         }
                     });
-                    const totalPhysicalStock = Number(khoTongRecord?.soluong || 0);
+                    let totalPhysicalStock = Number(khoTongRecord?.soluong || 0);
                     await prisma.tonKho.update({
                         where: { sanphamId: op.sanphamId },
                         data: {

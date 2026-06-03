@@ -194,8 +194,41 @@ let UniversalService = class UniversalService {
                 throw new Error(`Create method does not exist on model '${mappedModel}'`);
             }
             console.log(`🔍 Creating ${mappedModel} with:`, { data, include });
+            let cleanData = { ...data };
+            if (mappedModel.toLowerCase() === 'user') {
+                if (cleanData.password) {
+                    const bcrypt = require('bcryptjs');
+                    cleanData.password = await bcrypt.hash(cleanData.password, 10);
+                }
+                if (cleanData.SDT === '') {
+                    cleanData.SDT = null;
+                }
+                if (cleanData.email === '') {
+                    cleanData.email = null;
+                }
+                if (cleanData.SDT) {
+                    const existingUserWithSDT = await this.prisma.user.findFirst({
+                        where: {
+                            SDT: cleanData.SDT
+                        }
+                    });
+                    if (existingUserWithSDT) {
+                        throw new common_1.BadRequestException('Số điện thoại đã được sử dụng bởi người dùng khác');
+                    }
+                }
+                if (cleanData.email) {
+                    const existingUserWithEmail = await this.prisma.user.findFirst({
+                        where: {
+                            email: cleanData.email
+                        }
+                    });
+                    if (existingUserWithEmail) {
+                        throw new common_1.BadRequestException('Email đã được sử dụng bởi người dùng khác');
+                    }
+                }
+            }
             const result = await prismaModel.create({
-                data,
+                data: cleanData,
                 include,
             });
             console.log(`✅ Create result for ${mappedModel}:`, result);
@@ -229,6 +262,40 @@ let UniversalService = class UniversalService {
                 });
             }
             const cleanData = this.validateAndCleanRelationData(data);
+            if (mappedModel.toLowerCase() === 'user') {
+                if (cleanData.password) {
+                    const bcrypt = require('bcryptjs');
+                    cleanData.password = await bcrypt.hash(cleanData.password, 10);
+                }
+                if (cleanData.SDT === '') {
+                    cleanData.SDT = null;
+                }
+                if (cleanData.email === '') {
+                    cleanData.email = null;
+                }
+                if (cleanData.SDT) {
+                    const existingUserWithSDT = await this.prisma.user.findFirst({
+                        where: {
+                            SDT: cleanData.SDT,
+                            NOT: where
+                        }
+                    });
+                    if (existingUserWithSDT) {
+                        throw new common_1.BadRequestException('Số điện thoại đã được sử dụng bởi người dùng khác');
+                    }
+                }
+                if (cleanData.email) {
+                    const existingUserWithEmail = await this.prisma.user.findFirst({
+                        where: {
+                            email: cleanData.email,
+                            NOT: where
+                        }
+                    });
+                    if (existingUserWithEmail) {
+                        throw new common_1.BadRequestException('Email đã được sử dụng bởi người dùng khác');
+                    }
+                }
+            }
             console.log(`🧹 [CLEAN] Original data keys:`, Object.keys(data));
             console.log(`🧹 [CLEAN] Cleaned data keys:`, Object.keys(cleanData));
             console.log(`🧹 [CLEAN] Original khachhang:`, data.khachhang);

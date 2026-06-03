@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/shared/utils/trangthai.ts"],
-  "sourcesContent": ["export const TrangThaiDon = {\n    dadat: 'Đã đặt',\n    dagiao: 'Đang giao',\n    danhan: 'Đã nhận',\n    huy: 'Đã hủy',\n    dahuy: 'Đã hủy',\n    hoanthanh: 'Hoàn thành',\n    choxuly: 'Chờ xử lý',\n    dangxuly: 'Đang xử lý',\n    khonggiao: 'Không giao',\n    trahang: 'Trả hàng',\n    baotri: 'Bảo trì'\n};"],
-  "mappings": ";;;AAAO,IAAM,eAAe;EACxB,OAAO;EACP,QAAQ;EACR,QAAQ;EACR,KAAK;EACL,OAAO;EACP,WAAW;EACX,SAAS;EACT,UAAU;EACV,WAAW;EACX,SAAS;EACT,QAAQ;;",
-  "names": []
-}

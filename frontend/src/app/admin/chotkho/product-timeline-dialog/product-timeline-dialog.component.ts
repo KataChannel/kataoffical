@@ -206,6 +206,15 @@ export interface ProductTimelineDialogData {
                         <span class="text-slate-400 font-normal italic">-</span>
                       } @else if (item.type === 'CHỐT KHO') {
                         <span class="text-indigo-600 bg-indigo-50/40 px-1.5 py-0.5 rounded border border-indigo-100/50">{{ item.code }}</span>
+                      } @else if (item.orderId) {
+                        <span (click)="goToDetail(item)" 
+                              class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer flex items-center gap-1">
+                          <mat-icon style="font-size: 11px; width: 11px; height: 11px; margin: 0;" 
+                                    [class]="item.orderType === 'dathang' ? 'text-blue-500' : 'text-orange-500'">
+                            {{ item.orderType === 'dathang' ? 'shopping_cart' : 'local_shipping' }}
+                          </mat-icon>
+                          {{ item.code }}
+                        </span>
                       } @else {
                         <span class="text-slate-800">{{ item.code }}</span>
                       }
@@ -367,5 +376,16 @@ export class ProductTimelineDialogComponent implements OnInit {
 
   onClose(): void {
     this.dialogRef.close();
+  }
+
+  goToDetail(item: any): void {
+    if (!item.orderId || !item.orderType) return;
+    const url = item.orderType === 'dathang' 
+      ? `/admin/dathang/${item.orderId}` 
+      : `/admin/phieugiaohang/${item.orderId}`;
+    
+    if (typeof window !== 'undefined') {
+      window.open(url, '_blank');
+    }
   }
 }

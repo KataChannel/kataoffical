@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["quytrinh-dialog.component.ts"],
-  "sourcesContent": ["\n    .dialog-container {\n      height: 100%;\n      width: 100%;\n      overflow: hidden;\n      position: relative;\n    }\n    iframe {\n      width: 100%;\n      height: 100%;\n      border: none;\n    }\n    .close-btn-overlay {\n      position: absolute;\n      top: 15px;\n      right: 15px;\n      background-color: rgba(255, 255, 255, 0.7);\n      backdrop-filter: blur(4px);\n      border-radius: 50%;\n      z-index: 1000;\n      box-shadow: 0 2px 10px rgba(0,0,0,0.1);\n      transition: all 0.2s;\n    }\n    .close-btn-overlay:hover {\n      background-color: rgba(255, 255, 255, 0.9);\n      transform: scale(1.1);\n    }\n    .quytrinh-dialog-container .mat-mdc-dialog-container .mat-mdc-dialog-surface {\n      padding: 0 !important;\n      overflow: hidden !important;\n      border-radius: 0 !important;\n    }\n  "],
-  "mappings": ";AACI,CAAA;AACE,UAAA;AACA,SAAA;AACA,YAAA;AACA,YAAA;;AAEF;AACE,SAAA;AACA,UAAA;AACA,UAAA;;AAEF,CAAA;AACE,YAAA;AACA,OAAA;AACA,SAAA;AACA,oBAAA,KAAA,GAAA,EAAA,GAAA,EAAA,GAAA,EAAA;AACA,2BAAA,KAAA;AAAA,mBAAA,KAAA;AACA,iBAAA;AACA,WAAA;AACA,cAAA,EAAA,IAAA,KAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;AACA,cAAA,IAAA;;AAEF,CAXA,iBAWA;AACE,oBAAA,KAAA,GAAA,EAAA,GAAA,EAAA,GAAA,EAAA;AACA,aAAA,MAAA;;AAEF,CAAA,0BAAA,CAAA,yBAAA,CAAA;AACE,WAAA;AACA,YAAA;AACA,iBAAA;;",
-  "names": []
-}

@@ -15,6 +15,7 @@ const prisma_service_1 = require("../../prisma/prisma.service");
 const dataloader_service_1 = require("./dataloader.service");
 const field_selection_service_1 = require("./field-selection.service");
 const redis_service_1 = require("../redis/redis.service");
+const bcrypt = require("bcryptjs");
 let EnhancedUniversalService = class EnhancedUniversalService {
     constructor(prisma, dataLoader, fieldSelection, redisService) {
         this.prisma = prisma;
@@ -203,6 +204,37 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             const model = this.getModel(modelName);
             const normalizedData = this.normalizeDateFieldsForModel(modelName, args.data);
             const finalData = this.normalizeRelationFieldsForModel(modelName, normalizedData);
+            if (modelName.toLowerCase() === 'user') {
+                if (finalData.password) {
+                    finalData.password = await bcrypt.hash(finalData.password, 10);
+                }
+                if (finalData.SDT === '') {
+                    finalData.SDT = null;
+                }
+                if (finalData.email === '') {
+                    finalData.email = null;
+                }
+                if (finalData.SDT) {
+                    const existingUserWithSDT = await this.prisma.user.findFirst({
+                        where: {
+                            SDT: finalData.SDT
+                        }
+                    });
+                    if (existingUserWithSDT) {
+                        throw new common_1.BadRequestException('Số điện thoại đã được sử dụng bởi người dùng khác');
+                    }
+                }
+                if (finalData.email) {
+                    const existingUserWithEmail = await this.prisma.user.findFirst({
+                        where: {
+                            email: finalData.email
+                        }
+                    });
+                    if (existingUserWithEmail) {
+                        throw new common_1.BadRequestException('Email đã được sử dụng bởi người dùng khác');
+                    }
+                }
+            }
             const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
             const createOptions = {
                 data: finalData,
@@ -229,6 +261,39 @@ let EnhancedUniversalService = class EnhancedUniversalService {
         try {
             const model = this.getModel(modelName);
             let cleanedData = { ...args.data };
+            if (modelName.toLowerCase() === 'user') {
+                if (cleanedData.password) {
+                    cleanedData.password = await bcrypt.hash(cleanedData.password, 10);
+                }
+                if (cleanedData.SDT === '') {
+                    cleanedData.SDT = null;
+                }
+                if (cleanedData.email === '') {
+                    cleanedData.email = null;
+                }
+                if (cleanedData.SDT) {
+                    const existingUserWithSDT = await this.prisma.user.findFirst({
+                        where: {
+                            SDT: cleanedData.SDT,
+                            NOT: args.where
+                        }
+                    });
+                    if (existingUserWithSDT) {
+                        throw new common_1.BadRequestException('Số điện thoại đã được sử dụng bởi người dùng khác');
+                    }
+                }
+                if (cleanedData.email) {
+                    const existingUserWithEmail = await this.prisma.user.findFirst({
+                        where: {
+                            email: cleanedData.email,
+                            NOT: args.where
+                        }
+                    });
+                    if (existingUserWithEmail) {
+                        throw new common_1.BadRequestException('Email đã được sử dụng bởi người dùng khác');
+                    }
+                }
+            }
             const excludeFromUpdates = [
                 'roles', 'permissions', 'profile', 'userRoles', 'rolePermissions',
                 'user', 'role', 'permission', 'khachhang', 'nhomkhachhang'

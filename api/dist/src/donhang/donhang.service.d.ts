@@ -73,6 +73,7 @@ export declare class DonhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            ngayHoanThanhThucte: Date | null;
             isshowvat: boolean;
             tongtien: import("@prisma/client/runtime/library").Decimal;
             tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -157,6 +158,7 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        ngayHoanThanhThucte: Date | null;
         isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -221,6 +223,7 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        ngayHoanThanhThucte: Date | null;
         isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -280,6 +283,7 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        ngayHoanThanhThucte: Date | null;
         isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -366,6 +370,7 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        ngayHoanThanhThucte: Date | null;
         isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -453,6 +458,7 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        ngayHoanThanhThucte: Date | null;
         isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -551,6 +557,7 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        ngayHoanThanhThucte: Date | null;
         isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -566,6 +573,7 @@ export declare class DonhangService {
         shipper: string | null;
         khoId: string | null;
     }>;
+    private shouldSkipInventory;
     update(id: string, data: any, tx?: any): Promise<any>;
     private _updateInternal;
     danhan(id: string, data: any): Promise<any>;
@@ -603,6 +611,7 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        ngayHoanThanhThucte: Date | null;
         isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -707,6 +716,7 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        ngayHoanThanhThucte: Date | null;
         isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;

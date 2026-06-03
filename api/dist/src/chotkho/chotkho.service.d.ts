@@ -83,6 +83,7 @@ export declare class ChotkhoService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
+        ngayHoanThanhThucte: Date | null;
         lydohuy: string | null;
         khoId: string | null;
         subtitle: string | null;

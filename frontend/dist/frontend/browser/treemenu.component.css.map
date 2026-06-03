@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/shared/common/treemenu/treemenu.component.scss"],
-  "sourcesContent": ["mat-tree-node[aria-level=\"2\"] {\r\n    padding-left: 20px;\r\n  }\r\nmat-tree-node[aria-level=\"3\"] {\r\n  padding-left: 40px;\r\n  }\r\nmat-tree-node[aria-level=\"4\"] {\r\n  padding-left: 60px;\r\n }"],
-  "mappings": ";AAAA,aAAA,CAAA;AACI,gBAAA;;AAEJ,aAAA,CAAA;AACE,gBAAA;;AAEF,aAAA,CAAA;AACE,gBAAA;;",
-  "names": []
-}

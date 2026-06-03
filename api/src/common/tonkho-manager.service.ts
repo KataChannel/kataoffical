@@ -120,7 +120,7 @@ export class TonkhoManagerService {
           const movement = op.slton !== undefined ? op.slton : (op.sltontt || 0);
           
           // Update the specific warehouse (Source Tracking)
-          await prisma.sanphamKho.upsert({
+          const updatedSpKho = await prisma.sanphamKho.upsert({
             where: {
               sanphamId_khoId: {
                 sanphamId: op.sanphamId,
@@ -142,7 +142,7 @@ export class TonkhoManagerService {
 
           // ✅ MIRROR LOGIC: If update is NOT for KHO TỔNG, apply same delta to KHO TỔNG
           if (effectiveKhoId !== KHO_TONG_ID && op.operation !== 'set') {
-             await prisma.sanphamKho.upsert({
+             const updatedKhoTong = await prisma.sanphamKho.upsert({
                 where: {
                   sanphamId_khoId: {
                     sanphamId: op.sanphamId,
@@ -173,7 +173,7 @@ export class TonkhoManagerService {
             }
           });
 
-          const totalPhysicalStock = Number(khoTongRecord?.soluong || 0);
+          let totalPhysicalStock = Number(khoTongRecord?.soluong || 0);
 
           await prisma.tonKho.update({
             where: { sanphamId: op.sanphamId },

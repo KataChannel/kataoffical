@@ -261,6 +261,7 @@ model Donhang {
   isActive         Boolean          @default(false)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
+  ngayHoanThanhThucte DateTime?
   isshowvat        Boolean          @default(false)
   tongtien         Decimal          @default(0) @postgres.Decimal(20, 3)
   tongvat          Decimal          @default(0) @postgres.Decimal(20, 3)
@@ -405,6 +406,7 @@ model Dathang {
   printCount   Int?             @default(0)
   createdAt    DateTime         @default(now())
   updatedAt    DateTime?        @updatedAt
+  ngayHoanThanhThucte DateTime?
   subtitle     String?
   khoId        String?
   lydohuy      String?

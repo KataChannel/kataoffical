@@ -88,6 +88,7 @@ export declare class CancelOrderController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        ngayHoanThanhThucte: Date | null;
         isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -168,6 +169,7 @@ export declare class CancelOrderController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
+        ngayHoanThanhThucte: Date | null;
         lydohuy: string | null;
         khoId: string | null;
         subtitle: string | null;
@@ -260,6 +262,7 @@ export declare class CancelOrderController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        ngayHoanThanhThucte: Date | null;
         isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -340,6 +343,7 @@ export declare class CancelOrderController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
+        ngayHoanThanhThucte: Date | null;
         lydohuy: string | null;
         khoId: string | null;
         subtitle: string | null;

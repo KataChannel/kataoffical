@@ -80,3 +80,9 @@ docker-compose.override.yml
 
 # Backup
 backup/
+
+# Reports and Excel files
+docs/report/*.xlsx
+docs/report/*.zip
+*.xlsx
+

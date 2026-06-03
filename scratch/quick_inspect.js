@@ -1,123 +1,120 @@
 const { PrismaClient } = require('@prisma/client');
 const XLSX = require('xlsx');
 const fs = require('fs');
+const path = require('path');
 
-const prisma = new PrismaClient();
-const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
-
-async function main() {
+// Try to read .env file to print DB URL
+try {
+  const envContent = fs.readFileSync(path.join(__dirname, '../.env'), 'utf8');
+  console.log(".env content snippet:\n", envContent.split('\n').filter(line => line.includes('DATABASE_URL') || line.includes('DB_URL')).join('\n'));
+} catch (e) {
   try {
-    const excelPath = '/home/kata/Coding/rausachfinal/doisoat/Ton-Huy 26-5.xlsx';
-    console.log(`Reading Excel file: ${excelPath}`);
-    const workbook = XLSX.readFile(excelPath);
-    
-    // Let's list sheet names
-    console.log("Sheet names:", workbook.SheetNames);
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const excelRows = XLSX.utils.sheet_to_json(worksheet);
-    
-    const excelMap = new Map();
-    excelRows.forEach(row => {
-      if (row.masp) {
-        excelMap.set(String(row.masp).trim(), {
-          slton: parseFloat(row.slton) || 0,
-          slhuy: parseFloat(row.slhuy) || 0,
-          title: row.tensp || row.title || ''
-        });
-      }
-    });
-
-    console.log(`Loaded ${excelMap.size} products from Excel.`);
-
-    // Codes in the user's report image:
-    const targetCodes = [
-      'I100270', 'I100479', 'I100233', 'I100103', 'I100014', 
-      'I100105', 'I100220', 'I100102', 'I100815', 'I100612', 
-      'I100090', 'I101266', 'I100120', 'I100507', 'I100204', 
-      'I100208', 'I100405', 'I100171', 'I100168', 'I100028', 
-      'I100142', 'I100064'
-    ];
-
-    console.log(`Querying DB for ${targetCodes.length} target products...`);
-    const dbProducts = await prisma.sanpham.findMany({
-      where: {
-        masp: { in: targetCodes }
-      },
-      include: {
-        SanphamKho: {
-          where: { khoId: KHO_TONG_ID }
-        },
-        TonKho: true
-      }
-    });
-
-    // Find the latest Chotkho for May 26th
-    const latestChotkho = await prisma.chotkho.findFirst({
-      where: {
-        ngaychot: {
-          gte: new Date('2026-05-26T00:00:00+07:00'),
-          lte: new Date('2026-05-26T23:59:59+07:00')
-        }
-      },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        details: true
-      }
-    });
-
-    console.log("Latest Chotkho details:");
-    if (latestChotkho) {
-      console.log(`ID: ${latestChotkho.id}, Title: ${latestChotkho.title}, Date: ${latestChotkho.ngaychot}`);
-      console.log(`Total details in this chotkho: ${latestChotkho.details.length}`);
-    } else {
-      console.log("No Chotkho found for 2026-05-26!");
-    }
-
-    const results = [];
-    
-    dbProducts.forEach(sp => {
-      const masp = sp.masp;
-      const excelRow = excelMap.get(masp);
-      
-      const dbSoluongKho = sp.SanphamKho && sp.SanphamKho[0] ? parseFloat(sp.SanphamKho[0].soluong) : 0;
-      const dbTonKhoSlton = sp.TonKho ? parseFloat(sp.TonKho.slton) : 0;
-      const dbTonKhoSltontt = sp.TonKho ? parseFloat(sp.TonKho.sltontt) : 0;
-
-      // Find in Chotkho details
-      let chotDetail = null;
-      if (latestChotkho) {
-        chotDetail = latestChotkho.details.find(d => d.sanphamId === sp.id);
-      }
-
-      results.push({
-        masp,
-        title: sp.title,
-        dvt: sp.dvt,
-        excel_slton: excelRow ? excelRow.slton : '#N/A',
-        excel_slhuy: excelRow ? excelRow.slhuy : '#N/A',
-        db_sanphamkho: dbSoluongKho,
-        db_tonkho_slton: dbTonKhoSlton,
-        db_tonkho_sltontt: dbTonKhoSltontt,
-        chot_sltonhethong: chotDetail ? parseFloat(chotDetail.sltonhethong) : 'N/A',
-        chot_sltonthucte: chotDetail ? parseFloat(chotDetail.sltonthucte) : 'N/A',
-        chot_chenhlech: chotDetail ? parseFloat(chotDetail.chenhlech) : 'N/A',
-        chot_ghichu: chotDetail ? chotDetail.ghichu : 'N/A'
-      });
-    });
-
-    console.log("\n--- COMPARISON RESULTS ---");
-    console.table(results);
-
-    // Save to file for further study
-    fs.writeFileSync('/home/kata/Coding/rausachfinal/scratch/inspect_2605_results.json', JSON.stringify(results, null, 2));
-    console.log("Saved results to scratch/inspect_2605_results.json");
-
-  } catch (error) {
-    console.error("Error in main:", error);
-  } finally {
-    await prisma.$disconnect();
+    const envContent = fs.readFileSync(path.join(__dirname, '../api/.env'), 'utf8');
+    console.log("api/.env content snippet:\n", envContent.split('\n').filter(line => line.includes('DATABASE_URL') || line.includes('DB_URL')).join('\n'));
+  } catch (err) {
+    console.log("Could not read .env file:", err.message);
   }
 }
 
-main();
+const prisma = new PrismaClient();
+
+async function main() {
+  console.log("\n--- DATABASE INVESTIGATION ---");
+  const totalProducts = await prisma.sanpham.count();
+  console.log("Total products in database:", totalProducts);
+
+  const lastChotkho = await prisma.chotkho.findFirst({
+    orderBy: { ngaychot: 'desc' }
+  });
+  if (lastChotkho) {
+    console.log("Last Chotkho session:", {
+      id: lastChotkho.id,
+      title: lastChotkho.title,
+      ngaychot: lastChotkho.ngaychot.toISOString(),
+      codeId: lastChotkho.codeId
+    });
+  } else {
+    console.log("No Chotkho sessions found.");
+  }
+
+  // Find Chotkho sessions on 31-05-2026
+  const chotkhosToday = await prisma.chotkho.findMany({
+    where: {
+      ngaychot: {
+        gte: new Date('2026-05-31T00:00:00+07:00'),
+        lte: new Date('2026-05-31T23:59:59+07:00')
+      }
+    }
+  });
+  console.log(`Chotkho sessions on 2026-05-31: ${chotkhosToday.length}`);
+  chotkhosToday.forEach(c => {
+    console.log(`- ID: ${c.id}, Title: ${c.title}, NgayChot: ${c.ngaychot.toISOString()}`);
+  });
+
+  console.log("\n--- EXCEL FILE INVESTIGATION ---");
+  const excelPath = '/home/kata/Coding/rausachfinal/doisoat/Ton-Huy 31-5.xlsx';
+  if (!fs.existsSync(excelPath)) {
+    console.log(`Excel file does NOT exist at ${excelPath}`);
+    return;
+  }
+  const workbook = XLSX.readFile(excelPath);
+  console.log("Sheets in Excel file:", workbook.SheetNames);
+  const sheetName = workbook.SheetNames[0];
+  const worksheet = workbook.Sheets[sheetName];
+  const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+  console.log(`Total rows in first sheet: ${rows.length}`);
+  console.log("First 5 rows:");
+  rows.slice(0, 5).forEach((r, i) => console.log(`  Row ${i}:`, r));
+
+  // Determine headers
+  let headerRowIndex = -1;
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    if (row && (row.includes('masp') || row.includes('Mã sản phẩm') || row.includes('title') || row.includes('slton'))) {
+      headerRowIndex = i;
+      break;
+    }
+  }
+  console.log("Header row index:", headerRowIndex);
+  if (headerRowIndex !== -1) {
+    const header = rows[headerRowIndex];
+    console.log("Header fields:", header);
+    const colIdx = {
+      masp: header.indexOf('masp'),
+      title: header.indexOf('title'),
+      slton: header.indexOf('slton'),
+      slhuy: header.indexOf('slhuy')
+    };
+    console.log("Column indices:", colIdx);
+
+    let validRows = 0;
+    const sampleRows = [];
+    for (let i = headerRowIndex + 1; i < rows.length; i++) {
+      const row = rows[i];
+      if (!row) continue;
+      const masp = row[colIdx.masp];
+      if (!masp || masp.toString().trim() === '') continue;
+      validRows++;
+      if (sampleRows.length < 5) {
+        sampleRows.push({
+          masp: masp.toString().trim(),
+          title: row[colIdx.title],
+          slton: parseFloat(row[colIdx.slton]) || 0,
+          slhuy: parseFloat(row[colIdx.slhuy]) || 0
+        });
+      }
+    }
+    console.log(`Number of rows with valid masp: ${validRows}`);
+    console.log("Sample extracted data:", sampleRows);
+  } else {
+    // try sheet_to_json
+    const dataJson = XLSX.utils.sheet_to_json(worksheet);
+    console.log(`sheet_to_json parsed rows: ${dataJson.length}`);
+    if (dataJson.length > 0) {
+      console.log("Keys in first row:", Object.keys(dataJson[0]));
+      console.log("First row:", dataJson[0]);
+    }
+  }
+}
+
+main().catch(console.error).finally(() => prisma.$disconnect());

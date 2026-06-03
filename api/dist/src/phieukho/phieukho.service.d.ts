@@ -171,6 +171,7 @@ export declare class PhieukhoService {
         denKhoId: string | null;
         isChotkho: boolean;
     }>;
+    private shouldSkipInventory;
     update(id: string, data: any): Promise<{
         sanpham: {
             id: string;

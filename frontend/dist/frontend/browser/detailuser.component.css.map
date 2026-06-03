@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["detailuser.component.ts"],
-  "sourcesContent": ["\n    .permission-management {\n      border-left: 4px solid #4caf50;\n    }\n    \n    .permission-management mat-card-header {\n      padding-bottom: 8px;\n    }\n    \n    .permission-management mat-card-content {\n      font-size: 12px;\n    }\n  "],
-  "mappings": ";AACI,CAAA;AACE,eAAA,IAAA,MAAA;;AAGF,CAJA,sBAIA;AACE,kBAAA;;AAGF,CARA,sBAQA;AACE,aAAA;;",
-  "names": []
-}

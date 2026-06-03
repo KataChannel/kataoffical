@@ -1,10 +1,11 @@
 import { Component, Inject, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChotkhoService } from '../../chotkho/chotkho.service';
+import { ProductTimelineDialogComponent } from '../../chotkho/product-timeline-dialog/product-timeline-dialog.component';
 
 export interface StockWarningItem {
   masp: string;
@@ -196,6 +197,24 @@ export interface StockWarningData {
                           <div class="flex flex-col gap-0.5">
                             <span class="text-slate-800 text-sm font-semibold">{{ item.title }}</span>
                             <span class="text-[10px] text-slate-400 font-medium leading-none">{{ item.masp }} - {{ item.dvt }}</span>
+                            <div class="flex flex-wrap gap-1 mt-1.5 shrink-0">
+                              <button (click)="openTimeline(item)" class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/60 hover:bg-slate-200 hover:text-slate-850 text-[9px] font-black cursor-pointer transition-all shadow-sm">
+                                <mat-icon style="font-size: 11px; width: 11px; height: 11px" class="text-slate-500 scale-90 !m-0">history</mat-icon>
+                                Lịch sử
+                              </button>
+                              
+                              @for (order of item.pendingList || []; track order.id) {
+                                <button (click)="goToDetail(order)" 
+                                        [class]="'flex items-center gap-0.5 px-1.5 py-0.5 rounded border text-[9px] font-black cursor-pointer transition-all shadow-sm ' + 
+                                                 (order.type === 'dathang' ? 'bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100' : 'bg-orange-50 text-orange-700 border-orange-100 hover:bg-orange-100')">
+                                  <mat-icon style="font-size: 11px; width: 11px; height: 11px" 
+                                            [class]="order.type === 'dathang' ? 'text-blue-500' : 'text-orange-500'" class="!m-0">
+                                    {{ order.type === 'dathang' ? 'shopping_cart' : 'local_shipping' }}
+                                  </mat-icon>
+                                  {{ order.code }} ({{ order.soluong | number:'1.0-2' }} kg)
+                                </button>
+                              }
+                            </div>
                           </div>
                         </td>
                         <td class="py-3.5 px-4 text-center text-slate-500 font-medium">{{ item.initialQty | number:'1.0-3' }}</td>
@@ -408,6 +427,7 @@ export class StockWarningDialogComponent implements OnInit {
   latestChotkhoInfo: any = null;
 
   private chotkhoService = inject(ChotkhoService);
+  private dialog = inject(MatDialog);
 
   get filteredList() {
     let list = this.data.danhSachCanhBao || [];
@@ -497,5 +517,19 @@ export class StockWarningDialogComponent implements OnInit {
     if (typeof window !== 'undefined') {
       window.open(url, '_blank');
     }
+  }
+
+  openTimeline(item: any) {
+    this.dialog.open(ProductTimelineDialogComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '92vh',
+      data: {
+        sanphamId: item.id || item.sanphamId,
+        masp: item.masp,
+        title: item.title,
+        dvt: item.dvt
+      }
+    });
   }
 }

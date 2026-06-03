@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { DataLoaderService } from './dataloader.service';
 import { FieldSelectionService } from './field-selection.service';
 import { RedisService } from '../redis/redis.service';
 import { GraphQLResolveInfo } from 'graphql';
+import * as bcrypt from 'bcryptjs';
 
 /**
  * Enhanced Universal Service with dynamic field selection, DataLoader optimization,
@@ -267,6 +268,43 @@ export class EnhancedUniversalService {
       // Handle model-specific relation fields
       const finalData = this.normalizeRelationFieldsForModel(modelName, normalizedData);
       
+      // Special handling for user creation
+      if (modelName.toLowerCase() === 'user') {
+        if (finalData.password) {
+          finalData.password = await bcrypt.hash(finalData.password, 10);
+        }
+        if (finalData.SDT === '') {
+          finalData.SDT = null;
+        }
+        if (finalData.email === '') {
+          finalData.email = null;
+        }
+        
+        // Check unique constraint on SDT
+        if (finalData.SDT) {
+          const existingUserWithSDT = await this.prisma.user.findFirst({
+            where: {
+              SDT: finalData.SDT
+            }
+          });
+          if (existingUserWithSDT) {
+            throw new BadRequestException('Số điện thoại đã được sử dụng bởi người dùng khác');
+          }
+        }
+        
+        // Check unique constraint on email
+        if (finalData.email) {
+          const existingUserWithEmail = await this.prisma.user.findFirst({
+            where: {
+              email: finalData.email
+            }
+          });
+          if (existingUserWithEmail) {
+            throw new BadRequestException('Email đã được sử dụng bởi người dùng khác');
+          }
+        }
+      }
+      
       // Build query options for response
       const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
       const createOptions = {
@@ -320,6 +358,45 @@ export class EnhancedUniversalService {
       
       // Clean data to prevent complex relation errors
       let cleanedData = { ...args.data };
+      
+      // Special handling for user updates
+      if (modelName.toLowerCase() === 'user') {
+        if (cleanedData.password) {
+          cleanedData.password = await bcrypt.hash(cleanedData.password, 10);
+        }
+        if (cleanedData.SDT === '') {
+          cleanedData.SDT = null;
+        }
+        if (cleanedData.email === '') {
+          cleanedData.email = null;
+        }
+        
+        // Check unique constraint on SDT
+        if (cleanedData.SDT) {
+          const existingUserWithSDT = await this.prisma.user.findFirst({
+            where: {
+              SDT: cleanedData.SDT,
+              NOT: args.where
+            }
+          });
+          if (existingUserWithSDT) {
+            throw new BadRequestException('Số điện thoại đã được sử dụng bởi người dùng khác');
+          }
+        }
+        
+        // Check unique constraint on email
+        if (cleanedData.email) {
+          const existingUserWithEmail = await this.prisma.user.findFirst({
+            where: {
+              email: cleanedData.email,
+              NOT: args.where
+            }
+          });
+          if (existingUserWithEmail) {
+            throw new BadRequestException('Email đã được sử dụng bởi người dùng khác');
+          }
+        }
+      }
       
       // Define fields that should be excluded from updates because they are complex relations
       const excludeFromUpdates = [

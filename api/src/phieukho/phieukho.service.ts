@@ -448,6 +448,18 @@ export class PhieukhoService {
     }
   }
 
+  private async shouldSkipInventory(phieukho: { ngay: Date | null, createdAt: Date, khoId: string | null }, prisma: any): Promise<boolean> {
+    const latestChot = await prisma.chotkho.findFirst({
+      where: { khoId: phieukho.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258", isActive: true },
+      orderBy: { ngaychot: 'desc' },
+      select: { ngaychot: true }
+    });
+    if (!latestChot) return false;
+    
+    const effectiveDate = phieukho.ngay || phieukho.createdAt;
+    return new Date(effectiveDate) <= new Date(latestChot.ngaychot);
+  }
+
   async update(id: string, data: any) {
     return this.prisma.$transaction(async (prisma) => {
       const oldPhieuKho = await prisma.phieuKho.findUnique({
@@ -457,6 +469,8 @@ export class PhieukhoService {
 
       if (!oldPhieuKho) throw new NotFoundException('Phiếu kho không tồn tại');
       
+      const skipInventory = await this.shouldSkipInventory(oldPhieuKho, prisma);
+      
       // 1. Revert old stock levels atomically
       const revertOps = oldPhieuKho.sanpham.map(sp => ({
         sanphamId: sp.sanphamId,
@@ -465,7 +479,7 @@ export class PhieukhoService {
         slton: Number(sp.soluong) || 0,
         reason: `Hoàn tồn để cập nhật phiếu kho: ${oldPhieuKho.maphieu}`
       }));
-      if (revertOps.length > 0) {
+      if (revertOps.length > 0 && !skipInventory) {
         await this.tonkhoManager.updateTonkhoAtomic(revertOps, prisma);
       }
 
@@ -501,7 +515,7 @@ export class PhieukhoService {
         slton: Number(sp.soluong) || 0,
         reason: `Áp dụng tồn mới khi cập nhật phiếu kho: ${data.maphieu}`
       }));
-      if (applyOps.length > 0) {
+      if (applyOps.length > 0 && !skipInventory) {
         await this.tonkhoManager.updateTonkhoAtomic(applyOps, prisma);
       }
 
@@ -519,6 +533,8 @@ export class PhieukhoService {
         throw new NotFoundException('Phiếu kho không tồn tại');
       }
 
+      const skipInventory = await this.shouldSkipInventory(phieuKho, prisma);
+
       // Revert stock levels atomically for all products in PhieuKho
       const tonkhoOps = phieuKho.sanpham.map(item => ({
         sanphamId: item.sanphamId,
@@ -527,7 +543,7 @@ export class PhieukhoService {
         slton: Number(item.soluong) || 0,
         reason: `Hoàn tồn do xóa phiếu kho ${phieuKho.maphieu}`
       }));
-      if (tonkhoOps.length > 0) {
+      if (tonkhoOps.length > 0 && !skipInventory) {
         await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps, prisma);
       }
 

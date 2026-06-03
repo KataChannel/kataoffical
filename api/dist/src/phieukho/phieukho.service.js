@@ -373,6 +373,17 @@ let PhieukhoService = class PhieukhoService {
             }
         }
     }
+    async shouldSkipInventory(phieukho, prisma) {
+        const latestChot = await prisma.chotkho.findFirst({
+            where: { khoId: phieukho.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258", isActive: true },
+            orderBy: { ngaychot: 'desc' },
+            select: { ngaychot: true }
+        });
+        if (!latestChot)
+            return false;
+        const effectiveDate = phieukho.ngay || phieukho.createdAt;
+        return new Date(effectiveDate) <= new Date(latestChot.ngaychot);
+    }
     async update(id, data) {
         return this.prisma.$transaction(async (prisma) => {
             const oldPhieuKho = await prisma.phieuKho.findUnique({
@@ -381,6 +392,7 @@ let PhieukhoService = class PhieukhoService {
             });
             if (!oldPhieuKho)
                 throw new common_1.NotFoundException('Phiếu kho không tồn tại');
+            const skipInventory = await this.shouldSkipInventory(oldPhieuKho, prisma);
             const revertOps = oldPhieuKho.sanpham.map(sp => ({
                 sanphamId: sp.sanphamId,
                 khoId: oldPhieuKho.khoId || undefined,
@@ -388,7 +400,7 @@ let PhieukhoService = class PhieukhoService {
                 slton: Number(sp.soluong) || 0,
                 reason: `Hoàn tồn để cập nhật phiếu kho: ${oldPhieuKho.maphieu}`
             }));
-            if (revertOps.length > 0) {
+            if (revertOps.length > 0 && !skipInventory) {
                 await this.tonkhoManager.updateTonkhoAtomic(revertOps, prisma);
             }
             const updatedPhieuKho = await prisma.phieuKho.update({
@@ -421,7 +433,7 @@ let PhieukhoService = class PhieukhoService {
                 slton: Number(sp.soluong) || 0,
                 reason: `Áp dụng tồn mới khi cập nhật phiếu kho: ${data.maphieu}`
             }));
-            if (applyOps.length > 0) {
+            if (applyOps.length > 0 && !skipInventory) {
                 await this.tonkhoManager.updateTonkhoAtomic(applyOps, prisma);
             }
             return updatedPhieuKho;
@@ -436,6 +448,7 @@ let PhieukhoService = class PhieukhoService {
             if (!phieuKho) {
                 throw new common_1.NotFoundException('Phiếu kho không tồn tại');
             }
+            const skipInventory = await this.shouldSkipInventory(phieuKho, prisma);
             const tonkhoOps = phieuKho.sanpham.map(item => ({
                 sanphamId: item.sanphamId,
                 khoId: phieuKho.khoId || undefined,
@@ -443,7 +456,7 @@ let PhieukhoService = class PhieukhoService {
                 slton: Number(item.soluong) || 0,
                 reason: `Hoàn tồn do xóa phiếu kho ${phieuKho.maphieu}`
             }));
-            if (tonkhoOps.length > 0) {
+            if (tonkhoOps.length > 0 && !skipInventory) {
                 await this.tonkhoManager.updateTonkhoAtomic(tonkhoOps, prisma);
             }
             await prisma.phieuKhoSanpham.deleteMany({ where: { phieuKhoId: id } });

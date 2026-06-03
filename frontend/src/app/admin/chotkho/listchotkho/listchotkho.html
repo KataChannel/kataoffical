@@ -44,17 +44,7 @@
             </div>
           </div>
           
-          
-          <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
-            class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button [disabled]="isLoading()">
-            @if (isLoading()) {
-            <mat-icon class="animate-spin">autorenew</mat-icon>
-            }
-            @else {
-            <mat-icon>delete</mat-icon>
-            }
-            <span class="whitespace-nowrap">Xoá ({{EditList.length}})</span>
-          </button>
+
 
         </div>
       </div>
@@ -153,13 +143,8 @@
             </span>
             }
             @case ('stt') {
-            <span (click)="AddToEdit(row);" class="flex justify-center items-center font-bold text-blue-600">
-              @if(CheckSelect(row)){
-                <mat-icon>check</mat-icon>
-              }
-              @else {
-                <span>{{ idx + 1 }}</span>
-              }
+            <span class="flex justify-center items-center font-bold text-blue-600">
+              <span>{{ idx + 1 }}</span>
             </span>
             }
             @case ('createdAt') {
@@ -205,8 +190,8 @@
         }
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
         <tr class="border" mat-row *matRowDef="let row; columns: displayedColumns;" 
-          (click)="AddToEdit(row)"
-          class="hover:bg-slate-100 cursor-pointer {{CheckItemInEdit(row)?'!bg-slate-200':''}}">
+          (click)="goToDetail(row)"
+          class="hover:bg-slate-100 cursor-pointer">
         </tr>
         <tr class="mat-row border" *matNoDataRow>
           <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
@@ -218,19 +203,7 @@
 
 <!-- Enhanced Dialog Templates -->
 
-<!-- Delete Confirmation Dialog -->
-<ng-template #DeleteDialog>
-  <mat-dialog-content>
-    <div class="flex flex-col space-y-8 items-center justify-center">
-      <div class="font-bold">Xác Nhận</div>
-      <div>Bạn chắc chắn muốn xoá không?</div>
-      <div class="flex flex-row space-x-2 items-center justify-center">
-        <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
-        <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
-      </div>
-    </div>
-  </mat-dialog-content>
-</ng-template>
+
 
 <!-- Import Progress Dialog -->
 <ng-template #ImportDialog>
@@ -387,19 +360,4 @@
       </div>
     </div>
   </mat-dialog-content>
-</ng-template>
-
-<!-- Delete Confirmation Dialog -->
-<ng-template #DeleteDialog>
-  <div class="p-6">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">Xác nhận xóa</h2>
-    <p class="text-gray-600 mb-6">
-      Bạn có chắc chắn muốn xóa {{EditList.length}} mục đã chọn không? 
-      Hành động này không thể hoàn tác.
-    </p>
-    <div class="flex flex-row space-x-3 justify-end">
-      <button mat-flat-button color="primary" mat-dialog-close="true">Xác nhận</button>
-      <button mat-flat-button color="warn" mat-dialog-close="false">Hủy bỏ</button>
-    </div>
-  </div>
 </ng-template>

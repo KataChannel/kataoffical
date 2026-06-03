@@ -89,6 +89,7 @@ export declare class PhieuGiaoHangOptimizedService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        ngayHoanThanhThucte: Date | null;
         isshowvat: boolean;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;

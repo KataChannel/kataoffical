@@ -43,7 +43,10 @@ export class ChotkhoService {
         donhang: {
           ...(isMainWarehouse ? {} : { khoId: khoId }), // Nếu là kho tổng, lấy tất cả biến động
           status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
-          updatedAt: { gt: startTime, lte: endTime }
+          OR: [
+            { ngayHoanThanhThucte: { gt: startTime, lte: endTime } },
+            { ngayHoanThanhThucte: null, updatedAt: { gt: startTime, lte: endTime } }
+          ]
         }
       },
       include: { donhang: true }
@@ -56,7 +59,10 @@ export class ChotkhoService {
         dathang: {
           ...(isMainWarehouse ? {} : { khoId: khoId }), // Nếu là kho tổng, lấy tất cả biến động
           status: 'danhan',
-          updatedAt: { gt: startTime, lte: endTime }
+          OR: [
+            { ngayHoanThanhThucte: { gt: startTime, lte: endTime } },
+            { ngayHoanThanhThucte: null, updatedAt: { gt: startTime, lte: endTime } }
+          ]
         }
       },
       include: { dathang: true }
@@ -67,14 +73,14 @@ export class ChotkhoService {
       ...xuat.map(x => ({
         type: 'XUẤT',
         qty: Number(x.slnhan || x.slgiao || x.sldat),
-        time: x.donhang.updatedAt,
+        time: x.donhang.ngayHoanThanhThucte || x.donhang.updatedAt,
         code: x.donhang.madonhang,
         note: 'Đơn hàng'
       })),
       ...nhap.map(n => ({
         type: 'NHẬP',
         qty: Number(n.slnhan || n.slgiao),
-        time: n.dathang.updatedAt,
+        time: n.dathang.ngayHoanThanhThucte || n.dathang.updatedAt,
         code: n.dathang.madncc,
         note: 'Nhập kho'
       }))
@@ -533,7 +539,12 @@ export class ChotkhoService {
         }
       },
       include: {
-        phieuKho: true
+        phieuKho: {
+          include: {
+            dathang: true,
+            donhang: true
+          }
+        }
       }
     });
 
@@ -568,6 +579,17 @@ export class ChotkhoService {
         }
       }
 
+      let orderId: string | null = null;
+      let orderType: 'dathang' | 'donhang' | null = null;
+
+      if (item.phieuKho?.type === 'nhap') {
+        orderId = item.phieuKho.dathang?.id || null;
+        orderType = 'dathang';
+      } else if (item.phieuKho?.type === 'xuat') {
+        orderId = item.phieuKho.donhang?.id || null;
+        orderType = 'donhang';
+      }
+
       timeline.push({
         id: item.id,
         time: item.phieuKho.createdAt,
@@ -575,7 +597,9 @@ export class ChotkhoService {
         code: item.phieuKho.maphieu || '',
         qty: Number(item.soluong),
         slhuy: slhuy,
-        ghichu: item.ghichu || item.phieuKho.ghichu || ''
+        ghichu: item.ghichu || item.phieuKho.ghichu || '',
+        orderId,
+        orderType
       });
     });
 
@@ -1314,6 +1338,80 @@ export class ChotkhoService {
           systemQty
         });
       }
+    });
+
+    const negativeProductIds = negativeProducts.map(p => p.id);
+
+    // 7. Lấy các đơn đặt hàng (cả đang treo và đã nhận kể từ startTime) của các SP này
+    const pendingImports = await this.prisma.dathangsanpham.findMany({
+      where: {
+        idSP: { in: negativeProductIds },
+        dathang: {
+          OR: [
+            { status: { in: ['dadat', 'dagiao'] } },
+            {
+              status: 'danhan',
+              updatedAt: { gt: startTime }
+            }
+          ]
+        }
+      },
+      include: { dathang: true }
+    });
+
+    // 8. Lấy các đơn khách hàng (cả đang treo và đã giao/hoàn thành kể từ startTime) của các SP này
+    const pendingExports = await this.prisma.donhangsanpham.findMany({
+      where: {
+        idSP: { in: negativeProductIds },
+        donhang: {
+          OR: [
+            { status: { in: ['dadat', 'dagiao'] } },
+            {
+              status: { in: ['danhan', 'hoanthanh'] },
+              updatedAt: { gt: startTime }
+            }
+          ]
+        }
+      },
+      include: { donhang: true }
+    });
+
+    // 9. Phân nhóm đơn treo theo từng sản phẩm
+    const pendingMap = new Map<string, any[]>();
+    
+    pendingImports.forEach(item => {
+      if (item.idSP && item.dathang) {
+        const list = pendingMap.get(item.idSP) || [];
+        list.push({
+          id: item.dathang.id,
+          code: item.dathang.madncc || `DN-${item.dathang.id.split('-')[0]}`,
+          date: item.dathang.createdAt,
+          type: 'dathang',
+          status: item.dathang.status,
+          soluong: Number(item.slgiao || item.sldat || 0)
+        });
+        pendingMap.set(item.idSP, list);
+      }
+    });
+
+    pendingExports.forEach(item => {
+      if (item.idSP && item.donhang) {
+        const list = pendingMap.get(item.idSP) || [];
+        list.push({
+          id: item.donhang.id,
+          code: item.donhang.madonhang || `DH-${item.donhang.id.split('-')[0]}`,
+          date: item.donhang.createdAt,
+          type: 'donhang',
+          status: item.donhang.status,
+          soluong: Number(item.slnhan || item.slgiao || item.sldat || 0)
+        });
+        pendingMap.set(item.idSP, list);
+      }
+    });
+
+    // Gán danh sách đơn hàng treo vào từng sản phẩm âm
+    negativeProducts.forEach(p => {
+      p.pendingList = pendingMap.get(p.id) || [];
     });
 
     return {

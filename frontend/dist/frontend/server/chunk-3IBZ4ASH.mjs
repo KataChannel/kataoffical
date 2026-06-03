@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+var e=(n=>(n.PHONGBAN="PHONGBAN",n.BOPHAN="BOPHAN",n.PHONG="PHONG",n.BAN="BAN",n.TO="TO",n.NHOM="NHOM",n.KHAC="KHAC",n))(e||{}),t={PHONGBAN:"Ph\xF2ng Ban",BOPHAN:"B\u1ED9 Ph\u1EADn",PHONG:"Ph\xF2ng",BAN:"Ban",TO:"T\u1ED5",NHOM:"Nh\xF3m",KHAC:"Kh\xE1c"};export{e as a,t as b};

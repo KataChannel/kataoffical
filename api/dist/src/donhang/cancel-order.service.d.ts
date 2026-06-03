@@ -104,6 +104,7 @@ export declare class CancelOrderService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        ngayHoanThanhThucte: Date | null;
         isshowvat: boolean;
         tongtien: Prisma.Decimal;
         tongvat: Prisma.Decimal;
@@ -184,6 +185,7 @@ export declare class CancelOrderService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
+        ngayHoanThanhThucte: Date | null;
         lydohuy: string | null;
         khoId: string | null;
         subtitle: string | null;

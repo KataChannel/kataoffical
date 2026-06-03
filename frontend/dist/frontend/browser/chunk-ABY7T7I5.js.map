@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/admin/nhomncc/nhomncc.route.ts"],
-  "sourcesContent": ["import { NgModule } from '@angular/core';\nimport { Routes, RouterModule } from '@angular/router';\nimport { ListNhomnccComponent } from './listnhomncc/listnhomncc.component';\nconst routes: Routes = [\n  {\n    path: '',\n    component: ListNhomnccComponent,\n    children: [\n      {\n        path: ':id',\n        loadComponent: () =>\n          import('./detailnhomncc/detailnhomncc.component').then(\n            (c) => c.DetailNhomnccComponent\n          ),\n      },\n    ],\n  },\n];\n@NgModule({\n  imports: [RouterModule.forChild(routes)],\n  exports: [RouterModule],\n})\nexport class NhomnccRoutingModule {}"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAGA,IAAM,SAAiB;EACrB;IACE,MAAM;IACN,WAAW;IACX,UAAU;MACR;QACE,MAAM;QACN,eAAe,MACb,OAAO,qBAAyC,EAAE,KAChD,CAAC,MAAM,EAAE,sBAAsB;;;;;AAUrC,IAAO,uBAAP,MAAO,sBAAoB;;qCAApB,uBAAoB;EAAA;wEAApB,sBAAoB,CAAA;4EAHrB,aAAa,SAAS,MAAM,GAC5B,YAAY,EAAA,CAAA;;",
-  "names": []
-}

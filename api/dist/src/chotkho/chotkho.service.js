@@ -44,7 +44,10 @@ let ChotkhoService = class ChotkhoService {
                 donhang: {
                     ...(isMainWarehouse ? {} : { khoId: khoId }),
                     status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
-                    updatedAt: { gt: startTime, lte: endTime }
+                    OR: [
+                        { ngayHoanThanhThucte: { gt: startTime, lte: endTime } },
+                        { ngayHoanThanhThucte: null, updatedAt: { gt: startTime, lte: endTime } }
+                    ]
                 }
             },
             include: { donhang: true }
@@ -55,7 +58,10 @@ let ChotkhoService = class ChotkhoService {
                 dathang: {
                     ...(isMainWarehouse ? {} : { khoId: khoId }),
                     status: 'danhan',
-                    updatedAt: { gt: startTime, lte: endTime }
+                    OR: [
+                        { ngayHoanThanhThucte: { gt: startTime, lte: endTime } },
+                        { ngayHoanThanhThucte: null, updatedAt: { gt: startTime, lte: endTime } }
+                    ]
                 }
             },
             include: { dathang: true }
@@ -64,14 +70,14 @@ let ChotkhoService = class ChotkhoService {
             ...xuat.map(x => ({
                 type: 'XUẤT',
                 qty: Number(x.slnhan || x.slgiao || x.sldat),
-                time: x.donhang.updatedAt,
+                time: x.donhang.ngayHoanThanhThucte || x.donhang.updatedAt,
                 code: x.donhang.madonhang,
                 note: 'Đơn hàng'
             })),
             ...nhap.map(n => ({
                 type: 'NHẬP',
                 qty: Number(n.slnhan || n.slgiao),
-                time: n.dathang.updatedAt,
+                time: n.dathang.ngayHoanThanhThucte || n.dathang.updatedAt,
                 code: n.dathang.madncc,
                 note: 'Nhập kho'
             }))
@@ -428,7 +434,12 @@ let ChotkhoService = class ChotkhoService {
                 }
             },
             include: {
-                phieuKho: true
+                phieuKho: {
+                    include: {
+                        dathang: true,
+                        donhang: true
+                    }
+                }
             }
         });
         const chotKhos = await this.prisma.chotkhodetail.findMany({
@@ -457,6 +468,16 @@ let ChotkhoService = class ChotkhoService {
                     slhuy = parseFloat(match[1]) || 0;
                 }
             }
+            let orderId = null;
+            let orderType = null;
+            if (item.phieuKho?.type === 'nhap') {
+                orderId = item.phieuKho.dathang?.id || null;
+                orderType = 'dathang';
+            }
+            else if (item.phieuKho?.type === 'xuat') {
+                orderId = item.phieuKho.donhang?.id || null;
+                orderType = 'donhang';
+            }
             timeline.push({
                 id: item.id,
                 time: item.phieuKho.createdAt,
@@ -464,7 +485,9 @@ let ChotkhoService = class ChotkhoService {
                 code: item.phieuKho.maphieu || '',
                 qty: Number(item.soluong),
                 slhuy: slhuy,
-                ghichu: item.ghichu || item.phieuKho.ghichu || ''
+                ghichu: item.ghichu || item.phieuKho.ghichu || '',
+                orderId,
+                orderType
             });
         });
         chotKhos.forEach(item => {
@@ -1091,6 +1114,69 @@ let ChotkhoService = class ChotkhoService {
                     systemQty
                 });
             }
+        });
+        const negativeProductIds = negativeProducts.map(p => p.id);
+        const pendingImports = await this.prisma.dathangsanpham.findMany({
+            where: {
+                idSP: { in: negativeProductIds },
+                dathang: {
+                    OR: [
+                        { status: { in: ['dadat', 'dagiao'] } },
+                        {
+                            status: 'danhan',
+                            updatedAt: { gt: startTime }
+                        }
+                    ]
+                }
+            },
+            include: { dathang: true }
+        });
+        const pendingExports = await this.prisma.donhangsanpham.findMany({
+            where: {
+                idSP: { in: negativeProductIds },
+                donhang: {
+                    OR: [
+                        { status: { in: ['dadat', 'dagiao'] } },
+                        {
+                            status: { in: ['danhan', 'hoanthanh'] },
+                            updatedAt: { gt: startTime }
+                        }
+                    ]
+                }
+            },
+            include: { donhang: true }
+        });
+        const pendingMap = new Map();
+        pendingImports.forEach(item => {
+            if (item.idSP && item.dathang) {
+                const list = pendingMap.get(item.idSP) || [];
+                list.push({
+                    id: item.dathang.id,
+                    code: item.dathang.madncc || `DN-${item.dathang.id.split('-')[0]}`,
+                    date: item.dathang.createdAt,
+                    type: 'dathang',
+                    status: item.dathang.status,
+                    soluong: Number(item.slgiao || item.sldat || 0)
+                });
+                pendingMap.set(item.idSP, list);
+            }
+        });
+        pendingExports.forEach(item => {
+            if (item.idSP && item.donhang) {
+                const list = pendingMap.get(item.idSP) || [];
+                list.push({
+                    id: item.donhang.id,
+                    code: item.donhang.madonhang || `DH-${item.donhang.id.split('-')[0]}`,
+                    date: item.donhang.createdAt,
+                    type: 'donhang',
+                    status: item.donhang.status,
+                    soluong: Number(item.slnhan || item.slgiao || item.sldat || 0)
+                });
+                pendingMap.set(item.idSP, list);
+            }
+        });
+        negativeProducts.forEach(p => {
+            p.pendingList = pendingMap.get(p.id) || [];
         });
         return {
             latestChotkho: {

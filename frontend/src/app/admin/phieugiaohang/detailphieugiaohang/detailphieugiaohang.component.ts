@@ -130,6 +130,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
   dialogSlhuy = 0;
   dialogIndex: number | null = null;
   dialogEventTarget: any = null;
+  dialogDiscrepancies = signal<any[]>([]);
   profile: any = this._UserService.profile;
   isAccountant = computed(() => {
     const roles = this.profile()?.roles || [];
@@ -456,11 +457,21 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
       return;
     }
 
-    this.isSaving.set(true);
-    try {
-        await this.updatePhieugiaohangOptimized();
-    } finally {
-      this.isSaving.set(false);
+    const discrepancyItems = (this.DetailPhieugiaohang().sanpham || []).filter((item: any) => {
+      const slnhan = Number(item.slnhan) || 0;
+      const slgiao = Number(item.slgiao) || 0;
+      return slnhan < slgiao;
+    });
+
+    if (discrepancyItems.length > 0) {
+      this.openDiscrepancyDialog(discrepancyItems);
+    } else {
+      this.isSaving.set(true);
+      try {
+          await this.updatePhieugiaohangOptimized();
+      } finally {
+        this.isSaving.set(false);
+      }
     }
   }
 
@@ -802,114 +813,108 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
     const rawValue = (target instanceof HTMLInputElement) ? target.value : target.innerText;
     const enteredValue = this.sharedInputService.parseDecimalValue(rawValue.trim());
     const slgiao = Number(element.slgiao) || 0;
-    const oldSlnhan = Number(element.slnhan) || 0;
 
-    if (enteredValue < slgiao) {
-      // Prevent default change propagation immediately
-      event.preventDefault();
-      
-      // Store state
-      this.dialogShortageProduct = element;
-      this.dialogIndex = index;
-      this.dialogEventTarget = target;
-      this.dialogSlnhan = enteredValue;
-      this.dialogShortageQty = parseFloat((slgiao - enteredValue).toFixed(3));
-      
-      // Default initial split: all returned to warehouse, 0 cancelled
-      this.dialogSlnhapkho = this.dialogShortageQty;
-      this.dialogSlhuy = 0;
-      
-      // Open dialog
-      const dialogRef = this._dialog.open(this.confirmReceivedDialog, {
-        width: '450px',
-        disableClose: true
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result === 'confirm') {
-          // Update local state with both slnhan and slhuy
-          this.DetailPhieugiaohang.update((v: any) => {
-            const itemIndex = v.sanpham.findIndex((item: any) => item.id === element.id);
-            if (itemIndex !== -1) {
-              v.sanpham[itemIndex].slnhan = this.dialogSlnhan;
-              v.sanpham[itemIndex].slhuy = this.dialogSlhuy;
-              v.sanpham[itemIndex].ttnhan = this.dialogSlnhan * (element.giaban || 0);
-              v.sanpham[itemIndex].ttsauvat = v.isshowvat 
-                ? this.dialogSlnhan * (element.giaban || 0) * (1 + (v.sanpham[itemIndex].vat || 0))
-                : this.dialogSlnhan * (element.giaban || 0);
-              
-              // Clean and structured note
-              const baseNote = element.ghichu ? element.ghichu.replace(/; Trả kho:.*$/, '') : '';
-              v.sanpham[itemIndex].ghichu = `${baseNote}${baseNote ? '; ' : ''}Trả kho: ${this.dialogSlnhapkho}, Hủy: ${this.dialogSlhuy}`;
-            }
-            return v;
-          });
-          
-          this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
-          this._cdr.markForCheck();
-          
-          // Show feedback
-          this._snackBar.open(`Đã ghi nhận thực nhận ${this.dialogSlnhan}, Trả kho ${this.dialogSlnhapkho}, Hủy ${this.dialogSlhuy}`, 'Đóng', {
-            duration: 3000,
-            panelClass: ['snackbar-success']
-          });
-        } else {
-          // Reset target element text to old value
-          if (target instanceof HTMLInputElement) {
-            target.value = this.formatNumberDisplay(oldSlnhan);
-          } else {
-            target.innerText = this.formatNumberDisplay(oldSlnhan);
+    this.DetailPhieugiaohang.update((v: any) => {
+      const itemIndex = v.sanpham.findIndex((item: any) => item.id === element.id);
+      if (itemIndex !== -1) {
+        v.sanpham[itemIndex].slnhan = enteredValue;
+        v.sanpham[itemIndex].ttnhan = enteredValue * (element.giaban || 0);
+        v.sanpham[itemIndex].ttsauvat = v.isshowvat 
+          ? enteredValue * (element.giaban || 0) * (1 + (v.sanpham[itemIndex].vat || 0))
+          : enteredValue * (element.giaban || 0);
+        
+        if (enteredValue >= slgiao) {
+          v.sanpham[itemIndex].slhuy = 0;
+          if (v.sanpham[itemIndex].ghichu) {
+            v.sanpham[itemIndex].ghichu = v.sanpham[itemIndex].ghichu.replace(/;? ?Trả kho:.*$/, '');
           }
         }
-        
-        // Clear state
-        this.dialogShortageProduct = null;
-        this.dialogIndex = null;
-        this.dialogEventTarget = null;
-      });
-    } else {
-      // Normal flow (slnhan >= slgiao)
-      this.sharedInputService.updateValue(
-        event,
-        'phieugiaohang',
-        index,
-        element,
-        'slnhan',
-        'number',
-        this.DetailPhieugiaohang().sanpham,
-        (updateFn: (v: any) => any) => {
-          this.DetailPhieugiaohang.update(updateFn);
-          this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
-          this._cdr.markForCheck();
-        },
-        this.dataSource.filteredData.length
-      );
-    }
+      }
+      return v;
+    });
+
+    this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
+    this._cdr.markForCheck();
   }
 
-  onDialogSlnhapkhoChange() {
-    const nhapkho = Number(this.dialogSlnhapkho) || 0;
-    if (nhapkho > this.dialogShortageQty) {
-      this.dialogSlnhapkho = this.dialogShortageQty;
-      this.dialogSlhuy = 0;
+  openDiscrepancyDialog(items: any[]) {
+    const mappedItems = items.map((item: any) => {
+      const slgiao = Number(item.slgiao) || 0;
+      const slnhan = Number(item.slnhan) || 0;
+      const shortageQty = parseFloat((slgiao - slnhan).toFixed(3));
+      const slhuy = Math.min(Number(item.slhuy) || 0, shortageQty);
+      const slnhapkho = parseFloat((shortageQty - slhuy).toFixed(3));
+      
+      return {
+        id: item.id,
+        title: item.title || item.sanpham?.title || 'Không có tên',
+        dvt: item.dvt || 'Kg',
+        slgiao,
+        slnhan,
+        shortageQty,
+        slnhapkho,
+        slhuy,
+        giaban: Number(item.giaban) || 0,
+        vat: Number(item.vat) || 0,
+        ghichu: item.ghichu || ''
+      };
+    });
+
+    this.dialogDiscrepancies.set(mappedItems);
+
+    const dialogRef = this._dialog.open(this.confirmReceivedDialog, {
+      width: '650px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'confirm') {
+        this.DetailPhieugiaohang.update((v: any) => {
+          this.dialogDiscrepancies().forEach((dItem: any) => {
+            const idx = v.sanpham.findIndex((item: any) => item.id === dItem.id);
+            if (idx !== -1) {
+              v.sanpham[idx].slhuy = dItem.slhuy;
+              const baseNote = v.sanpham[idx].ghichu ? v.sanpham[idx].ghichu.replace(/;? ?Trả kho:.*$/, '') : '';
+              v.sanpham[idx].ghichu = `${baseNote}${baseNote ? '; ' : ''}Trả kho: ${dItem.slnhapkho}, Hủy: ${dItem.slhuy}`;
+            }
+          });
+          return v;
+        });
+
+        this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
+        this._cdr.markForCheck();
+
+        this.isSaving.set(true);
+        this.updatePhieugiaohangOptimized().finally(() => {
+          this.isSaving.set(false);
+        });
+      }
+    });
+  }
+
+  onDialogItemSlnhapkhoChange(item: any) {
+    const nhapkho = Number(item.slnhapkho) || 0;
+    if (nhapkho > item.shortageQty) {
+      item.slnhapkho = item.shortageQty;
+      item.slhuy = 0;
     } else if (nhapkho < 0) {
-      this.dialogSlnhapkho = 0;
-      this.dialogSlhuy = this.dialogShortageQty;
+      item.slnhapkho = 0;
+      item.slhuy = item.shortageQty;
     } else {
-      this.dialogSlhuy = parseFloat((this.dialogShortageQty - nhapkho).toFixed(3));
+      item.slhuy = parseFloat((item.shortageQty - nhapkho).toFixed(3));
     }
   }
 
-  onDialogSlhuyChange() {
-    const huy = Number(this.dialogSlhuy) || 0;
-    if (huy > this.dialogShortageQty) {
-      this.dialogSlhuy = this.dialogShortageQty;
-      this.dialogSlnhapkho = 0;
+  onDialogItemSlhuyChange(item: any) {
+    const huy = Number(item.slhuy) || 0;
+    if (huy > item.shortageQty) {
+      item.slhuy = item.shortageQty;
+      item.slnhapkho = 0;
     } else if (huy < 0) {
-      this.dialogSlhuy = 0;
-      this.dialogSlnhapkho = this.dialogShortageQty;
+      item.slhuy = 0;
+      item.slnhapkho = item.shortageQty;
     } else {
-      this.dialogSlnhapkho = parseFloat((this.dialogShortageQty - huy).toFixed(3));
+      item.slnhapkho = parseFloat((item.shortageQty - huy).toFixed(3));
     }
   }
 

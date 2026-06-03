@@ -260,8 +260,46 @@ async findMany(modelName: string, options: {
 
       console.log(`🔍 Creating ${mappedModel} with:`, { data, include });
 
+      let cleanData = { ...data };
+      if (mappedModel.toLowerCase() === 'user') {
+        if (cleanData.password) {
+          const bcrypt = require('bcryptjs');
+          cleanData.password = await bcrypt.hash(cleanData.password, 10);
+        }
+        if (cleanData.SDT === '') {
+          cleanData.SDT = null;
+        }
+        if (cleanData.email === '') {
+          cleanData.email = null;
+        }
+        
+        // Check unique constraint on SDT
+        if (cleanData.SDT) {
+          const existingUserWithSDT = await this.prisma.user.findFirst({
+            where: {
+              SDT: cleanData.SDT
+            }
+          });
+          if (existingUserWithSDT) {
+            throw new BadRequestException('Số điện thoại đã được sử dụng bởi người dùng khác');
+          }
+        }
+        
+        // Check unique constraint on email
+        if (cleanData.email) {
+          const existingUserWithEmail = await this.prisma.user.findFirst({
+            where: {
+              email: cleanData.email
+            }
+          });
+          if (existingUserWithEmail) {
+            throw new BadRequestException('Email đã được sử dụng bởi người dùng khác');
+          }
+        }
+      }
+
       const result = await prismaModel.create({
-        data,
+        data: cleanData,
         include,
       });
 
@@ -308,6 +346,46 @@ async findMany(modelName: string, options: {
 
       // Validate data for relations to prevent "Required exactly one parent ID" error
       const cleanData = this.validateAndCleanRelationData(data);
+      
+      // Special handling for user updates
+      if (mappedModel.toLowerCase() === 'user') {
+        if (cleanData.password) {
+          const bcrypt = require('bcryptjs');
+          cleanData.password = await bcrypt.hash(cleanData.password, 10);
+        }
+        if (cleanData.SDT === '') {
+          cleanData.SDT = null;
+        }
+        if (cleanData.email === '') {
+          cleanData.email = null;
+        }
+        
+        // Check unique constraint on SDT
+        if (cleanData.SDT) {
+          const existingUserWithSDT = await this.prisma.user.findFirst({
+            where: {
+              SDT: cleanData.SDT,
+              NOT: where
+            }
+          });
+          if (existingUserWithSDT) {
+            throw new BadRequestException('Số điện thoại đã được sử dụng bởi người dùng khác');
+          }
+        }
+        
+        // Check unique constraint on email
+        if (cleanData.email) {
+          const existingUserWithEmail = await this.prisma.user.findFirst({
+            where: {
+              email: cleanData.email,
+              NOT: where
+            }
+          });
+          if (existingUserWithEmail) {
+            throw new BadRequestException('Email đã được sử dụng bởi người dùng khác');
+          }
+        }
+      }
       
       console.log(`🧹 [CLEAN] Original data keys:`, Object.keys(data));
       console.log(`🧹 [CLEAN] Cleaned data keys:`, Object.keys(cleanData));

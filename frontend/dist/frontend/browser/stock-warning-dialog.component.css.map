@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["stock-warning-dialog.component.ts"],
-  "sourcesContent": ["\n    .custom-scrollbar::-webkit-scrollbar {\n       width: 5px;\n    }\n    .custom-scrollbar::-webkit-scrollbar-track {\n       background: transparent;\n    }\n    .custom-scrollbar::-webkit-scrollbar-thumb {\n       background: #e2e8f0;\n       border-radius: 10px;\n    }\n    .custom-scrollbar::-webkit-scrollbar-thumb:hover {\n       background: #cbd5e1;\n    }\n  "],
-  "mappings": ";AACI,CAAA,gBAAA;AACG,SAAA;;AAEH,CAHA,gBAGA;AACG,cAAA;;AAEH,CANA,gBAMA;AACG,cAAA;AACA,iBAAA;;AAEH,CAVA,gBAUA,yBAAA;AACG,cAAA;;",
-  "names": []
-}
