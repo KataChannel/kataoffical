@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DathangService = void 0;
 const common_1 = require("@nestjs/common");
 const schedule_1 = require("@nestjs/schedule");
+const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
 const status_machine_service_1 = require("../common/status-machine.service");
@@ -25,6 +26,41 @@ let DathangService = class DathangService {
         this.statusMachine = statusMachine;
         this.tonkhoManager = tonkhoManager;
         this.notificationService = notificationService;
+    }
+    async getCompletionDate(ngaynhan, khoId, prismaTx) {
+        const prisma = prismaTx || this.prisma;
+        const targetKhoId = khoId || "4cc01811-61f5-4bdc-83de-a493764e9258";
+        const vnMoment = moment.tz(ngaynhan, 'Asia/Ho_Chi_Minh');
+        const startOfVNDay = vnMoment.clone().startOf('day').toDate();
+        const endOfVNDay = vnMoment.clone().endOf('day').toDate();
+        let chotkho = await prisma.chotkho.findFirst({
+            where: {
+                khoId: targetKhoId,
+                isActive: true,
+                ngaychot: {
+                    gte: startOfVNDay,
+                    lte: endOfVNDay
+                }
+            },
+            orderBy: { ngaychot: 'desc' }
+        });
+        if (!chotkho && targetKhoId !== "4cc01811-61f5-4bdc-83de-a493764e9258") {
+            chotkho = await prisma.chotkho.findFirst({
+                where: {
+                    khoId: "4cc01811-61f5-4bdc-83de-a493764e9258",
+                    isActive: true,
+                    ngaychot: {
+                        gte: startOfVNDay,
+                        lte: endOfVNDay
+                    }
+                },
+                orderBy: { ngaychot: 'desc' }
+            });
+        }
+        if (chotkho) {
+            return new Date(chotkho.ngaychot.getTime() - 1000);
+        }
+        return new Date();
     }
     formatDateForFilename() {
         const now = new Date();
@@ -893,6 +929,7 @@ let DathangService = class DathangService {
                 });
             }
             if (data.status === 'danhan' && oldDathang.status === 'dagiao') {
+                const completionDate = await this.getCompletionDate(oldDathang.ngaynhan || new Date(), oldDathang.khoId, prisma);
                 const shortageItems = [];
                 for (const item of data.sanpham) {
                     const receivedQty = parseFloat((Number(item.slnhan) ?? 0).toFixed(3));
@@ -921,7 +958,9 @@ let DathangService = class DathangService {
                     await prisma.phieuKho.create({
                         data: {
                             maphieu: maphieuNhapChuan,
-                            ngay: new Date(data.ngaynhan || new Date()),
+                            ngay: completionDate,
+                            createdAt: completionDate,
+                            updatedAt: completionDate,
                             type: 'nhap',
                             khoId: khoId,
                             madncc: oldDathang.madncc,
@@ -940,7 +979,9 @@ let DathangService = class DathangService {
                         const maphieuShortage = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
                         const phieuKhoData = {
                             maphieu: maphieuShortage,
-                            ngay: new Date(data.ngaynhan || new Date()),
+                            ngay: completionDate,
+                            createdAt: completionDate,
+                            updatedAt: completionDate,
                             type: 'xuat',
                             khoId: khoId,
                             ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
@@ -963,7 +1004,8 @@ let DathangService = class DathangService {
                     data: {
                         status: 'danhan',
                         khoId: khoId,
-                        ngayHoanThanhThucte: oldDathang.ngayHoanThanhThucte || new Date(),
+                        ngayHoanThanhThucte: oldDathang.ngayHoanThanhThucte || completionDate,
+                        updatedAt: completionDate,
                         sanpham: {
                             updateMany: data.sanpham.map((item) => {
                                 const delivered = parseFloat((Number(item.slgiao) ?? 0).toFixed(3));
@@ -1155,6 +1197,7 @@ let DathangService = class DathangService {
                 return updatedDathang;
             }
             if (oldDathang.status === 'dadat' && data.status === 'danhan') {
+                const completionDate = await this.getCompletionDate(oldDathang.ngaynhan || new Date(), oldDathang.khoId, prisma);
                 if (!skipInventory) {
                     for (const sp of data.sanpham) {
                         const receivedQty = parseFloat((Number(sp.slnhan) ?? 0).toFixed(3));
@@ -1195,7 +1238,9 @@ let DathangService = class DathangService {
                     await prisma.phieuKho.create({
                         data: {
                             maphieu: maphieuNhapChuan,
-                            ngay: new Date(data.ngaynhan || new Date()),
+                            ngay: completionDate,
+                            createdAt: completionDate,
+                            updatedAt: completionDate,
                             type: 'nhap',
                             khoId: khoId,
                             madncc: oldDathang.madncc,
@@ -1214,7 +1259,9 @@ let DathangService = class DathangService {
                         const maphieuShortage = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
                         const phieuKhoData = {
                             maphieu: maphieuShortage,
-                            ngay: new Date(data.ngaynhan || new Date()),
+                            ngay: completionDate,
+                            createdAt: completionDate,
+                            updatedAt: completionDate,
                             type: 'xuat',
                             khoId: khoId,
                             ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
@@ -1258,6 +1305,8 @@ let DathangService = class DathangService {
                     data: {
                         status: 'danhan',
                         khoId: khoId,
+                        ngayHoanThanhThucte: oldDathang.ngayHoanThanhThucte || completionDate,
+                        updatedAt: completionDate,
                         sanpham: {
                             updateMany: data.sanpham.map((item) => {
                                 const sldat = parseFloat((Number(item.sldat) ?? 0).toFixed(3));
@@ -1586,13 +1635,14 @@ let DathangService = class DathangService {
                 if (!dathang) {
                     return { success: false, message: 'Đặt hàng không tồn tại' };
                 }
+                const completionDate = await this.getCompletionDate(dathang.ngaynhan || new Date(), dathang.khoId, prisma);
                 await prisma.dathang.update({
                     where: { id },
                     data: {
                         status: 'danhan',
                         ghichu: data.ghichu,
-                        ngayHoanThanhThucte: dathang.ngayHoanThanhThucte || new Date(),
-                        updatedAt: new Date()
+                        ngayHoanThanhThucte: dathang.ngayHoanThanhThucte || completionDate,
+                        updatedAt: completionDate
                     }
                 });
                 const skipInventory = await this.shouldSkipInventory(dathang, prisma);
@@ -1646,13 +1696,14 @@ let DathangService = class DathangService {
                 const batch = pendingOrders.slice(i, i + batchSize);
                 await this.prisma.$transaction(async (tx) => {
                     for (const order of batch) {
+                        const completionDate = await this.getCompletionDate(order.ngaynhan || new Date(), order.khoId, tx);
                         await tx.dathang.update({
                             where: { id: order.id },
                             data: {
                                 status: 'danhan',
                                 ghichu: (order.ghichu || '') + ' | Hoàn tất chờ nhập (Tự động)',
-                                ngayHoanThanhThucte: order.ngayHoanThanhThucte || new Date(),
-                                updatedAt: new Date()
+                                ngayHoanThanhThucte: order.ngayHoanThanhThucte || completionDate,
+                                updatedAt: completionDate
                             }
                         });
                         const skipInventory = await this.shouldSkipInventory(order, tx);
@@ -1732,12 +1783,14 @@ let DathangService = class DathangService {
                 await this.prisma.$transaction(async (tx) => {
                     const tonkhoUpdates = new Map();
                     for (const order of batch) {
+                        const completionDate = await this.getCompletionDate(order.ngaynhan || new Date(), order.khoId, tx);
                         await tx.dathang.update({
                             where: { id: order.id },
                             data: {
                                 status: 'danhan',
                                 ghichu: (order.ghichu || '') + ' | Bulk match process',
-                                updatedAt: new Date()
+                                ngayHoanThanhThucte: order.ngayHoanThanhThucte || completionDate,
+                                updatedAt: completionDate
                             }
                         });
                         for (const sp of order.sanpham) {
@@ -2181,17 +2234,14 @@ let DathangService = class DathangService {
     async autoSystemCompleteOrders() {
         console.log('🤖 [Auto-pilot] Bắt đầu quét đơn đặt hàng chờ nhập hàng ngày...');
         try {
-            const now = new Date();
-            const tzOffset = 7 * 60 * 60 * 1000;
-            const vnTime = new Date(now.getTime() + tzOffset);
-            const todayMaxUTC = new Date(Date.UTC(vnTime.getUTCFullYear(), vnTime.getUTCMonth(), vnTime.getUTCDate(), 16, 59, 59, 999));
-            console.log(`🤖 [Auto-pilot] Filtering orders with ngaynhan <= ${todayMaxUTC.toISOString()} (23:59:59 VN today)`);
+            const endOfDay = moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
+            console.log(`🤖 [Auto-pilot] Filtering orders with ngaynhan <= ${endOfDay.toISOString()} (23:59:59 VN today)`);
             const pendingOrders = await this.prisma.dathang.findMany({
                 where: {
                     status: 'dadat',
                     isActive: true,
                     ngaynhan: {
-                        lte: todayMaxUTC
+                        lte: endOfDay
                     }
                 }
             });
@@ -2199,6 +2249,9 @@ let DathangService = class DathangService {
                 console.log('🤖 [Auto-pilot] Không có đơn hàng nào cần xử lý.');
                 return;
             }
+            let updateCount = 0;
+            const executionTime = new Date();
+            const vietnamTime = executionTime.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
             for (const order of pendingOrders) {
                 console.log(`🤖 [Auto-pilot] Đang xử lý tự động đơn hàng: ${order.madncc}`);
                 const dathangFull = await this.prisma.dathang.findUnique({
@@ -2219,8 +2272,62 @@ let DathangService = class DathangService {
                     }))
                 };
                 await this.update(order.id, updateData);
+                updateCount++;
+                await this.prisma.auditLog.create({
+                    data: {
+                        userId: null,
+                        action: 'UPDATE',
+                        entityName: 'Dathang',
+                        entityId: order.id,
+                        oldValues: {
+                            status: order.status,
+                            madncc: order.madncc,
+                            processedBy: 'auto-pilot-cron'
+                        },
+                        newValues: {
+                            status: 'danhan',
+                            madncc: order.madncc,
+                            updatedAt: executionTime.toISOString(),
+                            processedBy: 'auto-pilot-cron',
+                            autoPilotExecution: {
+                                jobName: 'auto-complete-dathang',
+                                executionTime: vietnamTime,
+                                autoCompleteReason: 'Daily auto-completion at 14:00 Vietnam time'
+                            }
+                        },
+                        createdAt: new Date(),
+                    }
+                });
             }
-            console.log(`🤖 [Auto-pilot] Hoàn thành tự động chốt ${pendingOrders.length} đơn hàng.`);
+            console.log(`🤖 [Auto-pilot] Hoàn thành tự động chốt ${updateCount} đơn hàng.`);
+            if (updateCount > 0) {
+                await this.prisma.auditLog.create({
+                    data: {
+                        userId: null,
+                        action: 'UPDATE',
+                        entityName: 'DathangCronService',
+                        entityId: null,
+                        oldValues: {
+                            cronJobName: 'auto-complete-dathang',
+                            status: 'dadat',
+                            scheduledTime: '14:00 Vietnam Time',
+                            timezone: 'Asia/Ho_Chi_Minh',
+                            executionType: 'CRON_EXECUTION'
+                        },
+                        newValues: {
+                            action: 'auto-complete-dathang-daily',
+                            executionStatus: 'SUCCESS',
+                            ordersFound: pendingOrders.length,
+                            ordersProcessed: updateCount,
+                            executionTime: executionTime.toISOString(),
+                            vietnamTime: vietnamTime,
+                            targetStatus: 'danhan',
+                            executionType: 'CRON_EXECUTION'
+                        },
+                        createdAt: new Date(),
+                    }
+                });
+            }
         }
         catch (error) {
             console.error('❌ [Auto-pilot] Lỗi trong quá trình tự động chốt đơn:', error);
@@ -2229,7 +2336,8 @@ let DathangService = class DathangService {
 };
 exports.DathangService = DathangService;
 __decorate([
-    (0, schedule_1.Cron)('0 0 14 * * *', {
+    (0, schedule_1.Cron)('0 14 * * *', {
+        name: 'auto-complete-dathang',
         timeZone: 'Asia/Ho_Chi_Minh',
     }),
     __metadata("design:type", Function),

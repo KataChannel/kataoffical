@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, effect, inject, signal, computed, WritableSignal, ViewChild, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -27,6 +27,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
 import { UserService } from '../../user/user.service';
 import { KhoService } from '../../kho/kho.service';
 import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconciliation-dialog.component';
+import { ProductTimelineDialogComponent } from '../product-timeline-dialog/product-timeline-dialog.component';
   @Component({
     selector: 'app-detailchotkho',
     imports: [
@@ -101,6 +102,60 @@ import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconcil
     selectedOrderIds = signal<string[]>([]);
     isPendingLoading = signal(false);
     isSaving = signal(false);
+
+    // Active tab (0: All, 1: Negative Stock, 2: Pending/Double Count, 3: Discrepancy, 4: Missing, 5: Matched)
+    activeTab = signal<number>(0);
+
+    // Computed signals for categorized lists
+    allItems = computed(() => {
+      return this.DetailChotkho()?.details || [];
+    });
+
+    negativeStockList = computed(() => {
+      return this.allItems().filter((item: any) => Number(item.sltonhethong) < 0);
+    });
+
+    lateAndDoubleCountingList = computed(() => {
+      const orders = this.pendingOrders();
+      return this.allItems().filter((item: any) => {
+        const chenhlech = Number(item.sltonhethong) - (Number(item.sltonthucte) || 0) - (Number(item.slhuy) || 0);
+        if (chenhlech === 0) return false;
+        return orders.some(order => 
+          order.sanpham.some((sp: any) => sp.idSP === item.sanphamId)
+        );
+      });
+    });
+
+    largeDiscrepancyList = computed(() => {
+      const orders = this.pendingOrders();
+      return this.allItems().filter((item: any) => {
+        const isNegative = Number(item.sltonhethong) < 0;
+        if (isNegative) return false;
+
+        const isPending = orders.some(order => 
+          order.sanpham.some((sp: any) => sp.idSP === item.sanphamId)
+        );
+        if (isPending) return false;
+
+        const chenhlech = Number(item.sltonhethong) - (Number(item.sltonthucte) || 0) - (Number(item.slhuy) || 0);
+        return Math.abs(chenhlech) > 0;
+      });
+    });
+
+    missingStockList = computed(() => {
+      return this.allItems().filter((item: any) => 
+        Number(item.sltonhethong) > 0 && 
+        (Number(item.sltonthucte) || 0) === 0 && 
+        (Number(item.slhuy) || 0) === 0
+      );
+    });
+
+    matchedStockList = computed(() => {
+      return this.allItems().filter((item: any) => {
+        const chenhlech = Number(item.sltonhethong) - (Number(item.sltonthucte) || 0) - (Number(item.slhuy) || 0);
+        return chenhlech === 0 && Number(item.sltonhethong) >= 0;
+      });
+    });
     
     constructor(){
       this._route.paramMap.subscribe((params) => {
@@ -113,12 +168,11 @@ import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconcil
         const serviceDetail = this._ChotkhoService.DetailChotkho();
         if (serviceDetail) {
           this.DetailChotkho.set(serviceDetail);
-          
-          // Update dataSource when DetailChotkho changes
-          this.dataSource.update(ds => {
-            ds.data = serviceDetail.details || [];
-            return ds;
-          });
+
+          // Load pending orders for this warehouse to support Tab 2 and order association
+          if (serviceDetail.khoId) {
+            this.loadPendingOrders(serviceDetail.khoId);
+          }
           
           // Update ListFilter for product selection
           this.ListFilter = serviceDetail.details || [];
@@ -127,10 +181,39 @@ import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconcil
           if (this.ListSanpham.length > 0) {
             this.updateAvailableProducts();
           }          
-          // console.log('DetailChotkho updated from service:', serviceDetail);
         }
       });
 
+      // Effect to reactively update the table data when activeTab or computed lists change
+      effect(() => {
+        let list: any[] = [];
+        switch (this.activeTab()) {
+          case 0:
+            list = this.allItems();
+            break;
+          case 1:
+            list = this.negativeStockList();
+            break;
+          case 2:
+            list = this.lateAndDoubleCountingList();
+            break;
+          case 3:
+            list = this.largeDiscrepancyList();
+            break;
+          case 4:
+            list = this.missingStockList();
+            break;
+          case 5:
+            list = this.matchedStockList();
+            break;
+        }
+
+        this.dataSource.update(ds => {
+          ds.data = list;
+          return ds;
+        });
+      });
+ 
       // Load warehouses
       this.loadWarehouses();
     }
@@ -1523,5 +1606,51 @@ import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconcil
         ...instructionRows,
         ...exampleRows
       ];
+    }
+
+    setActiveTab(tab: number) {
+      this.activeTab.set(tab);
+    }
+
+    openTimeline(row: any) {
+      this._dialog.open(ProductTimelineDialogComponent, {
+        width: '900px',
+        maxWidth: '95vw',
+        maxHeight: '92vh',
+        data: {
+          sanphamId: row.sanphamId || row.id || row.sanpham?.id,
+          masp: row.masp || row.sanpham?.masp,
+          title: row.title || row.sanpham?.title,
+          dvt: row.dvt || row.sanpham?.dvt
+        }
+      });
+    }
+
+    goToDetail(order: any) {
+      const url = order.type === 'dathang' 
+        ? `/admin/dathang/${order.id}` 
+        : `/admin/phieugiaohang/${order.id}`;
+      
+      if (typeof window !== 'undefined') {
+        window.open(url, '_blank');
+      }
+    }
+
+    getPendingOrdersForProduct(row: any): any[] {
+      const orders = this.pendingOrders();
+      const productId = row.sanphamId || row.id || row.sanpham?.id;
+      const list: any[] = [];
+      orders.forEach(order => {
+        const match = order.sanpham.find((sp: any) => sp.idSP === productId);
+        if (match) {
+          list.push({
+            id: order.id,
+            code: order.madncc || 'ĐN-' + order.id.split('-')[0],
+            soluong: match.sldat,
+            type: 'dathang'
+          });
+        }
+      });
+      return list;
     }
   }

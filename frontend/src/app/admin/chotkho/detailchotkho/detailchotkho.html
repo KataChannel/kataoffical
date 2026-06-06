@@ -185,6 +185,90 @@
         }
       </div>
 
+      <!-- Sleek Modern Tabs Switcher (6 Tabs) -->
+      <div class="flex border-b border-slate-200 mb-4 overflow-x-auto no-scrollbar shrink-0 gap-0.5">
+        <button (click)="setActiveTab(0)" 
+                [class]="'pb-2 px-3 text-[11px] font-black transition-all flex items-center gap-1.5 border-b-2 tracking-tight whitespace-nowrap ' + 
+                         (activeTab() === 0 ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300')">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; line-height: 14px;">list</mat-icon>
+          TẤT CẢ ({{ allItems().length }})
+        </button>
+        <button (click)="setActiveTab(1)" 
+                [class]="'pb-2 px-3 text-[11px] font-black transition-all flex items-center gap-1.5 border-b-2 tracking-tight whitespace-nowrap ' + 
+                         (activeTab() === 1 ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300')">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; line-height: 14px;">trending_down</mat-icon>
+          TỒN ÂM ({{ negativeStockList().length }})
+        </button>
+        <button (click)="setActiveTab(2)" 
+                [class]="'pb-2 px-3 text-[11px] font-black transition-all flex items-center gap-1.5 border-b-2 tracking-tight whitespace-nowrap ' + 
+                         (activeTab() === 2 ? 'border-amber-500 text-amber-600' : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300')">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; line-height: 14px;">update</mat-icon>
+          TRỄ & LẶP ĐẾM ({{ lateAndDoubleCountingList().length }})
+        </button>
+        <button (click)="setActiveTab(3)" 
+                [class]="'pb-2 px-3 text-[11px] font-black transition-all flex items-center gap-1.5 border-b-2 tracking-tight whitespace-nowrap ' + 
+                         (activeTab() === 3 ? 'border-rose-500 text-rose-600' : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300')">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; line-height: 14px;">warning</mat-icon>
+          CHÊNH LỆCH ({{ largeDiscrepancyList().length }})
+        </button>
+        <button (click)="setActiveTab(4)" 
+                [class]="'pb-2 px-3 text-[11px] font-black transition-all flex items-center gap-1.5 border-b-2 tracking-tight whitespace-nowrap ' + 
+                         (activeTab() === 4 ? 'border-slate-600 text-slate-700' : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300')">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; line-height: 14px;">feedback</mat-icon>
+          BỎ SÓT ({{ missingStockList().length }})
+        </button>
+        <button (click)="setActiveTab(5)" 
+                [class]="'pb-2 px-3 text-[11px] font-black transition-all flex items-center gap-1.5 border-b-2 tracking-tight whitespace-nowrap ' + 
+                         (activeTab() === 5 ? 'border-green-600 text-green-600' : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300')">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; line-height: 14px;">check_circle</mat-icon>
+          KHỚP SỐ ({{ matchedStockList().length }})
+        </button>
+      </div>
+
+      <!-- Banners for each Tab -->
+      <div class="mb-4" *ngIf="activeTab() > 0">
+        <div *ngIf="activeTab() === 1" class="flex items-start gap-2.5 p-3 rounded-lg border bg-rose-50 border-rose-100 text-rose-800 text-[11px] font-medium leading-relaxed">
+          <mat-icon class="text-rose-500 scale-90 shrink-0" style="width: 16px; height: 16px; font-size: 16px">info</mat-icon>
+          <div>
+            <span class="font-black">🔴 Nguyên nhân:</span> Do bán hàng vật lý đi trước khi xác nhận nhận hàng từ Nhà cung cấp trên phần mềm.
+            <br>
+            <span class="font-black">👉 Hướng xử lý:</span> Cần đối soát lại chứng từ nhập kho để làm thủ tục nhập kho bù chênh lệch.
+          </div>
+        </div>
+
+        <div *ngIf="activeTab() === 2" class="flex items-start gap-2.5 p-3 rounded-lg border bg-amber-50 border-amber-100 text-amber-800 text-[11px] font-medium leading-relaxed">
+          <mat-icon class="text-amber-500 scale-90 shrink-0" style="width: 16px; height: 16px; font-size: 16px">info</mat-icon>
+          <div>
+            <span class="font-black">🟡 Nguyên nhân:</span> Tồn kho sổ sách lệch và có đơn hàng mua/bán đang "trung chuyển" quá 24h chưa hoàn tất. Có rủi ro nhân viên đếm lặp cả hàng đang về.
+            <br>
+            <span class="font-black">👉 Hướng xử lý:</span> Kiểm tra hàng hóa vật lý thực tế đã nhập/xuất kho chưa để cập nhật trạng thái đơn tương ứng, tránh đếm lặp gây sai lệch kép.
+          </div>
+        </div>
+
+        <div *ngIf="activeTab() === 3" class="flex items-start gap-2.5 p-3 rounded-lg border bg-rose-50 border-rose-100 text-rose-800 text-[11px] font-medium leading-relaxed">
+          <mat-icon class="text-rose-500 scale-90 shrink-0" style="width: 16px; height: 16px; font-size: 16px">info</mat-icon>
+          <div>
+            <span class="font-black">⚠️ Nguyên nhân:</span> Chênh lệch số liệu kiểm kê và sổ sách (do hao hụt lớn hoặc gõ nhầm số khi kiểm đếm).
+            <br>
+            <span class="font-black">👉 Hướng xử lý:</span> Đọc ghi chú đối soát hoặc thực hiện kiểm đếm (đếm lại) thực tế sản phẩm này một lần nữa để xác nhận nếu cần.
+          </div>
+        </div>
+
+        <div *ngIf="activeTab() === 4" class="flex items-start gap-2.5 p-3 rounded-lg border bg-slate-100 border-slate-200 text-slate-800 text-[11px] font-medium leading-relaxed">
+          <mat-icon class="text-slate-500 scale-90 shrink-0" style="width: 16px; height: 16px; font-size: 16px">info</mat-icon>
+          <div>
+            <span class="font-black">⚠️ Cảnh báo mất tồn:</span> Các sản phẩm này có tồn trên hệ thống nhưng không có mặt trong file Excel kiểm kho. Hệ thống đã tự động reset tồn về 0 khi chốt kho!
+          </div>
+        </div>
+
+        <div *ngIf="activeTab() === 5" class="flex items-start gap-2.5 p-3 rounded-lg border bg-green-50 border-green-100 text-green-850 text-[11px] font-medium leading-relaxed">
+          <mat-icon class="text-green-500 scale-90 shrink-0" style="width: 16px; height: 16px; font-size: 16px">check_circle</mat-icon>
+          <div>
+            <span class="font-black">✅ Trạng thái:</span> Số liệu thực tế đếm được từ Excel trùng khớp hoàn toàn với số tồn tính toán trên hệ thống. Không phát hiện sai lệch.
+          </div>
+        </div>
+      </div>
+
       <!-- Search toolbar always visible -->
       <div class="w-full flex items-center justify-between mb-4">
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="max-w-md w-full">
@@ -247,9 +331,30 @@
               </span>
               }
               @case ('title') {
-              <span class="max-w-40 line-clamp-4">
-                {{ row.title || row.sanpham?.title }}
-              </span>
+              <div class="flex flex-col gap-0.5 max-w-sm">
+                <span class="text-slate-800 text-sm font-semibold">{{ row.title || row.sanpham?.title }}</span>
+                <span class="text-[10px] text-slate-400 font-medium leading-none">{{ row.masp || row.sanpham?.masp }} - {{ row.dvt || row.sanpham?.dvt }}</span>
+                
+                <!-- Action Buttons: Timeline and Pending Orders (similar to warning dialog) -->
+                <div class="flex flex-wrap gap-1 mt-1.5 shrink-0" *ngIf="!isEdit()">
+                  <button (click)="openTimeline(row); $event.stopPropagation()" class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/60 hover:bg-slate-200 hover:text-slate-850 text-[9px] font-black cursor-pointer transition-all shadow-sm">
+                    <mat-icon style="font-size: 11px; width: 11px; height: 11px" class="text-slate-500 scale-90 !m-0">history</mat-icon>
+                    Lịch sử
+                  </button>
+                  
+                  <ng-container *ngFor="let order of getPendingOrdersForProduct(row); trackBy: trackByFn">
+                    <button (click)="goToDetail(order); $event.stopPropagation()" 
+                            [class]="'flex items-center gap-0.5 px-1.5 py-0.5 rounded border text-[9px] font-black cursor-pointer transition-all shadow-sm ' + 
+                                     (order.type === 'dathang' ? 'bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100' : 'bg-orange-50 text-orange-700 border-orange-100 hover:bg-orange-100')">
+                      <mat-icon style="font-size: 11px; width: 11px; height: 11px" 
+                                [class]="order.type === 'dathang' ? 'text-blue-500' : 'text-orange-500'" class="!m-0">
+                        {{ order.type === 'dathang' ? 'shopping_cart' : 'local_shipping' }}
+                      </mat-icon>
+                      {{ order.code }} ({{ order.soluong | number:'1.0-2' }} kg)
+                    </button>
+                  </ng-container>
+                </div>
+              </div>
               }
               @case ('masp') {
               <span class="max-w-40 line-clamp-4">

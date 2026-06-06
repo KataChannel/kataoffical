@@ -10,6 +10,7 @@ export declare class DathangService {
     private readonly tonkhoManager;
     private readonly notificationService;
     constructor(prisma: PrismaService, _ImportdataService: ImportdataService, statusMachine: StatusMachineService, tonkhoManager: TonkhoManagerService, notificationService: NotificationService);
+    getCompletionDate(ngaynhan: Date | string, khoId: string | null, prismaTx?: any): Promise<Date>;
     private formatDateForFilename;
     private convertDateFilters;
     generateNextOrderCode(): Promise<string>;

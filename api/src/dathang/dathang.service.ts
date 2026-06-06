@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from '../importdata/importdata.service';
 import { StatusMachineService } from '../common/status-machine.service';
@@ -18,6 +19,52 @@ export class DathangService {
   ) {}
 
   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
+  async getCompletionDate(ngaynhan: Date | string, khoId: string | null, prismaTx?: any): Promise<Date> {
+    const prisma = prismaTx || this.prisma;
+    const targetKhoId = khoId || "4cc01811-61f5-4bdc-83de-a493764e9258";
+    
+    // Parse ngaynhan and find the VN date boundary
+    const vnMoment = moment.tz(ngaynhan, 'Asia/Ho_Chi_Minh');
+    const startOfVNDay = vnMoment.clone().startOf('day').toDate();
+    const endOfVNDay = vnMoment.clone().endOf('day').toDate();
+    
+    // Find active Chotkho record for the target warehouse on that day
+    let chotkho = await prisma.chotkho.findFirst({
+      where: {
+        khoId: targetKhoId,
+        isActive: true,
+        ngaychot: {
+          gte: startOfVNDay,
+          lte: endOfVNDay
+        }
+      },
+      orderBy: { ngaychot: 'desc' }
+    });
+    
+    // Fallback to KHO_HCM if not found
+    if (!chotkho && targetKhoId !== "4cc01811-61f5-4bdc-83de-a493764e9258") {
+      chotkho = await prisma.chotkho.findFirst({
+        where: {
+          khoId: "4cc01811-61f5-4bdc-83de-a493764e9258",
+          isActive: true,
+          ngaychot: {
+            gte: startOfVNDay,
+            lte: endOfVNDay
+          }
+        },
+        orderBy: { ngaychot: 'desc' }
+      });
+    }
+    
+    if (chotkho) {
+      // Return 1 second before the chốt kho session
+      return new Date(chotkho.ngaychot.getTime() - 1000);
+    }
+    
+    // If no chốt kho session exists for that day yet, return the current time
+    return new Date();
+  }
+
   private formatDateForFilename(): string {
     const now = new Date();
     const year = now.getFullYear();
@@ -1057,6 +1104,12 @@ async convertDathangImportToTransfer(
 
       // 5. Chuyển sang 'danhan' (nhập kho, xử lý hao hụt)
       if (data.status === 'danhan' && oldDathang.status==='dagiao' ) {
+        const completionDate = await this.getCompletionDate(
+          oldDathang.ngaynhan || new Date(),
+          oldDathang.khoId,
+          prisma
+        );
+
         // Mảng lưu thông tin các sản phẩm có số lượng thiếu
         const shortageItems: {
           sanphamId: string;
@@ -1103,7 +1156,9 @@ async convertDathangImportToTransfer(
           await prisma.phieuKho.create({
             data: {
               maphieu: maphieuNhapChuan,
-              ngay: new Date(data.ngaynhan || new Date()),
+              ngay: completionDate,
+              createdAt: completionDate,
+              updatedAt: completionDate,
               type: 'nhap',
               khoId: khoId,
               madncc: oldDathang.madncc,
@@ -1125,7 +1180,9 @@ async convertDathangImportToTransfer(
             const maphieuShortage = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
             const phieuKhoData = {
               maphieu: maphieuShortage,
-              ngay: new Date(data.ngaynhan || new Date()), // Ngày nhập có thể sử dụng ngày giao hoặc hiện tại
+              ngay: completionDate,
+              createdAt: completionDate,
+              updatedAt: completionDate,
               type: 'xuat', // Loại phiếu xuất trả về
               khoId: khoId, // Use the khoId from dathang
               ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
@@ -1151,7 +1208,8 @@ async convertDathangImportToTransfer(
           data: {
         status: 'danhan',
         khoId: khoId, // Update khoId
-        ngayHoanThanhThucte: oldDathang.ngayHoanThanhThucte || new Date(),
+        ngayHoanThanhThucte: oldDathang.ngayHoanThanhThucte || completionDate,
+        updatedAt: completionDate,
         sanpham: {
           updateMany: data.sanpham.map((item: any) => {
             const delivered = parseFloat((Number(item.slgiao) ?? 0).toFixed(3));
@@ -1369,6 +1427,12 @@ async convertDathangImportToTransfer(
 
     // 8. Từ 'dadat' chuyển sang 'danhan' (bỏ qua 'dagiao' nhưng vẫn xử lý tồn kho và phiếu kho)
     if (oldDathang.status === 'dadat' && data.status === 'danhan') {
+      const completionDate = await this.getCompletionDate(
+        oldDathang.ngaynhan || new Date(),
+        oldDathang.khoId,
+        prisma
+      );
+
       // 8.1. Cập nhật tồn kho (Cả Tổng và Chi tiết)
       if (!skipInventory) {
         for (const sp of data.sanpham) {
@@ -1420,7 +1484,9 @@ async convertDathangImportToTransfer(
         await prisma.phieuKho.create({
           data: {
             maphieu: maphieuNhapChuan,
-            ngay: new Date(data.ngaynhan || new Date()),
+            ngay: completionDate,
+            createdAt: completionDate,
+            updatedAt: completionDate,
             type: 'nhap',
             khoId: khoId,
             madncc: oldDathang.madncc,
@@ -1440,7 +1506,9 @@ async convertDathangImportToTransfer(
           const maphieuShortage = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
           const phieuKhoData = {
             maphieu: maphieuShortage,
-            ngay: new Date(data.ngaynhan || new Date()),
+            ngay: completionDate,
+            createdAt: completionDate,
+            updatedAt: completionDate,
             type: 'xuat',
             khoId: khoId, // Use the khoId from dathang
             ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
@@ -1488,6 +1556,8 @@ async convertDathangImportToTransfer(
       data: {
         status: 'danhan',
         khoId: khoId, // Update khoId
+        ngayHoanThanhThucte: oldDathang.ngayHoanThanhThucte || completionDate,
+        updatedAt: completionDate,
         sanpham: {
         updateMany: data.sanpham.map((item: any) => {
           const sldat = parseFloat((Number(item.sldat) ?? 0).toFixed(3));
@@ -2035,14 +2105,20 @@ async deletebulk(data: any) {
           return { success: false, message: 'Đặt hàng không tồn tại' };
         }
 
+        const completionDate = await this.getCompletionDate(
+          dathang.ngaynhan || new Date(),
+          dathang.khoId,
+          prisma
+        );
+
         // Cập nhật trạng thái đặt hàng sang danhan
         await prisma.dathang.update({
           where: { id },
           data: {
             status: 'danhan',
             ghichu: data.ghichu,
-            ngayHoanThanhThucte: dathang.ngayHoanThanhThucte || new Date(),
-            updatedAt: new Date()
+            ngayHoanThanhThucte: dathang.ngayHoanThanhThucte || completionDate,
+            updatedAt: completionDate
           }
         });
 
@@ -2113,14 +2189,20 @@ async deletebulk(data: any) {
         
         await this.prisma.$transaction(async (tx) => {
           for (const order of batch) {
+            const completionDate = await this.getCompletionDate(
+              order.ngaynhan || new Date(),
+              order.khoId,
+              tx
+            );
+
             // 1. Update order status to 'danhan'
             await tx.dathang.update({
               where: { id: order.id },
               data: {
                 status: 'danhan',
                 ghichu: (order.ghichu || '') + ' | Hoàn tất chờ nhập (Tự động)',
-                ngayHoanThanhThucte: order.ngayHoanThanhThucte || new Date(),
-                updatedAt: new Date()
+                ngayHoanThanhThucte: order.ngayHoanThanhThucte || completionDate,
+                updatedAt: completionDate
               }
             });
 
@@ -2224,13 +2306,20 @@ async deletebulk(data: any) {
           const tonkhoUpdates = new Map<string, { slton: number; slchonhap: number }>();
 
           for (const order of batch) {
+            const completionDate = await this.getCompletionDate(
+              order.ngaynhan || new Date(),
+              order.khoId,
+              tx
+            );
+
             // Cập nhật trạng thái đơn hàng (tuần tự)
             await tx.dathang.update({
               where: { id: order.id },
               data: {
                 status: 'danhan',
                 ghichu: (order.ghichu || '') + ' | Bulk match process',
-                updatedAt: new Date()
+                ngayHoanThanhThucte: order.ngayHoanThanhThucte || completionDate,
+                updatedAt: completionDate
               }
             });
 
@@ -2771,31 +2860,24 @@ async deletebulk(data: any) {
    * 🤖 AUTO-PILOT CRON JOB
    * Tự động hoàn tất các đơn đặt hàng 'dadat' sang 'danhan' vào lúc 14h hàng ngày.
    */
-  @Cron('0 0 14 * * *', {
+  @Cron('0 14 * * *', {
+    name: 'auto-complete-dathang',
     timeZone: 'Asia/Ho_Chi_Minh',
   })
   async autoSystemCompleteOrders() {
     console.log('🤖 [Auto-pilot] Bắt đầu quét đơn đặt hàng chờ nhập hàng ngày...');
     try {
       // Get the end of today in Vietnam timezone (23:59:59.999 VN)
-      const now = new Date();
-      const tzOffset = 7 * 60 * 60 * 1000; // VN is +7h
-      const vnTime = new Date(now.getTime() + tzOffset);
-      const todayMaxUTC = new Date(Date.UTC(
-        vnTime.getUTCFullYear(),
-        vnTime.getUTCMonth(),
-        vnTime.getUTCDate(),
-        16, 59, 59, 999 // 23:59:59.999 VN timezone equivalent in UTC
-      ));
+      const endOfDay = moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
 
-      console.log(`🤖 [Auto-pilot] Filtering orders with ngaynhan <= ${todayMaxUTC.toISOString()} (23:59:59 VN today)`);
+      console.log(`🤖 [Auto-pilot] Filtering orders with ngaynhan <= ${endOfDay.toISOString()} (23:59:59 VN today)`);
 
       const pendingOrders = await this.prisma.dathang.findMany({
         where: {
           status: 'dadat',
           isActive: true,
           ngaynhan: {
-            lte: todayMaxUTC
+            lte: endOfDay
           }
         }
       });
@@ -2804,6 +2886,10 @@ async deletebulk(data: any) {
         console.log('🤖 [Auto-pilot] Không có đơn hàng nào cần xử lý.');
         return;
       }
+
+      let updateCount = 0;
+      const executionTime = new Date();
+      const vietnamTime = executionTime.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
 
       for (const order of pendingOrders) {
         console.log(`🤖 [Auto-pilot] Đang xử lý tự động đơn hàng: ${order.madncc}`);
@@ -2828,8 +2914,67 @@ async deletebulk(data: any) {
         };
 
         await this.update(order.id, updateData);
+        updateCount++;
+
+        // Tạo audit log chi tiết cho từng đơn đặt hàng được cập nhật
+        await this.prisma.auditLog.create({
+          data: {
+            userId: null, // System action
+            action: 'UPDATE',
+            entityName: 'Dathang',
+            entityId: order.id,
+            oldValues: {
+              status: order.status,
+              madncc: order.madncc,
+              processedBy: 'auto-pilot-cron'
+            },
+            newValues: {
+              status: 'danhan',
+              madncc: order.madncc,
+              updatedAt: executionTime.toISOString(),
+              processedBy: 'auto-pilot-cron',
+              autoPilotExecution: {
+                jobName: 'auto-complete-dathang',
+                executionTime: vietnamTime,
+                autoCompleteReason: 'Daily auto-completion at 14:00 Vietnam time'
+              }
+            },
+            createdAt: new Date(),
+          }
+        });
       }
-      console.log(`🤖 [Auto-pilot] Hoàn thành tự động chốt ${pendingOrders.length} đơn hàng.`);
+
+      console.log(`🤖 [Auto-pilot] Hoàn thành tự động chốt ${updateCount} đơn hàng.`);
+
+      if (updateCount > 0) {
+        // Tạo audit log tổng quan cho cron job execution
+        await this.prisma.auditLog.create({
+          data: {
+            userId: null, // System action
+            action: 'UPDATE',
+            entityName: 'DathangCronService',
+            entityId: null,
+            oldValues: {
+              cronJobName: 'auto-complete-dathang',
+              status: 'dadat',
+              scheduledTime: '14:00 Vietnam Time',
+              timezone: 'Asia/Ho_Chi_Minh',
+              executionType: 'CRON_EXECUTION'
+            },
+            newValues: {
+              action: 'auto-complete-dathang-daily',
+              executionStatus: 'SUCCESS',
+              ordersFound: pendingOrders.length,
+              ordersProcessed: updateCount,
+              executionTime: executionTime.toISOString(),
+              vietnamTime: vietnamTime,
+              targetStatus: 'danhan',
+              executionType: 'CRON_EXECUTION'
+            },
+            createdAt: new Date(),
+          }
+        });
+      }
     } catch (error) {
       console.error('❌ [Auto-pilot] Lỗi trong quá trình tự động chốt đơn:', error);
     }
