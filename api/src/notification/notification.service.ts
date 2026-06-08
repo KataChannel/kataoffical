@@ -232,7 +232,38 @@ export class NotificationService {
     }
   }
 
+  async isTelegramEnabled(): Promise<boolean> {
+    try {
+      const setting = await this.prisma.systemSetting.findUnique({
+        where: { key: 'telegram_notifications_enabled' }
+      });
+      return setting ? setting.value === 'true' : true;
+    } catch (error) {
+      this.logger.error('Lỗi khi đọc cấu hình Telegram từ DB, mặc định trả về true', error.stack);
+      return true;
+    }
+  }
+
+  async setTelegramEnabled(enabled: boolean): Promise<any> {
+    try {
+      return await this.prisma.systemSetting.upsert({
+        where: { key: 'telegram_notifications_enabled' },
+        update: { value: String(enabled) },
+        create: { key: 'telegram_notifications_enabled', value: String(enabled) }
+      });
+    } catch (error) {
+      this.logger.error('Lỗi khi lưu cấu hình Telegram vào DB', error.stack);
+      throw error;
+    }
+  }
+
   async sendTelegramMessage(message: string): Promise<boolean> {
+    const isEnabled = await this.isTelegramEnabled();
+    if (!isEnabled) {
+      this.logger.log('Bỏ qua gửi tin nhắn Telegram do tính năng này đang bị TẮT trong cấu hình hệ thống');
+      return false;
+    }
+
     const token = process.env.TELEGRAM_BOT_TOKEN?.replace(/^["']|["']$/g, '');
     const chatId = process.env.TELEGRAM_CHAT_ID?.replace(/^["']|["']$/g, '');
 
@@ -271,396 +302,120 @@ export class NotificationService {
   async sendChotkhoTelegramNotification(chotkhoData: any) {
     const khoName = chotkhoData.kho?.name || 'N/A';
     const creator = chotkhoData.user?.profile?.name || chotkhoData.user?.email || 'Hệ thống';
-    const ngayChotFormatted = new Date(chotkhoData.ngaychot).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
-    
-    const details = chotkhoData.details || [];
+    const ngayChotFormatted = new Date(chotkhoData.ngaychot).toLocaleString('vi-VN', {
+      timeZone: 'Asia/Ho_Chi_Minh',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      day: 'numeric', month: 'numeric', year: 'numeric'
+    });
+    const spCount = chotkhoData.details?.length || 0;
 
-    let message = `📦 <b>THÔNG BÁO CHỐT KHO</b>\n`;
-    message += `📋 <b>Mã chốt kho:</b> <code>${chotkhoData.codeId || 'N/A'}</code>\n`;
-    message += `📝 <b>Tiêu đề:</b> ${chotkhoData.title || 'N/A'}\n`;
-    message += `🏢 <b>Kho:</b> ${khoName}\n`;
-    message += `📅 <b>Thời gian chốt:</b> ${ngayChotFormatted}\n`;
-    message += `👤 <b>Người thực hiện:</b> ${creator}\n`;
-    message += `📊 <b>Tổng sản phẩm chốt:</b> ${details.length}\n`;
+    const message = `📦 <b>CHỐT KHO: ${khoName}</b>\n` +
+                    `- Thời gian: ${ngayChotFormatted}\n` +
+                    `- Người thực hiện: ${creator}\n` +
+                    `- Số SP chốt: ${spCount}`;
 
     return this.sendTelegramMessage(message);
   }
 
   async handleOrderEvent(order: any, action: 'CREATE' | 'UPDATE' | 'DELETE', oldOrder?: any) {
-    try {
-      // 1. Tìm phiên chốt kho gần nhất của kho này
-      const targetKhoId = order.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258";
-      
-      const latestChot = await this.prisma.chotkho.findFirst({
-        where: { khoId: targetKhoId, isActive: true },
-        orderBy: { ngaychot: 'desc' },
-        include: { kho: true }
-      });
-
-      let chot = latestChot;
-      if (!chot) {
-        chot = await this.prisma.chotkho.findFirst({
-          where: { isActive: true },
-          orderBy: { ngaychot: 'desc' },
-          include: { kho: true }
-        });
-      }
-
-      if (!chot) {
-        this.logger.log('No active chotkho session found. Post-closing order monitoring inactive.');
-        return;
-      }
-
-      const chotkhoTime = chot.createdAt || chot.ngaychot;
-      const eventTime = new Date();
-
-      // Chỉ giám sát nếu sự kiện xảy ra SAU khi chốt kho
-      if (eventTime <= chotkhoTime) {
-        return;
-      }
-
-      // Xác định ngày hôm sau trong múi giờ Việt Nam
-      const toVNString = (date: Date): string => {
-        const d = new Date(date.getTime() + 7 * 60 * 60 * 1000);
-        return d.toISOString().split('T')[0];
-      };
-
-      const chotDateStr = toVNString(chot.ngaychot);
-      const nextDayDate = new Date(chot.ngaychot);
-      nextDayDate.setDate(nextDayDate.getDate() + 1);
-      const nextDayDateStr = toVNString(nextDayDate);
-
-      // Định nghĩa mốc bắt đầu của ngày hôm sau
-      const nextDayStart = new Date(nextDayDateStr + 'T00:00:00+07:00');
-
-      // Kiểm tra xem đã có đơn hàng ngày hôm sau nào được tạo sau chốt kho chưa (loại trừ đơn hàng hiện tại)
-      const nextDayOrdersCount = await this.prisma.donhang.count({
-        where: {
-          id: { not: order.id },
-          khoId: targetKhoId,
-          createdAt: { gt: chot.createdAt },
-          OR: [
-            { ngaygiao: { gte: nextDayStart } },
-            { createdAt: { gte: nextDayStart } }
-          ]
-        }
-      });
-
-      // Nếu đã có đơn hàng của ngày hôm sau rồi (tức là đã qua mốc đơn hàng mới đầu tiên), thì DỪNG giám sát
-      if (nextDayOrdersCount > 0) {
-        this.logger.log(`Monitoring stopped. ${nextDayOrdersCount} next-day orders already processed.`);
-        return;
-      }
-
-      // Lấy thông tin đầy đủ của đơn hàng nếu không phải hành động XÓA
-      let fullOrder = order;
-      if (action !== 'DELETE') {
-        fullOrder = await this.prisma.donhang.findUnique({
-          where: { id: order.id },
-          include: {
-            sanpham: {
-              include: {
-                sanpham: true
-              }
-            },
-            khachhang: true
-          }
-        });
-        if (!fullOrder) return;
-      }
-
-      // Lấy tên khách hàng
-      const khachhangName = fullOrder.khachhang?.name || 'N/A';
-
-      // Kiểm tra xem đơn hàng hiện tại có phải là đơn hàng mới đầu tiên của ngày hôm sau không
-      const isCurrentOrderNextDay = fullOrder.ngaygiao >= nextDayStart || new Date(fullOrder.createdAt) >= nextDayStart;
-
-      const orderNgaygiaoFormatted = fullOrder.ngaygiao 
-        ? new Date(fullOrder.ngaygiao).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) 
-        : 'N/A';
-      const orderTongtien = Number(fullOrder.tongtien || 0).toLocaleString('vi-VN');
-
-      if (isCurrentOrderNextDay) {
-        // Đây là đơn hàng mới đầu tiên của ngày hôm sau! Thông báo và kết thúc giám sát.
-        let msg = `🔔 <b>ĐƠN HÀNG MỚI ĐẦU TIÊN CỦA NGÀY HÔM SAU</b>\n`;
-        msg += `🏢 <b>Kho:</b> ${chot.kho?.name || 'N/A'}\n`;
-        msg += `📋 <b>Mã đơn hàng:</b> <code>${fullOrder.madonhang}</code>\n`;
-        msg += `👤 <b>Khách hàng:</b> ${khachhangName}\n`;
-        msg += `📅 <b>Ngày giao:</b> ${orderNgaygiaoFormatted}\n`;
-        msg += `💰 <b>Tổng tiền:</b> ${orderTongtien} đ\n`;
-        msg += `🛑 <i>Hệ thống ghi nhận đơn hàng mới đầu tiên của ngày hôm sau và DỪNG giám sát các phát sinh sau chốt kho.</i>`;
-        
-        await this.sendTelegramMessage(msg);
-        return;
-      }
-
-      // Nếu không phải đơn hàng mới của ngày hôm sau, đây là phát sinh sau khi chốt kho của ngày hiện tại
-      let actionText = '';
-      if (action === 'CREATE') actionText = 'TẠO MỚI';
-      else if (action === 'UPDATE') actionText = 'CẬP NHẬT';
-      else if (action === 'DELETE') actionText = 'XÓA';
-
-      let msg = `⚠️ <b>PHÁT SINH SAU CHỐT KHO [${chot.title}]</b>\n`;
-      msg += `⚡ <b>Hành động:</b> <code>${actionText}</code> đơn hàng\n`;
-      msg += `📋 <b>Mã đơn hàng:</b> <code>${fullOrder.madonhang}</code>\n`;
-      msg += `👤 <b>Khách hàng:</b> ${khachhangName}\n`;
-      msg += `📅 <b>Ngày giao:</b> ${orderNgaygiaoFormatted}\n`;
-      msg += `💰 <b>Tổng tiền:</b> ${orderTongtien} đ\n`;
-      msg += `🏢 <b>Kho:</b> ${chot.kho?.name || 'N/A'}\n`;
-
-      if (action === 'UPDATE' && oldOrder) {
-        msg += `\n🔍 <b>Chi tiết thay đổi:</b>\n`;
-        
-        if (oldOrder.status !== fullOrder.status) {
-          msg += `- Trạng thái: <code>${oldOrder.status}</code> ➡️ <code>${fullOrder.status}</code>\n`;
-        }
-        
-        const oldNgaygiao = oldOrder.ngaygiao ? new Date(oldOrder.ngaygiao).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : 'N/A';
-        if (oldNgaygiao !== orderNgaygiaoFormatted) {
-          msg += `- Ngày giao: <code>${oldNgaygiao}</code> ➡️ <code>${orderNgaygiaoFormatted}</code>\n`;
-        }
-
-        // So sánh sản phẩm
-        const oldProducts = oldOrder.sanpham || [];
-        const newProducts = fullOrder.sanpham || [];
-
-        const oldProdMap = new Map<string, any>(oldProducts.map((p: any) => [p.idSP || p.id, p]));
-        const newProdMap = new Map<string, any>(newProducts.map((p: any) => [p.idSP || p.id, p]));
-
-        const added: any[] = [];
-        const removed: any[] = [];
-        const changed: any[] = [];
-
-        newProducts.forEach((np: any) => {
-          const npId = np.idSP || np.id;
-          const op = oldProdMap.get(npId);
-          if (!op) {
-            added.push(np);
-          } else {
-            const opQty = Number(op.slnhan ?? op.slgiao ?? op.sldat ?? 0);
-            const npQty = Number(np.slnhan ?? np.slgiao ?? np.sldat ?? 0);
-            if (opQty !== npQty) {
-              changed.push({ product: np, oldQty: opQty, newQty: npQty });
-            }
-          }
-        });
-
-        oldProducts.forEach((op: any) => {
-          const opId = op.idSP || op.id;
-          if (!newProdMap.has(opId)) {
-            removed.push(op);
-          }
-        });
-
-        if (added.length > 0) {
-          msg += `➕ <b>Sản phẩm được thêm:</b>\n`;
-          for (const item of added) {
-            const name = item.sanpham?.title || item.title || 'Sản phẩm';
-            const qty = Number(item.slnhan ?? item.slgiao ?? item.sldat ?? 0);
-            msg += `  • ${name}: <b>${qty}</b>\n`;
-          }
-        }
-
-        if (removed.length > 0) {
-          msg += `➖ <b>Sản phẩm bị xóa:</b>\n`;
-          for (const item of removed) {
-            const name = item.sanpham?.title || item.title || 'Sản phẩm';
-            msg += `  • ${name}\n`;
-          }
-        }
-
-        if (changed.length > 0) {
-          msg += `📝 <b>Thay đổi số lượng:</b>\n`;
-          for (const item of changed) {
-            const name = item.product.sanpham?.title || item.product.title || 'Sản phẩm';
-            msg += `  • ${name}: <code>${item.oldQty}</code> ➡️ <b>${item.newQty}</b>\n`;
-          }
-        }
-      }
-
-      await this.sendTelegramMessage(msg);
-    } catch (err) {
-      this.logger.error('Error handling order event for post-closing monitoring', err.stack);
-    }
+    // Bỏ qua hoàn toàn thông báo Telegram đối với đơn hàng bán (Donhang)
+    return;
   }
 
   async handleDathangEvent(dathang: any, action: 'CREATE' | 'UPDATE' | 'DELETE', oldDathang?: any) {
+    if (action !== 'CREATE') {
+      return;
+    }
+
     try {
-      // 1. Tìm phiên chốt kho gần nhất của kho này
       const targetKhoId = dathang.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258";
-      
-      const latestChot = await this.prisma.chotkho.findFirst({
-        where: { khoId: targetKhoId, isActive: true },
-        orderBy: { ngaychot: 'desc' },
-        include: { kho: true }
-      });
 
-      let chot = latestChot;
-      if (!chot) {
-        chot = await this.prisma.chotkho.findFirst({
-          where: { isActive: true },
-          orderBy: { ngaychot: 'desc' },
-          include: { kho: true }
-        });
-      }
-
-      if (!chot) {
-        this.logger.log('No active chotkho session found. Post-closing order monitoring inactive.');
-        return;
-      }
-
-      const chotkhoTime = chot.createdAt || chot.ngaychot;
-      const eventTime = new Date();
-
-      // Chỉ giám sát nếu sự kiện xảy ra SAU khi chốt kho
-      if (eventTime <= chotkhoTime) {
-        return;
-      }
-
-      // Xác định ngày hôm sau trong múi giờ Việt Nam
       const toVNString = (date: Date): string => {
         const d = new Date(date.getTime() + 7 * 60 * 60 * 1000);
         return d.toISOString().split('T')[0];
       };
 
-      const nextDayDate = new Date(chot.ngaychot);
-      nextDayDate.setDate(nextDayDate.getDate() + 1);
-      const nextDayDateStr = toVNString(nextDayDate);
+      const now = new Date();
+      const todayStr = toVNString(now);
+      const todayStart = new Date(todayStr + 'T00:00:00+07:00');
+      const todayEnd = new Date(todayStr + 'T23:59:59+07:00');
 
-      // Định nghĩa mốc bắt đầu của ngày hôm sau
-      const nextDayStart = new Date(nextDayDateStr + 'T00:00:00+07:00');
-
-      // Kiểm tra xem đã có đơn hàng ngày hôm sau nào được tạo sau chốt kho chưa
-      const nextDayOrdersCount = await this.prisma.donhang.count({
-        where: {
-          khoId: targetKhoId,
-          createdAt: { gt: chot.createdAt },
-          OR: [
-            { ngaygiao: { gte: nextDayStart } },
-            { createdAt: { gte: nextDayStart } }
-          ]
-        }
-      });
-
-      // Nếu đã có đơn hàng của ngày hôm sau rồi (tức là đã qua mốc đơn hàng mới đầu tiên), thì DỪNG giám sát
-      if (nextDayOrdersCount > 0) {
-        this.logger.log(`Monitoring stopped. ${nextDayOrdersCount} next-day orders already processed.`);
+      // 1. Kiểm tra xem đặt hàng có thuộc ngày hiện tại không
+      const dathangDate = dathang.ngaynhan || dathang.createdAt;
+      const dathangDateStr = toVNString(new Date(dathangDate));
+      if (dathangDateStr !== todayStr) {
+        this.logger.log(`Bỏ qua đặt hàng NCC do không thuộc ngày hiện tại: ${dathangDateStr} vs ${todayStr}`);
         return;
       }
 
-      // Lấy thông tin đầy đủ của đơn đặt hàng nếu không phải hành động XÓA
-      let fullDathang = dathang;
-      if (action !== 'DELETE') {
-        fullDathang = await this.prisma.dathang.findUnique({
-          where: { id: dathang.id },
-          include: {
-            sanpham: {
-              include: {
-                sanpham: true
-              }
-            },
-            nhacungcap: true
+      // 2. Tìm phiên chốt kho gần nhất của ngày hiện tại
+      const latestChot = await this.prisma.chotkho.findFirst({
+        where: {
+          khoId: targetKhoId,
+          isActive: true,
+          ngaychot: {
+            gte: todayStart,
+            lte: todayEnd
           }
-        });
-        if (!fullDathang) return;
+        },
+        orderBy: { ngaychot: 'desc' },
+        include: { kho: true }
+      });
+
+      if (!latestChot) {
+        this.logger.log('Chưa có phiên chốt kho nào trong ngày hiện tại. Bỏ qua thông báo phát sinh.');
+        return;
       }
 
-      // Lấy tên nhà cung cấp
-      const nhacungcapName = fullDathang.nhacungcap?.name || 'N/A';
-      const ngaynhanFormatted = fullDathang.ngaynhan 
-        ? new Date(fullDathang.ngaynhan).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) 
-        : 'N/A';
-
-      const tongtien = fullDathang.sanpham?.reduce(
-        (sum: number, sp: any) => sum + (Number(sp.slnhan || sp.slgiao || sp.sldat || 0) * Number(sp.gianhap || 0)), 
-        0
-      ) || 0;
-      const tongtienFormatted = tongtien.toLocaleString('vi-VN');
-
-      let actionText = '';
-      if (action === 'CREATE') actionText = 'TẠO MỚI';
-      else if (action === 'UPDATE') actionText = 'CẬP NHẬT';
-      else if (action === 'DELETE') actionText = 'XÓA';
-
-      let msg = `⚠️ <b>PHÁT SINH SAU CHỐT KHO [${chot.title}]</b>\n`;
-      msg += `⚡ <b>Hành động:</b> <code>${actionText}</code> đặt hàng (NCC)\n`;
-      msg += `📋 <b>Mã đặt hàng:</b> <code>${fullDathang.madncc}</code>\n`;
-      msg += `👤 <b>Nhà cung cấp:</b> ${nhacungcapName}\n`;
-      msg += `📅 <b>Ngày nhận dự kiến:</b> ${ngaynhanFormatted}\n`;
-      msg += `💰 <b>Tổng tiền:</b> ${tongtienFormatted} đ\n`;
-      msg += `🏢 <b>Kho:</b> ${chot.kho?.name || 'N/A'}\n`;
-
-      if (action === 'UPDATE' && oldDathang) {
-        msg += `\n🔍 <b>Chi tiết thay đổi:</b>\n`;
-        
-        if (oldDathang.status !== fullDathang.status) {
-          msg += `- Trạng thái: <code>${oldDathang.status}</code> ➡️ <code>${fullDathang.status}</code>\n`;
-        }
-        
-        const oldNgaynhan = oldDathang.ngaynhan ? new Date(oldDathang.ngaynhan).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : 'N/A';
-        if (oldNgaynhan !== ngaynhanFormatted) {
-          msg += `- Ngày nhận: <code>${oldNgaynhan}</code> ➡️ <code>${ngaynhanFormatted}</code>\n`;
-        }
-
-        // So sánh sản phẩm
-        const oldProducts = oldDathang.sanpham || [];
-        const newProducts = fullDathang.sanpham || [];
-
-        const oldProdMap = new Map<string, any>(oldProducts.map((p: any) => [p.idSP || p.id, p]));
-        const newProdMap = new Map<string, any>(newProducts.map((p: any) => [p.idSP || p.id, p]));
-
-        const added: any[] = [];
-        const removed: any[] = [];
-        const changed: any[] = [];
-
-        newProducts.forEach((np: any) => {
-          const npId = np.idSP || np.id;
-          const op = oldProdMap.get(npId);
-          if (!op) {
-            added.push(np);
-          } else {
-            const opQty = Number(op.slnhan ?? op.slgiao ?? op.sldat ?? 0);
-            const npQty = Number(np.slnhan ?? np.slgiao ?? np.sldat ?? 0);
-            if (opQty !== npQty) {
-              changed.push({ product: np, oldQty: opQty, newQty: npQty });
-            }
-          }
-        });
-
-        oldProducts.forEach((op: any) => {
-          const opId = op.idSP || op.id;
-          if (!newProdMap.has(opId)) {
-            removed.push(op);
-          }
-        });
-
-        if (added.length > 0) {
-          msg += `➕ <b>Sản phẩm được thêm:</b>\n`;
-          for (const item of added) {
-            const name = item.sanpham?.title || item.title || 'Sản phẩm';
-            const qty = Number(item.slnhan ?? item.slgiao ?? item.sldat ?? 0);
-            msg += `  • ${name}: <b>${qty}</b>\n`;
-          }
-        }
-
-        if (removed.length > 0) {
-          msg += `➖ <b>Sản phẩm bị xóa:</b>\n`;
-          for (const item of removed) {
-            const name = item.sanpham?.title || item.title || 'Sản phẩm';
-            msg += `  • ${name}\n`;
-          }
-        }
-
-        if (changed.length > 0) {
-          msg += `📝 <b>Thay đổi số lượng:</b>\n`;
-          for (const item of changed) {
-            const name = item.product.sanpham?.title || item.product.title || 'Sản phẩm';
-            msg += `  • ${name}: <code>${item.oldQty}</code> ➡️ <b>${item.newQty}</b>\n`;
-          }
-        }
+      // 3. Kiểm tra xem đơn đặt hàng có được tạo sau chốt kho gần nhất không
+      const chotkhoTime = latestChot.createdAt || latestChot.ngaychot;
+      const eventTime = new Date(dathang.createdAt);
+      if (eventTime <= chotkhoTime) {
+        this.logger.log(`Bỏ qua đặt hàng do được tạo trước hoặc cùng lúc với chốt kho ngày hiện tại.`);
+        return;
       }
 
-      await this.sendTelegramMessage(msg);
+      // Lấy đầy đủ thông tin đơn đặt hàng
+      const fullDathang = await this.prisma.dathang.findUnique({
+        where: { id: dathang.id },
+        include: {
+          sanpham: true
+        }
+      });
+      if (!fullDathang) return;
+
+      // Tìm người thực hiện từ AuditLog
+      let creator = 'Hệ thống';
+      try {
+        const audit = await this.prisma.auditLog.findFirst({
+          where: {
+            entityName: 'Dathang',
+            entityId: dathang.id,
+            action: 'CREATE'
+          },
+          select: { userEmail: true }
+        });
+        if (audit?.userEmail) {
+          creator = audit.userEmail;
+        }
+      } catch (e) {
+        this.logger.error('Lỗi khi truy vấn AuditLog để tìm người tạo đặt hàng', e);
+      }
+
+      const spCount = fullDathang.sanpham?.length || 0;
+      const thoiGianFormatted = new Date(fullDathang.createdAt).toLocaleString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        day: 'numeric', month: 'numeric', year: 'numeric'
+      });
+
+      const message = `⚠️ <b>ĐẶT HÀNG NCC MỚI (SAU CHỐT KHO)</b>\n` +
+                      `- Mã đặt hàng: <code>${fullDathang.madncc}</code>\n` +
+                      `- Thời gian: ${thoiGianFormatted}\n` +
+                      `- Người thực hiện: ${creator}\n` +
+                      `- Số SP phát sinh: ${spCount}`;
+
+      await this.sendTelegramMessage(message);
     } catch (err) {
       this.logger.error('Error handling dathang event for post-closing monitoring', err.stack);
     }

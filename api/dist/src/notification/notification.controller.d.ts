@@ -61,6 +61,20 @@ export declare class NotificationController {
     getUnreadCount(userId: string): Promise<{
         count: number;
     }>;
+    getTelegramSettings(): Promise<{
+        enabled: boolean;
+    }>;
+    setTelegramSettings(body: {
+        enabled: boolean;
+    }): Promise<{
+        success: boolean;
+        message: string;
+        enabled?: undefined;
+    } | {
+        success: boolean;
+        enabled: boolean;
+        message?: undefined;
+    }>;
     testAdminPush(body: {
         title?: string;
         body?: string;

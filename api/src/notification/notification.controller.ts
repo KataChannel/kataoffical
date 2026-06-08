@@ -47,6 +47,21 @@ export class NotificationController {
     return this.notificationService.getUnreadCount(userId);
   }
 
+  @Get('telegram-settings')
+  async getTelegramSettings() {
+    const enabled = await this.notificationService.isTelegramEnabled();
+    return { enabled };
+  }
+
+  @Post('telegram-settings')
+  async setTelegramSettings(@Body() body: { enabled: boolean }) {
+    if (body.enabled === undefined) {
+      return { success: false, message: 'Missing enabled flag' };
+    }
+    await this.notificationService.setTelegramEnabled(body.enabled);
+    return { success: true, enabled: body.enabled };
+  }
+
   @Post('test-admin-push')
   async testAdminPush(@Body() body: { title?: string; body?: string }) {
     await this.notificationService.broadcastToAdmins({

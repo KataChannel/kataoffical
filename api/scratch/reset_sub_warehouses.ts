@@ -1,0 +1,47 @@
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+const KHO_TONG_ID = '4cc01811-61f5-4bdc-83de-a493764e9258'; // KHO - HCM
+
+async function main() {
+  console.log('--- RESETTING VIRTUAL SUB-WAREHOUSE BALANCES TO 0 ---');
+  
+  // 1. Check current counts of non-zero rows in virtual warehouses
+  const beforeCount = await prisma.sanphamKho.count({
+    where: {
+      NOT: { khoId: KHO_TONG_ID },
+      soluong: { not: 0 }
+    }
+  });
+  console.log(`Found ${beforeCount} products with non-zero stock in virtual warehouses.`);
+
+  // 2. Perform the update: set soluong = 0 for all warehouse records except KHO_TONG_ID
+  const updateResult = await prisma.sanphamKho.updateMany({
+    where: {
+      NOT: { khoId: KHO_TONG_ID }
+    },
+    data: {
+      soluong: 0,
+      updatedAt: new Date()
+    }
+  });
+  
+  console.log(`Successfully reset stock to 0 for ${updateResult.count} virtual warehouse product records.`);
+
+  // 3. Confirming stock for I100207 as a sanity check
+  const loloProduct = await prisma.sanpham.findUnique({
+    where: { masp: 'I100207' },
+    include: { SanphamKho: { include: { kho: true } } }
+  });
+
+  if (loloProduct) {
+    console.log(`\nSanity Check - Product: ${loloProduct.title} (${loloProduct.masp})`);
+    loloProduct.SanphamKho.forEach(sk => {
+      console.log(`  - Warehouse: ${sk.kho.name} (${sk.kho.makho}) | Stock: ${sk.soluong}`);
+    });
+  }
+}
+
+main()
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());

@@ -6,18 +6,23 @@ Tài liệu này tổng hợp các quy tắc đối soát số liệu tồn kho,
 
 ## 1. Quy Tắc Đối Soát Chung & Chốt Baseline
 
-### 1.1. Nhóm sản phẩm tự động chuyển qua (Auto-carried over)
-Các sản phẩm thuộc nhóm sau đây sẽ **tự động được chuyển qua** (giữ nguyên số liệu hệ thống hoặc cập nhật tương ứng từ file đối soát):
+### 1.1. Quy tắc triệt tiêu kho âm (Ưu tiên cao nhất - Check đầu tiên)
+*   **Tồn hệ thống bị âm:** Nếu một sản phẩm có **số tồn hệ thống âm (`sltonhethong < 0`)** trước khi chốt kho, hệ thống sẽ **tự động reset cả tồn hệ thống và tồn thực tế chốt về 0**.
+*   **Ghi chú trong DB:** `Tự động reset kho âm về 0 (Rules.md)`
+*   **Độ ưu tiên:** Quy tắc này được ưu tiên cao nhất, áp dụng trước tất cả các quy tắc đối soát khác (kể cả nhóm tự động chuyển qua hay có trong Excel).
+
+### 1.2. Nhóm sản phẩm tự động chuyển qua (Auto-carried over - Chỉ áp dụng cho tồn >= 0)
+Các sản phẩm thuộc nhóm sau đây sẽ **tự động được chuyển qua** (giữ nguyên số liệu hệ thống hoặc cập nhật tương ứng từ file đối soát) nếu số lượng tồn >= 0:
 *   **Dưa hấu**
 *   **Bắp**
 *   **Cải chua**
-*   **Thơm** (Áp dụng thêm quy tắc phân loại ở mục 2)
+*   **Thơm** (Áp dụng thêm quy tắc gom tồn ở mục 2)
 *   **Hành tây**
 
 > [!NOTE]
-> Các sản phẩm này không bị tự động reset về 0 kể cả khi không có tên/không xuất hiện trong file Excel kiểm kho thực tế.
+> Các sản phẩm này không bị tự động reset về 0 kể cả khi không có tên/không xuất hiện trong file Excel kiểm kho thực tế (với điều kiện tồn ban đầu không bị âm).
 
-### 1.2. Nhóm sản phẩm chốt Baseline về 0
+### 1.3. Nhóm sản phẩm chốt Baseline về 0
 *   **Sản phẩm không có trong file Excel:** Tất cả các sản phẩm còn lại (ngoài danh sách tự động chuyển qua ở trên) nếu không xuất hiện trong file Excel kiểm kho thực tế sẽ bị **chốt baseline về 0**.
 *   **Các sản phẩm thơm khác (ngoài Thơm xanh và Thơm gọt):** Sẽ bị reset số lượng tồn kho về 0 theo quy tắc đặc thù của nhóm Thơm.
 

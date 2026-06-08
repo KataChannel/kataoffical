@@ -139,8 +139,8 @@ export declare class ChotkhoService {
                 userId: string | null;
                 sanphamId: string | null;
                 ngaychot: Date;
-                sltonthucte: Decimal;
                 sltonhethong: Decimal;
+                sltonthucte: Decimal;
                 chenhlech: Decimal;
                 giaGocSnapshot: Decimal;
                 giaTriChenhLech: Decimal;
@@ -159,10 +159,10 @@ export declare class ChotkhoService {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            ngaychot: Date;
             isLocked: boolean;
             lockedAt: Date | null;
             lockedBy: string | null;
-            ngaychot: Date;
         }) | null;
         warnings: any[];
     }>;
@@ -204,8 +204,8 @@ export declare class ChotkhoService {
                 userId: string | null;
                 sanphamId: string | null;
                 ngaychot: Date;
-                sltonthucte: Decimal;
                 sltonhethong: Decimal;
+                sltonthucte: Decimal;
                 chenhlech: Decimal;
                 giaGocSnapshot: Decimal;
                 giaTriChenhLech: Decimal;
@@ -224,10 +224,10 @@ export declare class ChotkhoService {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            ngaychot: Date;
             isLocked: boolean;
             lockedAt: Date | null;
             lockedBy: string | null;
-            ngaychot: Date;
         })[];
         pagination: {
             current: number;
@@ -266,8 +266,8 @@ export declare class ChotkhoService {
             userId: string | null;
             sanphamId: string | null;
             ngaychot: Date;
-            sltonthucte: Decimal;
             sltonhethong: Decimal;
+            sltonthucte: Decimal;
             chenhlech: Decimal;
             giaGocSnapshot: Decimal;
             giaTriChenhLech: Decimal;
@@ -286,10 +286,10 @@ export declare class ChotkhoService {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        ngaychot: Date;
         isLocked: boolean;
         lockedAt: Date | null;
         lockedBy: string | null;
-        ngaychot: Date;
     }) | null>;
     update(id: string, updateData: any): Promise<{
         id: string;
@@ -302,10 +302,10 @@ export declare class ChotkhoService {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        ngaychot: Date;
         isLocked: boolean;
         lockedAt: Date | null;
         lockedBy: string | null;
-        ngaychot: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -318,10 +318,10 @@ export declare class ChotkhoService {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        ngaychot: Date;
         isLocked: boolean;
         lockedAt: Date | null;
         lockedBy: string | null;
-        ngaychot: Date;
     }>;
     search(searchParams: any): Promise<{
         data: ({
@@ -354,8 +354,8 @@ export declare class ChotkhoService {
                 userId: string | null;
                 sanphamId: string | null;
                 ngaychot: Date;
-                sltonthucte: Decimal;
                 sltonhethong: Decimal;
+                sltonthucte: Decimal;
                 chenhlech: Decimal;
                 giaGocSnapshot: Decimal;
                 giaTriChenhLech: Decimal;
@@ -374,10 +374,10 @@ export declare class ChotkhoService {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            ngaychot: Date;
             isLocked: boolean;
             lockedAt: Date | null;
             lockedBy: string | null;
-            ngaychot: Date;
         })[];
         pagination: {
             current: any;
@@ -423,8 +423,8 @@ export declare class ChotkhoService {
             userId: string | null;
             sanphamId: string | null;
             ngaychot: Date;
-            sltonthucte: Decimal;
             sltonhethong: Decimal;
+            sltonthucte: Decimal;
             chenhlech: Decimal;
             giaGocSnapshot: Decimal;
             giaTriChenhLech: Decimal;
@@ -443,10 +443,10 @@ export declare class ChotkhoService {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        ngaychot: Date;
         isLocked: boolean;
         lockedAt: Date | null;
         lockedBy: string | null;
-        ngaychot: Date;
     }) | null>;
     getNegativeStockReport(): Promise<{
         latestChotkho: null;

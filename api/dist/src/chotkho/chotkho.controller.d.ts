@@ -35,8 +35,8 @@ export declare class ChotkhoController {
                 userId: string | null;
                 sanphamId: string | null;
                 ngaychot: Date;
-                sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
+                sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 chenhlech: import("@prisma/client/runtime/library").Decimal;
                 giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
                 giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
@@ -55,10 +55,10 @@ export declare class ChotkhoController {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            ngaychot: Date;
             isLocked: boolean;
             lockedAt: Date | null;
             lockedBy: string | null;
-            ngaychot: Date;
         }) | null;
         warnings: any[];
     }>;
@@ -114,8 +114,8 @@ export declare class ChotkhoController {
             userId: string | null;
             sanphamId: string | null;
             ngaychot: Date;
-            sltonthucte: import("@prisma/client/runtime/library").Decimal;
             sltonhethong: import("@prisma/client/runtime/library").Decimal;
+            sltonthucte: import("@prisma/client/runtime/library").Decimal;
             chenhlech: import("@prisma/client/runtime/library").Decimal;
             giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
             giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
@@ -134,10 +134,10 @@ export declare class ChotkhoController {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        ngaychot: Date;
         isLocked: boolean;
         lockedAt: Date | null;
         lockedBy: string | null;
-        ngaychot: Date;
     }) | null>;
     findAll(page?: string, limit?: string): Promise<{
         data: ({
@@ -170,8 +170,8 @@ export declare class ChotkhoController {
                 userId: string | null;
                 sanphamId: string | null;
                 ngaychot: Date;
-                sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
+                sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 chenhlech: import("@prisma/client/runtime/library").Decimal;
                 giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
                 giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
@@ -190,10 +190,10 @@ export declare class ChotkhoController {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            ngaychot: Date;
             isLocked: boolean;
             lockedAt: Date | null;
             lockedBy: string | null;
-            ngaychot: Date;
         })[];
         pagination: {
             current: number;
@@ -227,8 +227,8 @@ export declare class ChotkhoController {
             userId: string | null;
             sanphamId: string | null;
             ngaychot: Date;
-            sltonthucte: import("@prisma/client/runtime/library").Decimal;
             sltonhethong: import("@prisma/client/runtime/library").Decimal;
+            sltonthucte: import("@prisma/client/runtime/library").Decimal;
             chenhlech: import("@prisma/client/runtime/library").Decimal;
             giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
             giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
@@ -247,10 +247,10 @@ export declare class ChotkhoController {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        ngaychot: Date;
         isLocked: boolean;
         lockedAt: Date | null;
         lockedBy: string | null;
-        ngaychot: Date;
     }) | null>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -263,10 +263,10 @@ export declare class ChotkhoController {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        ngaychot: Date;
         isLocked: boolean;
         lockedAt: Date | null;
         lockedBy: string | null;
-        ngaychot: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -279,10 +279,10 @@ export declare class ChotkhoController {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        ngaychot: Date;
         isLocked: boolean;
         lockedAt: Date | null;
         lockedBy: string | null;
-        ngaychot: Date;
     }>;
     getPendingOrders(khoId: string): Promise<({
         sanpham: ({

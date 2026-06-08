@@ -802,6 +802,7 @@ async convertDathangImportToTransfer(
       // 🎯 LOCKING PERIOD CHECK: Đã loại bỏ phần lock chốt kho theo yêu cầu
 
       // 1.1. Validate status transition if status is changing
+      const status = data.status || oldDathang.status;
       if (data.status && data.status !== oldDathang.status) {
         const transition = this.statusMachine.validateTransition(
           'dathang',
@@ -827,8 +828,196 @@ async convertDathangImportToTransfer(
       // Use the khoId from data or fallback to existing khoId
       const khoId = data.khoId || oldDathang.khoId;
 
+      // 10. Cập nhật khi ở trạng thái 'choxuly' (không thay đổi trạng thái hoặc giữ nguyên choxuly)
+      if (oldDathang.status === 'choxuly' && status === 'choxuly') {
+        const oldProductIds = oldDathang.sanpham.map((sp: any) => sp.idSP);
+        const newProductIds = data.sanpham ? data.sanpham.map((sp: any) => sp.idSP ?? sp.id) : [];
+        const deletedProductIds = oldProductIds.filter((id: string) => !newProductIds.includes(id));
+
+        // Xóa các sản phẩm không còn trong danh sách mới
+        if (deletedProductIds.length > 0) {
+          await prisma.dathangsanpham.deleteMany({
+            where: {
+              dathangId: id,
+              idSP: { in: deletedProductIds },
+            },
+          });
+        }
+
+        // Cập nhật thông tin đơn đặt hàng
+        await prisma.dathang.update({
+          where: { id },
+          data: {
+            title: data.title,
+            type: data.type,
+            ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+            ngaynhanEnd: data.ngaynhanEnd ? new Date(data.ngaynhanEnd) : undefined,
+            nhacungcapId: data.nhacungcapId,
+            khoId: khoId,
+            isActive: data.isActive,
+            order: data.order,
+            ghichu: data.ghichu,
+            status: 'choxuly',
+          },
+        });
+
+        // Xử lý upsert từng sản phẩm
+        if (data.sanpham) {
+          for (const sp of data.sanpham) {
+            const spId = sp.idSP ?? sp.id;
+            const existingProduct = await prisma.dathangsanpham.findFirst({
+              where: {
+                dathangId: id,
+                idSP: spId,
+              },
+            });
+
+            if (existingProduct) {
+              await prisma.dathangsanpham.update({
+                where: { id: existingProduct.id },
+                data: {
+                  ghichu: sp.ghichu,
+                  sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                  slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                  slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                  slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
+                  gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
+                  ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
+                },
+              });
+            } else {
+              await prisma.dathangsanpham.create({
+                data: {
+                  dathangId: id,
+                  idSP: spId,
+                  ghichu: sp.ghichu,
+                  sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                  slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                  slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                  slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
+                  ttdat: parseFloat((sp.ttdat ?? 0).toFixed(3)),
+                  ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
+                  gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
+                  ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
+                },
+              });
+            }
+          }
+        }
+
+        return prisma.dathang.findUnique({
+          where: { id },
+          include: { sanpham: true },
+        });
+      }
+
+      // 11. Từ 'choxuly' chuyển sang 'dadat' (Xác nhận đặt hàng)
+      if (oldDathang.status === 'choxuly' && status === 'dadat') {
+        const oldProductIds = oldDathang.sanpham.map((sp: any) => sp.idSP);
+        const newProductIds = data.sanpham ? data.sanpham.map((sp: any) => sp.idSP ?? sp.id) : [];
+        const deletedProductIds = oldProductIds.filter((id: string) => !newProductIds.includes(id));
+
+        // Xóa các sản phẩm không còn trong danh sách mới
+        if (deletedProductIds.length > 0) {
+          await prisma.dathangsanpham.deleteMany({
+            where: {
+              dathangId: id,
+              idSP: { in: deletedProductIds },
+            },
+          });
+        }
+
+        // Tăng slchonhap cho các sản phẩm trong đơn hàng mới
+        if (!skipInventory && data.sanpham) {
+          for (const sp of data.sanpham) {
+            const spId = sp.idSP ?? sp.id;
+            const newSldat = parseFloat((sp.sldat ?? 0).toFixed(3));
+            if (newSldat > 0) {
+              await prisma.tonKho.upsert({
+                where: { sanphamId: spId },
+                update: {
+                  slchonhap: { increment: newSldat },
+                },
+                create: {
+                  sanphamId: spId,
+                  slchonhap: newSldat,
+                  slton: 0,
+                  slchogiao: 0,
+                },
+              });
+            }
+          }
+        }
+
+        // Cập nhật thông tin đơn đặt hàng
+        await prisma.dathang.update({
+          where: { id },
+          data: {
+            title: data.title,
+            type: data.type,
+            ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+            ngaynhanEnd: data.ngaynhanEnd ? new Date(data.ngaynhanEnd) : undefined,
+            nhacungcapId: data.nhacungcapId,
+            khoId: khoId,
+            isActive: data.isActive,
+            order: data.order,
+            ghichu: data.ghichu,
+            status: 'dadat',
+          },
+        });
+
+        // Xử lý upsert từng sản phẩm
+        if (data.sanpham) {
+          for (const sp of data.sanpham) {
+            const spId = sp.idSP ?? sp.id;
+            const existingProduct = await prisma.dathangsanpham.findFirst({
+              where: {
+                dathangId: id,
+                idSP: spId,
+              },
+            });
+
+            if (existingProduct) {
+              await prisma.dathangsanpham.update({
+                where: { id: existingProduct.id },
+                data: {
+                  ghichu: sp.ghichu,
+                  sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                  slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                  slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                  slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
+                  gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
+                  ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
+                },
+              });
+            } else {
+              await prisma.dathangsanpham.create({
+                data: {
+                  dathangId: id,
+                  idSP: spId,
+                  ghichu: sp.ghichu,
+                  sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                  slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                  slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                  slhuy: parseFloat((sp.slhuy ?? 0).toFixed(3)),
+                  ttdat: parseFloat((sp.ttdat ?? 0).toFixed(3)),
+                  ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
+                  gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
+                  ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
+                },
+              });
+            }
+          }
+        }
+
+        return prisma.dathang.findUnique({
+          where: { id },
+          include: { sanpham: true },
+        });
+      }
+
       // 2. Rollback từ 'dagiao' về 'dadat'
-      if (oldDathang.status === 'dagiao' && data.status === 'dadat') {
+      if (oldDathang.status === 'dagiao' && status === 'dadat') {
         // 2.1. Hoàn lại slchonhap
         if (!skipInventory) {
           for (const sp of oldDathang.sanpham) {
@@ -919,7 +1108,7 @@ async convertDathangImportToTransfer(
       }
 
       // 3. Cập nhật đơn ở trạng thái 'dadat'
-      if (oldDathang.status === 'dadat' && data.status === 'dadat') {
+      if (oldDathang.status === 'dadat' && status === 'dadat') {
         // 3.1. Xử lý sản phẩm bị xóa - giảm slchonhap
         const oldProductIds = oldDathang.sanpham.map((sp: any) => sp.idSP);
         const newProductIds = data.sanpham.map((sp: any) => sp.idSP ?? sp.id);
@@ -1054,7 +1243,7 @@ async convertDathangImportToTransfer(
       }
 
       // 4. Chuyển sang 'dagiao' (xuất kho từ nhà cung cấp)
-      if (data.status === 'dagiao') {
+      if (status === 'dagiao') {
         // 4.1. Giảm slchonhap
         // for (const sp of data.sanpham) {
         //   const decValue = parseFloat((Number(sp.slgiao) ?? 0).toFixed(3));
@@ -1123,7 +1312,7 @@ async convertDathangImportToTransfer(
       }
 
       // 5. Chuyển sang 'danhan' (nhập kho, xử lý hao hụt)
-      if (data.status === 'danhan' && oldDathang.status==='dagiao' ) {
+      if (status === 'danhan' && oldDathang.status==='dagiao' ) {
         const completionDate = await this.getCompletionDate(
           oldDathang.ngaynhan || new Date(),
           oldDathang.khoId,
@@ -1254,7 +1443,7 @@ async convertDathangImportToTransfer(
       }
 
       // 🎯 NEW: Điều chỉnh số lượng tồn kho nếu ĐÃ ở trạng thái 'danhan' và có thay đổi slnhan
-      if (data.status === 'danhan' && oldDathang.status === 'danhan' && data.sanpham) {
+      if (status === 'danhan' && oldDathang.status === 'danhan' && data.sanpham) {
         for (const item of data.sanpham) {
           const oldSp = oldDathang.sanpham.find(o => o.idSP === item.id || o.idSP === item.idSP);
           if (oldSp) {
@@ -1277,7 +1466,7 @@ async convertDathangImportToTransfer(
       }
 
       // 6. Chuyển sang 'huy', 'choxuly', hoặc 'khonggiao'
-      if (['huy', 'choxuly', 'khonggiao'].includes(data.status)) {
+      if (['huy', 'choxuly', 'khonggiao'].includes(status)) {
         // 6.1. Hoàn lại slton nếu từ 'danhan'
         if (oldDathang.status === 'danhan') {
           for (const sp of oldDathang.sanpham) {
@@ -1290,7 +1479,7 @@ async convertDathangImportToTransfer(
                   khoId: oldDathang.khoId || undefined,
                   operation: 'decrement',
                   slton: slnhan,
-                  reason: `Hoàn kho do đơn hàng ${oldDathang.madncc} chuyển trạng thái ${data.status}`
+                  reason: `Hoàn kho do đơn hàng ${oldDathang.madncc} chuyển trạng thái ${status}`
                 }]);
               } else {
                 // Fallback nếu không có khoId (không nên xảy ra)
@@ -1336,9 +1525,9 @@ async convertDathangImportToTransfer(
         return prisma.dathang.update({
           where: { id },
           data: {
-            status: data.status,
+            status: status,
             khoId: khoId, // Update khoId
-            ghichu: data.ghichu || `Đơn đặt hàng chuyển sang ${data.status}`,
+            ghichu: data.ghichu || `Đơn đặt hàng chuyển sang ${status}`,
             ngayHoanThanhThucte: null,
             sanpham: {
               updateMany: oldDathang.sanpham.map((sp: any) => ({
@@ -1346,8 +1535,8 @@ async convertDathangImportToTransfer(
                 data: {
                   slgiao: 0,
                   slnhan: 0,
-                  slhuy: data.status === 'huy' ? parseFloat((sp.sldat ?? 0).toFixed(3)) : 0,
-                  ghichu: sp.ghichu || `Chuyển sang ${data.status}`,
+                  slhuy: status === 'huy' ? parseFloat((sp.sldat ?? 0).toFixed(3)) : 0,
+                  ghichu: sp.ghichu || `Chuyển sang ${status}`,
                 },
               })),
             },
@@ -1356,7 +1545,7 @@ async convertDathangImportToTransfer(
       }
 
      // 7. Rollback từ 'danhan' về 'dadat'
-    if (oldDathang.status === 'danhan' && data.status === 'dadat') {
+    if (oldDathang.status === 'danhan' && status === 'dadat') {
       // 7.1. Hoàn lại slton (hoàn kho số lượng đã nhập) atomically
       if (!skipInventory) {
         for (const sp of oldDathang.sanpham) {
@@ -1446,7 +1635,7 @@ async convertDathangImportToTransfer(
     }
 
     // 8. Từ 'dadat' chuyển sang 'danhan' (bỏ qua 'dagiao' nhưng vẫn xử lý tồn kho và phiếu kho)
-    if (oldDathang.status === 'dadat' && data.status === 'danhan') {
+    if (oldDathang.status === 'dadat' && status === 'danhan') {
       const completionDate = await this.getCompletionDate(
         oldDathang.ngaynhan || new Date(),
         oldDathang.khoId,
@@ -1602,8 +1791,48 @@ async convertDathangImportToTransfer(
       });
     }
 
+      // 12. Chuyển từ 'danhan' sang 'hoanthanh' (Hoàn thành đơn đặt hàng)
+      if (oldDathang.status === 'danhan' && status === 'hoanthanh') {
+        return await prisma.dathang.update({
+          where: { id },
+          data: {
+            title: data.title,
+            type: data.type,
+            ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+            ngaynhanEnd: data.ngaynhanEnd ? new Date(data.ngaynhanEnd) : undefined,
+            nhacungcapId: data.nhacungcapId,
+            khoId: khoId,
+            isActive: data.isActive,
+            order: data.order,
+            ghichu: data.ghichu,
+            status: 'hoanthanh',
+          },
+          include: { sanpham: true }
+        });
+      }
+
+      // 13. Chuyển ngược từ 'hoanthanh' về 'danhan'
+      if (oldDathang.status === 'hoanthanh' && status === 'danhan') {
+        return await prisma.dathang.update({
+          where: { id },
+          data: {
+            title: data.title,
+            type: data.type,
+            ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+            ngaynhanEnd: data.ngaynhanEnd ? new Date(data.ngaynhanEnd) : undefined,
+            nhacungcapId: data.nhacungcapId,
+            khoId: khoId,
+            isActive: data.isActive,
+            order: data.order,
+            ghichu: data.ghichu,
+            status: 'danhan',
+          },
+          include: { sanpham: true }
+        });
+      }
+
       // 9. Cập nhật khi ở trạng thái 'danhan'
-      if (oldDathang.status === 'danhan' && data.status === 'danhan') {
+      if (oldDathang.status === 'danhan' && status === 'danhan') {
         const oldProductIds = oldDathang.sanpham.map((sp: any) => sp.idSP);
         const newProductIds = data.sanpham.map((sp: any) => sp.idSP ?? sp.id);
         const deletedProductIds = oldProductIds.filter((id: string) => !newProductIds.includes(id));

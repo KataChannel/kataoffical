@@ -187,6 +187,15 @@
             </mat-slide-toggle>
           </div>
 
+          <!-- Toggle Telegram status -->
+          <div class="flex items-center px-2 py-1 bg-gray-50 rounded-full border border-gray-100" [matTooltip]="isTelegramEnabled ? 'Đang nhận thông báo Telegram' : 'Bật thông báo Telegram'">
+            <mat-icon class="!text-[16px] !w-4 !h-4 mr-1 transition-colors" [ngClass]="isTelegramEnabled ? 'text-blue-500' : 'text-gray-400'">
+              send
+            </mat-icon>
+            <mat-slide-toggle color="accent" [checked]="isTelegramEnabled" (change)="toggleTelegramNotifications($event)" class="scale-75 origin-right">
+            </mat-slide-toggle>
+          </div>
+
           <button mat-icon-button class="!text-orange-500" (click)="testPushNotification()" matTooltip="Gửi test push">
             <mat-icon>send</mat-icon>
           </button>

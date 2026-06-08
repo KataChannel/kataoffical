@@ -131,7 +131,7 @@ async function performBaselineChot06June() {
     });
 
     const processedProducts = new Map();
-    const TARGET_THOM_XANH_MASP = 'I101127';
+    const TARGET_THOM_XANH_MASP = 'I100220';
 
     // Phase 1: Basic classification and auto carry-over
     for (const sp of allProducts) {
@@ -146,10 +146,10 @@ async function performBaselineChot06June() {
 
       // Define auto-carry groups
       const isDuaHau = title.includes('dưa hấu');
-      const isBap = title.includes('bắp') && !title.includes('thịt bắp');
+      const isBap = title.includes('bắp') && !title.includes('cải') && !title.includes('chuối') && !title.includes('đậu') && !title.includes('thịt');
       const isCaiChua = title.includes('cải chua');
       const isHanhTay = title.includes('hành tây');
-      const isThom = title.includes('thơm');
+      const isThom = title.includes('thơm') && !title.includes('rau thơm');
 
       const isAutoCarryGeneral = isDuaHau || isBap || isCaiChua || isHanhTay;
 
@@ -167,12 +167,12 @@ async function performBaselineChot06June() {
           slhuy = 0;
           note = 'Tự động đưa qua (không có trong Excel)';
         } else if (isThom) {
-          const isThomXanh = title.includes('xanh');
+          const isThomXanh = maspKey === TARGET_THOM_XANH_MASP;
           const isThomGot = title.includes('gọt');
           if (isThomXanh || isThomGot) {
             sltonthucte = sltonhethong;
             slhuy = 0;
-            note = 'Tự động đưa qua (Thơm xanh/Thơm gọt)';
+            note = 'Tự động đưa qua (Thơm trái xanh/Thơm gọt)';
           } else {
             sltonthucte = 0;
             slhuy = 0;
@@ -200,7 +200,7 @@ async function performBaselineChot06June() {
       });
     }
 
-    // Phase 2: Thơm consolidation to target Thơm xanh (kg) [I101127]
+    // Phase 2: Thơm consolidation to target Thơm trái xanh [I100220]
     let targetThomXanh = null;
     for (const [id, p] of processedProducts.entries()) {
       if (String(p.masp).trim() === TARGET_THOM_XANH_MASP) {
@@ -218,14 +218,14 @@ async function performBaselineChot06June() {
         if (p.isThom && String(p.masp).trim() !== TARGET_THOM_XANH_MASP) {
           const isThomGot = p.titleLower.includes('gọt');
           if (!isThomGot) {
-            extraStock += p.slton;
+            extraStock += p.sltonhethong;
             extraPendingIn += p.slchonhap;
             extraPendingOut += p.slchogiao;
 
             p.slton = 0;
             p.slchonhap = 0;
             p.slchogiao = 0;
-            p.note = `Quy đổi hàng tồn và Nhập/Xuất về Thơm xanh (kg) [${TARGET_THOM_XANH_MASP}]`;
+            p.note = `Quy đổi hàng tồn và Nhập/Xuất về Thơm trái xanh [${TARGET_THOM_XANH_MASP}]`;
           }
         }
       }
@@ -234,7 +234,7 @@ async function performBaselineChot06June() {
       targetThomXanh.slchonhap += extraPendingIn;
       targetThomXanh.slchogiao += extraPendingOut;
       targetThomXanh.note += ` (Nhận quy đổi từ các loại thơm khác: +${extraStock} tồn, +${extraPendingIn} nhập, +${extraPendingOut} xuất)`;
-      console.log(`[Thơm Consolidation] Consolidated to Thơm xanh (kg) [${TARGET_THOM_XANH_MASP}]: extraStock=${extraStock}, extraPendingIn=${extraPendingIn}, extraPendingOut=${extraPendingOut}`);
+      console.log(`[Thơm Consolidation] Consolidated to Thơm trái xanh [${TARGET_THOM_XANH_MASP}]: extraStock=${extraStock}, extraPendingIn=${extraPendingIn}, extraPendingOut=${extraPendingOut}`);
     } else {
       console.warn(`[Thơm Consolidation] Target product '${TARGET_THOM_XANH_MASP}' not found! Skip consolidation.`);
     }

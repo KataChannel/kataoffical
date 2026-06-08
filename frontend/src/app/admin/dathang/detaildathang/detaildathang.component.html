@@ -86,7 +86,7 @@
                   </mat-form-field>
                 </div>
                 <div class="overflow-y-auto max-h-44">
-                  @for (item of filterNhacungcap; track item.id) {
+                  @for (item of filterNhacungcap(); track item.id) {
                     <mat-option [value]="item.id">{{item.name}}</mat-option>
                   }
                 </div>
@@ -109,7 +109,7 @@
                   </mat-form-field>
                 </div>
                 <div class="overflow-y-auto max-h-44">
-                  @for (item of filterKho; track item.id) {
+                  @for (item of filterKho(); track item.id) {
                     <mat-option [value]="item.id">{{item.name}}</mat-option>
                   }
                 </div>
@@ -175,14 +175,14 @@
                   
                   <div class="flex justify-between items-center text-xs mb-3 font-semibold text-blue-600">
                     <div class="space-x-4">
-                      <span class="cursor-pointer hover:underline" (click)="ChosenAll(filterSanpham)">Chọn Tất Cả</span>
+                      <span class="cursor-pointer hover:underline" (click)="ChosenAll(filterSanpham())">Chọn Tất Cả</span>
                       <span class="cursor-pointer hover:underline text-gray-500" (click)="EmptyFiter()">Xoá Chọn</span>
                     </div>
                     <span class="cursor-pointer hover:underline" (click)="ResetFilter()">Reset</span>
                   </div>
 
                   <div class="max-h-64 overflow-auto border rounded-lg bg-gray-50">
-                    <div *ngFor="let item of filterSanpham; trackBy:trackByFn" (click)="ChosenItem(item)" 
+                    <div *ngFor="let item of filterSanpham(); trackBy:trackByFn" (click)="ChosenItem(item)" 
                       class="flex flex-row items-center p-2 hover:bg-blue-50 cursor-pointer border-b last:border-b-0">
                       <mat-icon class="mr-2 text-blue-600 size-5" *ngIf="CheckItem(item)">check_box</mat-icon>
                       <mat-icon class="mr-2 text-gray-300 size-5" *ngIf="!CheckItem(item)">check_box_outline_blank</mat-icon>

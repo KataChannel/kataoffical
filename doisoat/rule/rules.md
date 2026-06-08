@@ -6,20 +6,25 @@ Tài liệu này tổng hợp các quy tắc đối soát số liệu tồn kho,
 
 ## 1. Quy Tắc Đối Soát Chung & Chốt Baseline
 
-### 1.1. Nhóm sản phẩm tự động chuyển qua (Auto-carried over)
-Các sản phẩm thuộc nhóm sau đây sẽ **tự động được chuyển qua** (giữ nguyên số liệu hệ thống hoặc cập nhật tương ứng từ file đối soát):
+### 1.1. Quy tắc triệt tiêu kho âm (Ưu tiên cao nhất - Check đầu tiên)
+*   **Tồn hệ thống bị âm:** Nếu một sản phẩm có **số tồn hệ thống âm (`sltonhethong < 0`)** trước khi chốt kho, hệ thống sẽ **tự động reset cả tồn hệ thống và tồn thực tế chốt về 0**.
+*   **Ghi chú trong DB:** `Tự động reset kho âm về 0 (Rules.md)`
+*   **Độ ưu tiên:** Quy tắc này được ưu tiên cao nhất, áp dụng trước tất cả các quy tắc đối soát khác (kể cả nhóm tự động chuyển qua hay có trong Excel).
+
+### 1.2. Nhóm sản phẩm tự động chuyển qua (Auto-carried over - Chỉ áp dụng cho tồn >= 0)
+Các sản phẩm thuộc nhóm sau đây sẽ **tự động được chuyển qua** (giữ nguyên số liệu hệ thống hoặc cập nhật tương ứng từ file đối soát) nếu số lượng tồn >= 0:
 *   **Dưa hấu**
 *   **Bắp**
 *   **Cải chua**
-*   **Thơm** (Áp dụng thêm quy tắc phân loại ở mục 2)
+*   **Thơm** (Áp dụng thêm quy tắc gom tồn ở mục 2)
 *   **Hành tây**
 
 > [!NOTE]
-> Các sản phẩm này không bị tự động reset về 0 kể cả khi không có tên/không xuất hiện trong file Excel kiểm kho thực tế.
+> Các sản phẩm này không bị tự động reset về 0 kể cả khi không có tên/không xuất hiện trong file Excel kiểm kho thực tế (với điều kiện tồn ban đầu không bị âm).
 
-### 1.2. Nhóm sản phẩm chốt Baseline về 0
+### 1.3. Nhóm sản phẩm chốt Baseline về 0
 *   **Sản phẩm không có trong file Excel:** Tất cả các sản phẩm còn lại (ngoài danh sách tự động chuyển qua ở trên) nếu không xuất hiện trong file Excel kiểm kho thực tế sẽ bị **chốt baseline về 0**.
-*   **Các sản phẩm thơm khác (ngoài Thơm xanh và Thơm gọt):** Sẽ bị reset số lượng tồn kho về 0 theo quy tắc đặc thù của nhóm Thơm.
+*   **Các sản phẩm thơm khác (ngoài Thơm trái xanh và Thơm gọt):** Sẽ bị reset số lượng tồn kho về 0 theo quy tắc đặc thù của nhóm Thơm.
 
 ---
 
@@ -28,16 +33,17 @@ Các sản phẩm thuộc nhóm sau đây sẽ **tự động được chuyển 
 Áp dụng quy trình chuẩn hóa và quy đổi tồn kho đối với các sản phẩm làm từ trái Thơm:
 
 ### 2.1. Phân loại & Reset tồn kho
-*   **Thơm xanh:** Chuyển qua (giữ lại và làm sản phẩm gốc quy đổi).
-*   **Thơm gọt:** Được loại trừ khỏi tất cả quy tắc reset và quy đổi (giữ nguyên độc lập theo số liệu thực tế).
-*   **Tất cả các loại thơm khác:** (Ví dụ: Thơm trái ngọt, thơm băm, thơm lát, thơm xu...) sẽ bị **reset tồn kho về 0**.
+*   **Thơm trái xanh (I100220 - đơn vị Trái):** Chuyển qua (giữ lại và làm sản phẩm gốc quy đổi).
+*   **Thơm gọt (bao gồm Thơm gọt kg và Thơm gọt trái):** Được loại trừ khỏi tất cả quy tắc reset và quy đổi (giữ nguyên độc lập theo số liệu thực tế).
+*   **Tất cả các loại thơm khác:** (Ví dụ: Thơm xanh kg [I101127], Thơm chín, Thơm trái hườm, Thơm băm...) sẽ bị **reset tồn kho về 0**.
 
 ### 2.2. Quy đổi số liệu & Hàng tồn (Inventory Consolidation)
-Để quy nhất số liệu tồn kho về sản phẩm gốc là **Thơm xanh**, hệ thống thực hiện tính toán quy đổi theo nguyên tắc:
-1.  **Nhập Thơm xanh:** Mọi dữ liệu nhập kho của các loại thơm khác (ngoài Thơm gọt) sẽ được quy đổi và ghi nhận vào lượng **Nhập của Thơm xanh**.
-2.  **Xuất các loại thơm khác:** Mọi dữ liệu xuất kho của các loại thơm khác (ngoài Thơm gọt) sẽ được ghi nhận tương ứng và quy đổi giảm vào tồn kho của **Thơm xanh**.
-3.  **Quy đổi tồn kho:** Toàn bộ số lượng tồn kho của các loại thơm khác (sau khi chốt về 0) được quy đổi giá trị/số lượng tương đương để cộng dồn vào tồn kho của **Thơm xanh**.
-4.  **Loại trừ Thơm gọt:** Sản phẩm **Thơm gọt** hoàn toàn không tham gia vào luồng tính toán nhập xuất và quy đổi tồn kho này.
+Để quy nhất số liệu tồn kho về sản phẩm gốc là **Thơm trái xanh**, hệ thống thực hiện tính toán quy đổi theo nguyên tắc:
+1.  **Tỷ lệ quy đổi:** Quy đổi với tỷ lệ **1 trái tương đương 1 kg** đối với các loại thơm tính bằng ký. Các thơm trái khác quy đổi tỷ lệ 1-1.
+2.  **Nhập Thơm trái xanh:** Mọi dữ liệu nhập kho của các loại thơm khác (ngoài Thơm gọt) sẽ được quy đổi và ghi nhận vào lượng **Nhập của Thơm trái xanh**.
+3.  **Xuất các loại thơm khác:** Mọi dữ liệu xuất kho của các loại thơm khác (ngoài Thơm gọt) sẽ được ghi nhận tương ứng và quy đổi giảm vào tồn kho của **Thơm trái xanh**.
+4.  **Quy đổi tồn kho:** Toàn bộ số lượng tồn kho của các loại thơm khác (sau khi chốt về 0) được quy đổi giá trị/số lượng tương đương để cộng dồn vào tồn kho của **Thơm trái xanh**.
+5.  **Loại trừ Thơm gọt:** Các sản phẩm **Thơm gọt** hoàn toàn không tham gia vào luồng tính toán nhập xuất và quy đổi tồn kho này.
 
 ```mermaid
 graph TD

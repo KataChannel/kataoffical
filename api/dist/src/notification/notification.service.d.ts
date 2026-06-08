@@ -8,9 +8,9 @@ export declare class NotificationService {
         createdAt: Date;
         updatedAt: Date;
         userId: string;
+        auth: string;
         endpoint: string;
         p256dh: string;
-        auth: string;
     }>;
     unsubscribe(endpoint: string): Promise<{
         success: boolean;
@@ -59,6 +59,8 @@ export declare class NotificationService {
     getUnreadCount(userId: string): Promise<{
         count: number;
     }>;
+    isTelegramEnabled(): Promise<boolean>;
+    setTelegramEnabled(enabled: boolean): Promise<any>;
     sendTelegramMessage(message: string): Promise<boolean>;
     sendChotkhoTelegramNotification(chotkhoData: any): Promise<boolean>;
     handleOrderEvent(order: any, action: 'CREATE' | 'UPDATE' | 'DELETE', oldOrder?: any): Promise<void>;

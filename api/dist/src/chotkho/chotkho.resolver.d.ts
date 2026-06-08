@@ -33,8 +33,8 @@ export declare class ChotkhoResolver {
                 userId: string | null;
                 sanphamId: string | null;
                 ngaychot: Date;
-                sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
+                sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 chenhlech: import("@prisma/client/runtime/library").Decimal;
                 giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
                 giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
@@ -53,10 +53,10 @@ export declare class ChotkhoResolver {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            ngaychot: Date;
             isLocked: boolean;
             lockedAt: Date | null;
             lockedBy: string | null;
-            ngaychot: Date;
         })[];
         pagination: {
             current: number;
@@ -95,8 +95,8 @@ export declare class ChotkhoResolver {
             userId: string | null;
             sanphamId: string | null;
             ngaychot: Date;
-            sltonthucte: import("@prisma/client/runtime/library").Decimal;
             sltonhethong: import("@prisma/client/runtime/library").Decimal;
+            sltonthucte: import("@prisma/client/runtime/library").Decimal;
             chenhlech: import("@prisma/client/runtime/library").Decimal;
             giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
             giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
@@ -115,10 +115,10 @@ export declare class ChotkhoResolver {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        ngaychot: Date;
         isLocked: boolean;
         lockedAt: Date | null;
         lockedBy: string | null;
-        ngaychot: Date;
     }) | null>;
     getProductsByWarehouse(khoId: string): Promise<any[]>;
     getAllProducts(): Promise<any[]>;
@@ -169,8 +169,8 @@ export declare class ChotkhoResolver {
                 userId: string | null;
                 sanphamId: string | null;
                 ngaychot: Date;
-                sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
+                sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 chenhlech: import("@prisma/client/runtime/library").Decimal;
                 giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
                 giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
@@ -189,10 +189,10 @@ export declare class ChotkhoResolver {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            ngaychot: Date;
             isLocked: boolean;
             lockedAt: Date | null;
             lockedBy: string | null;
-            ngaychot: Date;
         }) | null;
         warnings: any[];
     }>;
@@ -207,10 +207,10 @@ export declare class ChotkhoResolver {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        ngaychot: Date;
         isLocked: boolean;
         lockedAt: Date | null;
         lockedBy: string | null;
-        ngaychot: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -223,10 +223,10 @@ export declare class ChotkhoResolver {
         khoId: string | null;
         userId: string | null;
         codeId: string | null;
+        ngaychot: Date;
         isLocked: boolean;
         lockedAt: Date | null;
         lockedBy: string | null;
-        ngaychot: Date;
     }>;
     search(filters?: {
         khoId?: string;
@@ -266,8 +266,8 @@ export declare class ChotkhoResolver {
                 userId: string | null;
                 sanphamId: string | null;
                 ngaychot: Date;
-                sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 sltonhethong: import("@prisma/client/runtime/library").Decimal;
+                sltonthucte: import("@prisma/client/runtime/library").Decimal;
                 chenhlech: import("@prisma/client/runtime/library").Decimal;
                 giaGocSnapshot: import("@prisma/client/runtime/library").Decimal;
                 giaTriChenhLech: import("@prisma/client/runtime/library").Decimal;
@@ -286,10 +286,10 @@ export declare class ChotkhoResolver {
             khoId: string | null;
             userId: string | null;
             codeId: string | null;
+            ngaychot: Date;
             isLocked: boolean;
             lockedAt: Date | null;
             lockedBy: string | null;
-            ngaychot: Date;
         })[];
         pagination: {
             current: any;

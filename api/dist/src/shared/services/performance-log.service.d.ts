@@ -33,10 +33,10 @@ export declare class PerformanceLogService {
         name: string;
         url: string | null;
         timestamp: Date;
-        method: string | null;
         success: boolean;
         duration: number;
         context: import("@prisma/client/runtime/library").JsonValue | null;
+        method: string | null;
         statusCode: number | null;
         memoryUsage: number | null;
     }[]>;

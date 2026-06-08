@@ -35,44 +35,44 @@ export declare class UserPermissionService {
         createdAt: Date;
         updatedAt: Date;
         userId: string;
-        reason: string | null;
         permissionId: string;
         isGranted: boolean;
         grantedBy: string | null;
         grantedAt: Date;
         expiresAt: Date | null;
+        reason: string | null;
     }>;
     removeUserPermission(userId: string, permissionId: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         userId: string;
-        reason: string | null;
         permissionId: string;
         isGranted: boolean;
         grantedBy: string | null;
         grantedAt: Date;
         expiresAt: Date | null;
+        reason: string | null;
     }>;
     getUserPermissions(userId: string): Promise<({
         permission: {
             id: string;
             name: string;
             codeId: string | null;
-            description: string | null;
             group: string | null;
+            description: string | null;
         };
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
         userId: string;
-        reason: string | null;
         permissionId: string;
         isGranted: boolean;
         grantedBy: string | null;
         grantedAt: Date;
         expiresAt: Date | null;
+        reason: string | null;
     })[]>;
     getUserEffectivePermission(userId: string, permissionId: string): Promise<({
         permission: {
@@ -82,20 +82,20 @@ export declare class UserPermissionService {
             updatedAt: Date;
             name: string;
             codeId: string | null;
-            description: string | null;
             group: string | null;
+            description: string | null;
         };
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
         userId: string;
-        reason: string | null;
         permissionId: string;
         isGranted: boolean;
         grantedBy: string | null;
         grantedAt: Date;
         expiresAt: Date | null;
+        reason: string | null;
     }) | null>;
     getUserEffectivePermissionByName(userId: string, permissionName: string): Promise<({
         permission: {
@@ -105,20 +105,20 @@ export declare class UserPermissionService {
             updatedAt: Date;
             name: string;
             codeId: string | null;
-            description: string | null;
             group: string | null;
+            description: string | null;
         };
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
         userId: string;
-        reason: string | null;
         permissionId: string;
         isGranted: boolean;
         grantedBy: string | null;
         grantedAt: Date;
         expiresAt: Date | null;
+        reason: string | null;
     }) | null>;
     findMany(params: {
         userId?: string;
@@ -145,12 +145,12 @@ export declare class UserPermissionService {
             createdAt: Date;
             updatedAt: Date;
             userId: string;
-            reason: string | null;
             permissionId: string;
             isGranted: boolean;
             grantedBy: string | null;
             grantedAt: Date;
             expiresAt: Date | null;
+            reason: string | null;
         })[];
         total: number;
         page: number;

@@ -973,3 +973,12 @@ model NhucauPlanningNote {
   sanpham   Sanpham  @relation(fields: [sanphamId], references: [id], onDelete: Cascade)
 }
 
+model SystemSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+

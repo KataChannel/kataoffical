@@ -71,6 +71,7 @@ export class AdminmainComponent {
   notifications: any[] = [];
   unreadCount: number = 0;
   isSubscribed: boolean = false;
+  isTelegramEnabled: boolean = true;
   notificationSearchTerm: string = '';
   listQuytrinh: any[] = [
     {
@@ -136,6 +137,7 @@ export class AdminmainComponent {
         
         await this.fetchNotifications();
         this.checkSubscriptionStatus();
+        await this.fetchTelegramStatus();
       } 
     });
     await this._UserguideService.getUserguideBy({codeId:'I100001'})
@@ -330,6 +332,56 @@ export class AdminmainComponent {
         console.error('Could not subscribe to notifications', err);
         this.isSubscribed = false;
       }
+    }
+  }
+
+  async fetchTelegramStatus() {
+    try {
+      const resp = await fetch(`${environment.APIURL}/notifications/telegram-settings`);
+      const data = await resp.json();
+      if (data && data.enabled !== undefined) {
+        this.isTelegramEnabled = data.enabled;
+      }
+    } catch (error) {
+      console.error('Error fetching Telegram status:', error);
+    }
+  }
+
+  async toggleTelegramNotifications(event: any) {
+    const originalState = this.isTelegramEnabled;
+    this.isTelegramEnabled = event.checked;
+
+    try {
+      const resp = await fetch(`${environment.APIURL}/notifications/telegram-settings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: this.isTelegramEnabled })
+      });
+      const data = await resp.json();
+      
+      if (data.success) {
+        this._snackBar.open(
+          this.isTelegramEnabled ? 'Đã bật gửi tin nhắn Telegram!' : 'Đã tắt gửi tin nhắn Telegram!', 
+          'Đóng', 
+          { 
+            duration: 3000,
+            panelClass: ['snackbar-success'],
+            horizontalPosition: 'end',
+            verticalPosition: 'top'
+          }
+        );
+      } else {
+        throw new Error(data.message || 'Failed to update settings');
+      }
+    } catch (err) {
+      console.error('Could not update Telegram settings', err);
+      this.isTelegramEnabled = originalState;
+      this._snackBar.open('Lỗi cấu hình Telegram, vui lòng thử lại.', 'Đóng', { 
+        duration: 3000,
+        panelClass: ['snackbar-error'],
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      });
     }
   }
 

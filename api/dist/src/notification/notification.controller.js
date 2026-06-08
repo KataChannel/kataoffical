@@ -47,6 +47,17 @@ let NotificationController = class NotificationController {
     async getUnreadCount(userId) {
         return this.notificationService.getUnreadCount(userId);
     }
+    async getTelegramSettings() {
+        const enabled = await this.notificationService.isTelegramEnabled();
+        return { enabled };
+    }
+    async setTelegramSettings(body) {
+        if (body.enabled === undefined) {
+            return { success: false, message: 'Missing enabled flag' };
+        }
+        await this.notificationService.setTelegramEnabled(body.enabled);
+        return { success: true, enabled: body.enabled };
+    }
     async testAdminPush(body) {
         await this.notificationService.broadcastToAdmins({
             title: body.title || 'Thông báo thử nghiệm',
@@ -108,6 +119,19 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], NotificationController.prototype, "getUnreadCount", null);
+__decorate([
+    (0, common_1.Get)('telegram-settings'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "getTelegramSettings", null);
+__decorate([
+    (0, common_1.Post)('telegram-settings'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "setTelegramSettings", null);
 __decorate([
     (0, common_1.Post)('test-admin-push'),
     __param(0, (0, common_1.Body)()),

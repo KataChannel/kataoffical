@@ -82,18 +82,7 @@ export class DetailDathangComponent {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
       this._DathangService.setDathangId(id);
-      await this._NhacungcapService.getAllNhacungcap({pageSize:99999});
-      this.filterNhacungcap = this.ListNhacungcap().filter(
-        (v: any) => v.isActive
-      );
-      await this._KhoService.getAllKho();
-      this.filterKho = this.ListKho()
-      await this._BanggiaService.getAllBanggia();
-      this.filterBanggia = this._BanggiaService.ListBanggia();
-      await this._SanphamService.getAllSanpham({pageSize:99999});
-      this.filterSanpham = this._SanphamService.ListSanpham();
-      this.dataSource.data = this.DetailDathang().sanpham;
-      // this.dataSource.paginator = this.paginator;
+      this.dataSource.data = this.DetailDathang()?.sanpham || [];
     });
 
     effect(async () => {
@@ -116,7 +105,8 @@ export class DetailDathangComponent {
         this._router.navigate(['/admin/dathang', 'new']);
       } else {
         await this._DathangService.getDathangByid(id);
-        this.ListFilter = this.DetailDathang().sanpham;
+        this.ListFilter = this.DetailDathang().sanpham || [];
+        this.dataSource.data = this.DetailDathang().sanpham || [];
         this._ListdathangComponent.drawer.open();
         this._router.navigate(['/admin/dathang', id]);
         this.titleService.setTitle(`${this.DetailDathang()?.madncc}`);
@@ -128,10 +118,49 @@ export class DetailDathangComponent {
   ListKho: any = this._KhoService.ListKho;
   isEdit = signal(false);
   isDelete = signal(false);
-  filterNhacungcap: any = [];
-  filterKho: any = [];
+
+  // Search query signals
+  nhacungcapSearchQuery = signal<string>('');
+  khoSearchQuery = signal<string>('');
+  sanphamSearchQuery = signal<string>('');
+
+  // Computed signals for filtering
+  filterNhacungcap = computed(() => {
+    const allNcc = this._NhacungcapService.ListNhacungcap() || [];
+    const query = this.nhacungcapSearchQuery().trim().toLowerCase();
+    if (!query) return allNcc;
+    const cleanQuery = removeVietnameseAccents(query);
+    return allNcc.filter((v: any) => 
+      removeVietnameseAccents(v.name).toLowerCase().includes(cleanQuery)
+    );
+  });
+
+  filterKho = computed(() => {
+    const allKho = this._KhoService.ListKho() || [];
+    const query = this.khoSearchQuery().trim().toLowerCase();
+    if (!query) return allKho;
+    return allKho.filter((v: any) => 
+      v.name.toLowerCase().includes(query)
+    );
+  });
+
+  filterSanpham = computed(() => {
+    const allSp = this._SanphamService.ListSanpham() || [];
+    const currentSp = this.DetailDathang()?.sanpham || [];
+    const currentSpIds = new Set(currentSp.map((item: any) => item.id));
+    
+    const availableSp = allSp.filter((v: any) => !currentSpIds.has(v.id));
+    const query = this.sanphamSearchQuery().trim().toLowerCase();
+    if (!query) return availableSp;
+    
+    const cleanQuery = removeVietnameseAccents(query);
+    return availableSp.filter((v: any) => {
+      const cleanTitle = removeVietnameseAccents(v.title.toLowerCase());
+      return cleanTitle.includes(cleanQuery) || v.masp?.toLowerCase().includes(cleanQuery);
+    });
+  });
+
   filterBanggia: any[] = [];
-  filterSanpham: any[] = [];
   dathangId: any = this._DathangService.dathangId;
   @ViewChild('menuTrigger') spMenuTrigger!: MatMenuTrigger;
   TrangThaiDon: any = TrangThaiDon;
@@ -159,6 +188,21 @@ export class DetailDathangComponent {
   }
 
   async ngOnInit() {
+    const promises: Promise<any>[] = [];
+
+    if (!this._NhacungcapService.ListNhacungcap()?.length) {
+      promises.push(this._NhacungcapService.getAllNhacungcap({ pageSize: 99999 }));
+    }
+    if (!this._KhoService.ListKho()?.length) {
+      promises.push(this._KhoService.getAllKho());
+    }
+    if (!this._SanphamService.ListSanpham()?.length) {
+      promises.push(this._SanphamService.getAllSanpham({ pageSize: 99999 }));
+    }
+
+    if (promises.length > 0) {
+      await Promise.all(promises);
+    }
   }
 
   async changeStatus(newStatus: string) {
@@ -393,12 +437,7 @@ export class DetailDathangComponent {
     // });
   }
   async DoFindKho(event: any) {
-    const value = event.target.value.trim().toLowerCase();
-    if( !value) {
-      this.filterKho = this.ListKho()
-      return;
-    }
-    this.filterKho = this.ListKho().filter((v: any) => v.name.toLowerCase().includes(value));
+    this.khoSearchQuery.set(event.target.value);
   }
   SelectKho(event: any) {
     const selectedKho = this.ListKho().find(
@@ -424,16 +463,7 @@ export class DetailDathangComponent {
 
   @Debounce(100)
   async DoFindNhacungcap(event: any) {
-    const value = event.target.value.trim();
-    if( !value) {
-      // await this._NhacungcapService.getNhacungcapBy({})
-      this.filterNhacungcap = this.ListNhacungcap()
-      return;
-    }
-    
-    this.filterNhacungcap = this.ListNhacungcap().filter((v:any)=>{
-        return removeVietnameseAccents(v.name).includes(removeVietnameseAccents(value))
-    })
+    this.nhacungcapSearchQuery.set(event.target.value);
   }
   DoFindBanggia(event: any) {
     const query = event.target.value.toLowerCase();
@@ -639,7 +669,6 @@ export class DetailDathangComponent {
     //   return v;
     // })
     this.dataSource.data = this.DetailDathang().sanpham;
-    this.reloadfilter();
   }
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -651,37 +680,13 @@ export class DetailDathangComponent {
       return v;
     });
     this.dataSource.data = this.DetailDathang().sanpham;
-    this.reloadfilter();
   }
   getName(id: any) {
     return this.ListNhacungcap().find((v: any) => v.id === id);
   }
 
-  reloadfilter() {
-    this.filterSanpham = this._SanphamService
-      .ListSanpham()
-      .filter(
-        (v: any) =>
-          !this.DetailDathang().sanpham.some((v2: any) => v2.id === v.id)
-      );
-  }
-  // RemoveSanpham(item:any){
-  //   this.DetailBanggia.update((v:any)=>{
-  //     v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
-  //     this.reloadfilter();
-  //     return v;
-  //   })
-  //   this.dataSource().data = this.DetailBanggia().sanpham;
-  //   this.dataSource().paginator = this.paginator;
-  //   this.dataSource().sort = this.sort;
-  // }
   DoFindSanpham(event: any) {
-    const value = event.target.value;
-    console.log(value);
-
-    this.filterSanpham = this._SanphamService
-      .ListSanpham()
-      .filter((v) => v.title.toLowerCase().includes(value.toLowerCase()));
+    this.sanphamSearchQuery.set(event.target.value);
   }
   SelectSanpham(event: any) {
     const value = event.value;
@@ -695,7 +700,6 @@ export class DetailDathangComponent {
         item.sldat = item.slgiao = 1;
         v.sanpham.push(item);
       }
-      this.reloadfilter();
       return v;
     });
     this.dataSource.data = this.DetailDathang().sanpham;
@@ -703,7 +707,6 @@ export class DetailDathangComponent {
   RemoveSanpham(item: any) {
     this.DetailDathang.update((v: any) => {
       v.sanpham = v.sanpham.filter((v1: any) => v1.id !== item.id);
-      this.reloadfilter();
       return v;
     });
     this.dataSource.data = this.DetailDathang().sanpham;
@@ -718,21 +721,13 @@ export class DetailDathangComponent {
     return result;
   }
   doFilterSanpham(event: any): void {
-    this.filterSanpham = this._SanphamService
-      .ListSanpham()
-      .filter(
-        (v: any) =>
-          removeVietnameseAccents(v.title).includes(
-            event.target.value.toLowerCase()
-          ) || v.title.toLowerCase().includes(event.target.value.toLowerCase())
-      );
-    const query = event.target.value.toLowerCase();
+    this.sanphamSearchQuery.set(event.target.value);
   }
   ListFilter: any[] = [];
   ChosenItem(item: any) {
     console.log(item);
 
-    const CheckItem = this.filterSanpham.filter((v: any) => v.id === item.id);
+    const CheckItem = this.filterSanpham().filter((v: any) => v.id === item.id);
     const CheckItem1 = this.ListFilter.filter((v: any) => v.id === item.id);
     if (CheckItem1.length > 0) {
       this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
@@ -747,8 +742,8 @@ export class DetailDathangComponent {
     this.ListFilter = list;
   }
   ResetFilter() {
-    this.ListFilter = this.filterSanpham;
-    this.dataSource.data = this.filterSanpham;
+    this.ListFilter = this.filterSanpham();
+    this.dataSource.data = this.filterSanpham();
   }
   EmptyFiter() {
     this.ListFilter = [];

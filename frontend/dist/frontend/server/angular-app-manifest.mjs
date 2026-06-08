@@ -20,6 +20,6 @@ export default {
     }
   },
   entryPointToBrowserMapping: {
-    '': ['main-D3A4ZQXH.js']
+    '': ['main-KGAGM7T2.js']
   }
 };
