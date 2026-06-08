@@ -273,9 +273,7 @@ export class NotificationService {
     const creator = chotkhoData.user?.profile?.name || chotkhoData.user?.email || 'Hệ thống';
     const ngayChotFormatted = new Date(chotkhoData.ngaychot).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
     
-    // Find discrepancies
     const details = chotkhoData.details || [];
-    const diffItems = details.filter((d: any) => Number(d.chenhlech) !== 0 || Number(d.slhuy) > 0);
 
     let message = `📦 <b>THÔNG BÁO CHỐT KHO</b>\n`;
     message += `📋 <b>Mã chốt kho:</b> <code>${chotkhoData.codeId || 'N/A'}</code>\n`;
@@ -284,25 +282,6 @@ export class NotificationService {
     message += `📅 <b>Thời gian chốt:</b> ${ngayChotFormatted}\n`;
     message += `👤 <b>Người thực hiện:</b> ${creator}\n`;
     message += `📊 <b>Tổng sản phẩm chốt:</b> ${details.length}\n`;
-
-    if (diffItems.length > 0) {
-      message += `\n⚠️ <b>Danh sách sản phẩm chênh lệch/hủy (${diffItems.length}):</b>\n`;
-      const displayedItems = diffItems.slice(0, 15);
-      displayedItems.forEach((d: any) => {
-        const masp = d.sanpham?.masp || 'N/A';
-        const title = d.sanpham?.title || 'N/A';
-        const chenhlech = Number(d.chenhlech);
-        const slhuy = Number(d.slhuy);
-        const sign = chenhlech > 0 ? '+' : '';
-        message += `- <code>${masp}</code> - ${title}: Lệch <b>${sign}${chenhlech}</b> | Hủy <b>${slhuy}</b>\n`;
-      });
-
-      if (diffItems.length > 15) {
-        message += `... và ${diffItems.length - 15} sản phẩm chênh lệch khác.\n`;
-      }
-    } else {
-      message += `\n✅ Không có chênh lệch tồn kho.`;
-    }
 
     return this.sendTelegramMessage(message);
   }
