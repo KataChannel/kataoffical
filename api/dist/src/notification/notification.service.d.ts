@@ -59,4 +59,8 @@ export declare class NotificationService {
     getUnreadCount(userId: string): Promise<{
         count: number;
     }>;
+    sendTelegramMessage(message: string): Promise<boolean>;
+    sendChotkhoTelegramNotification(chotkhoData: any): Promise<boolean>;
+    handleOrderEvent(order: any, action: 'CREATE' | 'UPDATE' | 'DELETE', oldOrder?: any): Promise<void>;
+    handleDathangEvent(dathang: any, action: 'CREATE' | 'UPDATE' | 'DELETE', oldDathang?: any): Promise<void>;
 }

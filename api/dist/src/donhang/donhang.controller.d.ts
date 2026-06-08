@@ -637,7 +637,10 @@ export declare class DonhangController {
         fail: number;
     }>;
     update(id: string, updateDonhangDto: any): Promise<any>;
-    removeBulk(ids: any[]): Promise<void>;
+    removeBulk(ids: any[]): Promise<{
+        success: number;
+        fail: number;
+    }>;
     remove(id: string): Promise<void>;
     reorder(body: {
         donhangIds: string[];

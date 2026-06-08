@@ -632,7 +632,10 @@ export declare class DonhangService {
         fail: number;
     }>;
     remove(id: string): Promise<void>;
-    removeBulk(ids: string[]): Promise<void>;
+    removeBulk(ids: string[]): Promise<{
+        success: number;
+        fail: number;
+    }>;
     findByProductId(idSP: string): Promise<{
         sanpham: ({
             sanpham: {

@@ -20,6 +20,6 @@ export default {
     }
   },
   entryPointToBrowserMapping: {
-    '': ['main-C4TJBOBI.js']
+    '': ['main-LPDGMNIX.js']
   }
 };

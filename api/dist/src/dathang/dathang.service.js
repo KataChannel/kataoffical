@@ -556,6 +556,9 @@ let DathangService = class DathangService {
                 url: `/admin/dathang/detail/${result.id}`,
                 type: 'dathang'
             }).catch(err => console.error('Failed to send notification:', err));
+            this.notificationService.handleDathangEvent(result, 'CREATE').catch(err => {
+                console.error('Failed to send post-closing telegram notification for dathang:', err);
+            });
         }
         return result;
     }
@@ -626,6 +629,9 @@ let DathangService = class DathangService {
                 url: `/admin/dathang/detail/${result.id}`,
                 type: 'dathang'
             }).catch(err => console.error('Failed to send notification:', err));
+            this.notificationService.handleDathangEvent(result, 'CREATE').catch(err => {
+                console.error('Failed to send post-closing telegram notification for dathang:', err);
+            });
         }
         return result;
     }
@@ -655,7 +661,18 @@ let DathangService = class DathangService {
         return orderDateStr <= chotkhoDateStr;
     }
     async update(id, data) {
-        return this.prisma.$transaction(async (prisma) => {
+        const oldDathangForAlert = await this.prisma.dathang.findUnique({
+            where: { id },
+            include: {
+                sanpham: {
+                    include: {
+                        sanpham: true
+                    }
+                },
+                nhacungcap: true
+            }
+        });
+        const result = await this.prisma.$transaction(async (prisma) => {
             const oldDathang = await prisma.dathang.findUnique({
                 where: { id },
                 include: { sanpham: true, kho: true },
@@ -1496,9 +1513,26 @@ let DathangService = class DathangService {
             }
             throw new Error('Trạng thái không hợp lệ');
         });
+        if (result) {
+            this.notificationService.handleDathangEvent(result, 'UPDATE', oldDathangForAlert).catch(err => {
+                console.error('Failed to send post-closing telegram notification for dathang update:', err);
+            });
+        }
+        return result;
     }
     async remove(id) {
-        return this.prisma.$transaction(async (prisma) => {
+        const oldDathangForAlert = await this.prisma.dathang.findUnique({
+            where: { id },
+            include: {
+                sanpham: {
+                    include: {
+                        sanpham: true
+                    }
+                },
+                nhacungcap: true
+            }
+        });
+        const result = await this.prisma.$transaction(async (prisma) => {
             const dathang = await prisma.dathang.findUnique({
                 where: { id },
                 include: { sanpham: true },
@@ -1522,6 +1556,12 @@ let DathangService = class DathangService {
             }
             return prisma.dathang.delete({ where: { id } });
         });
+        if (result && oldDathangForAlert) {
+            this.notificationService.handleDathangEvent(oldDathangForAlert, 'DELETE').catch(err => {
+                console.error('Failed to send post-closing telegram notification for dathang deletion:', err);
+            });
+        }
+        return result;
     }
     async findByProductId(idSP) {
         const dathangs = await this.prisma.dathang.findMany({

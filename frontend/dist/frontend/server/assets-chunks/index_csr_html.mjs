@@ -20,6 +20,6 @@ export default `<!doctype html>
 <body class="mat-typography" ngcm="">
   <app-root></app-root>
   <noscript>Please enable JavaScript to continue using this application.</noscript>
-<link rel="modulepreload" href="chunk-SJNV3SZM.js"><link rel="modulepreload" href="chunk-FSCSPFQQ.js"><link rel="modulepreload" href="chunk-4ZVJO4SQ.js"><link rel="modulepreload" href="chunk-XC2KVTPU.js"><link rel="modulepreload" href="chunk-V5FQY4WM.js"><link rel="modulepreload" href="chunk-VPHF2HY2.js"><link rel="modulepreload" href="chunk-KAV7W6GB.js"><link rel="modulepreload" href="chunk-KSDE3G3B.js"><link rel="modulepreload" href="chunk-UCQGJG6F.js"><link rel="modulepreload" href="chunk-QNWBDODA.js"><script src="polyfills-FFHMD2TL.js" type="module"></script><script src="main-C4TJBOBI.js" type="module"></script></body>
+<link rel="modulepreload" href="chunk-SJNV3SZM.js"><link rel="modulepreload" href="chunk-FSCSPFQQ.js"><link rel="modulepreload" href="chunk-4ZVJO4SQ.js"><link rel="modulepreload" href="chunk-XC2KVTPU.js"><link rel="modulepreload" href="chunk-V5FQY4WM.js"><link rel="modulepreload" href="chunk-VPHF2HY2.js"><link rel="modulepreload" href="chunk-KAV7W6GB.js"><link rel="modulepreload" href="chunk-KSDE3G3B.js"><link rel="modulepreload" href="chunk-UCQGJG6F.js"><link rel="modulepreload" href="chunk-QNWBDODA.js"><script src="polyfills-FFHMD2TL.js" type="module"></script><script src="main-LPDGMNIX.js" type="module"></script></body>
 
 </html>`;

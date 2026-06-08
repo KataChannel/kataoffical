@@ -95,6 +95,8 @@ services:
       - MINIO_REGION=us-east-1
       - MINIO_PUBLIC_URL=http://storage.rausachtrangia.com:59000
       - GOOGLE_API_KEY=AIzaSyAcLy3dOt27BgxkDSAY7fRm0jbwlzPo-80
+      - TELEGRAM_BOT_TOKEN=8899335906:AAHL8MBUlAzRs0POsI1TeNathGUCBu3poMU
+      - TELEGRAM_CHAT_ID=-1003898067417
     depends_on:
       - postgres
       - redis

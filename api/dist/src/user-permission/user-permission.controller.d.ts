@@ -25,24 +25,24 @@ export declare class UserPermissionController {
         createdAt: Date;
         updatedAt: Date;
         userId: string;
+        reason: string | null;
         permissionId: string;
         isGranted: boolean;
         grantedBy: string | null;
         grantedAt: Date;
         expiresAt: Date | null;
-        reason: string | null;
     }>;
     removeUserPermission(userId: string, permissionId: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         userId: string;
+        reason: string | null;
         permissionId: string;
         isGranted: boolean;
         grantedBy: string | null;
         grantedAt: Date;
         expiresAt: Date | null;
-        reason: string | null;
     }>;
     getUserPermissions(userId: string): Promise<({
         permission: {
@@ -57,12 +57,12 @@ export declare class UserPermissionController {
         createdAt: Date;
         updatedAt: Date;
         userId: string;
+        reason: string | null;
         permissionId: string;
         isGranted: boolean;
         grantedBy: string | null;
         grantedAt: Date;
         expiresAt: Date | null;
-        reason: string | null;
     })[]>;
     getUserEffectivePermission(userId: string, permissionId: string): Promise<({
         permission: {
@@ -80,12 +80,12 @@ export declare class UserPermissionController {
         createdAt: Date;
         updatedAt: Date;
         userId: string;
+        reason: string | null;
         permissionId: string;
         isGranted: boolean;
         grantedBy: string | null;
         grantedAt: Date;
         expiresAt: Date | null;
-        reason: string | null;
     }) | null>;
     getUserEffectivePermissionByName(userId: string, permissionName: string): Promise<({
         permission: {
@@ -103,12 +103,12 @@ export declare class UserPermissionController {
         createdAt: Date;
         updatedAt: Date;
         userId: string;
+        reason: string | null;
         permissionId: string;
         isGranted: boolean;
         grantedBy: string | null;
         grantedAt: Date;
         expiresAt: Date | null;
-        reason: string | null;
     }) | null>;
     findMany(userId?: string, permissionId?: string, isGranted?: string, isExpired?: string, page?: string, limit?: string): Promise<{
         data: ({
@@ -128,12 +128,12 @@ export declare class UserPermissionController {
             createdAt: Date;
             updatedAt: Date;
             userId: string;
+            reason: string | null;
             permissionId: string;
             isGranted: boolean;
             grantedBy: string | null;
             grantedAt: Date;
             expiresAt: Date | null;
-            reason: string | null;
         })[];
         total: number;
         page: number;

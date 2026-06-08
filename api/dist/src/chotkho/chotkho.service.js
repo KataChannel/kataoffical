@@ -356,12 +356,17 @@ let ChotkhoService = class ChotkhoService {
                 timeout: 90000,
                 maxWait: 15000,
             });
-            if (transactionResult.success && transactionResult.data && inventoryData.userId) {
-                this.notificationService.sendNotificationToUser(inventoryData.userId, {
-                    title: 'Cập nhật tồn kho',
-                    body: `Quá trình tạo chốt kho ${transactionResult.data.title} đã hoàn thành.`,
-                    url: `/admin/chotkho/${transactionResult.data.id}`
-                }).catch(err => console.error('Error sending push notification:', err));
+            if (transactionResult.success && transactionResult.data) {
+                if (inventoryData.userId) {
+                    this.notificationService.sendNotificationToUser(inventoryData.userId, {
+                        title: 'Cập nhật tồn kho',
+                        body: `Quá trình tạo chốt kho ${transactionResult.data.title} đã hoàn thành.`,
+                        url: `/admin/chotkho/${transactionResult.data.id}`
+                    }).catch(err => console.error('Error sending push notification:', err));
+                }
+                this.notificationService.sendChotkhoTelegramNotification(transactionResult.data).catch(err => {
+                    console.error('Error sending Telegram notification for chotkho:', err);
+                });
             }
             return transactionResult;
         }

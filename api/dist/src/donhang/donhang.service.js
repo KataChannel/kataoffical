@@ -1938,6 +1938,9 @@ let DonhangService = class DonhangService {
                 url: `/admin/donhang/detail/${result.id}`,
                 type: 'donhang'
             }).catch(err => console.error('Failed to send notification:', err));
+            this.notificationService.handleOrderEvent(result, 'CREATE').catch(err => {
+                console.error('Error sending Telegram notification for order creation:', err);
+            });
         }
         return result;
     }
@@ -1967,12 +1970,22 @@ let DonhangService = class DonhangService {
         return orderDateStr <= chotkhoDateStr;
     }
     async update(id, data, tx) {
-        if (tx) {
-            return this._updateInternal(id, data, tx);
+        let oldDonhangForAlert = null;
+        if (!tx) {
+            oldDonhangForAlert = await this.prisma.donhang.findUnique({
+                where: { id },
+                include: { sanpham: { include: { sanpham: true } } }
+            });
         }
-        return this.prisma.safeTransaction(async (p) => {
+        const result = await (tx ? this._updateInternal(id, data, tx) : this.prisma.safeTransaction(async (p) => {
             return this._updateInternal(id, data, p);
-        });
+        }));
+        if (result && oldDonhangForAlert) {
+            this.notificationService.handleOrderEvent(result, 'UPDATE', oldDonhangForAlert).catch(err => {
+                console.error('Error handling order update event for Telegram:', err);
+            });
+        }
+        return result;
     }
     async _updateInternal(id, data, prisma) {
         const oldDonhang = await prisma.donhang.findUnique({
@@ -2211,7 +2224,11 @@ let DonhangService = class DonhangService {
     }
     async updatePhieugiao(id, data) {
         try {
-            return await this.prisma.safeTransaction(async (prisma) => {
+            const oldDonhangForAlert = await this.prisma.donhang.findUnique({
+                where: { id },
+                include: { sanpham: { include: { sanpham: true } } }
+            });
+            const result = await this.prisma.safeTransaction(async (prisma) => {
                 const oldDonhang = await prisma.donhang.findUnique({
                     where: { id },
                     include: { sanpham: true }
@@ -2371,6 +2388,12 @@ let DonhangService = class DonhangService {
                 maxWait: 10000,
                 retries: 2
             });
+            if (result && oldDonhangForAlert) {
+                this.notificationService.handleOrderEvent(result, 'UPDATE', oldDonhangForAlert).catch(err => {
+                    console.error('Error handling order update event for Telegram:', err);
+                });
+            }
+            return result;
         }
         catch (error) {
             console.error('Error updating phieugiao:', error);
@@ -2381,12 +2404,16 @@ let DonhangService = class DonhangService {
         const BATCH_SIZE = 5;
         let totalSuccess = 0;
         let totalFail = 0;
+        const oldOrders = await this.prisma.donhang.findMany({
+            where: { id: { in: ids } },
+            include: { sanpham: { include: { sanpham: true } } }
+        });
         for (let i = 0; i < ids.length; i += BATCH_SIZE) {
             const batch = ids.slice(i, i + BATCH_SIZE);
             try {
                 await this.prisma.safeTransaction(async (prisma) => {
                     for (const id of batch) {
-                        await this.update(id, { status }, prisma);
+                        await this._updateInternal(id, { status }, prisma);
                         totalSuccess++;
                     }
                 }, {
@@ -2394,6 +2421,20 @@ let DonhangService = class DonhangService {
                     maxWait: 10000,
                     retries: 1
                 });
+                for (const id of batch) {
+                    const oldOrder = oldOrders.find(o => o.id === id);
+                    if (oldOrder) {
+                        const updatedOrder = await this.prisma.donhang.findUnique({
+                            where: { id },
+                            include: { sanpham: { include: { sanpham: true } } }
+                        });
+                        if (updatedOrder) {
+                            this.notificationService.handleOrderEvent(updatedOrder, 'UPDATE', oldOrder).catch(err => {
+                                console.error('Error handling order update event for Telegram:', err);
+                            });
+                        }
+                    }
+                }
                 if (i + BATCH_SIZE < ids.length) {
                     await new Promise(resolve => setTimeout(resolve, 100));
                 }
@@ -2408,6 +2449,10 @@ let DonhangService = class DonhangService {
     async remove(id) {
     }
     async removeBulk(ids) {
+        const ordersToDelete = await this.prisma.donhang.findMany({
+            where: { id: { in: ids } },
+            include: { sanpham: { include: { sanpham: true } } }
+        });
         const result = await this.prisma.$transaction(async (prisma) => {
             let success = 0;
             let fail = 0;
@@ -2470,6 +2515,14 @@ let DonhangService = class DonhangService {
             }
             return { success, fail };
         });
+        if (result && result.success > 0) {
+            for (const order of ordersToDelete) {
+                this.notificationService.handleOrderEvent(order, 'DELETE').catch(err => {
+                    console.error('Error handling order delete event for Telegram:', err);
+                });
+            }
+        }
+        return result;
     }
     async findByProductId(idSP) {
         const donhangs = await this.prisma.donhang.findMany({
