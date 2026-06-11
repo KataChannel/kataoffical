@@ -64,12 +64,17 @@ export class SanphamService {
   }
   
   async generateMaSP(): Promise<string> {
-    // Lấy NCC mới nhất
+    // Lấy sản phẩm mới nhất có mã bắt đầu bằng I1
     const latest = await this.prisma.sanpham.findFirst({
+      where: {
+        masp: {
+          startsWith: 'I1',
+        },
+      },
       orderBy: { masp: 'desc' },
     });
 
-    // Nếu chưa có NCC nào, bắt đầu từ 1
+    // Nếu chưa có sản phẩm nào, bắt đầu từ 1
     let nextNumber = 1;
     if (latest) {
       const match = latest.masp.match(/I1(\d+)/);
@@ -78,7 +83,7 @@ export class SanphamService {
       }
     }
 
-    // Tạo mã mới dạng TG-NCC00001
+    // Tạo mã mới dạng I100001
     return `I1${nextNumber.toString().padStart(5, '0')}`;
   }
 

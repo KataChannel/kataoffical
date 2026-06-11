@@ -49,6 +49,11 @@ export class NhacungcapService {
       while (!isUnique && attempts < maxAttempts) {
         // Tìm mancc lớn nhất hiện tại
         const latest = await this.prisma.nhacungcap.findFirst({
+          where: {
+            mancc: {
+              startsWith: 'TG-NCC',
+            },
+          },
           orderBy: { mancc: 'desc' },
         });
 

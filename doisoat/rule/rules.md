@@ -6,10 +6,11 @@ Tài liệu này tổng hợp các quy tắc đối soát số liệu tồn kho,
 
 ## 1. Quy Tắc Đối Soát Chung & Chốt Baseline
 
-### 1.1. Quy tắc triệt tiêu kho âm (Ưu tiên cao nhất - Check đầu tiên)
-*   **Tồn hệ thống bị âm:** Nếu một sản phẩm có **số tồn hệ thống âm (`sltonhethong < 0`)** trước khi chốt kho, hệ thống sẽ **tự động reset cả tồn hệ thống và tồn thực tế chốt về 0**.
-*   **Ghi chú trong DB:** `Tự động reset kho âm về 0 (Rules.md)`
-*   **Độ ưu tiên:** Quy tắc này được ưu tiên cao nhất, áp dụng trước tất cả các quy tắc đối soát khác (kể cả nhóm tự động chuyển qua hay có trong Excel).
+### 1.1. Quy tắc triệt tiêu kho âm (Chỉ áp dụng khi sản phẩm không có trong Excel)
+*   **Tồn hệ thống bị âm (Không có trong Excel):** Nếu một sản phẩm **không xuất hiện trong file Excel** kiểm kho nhưng có **số tồn hệ thống âm (`sltonhethong < 0`)** trước khi chốt kho, hệ thống sẽ **tự động reset cả tồn hệ thống và tồn thực tế chốt về 0**.
+*   **Sản phẩm có trong Excel:** Luôn lấy số tồn thực tế từ Excel để cập nhật. Tuy nhiên, nếu tồn hệ thống của sản phẩm bị âm, tồn hệ thống sẽ được tự động đưa về `0` để tránh âm ảo lũy kế.
+*   **Ghi chú trong DB:** `Tự động reset kho âm về 0 (Rules.md)` hoặc `Cập nhật từ Excel (Tồn hệ thống âm tự động reset về 0)`
+*   **Độ ưu tiên:** Quy tắc triệt tiêu kho âm được ưu tiên kiểm tra đầu tiên trong nhóm các sản phẩm không có trong Excel (áp dụng trước cả nhóm tự động chuyển qua như Bắp, Dưa hấu...).
 
 ### 1.2. Nhóm sản phẩm tự động chuyển qua (Auto-carried over - Chỉ áp dụng cho tồn >= 0)
 Các sản phẩm thuộc nhóm sau đây sẽ **tự động được chuyển qua** (giữ nguyên số liệu hệ thống hoặc cập nhật tương ứng từ file đối soát) nếu số lượng tồn >= 0:

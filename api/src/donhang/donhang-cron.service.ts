@@ -52,6 +52,7 @@ export class DonhangCronService {
               name: true,
             },
           },
+          sanpham: true,
         },
       });
 
@@ -68,10 +69,28 @@ export class DonhangCronService {
       
       for (const order of ordersToUpdate) {
         try {
+          const sanphamData = order.sanpham.map(sp => {
+            const sldat = Number(sp.sldat) || 0;
+            const slgiao = Number(sp.slgiao) || 0;
+            const slnhan = Number(sp.slnhan) || 0;
+            const actualQty = slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat);
+
+            return {
+              id: sp.idSP,
+              idSP: sp.idSP,
+              sldat: sldat,
+              slgiao: slgiao > 0 ? slgiao : actualQty,
+              slnhan: actualQty,
+              giaban: Number(sp.giaban) || 0,
+              ghichu: sp.ghichu,
+            };
+          });
+
           // 🔥 USE DonhangService.update to ensure all inventory logic and audit logs are triggered
           await this.donhangService.update(order.id, {
             status: 'danhan',
-            ghichu: `${order.ghichu ? order.ghichu + ' | ' : ''}[AUTOCOMPLETE] Tự động chuyển trạng thái lúc ${currentTime}`
+            ghichu: `${order.ghichu ? order.ghichu + ' | ' : ''}[AUTOCOMPLETE] Tự động chuyển trạng thái lúc ${currentTime}`,
+            sanpham: sanphamData
           });
           
           updateCount++;
@@ -267,6 +286,7 @@ export class DonhangCronService {
               name: true,
             },
           },
+          sanpham: true,
         },
       });
 
@@ -310,9 +330,27 @@ export class DonhangCronService {
       let successCount = 0;
       for (const order of ordersToUpdate) {
         try {
+          const sanphamData = order.sanpham.map(sp => {
+            const sldat = Number(sp.sldat) || 0;
+            const slgiao = Number(sp.slgiao) || 0;
+            const slnhan = Number(sp.slnhan) || 0;
+            const actualQty = slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat);
+
+            return {
+              id: sp.idSP,
+              idSP: sp.idSP,
+              sldat: sldat,
+              slgiao: slgiao > 0 ? slgiao : actualQty,
+              slnhan: actualQty,
+              giaban: Number(sp.giaban) || 0,
+              ghichu: sp.ghichu,
+            };
+          });
+
           await this.donhangService.update(order.id, {
             status: 'danhan',
-            ghichu: (order.ghichu || '') + ' | Manual auto-complete execution'
+            ghichu: (order.ghichu || '') + ' | Manual auto-complete execution',
+            sanpham: sanphamData
           });
           successCount++;
         } catch (err) {

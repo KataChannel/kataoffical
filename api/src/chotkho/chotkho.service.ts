@@ -258,11 +258,90 @@ export class ChotkhoService {
         });
         const tonKhoMapFinal = new Map(allTonKho.map((tk: any) => [tk.sanphamId, tk]));
 
+        const targetNgayChot = ngaychot || new Date();
+
+        // 1. Tìm phiên chốt kho gần nhất của kho này
+        const lastChot = await prisma.chotkho.findFirst({
+          where: {
+            khoId,
+            isActive: true,
+            ngaychot: { lt: targetNgayChot }
+          },
+          orderBy: { ngaychot: 'desc' },
+          include: {
+            details: true
+          }
+        });
+
+        const startTime = lastChot ? lastChot.ngaychot : new Date(0);
+        
+        // Tạo map tồn đầu kỳ từ phiên chốt trước
+        const initialQtyMap = new Map<string, number>();
+        if (lastChot && lastChot.details) {
+          for (const d of lastChot.details) {
+            if (d.sanphamId) {
+              initialQtyMap.set(d.sanphamId, Number(d.sltonthucte) || 0);
+            }
+          }
+        }
+
+        // Lấy tất cả phiếu xuất (Donhangsanpham) trong khoảng thời gian đối soát
+        const isMainWarehouse = khoId === KHO_TONG_ID;
+        const exports = await prisma.donhangsanpham.findMany({
+          where: {
+            idSP: { in: sanphamIds },
+            donhang: {
+              ...(isMainWarehouse ? {} : { khoId }),
+              status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
+              OR: [
+                { ngayHoanThanhThucte: { gt: startTime, lte: targetNgayChot } },
+                { ngayHoanThanhThucte: null, updatedAt: { gt: startTime, lte: targetNgayChot } }
+              ]
+            }
+          }
+        });
+
+        // Lấy tất cả phiếu nhập (Dathangsanpham) trong khoảng thời gian đối soát
+        const imports = await prisma.dathangsanpham.findMany({
+          where: {
+            idSP: { in: sanphamIds },
+            dathang: {
+              ...(isMainWarehouse ? {} : { khoId }),
+              status: 'danhan',
+              OR: [
+                { ngayHoanThanhThucte: { gt: startTime, lte: targetNgayChot } },
+                { ngayHoanThanhThucte: null, updatedAt: { gt: startTime, lte: targetNgayChot } }
+              ]
+            }
+          }
+        });
+
+        // Tổng hợp nhập xuất theo sản phẩm
+        const exportMap = new Map<string, number>();
+        exports.forEach((x: any) => {
+          const qty = Number(x.slnhan || x.slgiao || x.sldat || 0);
+          exportMap.set(x.idSP, (exportMap.get(x.idSP) || 0) + qty);
+        });
+
+        const importMap = new Map<string, number>();
+        imports.forEach((n: any) => {
+          const qty = Number(n.slnhan || n.slgiao || n.sldat || 0);
+          importMap.set(n.idSP, (importMap.get(n.idSP) || 0) + qty);
+        });
+
+        // Hàm tính tồn hệ thống động
+        const getCalculatedSystemStock = (spId: string): number => {
+          const init = initialQtyMap.get(spId) || 0;
+          const imp = importMap.get(spId) || 0;
+          const exp = exportMap.get(spId) || 0;
+          return init + imp - exp;
+        };
+
         // Tạo master record - Chotkho
         const chotkhoMaster = await prisma.chotkho.create({
           data: {
-            ngaychot: ngaychot || new Date(),
-            title: title || `Chốt kho ${new Date().toLocaleDateString('vi-VN')}`,
+            ngaychot: targetNgayChot,
+            title: title || `Chốt kho ${targetNgayChot.toLocaleDateString('vi-VN')}`,
             ghichu: ghichu || '',
             khoId,
             userId,
@@ -273,6 +352,139 @@ export class ChotkhoService {
 
         console.log(`📦 Created master chotkho record: ${chotkhoMaster.id}`);
 
+        // Phân loại sản phẩm và áp dụng các quy tắc baseline
+        const processedDetails = new Map<string, {
+          sanphamId: string;
+          masp: string;
+          title: string;
+          isThom: boolean;
+          titleLower: string;
+          sltonhethong: number;
+          sltonthucte: number;
+          slhuy: number;
+          ghichu: string;
+        }>();
+
+        const TARGET_THOM_XANH_MASP = 'I100220';
+        const isExcelChotkho = title && title.includes('[EXCEL]');
+
+        for (const detail of details) {
+          const sp = sanphamMap.get(detail.sanphamId);
+          if (!sp) continue;
+
+          const titleLower = sp.title.toLowerCase();
+          const masp = sp.masp.trim();
+          const detailGhichu = detail.ghichu || '';
+
+          let sltonhethong = getCalculatedSystemStock(sp.id);
+          let sltonthucte = Number(detail.sltonthucte);
+          let slhuy = Number(detail.slhuy);
+          let note = detailGhichu || '';
+
+          const isBap = titleLower.includes('bắp') && !titleLower.includes('cải') && !titleLower.includes('chuối') && !titleLower.includes('đậu') && !titleLower.includes('thịt');
+          const isAutoCarry = titleLower.includes('dưa hấu') || isBap || titleLower.includes('cải chua') || titleLower.includes('hành tây');
+          const isThom = titleLower.includes('thơm') && !titleLower.includes('rau thơm');
+
+          if (isExcelChotkho) {
+            // Xác định xem sản phẩm có trong Excel hay không dựa vào ghichu
+            const inExcel = detailGhichu.includes('Excel') && !detailGhichu.includes('không có trong Excel');
+
+            sltonthucte = inExcel ? Number(detail.sltonthucte) : 0;
+            slhuy = inExcel ? Number(detail.slhuy) : 0;
+
+            if (inExcel) {
+              note = `Cập nhật từ Excel (Áp dụng rule: có trong Excel)`;
+              if (sltonhethong < 0) {
+                sltonhethong = 0;
+                note = `Cập nhật từ Excel (Tồn hệ thống âm tự động reset về 0)`;
+              }
+            } else if (sltonhethong < 0) {
+              sltonhethong = 0;
+              sltonthucte = 0;
+              slhuy = 0;
+              note = 'Tự động reset kho âm về 0 (Rules.md)';
+            } else {
+              // Trường hợp B: Không có trong Excel
+              if (isAutoCarry) {
+                sltonthucte = sltonhethong;
+                note = 'Tự động đưa qua (không có trong Excel - Auto-carried)';
+              } else if (isThom) {
+                const isThomXanh = masp === TARGET_THOM_XANH_MASP;
+                const isThomGot = titleLower.includes('gọt');
+
+                if (isThomXanh || isThomGot) {
+                  sltonthucte = sltonhethong;
+                  note = 'Tự động đưa qua (Thơm trái xanh/Thơm gọt - Auto-carried)';
+                } else {
+                  sltonthucte = 0;
+                  slhuy = 0;
+                  note = 'Thơm khác reset về 0 (không có trong Excel - Rules.md)';
+                }
+              } else {
+                sltonthucte = 0;
+                slhuy = 0;
+                note = 'Reset về 0 (không có trong Excel - Rules.md)';
+              }
+            }
+          } else {
+            // KHÔNG phải Excel Chotkho (điều chỉnh thủ công thông thường)
+            if (sltonhethong < 0) {
+              sltonhethong = 0;
+            }
+            if (note === '') {
+              note = 'Điều chỉnh thủ công';
+            }
+          }
+
+          processedDetails.set(sp.id, {
+            sanphamId: sp.id,
+            masp,
+            title: sp.title,
+            isThom,
+            titleLower,
+            sltonhethong,
+            sltonthucte,
+            slhuy,
+            ghichu: note
+          });
+        }
+
+        // Quy đổi và cộng dồn nhóm Thơm (Pineapple Consolidation) - Chỉ chạy khi là Excel Chotkho
+        if (isExcelChotkho) {
+          const thomXanhProduct = sanphams.find(s => s.masp.trim() === TARGET_THOM_XANH_MASP);
+          let targetThomXanh = thomXanhProduct ? processedDetails.get(thomXanhProduct.id) : null;
+
+          if (targetThomXanh) {
+            let extraActual = 0;
+            let extraSystem = 0;
+            let extraHuy = 0;
+
+            for (const p of processedDetails.values()) {
+              if (p.isThom && p.masp !== TARGET_THOM_XANH_MASP) {
+                const isThomGot = p.titleLower.includes('gọt');
+                if (!isThomGot) {
+                  extraActual += p.sltonthucte;
+                  extraSystem += p.sltonhethong;
+                  extraHuy += p.slhuy;
+
+                  p.sltonhethong = 0;
+                  p.sltonthucte = 0;
+                  p.slhuy = 0;
+                  p.ghichu = `Quy đổi tồn kho về Thơm trái xanh [${TARGET_THOM_XANH_MASP}] (Rules.md)`;
+                }
+              }
+            }
+
+            if (extraActual > 0 || extraSystem > 0 || extraHuy > 0) {
+              targetThomXanh.sltonthucte += extraActual;
+              targetThomXanh.sltonhethong += extraSystem;
+              targetThomXanh.slhuy += extraHuy;
+              targetThomXanh.ghichu += ` (Nhận quy đổi từ các loại thơm khác: +${extraActual} thực tế, +${extraSystem} hệ thống, +${extraHuy} hủy)`;
+              console.log(`[Thơm Consolidation] Consolidated to Thơm trái xanh [${TARGET_THOM_XANH_MASP}]: extraActual=+${extraActual}, extraSystem=+${extraSystem}, extraHuy=+${extraHuy}`);
+            }
+          }
+        }
+
         // Tạo detail records - Chotkhodetail
         let detailCount = 0;
         const pendingWarnings: any[] = [];
@@ -281,48 +493,47 @@ export class ChotkhoService {
         const sanphamKhoUpserts: Array<{ sanphamId: string; khoId: string; soluong: Decimal }> = [];
         const tonKhoUpserts: Array<{ sanphamId: string; slton: Decimal; sltontt: Decimal }> = [];
 
-        for (const detail of details) {
-          const sltonhethong_chuan = Number(detail.sltonhethong);
-          const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte);
+        for (const p of processedDetails.values()) {
+          const chenhlech = p.sltonhethong - p.sltonthucte - p.slhuy;
 
           detailRecordsToCreate.push({
             id: randomUUID(),
             chotkhoId: chotkhoMaster.id,
-            sanphamId: detail.sanphamId,
-            sltonhethong: new Decimal(sltonhethong_chuan), 
-            sltonthucte: new Decimal(detail.sltonthucte),
-            slhuy: new Decimal(detail.slhuy),
+            sanphamId: p.sanphamId,
+            sltonhethong: new Decimal(p.sltonhethong), 
+            sltonthucte: new Decimal(p.sltonthucte),
+            slhuy: new Decimal(p.slhuy),
             chenhlech: new Decimal(chenhlech),
-            ghichu: detail.ghichu || '',
+            ghichu: p.ghichu,
             userId,
             ngaychot: chotkhoMaster.ngaychot
           });
 
           // 1. Cập nhật tồn tại kho cụ thể (Source Tracking)
           sanphamKhoUpserts.push({
-            sanphamId: detail.sanphamId,
+            sanphamId: p.sanphamId,
             khoId: khoId,
-            soluong: new Decimal(detail.sltonthucte)
+            soluong: new Decimal(p.sltonthucte)
           });
 
           // 2. Tính toán delta và mirror sang KHO_TONG nếu không phải KHO_TONG
-          const currentSpKho = sanphamKhoMap.get(`${detail.sanphamId}_${khoId}`);
+          const currentSpKho = sanphamKhoMap.get(`${p.sanphamId}_${khoId}`);
           const oldQty = Number(currentSpKho?.soluong || 0);
-          const delta = Number(detail.sltonthucte) - oldQty;
+          const delta = p.sltonthucte - oldQty;
 
-          const currentKhoTongRecord = sanphamKhoMap.get(`${detail.sanphamId}_${KHO_TONG_ID}`);
+          const currentKhoTongRecord = sanphamKhoMap.get(`${p.sanphamId}_${KHO_TONG_ID}`);
           let finalTotal = (khoId === KHO_TONG_ID) 
-            ? Number(detail.sltonthucte) 
+            ? p.sltonthucte 
             : (Number(currentKhoTongRecord?.soluong || 0) + delta);
 
           // 🛡️ SAFETY CHECK: Hàng hóa không thể tồn âm ở kho vật lý
           if (finalTotal < 0) {
-            console.warn(`⚠️ [CHOTKHO-SYNC] Product ${detail.sanphamId} has negative calculation (${finalTotal}). Clamping to 0.`);
+            console.warn(`⚠️ [CHOTKHO-SYNC] Product ${p.sanphamId} has negative calculation (${finalTotal}). Clamping to 0.`);
             finalTotal = 0;
 
             if (khoId !== KHO_TONG_ID) {
               sanphamKhoUpserts.push({
-                sanphamId: detail.sanphamId,
+                sanphamId: p.sanphamId,
                 khoId: KHO_TONG_ID,
                 soluong: new Decimal(0)
               });
@@ -330,7 +541,7 @@ export class ChotkhoService {
           } else {
             if (khoId !== KHO_TONG_ID) {
               sanphamKhoUpserts.push({
-                sanphamId: detail.sanphamId,
+                sanphamId: p.sanphamId,
                 khoId: KHO_TONG_ID,
                 soluong: new Decimal(Number(currentKhoTongRecord?.soluong || 0) + delta)
               });
@@ -339,7 +550,7 @@ export class ChotkhoService {
 
           // 3. Đồng bộ Tồn kho tổng (TonKho)
           tonKhoUpserts.push({
-            sanphamId: detail.sanphamId,
+            sanphamId: p.sanphamId,
             slton: new Decimal(finalTotal),
             sltontt: new Decimal(finalTotal)
           });
@@ -405,6 +616,12 @@ export class ChotkhoService {
 
           await prisma.$executeRawUnsafe(sql, ...params);
         }
+
+        // 4. Reset virtual sub-warehouses to 0
+        await prisma.sanphamKho.updateMany({
+          where: { NOT: { khoId: KHO_TONG_ID } },
+          data: { soluong: new Decimal(0), updatedAt: new Date() }
+        });
 
         // Lấy full data với relations
         const result = await prisma.chotkho.findUnique({

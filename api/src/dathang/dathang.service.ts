@@ -1782,7 +1782,7 @@ async convertDathangImportToTransfer(
           data: {
             ghichu: shortageNote,
             slnhan: slnhan,
-            slgiao: sldat, // Ghi nhận đã giao bằng số lượng đặt
+            slgiao: item.slgiao !== undefined && Number(item.slgiao) > 0 ? parseFloat(Number(item.slgiao).toFixed(3)) : sldat, // Ghi nhận đã giao theo thực tế hoặc theo đặt
           },
           };
         }),
@@ -3181,13 +3181,26 @@ async deletebulk(data: any) {
         const updateData = {
           status: 'danhan',
           ghichu: (order.ghichu || '') + ' | [Auto-pilot] Tự động xác nhận nhập kho lúc 14h',
-          sanpham: dathangFull.sanpham.map(sp => ({
-            id: sp.id, // ID của dathangsanpham record
-            idSP: sp.idSP,
-            sldat: Number(sp.sldat),
-            slnhan: Number(sp.sldat), // Mặc định nhận đủ khi auto
-            gianhap: Number(sp.gianhap)
-          }))
+          sanpham: dathangFull.sanpham.map(sp => {
+            const sldat = Number(sp.sldat) || 0;
+            const slgiao = Number(sp.slgiao) || 0;
+            const slnhan = Number(sp.slnhan) || 0;
+
+            // Xác định số lượng nhận thực tế:
+            // 1. Ưu tiên số lượng nhận (slnhan) đã nhập trước đó (nếu > 0)
+            // 2. Tiếp theo là số lượng giao (slgiao) nếu > 0
+            // 3. Cuối cùng mới dùng số lượng đặt (sldat)
+            const actualQty = slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat);
+
+            return {
+              id: sp.id, // ID của dathangsanpham record
+              idSP: sp.idSP,
+              sldat: sldat,
+              slgiao: slgiao > 0 ? slgiao : actualQty,
+              slnhan: actualQty,
+              gianhap: Number(sp.gianhap) || 0
+            };
+          })
         };
 
         await this.update(order.id, updateData);

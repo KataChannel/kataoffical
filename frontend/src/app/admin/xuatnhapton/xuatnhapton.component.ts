@@ -567,7 +567,11 @@ export class XuatnhaptonComponent implements OnDestroy {
         this._snackBar.dismiss();
 
         // --- BƯỚC 2: SAU KHI CHỐT KHO THEO FILE, HIỂN THỊ DIALOG ĐỐI SOÁT THEO SỐ MỚI ĐÓ ---
-        const discrepantItems = allChangedDetails.filter((item: any) => {
+        // Lấy chi tiết chốt kho từ backend trả về và lọc chỉ các sản phẩm thực tế có trong Excel để hiển thị đối soát nếu lệch
+        const discrepantItems = (ckResult.details || []).filter((item: any) => {
+          const sp = allSanpham.find((s: any) => s.id === item.sanphamId);
+          if (!sp || !validDataMap.has(sp.masp)) return false;
+
           const diff = Number(item.sltonhethong) - Number(item.sltonthucte) - Number(item.slhuy);
           return Math.abs(diff) > 0.001;
         });
@@ -602,17 +606,24 @@ export class XuatnhaptonComponent implements OnDestroy {
 
           const reconResult = await reconDialogRef.afterClosed().toPromise();
           if (reconResult) {
-            const finalDetailsToSave = allChangedDetails.map((detailItem: any) => {
+            const finalDetailsToSave = (ckResult.details || []).map((detailItem: any) => {
               const adjustedItem = reconResult.find((item: any) => item.sanphamId === detailItem.sanphamId);
               if (adjustedItem) {
                 return {
-                  ...detailItem,
+                  sanphamId: detailItem.sanphamId,
+                  sltonhethong: Number(detailItem.sltonhethong) || 0,
                   sltonthucte: adjustedItem.slDieuChinh,
                   slhuy: adjustedItem.slhuy,
-                  ghichu: adjustedItem.ghichuDieuChinh || detailItem.ghichu,
+                  ghichu: adjustedItem.ghichuDieuChinh || detailItem.ghichu || '',
                 };
               }
-              return detailItem;
+              return {
+                sanphamId: detailItem.sanphamId,
+                sltonhethong: Number(detailItem.sltonhethong) || 0,
+                sltonthucte: Number(detailItem.sltonthucte) || 0,
+                slhuy: Number(detailItem.slhuy) || 0,
+                ghichu: detailItem.ghichu || '',
+              };
             });
 
             this._snackBar.open('Đang cập nhật số liệu đối soát mới...', '', { duration: 0 });
