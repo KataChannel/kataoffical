@@ -1678,7 +1678,7 @@ async convertDathangImportToTransfer(
         if (slnhan < sldat) {
           const shortage = sldat - slnhan;
           shortageItems.push({
-            sanphamId: item.id,
+            sanphamId: item.idSP ?? item.id,
             soluong: shortage,
             ghichu: item.ghichu
               ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
@@ -1744,7 +1744,7 @@ async convertDathangImportToTransfer(
               const sldat = parseFloat((Number(item.sldat) ?? 0).toFixed(3));
               const slnhan = parseFloat((Number(item.slnhan) ?? 0).toFixed(3));
               return {
-                idSP: item.sanphamId ?? item.id,
+                idSP: item.idSP ?? item.id,
                 sldat: sldat,
                 slnhan: slnhan,
                 chenhlech: sldat - slnhan
@@ -3169,69 +3169,73 @@ async deletebulk(data: any) {
       const vietnamTime = executionTime.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
 
       for (const order of pendingOrders) {
-        console.log(`🤖 [Auto-pilot] Đang xử lý tự động đơn hàng: ${order.madncc}`);
-        // Lấy đầy đủ thông tin sản phẩm của đơn hàng
-        const dathangFull = await this.prisma.dathang.findUnique({
-          where: { id: order.id },
-          include: { sanpham: true }
-        });
+        try {
+          console.log(`🤖 [Auto-pilot] Đang xử lý tự động đơn hàng: ${order.madncc}`);
+          // Lấy đầy đủ thông tin sản phẩm của đơn hàng
+          const dathangFull = await this.prisma.dathang.findUnique({
+            where: { id: order.id },
+            include: { sanpham: true }
+          });
 
-        if (!dathangFull) continue;
+          if (!dathangFull) continue;
 
-        const updateData = {
-          status: 'danhan',
-          ghichu: (order.ghichu || '') + ' | [Auto-pilot] Tự động xác nhận nhập kho lúc 14h',
-          sanpham: dathangFull.sanpham.map(sp => {
-            const sldat = Number(sp.sldat) || 0;
-            const slgiao = Number(sp.slgiao) || 0;
-            const slnhan = Number(sp.slnhan) || 0;
+          const updateData = {
+            status: 'danhan',
+            ghichu: (order.ghichu || '') + ' | [Auto-pilot] Tự động xác nhận nhập kho lúc 14h',
+            sanpham: dathangFull.sanpham.map(sp => {
+              const sldat = Number(sp.sldat) || 0;
+              const slgiao = Number(sp.slgiao) || 0;
+              const slnhan = Number(sp.slnhan) || 0;
 
-            // Xác định số lượng nhận thực tế:
-            // 1. Ưu tiên số lượng nhận (slnhan) đã nhập trước đó (nếu > 0)
-            // 2. Tiếp theo là số lượng giao (slgiao) nếu > 0
-            // 3. Cuối cùng mới dùng số lượng đặt (sldat)
-            const actualQty = slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat);
+              // Xác định số lượng nhận thực tế:
+              // 1. Ưu tiên số lượng nhận (slnhan) đã nhập trước đó (nếu > 0)
+              // 2. Tiếp theo là số lượng giao (slgiao) nếu > 0
+              // 3. Cuối cùng mới dùng số lượng đặt (sldat)
+              const actualQty = slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat);
 
-            return {
-              id: sp.id, // ID của dathangsanpham record
-              idSP: sp.idSP,
-              sldat: sldat,
-              slgiao: slgiao > 0 ? slgiao : actualQty,
-              slnhan: actualQty,
-              gianhap: Number(sp.gianhap) || 0
-            };
-          })
-        };
+              return {
+                id: sp.id, // ID của dathangsanpham record
+                idSP: sp.idSP,
+                sldat: sldat,
+                slgiao: slgiao > 0 ? slgiao : actualQty,
+                slnhan: actualQty,
+                gianhap: Number(sp.gianhap) || 0
+              };
+            })
+          };
 
-        await this.update(order.id, updateData);
-        updateCount++;
+          await this.update(order.id, updateData);
+          updateCount++;
 
-        // Tạo audit log chi tiết cho từng đơn đặt hàng được cập nhật
-        await this.prisma.auditLog.create({
-          data: {
-            userId: null, // System action
-            action: 'UPDATE',
-            entityName: 'Dathang',
-            entityId: order.id,
-            oldValues: {
-              status: order.status,
-              madncc: order.madncc,
-              processedBy: 'auto-pilot-cron'
-            },
-            newValues: {
-              status: 'danhan',
-              madncc: order.madncc,
-              updatedAt: executionTime.toISOString(),
-              processedBy: 'auto-pilot-cron',
-              autoPilotExecution: {
-                jobName: 'auto-complete-dathang',
-                executionTime: vietnamTime,
-                autoCompleteReason: 'Daily auto-completion at 14:00 Vietnam time'
-              }
-            },
-            createdAt: new Date(),
-          }
-        });
+          // Tạo audit log chi tiết cho từng đơn đặt hàng được cập nhật
+          await this.prisma.auditLog.create({
+            data: {
+              userId: null, // System action
+              action: 'UPDATE',
+              entityName: 'Dathang',
+              entityId: order.id,
+              oldValues: {
+                status: order.status,
+                madncc: order.madncc,
+                processedBy: 'auto-pilot-cron'
+              },
+              newValues: {
+                status: 'danhan',
+                madncc: order.madncc,
+                updatedAt: executionTime.toISOString(),
+                processedBy: 'auto-pilot-cron',
+                autoPilotExecution: {
+                  jobName: 'auto-complete-dathang',
+                  executionTime: vietnamTime,
+                  autoCompleteReason: 'Daily auto-completion at 14:00 Vietnam time'
+                }
+              },
+              createdAt: new Date(),
+            }
+          });
+        } catch (orderError) {
+          console.error(`❌ [Auto-pilot] Lỗi khi tự động xử lý đơn hàng ${order.madncc}:`, orderError);
+        }
       }
 
       console.log(`🤖 [Auto-pilot] Hoàn thành tự động chốt ${updateCount} đơn hàng.`);

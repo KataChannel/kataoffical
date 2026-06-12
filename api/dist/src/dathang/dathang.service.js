@@ -1411,7 +1411,7 @@ let DathangService = class DathangService {
                     if (slnhan < sldat) {
                         const shortage = sldat - slnhan;
                         shortageItems.push({
-                            sanphamId: item.id,
+                            sanphamId: item.idSP ?? item.id,
                             soluong: shortage,
                             ghichu: item.ghichu
                                 ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
@@ -1472,7 +1472,7 @@ let DathangService = class DathangService {
                                 const sldat = parseFloat((Number(item.sldat) ?? 0).toFixed(3));
                                 const slnhan = parseFloat((Number(item.slnhan) ?? 0).toFixed(3));
                                 return {
-                                    idSP: item.sanphamId ?? item.id,
+                                    idSP: item.idSP ?? item.id,
                                     sldat: sldat,
                                     slnhan: slnhan,
                                     chenhlech: sldat - slnhan
@@ -1507,7 +1507,7 @@ let DathangService = class DathangService {
                                     data: {
                                         ghichu: shortageNote,
                                         slnhan: slnhan,
-                                        slgiao: sldat,
+                                        slgiao: item.slgiao !== undefined && Number(item.slgiao) > 0 ? parseFloat(Number(item.slgiao).toFixed(3)) : sldat,
                                     },
                                 };
                             }),
@@ -2498,51 +2498,63 @@ let DathangService = class DathangService {
             const executionTime = new Date();
             const vietnamTime = executionTime.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
             for (const order of pendingOrders) {
-                console.log(`🤖 [Auto-pilot] Đang xử lý tự động đơn hàng: ${order.madncc}`);
-                const dathangFull = await this.prisma.dathang.findUnique({
-                    where: { id: order.id },
-                    include: { sanpham: true }
-                });
-                if (!dathangFull)
-                    continue;
-                const updateData = {
-                    status: 'danhan',
-                    ghichu: (order.ghichu || '') + ' | [Auto-pilot] Tự động xác nhận nhập kho lúc 14h',
-                    sanpham: dathangFull.sanpham.map(sp => ({
-                        id: sp.id,
-                        idSP: sp.idSP,
-                        sldat: Number(sp.sldat),
-                        slnhan: Number(sp.sldat),
-                        gianhap: Number(sp.gianhap)
-                    }))
-                };
-                await this.update(order.id, updateData);
-                updateCount++;
-                await this.prisma.auditLog.create({
-                    data: {
-                        userId: null,
-                        action: 'UPDATE',
-                        entityName: 'Dathang',
-                        entityId: order.id,
-                        oldValues: {
-                            status: order.status,
-                            madncc: order.madncc,
-                            processedBy: 'auto-pilot-cron'
-                        },
-                        newValues: {
-                            status: 'danhan',
-                            madncc: order.madncc,
-                            updatedAt: executionTime.toISOString(),
-                            processedBy: 'auto-pilot-cron',
-                            autoPilotExecution: {
-                                jobName: 'auto-complete-dathang',
-                                executionTime: vietnamTime,
-                                autoCompleteReason: 'Daily auto-completion at 14:00 Vietnam time'
-                            }
-                        },
-                        createdAt: new Date(),
-                    }
-                });
+                try {
+                    console.log(`🤖 [Auto-pilot] Đang xử lý tự động đơn hàng: ${order.madncc}`);
+                    const dathangFull = await this.prisma.dathang.findUnique({
+                        where: { id: order.id },
+                        include: { sanpham: true }
+                    });
+                    if (!dathangFull)
+                        continue;
+                    const updateData = {
+                        status: 'danhan',
+                        ghichu: (order.ghichu || '') + ' | [Auto-pilot] Tự động xác nhận nhập kho lúc 14h',
+                        sanpham: dathangFull.sanpham.map(sp => {
+                            const sldat = Number(sp.sldat) || 0;
+                            const slgiao = Number(sp.slgiao) || 0;
+                            const slnhan = Number(sp.slnhan) || 0;
+                            const actualQty = slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat);
+                            return {
+                                id: sp.id,
+                                idSP: sp.idSP,
+                                sldat: sldat,
+                                slgiao: slgiao > 0 ? slgiao : actualQty,
+                                slnhan: actualQty,
+                                gianhap: Number(sp.gianhap) || 0
+                            };
+                        })
+                    };
+                    await this.update(order.id, updateData);
+                    updateCount++;
+                    await this.prisma.auditLog.create({
+                        data: {
+                            userId: null,
+                            action: 'UPDATE',
+                            entityName: 'Dathang',
+                            entityId: order.id,
+                            oldValues: {
+                                status: order.status,
+                                madncc: order.madncc,
+                                processedBy: 'auto-pilot-cron'
+                            },
+                            newValues: {
+                                status: 'danhan',
+                                madncc: order.madncc,
+                                updatedAt: executionTime.toISOString(),
+                                processedBy: 'auto-pilot-cron',
+                                autoPilotExecution: {
+                                    jobName: 'auto-complete-dathang',
+                                    executionTime: vietnamTime,
+                                    autoCompleteReason: 'Daily auto-completion at 14:00 Vietnam time'
+                                }
+                            },
+                            createdAt: new Date(),
+                        }
+                    });
+                }
+                catch (orderError) {
+                    console.error(`❌ [Auto-pilot] Lỗi khi tự động xử lý đơn hàng ${order.madncc}:`, orderError);
+                }
             }
             console.log(`🤖 [Auto-pilot] Hoàn thành tự động chốt ${updateCount} đơn hàng.`);
             if (updateCount > 0) {

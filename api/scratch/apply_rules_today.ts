@@ -47,14 +47,18 @@ async function main() {
     const isAutoCarry = title.includes('dưa hấu') || isBap || title.includes('cải chua') || title.includes('hành tây');
     const isThom = title.includes('thơm') && !title.includes('rau thơm');
 
-    if (sltonhethong < 0) {
+    if (inExcel) {
+      // Keep Excel counts as they are
+      note = `${ghichu} (Áp dụng rule: có trong Excel)`;
+      if (sltonhethong < 0) {
+        sltonhethong = 0;
+        note = `${ghichu} (Tồn hệ thống âm tự động reset về 0)`;
+      }
+    } else if (sltonhethong < 0) {
       sltonhethong = 0;
       sltonthucte = 0;
       slhuy = 0;
       note = 'Tự động reset kho âm về 0 (Rules.md)';
-    } else if (inExcel) {
-      // Keep Excel counts as they are
-      note = `${ghichu} (Áp dụng rule: có trong Excel)`;
     } else {
       // Product was NOT in Excel
       if (isAutoCarry) {

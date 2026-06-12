@@ -172,12 +172,16 @@ export class ChotkhoService {
             });
 
             if (order && order.status !== 'danhan') {
+              const targetNgayChot = ngaychot ? new Date(ngaychot) : new Date();
+              const completionDate = new Date(targetNgayChot.getTime() - 1000);
+
               // 1. Cập nhật trạng thái đơn hàng
               await prisma.dathang.update({
                 where: { id: orderId },
                 data: { 
                   status: 'danhan',
-                  updatedAt: new Date(),
+                  ngayHoanThanhThucte: completionDate,
+                  updatedAt: completionDate,
                   sanpham: {
                     updateMany: order.sanpham.map(sp => ({
                       where: { id: sp.id },

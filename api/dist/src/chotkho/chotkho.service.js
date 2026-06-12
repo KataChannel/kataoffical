@@ -137,11 +137,14 @@ let ChotkhoService = class ChotkhoService {
                             include: { sanpham: true }
                         });
                         if (order && order.status !== 'danhan') {
+                            const targetNgayChot = ngaychot ? new Date(ngaychot) : new Date();
+                            const completionDate = new Date(targetNgayChot.getTime() - 1000);
                             await prisma.dathang.update({
                                 where: { id: orderId },
                                 data: {
                                     status: 'danhan',
-                                    updatedAt: new Date(),
+                                    ngayHoanThanhThucte: completionDate,
+                                    updatedAt: completionDate,
                                     sanpham: {
                                         updateMany: order.sanpham.map(sp => ({
                                             where: { id: sp.id },
@@ -207,10 +210,74 @@ let ChotkhoService = class ChotkhoService {
                     sanphamKhoMap.set(`${sk.sanphamId}_${sk.khoId}`, sk);
                 });
                 const tonKhoMapFinal = new Map(allTonKho.map((tk) => [tk.sanphamId, tk]));
+                const targetNgayChot = ngaychot || new Date();
+                const lastChot = await prisma.chotkho.findFirst({
+                    where: {
+                        khoId,
+                        isActive: true,
+                        ngaychot: { lt: targetNgayChot }
+                    },
+                    orderBy: { ngaychot: 'desc' },
+                    include: {
+                        details: true
+                    }
+                });
+                const startTime = lastChot ? lastChot.ngaychot : new Date(0);
+                const initialQtyMap = new Map();
+                if (lastChot && lastChot.details) {
+                    for (const d of lastChot.details) {
+                        if (d.sanphamId) {
+                            initialQtyMap.set(d.sanphamId, Number(d.sltonthucte) || 0);
+                        }
+                    }
+                }
+                const isMainWarehouse = khoId === KHO_TONG_ID;
+                const exports = await prisma.donhangsanpham.findMany({
+                    where: {
+                        idSP: { in: sanphamIds },
+                        donhang: {
+                            ...(isMainWarehouse ? {} : { khoId }),
+                            status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
+                            OR: [
+                                { ngayHoanThanhThucte: { gt: startTime, lte: targetNgayChot } },
+                                { ngayHoanThanhThucte: null, updatedAt: { gt: startTime, lte: targetNgayChot } }
+                            ]
+                        }
+                    }
+                });
+                const imports = await prisma.dathangsanpham.findMany({
+                    where: {
+                        idSP: { in: sanphamIds },
+                        dathang: {
+                            ...(isMainWarehouse ? {} : { khoId }),
+                            status: 'danhan',
+                            OR: [
+                                { ngayHoanThanhThucte: { gt: startTime, lte: targetNgayChot } },
+                                { ngayHoanThanhThucte: null, updatedAt: { gt: startTime, lte: targetNgayChot } }
+                            ]
+                        }
+                    }
+                });
+                const exportMap = new Map();
+                exports.forEach((x) => {
+                    const qty = Number(x.slnhan || x.slgiao || x.sldat || 0);
+                    exportMap.set(x.idSP, (exportMap.get(x.idSP) || 0) + qty);
+                });
+                const importMap = new Map();
+                imports.forEach((n) => {
+                    const qty = Number(n.slnhan || n.slgiao || n.sldat || 0);
+                    importMap.set(n.idSP, (importMap.get(n.idSP) || 0) + qty);
+                });
+                const getCalculatedSystemStock = (spId) => {
+                    const init = initialQtyMap.get(spId) || 0;
+                    const imp = importMap.get(spId) || 0;
+                    const exp = exportMap.get(spId) || 0;
+                    return init + imp - exp;
+                };
                 const chotkhoMaster = await prisma.chotkho.create({
                     data: {
-                        ngaychot: ngaychot || new Date(),
-                        title: title || `Chốt kho ${new Date().toLocaleDateString('vi-VN')}`,
+                        ngaychot: targetNgayChot,
+                        title: title || `Chốt kho ${targetNgayChot.toLocaleDateString('vi-VN')}`,
                         ghichu: ghichu || '',
                         khoId,
                         userId,
@@ -219,44 +286,152 @@ let ChotkhoService = class ChotkhoService {
                     }
                 });
                 console.log(`📦 Created master chotkho record: ${chotkhoMaster.id}`);
+                const processedDetails = new Map();
+                const TARGET_THOM_XANH_MASP = 'I100220';
+                const isExcelChotkho = title && title.includes('[EXCEL]');
+                for (const detail of details) {
+                    const sp = sanphamMap.get(detail.sanphamId);
+                    if (!sp)
+                        continue;
+                    const titleLower = sp.title.toLowerCase();
+                    const masp = sp.masp.trim();
+                    const detailGhichu = detail.ghichu || '';
+                    let sltonhethong = getCalculatedSystemStock(sp.id);
+                    let sltonthucte = Number(detail.sltonthucte);
+                    let slhuy = Number(detail.slhuy);
+                    let note = detailGhichu || '';
+                    const isBap = titleLower.includes('bắp') && !titleLower.includes('cải') && !titleLower.includes('chuối') && !titleLower.includes('đậu') && !titleLower.includes('thịt');
+                    const isAutoCarry = titleLower.includes('dưa hấu') || isBap || titleLower.includes('cải chua') || titleLower.includes('hành tây');
+                    const isThom = titleLower.includes('thơm') && !titleLower.includes('rau thơm');
+                    if (isExcelChotkho) {
+                        const inExcel = detailGhichu.includes('Excel') && !detailGhichu.includes('không có trong Excel');
+                        sltonthucte = inExcel ? Number(detail.sltonthucte) : 0;
+                        slhuy = inExcel ? Number(detail.slhuy) : 0;
+                        if (inExcel) {
+                            note = `Cập nhật từ Excel (Áp dụng rule: có trong Excel)`;
+                            if (sltonhethong < 0) {
+                                sltonhethong = 0;
+                                note = `Cập nhật từ Excel (Tồn hệ thống âm tự động reset về 0)`;
+                            }
+                        }
+                        else if (sltonhethong < 0) {
+                            sltonhethong = 0;
+                            sltonthucte = 0;
+                            slhuy = 0;
+                            note = 'Tự động reset kho âm về 0 (Rules.md)';
+                        }
+                        else {
+                            if (isAutoCarry) {
+                                sltonthucte = sltonhethong;
+                                note = 'Tự động đưa qua (không có trong Excel - Auto-carried)';
+                            }
+                            else if (isThom) {
+                                const isThomXanh = masp === TARGET_THOM_XANH_MASP;
+                                const isThomGot = titleLower.includes('gọt');
+                                if (isThomXanh || isThomGot) {
+                                    sltonthucte = sltonhethong;
+                                    note = 'Tự động đưa qua (Thơm trái xanh/Thơm gọt - Auto-carried)';
+                                }
+                                else {
+                                    sltonthucte = 0;
+                                    slhuy = 0;
+                                    note = 'Thơm khác reset về 0 (không có trong Excel - Rules.md)';
+                                }
+                            }
+                            else {
+                                sltonthucte = 0;
+                                slhuy = 0;
+                                note = 'Reset về 0 (không có trong Excel - Rules.md)';
+                            }
+                        }
+                    }
+                    else {
+                        if (sltonhethong < 0) {
+                            sltonhethong = 0;
+                        }
+                        if (note === '') {
+                            note = 'Điều chỉnh thủ công';
+                        }
+                    }
+                    processedDetails.set(sp.id, {
+                        sanphamId: sp.id,
+                        masp,
+                        title: sp.title,
+                        isThom,
+                        titleLower,
+                        sltonhethong,
+                        sltonthucte,
+                        slhuy,
+                        ghichu: note
+                    });
+                }
+                if (isExcelChotkho) {
+                    const thomXanhProduct = sanphams.find(s => s.masp.trim() === TARGET_THOM_XANH_MASP);
+                    let targetThomXanh = thomXanhProduct ? processedDetails.get(thomXanhProduct.id) : null;
+                    if (targetThomXanh) {
+                        let extraActual = 0;
+                        let extraSystem = 0;
+                        let extraHuy = 0;
+                        for (const p of processedDetails.values()) {
+                            if (p.isThom && p.masp !== TARGET_THOM_XANH_MASP) {
+                                const isThomGot = p.titleLower.includes('gọt');
+                                if (!isThomGot) {
+                                    extraActual += p.sltonthucte;
+                                    extraSystem += p.sltonhethong;
+                                    extraHuy += p.slhuy;
+                                    p.sltonhethong = 0;
+                                    p.sltonthucte = 0;
+                                    p.slhuy = 0;
+                                    p.ghichu = `Quy đổi tồn kho về Thơm trái xanh [${TARGET_THOM_XANH_MASP}] (Rules.md)`;
+                                }
+                            }
+                        }
+                        if (extraActual > 0 || extraSystem > 0 || extraHuy > 0) {
+                            targetThomXanh.sltonthucte += extraActual;
+                            targetThomXanh.sltonhethong += extraSystem;
+                            targetThomXanh.slhuy += extraHuy;
+                            targetThomXanh.ghichu += ` (Nhận quy đổi từ các loại thơm khác: +${extraActual} thực tế, +${extraSystem} hệ thống, +${extraHuy} hủy)`;
+                            console.log(`[Thơm Consolidation] Consolidated to Thơm trái xanh [${TARGET_THOM_XANH_MASP}]: extraActual=+${extraActual}, extraSystem=+${extraSystem}, extraHuy=+${extraHuy}`);
+                        }
+                    }
+                }
                 let detailCount = 0;
                 const pendingWarnings = [];
                 const detailRecordsToCreate = [];
                 const sanphamKhoUpserts = [];
                 const tonKhoUpserts = [];
-                for (const detail of details) {
-                    const sltonhethong_chuan = Number(detail.sltonhethong);
-                    const chenhlech = sltonhethong_chuan - Number(detail.sltonthucte);
+                for (const p of processedDetails.values()) {
+                    const chenhlech = p.sltonhethong - p.sltonthucte - p.slhuy;
                     detailRecordsToCreate.push({
                         id: (0, crypto_1.randomUUID)(),
                         chotkhoId: chotkhoMaster.id,
-                        sanphamId: detail.sanphamId,
-                        sltonhethong: new library_1.Decimal(sltonhethong_chuan),
-                        sltonthucte: new library_1.Decimal(detail.sltonthucte),
-                        slhuy: new library_1.Decimal(detail.slhuy),
+                        sanphamId: p.sanphamId,
+                        sltonhethong: new library_1.Decimal(p.sltonhethong),
+                        sltonthucte: new library_1.Decimal(p.sltonthucte),
+                        slhuy: new library_1.Decimal(p.slhuy),
                         chenhlech: new library_1.Decimal(chenhlech),
-                        ghichu: detail.ghichu || '',
+                        ghichu: p.ghichu,
                         userId,
                         ngaychot: chotkhoMaster.ngaychot
                     });
                     sanphamKhoUpserts.push({
-                        sanphamId: detail.sanphamId,
+                        sanphamId: p.sanphamId,
                         khoId: khoId,
-                        soluong: new library_1.Decimal(detail.sltonthucte)
+                        soluong: new library_1.Decimal(p.sltonthucte)
                     });
-                    const currentSpKho = sanphamKhoMap.get(`${detail.sanphamId}_${khoId}`);
+                    const currentSpKho = sanphamKhoMap.get(`${p.sanphamId}_${khoId}`);
                     const oldQty = Number(currentSpKho?.soluong || 0);
-                    const delta = Number(detail.sltonthucte) - oldQty;
-                    const currentKhoTongRecord = sanphamKhoMap.get(`${detail.sanphamId}_${KHO_TONG_ID}`);
+                    const delta = p.sltonthucte - oldQty;
+                    const currentKhoTongRecord = sanphamKhoMap.get(`${p.sanphamId}_${KHO_TONG_ID}`);
                     let finalTotal = (khoId === KHO_TONG_ID)
-                        ? Number(detail.sltonthucte)
+                        ? p.sltonthucte
                         : (Number(currentKhoTongRecord?.soluong || 0) + delta);
                     if (finalTotal < 0) {
-                        console.warn(`⚠️ [CHOTKHO-SYNC] Product ${detail.sanphamId} has negative calculation (${finalTotal}). Clamping to 0.`);
+                        console.warn(`⚠️ [CHOTKHO-SYNC] Product ${p.sanphamId} has negative calculation (${finalTotal}). Clamping to 0.`);
                         finalTotal = 0;
                         if (khoId !== KHO_TONG_ID) {
                             sanphamKhoUpserts.push({
-                                sanphamId: detail.sanphamId,
+                                sanphamId: p.sanphamId,
                                 khoId: KHO_TONG_ID,
                                 soluong: new library_1.Decimal(0)
                             });
@@ -265,14 +440,14 @@ let ChotkhoService = class ChotkhoService {
                     else {
                         if (khoId !== KHO_TONG_ID) {
                             sanphamKhoUpserts.push({
-                                sanphamId: detail.sanphamId,
+                                sanphamId: p.sanphamId,
                                 khoId: KHO_TONG_ID,
                                 soluong: new library_1.Decimal(Number(currentKhoTongRecord?.soluong || 0) + delta)
                             });
                         }
                     }
                     tonKhoUpserts.push({
-                        sanphamId: detail.sanphamId,
+                        sanphamId: p.sanphamId,
                         slton: new library_1.Decimal(finalTotal),
                         sltontt: new library_1.Decimal(finalTotal)
                     });
@@ -324,6 +499,10 @@ let ChotkhoService = class ChotkhoService {
           `;
                     await prisma.$executeRawUnsafe(sql, ...params);
                 }
+                await prisma.sanphamKho.updateMany({
+                    where: { NOT: { khoId: KHO_TONG_ID } },
+                    data: { soluong: new library_1.Decimal(0), updatedAt: new Date() }
+                });
                 const result = await prisma.chotkho.findUnique({
                     where: { id: chotkhoMaster.id },
                     include: {

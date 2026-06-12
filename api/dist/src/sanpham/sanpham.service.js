@@ -66,6 +66,11 @@ let SanphamService = class SanphamService {
     }
     async generateMaSP() {
         const latest = await this.prisma.sanpham.findFirst({
+            where: {
+                masp: {
+                    startsWith: 'I1',
+                },
+            },
             orderBy: { masp: 'desc' },
         });
         let nextNumber = 1;

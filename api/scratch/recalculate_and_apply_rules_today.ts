@@ -6,7 +6,7 @@ const TARGET_THOM_XANH_MASP = 'I100220'; // Thơm trái xanh
 
 import * as XLSX from 'xlsx';
 
-async function processSession(chotkhoId: string, excelFilePath: string | null) {
+async function processSession(chotkhoId: string, excelFilePath: string | null, isLatestSession: boolean) {
   console.log(`\n=== Recalculating and Applying Rules for Session: ${chotkhoId} ===`);
 
   // 1. Fetch the chotkho record
@@ -79,10 +79,6 @@ async function processSession(chotkhoId: string, excelFilePath: string | null) {
 
     const calculatedSystemStock = initialQty + totalImports - totalExports;
 
-    if (sp.masp.trim() === 'I101127') {
-      console.log(`[Recalc I101127] session=${chotkhoId}, initialQty=${initialQty}, imports=${totalImports}, exports=${totalExports}, result=${calculatedSystemStock}`);
-    }
-
     recalculatedDetails.push({
       detail,
       sp,
@@ -131,13 +127,17 @@ async function processSession(chotkhoId: string, excelFilePath: string | null) {
     const isAutoCarry = title.includes('dưa hấu') || isBap || title.includes('cải chua') || title.includes('hành tây');
     const isThom = title.includes('thơm') && !title.includes('rau thơm');
 
-    if (sltonhethong < 0) {
+    if (inExcel) {
+      note = `Cập nhật từ Excel (Áp dụng rule: có trong Excel)`;
+      if (sltonhethong < 0) {
+        sltonhethong = 0;
+        note = `Cập nhật từ Excel (Tồn hệ thống âm tự động reset về 0)`;
+      }
+    } else if (sltonhethong < 0) {
       sltonhethong = 0;
       sltonthucte = 0;
       slhuy = 0;
       note = 'Tự động reset kho âm về 0 (Rules.md)';
-    } else if (inExcel) {
-      note = `Cập nhật từ Excel (Áp dụng rule: có trong Excel)`;
     } else {
       if (isAutoCarry) {
         sltonthucte = sltonhethong;
@@ -159,10 +159,6 @@ async function processSession(chotkhoId: string, excelFilePath: string | null) {
         slhuy = 0;
         note = 'Reset về 0 (không có trong Excel - Rules.md)';
       }
-    }
-
-    if (masp === 'I101127') {
-      console.log(`[Processed I101127] sltonhethong=${sltonhethong}, sltonthucte=${sltonthucte}, ghichu="${note}"`);
     }
 
     processedDetails.set(sp.id, {
@@ -233,14 +229,10 @@ async function processSession(chotkhoId: string, excelFilePath: string | null) {
       Number(orig.slhuy) !== p.slhuy ||
       orig.ghichu !== p.ghichu;
 
-    const hasStockChange = Number(orig.sltonthucte) !== p.sltonthucte;
+    const hasStockChange = isLatestSession || Number(orig.sltonthucte) !== p.sltonthucte;
 
     if (!hasDetailChange && !hasStockChange) {
       continue;
-    }
-
-    if (p.masp === 'I101127') {
-      console.log(`[DB Update I101127] sltonhethong=${p.sltonhethong}, sltonthucte=${p.sltonthucte}, ghichu="${p.ghichu}"`);
     }
 
     if (hasDetailChange) {
@@ -288,13 +280,14 @@ async function processSession(chotkhoId: string, excelFilePath: string | null) {
 }
 
 async function main() {
-  console.log('--- RECALCULATING SYSTEM STOCK AND RE-APPLYING RULES FOR JUNE 8 SESSIONS ---');
+  console.log('--- RECALCULATING SYSTEM STOCK AND RE-APPLYING RULES FOR TODAY (JUNE 11) ---');
   
-  // Session 1: Sáng 8/6 (không áp dụng file Excel)
-  await processSession('03dba5dc-ddac-4ae6-a0cc-8a5e5fc63461', null);
-
-  // Session 2: Trưa 8/6 (áp dụng file Excel Ton-Huy 08-6.xlsx)
-  await processSession('12f01303-5f3b-4fcd-a695-34ff6ab9f5fd', '/home/kata/Coding/rausachfinal/doisoat/Ton-Huy 08-6.xlsx');
+  // Today's Excel closing session:
+  await processSession(
+    '778eb33a-0ad9-4b80-9644-0b62fe67fe98', 
+    '/home/kata/Coding/rausachfinal/doisoat/Ton-Huy 11-6.xlsx', 
+    true
+  );
 
   console.log('\n--- ALL SESSIONS COMPLETED ---');
 }

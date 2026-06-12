@@ -51,6 +51,11 @@ let NhacungcapService = class NhacungcapService {
             const maxAttempts = 100;
             while (!isUnique && attempts < maxAttempts) {
                 const latest = await this.prisma.nhacungcap.findFirst({
+                    where: {
+                        mancc: {
+                            startsWith: 'TG-NCC',
+                        },
+                    },
                     orderBy: { mancc: 'desc' },
                 });
                 let nextNumber = 1;
