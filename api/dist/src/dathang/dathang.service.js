@@ -2506,6 +2506,8 @@ let DathangService = class DathangService {
                     });
                     if (!dathangFull)
                         continue;
+                    const isEdited = dathangFull.updatedAt && dathangFull.createdAt &&
+                        (Math.abs(new Date(dathangFull.updatedAt).getTime() - new Date(dathangFull.createdAt).getTime()) > 10000);
                     const updateData = {
                         status: 'danhan',
                         ghichu: (order.ghichu || '') + ' | [Auto-pilot] Tự động xác nhận nhập kho lúc 14h',
@@ -2513,12 +2515,13 @@ let DathangService = class DathangService {
                             const sldat = Number(sp.sldat) || 0;
                             const slgiao = Number(sp.slgiao) || 0;
                             const slnhan = Number(sp.slnhan) || 0;
-                            const actualQty = slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat);
+                            const actualQty = isEdited ? slnhan : (slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat));
+                            const slgiaoVal = isEdited ? slgiao : (slgiao > 0 ? slgiao : actualQty);
                             return {
                                 id: sp.id,
                                 idSP: sp.idSP,
                                 sldat: sldat,
-                                slgiao: slgiao > 0 ? slgiao : actualQty,
+                                slgiao: slgiaoVal,
                                 slnhan: actualQty,
                                 gianhap: Number(sp.gianhap) || 0
                             };

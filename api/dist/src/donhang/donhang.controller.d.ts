@@ -316,6 +316,8 @@ export declare class DonhangController {
             ttdat: number;
             ttgiao: number;
             ttnhan: number;
+            vat: number;
+            ttsauvat: number;
             ghichu: string | null;
             id: string;
             title: string;
@@ -323,7 +325,6 @@ export declare class DonhangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            vat: import("@prisma/client/runtime/library").Decimal | null;
             subtitle: string | null;
             title2: string | null;
             slug: string | null;
@@ -503,6 +504,8 @@ export declare class DonhangController {
             ttdat: number;
             ttgiao: number;
             ttnhan: number;
+            vat: number;
+            ttsauvat: number;
             ghichu: string | null;
             id: string;
             title: string;
@@ -510,7 +513,6 @@ export declare class DonhangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            vat: import("@prisma/client/runtime/library").Decimal | null;
             subtitle: string | null;
             title2: string | null;
             slug: string | null;

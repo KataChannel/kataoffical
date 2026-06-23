@@ -309,6 +309,8 @@ export declare class DonhangService {
             ttdat: number;
             ttgiao: number;
             ttnhan: number;
+            vat: number;
+            ttsauvat: number;
             ghichu: string | null;
             id: string;
             title: string;
@@ -316,7 +318,6 @@ export declare class DonhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            vat: import("@prisma/client/runtime/library").Decimal | null;
             subtitle: string | null;
             title2: string | null;
             slug: string | null;
@@ -397,6 +398,8 @@ export declare class DonhangService {
             ttdat: number;
             ttgiao: number;
             ttnhan: number;
+            vat: number;
+            ttsauvat: number;
             ghichu: string | null;
             id: string;
             title: string;
@@ -404,7 +407,6 @@ export declare class DonhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            vat: import("@prisma/client/runtime/library").Decimal | null;
             subtitle: string | null;
             title2: string | null;
             slug: string | null;
@@ -524,6 +526,7 @@ export declare class DonhangService {
     DonhangnumberToCode(number: any): Promise<string>;
     private calculateDonhangTotals;
     private deduplicateSanpham;
+    private deduplicateAndMergeSanpham;
     create(dto: any): Promise<{
         sanpham: {
             id: string;

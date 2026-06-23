@@ -3179,6 +3179,11 @@ async deletebulk(data: any) {
 
           if (!dathangFull) continue;
 
+          // Check if the order was manually edited by a user.
+          // If updatedAt is different from createdAt by more than 10 seconds, it is considered edited.
+          const isEdited = dathangFull.updatedAt && dathangFull.createdAt &&
+            (Math.abs(new Date(dathangFull.updatedAt).getTime() - new Date(dathangFull.createdAt).getTime()) > 10000);
+
           const updateData = {
             status: 'danhan',
             ghichu: (order.ghichu || '') + ' | [Auto-pilot] Tự động xác nhận nhập kho lúc 14h',
@@ -3188,16 +3193,19 @@ async deletebulk(data: any) {
               const slnhan = Number(sp.slnhan) || 0;
 
               // Xác định số lượng nhận thực tế:
+              // Nếu đơn hàng đã được sửa bởi user, giữ nguyên slnhan và slgiao.
+              // Ngược lại, tính toán mặc định:
               // 1. Ưu tiên số lượng nhận (slnhan) đã nhập trước đó (nếu > 0)
               // 2. Tiếp theo là số lượng giao (slgiao) nếu > 0
               // 3. Cuối cùng mới dùng số lượng đặt (sldat)
-              const actualQty = slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat);
+              const actualQty = isEdited ? slnhan : (slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat));
+              const slgiaoVal = isEdited ? slgiao : (slgiao > 0 ? slgiao : actualQty);
 
               return {
                 id: sp.id, // ID của dathangsanpham record
                 idSP: sp.idSP,
                 sldat: sldat,
-                slgiao: slgiao > 0 ? slgiao : actualQty,
+                slgiao: slgiaoVal,
                 slnhan: actualQty,
                 gianhap: Number(sp.gianhap) || 0
               };

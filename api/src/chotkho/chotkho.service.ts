@@ -45,7 +45,7 @@ export class ChotkhoService {
           status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
           OR: [
             { ngayHoanThanhThucte: { gt: startTime, lte: endTime } },
-            { ngayHoanThanhThucte: null, updatedAt: { gt: startTime, lte: endTime } }
+            { ngayHoanThanhThucte: null, ngaygiao: { gt: startTime, lte: endTime } }
           ]
         }
       },
@@ -61,7 +61,7 @@ export class ChotkhoService {
           status: 'danhan',
           OR: [
             { ngayHoanThanhThucte: { gt: startTime, lte: endTime } },
-            { ngayHoanThanhThucte: null, updatedAt: { gt: startTime, lte: endTime } }
+            { ngayHoanThanhThucte: null, ngaynhan: { gt: startTime, lte: endTime } }
           ]
         }
       },
@@ -73,14 +73,14 @@ export class ChotkhoService {
       ...xuat.map(x => ({
         type: 'XUẤT',
         qty: Number(x.slnhan || x.slgiao || x.sldat),
-        time: x.donhang.ngayHoanThanhThucte || x.donhang.updatedAt,
+        time: x.donhang.ngayHoanThanhThucte || x.donhang.ngaygiao,
         code: x.donhang.madonhang,
         note: 'Đơn hàng'
       })),
       ...nhap.map(n => ({
         type: 'NHẬP',
         qty: Number(n.slnhan || n.slgiao),
-        time: n.dathang.ngayHoanThanhThucte || n.dathang.updatedAt,
+        time: n.dathang.ngayHoanThanhThucte || n.dathang.ngaynhan,
         code: n.dathang.madncc,
         note: 'Nhập kho'
       }))
@@ -175,6 +175,9 @@ export class ChotkhoService {
               const targetNgayChot = ngaychot ? new Date(ngaychot) : new Date();
               const completionDate = new Date(targetNgayChot.getTime() - 1000);
 
+              const isEdited = order.updatedAt && order.createdAt &&
+                (Math.abs(order.updatedAt.getTime() - order.createdAt.getTime()) > 10000);
+
               // 1. Cập nhật trạng thái đơn hàng
               await prisma.dathang.update({
                 where: { id: orderId },
@@ -185,7 +188,7 @@ export class ChotkhoService {
                   sanpham: {
                     updateMany: order.sanpham.map(sp => ({
                       where: { id: sp.id },
-                      data: { slnhan: sp.slgiao || sp.sldat } // Mặc định nhận đủ nếu xác nhận nhanh
+                      data: { slnhan: isEdited ? sp.slnhan : (sp.slgiao || sp.sldat) }
                     }))
                   }
                 }
@@ -203,7 +206,7 @@ export class ChotkhoService {
                   sanpham: {
                     create: order.sanpham.map(sp => ({
                       sanphamId: sp.idSP,
-                      soluong: sp.slgiao || sp.sldat
+                      soluong: isEdited ? sp.slnhan : (sp.slgiao || sp.sldat)
                     }))
                   }
                 }
@@ -299,7 +302,7 @@ export class ChotkhoService {
               status: { in: ['dagiao', 'danhan', 'hoanthanh'] },
               OR: [
                 { ngayHoanThanhThucte: { gt: startTime, lte: targetNgayChot } },
-                { ngayHoanThanhThucte: null, updatedAt: { gt: startTime, lte: targetNgayChot } }
+                { ngayHoanThanhThucte: null, ngaygiao: { gt: startTime, lte: targetNgayChot } }
               ]
             }
           }
@@ -314,7 +317,7 @@ export class ChotkhoService {
               status: 'danhan',
               OR: [
                 { ngayHoanThanhThucte: { gt: startTime, lte: targetNgayChot } },
-                { ngayHoanThanhThucte: null, updatedAt: { gt: startTime, lte: targetNgayChot } }
+                { ngayHoanThanhThucte: null, ngaynhan: { gt: startTime, lte: targetNgayChot } }
               ]
             }
           }

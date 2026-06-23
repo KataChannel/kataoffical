@@ -47,6 +47,8 @@ export class DonhangCronService {
           ngaygiao: true,
           status: true,
           ghichu: true,
+          createdAt: true,
+          updatedAt: true,
           khachhang: {
             select: {
               name: true,
@@ -69,17 +71,24 @@ export class DonhangCronService {
       
       for (const order of ordersToUpdate) {
         try {
+          const isEdited = order.updatedAt && order.createdAt &&
+            (Math.abs(new Date(order.updatedAt).getTime() - new Date(order.createdAt).getTime()) > 10000);
+
           const sanphamData = order.sanpham.map(sp => {
             const sldat = Number(sp.sldat) || 0;
             const slgiao = Number(sp.slgiao) || 0;
             const slnhan = Number(sp.slnhan) || 0;
-            const actualQty = slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat);
+            
+            // Nếu đơn hàng đã được sửa bởi user, giữ nguyên slnhan và slgiao.
+            // Ngược lại, tính toán mặc định.
+            const actualQty = isEdited ? slnhan : (slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat));
+            const slgiaoVal = isEdited ? slgiao : (slgiao > 0 ? slgiao : actualQty);
 
             return {
               id: sp.idSP,
               idSP: sp.idSP,
               sldat: sldat,
-              slgiao: slgiao > 0 ? slgiao : actualQty,
+              slgiao: slgiaoVal,
               slnhan: actualQty,
               giaban: Number(sp.giaban) || 0,
               ghichu: sp.ghichu,
@@ -330,17 +339,24 @@ export class DonhangCronService {
       let successCount = 0;
       for (const order of ordersToUpdate) {
         try {
+          const isEdited = order.updatedAt && order.createdAt &&
+            (Math.abs(new Date(order.updatedAt).getTime() - new Date(order.createdAt).getTime()) > 10000);
+
           const sanphamData = order.sanpham.map(sp => {
             const sldat = Number(sp.sldat) || 0;
             const slgiao = Number(sp.slgiao) || 0;
             const slnhan = Number(sp.slnhan) || 0;
-            const actualQty = slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat);
+            
+            // Nếu đơn hàng đã được sửa bởi user, giữ nguyên slnhan và slgiao.
+            // Ngược lại, tính toán mặc định.
+            const actualQty = isEdited ? slnhan : (slnhan > 0 ? slnhan : (slgiao > 0 ? slgiao : sldat));
+            const slgiaoVal = isEdited ? slgiao : (slgiao > 0 ? slgiao : actualQty);
 
             return {
               id: sp.idSP,
               idSP: sp.idSP,
               sldat: sldat,
-              slgiao: slgiao > 0 ? slgiao : actualQty,
+              slgiao: slgiaoVal,
               slnhan: actualQty,
               giaban: Number(sp.giaban) || 0,
               ghichu: sp.ghichu,

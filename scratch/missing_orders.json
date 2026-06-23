@@ -1,0 +1,1451 @@
+[
+  {
+    "madonhang": "TG-AA46333",
+    "createdAt": "2026-06-08T16:57:38.510Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 380000,
+    "customerName": "SAHARA",
+    "makh": "TG-KS01367"
+  },
+  {
+    "madonhang": "TG-AA46332",
+    "createdAt": "2026-06-08T16:54:21.938Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 405500,
+    "customerName": "Xôi Mềm (Nguyễn Trãi)",
+    "makh": "TG-KS01393"
+  },
+  {
+    "madonhang": "TG-AA46331",
+    "createdAt": "2026-06-08T16:54:21.810Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 980300,
+    "customerName": "Hoàng Yến Buffet (BVH)",
+    "makh": "TG-KS00467"
+  },
+  {
+    "madonhang": "TG-AA46330",
+    "createdAt": "2026-06-08T16:54:21.646Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 895100,
+    "customerName": "Trống Cơm - Chảo Cá (AVH)",
+    "makh": "TG-KS00466"
+  },
+  {
+    "madonhang": "TG-AA46329",
+    "createdAt": "2026-06-08T16:54:11.677Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 191100,
+    "customerName": "Gạo Gạo (0819590592)",
+    "makh": "TG-KL00127"
+  },
+  {
+    "madonhang": "TG-AA46328",
+    "createdAt": "2026-06-08T16:54:11.626Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 158000,
+    "customerName": "CTCP Kỹ Nghệ Thực Phẩm Việt Sin",
+    "makh": "TG-KS01373"
+  },
+  {
+    "madonhang": "TG-AA46327",
+    "createdAt": "2026-06-08T16:54:11.552Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 198450,
+    "customerName": "Trâm Hồ (0918476489)",
+    "makh": "TG-KL00128"
+  },
+  {
+    "madonhang": "TG-AA46326",
+    "createdAt": "2026-06-08T16:54:11.433Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 639397.5,
+    "customerName": "Cô Lương (0909868474)",
+    "makh": "TG-KS01208"
+  },
+  {
+    "madonhang": "TG-AA46325",
+    "createdAt": "2026-06-08T16:54:11.235Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 2638800,
+    "customerName": "ZUMWHERE",
+    "makh": "TG-KS01389"
+  },
+  {
+    "madonhang": "TG-AA46324",
+    "createdAt": "2026-06-08T16:54:11.174Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 456000,
+    "customerName": "Xôi Mềm (Cửu Long)",
+    "makh": "TG-KS01391"
+  },
+  {
+    "madonhang": "TG-AA46323",
+    "createdAt": "2026-06-08T16:54:11.107Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 943500,
+    "customerName": "NAKED SUSHI (BTT)",
+    "makh": "TG-KS01356"
+  },
+  {
+    "madonhang": "TG-AA46322",
+    "createdAt": "2026-06-08T16:54:11.053Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 435000,
+    "customerName": "Xôi Mềm (Bạch Đằng)",
+    "makh": "TG-KS01394"
+  },
+  {
+    "madonhang": "TG-AA46321",
+    "createdAt": "2026-06-08T16:54:10.957Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 281610,
+    "customerName": "PLV CHICKEN",
+    "makh": "TG-KS01395"
+  },
+  {
+    "madonhang": "TG-AA46320",
+    "createdAt": "2026-06-08T16:54:10.806Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1034500,
+    "customerName": "NAKED SUSHI (Nhà Hàng)",
+    "makh": "TG-KS01355"
+  },
+  {
+    "madonhang": "TG-AA46319",
+    "createdAt": "2026-06-08T16:54:10.678Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 2521500,
+    "customerName": "Hoàng Yến Bếp Sơ Chế (PRK)",
+    "makh": "TG-KS01357"
+  },
+  {
+    "madonhang": "TG-AA46318",
+    "createdAt": "2026-06-08T16:54:10.620Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 541000,
+    "customerName": "Hoàng Yến Bếp Bánh (PST)",
+    "makh": "TG-KS01358"
+  },
+  {
+    "madonhang": "TG-AA46317",
+    "createdAt": "2026-06-08T16:54:10.506Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 796850,
+    "customerName": "Hoàng Yến Vietnamese Cuisine (PMH)",
+    "makh": "TG-KS00464"
+  },
+  {
+    "madonhang": "TG-AA46316",
+    "createdAt": "2026-06-08T16:54:10.383Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1038000,
+    "customerName": "LACASA",
+    "makh": "TG-KS01365"
+  },
+  {
+    "madonhang": "TG-AA46315",
+    "createdAt": "2026-06-08T16:54:10.295Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 893500,
+    "customerName": "BIG NIGHT OUT",
+    "makh": "TG-KS01366"
+  },
+  {
+    "madonhang": "TG-AA46314",
+    "createdAt": "2026-06-08T16:54:10.179Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 723800,
+    "customerName": "Trống Cơm - Chảo Cá (CRE)",
+    "makh": "TG-KS00465"
+  },
+  {
+    "madonhang": "TG-AA46313",
+    "createdAt": "2026-06-08T16:54:10.027Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 712100,
+    "customerName": "Khế Việt",
+    "makh": "TG-KS01350"
+  },
+  {
+    "madonhang": "TG-AA46312",
+    "createdAt": "2026-06-08T16:54:09.954Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 350700,
+    "customerName": "MARBLING",
+    "makh": "TG-KS01380"
+  },
+  {
+    "madonhang": "TG-AA46311",
+    "createdAt": "2026-06-08T16:54:09.860Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 582000,
+    "customerName": "COBALA FOODS",
+    "makh": "TG-KS01381"
+  },
+  {
+    "madonhang": "TG-AA46310",
+    "createdAt": "2026-06-08T16:54:09.778Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 120500,
+    "customerName": "Khế Việt (NV)",
+    "makh": "TG-KS01360"
+  },
+  {
+    "madonhang": "TG-AA46309",
+    "createdAt": "2026-06-08T16:54:09.646Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 521613.75,
+    "customerName": "NANA MART",
+    "makh": "TG-KS01349"
+  },
+  {
+    "madonhang": "TG-AA46308",
+    "createdAt": "2026-06-08T16:54:09.583Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 21000,
+    "customerName": "A Taste Of Saigon - Kitchen (NV)",
+    "makh": "TG-KS01386"
+  },
+  {
+    "madonhang": "TG-AA46307",
+    "createdAt": "2026-06-08T16:54:09.513Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 36500,
+    "customerName": "A Taste Of Saigon - Old Market (Bar)",
+    "makh": "TG-KS01384"
+  },
+  {
+    "madonhang": "TG-AA46306",
+    "createdAt": "2026-06-08T16:54:09.363Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 530600,
+    "customerName": "A Taste Of Saigon - Old Market (Bếp)",
+    "makh": "TG-KS01383"
+  },
+  {
+    "madonhang": "TG-AA46305",
+    "createdAt": "2026-06-08T16:54:09.283Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 76000,
+    "customerName": "LACASA (Bếp Ốc)",
+    "makh": "TG-KS01372"
+  },
+  {
+    "madonhang": "TG-AA46304",
+    "createdAt": "2026-06-08T16:54:09.170Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 346605,
+    "customerName": "A Taste Of Saigon - Kitchen (Bếp)",
+    "makh": "TG-KS01382"
+  },
+  {
+    "madonhang": "TG-AA46303",
+    "createdAt": "2026-06-08T16:51:33.275Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1897600,
+    "customerName": "Nhà Hàng Soul Bến Thành",
+    "makh": "TG-KS00395"
+  },
+  {
+    "madonhang": "TG-AA46302",
+    "createdAt": "2026-06-08T16:49:42.273Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1043900,
+    "customerName": "TIANLONG 09",
+    "makh": "TG-KS01266"
+  },
+  {
+    "madonhang": "TG-AA46301",
+    "createdAt": "2026-06-08T16:49:42.160Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 927300,
+    "customerName": "TIANLONG 06",
+    "makh": "TG-KS01261"
+  },
+  {
+    "madonhang": "TG-AA46300",
+    "createdAt": "2026-06-08T16:49:42.018Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1585000,
+    "customerName": "LONGWANG 18",
+    "makh": "TG-KS01263"
+  },
+  {
+    "madonhang": "TG-AA46299",
+    "createdAt": "2026-06-08T16:49:41.900Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1604600,
+    "customerName": "LONGWANG 11",
+    "makh": "TG-KS00546"
+  },
+  {
+    "madonhang": "TG-AA46298",
+    "createdAt": "2026-06-08T16:49:41.754Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1712800,
+    "customerName": "LONGWANG 8",
+    "makh": "TG-KS00526"
+  },
+  {
+    "madonhang": "TG-AA46297",
+    "createdAt": "2026-06-08T16:49:41.607Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 2223300,
+    "customerName": "LONGWANG 3",
+    "makh": "TG-KS00286"
+  },
+  {
+    "madonhang": "TG-AA46296",
+    "createdAt": "2026-06-08T16:49:41.458Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 2645800,
+    "customerName": "LONGWANG 1",
+    "makh": "TG-KS00333"
+  },
+  {
+    "madonhang": "TG-AA46295",
+    "createdAt": "2026-06-08T16:49:41.323Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 2828600,
+    "customerName": "KHÈN",
+    "makh": "TG-KS00343"
+  },
+  {
+    "madonhang": "TG-AA46294",
+    "createdAt": "2026-06-08T16:49:41.258Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 247000,
+    "customerName": "Cơm niêu Hải Sư 3",
+    "makh": "TG-KS01276"
+  },
+  {
+    "madonhang": "TG-AA46293",
+    "createdAt": "2026-06-08T16:49:41.068Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1122200,
+    "customerName": "BÒ TƠ Q10",
+    "makh": "TG-KS00156"
+  },
+  {
+    "madonhang": "TG-AA46292",
+    "createdAt": "2026-06-08T16:49:40.882Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 2088800,
+    "customerName": "BÒ TƠ Q7",
+    "makh": "TG-KS00056"
+  },
+  {
+    "madonhang": "TG-AA46291",
+    "createdAt": "2026-06-08T16:49:40.713Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 2056300,
+    "customerName": "BÒ TƠ Q3",
+    "makh": "TG-KS00058"
+  },
+  {
+    "madonhang": "TG-AA46290",
+    "createdAt": "2026-06-08T16:49:40.645Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 4439000,
+    "customerName": "Bò Tơ Bếp Trung Tâm",
+    "makh": "TG-KS00347"
+  },
+  {
+    "madonhang": "TG-AA46289",
+    "createdAt": "2026-06-08T16:49:40.476Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1516250,
+    "customerName": "BÒ TƠ BÌNH THẠNH",
+    "makh": "TG-KS00197"
+  },
+  {
+    "madonhang": "TG-AA46288",
+    "createdAt": "2026-06-08T16:49:38.413Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 2088900,
+    "customerName": "TIANLONG 08",
+    "makh": "TG-KS01269"
+  },
+  {
+    "madonhang": "TG-AA46287",
+    "createdAt": "2026-06-08T16:49:38.314Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 509700,
+    "customerName": "TIANLONG 07",
+    "makh": "TG-KS01259"
+  },
+  {
+    "madonhang": "TG-AA46286",
+    "createdAt": "2026-06-08T16:49:38.173Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1461000,
+    "customerName": "TIANLONG 01",
+    "makh": "TG-KS01163"
+  },
+  {
+    "madonhang": "TG-AA46285",
+    "createdAt": "2026-06-08T16:49:38.115Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 290500,
+    "customerName": "Minh Mẫn (Trần Gia)",
+    "makh": "TG-KS01052"
+  },
+  {
+    "madonhang": "TG-AA46284",
+    "createdAt": "2026-06-08T16:49:37.946Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1260700,
+    "customerName": "LONGWANG 7",
+    "makh": "TG-KS00392"
+  },
+  {
+    "madonhang": "TG-AA46283",
+    "createdAt": "2026-06-08T16:49:37.815Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1328400,
+    "customerName": "G-MASTER NƯỚNG",
+    "makh": "TG-KS01254"
+  },
+  {
+    "madonhang": "TG-AA46282",
+    "createdAt": "2026-06-08T16:49:37.711Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 677000,
+    "customerName": "Nhà Hàng Fenice Cuisine Bar",
+    "makh": "TG-KS00535"
+  },
+  {
+    "madonhang": "TG-AA46281",
+    "createdAt": "2026-06-08T16:49:37.624Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 132000,
+    "customerName": "Cơm niêu Hải Sư 2",
+    "makh": "TG-KS01258"
+  },
+  {
+    "madonhang": "TG-AA46280",
+    "createdAt": "2026-06-08T16:49:37.549Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 119000,
+    "customerName": "BÒ TƠ Q10 (BAR)",
+    "makh": "TG-KS00158"
+  },
+  {
+    "madonhang": "TG-AA46279",
+    "createdAt": "2026-06-08T16:49:37.447Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 329500,
+    "customerName": "BÒ TƠ Q7 (NV)",
+    "makh": "TG-KS00066"
+  },
+  {
+    "madonhang": "TG-AA46278",
+    "createdAt": "2026-06-08T16:49:37.363Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 214000,
+    "customerName": "BÒ TƠ Q7 (BAR)",
+    "makh": "TG-KS00085"
+  },
+  {
+    "madonhang": "TG-AA46277",
+    "createdAt": "2026-06-08T16:49:37.281Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 240000,
+    "customerName": "BÒ TƠ Q3 (NV)",
+    "makh": "TG-KS00067"
+  },
+  {
+    "madonhang": "TG-AA46276",
+    "createdAt": "2026-06-08T16:49:37.181Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 247000,
+    "customerName": "BÒ TƠ BÌNH THẠNH (NV)",
+    "makh": "TG-KS00198"
+  },
+  {
+    "madonhang": "TG-AA46275",
+    "createdAt": "2026-06-08T16:49:37.099Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 101000,
+    "customerName": "BÒ TƠ BÌNH THẠNH (BAR)",
+    "makh": "TG-KS00291"
+  },
+  {
+    "madonhang": "TG-AA46274",
+    "createdAt": "2026-06-08T16:45:06.596Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1162500,
+    "customerName": "YEEBO (NVT)",
+    "makh": "TG-KS01369"
+  },
+  {
+    "madonhang": "TG-AA46273",
+    "createdAt": "2026-06-08T16:45:06.530Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 922000,
+    "customerName": "YEEBO (LTT)",
+    "makh": "TG-KS01370"
+  },
+  {
+    "madonhang": "TG-AA46272",
+    "createdAt": "2026-06-08T16:45:06.437Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 873500,
+    "customerName": "YEEBO (HBN)",
+    "makh": "TG-KS01368"
+  },
+  {
+    "madonhang": "TG-AA46271",
+    "createdAt": "2026-06-08T16:45:06.304Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1194500,
+    "customerName": "YAKIMONO (PXL)",
+    "makh": "TG-KS01224"
+  },
+  {
+    "madonhang": "TG-AA46270",
+    "createdAt": "2026-06-08T16:45:05.939Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1517200,
+    "customerName": "YAKIMONO (LQĐ)",
+    "makh": "TG-KS00406"
+  },
+  {
+    "madonhang": "TG-AA46269",
+    "createdAt": "2026-06-08T16:45:05.804Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1637200,
+    "customerName": "YAKIMONO (Gigamall)",
+    "makh": "TG-KS01361"
+  },
+  {
+    "madonhang": "TG-AA46268",
+    "createdAt": "2026-06-08T16:45:05.662Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 2931725,
+    "customerName": "YAKIMONO (Bình Tân)",
+    "makh": "TG-KS00075"
+  },
+  {
+    "madonhang": "TG-AA46267",
+    "createdAt": "2026-06-08T16:45:05.564Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 356900,
+    "customerName": "TOHOKU Đồng Khởi",
+    "makh": "TG-KS01306"
+  },
+  {
+    "madonhang": "TG-AA46266",
+    "createdAt": "2026-06-08T16:45:05.458Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 276500,
+    "customerName": "Soho Bistro",
+    "makh": "TG-KL00088"
+  },
+  {
+    "madonhang": "TG-AA46265",
+    "createdAt": "2026-06-08T16:45:05.148Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 803000,
+    "customerName": "ẨM THỰC SÂN VƯỜN PON",
+    "makh": "TG-KS00226"
+  },
+  {
+    "madonhang": "TG-AA46264",
+    "createdAt": "2026-06-08T16:45:05.063Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 455500,
+    "customerName": "Meat Works2",
+    "makh": "TG-KS00120"
+  },
+  {
+    "madonhang": "TG-AA46263",
+    "createdAt": "2026-06-08T16:45:04.970Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 395400,
+    "customerName": "Le Monde Steak (Tân Phú)",
+    "makh": "TG-KS00411"
+  },
+  {
+    "madonhang": "TG-AA46262",
+    "createdAt": "2026-06-08T16:45:04.876Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 549800,
+    "customerName": "Le Monde Steak (Bình Tân)",
+    "makh": "TG-KS00408"
+  },
+  {
+    "madonhang": "TG-AA46261",
+    "createdAt": "2026-06-08T16:45:04.760Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 883500,
+    "customerName": "La Sirena",
+    "makh": "TG-KS01374"
+  },
+  {
+    "madonhang": "TG-AA46260",
+    "createdAt": "2026-06-08T16:45:04.456Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 924250,
+    "customerName": "NHÀ HÀNG HÀNG DƯƠNG (QUẬN 7)",
+    "makh": "TG-KS00238"
+  },
+  {
+    "madonhang": "TG-AA46259",
+    "createdAt": "2026-06-08T16:45:04.388Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 326000,
+    "customerName": "NHÀ HÀNG HÀNG DƯƠNG (QUẬN 4)",
+    "makh": "TG-KS00239"
+  },
+  {
+    "madonhang": "TG-AA46258",
+    "createdAt": "2026-06-08T16:45:04.287Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 250500,
+    "customerName": "NHÀ HÀNG GÀ TRỐNG",
+    "makh": "TG-KS00006"
+  },
+  {
+    "madonhang": "TG-AA46257",
+    "createdAt": "2026-06-08T16:45:04.138Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 979000,
+    "customerName": "Chay Vô Úy",
+    "makh": "TG-KS01353"
+  },
+  {
+    "madonhang": "TG-AA46256",
+    "createdAt": "2026-06-08T16:45:04.059Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 891000,
+    "customerName": "BUSAN BBQ",
+    "makh": "TG-KS01324"
+  },
+  {
+    "madonhang": "TG-AA46255",
+    "createdAt": "2026-06-08T16:45:03.477Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1969500,
+    "customerName": "Nhà hàng An Nam Quán",
+    "makh": "TG-KS01311"
+  },
+  {
+    "madonhang": "TG-AA46254",
+    "createdAt": "2026-06-08T16:45:03.342Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1256600,
+    "customerName": "AMAVI VEGAN & KOM",
+    "makh": "TG-KS01300"
+  },
+  {
+    "madonhang": "TG-AA46253",
+    "createdAt": "2026-06-08T16:45:00.290Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 2630100,
+    "customerName": "NHÀ HÀNG TRUFFLE & CO (Q7)",
+    "makh": "TG-KS00309"
+  },
+  {
+    "madonhang": "TG-AA46252",
+    "createdAt": "2026-06-08T16:45:00.143Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 2425100,
+    "customerName": "NHÀ HÀNG TRUFFLE & CO (Q1)",
+    "makh": "TG-KS00452"
+  },
+  {
+    "madonhang": "TG-AA46251",
+    "createdAt": "2026-06-08T16:45:00.026Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1466400,
+    "customerName": "NHÀ HÀNG TRUFFLE & CO (MTB)",
+    "makh": "TG-KS00542"
+  },
+  {
+    "madonhang": "TG-AA46250",
+    "createdAt": "2026-06-08T16:44:59.830Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 297550,
+    "customerName": "HERE & NOW (NTT)",
+    "makh": "TG-KS00028"
+  },
+  {
+    "madonhang": "TG-AA46249",
+    "createdAt": "2026-06-08T16:44:59.662Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 770700,
+    "customerName": "ĐỖ LÊ MINH TRÍ",
+    "makh": "TG-KS01320"
+  },
+  {
+    "madonhang": "TG-AA46248",
+    "createdAt": "2026-06-08T16:44:18.128Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 842500,
+    "customerName": "THỦY MỘC",
+    "makh": "TG-KS00447"
+  },
+  {
+    "madonhang": "TG-AA46247",
+    "createdAt": "2026-06-08T16:44:18.045Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 293800,
+    "customerName": "CÔNG TY TNHH NAP SAIGON",
+    "makh": "TG-KS00558"
+  },
+  {
+    "madonhang": "TG-AA46246",
+    "createdAt": "2026-06-08T16:44:17.999Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 75000,
+    "customerName": "FS lá basil",
+    "makh": "TG-KL00009"
+  },
+  {
+    "madonhang": "TG-AA46245",
+    "createdAt": "2026-06-08T16:44:17.918Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 387100,
+    "customerName": "Waikiki",
+    "makh": "TG-KS00221"
+  },
+  {
+    "madonhang": "TG-AA46244",
+    "createdAt": "2026-06-08T16:44:17.848Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 224500,
+    "customerName": "STATION SPORT BAR (NV)",
+    "makh": "TG-KS00155"
+  },
+  {
+    "madonhang": "TG-AA46243",
+    "createdAt": "2026-06-08T16:44:17.761Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 330800,
+    "customerName": "STATION SPORT BAR (BẾP)",
+    "makh": "TG-KS00149"
+  },
+  {
+    "madonhang": "TG-AA46242",
+    "createdAt": "2026-06-08T16:44:17.566Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1296800,
+    "customerName": "CỎ GARDEN",
+    "makh": "TG-KS00031"
+  },
+  {
+    "madonhang": "TG-AA46241",
+    "createdAt": "2026-06-08T16:44:17.501Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 90000,
+    "customerName": "CALI (BAR) NGUYỄN VĂN TRỖI",
+    "makh": "TG-KS00267"
+  },
+  {
+    "madonhang": "TG-AA46240",
+    "createdAt": "2026-06-08T16:44:17.440Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 30000,
+    "customerName": "CALI (BAR) NGUYỄN HUỆ",
+    "makh": "TG-KS00248"
+  },
+  {
+    "madonhang": "TG-AA46239",
+    "createdAt": "2026-06-08T16:44:17.351Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 91000,
+    "customerName": "CALI (BAR) NGUYỄN CHÍ THANH",
+    "makh": "TG-KS00247"
+  },
+  {
+    "madonhang": "TG-AA46238",
+    "createdAt": "2026-06-08T16:44:17.294Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 48000,
+    "customerName": "CALI (BAR) MEGA MALL",
+    "makh": "TG-KS00263"
+  },
+  {
+    "madonhang": "TG-AA46237",
+    "createdAt": "2026-06-08T16:44:17.236Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 45000,
+    "customerName": "CALI (BAR) Vinhomes Central Park",
+    "makh": "TG-KS00244"
+  },
+  {
+    "madonhang": "TG-AA46236",
+    "createdAt": "2026-06-08T16:44:17.158Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1177500,
+    "customerName": "CALI (BẾP TỔNG)",
+    "makh": "TG-KS00259"
+  },
+  {
+    "madonhang": "TG-AA46235",
+    "createdAt": "2026-06-08T16:44:17.071Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 507400,
+    "customerName": "CALI (BẾP) NGUYỄN VĂN TRỖI",
+    "makh": "TG-KS00266"
+  },
+  {
+    "madonhang": "TG-AA46234",
+    "createdAt": "2026-06-08T16:44:16.981Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 584600,
+    "customerName": "CALI (NGUYỄN HUỆ)",
+    "makh": "TG-KS00243"
+  },
+  {
+    "madonhang": "TG-AA46233",
+    "createdAt": "2026-06-08T16:44:16.893Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 603000,
+    "customerName": "CALI (NGUYỄN CHÍ THANH)",
+    "makh": "TG-KS00242"
+  },
+  {
+    "madonhang": "TG-AA46232",
+    "createdAt": "2026-06-08T16:44:16.783Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 580000,
+    "customerName": "CALI (BẾP) MEGA MALL",
+    "makh": "TG-KS00262"
+  },
+  {
+    "madonhang": "TG-AA46231",
+    "createdAt": "2026-06-08T16:44:16.655Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 718100,
+    "customerName": "CALI Vinhomes Center Park",
+    "makh": "TG-KS00240"
+  },
+  {
+    "madonhang": "TG-AA46230",
+    "createdAt": "2026-06-08T16:44:16.562Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 596000,
+    "customerName": "SpringFish Lẩu cá Tứ Xuyên (Tiệm 3/2)",
+    "makh": "TG-KS01337"
+  },
+  {
+    "madonhang": "TG-AA46229",
+    "createdAt": "2026-06-08T16:44:16.482Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 302000,
+    "customerName": "SpringFish Lẩu cá Tứ Xuyên (Thủ Đức)",
+    "makh": "TG-KS01191"
+  },
+  {
+    "madonhang": "TG-AA46228",
+    "createdAt": "2026-06-08T16:44:16.378Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 626600,
+    "customerName": "BEER 90",
+    "makh": "TG-KS00039"
+  },
+  {
+    "madonhang": "TG-AA46227",
+    "createdAt": "2026-06-08T16:44:16.264Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1465100,
+    "customerName": "ỤT ỤT 47",
+    "makh": "TG-KS00037"
+  },
+  {
+    "madonhang": "TG-AA46226",
+    "createdAt": "2026-06-08T16:44:16.190Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 394000,
+    "customerName": "ỤT ỤT 168 (VVK)",
+    "makh": "TG-KS00036"
+  },
+  {
+    "madonhang": "TG-AA46225",
+    "createdAt": "2026-06-08T16:44:16.080Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 395600,
+    "customerName": "BEER 01 (LNC)",
+    "makh": "TG-KS00040"
+  },
+  {
+    "madonhang": "TG-AA46224",
+    "createdAt": "2026-06-08T16:44:15.968Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 390600,
+    "customerName": "BEER 300",
+    "makh": "TG-KS00041"
+  },
+  {
+    "madonhang": "TG-AA46223",
+    "createdAt": "2026-06-08T16:44:15.832Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1686800,
+    "customerName": "Nhà hàng Opus Sài Gòn",
+    "makh": "TG-KS00214"
+  },
+  {
+    "madonhang": "TG-AA46222",
+    "createdAt": "2026-06-08T16:44:15.736Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 631500,
+    "customerName": "MOMO Q3",
+    "makh": "TG-KS00043"
+  },
+  {
+    "madonhang": "TG-AA46221",
+    "createdAt": "2026-06-08T16:44:15.313Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 955300,
+    "customerName": "Nhà Hàng Cheer House",
+    "makh": "TG-KS00418"
+  },
+  {
+    "madonhang": "TG-AA46220",
+    "createdAt": "2026-06-08T16:44:15.125Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1115600,
+    "customerName": "CƠM NIÊU BÌNH DÂN (Thủ Đức)",
+    "makh": "TG-KS01277"
+  },
+  {
+    "madonhang": "TG-AA46219",
+    "createdAt": "2026-06-08T16:44:14.999Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1605000,
+    "customerName": "Geylang Lor 9",
+    "makh": "TG-KS00281"
+  },
+  {
+    "madonhang": "TG-AA46218",
+    "createdAt": "2026-06-08T16:44:14.915Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 411500,
+    "customerName": "Nhà hàng Daiichi Ramen",
+    "makh": "TG-KS00568"
+  },
+  {
+    "madonhang": "TG-AA46217",
+    "createdAt": "2026-06-08T16:44:14.823Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 311000,
+    "customerName": "Khách Sạn HuaZhu (NV)",
+    "makh": "TG-KS00518"
+  },
+  {
+    "madonhang": "TG-AA46216",
+    "createdAt": "2026-06-08T16:44:14.646Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 2397000,
+    "customerName": "Khách Sạn HuaZhu (Bếp sáng)",
+    "makh": "TG-KS00557"
+  },
+  {
+    "madonhang": "TG-AA46215",
+    "createdAt": "2026-06-08T16:44:14.575Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 109000,
+    "customerName": "NHÀ GỖ (NV)",
+    "makh": "TG-KS00491"
+  },
+  {
+    "madonhang": "TG-AA46214",
+    "createdAt": "2026-06-08T16:44:14.432Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1588000,
+    "customerName": "NHÀ GỖ (Bếp tối)",
+    "makh": "TG-KS00490"
+  },
+  {
+    "madonhang": "TG-AA46213",
+    "createdAt": "2026-06-08T16:44:14.343Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 593985,
+    "customerName": "Hikari Vegetarian Coffee (Q10)",
+    "makh": "TG-KS00371"
+  },
+  {
+    "madonhang": "TG-AA46212",
+    "createdAt": "2026-06-08T16:44:14.237Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 501585,
+    "customerName": "Hikari Vegetarian Coffee (Q1)",
+    "makh": "TG-KS00382"
+  },
+  {
+    "madonhang": "TG-AA46211",
+    "createdAt": "2026-06-08T16:44:14.052Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1146390,
+    "customerName": "Nhà hàng Chay Làng Ta",
+    "makh": "TG-KS00357"
+  },
+  {
+    "madonhang": "TG-AA46210",
+    "createdAt": "2026-06-08T16:44:13.930Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 898500,
+    "customerName": "NHÀ HÀNG LÁ MỚI",
+    "makh": "TG-KS00361"
+  },
+  {
+    "madonhang": "TG-AA46209",
+    "createdAt": "2026-06-08T16:42:36.785Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 476000,
+    "customerName": "BIA THỦ CÔNG BRAUHOF SAIGON (Bar)",
+    "makh": "TG-KS01312"
+  },
+  {
+    "madonhang": "TG-AA46208",
+    "createdAt": "2026-06-08T16:42:36.690Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 329100,
+    "customerName": "Le Monde Steak (NTMK)",
+    "makh": "TG-KS00410"
+  },
+  {
+    "madonhang": "TG-AA46207",
+    "createdAt": "2026-06-08T16:42:33.326Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 352100,
+    "customerName": "BIA THỦ CÔNG BRAUHOF SAIGON",
+    "makh": "TG-KS01310"
+  },
+  {
+    "madonhang": "TG-AA46206",
+    "createdAt": "2026-06-08T16:34:32.749Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 243000,
+    "customerName": "HOA NẮNG",
+    "makh": "TG-KS00045"
+  },
+  {
+    "madonhang": "TG-AA46205",
+    "createdAt": "2026-06-08T16:34:32.646Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 845000,
+    "customerName": "Minh Ký Q2",
+    "makh": "TG-KS01299"
+  },
+  {
+    "madonhang": "TG-AA46204",
+    "createdAt": "2026-06-08T16:34:32.558Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 644400,
+    "customerName": "Gcup - Coffe & Bistro",
+    "makh": "TG-KS00481"
+  },
+  {
+    "madonhang": "TG-AA46203",
+    "createdAt": "2026-06-08T16:34:30.180Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1340000,
+    "customerName": "Palsaik Korean BBQ",
+    "makh": "TG-KS00419"
+  },
+  {
+    "madonhang": "TG-AA46202",
+    "createdAt": "2026-06-08T16:30:59.676Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 801100,
+    "customerName": "HOA NẮNG",
+    "makh": "TG-KS00045"
+  },
+  {
+    "madonhang": "TG-AA46201",
+    "createdAt": "2026-06-08T16:30:59.392Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 375000,
+    "customerName": "FRANCIS BAR",
+    "makh": "TG-KS00064"
+  },
+  {
+    "madonhang": "TG-AA46200",
+    "createdAt": "2026-06-08T16:30:59.322Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 253000,
+    "customerName": "MANMARU",
+    "makh": "TG-KS00106"
+  },
+  {
+    "madonhang": "TG-AA46199",
+    "createdAt": "2026-06-08T16:30:59.164Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1696500,
+    "customerName": "FRANCIS BẾP",
+    "makh": "TG-KS00063"
+  },
+  {
+    "madonhang": "TG-AA46198",
+    "createdAt": "2026-06-08T16:30:59.067Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 846000,
+    "customerName": "Minh Ký Q2",
+    "makh": "TG-KS01299"
+  },
+  {
+    "madonhang": "TG-AA46197",
+    "createdAt": "2026-06-08T16:30:58.995Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 480000,
+    "customerName": "NHÀ HÀNG COCOTTE (NTMK)",
+    "makh": "TG-KS01160"
+  },
+  {
+    "madonhang": "TG-AA46196",
+    "createdAt": "2026-06-08T16:30:58.919Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 399000,
+    "customerName": "NHÀ HÀNG COCOTTE (NTN)",
+    "makh": "TG-KS01164"
+  },
+  {
+    "madonhang": "TG-AA46195",
+    "createdAt": "2026-06-08T16:30:58.838Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 271800,
+    "customerName": "MANMARU (Lê Văn Sỹ)",
+    "makh": "TG-KS01183"
+  },
+  {
+    "madonhang": "TG-AA46194",
+    "createdAt": "2026-06-08T16:30:58.730Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 640300,
+    "customerName": "Phở Sol Q1 (32 Phạm Hồng Thái)",
+    "makh": "TG-KS01296"
+  },
+  {
+    "madonhang": "TG-AA46193",
+    "createdAt": "2026-06-08T16:30:58.560Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 2188400,
+    "customerName": "Cháo Sườn Chú Chen",
+    "makh": "TG-KS00417"
+  },
+  {
+    "madonhang": "TG-AA46192",
+    "createdAt": "2026-06-08T16:30:58.462Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1730000,
+    "customerName": "HAPPY LAMB",
+    "makh": "TG-KS00257"
+  },
+  {
+    "madonhang": "TG-AA46191",
+    "createdAt": "2026-06-08T16:30:58.182Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1451700,
+    "customerName": "Nhà Hàng Biển Đông",
+    "makh": "TG-KS01213"
+  },
+  {
+    "madonhang": "TG-AA46190",
+    "createdAt": "2026-06-08T16:30:58.045Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 819000,
+    "customerName": "Gcup - Coffe & Bistro",
+    "makh": "TG-KS00481"
+  },
+  {
+    "madonhang": "TG-AA46189",
+    "createdAt": "2026-06-08T16:30:57.902Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1309500,
+    "customerName": "Nhà hàng Hoa Lộc Vừng",
+    "makh": "TG-KS00228"
+  },
+  {
+    "madonhang": "TG-AA46188",
+    "createdAt": "2026-06-08T16:30:57.809Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1394000,
+    "customerName": "Mùa Vàng",
+    "makh": "TG-KS00080"
+  },
+  {
+    "madonhang": "TG-AA46187",
+    "createdAt": "2026-06-08T16:30:57.751Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 56000,
+    "customerName": "MANMARU (Nguyễn Hữu Cảnh)",
+    "makh": "TG-KS00111"
+  },
+  {
+    "madonhang": "TG-AA46186",
+    "createdAt": "2026-06-08T16:30:57.672Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 401000,
+    "customerName": "CTCP DU LỊCH THÀNH THÀNH CÔNG HVT (TTC Bếp)",
+    "makh": "TG-KS00025"
+  },
+  {
+    "madonhang": "TG-AA46185",
+    "createdAt": "2026-06-08T16:30:57.592Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 122400,
+    "customerName": "Le Monde Steak (NTMK)",
+    "makh": "TG-KS00410"
+  },
+  {
+    "madonhang": "TG-AA46184",
+    "createdAt": "2026-06-08T16:30:57.492Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 503200,
+    "customerName": "Phở Sol Q4",
+    "makh": "TG-KS00172"
+  },
+  {
+    "madonhang": "TG-AA46183",
+    "createdAt": "2026-06-08T16:30:57.351Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 872000,
+    "customerName": "NHÀ HÀNG ỚT ĐỎ",
+    "makh": "TG-KS01175"
+  },
+  {
+    "madonhang": "TG-AA46182",
+    "createdAt": "2026-06-08T16:30:57.218Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 781500,
+    "customerName": "Le Monde Steak (Cao Thắng)",
+    "makh": "TG-KS00409"
+  },
+  {
+    "madonhang": "TG-AA46181",
+    "createdAt": "2026-06-08T16:30:57.081Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 643500,
+    "customerName": "NHÀ HÀNG PHỐ 79 (5 PNT)",
+    "makh": "TG-KS00147"
+  },
+  {
+    "madonhang": "TG-AA46180",
+    "createdAt": "2026-06-08T16:30:56.704Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 497300,
+    "customerName": "VINFFOOD (S902)",
+    "makh": "TG-KS00296"
+  },
+  {
+    "madonhang": "TG-AA46179",
+    "createdAt": "2026-06-08T16:30:56.434Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 1202550,
+    "customerName": "VINFFOOD (S301)",
+    "makh": "TG-KS00049"
+  },
+  {
+    "madonhang": "TG-AA46178",
+    "createdAt": "2026-06-08T16:30:56.335Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 99950,
+    "customerName": "Le Monde Steak (PXL) (Bar)",
+    "makh": "TG-KS01326"
+  },
+  {
+    "madonhang": "TG-AA46177",
+    "createdAt": "2026-06-08T16:30:55.945Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 531750,
+    "customerName": "VINFFOOD (S203)",
+    "makh": "TG-KS01280"
+  },
+  {
+    "madonhang": "TG-AA46176",
+    "createdAt": "2026-06-08T16:30:55.844Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 399400,
+    "customerName": "Le Monde Steak (PXL)",
+    "makh": "TG-KS00407"
+  },
+  {
+    "madonhang": "TG-AA46175",
+    "createdAt": "2026-06-08T16:30:55.756Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 747000,
+    "customerName": "OZZY",
+    "makh": "TG-KS01364"
+  },
+  {
+    "madonhang": "TG-AA46174",
+    "createdAt": "2026-06-08T16:30:55.483Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 495500,
+    "customerName": "NHÀ HÀNG ỐC GÕ",
+    "makh": "TG-KS01315"
+  },
+  {
+    "madonhang": "TG-AA46173",
+    "createdAt": "2026-06-08T16:30:55.347Z",
+    "ngaygiao": "2026-06-08T17:00:00.000Z",
+    "status": "dadat",
+    "tongtien": 147300,
+    "customerName": "NOT ONLY",
+    "makh": "TG-KS00034"
+  }
+]
