@@ -20,6 +20,6 @@ export default {
     }
   },
   entryPointToBrowserMapping: {
-    '': ['main-7UADGTY2.js']
+    '': ['main-VCXLDLT5.js']
   }
 };

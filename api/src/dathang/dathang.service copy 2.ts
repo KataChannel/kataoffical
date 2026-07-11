@@ -26,7 +26,7 @@ export class DathangService {
   private incrementOrderCode(orderCode: string): string {
     const prefix = 'TGNCC-';
     const letters = orderCode.slice(6, 8); // Lấy AA → ZZ
-    const numbers = parseInt(orderCode.slice(8), 13); // Lấy 00001 → 99999
+    const numbers = parseInt(orderCode.slice(8), 10); // Lấy 00001 → 99999
 
     let newLetters = letters;
     let newNumbers = numbers + 1;

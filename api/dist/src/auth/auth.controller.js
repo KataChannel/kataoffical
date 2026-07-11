@@ -47,6 +47,9 @@ let AuthController = class AuthController {
         console.log(body);
         return this.authService.login(body.SDT, body.email, body.password);
     }
+    async zaloMiniappLogin(body) {
+        return this.authService.zaloMiniappLogin(body.accessToken, body.phoneToken, body.userInfo, body.mockPhone);
+    }
     changePassword(req, body) {
         return this.authService.changePassword(req.user.id, body.oldPassword, body.newPassword);
     }
@@ -114,6 +117,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('zalo-miniapp'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "zaloMiniappLogin", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('change-password'),

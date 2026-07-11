@@ -91,7 +91,7 @@ export class LoginComponent implements OnInit {
        this._StorageService.setItem('token', token); // Store the token
        this._UserService.getProfile().then((res: any) => {
         if(res){
-          if(res.permissions>0){
+          if (res.permissions && res.permissions.length > 0) {
             console.log(res);
             window.location.reload(); // Reload the page
           }

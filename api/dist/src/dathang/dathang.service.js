@@ -97,7 +97,7 @@ let DathangService = class DathangService {
     incrementOrderCode(orderCode) {
         const prefix = 'TGNCC-';
         const letters = orderCode.slice(6, 8);
-        const numbers = parseInt(orderCode.slice(8), 13);
+        const numbers = parseInt(orderCode.slice(8), 10);
         let newLetters = letters;
         let newNumbers = numbers + 1;
         if (newNumbers > 99999) {
@@ -1335,17 +1335,13 @@ let DathangService = class DathangService {
                 }
                 if (!skipInventory) {
                     for (const sp of data.sanpham) {
+                        const prodId = sp.idSP ?? sp.id;
                         const newSldat = parseFloat((sp.sldat ?? 0).toFixed(3));
-                        const oldItem = oldDathang.sanpham.find((o) => o.idSP === sp.id);
-                        const oldslnhan = oldItem ? parseFloat((oldItem.slnhan ?? 0).toFixed(3)) : 0;
-                        const difference = newSldat - oldslnhan;
-                        if (difference !== 0) {
+                        if (newSldat > 0) {
                             await prisma.tonKho.update({
-                                where: { sanphamId: sp.id },
+                                where: { sanphamId: prodId },
                                 data: {
-                                    slchonhap: difference > 0
-                                        ? { increment: difference }
-                                        : { decrement: -difference },
+                                    slchonhap: { increment: newSldat },
                                 },
                             });
                         }
@@ -1369,10 +1365,14 @@ let DathangService = class DathangService {
                             ? {
                                 sanpham: {
                                     updateMany: data.sanpham.map((sp) => ({
-                                        where: { idSP: sp.id },
+                                        where: { idSP: sp.idSP ?? sp.id },
                                         data: {
                                             ghichu: sp.ghichu,
                                             sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                                            gianhap: parseFloat((sp.gianhap ?? 0).toFixed(3)) || 0,
+                                            ttnhan: Number((sp.slnhan ?? 0) * (sp.gianhap ?? 0)) || 0,
                                         },
                                     })),
                                 },

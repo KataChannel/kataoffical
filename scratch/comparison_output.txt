@@ -1,0 +1,891 @@
+Parsing Excel T6...
+Parsing Excel T7...
+Fetching database prices for Nana Mart...
+
+--- ANALYZING HÀNH LÁ (Green Onion) ---
+
+Items containing "Hành lá" or masp "I100098" in Excel T6 (June):
+{
+  "masp": "I100098",
+  "title": "Hành lá",
+  "dvt": "Kg",
+  "price": 45000,
+  "note": "200gr/Gói",
+  "changeStatus": ""
+}
+
+Items containing "Hành lá" or masp "I100098" in Excel T7 (July):
+{
+  "masp": "I100098",
+  "title": "Hành lá",
+  "dvt": "Kg",
+  "price": 60000,
+  "note": "200gr/Gói",
+  "changeStatus": "TĂNG"
+}
+
+Items containing "Hành lá" in DB:
+{
+  "id": "dc7139f3-bb0e-4276-91e8-7212aec8af46",
+  "masp": "I100993",
+  "title": "Bao Hành Lá Lớn",
+  "dvt": "Kg",
+  "giaban": 0,
+  "isActive": true
+}
+{
+  "id": "7880ffe5-d2f4-4703-802c-1f22fcb701e2",
+  "masp": "I100994",
+  "title": "Bao Hành Lá Nhỏ",
+  "dvt": "Kg",
+  "giaban": 0,
+  "isActive": true
+}
+{
+  "id": "69c36be0-e22a-41bb-a22c-49d5cc877e5d",
+  "masp": "I100098",
+  "title": "Hành lá",
+  "dvt": "Kg",
+  "giaban": 60000,
+  "isActive": true
+}
+
+--- COMPARING EXCEL T7 (JULY 2026) VS DATABASE ---
+Discrepancies found: 2
+MASP: I100236 | Nấm đông cô tươi
+  DVT Diff: Excel T7 = kg | DB = Kg
+MASP: I100482 | Dừa tươi
+  DVT Diff: Excel T7 = trái | DB = Trái
+
+Items in Excel T7 but not in DB: 0
+
+Active items in DB but not in Excel T7: 786
+- I100821 | Cà Đắng | DVT: Kg | Price: 0
+- I100007 | Bắp mỹ kg Lột Vỏ | DVT: Kg | Price: 0
+- I100593 | Bắp chuối hột nguyên trái | DVT: Kg | Price: 0
+- I100006 | Bắp mỹ hạt | DVT: Kg | Price: 0
+- I100019 | Bồn bồn chua | DVT: Kg | Price: 0
+- I100027 | Bông điên điển | DVT: Kg | Price: 0
+- I100030 | Bông so đũa | DVT: Kg | Price: 0
+- I100547 | BẮP CẢI TRÁI TIM | DVT: Kg | Price: 0
+- I100035 | Cà dĩa | DVT: Kg | Price: 0
+- I100048 | Cải nhún | DVT: Kg | Price: 0
+- I100037 | Cà pháo muối | DVT: Kg | Price: 0
+- I100038 | Cà pháo xanh | DVT: Kg | Price: 0
+- I100061 | Chanh thái | DVT: Kg | Price: 0
+- I100066 | Củ cải muối | DVT: Kg | Price: 0
+- I100281 | Củ năng gọt vỏ | DVT: Kg | Price: 0
+- I100573 | Đinh Lăng | DVT: Kg | Price: 0
+- I100084 | Đọt choại | DVT: Kg | Price: 0
+- I100053 | Cải trời | DVT: Kg | Price: 0
+- I100065 | Củ cải Hàn Quốc | DVT: Kg | Price: 0
+- I100076 | Đậu bo tươi | DVT: Kg | Price: 0
+- I100555 | Hành hương làm sạch | DVT: Kg | Price: 0
+- I100107 | Hành tím VN lột vỏ | DVT: Kg | Price: 0
+- I100121 | Khoai lang nhật | DVT: Kg | Price: 0
+- I100129 | Khoai Tây TQ | DVT: Kg | Price: 0
+- I100141 | Lá sen tươi | DVT: Lá | Price: 0
+- I100143 | Măng chua trắng | DVT: Kg | Price: 0
+- I100146 | Măng vàng | DVT: Kg | Price: 0
+- I100147 | Me Vắt | DVT: Kg | Price: 0
+- I100117 | Khổ qua đèo | DVT: Kg | Price: 0
+- I100130 | Lá bưởi | DVT: Kg | Price: 0
+- I100541 | Lá cẩm | DVT: Kg | Price: 0
+- I100491 | Mận | DVT: Kg | Price: 0
+- I100148 | Mía lau | DVT: Kg | Price: 0
+- I100149 | Mít non | DVT: Kg | Price: 0
+- I100620 | Rau muống mầm | DVT: Kg | Price: 0
+- I100152 | Mướp khía | DVT: Kg | Price: 0
+- I100106 | Hành tím bào | DVT: Kg | Price: 0
+- I101223 | Ngò già | DVT: Kg | Price: 0
+- I100157 | Ngó sen chẻ | DVT: Kg | Price: 0
+- I100169 | Ớt hiểm xay | DVT: Kg | Price: 0
+- I100173 | Râu Bắp | DVT: Kg | Price: 0
+- I100516 | Red oakleaf | DVT: Kg | Price: 0
+- I100195 | Rễ tranh | DVT: Kg | Price: 0
+- I100200 | Sake | DVT: Kg | Price: 0
+- I100182 | Rau má | DVT: Kg | Price: 0
+- I100563 | Nấm tuyết khô | DVT: Kg | Price: 0
+- I100159 | Ngó sen nguyên cọng | DVT: Kg | Price: 0
+- I100513 | Rong nho | DVT: Kg | Price: 0
+- I100197 | Sả bào | DVT: Kg | Price: 0
+- I100232 | Tỏi xay | DVT: Kg | Price: 0
+- I100210 | Xà lách son nhỏ | DVT: Kg | Price: 0
+- I100095 | Green Oakleaf | DVT: Kg | Price: 0
+- I100653 | Cải Mầm(kg) | DVT: Kg | Price: 0
+- I100104 | Hành tím lột vỏ TQ | DVT: Kg | Price: 0
+- I100105 | Hành tím Bắc | DVT: Kg | Price: 0
+- I100703 | Rau dền xanh | DVT: Kg | Price: 0
+- I100634 | Nấm hải sản (kg) | DVT: Kg | Price: 0
+- I100240 | Nấm kim châm tươi | DVT: Kg | Price: 0
+- I100226 | Tỏi bào | DVT: Kg | Price: 0
+- I100229 | Tỏi lột | DVT: Kg | Price: 0
+- I100514 | Khổ Qua Lớn | DVT: Kg | Price: 0
+- I100092 | Giá Hàn Quốc | DVT: Kg | Price: 0
+- I100093 | Giá lặt | DVT: Kg | Price: 0
+- I100580 | Cải bẹ xanh nước | DVT: Kg | Price: 0
+- I100005 | Bắp chuối nguyên trái | DVT: Kg | Price: 0
+- I100041 | Cà rốt ĐaLat | DVT: Kg | Price: 0
+- I100631 | Ngải Bún | DVT: Kg | Price: 0
+- I101117 | Rau dền đỏ | DVT: Kg | Price: 0
+- I100243 | Nấm mèo | DVT: Kg | Price: 0
+- I100635 | Nấm linh chi nâu (kg) | DVT: Kg | Price: 0
+- I100370 | Nấm đông cô khô | DVT: Kg | Price: 0
+- I100455 | Bông sen | DVT: Cây | Price: 0
+- I100250 | Bánh lọt | DVT: bịch | Price: 0
+- I100253 | Bánh ướt | DVT: Kg | Price: 0
+- I100257 | Bún nhuyễn | DVT: Kg | Price: 0
+- I100261 | Đậu hủ non Ichiban | DVT: Hộp | Price: 0
+- I100269 | Mì trứng tươi | DVT: Kg | Price: 0
+- I100700 | Cóc Non | DVT: Kg | Price: 0
+- I100476 | Cóc Trái | DVT: Kg | Price: 0
+- I100477 | Dâu tây ĐL | DVT: Kg | Price: 0
+- I100488 | Kiwi | DVT: Kg | Price: 0
+- I100489 | Lê trái | DVT: Kg | Price: 0
+- I100490 | Lựu | DVT: Kg | Price: 0
+- I100493 | Nhãn | DVT: Kg | Price: 0
+- I100702 | NHO XANH KHÔNG HẠT | DVT: Kg | Price: 0
+- I100499 | ỔI Ruột Đỏ | DVT: Kg | Price: 0
+- I100498 | Ổi trái | DVT: Kg | Price: 0
+- I100500 | Quýt | DVT: Kg | Price: 0
+- I100501 | Sơ ri | DVT: Kg | Price: 0
+- I100503 | Táo đỏ trái | DVT: Kg | Price: 0
+- I100871 | TÁO GALA | DVT: Kg | Price: 0
+- I100505 | Táo mèo | DVT: Kg | Price: 0
+- I100504 | Táo đỏ Mỹ | DVT: Kg | Price: 0
+- I100506 | Táo xanh VN | DVT: Kg | Price: 0
+- I100466 | Thanh long ruột đỏ | DVT: Kg | Price: 0
+- I100508 | Xoài cát Hòa Lộc | DVT: Kg | Price: 0
+- I100716 | Xoài Cát Chu | DVT: Kg | Price: 0
+- I100509 | Xoài chín | DVT: Kg | Price: 0
+- I100510 | Xoài thái | DVT: Kg | Price: 0
+- I100613 | Xoài tứ quý | DVT: Kg | Price: 0
+- I100511 | Xoài Keo | DVT: Kg | Price: 0
+- I100252 | Bánh tráng pía tươi | DVT: Xấp | Price: 0
+- I100254 | Bánh ướt tròn | DVT: Kg | Price: 0
+- I100260 | Đậu hủ miếng trắng | DVT: Miếng | Price: 0
+- I100262 | Đậu hủ trắng Ichiban | DVT: Cây | Price: 0
+- I100263 | Đậu hủ trứng Ichiban | DVT: Cây | Price: 0
+- I100265 | Hủ tiếu dai | DVT: Kg | Price: 0
+- I100266 | Hủ tiếu xào | DVT: Kg | Price: 0
+- I100791 | Đậu trắng đà lạt | DVT: Kg | Price: 0
+- I100291 | Bạch quả tươi | DVT: Gói | Price: 0
+- I100781 | Bạch quả không tách vỏ | DVT: Kg | Price: 0
+- I100726 | Bánh đa mè | DVT: Kg | Price: 0
+- I100858 | Bánh đa nướng | DVT: Cái | Price: 0
+- I100889 | BÁNH ĐA NƯỚNG LỚN | DVT: cái | Price: 0
+- I101189 | Bột chiên giòn | DVT: Kg | Price: 0
+- I101238 | Bún gạo (gói) | DVT: Kg | Price: 0
+- I100294 | Bánh mì sandwich | DVT: Gói | Price: 0
+- I100855 | Bánh phở Bắc | DVT: Kg | Price: 0
+- I100900 | Bánh phở tròn | DVT: Kg | Price: 0
+- I100457 | Bánh tráng cuốn | DVT: Kg | Price: 0
+- I100801 | Bánh tráng pía kg | DVT: Kg | Price: 0
+- I100893 | Bánh tráng rế | DVT: Xấp | Price: 0
+- I100818 | Bắp cải baby | DVT: Kg | Price: 0
+- I100674 | Bắp Mỹ Đông Lạnh | DVT: Kg | Price: 0
+- I100678 | Bắp Nếp Hạt | DVT: Kg | Price: 0
+- I101116 | Bắp non tươi (Loại 1) | DVT: Kg | Price: 0
+- I100933 | Bầu xanh gọt vỏ | DVT: Kg | Price: 0
+- I100277 | Bí đỏ gọt vỏ | DVT: Kg | Price: 0
+- I100696 | Bí đao gọt | DVT: Kg | Price: 0
+- I100917 | Bồn bồn tươi | DVT: Kg | Price: 0
+- I100484 | Hoa cúc vàng | DVT: Bó | Price: 0
+- I100029 | Bông kim châm | DVT: GÓI | Price: 0
+- I100780 | Bột bán | DVT: Kg | Price: 0
+- I101139 | Bột chiên xù (bịch) | DVT: Bịch | Price: 0
+- I100305 | Bột mì | DVT: Kg | Price: 0
+- I101135 | Bột năng | DVT: Kg | Price: 0
+- I100831 | Bột nghệ | DVT: Kg | Price: 0
+- I100307 | Bột ngọt | DVT: Kg | Price: 0
+- I100729 | Bột quế | DVT: Kg | Price: 0
+- I100863 | BỘT TỎI | DVT: Kg | Price: 0
+- I100734 | Bơ tường an | DVT: Hộp | Price: 0
+- I100409 | Bò viên | DVT: Kg | Price: 0
+- I100309 | Bún gạo | DVT: Kg | Price: 0
+- I101150 | Bún lá | DVT: Kg | Price: 0
+- I100311 | Bún tàu | DVT: Kg | Price: 0
+- I100410 | Cá Ba sa | DVT: Kg | Price: 0
+- I101024 | Cà chua bi vàng | DVT: Kg | Price: 0
+- I101023 | Cà chua bi xanh | DVT: Kg | Price: 0
+- I100588 | Cà chua hườm | DVT: Kg | Price: 0
+- I100525 | Cà chua socola | DVT: Kg | Price: 0
+- I100704 | Cà chua trứng | DVT: Kg | Price: 0
+- I100581 | Cá cơm | DVT: Kg | Price: 0
+- I100412 | Cá diêu hồng | DVT: Kg | Price: 0
+- I100413 | Cá hấp | DVT: Kg | Price: 0
+- I100689 | Cải Cầu Vồng | DVT: Kg | Price: 0
+- I100813 | Cải mầm tím | DVT: Hộp | Price: 0
+- I100819 | Cải ngọt gốc | DVT: Kg | Price: 0
+- I100419 | Cá Mặn | DVT: Kg | Price: 0
+- I101162 | Cam đỏ | DVT: Kg | Price: 0
+- I100605 | Cá mó | DVT: Kg | Price: 0
+- I101229 | Cam xoàn | DVT: Kg | Price: 0
+- I100810 | Cần nước cạn | DVT: Kg | Price: 0
+- I100589 | Cánh gà | DVT: Kg | Price: 0
+- I100907 | Bánh mì Baguette (Kg) | DVT: Kg | Price: 0
+- I100748 | CỦ HỦ DỪA THÂN | DVT: Kg | Price: 0
+- I100885 | Đậu hủ miếng trắng ngắn | DVT: Miếng | Price: 0
+- I100595 | Cà pháo lớn | DVT: Kg | Price: 0
+- I100682 | Cà Pháo Tím | DVT: Kg | Price: 0
+- I100427 | Cá rô | DVT: Kg | Price: 0
+- I100278 | Cà rốt bào | DVT: Kg | Price: 0
+- I101234 | Cá trắm cỏ | DVT: Kg | Price: 0
+- I101020 | Cá trê | DVT: Kg | Price: 0
+- I100648 | Cà pháo trứng | DVT: Kg | Price: 0
+- I100665 | Cây lẻ bạn | DVT: Kg | Price: 0
+- I101236 | Chả bò | DVT: Kg | Price: 0
+- I100836 | Chà bông | DVT: Kg | Price: 0
+- I100429 | Chả cá | DVT: Kg | Price: 0
+- I101102 | Chả cá Basa | DVT: Kg | Price: 0
+- I100312 | Chả cây | DVT: Cây | Price: 0
+- I100315 | Chả lụa chay | DVT: Kg | Price: 0
+- I100430 | Chả chiên | DVT: Kg | Price: 0
+- I101199 | Chả huế | DVT: Kg | Price: 0
+- I100864 | CHẢ LÁ | DVT: Cây | Price: 0
+- I100431 | Chả lụa | DVT: Kg | Price: 0
+- I100649 | Chanh Giấy Vàng | DVT: Kg | Price: 0
+- I100318 | Chao đỏ | DVT: hủ | Price: 0
+- I100319 | Chao trắng | DVT: Hủ | Price: 0
+- I100316 | Chả quế | DVT: Kg | Price: 0
+- I101242 | Chuối Dole | DVT: Kg | Price: 0
+- I101118 | Chuối Laba | DVT: Kg | Price: 0
+- I100927 | Chuối sáp | DVT: Kg | Price: 0
+- I101137 | Cóc chín | DVT: Kg | Price: 0
+- I100629 | Cơm dừa | DVT: Kg | Price: 0
+- I100761 | CƠM MẺ | DVT: Kg | Price: 0
+- I100771 | Cốm xanh | DVT: Kg | Price: 0
+- I100432 | Cua đồng xay | DVT: Kg | Price: 0
+- I100583 | Củ cải trắng bào sợi | DVT: Kg | Price: 0
+- I100929 | Củ cải trắng gọt vỏ | DVT: Kg | Price: 0
+- I100640 | Củ dền gọt | DVT: Kg | Price: 0
+- I100071 | Củ kiệu ngâm | DVT: Kg | Price: 0
+- I100749 | CỦ KIỆU HŨ | DVT: Hũ | Price: 0
+- I100623 | Củ năng còn vỏ | DVT: Kg | Price: 0
+- I100651 | Củ sắn bào sợi | DVT: Kg | Price: 0
+- I100321 | Đậu bo (Bo đông lạnh) | DVT: Kg | Price: 0
+- I100820 | Đậu đỏ | DVT: Kg | Price: 0
+- I100415 | Cá nục | DVT: Kg | Price: 0
+- I100718 | Đậu hủ non cao cấp | DVT: Hộp | Price: 0
+- I100799 | Đậu hủ trắng cây Ichiban 220gr | DVT: cây | Price: 0
+- I100895 | Đậu hủ trắng miếng nhỏ | DVT: Miếng | Price: 0
+- I100800 | Đậu hủ trứng cây Ichiban 220gr | DVT: cây | Price: 0
+- I100324 | Dầu mè | DVT: Chai | Price: 0
+- I100961 | Đậu nành Nhật | DVT: Kg | Price: 0
+- I100944 | Đậu Ngự | DVT: Kg | Price: 0
+- I100894 | Đậu hủ miếng chiên nhỏ | DVT: Miếng | Price: 0
+- I100325 | Đậu phộng rang | DVT: Kg | Price: 0
+- I100326 | Đậu phộng sống | DVT: Kg | Price: 0
+- I100852 | Đậu xanh nguyên hạt | DVT: Kg | Price: 0
+- I100327 | Đậu xanh cà vỏ | DVT: Kg | Price: 0
+- I100328 | Đồ chua ngâm | DVT: Kg | Price: 0
+- I100082 | Đọt bầu | DVT: Kg | Price: 0
+- I100952 | Đọt khổ qua rừng | DVT: Kg | Price: 0
+- I100332 | Dừa khô | DVT: trái | Price: 0
+- I100928 | Dưa lưới (vỏ vàng) | DVT: Kg | Price: 0
+- I100331 | Dưa mắm | DVT: Kg | Price: 0
+- I100481 | Dừa nạo | DVT: Kg | Price: 0
+- I100329 | Dưa chuột ngâm chua | DVT: Bịch | Price: 0
+- I100283 | Đu đủ xanh bào | DVT: Kg | Price: 0
+- I100949 | Đu đủ (gọt vỏ) | DVT: Kg | Price: 0
+- I101120 | Đu đủ hườm (gọt vỏ) | DVT: Kg | Price: 0
+- I100576 | Đùi gà | DVT: Kg | Price: 0
+- I100728 | Đường thốt nốt | DVT: Kg | Price: 0
+- I100334 | Đường cát trắng | DVT: Kg | Price: 0
+- I100335 | Đường cát vàng | DVT: Kg | Price: 0
+- I100896 | Dương xỉ | DVT: Cành | Price: 0
+- I100434 | Ếch | DVT: Kg | Price: 0
+- I100565 | Thịt gà | DVT: Kg | Price: 0
+- I100435 | Gà góc tư | DVT: Kg | Price: 0
+- I100592 | Giá lặt (2 đầu) | DVT: Kg | Price: 0
+- I100668 | Giá lùn | DVT: Kg | Price: 0
+- I100340 | Giấm gạo | DVT: chai | Price: 0
+- I100342 | Giấm trắng | DVT: Chai | Price: 0
+- I100908 | Gốc ngò rí | DVT: Kg | Price: 0
+- I100284 | Gừng gọt vỏ | DVT: Kg | Price: 0
+- I100615 | Gừng VN gọt vỏ | DVT: Kg | Price: 0
+- I100621 | Gừng xay | DVT: Kg | Price: 0
+- I100790 | Hành Indo trắng | DVT: Kg | Price: 0
+- I100100 | Hành phi | DVT: Kg | Price: 0
+- I100706 | Hành sậy | DVT: Kg | Price: 0
+- I100246 | Hành tây lột | DVT: Kg | Price: 0
+- I101148 | Hành tây tím lột | DVT: Kg | Price: 0
+- I100945 | Hành tây trung | DVT: Kg | Price: 0
+- I100837 | Hành tím bắc bào | DVT: Kg | Price: 0
+- I100730 | Hành tím bắc lột | DVT: Kg | Price: 0
+- I101132 | Hành tím Lý Sơn | DVT: Kg | Price: 0
+- I100109 | Hành tím xay | DVT: Kg | Price: 0
+- I100343 | Hạt điều | DVT: Kg | Price: 0
+- I101225 | Hạt điều rang | DVT: kg | Price: 0
+- I101149 | Hạt nêm chay Maggi | DVT: Kg | Price: 0
+- I100345 | Hạt sen khô | DVT: Kg | Price: 0
+- I100926 | Hoa Decor (kg) | DVT: Kg | Price: 0
+- I101226 | Hoa đồng tiền (bó) | DVT: Bó | Price: 0
+- I100346 | Hoa hồi | DVT: Kg | Price: 0
+- I100946 | Hoa lan (bó) | DVT: Bó | Price: 0
+- I101152 | Hoa ly | DVT: Bó | Price: 0
+- I101240 | Đậu nưa | DVT: Bịch | Price: 0
+- I100873 | MÈ ĐEN | DVT: Kg | Price: 0
+- I100768 | Hủ tiếu dai Mỹ tho | DVT: Kg | Price: 0
+- I101133 | Kèo nèo bó | DVT: Bó | Price: 0
+- I101243 | Khế ngọt | DVT: Kg | Price: 0
+- I100534 | Khoai mỡ gọt | DVT: Kg | Price: 0
+- I100568 | Khoai lang bào | DVT: Kg | Price: 0
+- I100122 | Khoai lang tím | DVT: Kg | Price: 0
+- I100350 | Khoai tây (lỡ) | DVT: Kg | Price: 0
+- I100624 | Khoai mỡ cạo sẵn | DVT: Kg | Price: 0
+- I100567 | Khoai môn bào | DVT: Kg | Price: 0
+- I100578 | Khoai môn gọt vỏ | DVT: Kg | Price: 0
+- I100597 | Khoai môn sáp | DVT: Kg | Price: 0
+- I100286 | Khoai sọ gọt sạch | DVT: Kg | Price: 0
+- I101237 | Khoai tây bi gọt vỏ | DVT: Kg | Price: 0
+- I100387 | Khoai từ | DVT: Kg | Price: 0
+- I100285 | Khổ qua bào | DVT: Kg | Price: 0
+- I100740 | Khổ qua rừng | DVT: Kg | Price: 0
+- I100786 | Kim chi | DVT: Kg | Price: 0
+- I100686 | Kỷ Tử Khô | DVT: Kg | Price: 0
+- I100683 | Lá Cách | DVT: Kg | Price: 0
+- I100526 | Lá Giang (kg) | DVT: Kg | Price: 0
+- I100454 | Lá Mắc Mật | DVT: Kg | Price: 0
+- I100663 | Lá mã đề | DVT: Kg | Price: 0
+- I101104 | Lá me | DVT: Kg | Price: 0
+- I100561 | Lá bạc hà | DVT: Kg | Price: 0
+- I101168 | Lá nghệ | DVT: Kg | Price: 0
+- I100705 | Lá nhàu | DVT: Kg | Price: 0
+- I100290 | Lá ớt non | DVT: Kg | Price: 0
+- I100352 | Lạp xưởng | DVT: Kg | Price: 0
+- I100804 | Lá sung | DVT: Kg | Price: 0
+- I100935 | Lá trà (lặt lá) | DVT: Kg | Price: 0
+- I100604 | Lòng gà | DVT: Kg | Price: 0
+- I101263 | Lòng già | DVT: Kg | Price: 0
+- I100353 | Mạch nha | DVT: Hủ | Price: 0
+- I100805 | Mắm cá linh Xay | DVT: Kg | Price: 0
+- I100355 | Mắm cá Sặc | DVT: Kg | Price: 0
+- I100806 | Mắm cá Sặc xay | DVT: Kg | Price: 0
+- I100358 | Mắm ruốc | DVT: Hủ | Price: 0
+- I100872 | MẮM RUỐC BÀ DUỆ | DVT: hủ | Price: 0
+- I100357 | Mắm ruốc Huế | DVT: Kg | Price: 0
+- I100633 | Mắm ruốc xào | DVT: Kg | Price: 0
+- I100359 | Mắm tôm | DVT: Chai | Price: 0
+- I100727 | Mãng cầu xiêm | DVT: Kg | Price: 0
+- I100145 | Măng trắng củ | DVT: Kg | Price: 0
+- I100437 | Măng khô | DVT: Kg | Price: 0
+- I100957 | Măng le | DVT: Kg | Price: 0
+- I101109 | Măng le (gói) | DVT: Gói | Price: 0
+- I100897 | Mận Hà Nội | DVT: Kg | Price: 0
+- I100610 | Mề gà | DVT: Kg | Price: 0
+- I100676 | Me Hộp | DVT: Hộp | Price: 0
+- I100986 | Hộp đựng Hoa Deco | DVT: Cái | Price: 0
+- I100441 | Nghêu | DVT: Kg | Price: 0
+- I100878 | Phở lá | DVT: Kg | Price: 0
+- I101207 | Mè rang | DVT: Kg | Price: 0
+- I100362 | Mè trắng | DVT: Kg | Price: 0
+- I100579 | Me xanh | DVT: Kg | Price: 0
+- I100363 | Mì giòn - mì chiên giòn | DVT: Kg | Price: 0
+- I100365 | Miến dong | DVT: Kg | Price: 0
+- I101138 | Miến tươi (thái) | DVT: Kg | Price: 0
+- I100882 | Mì gói kg | DVT: Kg | Price: 0
+- I100874 | Mì trứng khô | DVT: Kg | Price: 0
+- I100948 | Mít non (luộc) | DVT: Kg | Price: 0
+- I101100 | Mít ruột đỏ | DVT: Kg | Price: 0
+- I100951 | Mít thái | DVT: Kg | Price: 0
+- I101122 | Mít thái lột sẵn (ko hạt) | DVT: Kg | Price: 0
+- I100963 | Mì Phúc Kiến | DVT: Kg | Price: 0
+- I100542 | Mì vắt | DVT: Vắt | Price: 0
+- I101156 | Mì vắt (Kg) | DVT: Kg | Price: 0
+- I100440 | Mực ống | DVT: Kg | Price: 0
+- I100369 | Muối sấy | DVT: Kg | Price: 0
+- I100368 | Muối hạt | DVT: Kg | Price: 0
+- I100924 | Muối ớt tôm | DVT: Kg | Price: 0
+- I101000 | Muối tôm DH Food | DVT: hủ | Price: 0
+- I100969 | Mướp hương gọt vỏ | DVT: Kg | Price: 0
+- I100824 | Nấm Đông Trùng hạ thảo | DVT: hộp | Price: 0
+- I101155 | Nấm hương | DVT: Kg | Price: 0
+- I100464 | Ngải cứu | DVT: Kg | Price: 0
+- I100161 | Ngồng tỏi | DVT: Kg | Price: 0
+- I100943 | Ngò ôm tím | DVT: Kg | Price: 0
+- I100395 | Ngũ vị hương | DVT: gói | Price: 0
+- I101119 | Nhãn thái | DVT: Kg | Price: 0
+- I101001 | Nhân trần | DVT: Kg | Price: 0
+- I100875 | NHO ĐEN KHÔNG HẠT | DVT: Kg | Price: 0
+- I100373 | Nui | DVT: Kg | Price: 0
+- I101232 | Nui xoắn | DVT: Kg | Price: 0
+- I100495 | Nước cốt dừa | DVT: Lít | Price: 0
+- I100906 | Nước cốt dừa (kg) | DVT: Kg | Price: 0
+- I100879 | Nước cốt dừa lon | DVT: Lon | Price: 0
+- I100497 | Nước dừa | DVT: Lít | Price: 0
+- I101239 | Nước màu dừa (lít) | DVT: LÍT | Price: 0
+- I101136 | Ổi lê | DVT: Kg | Price: 0
+- I101112 | Olive xanh không hạt | DVT: Hủ | Price: 0
+- I100958 | Ớt Batri xay | DVT: Kg | Price: 0
+- I101022 | Ớt bột paprika | DVT: Kg | Price: 0
+- I100763 | Ớt bột huế loại vảy | DVT: Kg | Price: 0
+- I101025 | Ớt jalapeno | DVT: Kg | Price: 0
+- I100377 | Ớt trái sấy | DVT: Kg | Price: 0
+- I100295 | Bánh phồng tôm | DVT: gói | Price: 0
+- I101121 | Me cục không hạt | DVT: Kg | Price: 0
+- I100673 | Quýt Thái | DVT: Kg | Price: 0
+- I101215 | Quýt Úc | DVT: Kg | Price: 0
+- I100372 | Rau Bí Bái | DVT: Kg | Price: 0
+- I101123 | Rau củ hỗn hợp đông lạnh | DVT: Kg | Price: 0
+- I100756 | RAU NHÚT (Phau) | DVT: Kg | Price: 0
+- I100380 | Rau tiến vua khô | DVT: Kg | Price: 0
+- I100382 | Rong biển | DVT: Kg | Price: 0
+- I100366 | Rong biển khô | DVT: Bịch | Price: 0
+- I101111 | Rong biển khô (kg) | DVT: kg | Price: 0
+- I100680 | Rong Sụn | DVT: Kg | Price: 0
+- I101021 | Ruột ốc | DVT: Kg | Price: 0
+- I100375 | Sao Nhái | DVT: Kg | Price: 0
+- I100531 | Quả Sapoche | DVT: Kg | Price: 0
+- I100384 | Sa tế tôm | DVT: Hủ | Price: 0
+- I100737 | Sữa đậu nành | DVT: bịch | Price: 0
+- I100762 | Sữa đậu nành Kg | DVT: Kg | Price: 0
+- I100964 | Su hào (gọt vỏ) | DVT: Kg | Price: 0
+- I100942 | Sương sâm | DVT: ổ | Price: 0
+- I100289 | Su su bào sẵn | DVT: Kg | Price: 0
+- I100960 | Su su(8) + cà rốt(2) bào sợi | DVT: Kg | Price: 0
+- I100930 | Su su gọt | DVT: Kg | Price: 0
+- I100406 | Tần dày lá | DVT: Kg | Price: 0
+- I100802 | Táo tàu | DVT: Kg | Price: 0
+- I100845 | Táo tàu đen | DVT: Kg | Price: 0
+- I101106 | TÁO WOW | DVT: kg | Price: 0
+- I100639 | Táo xanh | DVT: Kg | Price: 0
+- I101244 | Tàu hủ chiên | DVT: Bịch | Price: 0
+- I100390 | Tàu hủ ky sợi | DVT: Kg | Price: 0
+- I100389 | Tàu hủ ky lá tươi | DVT: Kg | Price: 0
+- I100310 | Tép tươi | DVT: Kg | Price: 0
+- I100916 | Thân chuối (nguyên cây) | DVT: Kg | Price: 0
+- I100538 | Thảo quả | DVT: Kg | Price: 0
+- I101233 | Thịt bò mông vai | DVT: Kg | Price: 0
+- I100556 | Thịt vịt | DVT: Kg | Price: 0
+- I100601 | Thơm bông | DVT: Trái | Price: 0
+- I100891 | Thơm chín | DVT: Trái | Price: 0
+- I101129 | Thơm chín (kg) | DVT: Kg | Price: 0
+- I100600 | Thơm trái hườm | DVT: Trái | Price: 0
+- I101128 | Thơm hườm (kg) | DVT: Kg | Price: 0
+- I101127 | Thơm xanh (kg) | DVT: Kg | Price: 0
+- I100854 | Thù lù (Trái lồng đèn) | DVT: Kg | Price: 0
+- I101224 | Rau tiến vua ngâm (kg) | DVT: Kg | Price: 0
+- I100667 | Tiêu Sọ Hạt | DVT: Kg | Price: 0
+- I100392 | Tiêu đen xay | DVT: Kg | Price: 0
+- I100224 | Tỏi Bắc lột | DVT: Kg | Price: 0
+- I100225 | Tỏi Bắc xay | DVT: Kg | Price: 0
+- I100918 | Tỏi cô đơn (lột) | DVT: Kg | Price: 0
+- I100723 | Tỏi củ sạch | DVT: Kg | Price: 0
+- I100662 | Tỏi lột sạch (cắt đầu) | DVT: Kg | Price: 0
+- I100545 | Tôm tươi | DVT: Kg | Price: 0
+- I101105 | Trái sấu tươi | DVT: Kg | Price: 0
+- I100736 | Phổ tai | DVT: Kg | Price: 0
+- I100270 | Trứng bắc thảo | DVT: Quả | Price: 0
+- I101157 | Trứng gà Ba Huân | DVT: Vỉ | Price: 0
+- I101264 | Trứng gà CP | DVT: Vỉ | Price: 0
+- I100271 | Trứng cút | DVT: Vỉ | Price: 0
+- I100233 | Trứng gà | DVT: Vỉ | Price: 0
+- I100274 | Trứng vịt | DVT: Quả | Price: 0
+- I101153 | Tương hột cholimex | DVT: Hủ | Price: 0
+- I100399 | Tương hạt vàng | DVT: Kg | Price: 0
+- I100776 | Vải thiều Thanh Hà | DVT: Lon | Price: 0
+- I100552 | Xà lách bèo | DVT: Kg | Price: 0
+- I100937 | Xoài keo vàng | DVT: Kg | Price: 0
+- I101235 | Xương ống | DVT: Kg | Price: 0
+- I101265 | Lá tre | DVT: Kg | Price: 0
+- I101131 | Táo xanh New Zealand | DVT: Kg | Price: 0
+- I100020 | Bông Atiso | DVT: Kg | Price: 0
+- I100282 | Lá décor (kg) | DVT: Hộp | Price: 0
+- I100292 | Bánh gạo cây | DVT: Kg | Price: 0
+- I100298 | Bánh tráng phơi sương | DVT: Xấp | Price: 0
+- I100302 | Hạt ngò | DVT: Kg | Price: 0
+- I100303 | Giò heo | DVT: Kg | Price: 0
+- I100304 | Bột chiên xù | DVT: Kg | Price: 0
+- I100306 | Bột loc | DVT: Kg | Price: 0
+- I100308 | Bột sốt nâu | DVT: Kg | Price: 0
+- I100313 | Chả giò rế tôm cua | DVT: Gói | Price: 0
+- I100317 | Chanh sả gừng | DVT: Kg | Price: 0
+- I100320 | Dầu Hào | DVT: Chai | Price: 0
+- I100333 | Mắm cà | DVT: Bịch | Price: 0
+- I100336 | Đường nước | DVT: Lít | Price: 0
+- I100338 | Đậu nành | DVT: Kg | Price: 0
+- I100339 | Gạo nếp | DVT: Kg | Price: 0
+- I100341 | Giấm tiều | DVT: Chai | Price: 0
+- I100344 | Hạt nêm | DVT: Kg | Price: 0
+- I100347 | Khô bò | DVT: Kg | Price: 0
+- I100356 | Mắm nêm | DVT: Chai | Price: 0
+- I100367 | Mực khô | DVT: Kg | Price: 0
+- I100374 | Lá Bứa | DVT: Kg | Price: 0
+- I100376 | Bột cốt dừa | DVT: Gói | Price: 0
+- I100378 | Phèn chua | DVT: Kg | Price: 0
+- I100379 | Gia vị bò kho | DVT: Gói | Price: 0
+- I100381 | Rau tiến vua ngâm | DVT: Gói | Price: 0
+- I100388 | Sữa tươi không đường Bich Vinamilk  - Hộp 1000ML | DVT: Hộp | Price: 0
+- I100394 | Tôm khô | DVT: Kg | Price: 0
+- I100397 | Tương đen | DVT: Kg | Price: 0
+- I100400 | Tương cà | DVT: Chai | Price: 0
+- I100401 | Xá Xíu | DVT: Kg | Price: 0
+- I100402 | Xôi chiên | DVT: Cây | Price: 0
+- I100403 | Xúc xích Đức | DVT: Kg | Price: 0
+- I100404 | Xúc xích heo | DVT: Bịch | Price: 0
+- I100408 | Bò gân | DVT: Kg | Price: 0
+- I100411 | Cá bống | DVT: Kg | Price: 0
+- I100414 | Cá hộp 3 cô gái | DVT: Hộp | Price: 0
+- I100536 | Lá Trâm Ổi | DVT: Kg | Price: 0
+- I100423 | Cá thu đao | DVT: Kg | Price: 0
+- I100424 | Cá thu nhật | DVT: Kg | Price: 0
+- I100426 | Cá viên | DVT: Kg | Price: 0
+- I100428 | Đầu cá hồi | DVT: Kg | Price: 0
+- I100433 | Ức gà | DVT: Kg | Price: 0
+- I100436 | Giò sống | DVT: Kg | Price: 0
+- I100442 | Huyết | DVT: Kg | Price: 0
+- I100443 | Da heo | DVT: Kg | Price: 0
+- I100444 | Thịt bò băm | DVT: Kg | Price: 0
+- I100445 | Tim heo | DVT: Kg | Price: 0
+- I101262 | Tim gà | DVT: Kg | Price: 0
+- I100446 | Thịt ba rọi | DVT: Kg | Price: 0
+- I100447 | Thịt bò | DVT: Kg | Price: 0
+- I100448 | Thịt bò xay | DVT: Kg | Price: 0
+- I100449 | Thịt cốt lết | DVT: Kg | Price: 0
+- I100450 | Thịt cua | DVT: Kg | Price: 0
+- I100451 | Thịt heo xay | DVT: Kg | Price: 0
+- I100452 | Thịt nạc dăm | DVT: Kg | Price: 0
+- I100453 | Thịt heo | DVT: Kg | Price: 0
+- I100456 | Bánh chưng | DVT: Cái | Price: 0
+- I100458 | Bánh da lợn | DVT: Ổ | Price: 0
+- I100460 | Bánh khoai mì | DVT: Kg | Price: 0
+- I100461 | Bánh tét chuối | DVT: Cái | Price: 0
+- I100485 | Hoa hồng | DVT: Cây | Price: 0
+- I100487 | Khô cá tra | DVT: Kg | Price: 0
+- I100492 | Mãng cầu | DVT: Kg | Price: 0
+- I100494 | Nho tươi Phan Rang | DVT: Kg | Price: 0
+- I100496 | Nước đậu nành | DVT: Lít | Price: 0
+- I100515 | Gương sen | DVT: Kg | Price: 0
+- I100520 | Cá đuối | DVT: Kg | Price: 0
+- I100524 | Khoai mì bào | DVT: Kg | Price: 0
+- I100527 | Lá dong | DVT: Kg | Price: 0
+- I100537 | Chôm chôm | DVT: Kg | Price: 0
+- I100539 | Cá chỉ vàng | DVT: Kg | Price: 0
+- I100544 | Bánh giò | DVT: Cái | Price: 0
+- I100546 | Bò vụn | DVT: Kg | Price: 0
+- I100548 | Tép khô | DVT: Kg | Price: 0
+- I100551 | Bột trà xanh | DVT: Kg | Price: 0
+- I100557 | Xương gà | DVT: Kg | Price: 0
+- I100558 | Chim cút | DVT: Kg | Price: 0
+- I100559 | Hành hương bào | DVT: Kg | Price: 0
+- I100560 | Gan heo | DVT: Kg | Price: 0
+- I100564 | Mỡ heo | DVT: Kg | Price: 0
+- I100566 | Thịt sườn | DVT: Kg | Price: 0
+- I100569 | Gân nạm bò | DVT: Kg | Price: 0
+- I100570 | Thịt đùi heo | DVT: Kg | Price: 0
+- I100574 | Lòng heo | DVT: Kg | Price: 0
+- I100575 | Đùi heo | DVT: Kg | Price: 0
+- I100577 | Đuôi heo | DVT: Kg | Price: 0
+- I100582 | Măng cụt | DVT: Kg | Price: 0
+- I100587 | Da bò | DVT: Kg | Price: 0
+- I100422 | Cá Thát lát | DVT: Kg | Price: 0
+- I100607 | Khoai lang trắng | DVT: Kg | Price: 0
+- I100609 | Lươn | DVT: Kg | Price: 0
+- I100614 | Ức vịt | DVT: Kg | Price: 0
+- I100618 | Đùi vịt | DVT: Kg | Price: 0
+- I100622 | Trứng vịt lộn | DVT: Quả | Price: 0
+- I100628 | Dừa bào | DVT: Kg | Price: 0
+- I100632 | Nọng heo | DVT: Kg | Price: 0
+- I100637 | Cá chép | DVT: Kg | Price: 0
+- I100641 | Phèo Non | DVT: Kg | Price: 0
+- I100642 | Vải Thiều | DVT: Kg | Price: 0
+- I100643 | Thịt bắp heo | DVT: Kg | Price: 0
+- I100644 | Cuống họng heo | DVT: Kg | Price: 0
+- I100647 | Mắm thái | DVT: Kg | Price: 0
+- I100652 | Đậu hủ già Ichiban | DVT: Hộp | Price: 0
+- I100654 | Thịt bắp bò | DVT: Kg | Price: 0
+- I100656 | Sụn gà | DVT: Kg | Price: 0
+- I100657 | Bí Đao Bắc | DVT: Kg | Price: 0
+- I100660 | z_Phí Ship 30_z | DVT: Lần | Price: 0
+- I100672 | Bông Cải San Hô | DVT: Kg | Price: 0
+- I100677 | Lạc Buộc | DVT: Kg | Price: 0
+- I100679 | Rau Tiến Vua | DVT: Gói | Price: 0
+- I100685 | Củ Cải Hồng Nhật | DVT: Kg | Price: 0
+- I100687 | Ớt Hiểm Xanh Lặt | DVT: Kg | Price: 0
+- I100688 | Hoa Tuyết | DVT: Hộp | Price: 0
+- I100697 | Măng vàng vắt khô | DVT: Kg | Price: 0
+- I100712 | Khoai tây chiên | DVT: Kg | Price: 0
+- I100717 | Cháo Quẫy | DVT: Kg | Price: 0
+- I100720 | Dưa món | DVT: Hủ | Price: 0
+- I100724 | Tỏi củ dơ | DVT: Kg | Price: 0
+- I100731 | Ớt bột HQ | DVT: Kg | Price: 0
+- I100732 | Ớt hạt HQ | DVT: Bịch | Price: 0
+- I100739 | Lá nguyệt quế | DVT: Kg | Price: 0
+- I100741 | Chả giò bánh pía | DVT: Gói | Price: 0
+- I100765 | Miến Phú Hương | DVT: Thùng | Price: 0
+- I100770 | Cá viên Cầu tre | DVT: Kg | Price: 0
+- I100774 | Bắp cải Brussels | DVT: Kg | Price: 0
+- I100775 | Bột sa cương | DVT: Kg | Price: 0
+- I100778 | Tóc tiên | DVT: Kg | Price: 0
+- I100779 | Khô cá dứa nắng | DVT: Kg | Price: 0
+- I100782 | Bánh đa nem | DVT: Xấp | Price: 0
+- I100783 | Cải phụng | DVT: Kg | Price: 0
+- I100789 | Oak leaf | DVT: Kg | Price: 0
+- I100793 | Màu gạch tôm | DVT: Kg | Price: 0
+- I100795 | Đường tinh luyện | DVT: Kg | Price: 0
+- I100796 | Cá mồi 3 cô gái | DVT: Hộp | Price: 0
+- I100797 | Mì ý | DVT: Kg | Price: 0
+- I100803 | Trái sung | DVT: Kg | Price: 0
+- I100812 | Cải mầm hồng | DVT: Hộp | Price: 0
+- I100816 | Bạch hoa Loreto | DVT: Hủ | Price: 0
+- I100822 | Rau mầm đậu Hà Lan décor | DVT: hộp | Price: 0
+- I100823 | Rau má Nhật décor | DVT: Hộp | Price: 0
+- I100603 | Má đùi gà | DVT: Kg | Price: 0
+- I100828 | Bánh tráng Thiên Ấn | DVT: Xấp | Price: 0
+- I100830 | Túi vải cọ gia vị | DVT: túi | Price: 0
+- I100834 | Tương ớt Bắc | DVT: Kg | Price: 0
+- I100839 | z_Phí Ship 50_z | DVT: lần | Price: 0
+- I100840 | Bột chiên xù panko | DVT: Kg | Price: 0
+- I100841 | Gói nhỏ Panking Powder | DVT: Gói | Price: 0
+- I100843 | Cốt mắm nêm | DVT: Kg | Price: 0
+- I100847 | Đẳng sâm | DVT: Kg | Price: 0
+- I100848 | Hoài sơn | DVT: Kg | Price: 0
+- I100849 | Mật ong | DVT: lít | Price: 0
+- I100850 | Cải cầu vồng baby | DVT: Kg | Price: 0
+- I100851 | Chùm bao | DVT: Kg | Price: 0
+- I100857 | Rau Móp ngâm chua | DVT: Kg | Price: 0
+- I100859 | Măng búp vàng | DVT: Kg | Price: 0
+- I100861 | Đà Lạt Milk | DVT: Hộp | Price: 0
+- I100865 | CƠM CHÁY | DVT: Bịch | Price: 0
+- I100867 | DỪA SẤY NHUYỄN | DVT: Gói | Price: 0
+- I100868 | DÙA SẤY SỢI | DVT: Gói | Price: 0
+- I100876 | Sốt gia vị Bò kho | DVT: Gói | Price: 0
+- I100880 | Phô mai CHEDDAR | DVT: Kg | Price: 0
+- I100881 | Phô mai Mozz | DVT: Kg | Price: 0
+- I100887 | Nước màu dừa | DVT: Chai | Price: 0
+- I100898 | z_Phí ship 150_z | DVT: Lần | Price: 0
+- I100901 | Hoa Baby | DVT: Bó | Price: 0
+- I100910 | Bột rau má | DVT: Kg | Price: 0
+- I100911 | Bột Cần tây | DVT: Kg | Price: 0
+- I100914 | Hoa thạch thảo tím | DVT: Bó | Price: 0
+- I100919 | Hương thảo (sấy khô) | DVT: Kg | Price: 0
+- I100922 | Củ cải Anthary | DVT: Kg | Price: 0
+- I100923 | Hoa cúc tím | DVT: Bó | Price: 0
+- I100925 | Hạt điều sống | DVT: Kg | Price: 0
+- I100934 | z_Phí ship 100_z | DVT: Lần | Price: 0
+- I100936 | Ớt sừng đỏ (lặt cuống) | DVT: Kg | Price: 0
+- I100947 | z_Phí ship 25_z | DVT: Lần | Price: 0
+- I100954 | Cơm sầu riêng | DVT: Kg | Price: 0
+- I100959 | Gừng cắt sợ | DVT: Kg | Price: 0
+- I100965 | z_Phí ship 20_z | DVT: Lần | Price: 0
+- I100966 | z_Phí ship 35_z | DVT: Lần | Price: 0
+- I100967 | z_Phí ship 45_z | DVT: Lần | Price: 0
+- I100971 | Bao Zin To | DVT: Kg | Price: 0
+- I100972 | Bao Zin 40 | DVT: Kg | Price: 0
+- I100973 | Báo Trắng 40 | DVT: Kg | Price: 0
+- I100976 | Băng Keo Trong | DVT: Cuộn | Price: 0
+- I100977 | Bao Đựng Giá 30 | DVT: Kg | Price: 0
+- I100978 | Bao Đựng Giá 20 | DVT: Kg | Price: 0
+- I100979 | Vỉ Siêu Thị Nhỏ | DVT: Cái | Price: 0
+- I100980 | Vỉ Siêu Thị Lớn | DVT: Cái | Price: 0
+- I100981 | Vỉ Siêu Thị Đại | DVT: Cái | Price: 0
+- I100982 | Túi Lưới Vàng | DVT: Kg | Price: 0
+- I100983 | Túi Lưới Trắng | DVT: Kg | Price: 0
+- I100984 | Hộp Trái Cây 1Kg | DVT: Cái | Price: 0
+- I100827 | Sữa đặc NSPN 1280gr | DVT: hộp | Price: 0
+- I100670 | Bún Gói | DVT: Gói | Price: 0
+- I100215 | Su su baby | DVT: Kg | Price: 0
+- I100239 | Nấm hoàng kim | DVT: Gói | Price: 0
+- I100470 | Dưa lưới | DVT: Kg | Price: 0
+- I100259 | Đậu hủ miếng chiên | DVT: Miếng | Price: 0
+- I100293 | Bánh mì Baguette | DVT: ổ | Price: 0
+- I100418 | Cá lóc | DVT: Kg | Price: 0
+- I101179 | Trái bòn bon | DVT: Kg | Price: 0
+- I100987 | Dây chằng bản lớn | DVT: Cái | Price: 0
+- I100988 | Tấm Bạt Che Hàng | DVT: m | Price: 0
+- I100989 | Bao Rau Muống | DVT: Kg | Price: 0
+- I100990 | Bao Ngò Rí | DVT: Kg | Price: 0
+- I100991 | Bao Cải Thìa | DVT: Kg | Price: 0
+- I100992 | Bao Thì là | DVT: Kg | Price: 0
+- I100993 | Bao Hành Lá Lớn | DVT: Kg | Price: 0
+- I100994 | Bao Hành Lá Nhỏ | DVT: Kg | Price: 0
+- I100995 | Bao Ngò Gai | DVT: Kg | Price: 0
+- I100996 | Bao Ớt Sừng | DVT: Kg | Price: 0
+- I100997 | Bao Ớt Ba Tri | DVT: Kg | Price: 0
+- I100998 | Bao Ớt Hiểm | DVT: Kg | Price: 0
+- I100999 | Băng Keo Giấy | DVT: Cuộn | Price: 0
+- I101002 | Viết Bi Xanh | DVT: Cây | Price: 0
+- I101004 | Sổ Lò Xo | DVT: Cuốn | Price: 0
+- I101005 | Cuộn Ráp Bọc Thực Phẩm | DVT: Cuộn | Price: 0
+- I101006 | Cây Lau Nhà | DVT: Cây | Price: 0
+- I101007 | Vin Lau Sàn | DVT: Chai | Price: 0
+- I101008 | Giấy In Tem | DVT: Cuộn | Price: 0
+- I101009 | Sổ Lò Xo A4 -200 trang | DVT: Cuốn | Price: 0
+- I101010 | Sổ Lò Xo A5 -200 trang | DVT: Cuốn | Price: 0
+- I101011 | Sổ Lò Xo A6 -100 trang | DVT: Cuốn | Price: 0
+- I101012 | BìaTrình Ký A4 | DVT: Cái | Price: 0
+- I101013 | BìaTrình Ký A5 | DVT: Cái | Price: 0
+- I101016 | Hộp Cải Mầm | DVT: Hộp | Price: 0
+- I101017 | Bao hút chân không 2kg | DVT: Kg | Price: 0
+- I101018 | Bao hút chân không 1kg | DVT: Kg | Price: 0
+- I101019 | Bột làm bánh (Cake Flour vàng) | DVT: Kg | Price: 0
+- I101027 | Tỏi lá | DVT: Kg | Price: 0
+- I101032 | Dâu tây Nhật | DVT: Kg | Price: 0
+- I101107 | Đọt mướp | DVT: Kg | Price: 0
+- I101108 | Nấm Đông Trùng Hạ Thảo (kg) | DVT: Kg | Price: 0
+- I100985 | Hộp Trái Cây 0.5Kg | DVT: Cái | Price: 0
+- I100322 | Đậu đen hạt | DVT: Kg | Price: 0
+- I100337 | Đường phèn | DVT: Kg | Price: 0
+- I100938 | GIÁ SẠCH | DVT: Kg | Price: 0
+- I100931 | Khoai tây gọt vỏ | DVT: Kg | Price: 0
+- I100371 | Lá Mặt Trăng | DVT: Kg | Price: 0
+- I100364 | Mì quảng vàng | DVT: Kg | Price: 0
+- I100921 | Nấm linh chi trắng (kg) | DVT: Kg | Price: 0
+- I101227 | Rau Bông Tuyết (Rau Kim Cương) | DVT: Kg | Price: 0
+- I100383 | Rượu nếp | DVT: Chai | Price: 0
+- I100502 | Sương sáo | DVT: Ổ | Price: 0
+- I100231 | Tỏi phi | DVT: Kg | Price: 0
+- I100275 | Trứng vịt muối | DVT: Quả | Price: 0
+- I100608 | Xoài non | DVT: Kg | Price: 0
+- I100398 | Tương gỏi cuốn | DVT: Kg | Price: 0
+- I100420 | Cá mối | DVT: Kg | Price: 0
+- I100438 | Mực lá | DVT: Kg | Price: 0
+- I100554 | Bông cải thập cẩm | DVT: Kg | Price: 0
+- I100571 | Tai heo | DVT: Kg | Price: 0
+- I100606 | Xương ức gà | DVT: Kg | Price: 0
+- I100742 | Đường nâu | DVT: Kg | Price: 0
+- I100787 | Bí nụ trọc | DVT: Kg | Price: 0
+- I100809 | Lá décor | DVT: Hộp | Price: 0
+- I100915 | Hoa cẩm chướng | DVT: Bó | Price: 0
+- I100956 | Lá riềng | DVT: Kg | Price: 0
+- I100974 | Bao Trắng 30 | DVT: Kg | Price: 0
+- I101014 | Ghim Bấm No.10 | DVT: Hộp | Price: 0
+- I101110 | Rong biển (gói) | DVT: gói | Price: 0
+- I101114 | Củ Gobo (Ngưu bàng) | DVT: Kg | Price: 0
+- I101115 | Me non | DVT: Kg | Price: 0
+- I101124 | Miến dong (gói) | DVT: Gói | Price: 0
+- I101125 | Hành tây (chùm) | DVT: Kg | Price: 0
+- I101130 | Gừng non | DVT: Kg | Price: 0
+- I101140 | Đậu hủ chiên miếng lớn | DVT: Miếng | Price: 0
+- I101151 | Nho đỏ không hạt | DVT: Kg | Price: 0
+- I101154 | Nho xanh mẫu đơn | DVT: Kg | Price: 0
+- I101167 | Giá đậu nành | DVT: Kg | Price: 0
+- I101028 | Đậu nành Nhật (đông lạnh) | DVT: Kg | Price: 0
+- I101241 | Nước mắm | DVT: Chai | Price: 0
+- I101248 | Bánh mì chuột | DVT: ổ | Price: 0
+- I101249 | Tỏi Đà Lạt | DVT: Kg | Price: 0
+- I101250 | Xoài tượng | DVT: Kg | Price: 0
+- I101113 | z_Phí ship 65_z | DVT: Lần | Price: 0
+- I101253 | Rong nho khô | DVT: hộp | Price: 0
+- I100890 | Đồ nấu canh chua | DVT: VỈ | Price: 0
+- I100299 | Bắp hạt lon | DVT: lon | Price: 0
+- I100710 | Đường cát đen | DVT: Kg | Price: 0
+- I101254 | LÁ BỤP GIẤM (LÁ ATISO ĐỎ) | DVT: Kg | Price: 0
+- I101255 | Cải thảo hỏa tiễn | DVT: Kg | Price: 0
+- I101256 | Bắp nếp (kg) | DVT: kg | Price: 0
+- I100747 | CỦ HỦ DỪA ĐỌT | DVT: Kg | Price: 0
+- I100528 | Quế cây | DVT: Kg | Price: 0
+- I100218 | Thân chuối bào | DVT: Kg | Price: 0
+- I100267 | Mì căn ống | DVT: Kg | Price: 0
+- I100877 | BÁNH MÌ KHÔNG | DVT: ổ | Price: 0
+- I100962 | Bắp cải trắng bào sợi | DVT: Kg | Price: 0
+- I100616 | Cá hú | DVT: Kg | Price: 0
+- I100421 | Cá ngừ | DVT: Kg | Price: 0
+- I100280 | Cà tím Nhật | DVT: Kg | Price: 0
+- I101134 | Cóc non (gọt vỏ) | DVT: Kg | Price: 0
+- I100883 | Đậu hủ trứng CP 220gr | DVT: Cây | Price: 0
+- I100835 | Dâu tằm | DVT: Kg | Price: 0
+- I100722 | Hành tây tím baby | DVT: Kg | Price: 0
+- I100884 | Hạt màu điều | DVT: Kg | Price: 0
+- I100288 | Bí Hồ lô gọt vỏ | DVT: Kg | Price: 0
+- I100664 | Lá Thuốc Vòi Voi | DVT: Kg | Price: 0
+- I100351 | Măng trắng bào | DVT: Kg | Price: 0
+- I100361 | Mẻ chua | DVT: Chai | Price: 0
+- I100846 | Nhãn nhục | DVT: Kg | Price: 0
+- I100904 | Nước dừa (kg) | DVT: Kg | Price: 0
+- I100535 | Tàu hủ ky khô | DVT: Kg | Price: 0
+- I101126 | Thơm gọt (kg) | DVT: Kg | Price: 0
+- I100393 | Tiêu sọ xay | DVT: Kg | Price: 0
+- I100314 | Chả cây phở Hòa | DVT: Cây | Price: 0
+- I100348 | Cá cơm khô | DVT: Kg | Price: 0
+- I100385 | Sa tế tứ xuyên | DVT: Hủ | Price: 0
+- I100459 | Bánh dày | DVT: Cái | Price: 0
+- I100522 | Đọt ớt | DVT: Kg | Price: 0
+- I100549 | Hạnh nhân lát | DVT: Kg | Price: 0
+- I100666 | La hán quả | DVT: Trái | Price: 0
+- I100719 | Đậu bắp nhỏ | DVT: Kg | Price: 0
+- I100767 | Chả cua | DVT: Kg | Price: 0
+- I100862 | Bột Cà ri | DVT: Kg | Price: 0
+- I100909 | Bánh đa cua | DVT: Kg | Price: 0
+- I100932 | z_Phí ship 40_z | DVT: Lần | Price: 0
+- I101003 | Viết Lông Dâu | DVT: Cây | Price: 0
+- I101251 | Đậu ngọt | DVT: Kg | Price: 0
+- I100572 | Đậu hủ bi chiên | DVT: Kg | Price: 0
+- I100158 | Ngó sen ngâm chua | DVT: Kg | Price: 0
+- I100264 | Hoành thánh | DVT: Kg | Price: 0
+- I100416 | Cá hường | DVT: Kg | Price: 0
+- I100940 | Đậu đỏ tươi | DVT: Kg | Price: 0
+- I101221 | Hành tỏi | DVT: Kg | Price: 0
+- I100888 | Nước vải Thiều | DVT: Lon | Price: 0
+- I100617 | Củ riềng xay | DVT: Kg | Price: 0
+- I100695 | Trái Vả | DVT: Kg | Price: 0
+- I100638 | Khoai lang bí | DVT: Kg | Price: 0
+- I100892 | Bánh tráng cuốn (xấp) | DVT: Xấp | Price: 0
+- I100279 | Cà rốt gọt vỏ | DVT: Kg | Price: 0
+- I100083 | Đọt bí | DVT: Kg | Price: 0
+- I100354 | Mắm cá linh | DVT: Kg | Price: 0
+- I100941 | Mắm tôm (kg) | DVT: Kg | Price: 0
+- I100766 | Mía cây | DVT: Kg | Price: 0
+- I101228 | Muối bọt | DVT: Kg | Price: 0
+- I100391 | Tiêu đen hạt | DVT: Kg | Price: 0
+- I100833 | TƯơng đen ăn phở | DVT: chai | Price: 0
+- I100396 | Tương Bắc | DVT: Kg | Price: 0
+- I100417 | Cá kèo | DVT: Kg | Price: 0
+- I100439 | Mực nang | DVT: Kg | Price: 0
+- I100594 | Lá Bay Leaf | DVT: Kg | Price: 0
+- I100630 | Xương ống heo | DVT: Kg | Price: 0
+- I100792 | Muối Tây Ninh | DVT: Kg | Price: 0
+- I100825 | Lẩu Thái gói | DVT: gói | Price: 0
+- I100842 | Củ hủ dừa sấy khô | DVT: Kg | Price: 0
+- I100975 | Báo Trắng 25 | DVT: Kg | Price: 0
+- I101015 | Máy Tính Bàn | DVT: Bộ | Price: 0
+- I100905 | Bánh tráng mè (kg) | DVT: Kg | Price: 0
+- I100562 | Xương heo | DVT: Kg | Price: 0
+- I101268 | Hoa Thanh Liễu | DVT: Bó | Price: 0
+- I101269 | Bánh tráng pía khô | DVT: Xấp | Price: 0
+- I101270 | Lá tre (gói) | DVT: gói | Price: 0
+- I101271 | Đậu Ván | DVT: Kg | Price: 0
+
+--- COMPARING EXCEL T6 (JUNE) VS EXCEL T7 (JULY) ---
+Changes between T6 and T7: 20
+- [CHANGED] I100008 | Bắp mỹ trái (Loại 1)
+  Price: T6 = 8500 -> T7 = 9000
+- [CHANGED] I100012 | Bí đỏ hồ lô
+  Price: T6 = 18000 -> T7 = 22000
+- [CHANGED] I100018 | Bó xôi (Nhà Lồng)
+  Price: T6 = 55000 -> T7 = 60000
+- [CHANGED] I100034 | Cà chua
+  Price: T6 = 48000 -> T7 = 35000
+- [CHANGED] I100050 | Cải sậy
+  Price: T6 = 20000 -> T7 = 25000
+- [CHANGED] I100058 | Chanh ĐaLat
+  Price: T6 = 34000 -> T7 = 30000
+- [CHANGED] I100059 | Chanh giấy
+  Price: T6 = 58000 -> T7 = 48000
+- [CHANGED] I100063 | Chuối chát
+  Price: T6 = 68000 -> T7 = 80000
+- [CHANGED] I100064 | Củ cải đỏ (Radis)
+  Price: T6 = 50000 -> T7 = 65000
+- [CHANGED] I100089 | Dưa leo
+  Price: T6 = 32000 -> T7 = 26000
+- [CHANGED] I100098 | Hành lá
+  Price: T6 = 45000 -> T7 = 60000
+- [CHANGED] I100101 | Hành tây
+  Price: T6 = 16000 -> T7 = 20000
+- [CHANGED] I100163 | Ớt Batri (Cay)
+  Price: T6 = 52000 -> T7 = 60000
+- [CHANGED] I100181 | Rau kinh giới
+  Price: T6 = 35000 -> T7 = 38000
+- [CHANGED] I100300 | Bắp nếp
+  Price: T6 = 8000 -> T7 = 8500
+- [CHANGED] I100612 | Cà Chua Lớn
+  Price: T6 = 48000 -> T7 = 38000
+- [CHANGED] I100468 | Cam tươi
+  Price: T6 = 16000 -> T7 = 17000
+- [CHANGED] I100479 | Dưa hấu
+  Price: T6 = 15000 -> T7 = 17000
+- [CHANGED] I100079 | Đậu đũa xanh
+  Price: T6 = 25000 -> T7 = 28000
+- [CHANGED] I100777 | Khoai tây hồng hai da
+  Price: T6 = 40000 -> T7 = 38000

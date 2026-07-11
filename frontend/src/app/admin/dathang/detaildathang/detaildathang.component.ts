@@ -373,18 +373,25 @@ export class DetailDathangComponent {
     }
   }
 
+  private prepareDathangData(status?: string) {
+    this.DetailDathang.update((v: any) => {
+      v.sanpham = this.dataSource.data.map((item: any) => {
+        const { TonKho, ...rest } = item;
+        return rest;
+      });
+      v.ngaynhan = v.ngaynhan ? moment(v.ngaynhan).format('YYYY-MM-DD') : null;
+      v.ngaynhanEnd = null;
+      if (status) {
+        v.status = status;
+      }
+      return v;
+    });
+  }
+
   private async updateDathang() {
     try {
       console.log(this.DetailDathang());
-      this.DetailDathang.update((v: any) => {
-        v.sanpham = this.dataSource.data.map((item: any) => {
-          const { TonKho, ...rest } = item;
-          return rest;
-        });
-        v.ngaynhan = v.ngaynhan ? moment(v.ngaynhan).format('YYYY-MM-DD') : null;
-        v.ngaynhanEnd = null;
-        return v;
-      });
+      this.prepareDathangData();
       console.log(this.DetailDathang());
       
       await this._DathangService.updateDathang(this.DetailDathang());
@@ -794,10 +801,7 @@ export class DetailDathangComponent {
   }
 
   GiaoDonhang() {
-    this.DetailDathang.update((v: any) => {
-      v.status = 'dagiao';
-      return v;
-    });
+    this.prepareDathangData('dagiao');
     this._DathangService
       .updateDathang(this.DetailDathang())
       .then((res: any) => {
@@ -810,10 +814,7 @@ export class DetailDathangComponent {
       });
   }
   Danhanhang() {
-    this.DetailDathang.update((v: any) => {
-      v.status = 'danhan';
-      return v;
-    });
+    this.prepareDathangData('danhan');
     this._DathangService
       .updateDathang(this.DetailDathang())
       .then((res: any) => {
@@ -827,10 +828,7 @@ export class DetailDathangComponent {
       });
   }
   Dathang() {
-    this.DetailDathang.update((v: any) => {
-      v.status = 'dadat';
-      return v;
-    });
+    this.prepareDathangData('dadat');
     this._DathangService
       .updateDathang(this.DetailDathang())
       .then((res: any) => {

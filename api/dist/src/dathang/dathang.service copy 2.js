@@ -33,7 +33,7 @@ let DathangService = class DathangService {
     incrementOrderCode(orderCode) {
         const prefix = 'TGNCC-';
         const letters = orderCode.slice(6, 8);
-        const numbers = parseInt(orderCode.slice(8), 13);
+        const numbers = parseInt(orderCode.slice(8), 10);
         let newLetters = letters;
         let newNumbers = numbers + 1;
         if (newNumbers > 99999) {

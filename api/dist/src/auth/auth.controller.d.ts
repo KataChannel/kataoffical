@@ -32,6 +32,24 @@ export declare class AuthController {
         access_token: string;
         user: any;
     }>;
+    zaloMiniappLogin(body: {
+        accessToken: string;
+        phoneToken?: string;
+        userInfo?: any;
+        mockPhone?: string;
+    }): Promise<{
+        access_token: string;
+        user: {
+            id: string;
+            email: string | null;
+            SDT: string | null;
+            name: string | null;
+            provider: string | null;
+            providerId: string | null;
+        };
+        khachhangId: string;
+        makh: string;
+    }>;
     changePassword(req: any, body: {
         oldPassword: string;
         newPassword: string;

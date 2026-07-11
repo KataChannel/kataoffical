@@ -263,7 +263,7 @@ export class UserService {
 
       this.profile.set(data);
       if (permissions.length > 0) {
-        this._StorageService.setItem('permissions', JSON.stringify(permissions));
+        this._StorageService.setItem('permissions', permissions);
       } else {
         // Clear permissions if none found
         this._StorageService.removeItem('permissions');
@@ -306,8 +306,11 @@ export class UserService {
         if (this.isBrowser) {
           this._authenticated = true;
           this.accessToken = data.access_token;
-          this._StorageService.setItem('permissions', JSON.stringify(data?.user?.permissions || []));
-          this.permissionsSubject.next(data?.user?.permissions);
+          const permissions = data?.user?.permissions && Array.isArray(data?.user?.permissions)
+            ? data.user.permissions.map((p: any) => p.name || p)
+            : [];
+          this._StorageService.setItem('permissions', permissions);
+          this.permissionsSubject.next(permissions);
         }
         return [true, data]
       } else {

@@ -104,4 +104,17 @@ export declare class AuthService {
         expiresAt?: undefined;
         roleName?: undefined;
     }>;
+    zaloMiniappLogin(accessToken: string, phoneToken?: string, userInfo?: any, mockPhone?: string): Promise<{
+        access_token: string;
+        user: {
+            id: string;
+            email: string | null;
+            SDT: string | null;
+            name: string | null;
+            provider: string | null;
+            providerId: string | null;
+        };
+        khachhangId: string;
+        makh: string;
+    }>;
 }

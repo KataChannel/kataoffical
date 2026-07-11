@@ -52,6 +52,13 @@ export class AuthController {
     return this.authService.login(body.SDT, body.email, body.password);
   }
 
+  @Post('zalo-miniapp')
+  async zaloMiniappLogin(
+    @Body() body: { accessToken: string; phoneToken?: string; userInfo?: any; mockPhone?: string }
+  ) {
+    return this.authService.zaloMiniappLogin(body.accessToken, body.phoneToken, body.userInfo, body.mockPhone);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
   changePassword(
@@ -60,6 +67,7 @@ export class AuthController {
   ) {
     return this.authService.changePassword(req.user.id, body.oldPassword, body.newPassword);
   }
+
 
   @UseGuards(JwtAuthGuard)
   @Post('random-password')
