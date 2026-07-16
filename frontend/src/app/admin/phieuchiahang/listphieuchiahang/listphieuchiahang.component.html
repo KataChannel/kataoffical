@@ -124,9 +124,49 @@
             </button>
             
           </div>
-          <div class="flex flex-row space-x-2">
-            <!-- <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button> -->
-            <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Tạo Phiếu Chia</button>
+
+          <!-- Cluster Selection Bar -->
+          <div *ngIf="Listdonhang().length > 0" class="flex flex-col gap-2 p-2 bg-slate-50 rounded-lg border border-slate-200">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1">Phân Cụm In Phiếu</span>
+            <div class="flex flex-wrap gap-2">
+              <button *ngFor="let tab of clusterTabs"
+                      mat-stroked-button
+                      [color]="selectedCluster() === tab.id ? 'primary' : ''"
+                      [class.bg-blue-50]="selectedCluster() === tab.id"
+                      [class.border-blue-400]="selectedCluster() === tab.id"
+                      (click)="selectCluster(tab.id)"
+                      class="!rounded-md relative">
+                <span class="font-medium">{{ tab.label }}</span>
+                <span class="ml-1 text-xs text-slate-500">({{ tab.count }})</span>
+                <!-- Warning badge for unprinted items -->
+                <span *ngIf="tab.unprintedCount > 0" 
+                      class="ml-1 px-1.5 py-0.5 text-[10px] bg-red-500 text-white rounded-full font-bold inline-flex items-center justify-center min-w-4 h-4 animate-pulse"
+                      [matTooltip]="tab.unprintedCount + ' đơn chưa in'">
+                  {{ tab.unprintedCount }}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-row items-center justify-between gap-2 mt-2">
+            <div class="flex flex-row gap-2">
+              <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">
+                <mat-icon class="mr-1">print</mat-icon>
+                <span>Tạo Phiếu Chia ({{ editDonhang.length }})</span>
+              </button>
+            </div>
+            
+            <!-- Quick Selection Actions (only show if there is visible data) -->
+            <div *ngIf="dataSource.data.length > 0" class="flex flex-row gap-2">
+              <button mat-stroked-button color="primary" (click)="selectAllVisible()" matTooltip="Chọn nhanh tất cả đơn trong cụm đang xem">
+                <mat-icon class="!mr-1 !h-5 !w-5 !text-sm">check_box</mat-icon>
+                <span>Chọn tất cả trong cụm</span>
+              </button>
+              <button *ngIf="editDonhang.length > 0" mat-stroked-button color="warn" (click)="deselectAllVisible()" matTooltip="Bỏ chọn tất cả đơn đang xem">
+                <mat-icon class="!mr-1 !h-5 !w-5 !text-sm">check_box_outline_blank</mat-icon>
+                <span>Bỏ chọn</span>
+              </button>
+            </div>
           </div>
         <div class="w-full overflow-auto relative">
             <!-- Empty State - Chưa tìm kiếm -->

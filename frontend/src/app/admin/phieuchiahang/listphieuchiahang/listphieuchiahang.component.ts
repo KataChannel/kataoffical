@@ -50,6 +50,7 @@ import { StorageService } from '../../../shared/utils/storage.service';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import { DateHelpers } from '../../../shared/utils/date-helpers';
 import * as XLSX from 'xlsx';
+import { CLUSTER_MAPPING } from './cluster-mapping.constant';
 
 @Component({
   selector: 'app-listphieuchiahang',
@@ -161,9 +162,19 @@ export class ListPhieuchiahangComponent {
   ];
   Chonthoigian: any = 'day';
   isSearch: boolean = false;
+  
+  clusterMapping = CLUSTER_MAPPING;
+  selectedCluster = signal<string>('all');
+  clusterTabs: any[] = [];
   constructor() {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
+    });
+    
+    // Auto-update cluster counts and filter visible data when data or selection changes
+    effect(() => {
+      this.computeClusterCounts();
+      this.applyClusterFilter();
     });
   }
   onSelectionChange(event: MatSelectChange): void {
@@ -247,6 +258,7 @@ export class ListPhieuchiahangComponent {
     // 🔥 AUTO-LOAD: Tự động load dữ liệu trong ngày khi vào trang
     this.initializeColumns();
     this.setupDrawer();
+    this.dataSource.filterPredicate = this.createFilter();
     
     // Setup paginator
     if (this.paginator) {
@@ -283,23 +295,7 @@ export class ListPhieuchiahangComponent {
     this.isLoading.set(true);  // 🔥 Bắt đầu loading
     try {
       await this._DonhangService.searchDonhang(this.SearchParams);
-      const listData = this.Listdonhang();
-      
-      // Phòng thủ: kiểm tra dữ liệu hợp lệ
-      if (!Array.isArray(listData)) {
-        console.error('Listdonhang không phải là array:', listData);
-        this.CountItem = 0;
-        this.dataSource = new MatTableDataSource<any>([]);
-      } else {
-        this.CountItem = listData.length;
-        this.dataSource = new MatTableDataSource(listData);
-      }
-      
-      console.log(this.dataSource.data);
-
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.dataSource.filterPredicate = this.createFilter();
+      // Data change triggers the effect which calls computeClusterCounts() and applyClusterFilter()
     } catch (error) {
       console.error('Error loading data:', error);
       this._snackBar.open('❌ Lỗi khi tải dữ liệu', '', {
@@ -1303,6 +1299,117 @@ export class ListPhieuchiahangComponent {
    */
   getTrangthaiInLabel(row: any): string {
     return this.getTrangthaiIn(row) ? 'Đã in' : 'Chưa in';
+  }
+
+  computeClusterCounts(): void {
+    const listData = this.Listdonhang() || [];
+    if (!Array.isArray(listData)) return;
+
+    const counts: Record<string, { total: number; unprinted: number }> = {
+      all: { total: listData.length, unprinted: 0 },
+      other: { total: 0, unprinted: 0 }
+    };
+    for (let i = 1; i <= 9; i++) {
+      counts[i.toString()] = { total: 0, unprinted: 0 };
+    }
+
+    listData.forEach(item => {
+      const makh = item.khachhang?.makh;
+      const isUnprinted = (item.printCount || 0) === 0;
+      
+      if (isUnprinted) {
+        counts.all.unprinted++;
+      }
+
+      const clusterNum = makh ? this.clusterMapping[makh] : undefined;
+      if (clusterNum && clusterNum >= 1 && clusterNum <= 9) {
+        const cKey = clusterNum.toString();
+        counts[cKey].total++;
+        if (isUnprinted) {
+          counts[cKey].unprinted++;
+        }
+      } else {
+        counts.other.total++;
+        if (isUnprinted) {
+          counts.other.unprinted++;
+        }
+      }
+    });
+
+    this.clusterTabs = [
+      { id: 'all', label: 'Tất cả', count: counts.all.total, unprintedCount: counts.all.unprinted },
+      ...Array.from({ length: 9 }, (_, i) => {
+        const num = (i + 1).toString();
+        return { id: num, label: `Cụm ${num}`, count: counts[num].total, unprintedCount: counts[num].unprinted };
+      }),
+      { id: 'other', label: 'Ngoài cụm', count: counts.other.total, unprintedCount: counts.other.unprinted }
+    ];
+  }
+
+  applyClusterFilter(): void {
+    const listData = this.Listdonhang() || [];
+    if (!Array.isArray(listData)) return;
+
+    const cluster = this.selectedCluster();
+    let filtered = listData;
+
+    if (cluster === 'other') {
+      filtered = listData.filter(item => {
+        const makh = item.khachhang?.makh;
+        return !makh || !this.clusterMapping[makh];
+      });
+    } else if (cluster !== 'all') {
+      const clusterNum = parseInt(cluster, 10);
+      filtered = listData.filter(item => {
+        const makh = item.khachhang?.makh;
+        return makh && this.clusterMapping[makh] === clusterNum;
+      });
+    }
+
+    this.CountItem = filtered.length;
+    this.dataSource.data = filtered;
+
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+    }
+  }
+
+  selectCluster(clusterId: string): void {
+    this.selectedCluster.set(clusterId);
+    this.applyClusterFilter();
+  }
+
+  selectAllVisible(): void {
+    const visibleData = this.dataSource.data;
+    visibleData.forEach(item => {
+      if (!this.CheckItemInDonhang(item)) {
+        this.editDonhang.push(item);
+      }
+    });
+  }
+
+  deselectAllVisible(): void {
+    const visibleData = this.dataSource.data;
+    this.editDonhang = this.editDonhang.filter(
+      item => !visibleData.some(visible => visible.id === item.id)
+    );
+  }
+
+  isAllVisibleSelected(): boolean {
+    const visibleData = this.dataSource.data;
+    if (visibleData.length === 0) return false;
+    return visibleData.every(item => this.CheckItemInDonhang(item));
+  }
+
+  toggleAllVisible(): void {
+    if (this.isAllVisibleSelected()) {
+      this.deselectAllVisible();
+    } else {
+      this.selectAllVisible();
+    }
   }
 }
 
