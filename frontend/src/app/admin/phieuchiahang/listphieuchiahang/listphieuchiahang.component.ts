@@ -165,6 +165,7 @@ export class ListPhieuchiahangComponent {
   
   clusterMapping = CLUSTER_MAPPING;
   selectedCluster = signal<string>('all');
+  selectedPrintStatus = signal<'all' | 'printed' | 'unprinted'>('all');
   clusterTabs: any[] = [];
   constructor() {
     this.displayedColumns.forEach((column) => {
@@ -1315,34 +1316,24 @@ export class ListPhieuchiahangComponent {
 
     listData.forEach(item => {
       const makh = item.khachhang?.makh;
+      const cluster = makh ? this.clusterMapping[makh] : null;
+      const key = (cluster && cluster >= 1 && cluster <= 9) ? cluster.toString() : 'other';
       const isUnprinted = (item.printCount || 0) === 0;
-      
-      if (isUnprinted) {
-        counts.all.unprinted++;
-      }
 
-      const clusterNum = makh ? this.clusterMapping[makh] : undefined;
-      if (clusterNum && clusterNum >= 1 && clusterNum <= 9) {
-        const cKey = clusterNum.toString();
-        counts[cKey].total++;
-        if (isUnprinted) {
-          counts[cKey].unprinted++;
-        }
-      } else {
-        counts.other.total++;
-        if (isUnprinted) {
-          counts.other.unprinted++;
-        }
+      counts[key].total++;
+      if (isUnprinted) {
+        counts[key].unprinted++;
+        counts['all'].unprinted++;
       }
     });
 
     this.clusterTabs = [
-      { id: 'all', label: 'Tất cả', count: counts.all.total, unprintedCount: counts.all.unprinted },
+      { id: 'all', label: 'Tất cả', count: counts['all'].total, unprintedCount: counts['all'].unprinted },
       ...Array.from({ length: 9 }, (_, i) => {
         const num = (i + 1).toString();
         return { id: num, label: `Cụm ${num}`, count: counts[num].total, unprintedCount: counts[num].unprinted };
       }),
-      { id: 'other', label: 'Ngoài cụm', count: counts.other.total, unprintedCount: counts.other.unprinted }
+      { id: 'other', label: 'Ngoài cụm', count: counts['other'].total, unprintedCount: counts['other'].unprinted }
     ];
   }
 
@@ -1351,6 +1342,7 @@ export class ListPhieuchiahangComponent {
     if (!Array.isArray(listData)) return;
 
     const cluster = this.selectedCluster();
+    const printStatus = this.selectedPrintStatus();
     let filtered = listData;
 
     if (cluster === 'other') {
@@ -1366,6 +1358,12 @@ export class ListPhieuchiahangComponent {
       });
     }
 
+    if (printStatus === 'printed') {
+      filtered = filtered.filter(item => (item.printCount || 0) > 0);
+    } else if (printStatus === 'unprinted') {
+      filtered = filtered.filter(item => (item.printCount || 0) === 0);
+    }
+
     this.CountItem = filtered.length;
     this.dataSource.data = filtered;
 
@@ -1377,8 +1375,9 @@ export class ListPhieuchiahangComponent {
     }
   }
 
-  selectCluster(clusterId: string): void {
+  selectCluster(clusterId: string, printStatus: 'all' | 'printed' | 'unprinted' = 'all'): void {
     this.selectedCluster.set(clusterId);
+    this.selectedPrintStatus.set(printStatus);
     this.applyClusterFilter();
   }
 

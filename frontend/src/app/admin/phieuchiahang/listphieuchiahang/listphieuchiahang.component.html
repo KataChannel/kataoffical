@@ -129,22 +129,50 @@
           <div *ngIf="Listdonhang().length > 0" class="flex flex-col gap-2 p-2 bg-slate-50 rounded-lg border border-slate-200">
             <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1">Phân Cụm In Phiếu</span>
             <div class="flex flex-wrap gap-2">
-              <button *ngFor="let tab of clusterTabs"
-                      mat-stroked-button
-                      [color]="selectedCluster() === tab.id ? 'primary' : ''"
-                      [class.bg-blue-50]="selectedCluster() === tab.id"
-                      [class.border-blue-400]="selectedCluster() === tab.id"
-                      (click)="selectCluster(tab.id)"
-                      class="!rounded-md relative">
-                <span class="font-medium">{{ tab.label }}</span>
-                <span class="ml-1 text-xs text-slate-500">({{ tab.count }})</span>
-                <!-- Warning badge for unprinted items -->
-                <span *ngIf="tab.unprintedCount > 0" 
-                      class="ml-1 px-1.5 py-0.5 text-[10px] bg-red-500 text-white rounded-full font-bold inline-flex items-center justify-center min-w-4 h-4 animate-pulse"
-                      [matTooltip]="tab.unprintedCount + ' đơn chưa in'">
+              <div *ngFor="let tab of clusterTabs" 
+                   class="inline-flex rounded-md shadow-sm border overflow-hidden text-xs transition-all duration-200"
+                   [class.ring-2]="selectedCluster() === tab.id"
+                   [class.ring-blue-500]="selectedCluster() === tab.id"
+                   [class.border-blue-400]="selectedCluster() === tab.id"
+                   [class.border-slate-200]="selectedCluster() !== tab.id">
+                
+                <!-- Main cluster selector -->
+                <button (click)="selectCluster(tab.id, 'all')"
+                        class="px-2 py-1 font-bold border-r transition-colors"
+                        [ngClass]="{
+                          'bg-blue-600 text-white border-blue-700': selectedCluster() === tab.id && selectedPrintStatus() === 'all',
+                          'bg-white text-slate-800 border-slate-200 hover:bg-slate-100': selectedCluster() !== tab.id || selectedPrintStatus() !== 'all'
+                        }">
+                  {{ tab.label }}
+                  <span [class.text-blue-100]="selectedCluster() === tab.id && selectedPrintStatus() === 'all'"
+                        [class.text-slate-500]="selectedCluster() !== tab.id || selectedPrintStatus() !== 'all'" 
+                        class="font-normal ml-0.5">({{ tab.count }})</span>
+                </button>
+                
+                <!-- Printed indicator/button -->
+                <button (click)="selectCluster(tab.id, 'printed')"
+                        matTooltip="Đã in: {{ tab.count - tab.unprintedCount }}"
+                        class="px-1.5 py-1 font-medium border-r inline-flex items-center justify-center transition-colors min-w-8 text-center"
+                        [ngClass]="{
+                          'bg-green-600 text-white border-green-700': selectedCluster() === tab.id && selectedPrintStatus() === 'printed',
+                          'border-blue-300 bg-green-50/70 text-green-700 hover:bg-green-100': selectedCluster() === tab.id && selectedPrintStatus() !== 'printed',
+                          'border-slate-100 bg-green-50/70 text-green-700 hover:bg-green-100': selectedCluster() !== tab.id
+                        }">
+                  {{ tab.count - tab.unprintedCount }}
+                </button>
+                
+                <!-- Unprinted indicator/button -->
+                <button (click)="selectCluster(tab.id, 'unprinted')"
+                        matTooltip="Chưa in: {{ tab.unprintedCount }}"
+                        class="px-1.5 py-1 font-bold inline-flex items-center justify-center transition-colors min-w-8 text-center"
+                        [ngClass]="{
+                          'bg-red-600 text-white border-red-700': selectedCluster() === tab.id && selectedPrintStatus() === 'unprinted',
+                          'bg-red-500 text-white animate-pulse hover:bg-red-400': (selectedCluster() !== tab.id || selectedPrintStatus() !== 'unprinted') && tab.unprintedCount > 0,
+                          'bg-slate-100 text-slate-400 hover:bg-slate-200': (selectedCluster() !== tab.id || selectedPrintStatus() !== 'unprinted') && tab.unprintedCount === 0
+                        }">
                   {{ tab.unprintedCount }}
-                </span>
-              </button>
+                </button>
+              </div>
             </div>
           </div>
 
