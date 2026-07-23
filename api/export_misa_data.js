@@ -166,7 +166,7 @@ async function main() {
             const row = Array(63).fill(null);
             row[0] = "Mua hàng trong nước nhập kho";
             row[1] = "Chưa thanh toán";
-            row[2] = "Nhận kèm hóa đơn";
+            row[2] = "";
             row[3] = formattedDate;
             row[4] = formattedDate;
             row[5] = purchase.madncc;

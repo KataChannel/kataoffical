@@ -86,3 +86,8 @@ docs/report/*.xlsx
 docs/report/*.zip
 *.xlsx
 
+# Local backups and exported data
+Backupserver/
+docs/yeucaucuaketoan/dulieuxuat/
+
+
