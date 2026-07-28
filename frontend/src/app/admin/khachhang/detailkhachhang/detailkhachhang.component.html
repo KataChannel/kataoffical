@@ -1,0 +1,435 @@
+<div class="flex flex-row justify-between items-center space-x-2 p-2">
+  <button mat-icon-button color="primary" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <div class="font-bold">{{ DetailKhachhang()?.name || 'Không có dữ liệu' }}</div>
+  <div class="flex flex-row space-x-2 items-center">
+    <mat-slide-toggle [checked]="DetailKhachhang()?.isActive" (change)="updateIsActive($event)" [disabled]="!isEdit()">{{DetailKhachhang()?.isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleKhachhangAction()">
+      <mat-icon>save</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-icon-button color="warn" (click)="toggleDelete()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</div>
+
+<div class="relative flex flex-col w-full p-4 overflow-auto">
+  <!-- Xác nhận Xóa -->
+  <ng-container *ngIf="isDelete()">
+    <div class="flex flex-col space-y-4 items-center justify-center">
+      <div class="font-bold text-2xl">Bạn chắc chắn muốn xoá không?</div>
+      <div class="flex flex-row space-x-2 items-center justify-center">
+        <button mat-flat-button color="primary" (click)="DeleteData()">Đồng Ý</button>
+        <button mat-flat-button color="warn" (click)="toggleDelete()">Huỷ Bỏ</button>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Chi tiết Khachhang -->
+  <ng-container *ngIf="!isDelete()">
+    <div class="w-full grid grid-cols-2 gap-4">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Tên Khách Hàng</mat-label>
+        <input matInput [value]="DetailKhachhang()?.name || ''" (input)="updateName($event)" (keyup)="autoSubtitle()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên Khách Hàng"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Mã Khách Hàng</mat-label>
+        <input matInput [value]="DetailKhachhang()?.makh || ''" (input)="updateMakh($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Khách Hàng"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Viết Tắt</mat-label>
+        <input matInput [value]="DetailKhachhang()?.subtitle || ''" (input)="updateSubtitle($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Viết Tắt"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Tên File</mat-label>
+        <input matInput [value]="DetailKhachhang()?.tenfile || ''" (input)="updateTenfile($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên File"/>
+      </mat-form-field>
+
+    <!-- Loại Khách Hàng - shadcn-style Single Select -->
+    <div>
+      <div class="relative w-full">
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Loại Khách Hàng</label>
+        
+        <!-- Trigger Button (shadcn style) -->
+        <button 
+          type="button"
+          [disabled]="!isEdit()"
+          (click)="toggleLoaikhDropdown()"
+          class="flex items-center justify-between w-full min-h-[44px] px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-200
+                 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1 focus:border-primary-500
+                 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50
+                 active:scale-[0.99] touch-manipulation">
+          <span class="flex-1 text-left truncate" [class.text-gray-400]="!DetailKhachhang()?.loaikh">
+            {{ getLoaikhTitle() || 'Chọn loại khách hàng...' }}
+          </span>
+          <mat-icon class="!text-lg !w-5 !h-5 text-gray-400 ml-2 transition-transform duration-200" [class.rotate-180]="isLoaikhDropdownOpen()">expand_more</mat-icon>
+        </button>
+
+        <!-- Dropdown Panel (Mobile First) -->
+        <div 
+          *ngIf="isLoaikhDropdownOpen()"
+          class="fixed md:absolute inset-0 md:inset-auto md:top-full md:left-0 md:right-0 z-50 
+                 bg-white md:mt-1 md:rounded-lg md:border md:border-gray-200 md:shadow-lg
+                 flex flex-col md:overflow-hidden">
+          
+          <!-- Mobile Header -->
+          <div class="flex md:hidden items-center justify-between px-4 py-3 border-b border-gray-100 bg-white sticky top-0">
+            <h3 class="text-base font-semibold text-gray-900">Chọn Loại Khách Hàng</h3>
+            <button 
+              type="button" 
+              (click)="closeLoaikhDropdown()"
+              class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors">
+              <mat-icon class="!text-xl text-gray-500">close</mat-icon>
+            </button>
+          </div>
+
+          <!-- Options List -->
+          <div class="flex-1 overflow-y-auto overscroll-contain">
+            <button 
+              *ngFor="let item of loaikhOptions"
+              type="button"
+              (click)="selectLoaikh(item.value)"
+              class="flex items-center gap-3 w-full px-4 py-3.5 text-sm transition-colors
+                     hover:bg-gray-50 active:bg-gray-100"
+              [class.bg-primary-50]="DetailKhachhang()?.loaikh === item.value">
+              <!-- Radio indicator -->
+              <div class="flex items-center justify-center w-5 h-5 rounded-full border-2 transition-all duration-200"
+                   [class.border-primary-500]="DetailKhachhang()?.loaikh === item.value"
+                   [class.border-gray-300]="DetailKhachhang()?.loaikh !== item.value">
+                <div *ngIf="DetailKhachhang()?.loaikh === item.value" 
+                     class="w-2.5 h-2.5 rounded-full bg-primary-500"></div>
+              </div>
+              <!-- Content -->
+              <div class="flex-1 min-w-0 text-left">
+                <div class="font-medium text-gray-900">{{ item.title }}</div>
+                <div class="text-xs text-gray-500 mt-0.5">{{ item.description }}</div>
+              </div>
+              <!-- Check icon -->
+              <mat-icon *ngIf="DetailKhachhang()?.loaikh === item.value" class="!text-lg !w-5 !h-5 text-primary-500">check</mat-icon>
+            </button>
+          </div>
+
+          <!-- Mobile Footer -->
+          <div class="flex md:hidden items-center justify-end px-4 py-3 border-t border-gray-100 bg-gray-50 sticky bottom-0">
+            <button 
+              type="button"
+              (click)="closeLoaikhDropdown()"
+              class="px-6 py-2.5 text-sm font-medium text-white bg-primary-600 rounded-lg
+                     hover:bg-primary-700 active:bg-primary-800 transition-colors shadow-sm">
+              Xong
+            </button>
+          </div>
+        </div>
+
+        <!-- Backdrop for mobile -->
+        <div 
+          *ngIf="isLoaikhDropdownOpen()"
+          (click)="closeLoaikhDropdown()"
+          class="fixed inset-0 bg-black/20 z-40 md:hidden"></div>
+      </div>
+      
+      <!-- Selected chip display -->
+      <div class="mt-2" *ngIf="DetailKhachhang()?.loaikh">
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md 
+                    bg-gray-100 text-gray-700 border border-gray-200">
+          <mat-icon class="!text-sm !w-4 !h-4 text-gray-500">{{ DetailKhachhang()?.loaikh === 'khachsi' ? 'store' : 'person' }}</mat-icon>
+          <span>{{ getLoaikhTitle() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nhóm Khách Hàng - Searchable Multi-select with shadcn-style Mobile First UI -->
+    <div>
+      <!-- Custom Searchable Select Container -->
+      <div class="relative w-full">
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nhóm Khách Hàng *</label>
+        
+        <!-- Trigger Button (shadcn style) -->
+        <button 
+          type="button"
+          [disabled]="!isEdit()"
+          (click)="toggleNhomkhachhangDropdown()"
+          class="flex items-center justify-between w-full min-h-[44px] px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-200
+                 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1 focus:border-primary-500
+                 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50
+                 active:scale-[0.99] touch-manipulation">
+          <span class="flex-1 text-left truncate" [class.text-gray-400]="selectedNhomkhachhangIds().length === 0">
+            {{ selectedNhomkhachhangIds().length > 0 ? selectedNhomkhachhangIds().length + ' nhóm đã chọn' : 'Chọn nhóm khách hàng...' }}
+          </span>
+          <mat-icon class="!text-lg !w-5 !h-5 text-gray-400 ml-2 transition-transform duration-200" [class.rotate-180]="isNhomDropdownOpen()">expand_more</mat-icon>
+        </button>
+
+        <!-- Dropdown Panel (Mobile First - Full screen on mobile, dropdown on desktop) -->
+        <div 
+          *ngIf="isNhomDropdownOpen()"
+          class="fixed md:absolute inset-0 md:inset-auto md:top-full md:left-0 md:right-0 z-50 
+                 bg-white md:mt-1 md:rounded-lg md:border md:border-gray-200 md:shadow-lg md:max-h-80
+                 flex flex-col md:overflow-hidden">
+          
+          <!-- Mobile Header -->
+          <div class="flex md:hidden items-center justify-between px-4 py-3 border-b border-gray-100 bg-white sticky top-0">
+            <h3 class="text-base font-semibold text-gray-900">Chọn Nhóm Khách Hàng</h3>
+            <button 
+              type="button" 
+              (click)="closeNhomkhachhangDropdown()"
+              class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors">
+              <mat-icon class="!text-xl text-gray-500">close</mat-icon>
+            </button>
+          </div>
+
+          <!-- Search Input -->
+          <div class="sticky top-0 md:top-0 p-3 bg-white border-b border-gray-100 z-10">
+            <div class="relative">
+              <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-lg !w-5 !h-5 text-gray-400">search</mat-icon>
+              <input 
+                type="text"
+                [value]="nhomSearchQuery()"
+                (input)="onNhomSearchInput($event)"
+                placeholder="Tìm kiếm nhóm..."
+                class="w-full h-11 md:h-10 pl-10 pr-4 text-sm bg-gray-50 border border-gray-200 rounded-lg
+                       placeholder:text-gray-400 transition-all duration-200
+                       focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:bg-white"
+                #nhomSearchInput />
+              <button 
+                *ngIf="nhomSearchQuery()"
+                type="button"
+                (click)="clearNhomSearch()"
+                class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6 rounded-full hover:bg-gray-200 transition-colors">
+                <mat-icon class="!text-sm !w-4 !h-4 text-gray-400">close</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Options List -->
+          <div class="flex-1 overflow-y-auto overscroll-contain">
+            <!-- Quick Create Option -->
+            <button 
+              type="button"
+              (click)="openCreateNhomkhachhangDialog()"
+              class="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-primary-600 bg-primary-50/50
+                     hover:bg-primary-100 active:bg-primary-200 transition-colors border-b border-gray-100">
+              <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100">
+                <mat-icon class="!text-lg text-primary-600">add</mat-icon>
+              </div>
+              <span>Tạo nhóm mới...</span>
+            </button>
+
+            <!-- Filtered Nhomkhachhang Options -->
+            <div *ngIf="filteredNhomkhachhang().length > 0; else noResults">
+              <button 
+                *ngFor="let nhom of filteredNhomkhachhang(); trackBy: trackByNhom"
+                type="button"
+                (click)="toggleNhomSelection(nhom.id)"
+                class="flex items-center gap-3 w-full px-4 py-3 text-sm transition-colors
+                       hover:bg-gray-50 active:bg-gray-100"
+                [class.bg-primary-50]="isNhomSelected(nhom.id)">
+                <!-- Checkbox -->
+                <div class="flex items-center justify-center w-5 h-5 rounded border-2 transition-all duration-200"
+                     [class.border-primary-500]="isNhomSelected(nhom.id)"
+                     [class.bg-primary-500]="isNhomSelected(nhom.id)"
+                     [class.border-gray-300]="!isNhomSelected(nhom.id)">
+                  <mat-icon *ngIf="isNhomSelected(nhom.id)" class="!text-xs !w-3 !h-3 text-white">check</mat-icon>
+                </div>
+                <!-- Content -->
+                <div class="flex-1 min-w-0 text-left">
+                  <div class="font-medium text-gray-900 truncate">{{ nhom.name }}</div>
+                  <div *ngIf="nhom.description" class="text-xs text-gray-500 truncate mt-0.5">{{ nhom.description }}</div>
+                </div>
+              </button>
+            </div>
+
+            <!-- No Results -->
+            <ng-template #noResults>
+              <div class="flex flex-col items-center justify-center py-8 px-4 text-center">
+                <mat-icon class="!text-4xl !w-12 !h-12 text-gray-300 mb-3">search_off</mat-icon>
+                <p class="text-sm text-gray-500">Không tìm thấy nhóm "{{ nhomSearchQuery() }}"</p>
+                <button 
+                  type="button"
+                  (click)="createNhomFromSearch()"
+                  class="mt-3 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg
+                         hover:bg-primary-100 active:bg-primary-200 transition-colors">
+                  <mat-icon class="!text-lg !w-5 !h-5">add</mat-icon>
+                  Tạo nhóm "{{ nhomSearchQuery() }}"
+                </button>
+              </div>
+            </ng-template>
+          </div>
+
+          <!-- Mobile Footer with Done Button -->
+          <div class="flex md:hidden items-center justify-between px-4 py-3 border-t border-gray-100 bg-gray-50 sticky bottom-0">
+            <span class="text-sm text-gray-600">{{ selectedNhomkhachhangIds().length }} nhóm đã chọn</span>
+            <button 
+              type="button"
+              (click)="closeNhomkhachhangDropdown()"
+              class="px-6 py-2.5 text-sm font-medium text-white bg-primary-600 rounded-lg
+                     hover:bg-primary-700 active:bg-primary-800 transition-colors shadow-sm">
+              Xong
+            </button>
+          </div>
+        </div>
+
+        <!-- Backdrop for mobile -->
+        <div 
+          *ngIf="isNhomDropdownOpen()"
+          (click)="closeNhomkhachhangDropdown()"
+          class="fixed inset-0 bg-black/20 z-40 md:hidden"></div>
+      </div>
+      
+      <!-- Validation Hint -->
+      <p *ngIf="selectedNhomkhachhangIds().length === 0 && isEdit()" class="mt-1.5 text-xs text-orange-500 flex items-center gap-1">
+        <mat-icon class="!text-sm !w-4 !h-4">warning</mat-icon>
+        Vui lòng chọn ít nhất một nhóm khách hàng
+      </p>
+      
+      <!-- Selected chips display (shadcn style) -->
+      <div class="flex flex-wrap gap-1.5 mt-2" *ngIf="selectedNhomkhachhangIds().length > 0">
+        <div 
+          *ngFor="let nhomId of selectedNhomkhachhangIds(); trackBy: trackByNhomId" 
+          class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md 
+                 bg-gray-100 text-gray-700 border border-gray-200
+                 transition-all duration-200 hover:bg-gray-200">
+          <span class="truncate max-w-[120px]">{{ getNhomkhachhangName(nhomId) }}</span>
+          <button 
+            *ngIf="isEdit()"
+            type="button"
+            class="flex items-center justify-center w-4 h-4 rounded hover:bg-gray-300 transition-colors -mr-0.5"
+            (click)="removeNhomkhachhang(nhomId); $event.stopPropagation()">
+            <mat-icon class="!text-xs !w-3 !h-3 text-gray-500">close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Email</mat-label>
+      <input matInput [value]="DetailKhachhang()?.email || ''" (input)="updateEmail($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Email"/>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Số Điện Thoại</mat-label>
+      <input matInput [value]="DetailKhachhang()?.sdt || ''" (input)="updateSdt($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Số Điện Thoại"/>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Mã Số Thuế</mat-label>
+      <input matInput [value]="DetailKhachhang()?.mst || ''" (input)="updateMst($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Số Thuế"/>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Giờ Nhận Hàng</mat-label>
+      <input matInput [value]="DetailKhachhang()?.gionhanhang || ''" (input)="updateGionhanhang($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giờ Nhận Hàng"/>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Mã Chuyến</mat-label>
+      <input matInput [value]="DetailKhachhang()?.machuyen || ''" (input)="updateMachuyen($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Chuyến"/>
+    </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Địa Chỉ</mat-label>
+        <input matInput [value]="DetailKhachhang()?.diachi || ''" (input)="updateDiachi($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Địa Chỉ"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Quận</mat-label>
+        <input matInput [value]="DetailKhachhang()?.quan || ''" (input)="updateQuan($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Quận"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Bảng Giá</mat-label>
+        <input 
+          matInput 
+          [value]="getSelectedBanggiaTitle()"
+          [matAutocomplete]="autoBanggia"
+          [disabled]="!isEdit()"
+          (input)="onBanggiaInput($event)"
+          placeholder="Tìm kiếm bảng giá..."/>
+        <mat-autocomplete #autoBanggia="matAutocomplete" [displayWith]="displayBanggia">
+          <mat-option 
+            *ngFor="let item of filteredBanggia()" 
+            [value]="item"
+            (click)="onBanggiaSelected(item)">
+            {{item.title}} - {{item.mabanggia}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <!-- <app-searchfilter         
+        [title]="'Bảng Giá'"
+        [fieldsearch]="'title'"
+        [ListItem]="_BanggiaService.ListBanggia()"
+        [ListFilter]="ListFilter"
+        [filterItem]="filterItem"
+        [CountItems]="DetailKhachhang()?.banggia?.length"
+        [isEdit]="isEdit"
+        (OutFilter)="DoOutFilter($event)"
+      ></app-searchfilter> -->
+
+      <mat-slide-toggle color="primary" [checked]="DetailKhachhang()?.hiengia" (change)="updateHiengia($event)" [disabled]="!isEdit()">Hiện Giá</mat-slide-toggle>
+      <mat-slide-toggle color="primary" [checked]="DetailKhachhang()?.istitle2" (change)="updateIstitle2($event)" [disabled]="!isEdit()">Hiện Tên Sản Phẩm 2</mat-slide-toggle>
+      <mat-slide-toggle color="primary" [checked]="DetailKhachhang()?.isshowvat" (change)="updateIsshowvat($event)" [disabled]="!isEdit()">Hiện VAT</mat-slide-toggle>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Ghi Chú</mat-label>
+        <textarea matInput [value]="DetailKhachhang()?.ghichu || ''" (input)="updateGhichu($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Ghi Chú"></textarea>
+      </mat-form-field>   
+    </div>
+  </ng-container>
+</div>
+
+<!-- Inline Create Nhomkhachhang Dialog (Mobile-First Overlay) -->
+<ng-template #createNhomkhachhangDialog>
+  <div class="flex flex-col w-full max-w-md bg-white rounded-2xl overflow-hidden">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-white">
+      <h3 class="text-lg font-semibold text-gray-900">Tạo Nhóm Khách Hàng Mới</h3>
+      <button 
+        mat-icon-button 
+        class="!-mr-2"
+        (click)="closeCreateNhomkhachhangDialog()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <!-- Content -->
+    <mat-dialog-content class="!p-4 !max-h-[60vh]">
+      <div class="space-y-4">
+        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+          <mat-label>Tên Nhóm *</mat-label>
+          <input 
+            matInput 
+            [(ngModel)]="newNhomkhachhang.name"
+            placeholder="Nhập tên nhóm khách hàng"
+            required
+            #nhomNameInput />
+          <mat-hint class="text-gray-500">Ví dụ: Khách VIP, Khách Mới, ...</mat-hint>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+          <mat-label>Mô Tả</mat-label>
+          <textarea 
+            matInput 
+            [(ngModel)]="newNhomkhachhang.description"
+            placeholder="Nhập mô tả cho nhóm (không bắt buộc)"
+            rows="3"></textarea>
+        </mat-form-field>
+      </div>
+    </mat-dialog-content>
+    
+    <!-- Footer -->
+    <mat-dialog-actions class="!px-4 !py-3 border-t border-gray-100 bg-gray-50 !justify-end gap-2">
+      <button 
+        mat-stroked-button 
+        class="!min-w-[80px]"
+        (click)="closeCreateNhomkhachhangDialog()">
+        Hủy
+      </button>
+      <button 
+        mat-flat-button 
+        color="primary" 
+        class="!min-w-[100px]"
+        [disabled]="!newNhomkhachhang.name || isCreatingNhomkhachhang()"
+        (click)="createNewNhomkhachhang()">
+        <mat-icon *ngIf="isCreatingNhomkhachhang()" class="animate-spin !mr-1">autorenew</mat-icon>
+        <span *ngIf="!isCreatingNhomkhachhang()">Tạo Nhóm</span>
+        <span *ngIf="isCreatingNhomkhachhang()">Đang tạo...</span>
+      </button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>

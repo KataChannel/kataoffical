@@ -1,0 +1,1264 @@
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  computed,
+  effect,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+  ViewChild,
+  TemplateRef,
+  NgZone,
+  PLATFORM_ID,
+} from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { TrangThaiDon } from '../../../shared/utils/trangthai';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { ListPhieugiaohangComponent } from '../listphieugiaohang/listphieugiaohang.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import {
+  ConvertDriveData,
+  GenId,
+  convertToSlug,
+} from '../../../shared/utils/shared.utils';
+import { MatMenuModule } from '@angular/material/menu';
+import { KhachhangService } from '../../khachhang/khachhang.service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { BanggiaService } from '../../banggia/banggia.service';
+import moment from 'moment';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DonhangService } from '../../donhang/donhang.service';
+import { SanphamService } from '../../sanpham/sanpham.service';
+import { UserService } from '../../user/user.service';
+import { SharedInputService } from '../../../shared/services/shared-input.service';
+import { LoadingUtils } from '../../../shared/utils/loading.utils';
+import { Title } from '@angular/platform-browser';
+import { Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
+@Component({
+  selector: 'app-detailphieugiaohang',
+  imports: [
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    CommonModule,
+    MatSlideToggleModule,
+    MatMenuModule,
+    MatDatepickerModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule,
+  ],
+  // providers: [provideNativeDateAdapter()],
+  templateUrl: './detailphieugiaohang.component.html',
+  styleUrl: './detailphieugiaohang.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDestroy {
+  _ListphieugiaohangComponent: ListPhieugiaohangComponent = inject(ListPhieugiaohangComponent);
+  _PhieugiaohangService: DonhangService = inject(DonhangService);
+  _SanphamService: SanphamService = inject(SanphamService);
+  _UserService: UserService = inject(UserService);
+  _SharedInputService: SharedInputService = inject(SharedInputService);
+  _route: ActivatedRoute = inject(ActivatedRoute);
+  _router: Router = inject(Router);
+  _snackBar: MatSnackBar = inject(MatSnackBar);
+  _dialog: MatDialog = inject(MatDialog);
+  _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private titleService: Title = inject(Title);
+    displayedColumns: string[] = [
+    'STT',
+    'title',
+    'masp',
+    'dvt',
+    'sldat',
+    'slgiao',
+    'giaban',
+    'ttgiao',
+    'slnhan',
+    'ghichu'
+  ];
+  
+  ColumnName: any = {
+    STT: 'STT',
+    title: 'Tiêu Đề',
+    masp: 'Mã SP',
+    dvt: 'Đơn Vị Tính',
+    sldat: 'SL Đặt',
+    slgiao: 'SL Giao',
+    giaban: 'Giá Bán',
+    ttgiao: 'TT Giao',
+    slnhan: 'Thực Nhận',
+    ghichu: 'Ghi Chú'
+  };
+
+  dataSource:any = new MatTableDataSource([]);
+  CountItem = computed(() => this.dataSource.data.length);
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('confirmRemoveDialog') confirmRemoveDialog!: TemplateRef<any>;
+  @ViewChild('confirmReceivedDialog') confirmReceivedDialog!: TemplateRef<any>;
+  DetailPhieugiaohang: any = this._PhieugiaohangService.DetailDonhang;
+
+  // Dialog state properties for slnhan < slgiao dialog
+  dialogShortageProduct: any = null;
+  dialogShortageQty = 0;
+  dialogSlnhan = 0;
+  dialogSlnhapkho = 0;
+  dialogSlhuy = 0;
+  dialogIndex: number | null = null;
+  dialogEventTarget: any = null;
+  dialogDiscrepancies = signal<any[]>([]);
+  profile: any = this._UserService.profile;
+  isAccountant = computed(() => {
+    const roles = this.profile()?.roles || [];
+    return roles.includes('Kế Toán') || roles.includes('Admin');
+  });
+  // ListKhachhang: any = this._KhachhangService.ListKhachhang;
+  isEdit = signal(true);
+  isDelete = signal(false);
+  isLoading = signal<boolean>(false);
+  isSaving = signal<boolean>(false);
+  isUpdating = signal<boolean>(false);
+  isLoadingProducts = signal<boolean>(false);
+  
+  // Optimization: Request queue and debounce
+  private updateQueue = new Map<string, any>();
+  private updateDebounceTimer: any;
+  private readonly UPDATE_DEBOUNCE_TIME = 500; // 500ms debounce
+  private readonly MAX_CONCURRENT_UPDATES = 3; // Max concurrent update requests
+  private activeUpdateRequests = 0;
+  private originalData: any = null; // For rollback on errors
+  
+  filterKhachhang: any = [];
+  filterBanggia: any[] = [];
+  filterSanpham: any[] = [];
+  phieugiaohangId: any = this._PhieugiaohangService.donhangId;
+  ListSanpham: any = this._SanphamService.ListSanpham;
+
+  // RxJS for optimized updates
+  private updateSubject = new Subject<any>();
+  private destroy$ = new Subject<void>();
+  
+  // Store item to be removed for dialog
+  itemToRemove: any = null;
+  
+  // Component key for loading utilities
+  private readonly COMPONENT_KEY = 'detailphieugiaohang';
+  TrangThaiDon: any = TrangThaiDon;
+
+  getStatusStyle(status: string): string {
+    const s = status?.toLowerCase();
+    switch (s) {
+      case 'dadat':
+        return 'status-dadat';
+      case 'dagiao':
+        return 'status-dagiao';
+      case 'danhan':
+        return 'status-danhan';
+      case 'hoanthanh':
+        return 'status-hoanthanh';
+      case 'choxuly':
+        return 'status-choxuly';
+      case 'khonggiao':
+        return 'status-khonggiao';
+      case 'huy':
+      case 'dahuy':
+        return 'status-huy';
+      default:
+        return 'status-khonggiao';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    return (this.TrangThaiDon as any)[status?.toLowerCase()] || status;
+  }
+
+
+  async changeStatus(newStatus: string) {
+    if (this.DetailPhieugiaohang()?.status === newStatus) return;
+    
+    try {
+      this._snackBar.open('Đang cập nhật trạng thái...', '', { duration: 1000 });
+      
+      const updatedData = {
+        ...this.DetailPhieugiaohang(),
+        status: newStatus
+      };
+
+      await this._PhieugiaohangService.updateDonhang(updatedData);
+
+      this.DetailPhieugiaohang.update((v: any) => ({
+        ...v,
+        status: newStatus
+      }));
+
+      this._snackBar.open('Cập nhật trạng thái thành công', '', {
+        duration: 2000,
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      console.error('Lỗi khi đổi trạng thái:', error);
+      this._snackBar.open('Lỗi khi cập nhật trạng thái', '', {
+        duration: 2000,
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+  constructor(
+    private sharedInputService: SharedInputService
+  ) {
+    this._route.paramMap.subscribe((params) => {
+      const id = params.get('id');
+      this._PhieugiaohangService.setDonhangId(id);
+    });
+
+    // Initialize update stream with debounce
+    this.updateSubject.pipe(
+      debounceTime(this.UPDATE_DEBOUNCE_TIME),
+      takeUntil(this.destroy$)
+    ).subscribe(data => {
+      this.executeUpdate(data);
+    });
+
+    effect(() => {
+      const user = this._UserService.profile();
+      const id = this._PhieugiaohangService.donhangId();
+      
+      if (user && id && id !== '0') {
+        // Use timeout to prevent blocking
+        setTimeout(() => {
+            this.loadProductsAsync();
+            this.loadPhieugiaohangData(id);
+        }, 0);
+      } else if (id === '0') {
+        this._router.navigate(['/admin/phieugiaohang']);
+        this._ListphieugiaohangComponent.drawer.close();
+      }
+    });
+  }
+
+  private async loadProductsAsync() {
+    this.isLoadingProducts.set(true);
+    try {
+      // Load products with reasonable pagination instead of all 99,999
+      await this._SanphamService.getAllSanpham({pageSize: 1000});
+      this.filterSanpham = this._SanphamService.ListSanpham();
+    } catch (error) {
+      console.error('Error loading products:', error);
+      this._snackBar.open('Lỗi khi tải danh sách sản phẩm', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoadingProducts.set(false);
+    }
+  }
+
+  private async loadPhieugiaohangData(id: string) {
+    this.isLoading.set(true);
+    try {
+      await this._PhieugiaohangService.Phieugiaohang({id: id});
+      const phieuGiaoHang = this.DetailPhieugiaohang();
+
+      // Update edit mode based on status
+      this.isEdit.set(phieuGiaoHang.status !== 'hoanthanh');
+      
+      // Process sanpham data with proper typing
+      const processedSanpham = phieuGiaoHang?.sanpham?.map((item: any) => ({
+        ...item,
+        ttgiao: (Number(item.slgiao) || 0) * (Number(item.giaban) || 0)
+      })) || [];
+      
+      // Sort by title A-Z
+      processedSanpham.sort((a: any, b: any) => {
+        const titleA = a.sanpham?.title || a.title || '';
+        const titleB = b.sanpham?.title || b.title || '';
+        return titleA.localeCompare(titleB, 'vi', { sensitivity: 'base' });
+      });
+      
+      // Update the signal with processed data
+      this.DetailPhieugiaohang.update((data: any) => ({
+        ...data,
+        sanpham: processedSanpham
+      }));
+      
+      // Initialize datasource with processed data
+      this.dataSource.data = processedSanpham;
+      setTimeout(() => {
+        this.dataSource.sort = this.sort;
+      }, 300);
+      
+      // Set up paginator and sort after view init
+      this.setupDataSource();
+      this._ListphieugiaohangComponent.drawer.open();
+      // this._router.navigate(['/admin/phieugiaohang', id]);
+    } catch (error) {
+      console.error('Error loading phieugiaohang data:', error);
+      this._snackBar.open('Lỗi khi tải dữ liệu phiếu giao hàng', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  getTitle(item: any) {
+    return this.TrangThaiDon[item] || item;
+  }
+
+  // Permission check methods
+  hasPermission(permission: string): boolean {
+    return this._UserService.hasPermission(permission);
+  }
+
+  canEditSldat(): boolean {
+    const result = this.hasPermission('phieugiaohang.sldat');
+    console.log(result);
+    
+    return result;
+  }
+
+  canEditSlgiao(): boolean {
+    const result = this.hasPermission('phieugiaohang.slgiao');
+    return result;
+  }
+
+  canEditSlnhan(): boolean {
+    const result = this.hasPermission('phieugiaohang.slnhan');
+    return result;
+  }
+ 
+ async ngOnInit() {
+   await this._UserService.getProfile();
+  console.log(this.profile());
+    this.canEditSlnhan();
+    const phieugiaohangId = this.phieugiaohangId();
+    if (!phieugiaohangId) return;
+    
+    // Sort by title A-Z
+    this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+      console.log(item, property);
+      
+      switch (property) {
+      case 'title':
+      return (item.sanpham?.title || item.title || '');
+      default:
+      return item[property] || '';
+      }
+    };
+
+    // Custom sort for Vietnamese
+    this.dataSource.sortData = (data: any[], sort: MatSort) => {
+      const active = sort.active;
+      const direction = sort.direction;
+      
+      if (!active || direction === '') {
+      return data;
+      }
+
+      return data.sort((a, b) => {
+      let valueA = this.dataSource.sortingDataAccessor(a, active);
+      let valueB = this.dataSource.sortingDataAccessor(b, active);
+
+      // Use Vietnamese locale comparison for strings
+      if (typeof valueA === 'string' && typeof valueB === 'string') {
+        const comparison = valueA.localeCompare(valueB, 'vi', { 
+        sensitivity: 'base',
+        numeric: true,
+        ignorePunctuation: true
+        });
+        return direction === 'asc' ? comparison : -comparison;
+      }
+
+      // Numeric comparison
+      if (typeof valueA === 'number' && typeof valueB === 'number') {
+        return direction === 'asc' ? valueA - valueB : valueB - valueA;
+      }
+
+      // Default comparison
+      const comparison = valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+      return direction === 'asc' ? comparison : -comparison;
+      });
+    };
+
+    setTimeout(() => {
+      this.dataSource.sort = this.sort;
+    }, 300);
+     if(this.DetailPhieugiaohang()?.madonhang){
+      this.titleService.setTitle(`${this.DetailPhieugiaohang()?.madonhang}`);
+    }
+  }
+
+  ngAfterViewInit() {
+    this.setupDataSource();
+  }
+
+  onChangeVat() {
+    this.DetailPhieugiaohang.update((v: any) => {
+      v.isshowvat = !v.isshowvat;
+      return v;
+    });
+    console.log('VAT changed:', this.DetailPhieugiaohang().isshowvat);
+    
+  }
+  private setupDataSource(): void {
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+    }
+  }
+  SortByVi(ListItem:any[], field:string) {
+      return ListItem.sort((a:any,b:any) => {
+        const nameA = (a.sanpham?.[field] || a[field] || '').toLowerCase();
+        const nameB = (b.sanpham?.[field] || b[field] || '').toLowerCase();
+        return nameA.localeCompare(nameB, 'vi', { sensitivity: 'base' });
+      });
+  }
+  GetDVT(item:any) {
+    if(item?.sanpham?.length > 0) {
+      return item?.sanpham[0]?.dvt || '';
+    }
+    return '';
+  }
+
+  async handlePhieugiaohangAction() {
+    if (this.isSaving() || this.isUpdating()) {
+      console.warn('Update already in progress, skipping...');
+      return;
+    }
+
+    const discrepancyItems = (this.DetailPhieugiaohang().sanpham || []).filter((item: any) => {
+      const slnhan = Number(item.slnhan) || 0;
+      const slgiao = Number(item.slgiao) || 0;
+      return slnhan < slgiao;
+    });
+
+    if (discrepancyItems.length > 0) {
+      this.openDiscrepancyDialog(discrepancyItems);
+    } else {
+      this.isSaving.set(true);
+      try {
+          await this.updatePhieugiaohangOptimized();
+      } finally {
+        this.isSaving.set(false);
+      }
+    }
+  }
+
+  private async updatePhieugiaohangOptimized() {
+    const phieugiaohangId = this.phieugiaohangId();
+    if (!phieugiaohangId || phieugiaohangId === '0') {
+      return;
+    }
+
+    const data = this.prepareUpdateData();
+    this.originalData = { ...this.DetailPhieugiaohang() };
+    this.DetailPhieugiaohang.set(data);
+    this.updateSubject.next(data);
+  }
+
+  private prepareUpdateData() {
+    try {
+      const sanphamWithCalculations = this.DetailPhieugiaohang().sanpham?.map((v: any) => {
+        const slgiao = Number(v.slgiao) || 0;
+        const giaban = Number(v.giaban) || 0;
+        return {
+          ...v,
+          ttgiao: slgiao * giaban
+        };
+      }) || [];
+
+      const tong = sanphamWithCalculations.reduce((sum: number, item: any) => 
+        sum + (item.ttgiao || 0), 0);
+      const vat = Number(this.DetailPhieugiaohang().vat) || 0;
+      const tongvat = tong * vat;
+      const tongtien = tong * (1 + vat);
+
+      return {
+        ...this.DetailPhieugiaohang(),
+        sanpham: sanphamWithCalculations,
+        tongtien,
+        tongvat
+      };
+    } catch (error) {
+      console.error('Error preparing update data:', error);
+      throw error;
+    }
+  }
+
+
+  private async executeUpdate(data: any) {
+    this.isUpdating.set(true);
+
+    try {
+      await this._PhieugiaohangService.updatePhieugiao(data);
+
+      this._snackBar.open('Cập Nhật Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      console.error('Lỗi khi cập nhật phiếu giao hàng:', error);
+      
+      this.rollbackOptimisticUpdate();
+
+      this._snackBar.open('Lỗi Cập Nhật - Đã hoàn tác thay đổi', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isUpdating.set(false);
+    }
+  }
+
+  private updateUIOptimistically(data: any) {
+    // Store original data for rollback
+    this.originalData = { ...this.DetailPhieugiaohang() };
+
+    // Update UI immediately
+    this.DetailPhieugiaohang.set(data);
+    
+    // Only trigger change detection once
+    this._cdr.detectChanges();
+  }
+
+  private rollbackOptimisticUpdate() {
+    if (this.originalData) {
+      this.DetailPhieugiaohang.set(this.originalData);
+      this._cdr.detectChanges();
+    }
+  }
+
+  // Keep original method for backward compatibility but mark as deprecated
+  private async updatePhieugiaohang() {
+    console.warn('updatePhieugiaohang is deprecated, use updatePhieugiaohangOptimized instead');
+    return this.updatePhieugiaohangOptimized();
+  }
+
+  // Optimized UpdateTongTongTienVat method
+  UpdateTongTongTienVat() {
+    try {
+      const sanpham = this.DetailPhieugiaohang().sanpham || [];
+      const vat = Number(this.DetailPhieugiaohang().vat) || 0;
+      
+      // Use reduce with better performance
+      const tong = sanpham.reduce((sum: number, item: any) => {
+        const slgiao = Number(item.slgiao) || 0;
+        const giaban = Number(item.giaban) || 0;
+        return sum + (slgiao * giaban);
+      }, 0);
+      
+      const tongvat = tong * vat;
+      const tongtien = tong * (1 + vat);
+
+      // Batch update to avoid multiple signal updates
+      this.DetailPhieugiaohang.update((data: any) => ({
+        ...data,
+        tongtien,
+        tongvat
+      }));
+
+      // Only trigger change detection if values actually changed
+      this._cdr.detectChanges();
+
+    } catch (error) {
+      console.error('Error updating totals:', error);
+    }
+  }
+
+  // Cleanup method to prevent memory leaks
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+    if (this.updateDebounceTimer) {
+      clearTimeout(this.updateDebounceTimer);
+    }
+    this.updateQueue.clear();
+    this.originalData = null;
+  }
+
+  // Performance monitoring method
+  private logPerformanceMetrics(operation: string, startTime: number) {
+    const endTime = performance.now();
+    const duration = endTime - startTime;
+    
+    console.log(`Performance [${operation}]:`, {
+      duration: `${duration.toFixed(2)}ms`,
+      activeRequests: this.activeUpdateRequests,
+      queueSize: this.updateQueue.size,
+      timestamp: new Date().toISOString()
+    });
+
+    // Log warning if operation takes too long
+    if (duration > 1000) {
+      console.warn(`Slow operation detected: ${operation} took ${duration.toFixed(2)}ms`);
+    }
+  }
+
+  // Method to manually trigger performance test (for debugging)
+  async testConcurrentUpdates(count: number = 10) {
+    console.log(`Starting concurrent update test with ${count} requests...`);
+    const startTime = performance.now();
+
+    const promises = Array.from({ length: count }, (_, i) => {
+      return this.updatePhieugiaohangOptimized();
+    });
+
+    try {
+      await Promise.all(promises);
+      this.logPerformanceMetrics(`ConcurrentTest_${count}`, startTime);
+    } catch (error) {
+      console.error('Concurrent test failed:', error);
+    }
+  }
+
+  async DeleteData() {
+
+  }
+  goBack() {
+    this._router.navigate(['/admin/phieugiaohang']);
+    this._ListphieugiaohangComponent.drawer.close();
+  }  trackByFn(index: number, item: any): any {
+    return item.id;
+  }
+  
+  // Method để auto-select text khi focus vào input - Using shared service
+  onInputFocus(event: FocusEvent) {
+    this.sharedInputService.onInputFocus(event);
+  }
+
+  // Method để validate keyboard input for decimal handling
+  validateKeyInput(event: KeyboardEvent, type: 'number' | 'string') {
+    return this.sharedInputService.handleKeyboardEvent(event, type);
+  }
+
+  // Method để xử lý input từ numpad và format số
+  private handleNumericInput(event: KeyboardEvent, target: HTMLElement): void {
+    // Handle numpad decimal point
+    if (event.code === 'NumpadDecimal' || event.key === '.' || event.key === ',') {
+      const currentText = target.innerText;
+      // Prevent multiple decimal points
+      if (currentText.includes('.') || currentText.includes(',')) {
+        event.preventDefault();
+        return;
+      }
+    }
+    
+    // Handle numpad numbers - let them through normally
+    if (event.code && event.code.startsWith('Numpad') && /Numpad[0-9]/.test(event.code)) {
+      // These will be handled normally by the browser
+      return;
+    }
+  }
+
+  // Method để format số hiển thị
+  private formatNumberDisplay(value: number): string {
+    if (isNaN(value) || value === 0) return '0';
+    return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
+
+  toggleEdit() {
+    this.isEdit.update((value) => !value);
+  }
+
+  toggleDelete() {
+    this.isDelete.update((value) => !value);
+  }
+  FillSlug() {
+    this.DetailPhieugiaohang.update((v: any) => {
+      v.slug = convertToSlug(v.title);
+      return v;
+    });
+  }
+  DoFindBanggia(event: any) {
+    const query = event.target.value.toLowerCase();
+    //  this.FilterBanggia = this.ListBanggia.filter(v => v.Title.toLowerCase().includes(query));
+  }
+  UpdateBangia() {
+    // const Banggia = this.ListBanggia.find(v => v.id === this.Detail.idBanggia)
+    // const valueMap = new Map(Banggia.ListSP.map(({ MaSP, giaban }:any) => [MaSP, giaban]));
+    // this.Detail.Giohangs = this.Detail.Giohangs
+    //     .filter(({ MaSP }:any) => valueMap.has(MaSP)) // Chỉ giữ lại phần tử có trong data2
+    //     .map((item:any) => ({
+    //         ...item,  // Giữ lại tất cả các thuộc tính từ data1
+    //         gia: valueMap.get(item.MaSP)?? item.gia, // Cập nhật giá trị value từ data2
+    //         Tongtien: valueMap.get(item.MaSP)?? item.gia // Cập nhật giá trị value từ data2
+    //     }));
+    //     this.UpdateListSanpham()
+    // console.log(this.Detail.Giohangs);
+  }
+  SelectBanggia(event: any) {
+    console.log(event.value);
+    // this.Detail.idBanggia = event.value
+    // this.UpdateBangia()
+    // const Banggia = this.ListBanggia.find(v => v.id === event.value)
+    // const valueMap = new Map(Banggia.ListSP.map(({ id, giaban }:any) => [id, giaban]));
+    // this.Detail.Giohangs = this.Detail.Giohangs
+    //     .filter(({ id }:any) => valueMap.has(id)) // Chỉ giữ lại phần tử có trong data2
+    //     .map((item:any) => ({
+    //         ...item,  // Giữ lại tất cả các thuộc tính từ data1
+    //         gia: valueMap.get(item.id)?? item.gia, // Cập nhật giá trị value từ data2
+    //         Tongtien: valueMap.get(item.id)?? item.gia // Cập nhật giá trị value từ data2
+    //     }));
+    // console.log(this.Detail.Giohangs);
+  }
+  Chonkhachhang(item: any) {
+    this.DetailPhieugiaohang.update((v: any) => {
+      v.khachhangId = item.id;
+      return v;
+    });
+  }
+
+  
+  updateValue(
+    event: Event,
+    index: number | null,
+    element: any,
+    field: keyof any,
+    type: 'number' | 'string'
+  ) {
+    this.sharedInputService.updateValue(
+      event,
+      'phieugiaohang',
+      index,
+      element,
+      field as string,
+      type,
+      this.DetailPhieugiaohang().sanpham,
+      (updateFn: (v: any) => any) => {
+        // Apply the update function from shared service
+        this.DetailPhieugiaohang.update(updateFn);
+        
+        // Update dataSource after changes - NO SORT (keep current order)
+        this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
+      },
+      this.dataSource.filteredData.length
+    );
+  }
+  updateBlurValue(
+    event: FocusEvent,
+    index: number | null,
+    element: any,
+    field: keyof any,
+    type: 'number' | 'string'
+  ) {
+    this.sharedInputService.updateBlurValue(
+      event,
+      'phieugiaohang',
+      index,
+      element,
+      field as string,
+      type,
+      this.DetailPhieugiaohang().sanpham,
+      (updateFn: (v: any) => any) => {
+        // Apply the update function from shared service
+        this.DetailPhieugiaohang.update(updateFn);
+        
+        // Update dataSource after changes - NO SORT (keep current order)
+        this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
+      }
+    );
+  }
+
+  onSlnhanEnter(event: Event, index: number | null, element: any) {
+    event.preventDefault();
+    this.onSlnhanChanged(event, index, element);
+    
+    // Focus next cell if needed
+    if (index !== null) {
+      this.sharedInputService.focusNextInput('.slnhan-input', index, this.dataSource.filteredData.length);
+    }
+  }
+
+  onSlnhanBlur(event: FocusEvent, index: number | null, element: any) {
+    this.onSlnhanChanged(event, index, element);
+  }
+
+  onSlnhanChanged(event: Event, index: number | null, element: any) {
+    const target = event.target as HTMLElement;
+    const rawValue = (target instanceof HTMLInputElement) ? target.value : target.innerText;
+    const enteredValue = this.sharedInputService.parseDecimalValue(rawValue.trim());
+    const slgiao = Number(element.slgiao) || 0;
+
+    this.DetailPhieugiaohang.update((v: any) => {
+      const itemIndex = v.sanpham.findIndex((item: any) => item.id === element.id);
+      if (itemIndex !== -1) {
+        v.sanpham[itemIndex].slnhan = enteredValue;
+        v.sanpham[itemIndex].ttnhan = enteredValue * (element.giaban || 0);
+        v.sanpham[itemIndex].ttsauvat = v.isshowvat 
+          ? enteredValue * (element.giaban || 0) * (1 + (v.sanpham[itemIndex].vat || 0))
+          : enteredValue * (element.giaban || 0);
+        
+        if (enteredValue >= slgiao) {
+          v.sanpham[itemIndex].slhuy = 0;
+          if (v.sanpham[itemIndex].ghichu) {
+            v.sanpham[itemIndex].ghichu = v.sanpham[itemIndex].ghichu.replace(/;? ?Trả kho:.*$/, '');
+          }
+        }
+      }
+      return v;
+    });
+
+    this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
+    this._cdr.markForCheck();
+  }
+
+  openDiscrepancyDialog(items: any[]) {
+    const mappedItems = items.map((item: any) => {
+      const slgiao = Number(item.slgiao) || 0;
+      const slnhan = Number(item.slnhan) || 0;
+      const shortageQty = parseFloat((slgiao - slnhan).toFixed(3));
+      const slhuy = Math.min(Number(item.slhuy) || 0, shortageQty);
+      const slnhapkho = parseFloat((shortageQty - slhuy).toFixed(3));
+      
+      return {
+        id: item.id,
+        title: item.title || item.sanpham?.title || 'Không có tên',
+        dvt: item.dvt || 'Kg',
+        slgiao,
+        slnhan,
+        shortageQty,
+        slnhapkho,
+        slhuy,
+        giaban: Number(item.giaban) || 0,
+        vat: Number(item.vat) || 0,
+        ghichu: item.ghichu || ''
+      };
+    });
+
+    this.dialogDiscrepancies.set(mappedItems);
+
+    const dialogRef = this._dialog.open(this.confirmReceivedDialog, {
+      width: '650px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'confirm') {
+        this.DetailPhieugiaohang.update((v: any) => {
+          this.dialogDiscrepancies().forEach((dItem: any) => {
+            const idx = v.sanpham.findIndex((item: any) => item.id === dItem.id);
+            if (idx !== -1) {
+              v.sanpham[idx].slhuy = dItem.slhuy;
+              const baseNote = v.sanpham[idx].ghichu ? v.sanpham[idx].ghichu.replace(/;? ?Trả kho:.*$/, '') : '';
+              v.sanpham[idx].ghichu = `${baseNote}${baseNote ? '; ' : ''}Trả kho: ${dItem.slnhapkho}, Hủy: ${dItem.slhuy}`;
+            }
+          });
+          return v;
+        });
+
+        this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
+        this._cdr.markForCheck();
+
+        this.isSaving.set(true);
+        this.updatePhieugiaohangOptimized().finally(() => {
+          this.isSaving.set(false);
+        });
+      }
+    });
+  }
+
+  onDialogItemSlnhapkhoChange(item: any) {
+    const nhapkho = Number(item.slnhapkho) || 0;
+    if (nhapkho > item.shortageQty) {
+      item.slnhapkho = item.shortageQty;
+      item.slhuy = 0;
+    } else if (nhapkho < 0) {
+      item.slnhapkho = 0;
+      item.slhuy = item.shortageQty;
+    } else {
+      item.slhuy = parseFloat((item.shortageQty - nhapkho).toFixed(3));
+    }
+  }
+
+  onDialogItemSlhuyChange(item: any) {
+    const huy = Number(item.slhuy) || 0;
+    if (huy > item.shortageQty) {
+      item.slhuy = item.shortageQty;
+      item.slnhapkho = 0;
+    } else if (huy < 0) {
+      item.slhuy = 0;
+      item.slnhapkho = item.shortageQty;
+    } else {
+      item.slnhapkho = parseFloat((item.shortageQty - huy).toFixed(3));
+    }
+  }
+
+
+  async GiaoDonhang() {
+    try {
+      this.DetailPhieugiaohang.update((v: any) => {
+        v.status = 'dagiao';
+        return v;
+      });
+      await this._PhieugiaohangService.DagiaoDonhang(this.DetailPhieugiaohang());
+      this._snackBar.open('Giao đơn hàng thành công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+    } catch (error) {
+      console.error('Lỗi khi giao đơn hàng:', error);
+      this._snackBar.open('Giao đơn hàng thất bại', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+    }
+  }
+  async Hoanthanhhang() {
+    if (this.isUpdating()) return;
+    this.isUpdating.set(true);
+    try {
+      this.DetailPhieugiaohang.update((v: any) => {
+        v.status = 'hoanthanh';
+        return v;
+      });
+      await this._PhieugiaohangService.updateDonhang(this.DetailPhieugiaohang());
+      this._snackBar.open('Hoàn thành đơn hàng thành công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+      this.isEdit.update((value) => false);
+    } catch (error) {
+      console.error('Lỗi khi hoàn thành đơn hàng:', error);
+      this._snackBar.open('Hoàn thành đơn hàng thất bại', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+    } finally {
+      this.isUpdating.set(false);
+    }
+  }
+  async Dagiaohang() {
+    if (this.isUpdating()) return;
+    this.isUpdating.set(true);
+    try {
+      this.DetailPhieugiaohang.update((v: any) => {
+        v.status = 'dagiao';
+        return v;
+      });
+      await this._PhieugiaohangService.updateDonhang(this.DetailPhieugiaohang());
+      this._snackBar.open('Đã Nhận đơn hàng thành công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+      this.isEdit.update((value) => false);
+    } catch (error) {
+      console.error('Lỗi khi nhận đơn hàng:', error);
+      this._snackBar.open('Nhận đơn hàng thất bại', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+    } finally {
+      this.isUpdating.set(false);
+    }
+  }
+
+  Tongcong: any = 0;
+  Tong: any = 0;
+  Tinhtongcong(value: any) {
+    this.Tongcong = value.Tongcong;
+    this.Tong = value.Tong;
+  }
+  TinhTong(items: any, fieldTong: any) {
+    return (
+      items?.reduce((sum: any, item: any) => sum + (item[fieldTong] || 0), 0) ||
+      0
+    );
+  }
+
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.debouncedSearch(filterValue);
+  }
+
+  // Debounced search function for better performance
+  private debouncedSearch = LoadingUtils.debounce(
+    (filterValue: string) => {
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+      
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    },
+    300,
+    `${this.COMPONENT_KEY}_search`
+  );  EmptyCart()
+  {
+    this.DetailPhieugiaohang.update((v:any)=>{
+      v.sanpham = []
+      return v;
+    })
+    
+    // Update dataSource to reflect changes - NO SORT (keep current order)
+    this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
+  }
+
+  RemoveSanpham(item: any) {
+    // Store the item to be removed
+    this.itemToRemove = item;
+    
+    // Show confirmation dialog
+    const dialogRef = this._dialog.open(this.confirmRemoveDialog, {
+      width: '400px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'confirm') {
+        this.confirmRemoveSanpham(this.itemToRemove);
+      }
+      this.itemToRemove = null;
+    });
+  }
+
+  private confirmRemoveSanpham(item: any) {
+    console.log(item);
+    
+    this.DetailPhieugiaohang.update((v: any) => {
+      v.sanpham = v.sanpham.filter((v1: any) => v1.id !== item.id);
+      this.reloadfilter();
+      return v;
+    });
+    
+    // Update dataSource to reflect changes - NO SORT (keep current order)
+    this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
+
+    // Show success message
+    this._snackBar.open(`Đã xóa sản phẩm: ${item.title}`, 'Đóng', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+
+    console.log(`Removed product: ${item.title}`);
+  }
+  reloadfilter(){
+    this.filterSanpham = this.ListSanpham().filter((v:any) => !this.DetailPhieugiaohang().sanpham.some((v2:any) => v2.id === v.id));
+  }
+
+
+  CoppyDon()
+  {
+
+  }
+  CheckVatDonhang(){
+    console.log(this.DetailPhieugiaohang());
+    if(this.DetailPhieugiaohang().isshowvat){
+
+    const tong = this.DetailPhieugiaohang().sanpham?.reduce((sum:any, item:any) => sum + (Number(item.slgiao) * Number(item.giaban)||0), 0) || 0;
+    const tongtien = tong*(1+Number(this.DetailPhieugiaohang().vat));
+    const tongvat = tong*this.DetailPhieugiaohang().vat;
+        console.log('VAT changed:', 1+this.DetailPhieugiaohang().vat);
+        
+        console.log('tong',tong);
+        console.log('tongtien',tongtien);
+        console.log('tongvat',tongvat);
+        console.log('this.DetailPhieugiaohang().tongtien',this.DetailPhieugiaohang().tongtien);
+        console.log('this.DetailPhieugiaohang().tongvat',this.DetailPhieugiaohang().tongvat);
+
+
+    if(Number(tongtien) !== Number(this.DetailPhieugiaohang().tongtien)){
+      return false;
+    }
+    if(Number(tongvat) !== Number(this.DetailPhieugiaohang().tongvat)){
+      return false;
+    } else {
+      return true;
+    }
+    }
+    else {
+      return true;
+    }
+    
+  }
+
+  async printContent()
+  {
+   const isCheck = this.CheckVatDonhang();
+   if(!isCheck){
+    this._snackBar.open('Vui lòng kiểm tra lại VAT trước khi in phiếu giao hàng', '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-error']
+    });
+    return;
+   }
+
+    // 🔥 CẬP NHẬT printCount khi in phiếu giao hàng
+    const currentPhieugiaohang = this.DetailPhieugiaohang();
+    if (currentPhieugiaohang && currentPhieugiaohang.id) {
+      try {
+        const oldPrintCount = currentPhieugiaohang.printCount || 0;
+        const newPrintCount = oldPrintCount + 1;
+        
+        // Cập nhật lên server trước
+        await this._PhieugiaohangService.updateDonhang({
+          id: currentPhieugiaohang.id,
+          printCount: newPrintCount
+        });
+        
+        // Chỉ cập nhật local state sau khi API thành công
+        currentPhieugiaohang.printCount = newPrintCount;
+        
+        console.log(`✅ [printContent] Đã cập nhật printCount: ${oldPrintCount} → ${newPrintCount}`);
+        
+        this._snackBar.open(`✅ Đã cập nhật trạng thái in (lần thứ ${newPrintCount})`, '', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+      } catch (error) {
+        console.error('❌ [printContent] Lỗi khi cập nhật printCount:', error);
+        this._snackBar.open('❌ Không thể cập nhật trạng thái in. Vui lòng thử lại!', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error']
+        });
+      }
+    }
+    // Đảm bảo đang ở chế độ xem trước khi in để lấy đủ header và layout đẹp
+    const wasEditing = this.isEdit();
+    if (wasEditing) {
+      this.isEdit.set(false);
+      this._cdr.detectChanges();
+    }
+
+    // Thực hiện in sau khi đã chuyển sang chế độ xem
+    setTimeout(async () => {
+      const printContentElement = document.getElementById('printContent');
+      if (printContentElement) {
+        const newWindow = window.open('', '_blank');
+        const tailwindCSS = `
+          <script src="https://cdn.tailwindcss.com"></script>
+          <script>
+            tailwind.config = {
+              theme: { extend: {} }
+            };
+          </script>
+        `;
+        if (newWindow) {
+          newWindow.document.write(`
+            <html>
+            <head>
+              <title>${this.DetailPhieugiaohang()?.madonhang}</title>
+               ${tailwindCSS}
+              <style>
+                body { font-size: 12px; font-family: 'Times New Roman', Times, serif !important; }
+                table { width: 100%; border-collapse: collapse; }
+                th, td { border: 1px solid #000; padding: 4px; text-align: left; }
+                .font-times {font-family: 'Times New Roman', Times, serif !important;}
+                @media print { 
+                body { margin: 0; font-family: 'Times New Roman', Times, serif !important;} 
+                img {height:80px}
+               .font-times {font-family: 'Times New Roman', Times, serif !important;}
+                }
+              </style>
+            </head>
+            <body>
+              ${printContentElement.outerHTML}
+              <script>
+                window.onload = function() { window.print(); window.close(); }
+              </script>
+            </body>
+            </html>
+          `);
+          newWindow.document.close();
+          if (this.DetailPhieugiaohang().status === 'dadat') {
+            this.Dagiaohang();
+          }
+        } else {
+          console.error('Không thể mở cửa sổ in');
+        }
+      } else {
+        console.error('Không tìm thấy phần tử printContent');
+      }
+
+      // Trả lại trạng thái edit nếu trước đó đang edit
+      if (wasEditing) {
+        this.isEdit.set(true);
+        this._cdr.detectChanges();
+      }
+    }, 150);
+
+
+
+
+    // html2canvas(element, { scale: 2 }).then(canvas => {
+    //   const imageData = canvas.toDataURL('image/png');
+
+    //   // Mở cửa sổ mới và in ảnh
+    //   const printWindow = window.open('', '_blank');
+    //   if (!printWindow) return;
+
+    //   printWindow.document.write(`
+    //     <html>
+    //       <head>
+    //         <title>${this.DetailPhieugiaohang()?.title}</title>
+    //       </head>
+    //       <body style="text-align: center;">
+    //         <img src="${imageData}" style="max-width: 100%;"/>
+    //         <script>
+    //           window.onload = function() {
+    //             window.print();
+    //             window.onafterprint = function() { window.close(); };
+    //           };
+    //         </script>
+    //       </body>
+    //     </html>
+    //   `);
+
+    //   printWindow.document.close();
+    // });
+  }
+}

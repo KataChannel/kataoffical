@@ -1,0 +1,1656 @@
+import { Component, effect, inject, signal, computed, WritableSignal, ViewChild, AfterViewInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { ActivatedRoute, Route, Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatMenuModule } from '@angular/material/menu';
+import { CommonModule } from '@angular/common';
+import { ListChotkhoComponent } from '../listchotkho/listchotkho';
+import { ChotkhoService } from '../chotkho.service';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ProductSelectionDialogComponent, ProductSelectionResult } from '../product-selection-dialog/product-selection-dialog.component';
+import { SearchfilterComponent } from '../../../shared/common/searchfilter123/searchfilter.component';
+import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { SanphamService } from '../../sanpham/sanpham.service';
+// Remove static XLSX imports to fix SSR issues
+import { UserService } from '../../user/user.service';
+import { KhoService } from '../../kho/kho.service';
+import { ReconciliationDialogComponent } from '../reconciliation-dialog/reconciliation-dialog.component';
+import { ProductTimelineDialogComponent } from '../product-timeline-dialog/product-timeline-dialog.component';
+  @Component({
+    selector: 'app-detailchotkho',
+    imports: [
+      MatFormFieldModule,
+      MatInputModule,
+      FormsModule,
+      MatIconModule,
+      MatButtonModule,
+      MatSelectModule,
+      MatDialogModule,
+      MatDatepickerModule,
+      MatNativeDateModule,
+      MatTableModule,
+      MatSortModule,
+      MatMenuModule,
+      CommonModule,
+      MatSlideToggleModule,
+      MatProgressSpinnerModule
+    ],
+    templateUrl: './detailchotkho.html',
+    styleUrl: './detailchotkho.scss'
+  })
+  export class DetailChotkhoComponent implements AfterViewInit {
+    public ColumnDesc: any = {
+      sltonhethong: 'Số liệu Snapshot',
+      sltonthucte: 'Số kiểm đếm',
+      slhuy: 'Hàng hư hỏng',
+      chenhlech: 'Hệ thống - Thực tế'
+    };
+    _ListChotkhoComponent:ListChotkhoComponent = inject(ListChotkhoComponent)
+    _ChotkhoService:ChotkhoService = inject(ChotkhoService)
+    _SanphamService: SanphamService = inject(SanphamService);
+    _route:ActivatedRoute = inject(ActivatedRoute)
+    _router:Router = inject(Router)
+    _snackBar:MatSnackBar = inject(MatSnackBar)
+    _dialog:MatDialog = inject(MatDialog)
+    _UserService:UserService = inject(UserService)
+    _KhoService:KhoService = inject(KhoService)
+    
+    ListKho = signal<any[]>([]);
+    
+    @ViewChild(MatSort) sort!: MatSort;
+    
+    // Table configuration
+    dataSource = signal(new MatTableDataSource<any>([]));
+    displayedColumns: string[] = ['STT', 'title', 'masp', 'dvt', 'sltonhethong', 'sltonthucte', 'slhuy', 'chenhlech', 'ghichu'];
+    ColumnName: any = {
+      STT: 'STT',
+      title: 'Tên Sản Phẩm',
+      masp: 'Mã SP',
+      dvt: 'Đơn Vị',
+      sltonhethong: 'SL Hệ Thống',
+      sltonthucte: 'SL Thực Tế',
+      slhuy: 'SL Hủy',
+      chenhlech: 'Chênh Lệch',
+      ghichu: 'Ghi Chú'
+    };
+    
+    // Initialize DetailChotkho with default structure
+    DetailChotkho: any = signal({
+      id: undefined,
+      title: '',
+      ngaychot: new Date(),
+      ghichu: '',
+      khoId: '',
+      userId: '',
+      isActive: true,
+      details: []
+    });
+    
+    pendingOrders = signal<any[]>([]);
+    selectedOrderIds = signal<string[]>([]);
+    isPendingLoading = signal(false);
+    isSaving = signal(false);
+
+    // Active tab (0: All, 1: Negative Stock, 2: Pending/Double Count, 3: Discrepancy, 4: Missing, 5: Matched)
+    activeTab = signal<number>(0);
+
+    // Computed signals for categorized lists
+    allItems = computed(() => {
+      return this.DetailChotkho()?.details || [];
+    });
+
+    negativeStockList = computed(() => {
+      return this.allItems().filter((item: any) => Number(item.sltonhethong) < 0);
+    });
+
+    lateAndDoubleCountingList = computed(() => {
+      const orders = this.pendingOrders();
+      return this.allItems().filter((item: any) => {
+        const chenhlech = Number(item.sltonhethong) - (Number(item.sltonthucte) || 0) - (Number(item.slhuy) || 0);
+        if (chenhlech === 0) return false;
+        return orders.some(order => 
+          order.sanpham.some((sp: any) => sp.idSP === item.sanphamId)
+        );
+      });
+    });
+
+    largeDiscrepancyList = computed(() => {
+      const orders = this.pendingOrders();
+      return this.allItems().filter((item: any) => {
+        const isNegative = Number(item.sltonhethong) < 0;
+        if (isNegative) return false;
+
+        const isPending = orders.some(order => 
+          order.sanpham.some((sp: any) => sp.idSP === item.sanphamId)
+        );
+        if (isPending) return false;
+
+        const chenhlech = Number(item.sltonhethong) - (Number(item.sltonthucte) || 0) - (Number(item.slhuy) || 0);
+        return Math.abs(chenhlech) > 0;
+      });
+    });
+
+    missingStockList = computed(() => {
+      return this.allItems().filter((item: any) => 
+        Number(item.sltonhethong) > 0 && 
+        (Number(item.sltonthucte) || 0) === 0 && 
+        (Number(item.slhuy) || 0) === 0
+      );
+    });
+
+    matchedStockList = computed(() => {
+      return this.allItems().filter((item: any) => {
+        const chenhlech = Number(item.sltonhethong) - (Number(item.sltonthucte) || 0) - (Number(item.slhuy) || 0);
+        return chenhlech === 0 && Number(item.sltonhethong) >= 0;
+      });
+    });
+    
+    constructor(){
+      this._route.paramMap.subscribe((params) => {
+        const id = params.get('id');
+        this._ChotkhoService.setChotkhoId(id);
+      });
+  
+      effect(async () => {
+        // Watch for changes in service DetailChotkho
+        const serviceDetail = this._ChotkhoService.DetailChotkho();
+        if (serviceDetail) {
+          this.DetailChotkho.set(serviceDetail);
+
+          // Load pending orders for this warehouse to support Tab 2 and order association
+          if (serviceDetail.khoId) {
+            this.loadPendingOrders(serviceDetail.khoId);
+          }
+          
+          // Update ListFilter for product selection
+          this.ListFilter = serviceDetail.details || [];
+          
+          // Only update available products if ListSanpham is loaded
+          if (this.ListSanpham.length > 0) {
+            this.updateAvailableProducts();
+          }          
+        }
+      });
+
+      // Effect to reactively update the table data when activeTab or computed lists change
+      effect(() => {
+        let list: any[] = [];
+        switch (this.activeTab()) {
+          case 0:
+            list = this.allItems();
+            break;
+          case 1:
+            list = this.negativeStockList();
+            break;
+          case 2:
+            list = this.lateAndDoubleCountingList();
+            break;
+          case 3:
+            list = this.largeDiscrepancyList();
+            break;
+          case 4:
+            list = this.missingStockList();
+            break;
+          case 5:
+            list = this.matchedStockList();
+            break;
+        }
+
+        this.dataSource.update(ds => {
+          ds.data = list;
+          return ds;
+        });
+      });
+ 
+      // Load warehouses
+      this.loadWarehouses();
+    }
+    isEdit = signal(false);
+    isDelete = signal(false);  
+    chotkhoId:any = this._ChotkhoService.chotkhoId
+    
+    // SearchFilter properties for product selection
+    ListSanpham: any[] = [];
+    filterSanpham: any[] = [];
+    ListFilter: any[] = [];
+    private searchTerm: string = '';
+
+    // Get filtered products for display in dropdown
+    getFilteredSanpham(): any[] {
+      if (!this.searchTerm || this.searchTerm.length < 2) {
+        return this.ListSanpham;
+      }
+
+      const normalizedValue = removeVietnameseAccents(this.searchTerm.toLowerCase());
+
+      return this.ListSanpham.filter((product: any) => {
+        const normalizedTitle = removeVietnameseAccents(
+          product.title?.toLowerCase() || ''
+        );
+        const normalizedMasp = removeVietnameseAccents(
+          product.masp?.toLowerCase() || ''
+        );
+
+        return (
+          normalizedTitle.includes(normalizedValue) ||
+          normalizedMasp.includes(normalizedValue) ||
+          product.title?.toLowerCase().includes(this.searchTerm) ||
+          product.masp?.toLowerCase().includes(this.searchTerm)
+        );
+      });
+    }
+    
+    async ngOnInit() {    
+        const id = this._ChotkhoService.chotkhoId();
+        if (!id){
+          this._router.navigate(['/admin/chotkho']);
+          this._ListChotkhoComponent.drawer.close();
+        }
+        if(id === 'new'){
+          this.loadNewSanphamList(); // Load products for new chotkho
+          const newChotkhoData = { 
+            title: 'Chốt Kho Ngày ' + new Date().toLocaleDateString(),
+            ngaychot: new Date(),
+            ghichu: '',
+            khoId: '',
+            userId: '',
+            isActive: true,
+            details: []
+          };
+          this.DetailChotkho.set(newChotkhoData);
+          this._ChotkhoService.DetailChotkho.set(newChotkhoData);
+          this._ListChotkhoComponent.drawer.open();
+          this.isEdit.update(value => true);
+          this._router.navigate(['/admin/chotkho', "new"]);
+        }
+        else if(id){
+            // console.log('Loading chotkho by id:', id);
+            await this._ChotkhoService.getChotkhoById(id);
+            // The effect will handle updating this.DetailChotkho when service data changes
+            await this.loadSanphamList();
+            // Debug: Check if service data is loaded correctly
+            setTimeout(() => {
+             const serviceData = this._ChotkhoService.DetailChotkho();
+            //  console.log('Service data after load:', serviceData);
+            //  console.log('Component data after load:', this.DetailChotkho());
+            //  console.log('DataSource data after load:', this.dataSource().data);
+            }, 1000);         
+            this._ListChotkhoComponent.drawer.open();
+            this._router.navigate(['/admin/chotkho', id]);
+        }   
+        // Load sanpham list for product selection
+    }
+
+    ngAfterViewInit() {
+      this.dataSource().sort = this.sort;
+      this.dataSource().sortingDataAccessor = (item, property) => {
+        switch (property) {
+          case 'title':
+            return item.title || item.sanpham?.title || '';
+          case 'masp':
+            return item.masp || item.sanpham?.masp || '';
+          case 'dvt':
+            return item.dvt || item.sanpham?.dvt || '';
+          default:
+            return item[property];
+        }
+      };
+      this.dataSource().filterPredicate = (data, filter) => {
+        const term = filter.trim().toLowerCase();
+        const title = (data.title || data.sanpham?.title || '').toLowerCase();
+        const masp = (data.masp || data.sanpham?.masp || '').toLowerCase();
+        const dvt = (data.dvt || data.sanpham?.dvt || '').toLowerCase();
+        return title.includes(term) || masp.includes(term) || dvt.includes(term);
+      };
+    }
+
+    async handleChotkhoAction() {
+      if (this.isSaving()) return;
+      
+      const details = this.DetailChotkho()?.details || [];
+      const discrepantItems = details.filter((item: any) => (item.chenhlech || 0) !== 0);
+
+      if (discrepantItems.length > 0) {
+        // Map elements to ReconciliationItem format
+        const dialogItems = discrepantItems.map((item: any) => ({
+          sanphamId: item.sanphamId,
+          masp: item.masp || item.sanpham?.masp || '',
+          title: item.title || item.sanpham?.title || '',
+          dvt: item.dvt || item.sanpham?.dvt || '',
+          sltonhethong: Number(item.sltonhethong) || 0,
+          sltonthucte: Number(item.sltonthucte) || 0,
+          slhuy: Number(item.slhuy) || 0,
+          chenhlech: Number(item.chenhlech) || 0,
+          slDieuChinh: Number(item.sltonthucte) || 0, // Default is sltonthucte
+          ghichuDieuChinh: ''
+        }));
+
+        // Open Dialog
+        const result = await new Promise<any[]>((resolve) => {
+          const dialogRef = this._dialog.open(ReconciliationDialogComponent, {
+            data: { items: dialogItems },
+            width: '900px',
+            disableClose: true
+          });
+          dialogRef.afterClosed().subscribe((res) => {
+            resolve(res);
+          });
+        });
+
+        // If user cancelled, abort saving
+        if (!result) {
+          return;
+        }
+
+        // Apply adjustments back to DetailChotkho and other internal structures
+        this.DetailChotkho.update((v: any) => {
+          const updatedDetails = (v.details || []).map((detailItem: any) => {
+            const adjustedItem = result.find((item: any) => item.sanphamId === detailItem.sanphamId);
+            if (adjustedItem) {
+              return {
+                ...detailItem,
+                sltonthucte: adjustedItem.slDieuChinh,
+                slhuy: adjustedItem.slhuy,
+                ghichu: adjustedItem.ghichuDieuChinh || detailItem.ghichu,
+                chenhlech: adjustedItem.chenhlech
+              };
+            }
+            return detailItem;
+          });
+          return {
+            ...v,
+            details: updatedDetails
+          };
+        });
+
+        // Update dataSource for table display
+        this.dataSource.update(ds => {
+          ds.data = [...this.DetailChotkho().details];
+          ds.sort = this.sort;
+          return ds;
+        });
+
+        // Update ListFilter for consistency
+        this.ListFilter = this.DetailChotkho().details || [];
+      }
+
+      this.isSaving.set(true);
+      try {
+        if (this.chotkhoId() === 'new') {
+          await this.createChotkho();
+        }
+        else {
+          await this.updateChotkho();
+        }
+      } finally {
+        this.isSaving.set(false);
+      }
+    }
+    private async createChotkho() {
+      try {
+        const chotkhoData = {
+          ...this.DetailChotkho(),
+          confirmOrderIds: this.selectedOrderIds()
+        };   
+        const result = await this._ChotkhoService.createChotkhoWithDetails(chotkhoData); 
+        if(result && result.id){this._router.navigate(['/admin/chotkho', result.id])}
+        this._snackBar.open('Tạo chốt kho thành công', '', {
+          duration: 1000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+        this.isEdit.update(value => false);
+      } catch (error) {
+        console.error('Lỗi khi tạo chốt kho:', error);
+        this._snackBar.open('Lỗi khi tạo chốt kho', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
+    }
+
+    private async updateChotkho() {
+      try {
+        const chotkhoData = this.DetailChotkho();
+        if (chotkhoData?.id) {
+          // Use updateChotkhoWithDetails to save both master and details
+          await this._ChotkhoService.updateChotkhoWithDetails(chotkhoData.id, chotkhoData);
+          
+          this._snackBar.open('Cập nhật thành công', '', {
+            duration: 1000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-success'],
+          });
+          this.isEdit.update(value => false);
+          // setTimeout(() => {
+          //   window.location.reload();
+          // }, 100);
+        }
+      } catch (error) {
+        console.error('Lỗi khi cập nhật chốt kho:', error);
+        this._snackBar.open('Lỗi khi cập nhật chốt kho', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
+    }
+    
+    async DeleteData() {
+      try {
+        const chotkhoData = this.DetailChotkho();
+        if (chotkhoData?.id) {
+          await this._ChotkhoService.deleteChotkho(chotkhoData.id);
+
+          this._snackBar.open('Xóa thành công', '', {
+            duration: 1000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-success'],
+          });
+
+          this._router.navigate(['/admin/chotkho']);
+        }
+      } catch (error: any) {
+        console.error('Lỗi khi xóa chốt kho:', error);
+        this._snackBar.open('Lỗi khi xóa chốt kho', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
+    }
+    
+    onQuantityChange() {
+      // Tính chênh lệch tự động: chenhlech = sltonhethong - sltonthucte - slhuy
+      const detail = this.DetailChotkho();
+      if (detail) {
+        const sltonhethong = Number(detail.sltonhethong) || 0;
+        const sltonthucte = Number(detail.sltonthucte) || 0;
+        const slhuy = Number(detail.slhuy) || 0;
+        const chenhlech = sltonhethong - sltonthucte - slhuy;
+        
+        this.DetailChotkho.update((v: any) => ({
+          ...v,
+          chenhlech: chenhlech
+        }));
+      }
+    }
+
+    // Properties for detail table display
+    detailDisplayedColumns: string[] = ['sanpham', 'sltonhethong', 'sltonthucte', 'slhuy', 'chenhlech', 'actions'];
+
+    removeDetail(detail: any) {
+      // Chỉ remove khỏi local array (cho unsaved details)
+      const currentDetails = this.DetailChotkho().details || [];
+      const updatedDetails = currentDetails.filter((d: any) => d !== detail);
+      
+      this.DetailChotkho.update((v: any) => ({
+        ...v,
+        details: updatedDetails
+      }));
+    }
+
+    async deleteDetailFromDatabase(detail: any) {
+      // Xóa detail đã lưu từ database
+      try {
+        if (detail.id && this.DetailChotkho().id) {
+          const success = await this._ChotkhoService.deleteChotkhoDetail(
+            detail.id, 
+            this.DetailChotkho().id
+          );
+          
+          if (success) {
+            // Service đã refresh data, không cần update local state
+            this._snackBar.open('Xóa chi tiết thành công', '', {
+              duration: 1000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-success'],
+            });
+          }
+        } else {
+          // Nếu không có ID, chỉ remove khỏi local array
+          this.removeDetail(detail);
+        }
+      } catch (error) {
+        console.error('Lỗi khi xóa chi tiết:', error);
+        this._snackBar.open('Lỗi khi xóa chi tiết', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
+    }
+
+    async loadPendingOrders(khoId: string) {
+      if (!khoId) return;
+      this.isPendingLoading.set(true);
+      try {
+        const orders = await this._ChotkhoService.getPendingOrders(khoId);
+        this.pendingOrders.set(orders);
+      } catch (error) {
+        console.error('Error loading pending orders:', error);
+      } finally {
+        this.isPendingLoading.set(false);
+      }
+    }
+
+    toggleOrderSelection(orderId: string) {
+      const current = this.selectedOrderIds();
+      if (current.includes(orderId)) {
+        this.selectedOrderIds.set(current.filter(id => id !== orderId));
+      } else {
+        this.selectedOrderIds.set([...current, orderId]);
+      }
+    }
+
+    autoSelectRelevantOrders() {
+      // Auto-select orders that contain products with negative discrepancies
+      const details = this.DetailChotkho().details || [];
+      const negativeProductIds = details
+        .filter((d: any) => (Number(d.sltonhethong) - Number(d.sltonthucte) - Number(d.slhuy)) < 0)
+        .map((d: any) => d.sanphamId);
+      
+      if (negativeProductIds.length === 0) return;
+
+      const relevantOrders = this.pendingOrders().filter(order => 
+        order.sanpham.some((sp: any) => negativeProductIds.includes(sp.idSP))
+      );
+
+      const newIds = [...new Set([...this.selectedOrderIds(), ...relevantOrders.map(o => o.id)])];
+      this.selectedOrderIds.set(newIds);
+      
+      this._snackBar.open(`Đã tự động chọn ${relevantOrders.length} đơn hàng liên quan`, '', { duration: 2000 });
+    }
+
+    async loadWarehouses() {
+      try {
+        const warehouses = await this._KhoService.getAllKho();
+        this.ListKho.set(warehouses);
+      } catch (error) {
+        console.error('Error loading warehouses:', error);
+      }
+    }
+
+    onWarehouseChange(khoId: string) {
+      if (khoId) {
+        this.loadPendingOrders(khoId);
+        // Also reload products for this warehouse if needed
+        this.loadNewSanphamList();
+      }
+    }
+
+    updateChenhLech(detail: any) {
+      // Calculate chenhlech for this detail item
+      const sltonhethong = Number(detail.sltonhethong) || 0;
+      const sltonthucte = Number(detail.sltonthucte) || 0;
+      const slhuy = Number(detail.slhuy) || 0;
+      detail.chenhlech = sltonhethong - sltonthucte - slhuy;
+    }
+    
+    goBack(){
+      this._router.navigate(['/admin/chotkho'])
+      this._ListChotkhoComponent.drawer.close();
+    }
+    trackByFn(index: number, item: any): any {
+      return item.id || index;
+    }
+    toggleEdit() {
+      this.isEdit.update(value => !value);
+    }
+    
+    toggleDelete() {
+      this.isDelete.update(value => !value);
+    }
+    FillSlug(){
+      this.DetailChotkho.update((v:any)=>{
+        v.slug = convertToSlug(v.title);
+        return v;
+      })
+    }
+
+    // SearchFilter methods (similar to banggia pattern)
+    async loadNewSanphamList() {
+      try {
+        // Load all products with tonkho information (no warehouse filter needed)
+        const products = await this._ChotkhoService.getAllProducts();       
+        const allProducts = products.map((product:any) => ({
+          id: product.id,
+          sanphamId: product.id,
+          title: product.title,
+          masp: product.masp,
+          dvt: product.dvt,
+          sltonhethong: product.tonkho?.slton || 0,
+          sltonthucte: Math.max(0, product.tonkho?.slton || 0), // Mặc định là số tồn vật lý hiện tại (không âm)
+          slhuy: product.tonkho?.slhuy || 0,
+          chenhlech: 0, // Mặc định chưa có chênh lệch khi bắt đầu đếm
+          dongia: product.dongia
+        }));
+        
+        // Set ListSanpham to all products
+        this.ListSanpham = allProducts;
+        this.filterSanpham = this.ListSanpham.filter((item: any) =>
+          !this.ListFilter.find((selected: any) => selected.id === item.id)
+        );
+        // Update available products (excluding already selected ones)
+        this.updateAvailableProducts();
+
+        // console.log('Loaded products:', products);
+        // console.log('Loaded ListSanpham:', this.ListSanpham.length);
+        // console.log('Current ListFilter:', this.ListFilter.length);
+        // console.log('Available products (filterSanpham):', this.filterSanpham.length);
+
+      } catch (error) {
+        console.error('Error loading sanpham list:', error);
+        this._snackBar.open('Lỗi khi tải danh sách sản phẩm', 'Đóng', { 
+          duration: 3000,
+          panelClass: ['snackbar-error']
+        });
+      }
+    }
+    async loadSanphamList() {
+      try {
+        // Load all products with tonkho information (no warehouse filter needed)
+        const products = await this._ChotkhoService.getAllProducts();
+        const allProducts = products.map((product:any) => ({
+          id: product.id,
+          sanphamId: product.id,
+          title: product.title,
+          masp: product.masp,
+          dvt: product.dvt,
+          sltonhethong: product.sltonhethong || 0,
+          sltonthucte: Math.max(0, product.sltonthucte || 0),
+          slhuy: product.slhuy || 0,
+          chenhlech: 0,
+          dongia: product.dongia
+        }));
+        
+        // Set ListSanpham to all products
+        this.ListSanpham = allProducts;
+        this.filterSanpham = this.ListSanpham.filter((item: any) =>
+          !this.ListFilter.find((selected: any) => selected.id === item.id)
+        );
+        // Update available products (excluding already selected ones)
+        this.updateAvailableProducts();
+
+        // console.log('Loaded products:', products);
+        // console.log('Loaded ListSanpham:', this.ListSanpham.length);
+        // console.log('Current ListFilter:', this.ListFilter.length);
+        // console.log('Available products (filterSanpham):', this.filterSanpham.length);
+
+      } catch (error) {
+        console.error('Error loading sanpham list:', error);
+        this._snackBar.open('Lỗi khi tải danh sách sản phẩm', 'Đóng', { 
+          duration: 3000,
+          panelClass: ['snackbar-error']
+        });
+      }
+    }
+
+    async DoOutFilter(event: any) {
+      console.log('Cập nhật sản phẩm cho chốt kho:', event);
+      try {
+        this.DetailChotkho.update((v: any) => {
+          return {
+            ...v,
+            details: event.map((sp: any) => ({
+              sanphamId: sp.sanphamId || sp.id,
+              sanpham: {
+                id: sp.sanphamId || sp.id,
+                masp: sp.masp,
+                title: sp.title,
+                dvt: sp.dvt,
+                dongia: sp.dongia
+              },
+              sltonhethong: Number(sp.sltonhethong) || 0,
+              sltonthucte: Math.max(0, Number(sp.sltonthucte) || 0),
+              slhuy: Math.max(0, Number(sp.slhuy) || 0),
+              chenhlech: Number(sp.chenhlech) || 0,
+              ghichu: sp.ghichu || '',
+              isActive: true,
+              // Fields for table display
+              title: sp.title,
+              masp: sp.masp,
+              dvt: sp.dvt
+            }))
+          };
+        }); 
+        
+        this.filterSanpham = this.DetailChotkho().details;
+        
+        // Update dataSource for table display using signal update
+        this.dataSource.update(ds => {
+          ds.data = [...this.DetailChotkho().details];
+          ds.sort = this.sort;
+          return ds;
+        });
+        
+        // Remove selected products from ListSanpham to avoid duplicates
+        const selectedIds = event.map((sp: any) => sp.sanphamId || sp.id);
+        this.ListSanpham = this.ListSanpham.filter(product => 
+          !selectedIds.includes(product.id || product.sanphamId)
+        );
+        
+        // console.log('Updated DetailChotkho:', this.DetailChotkho());
+        // console.log('Updated ListSanpham (removed selected):', this.ListSanpham);
+
+        this._snackBar.open('Cập nhật sản phẩm thành công', '', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+      } catch (error) {
+        console.error('Lỗi cập nhật sản phẩm:', error);
+        this._snackBar.open('Lỗi cập nhật sản phẩm', '', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
+    }
+
+    EmptyCart() {
+      // Store current details to add back to ListSanpham
+      const currentDetails = this.DetailChotkho().details || [];
+      
+      this.DetailChotkho.update((v: any) => {
+        return {
+          ...v,
+          details: []
+        };
+      });
+      
+      // Update dataSource
+      this.dataSource.update(ds => {
+        ds.data = [];
+        return ds;
+      });
+      
+      // Add all removed products back to ListSanpham
+      currentDetails.forEach((detail: any) => {
+        const productToAdd = {
+          id: detail.sanphamId || detail.id,
+          sanphamId: detail.sanphamId || detail.id,
+          title: detail.title || detail.sanpham?.title,
+          masp: detail.masp || detail.sanpham?.masp,
+          dvt: detail.dvt || detail.sanpham?.dvt,
+          sltonhethong: detail.sltonhethong || 0,
+          sltonthucte: detail.sltonthucte || 0,
+          slhuy: detail.slhuy || 0,
+          chenhlech: detail.chenhlech || 0,
+          dongia: detail.dongia || detail.sanpham?.dongia || 0
+        };
+        
+        // Check if product is not already in ListSanpham before adding
+        const existsInList = this.ListSanpham.some(p => 
+          (p.id === productToAdd.id) || (p.sanphamId === productToAdd.id)
+        );
+        
+        if (!existsInList) {
+          this.ListSanpham.push(productToAdd);
+        }
+      });
+      
+      console.log('Restored products to ListSanpham:', this.ListSanpham);
+      
+      this._snackBar.open('Đã xóa tất cả sản phẩm', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    }
+
+    // Methods similar to banggia pattern
+    RemoveSanpham(row: any) {
+      const currentDetails = this.DetailChotkho().details || [];
+      const updatedDetails = currentDetails.filter((detail: any) => detail.id !== row.id && detail.sanphamId !== row.sanphamId);
+      
+      this.DetailChotkho.update((v: any) => {
+        return {
+          ...v,
+          details: updatedDetails
+        };
+      });
+      
+      // Update dataSource
+      this.dataSource.update(ds => {
+        ds.data = [...updatedDetails];
+        return ds;
+      });
+      
+      // Add the removed product back to ListSanpham
+      const removedProductId = row.sanphamId || row.id;
+      const productToAdd = {
+        id: removedProductId,
+        sanphamId: removedProductId,
+        title: row.title || row.sanpham?.title,
+        masp: row.masp || row.sanpham?.masp,
+        dvt: row.dvt || row.sanpham?.dvt,
+        sltonhethong: row.sltonhethong || 0,
+        sltonthucte: row.sltonthucte || 0,
+        slhuy: row.slhuy || 0,
+        chenhlech: row.chenhlech || 0,
+        dongia: row.dongia || row.sanpham?.dongia || 0
+      };
+      
+      // Check if product is not already in ListSanpham before adding
+      const existsInList = this.ListSanpham.some(p => 
+        (p.id === removedProductId) || (p.sanphamId === removedProductId)
+      );
+      
+      if (!existsInList) {
+        this.ListSanpham.push(productToAdd);
+        console.log('Added product back to ListSanpham:', productToAdd);
+      }
+      
+      this._snackBar.open('Đã xóa sản phẩm', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    }
+
+    updateValue(event: any, index: number, row: any, field: string, type: string) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      let value = event.target.innerText.trim();
+      
+      if (type === 'number') {
+        // Remove commas and convert to number
+        const numericValue = value.replace(/,/g, '').replace(/[^0-9.-]/g, '');
+        value = Number(numericValue) || 0;
+        
+        // Cọc rào: Tồn thực tế và SL Hủy không được âm
+        if (field === 'sltonthucte' || field === 'slhuy') {
+          value = Math.max(0, Number(value) || 0);
+        }
+      }
+      
+      // console.log(`Updating ${field} with value:`, value);
+      
+      // Update DetailChotkho using immutable pattern
+      this.DetailChotkho.update((currentChotkho: any) => {
+        const updatedDetails = (currentChotkho.details || []).map((detail: any, idx: number) => {
+          if (idx === index || detail.sanphamId === row.sanphamId) {
+            const updatedDetail = { ...detail };
+            updatedDetail[field] = value;
+            
+            // Recalculate chenhlech when sltonthucte or slhuy changes
+            if (field === 'sltonthucte' || field === 'slhuy') {
+              const sltonhethong = Number(updatedDetail.sltonhethong) || 0;
+              const sltonthucte = Number(updatedDetail.sltonthucte) || 0;
+              updatedDetail.chenhlech = sltonhethong - sltonthucte;
+            }
+            
+            return updatedDetail;
+          }
+          return detail;
+        });
+        
+        return {
+          ...currentChotkho,
+          details: updatedDetails
+        };
+      });
+      
+      // Update dataSource for table display
+      const currentDetails = this.DetailChotkho().details || [];
+      this.dataSource.update(ds => {
+        ds.data = [...currentDetails];
+        return ds;
+      });
+      
+      // console.log('Updated DetailChotkho:', this.DetailChotkho());
+      
+      // Show success message
+      // this._snackBar.open(`Cập nhật ${field} thành công`, '', {
+      //   duration: 1500,
+      //   horizontalPosition: 'end',
+      //   verticalPosition: 'top',
+      //   panelClass: ['snackbar-success'],
+      // });
+    }
+  
+    // Product selection methods similar to detaildonhang
+    async doFilterSanpham(event: any): Promise<void> {
+      const value = event.target.value.trim().toLowerCase();
+      this.searchTerm = value;
+
+      if (event.key === 'Enter') {
+        const filteredProducts = this.getFilteredSanpham();
+        if (filteredProducts.length > 0) {
+          // Find first unselected product
+          const firstAvailable = filteredProducts.find(product => !this.CheckItem(product));
+          if (firstAvailable) {
+            this.ChosenItem(firstAvailable);
+            // Reset search after adding product
+            event.target.value = '';
+            this.searchTerm = '';
+          }
+        }
+      }
+    }
+
+    ChosenItem(item: any) {
+      let CheckItem = this.filterSanpham.find((v: any) => v.id === item.id);
+      let CheckItem1 = this.ListFilter.find((v: any) => v.id === item.id || v.sanphamId === item.id);
+      // console.log('ChosenItem:', item, 'CheckItem:', CheckItem, 'CheckItem1:', CheckItem1);
+      // console.log(this.filterSanpham);
+      // console.log(this.ListFilter);
+      
+      if (CheckItem1) {
+        // Product is already selected, remove it from ListFilter
+        this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id && v.sanphamId !== item.id);
+        console.log(`Removed product: ${item.title}`);
+      } else {
+        // Product is not selected yet, add it to ListFilter
+        if (CheckItem) {
+          // Create a copy of the object to avoid read-only property error
+          const itemCopy = { 
+            ...CheckItem,
+            sanphamId: CheckItem.id,
+            sltonhethong: CheckItem.sltonhethong || 0,
+            sltonthucte: CheckItem.sltonthucte || 0, 
+            slhuy: CheckItem.slhuy || 0,
+            chenhlech: CheckItem.chenhlech || 0,
+            order: this.ListFilter.length + 1
+          };
+          
+          const existingIndex = this.ListFilter.findIndex(existing => existing.id === item.id || existing.sanphamId === item.id);
+          if (existingIndex === -1) {
+            this.ListFilter.push(itemCopy);
+            // console.log(`Added product: ${item.title}`);
+          }
+        }
+      }
+    }
+
+    async ChosenAll(list: any) {
+      // Prevent duplicates by only adding products that are not already in ListFilter
+      const uniqueProducts = list.filter(
+        (item: any) =>
+          !this.ListFilter.find((existing: any) => existing.id === item.id || existing.sanphamId === item.id)
+      );
+
+      // Add all unique products with default quantities
+      const newProducts = uniqueProducts.map((item: any, index: number) => {
+        const itemCopy = { 
+          ...item,
+          sanphamId: item.id,
+          sltonhethong: item.sltonhethong || 0,
+          sltonthucte: item.sltonthucte || 0, 
+          slhuy: item.slhuy || 0,
+          chenhlech: item.chenhlech || 0,
+          order: this.ListFilter.length + index + 1
+        };
+        return itemCopy;
+      });
+
+      // Add new products to existing ListFilter
+      this.ListFilter = [...this.ListFilter, ...newProducts];
+
+      console.log(
+        `Added ${newProducts.length} unique products. Total: ${this.ListFilter.length} products`
+      );
+    }
+
+    ResetFilter() {
+      // Reset to only show available products (not already selected)
+      this.filterSanpham = this.ListSanpham.filter((item: any) =>
+          !this.ListFilter.find((selected: any) => selected.id === item.id)
+      );
+      console.log(
+        `Reset filter. Showing ${this.filterSanpham.length} available products`
+      );
+    }
+
+    EmptyFiter() {
+      this.ListFilter = [];
+      this.updateAvailableProducts();
+      console.log('Cleared all selected products');
+    }
+
+    // New method to update available products (excluding already selected ones) - kept for compatibility
+    updateAvailableProducts() {
+      // No longer needed since we show all products with checkboxes
+      // console.log('All products are now visible with checkbox states');
+    }
+
+    CheckItem(item: any) {
+      return this.ListFilter.find((v) => v.id === item.id || v.sanphamId === item.id) ? true : false;
+    }
+
+    ApplyFilterColum(menu: any) {
+      // Update DetailChotkho with selected products
+      this.DetailChotkho.update((v: any) => {
+        v.details = [...this.ListFilter]; // Create a copy to avoid reference issues
+        return v;
+      });
+
+      // Update dataSource for display
+      this.dataSource.update(ds => {
+        ds.data = [...this.ListFilter];
+        return ds;
+      });
+
+      menu.closeMenu();
+      console.log('Applied filter. Selected products:', this.ListFilter.length);
+    }
+
+    applyFilter(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value;
+      this.dataSource().filter = filterValue.trim().toLowerCase();
+    }
+    async ImportExcel(event: any) {
+      try {
+        const file = event.target.files[0];
+        if (!file) {
+          this._snackBar.open('Vui lòng chọn file Excel', 'Đóng', {
+            duration: 3000,
+            panelClass: ['snackbar-error']
+          });
+          return;
+        }
+
+        // Validate file type
+        const validTypes = [
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'application/vnd.ms-excel',
+          'application/octet-stream'
+        ];
+        
+        if (!validTypes.includes(file.type) && !file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+          this._snackBar.open('Vui lòng chọn file Excel (.xlsx hoặc .xls)', 'Đóng', {
+            duration: 3000,
+            panelClass: ['snackbar-error']
+          });
+          return;
+        }
+
+        this._snackBar.open('Đang xử lý file Excel...', '', {
+          duration: 2000,
+          panelClass: ['snackbar-info']
+        });
+
+        // Read Excel file
+        const data = await this.readExcelFile(file);
+        
+        if (!data || data.length === 0) {
+          this._snackBar.open('File Excel không có dữ liệu hoặc không hợp lệ', 'Đóng', {
+            duration: 3000,
+            panelClass: ['snackbar-error']
+          });
+          return;
+        }
+
+        // Load all products from server if not already loaded
+        if (this.ListSanpham.length === 0) {
+          await this.loadNewSanphamList();
+        }
+
+        // Process and validate Excel data
+        const processedData = await this.processExcelData(data);
+        
+        if (processedData.length === 0) {
+          this._snackBar.open('Không tìm thấy sản phẩm nào khớp với mã sản phẩm trong file Excel', 'Đóng', {
+            duration: 4000,
+            panelClass: ['snackbar-warning']
+          });
+          return;
+        }
+
+        // Update DetailChotkho with processed data
+        this.DetailChotkho.update((v: any) => {
+          // Combine existing details with imported data, avoiding duplicates
+          const existingDetails = v.details || [];
+          const combinedDetails = [...existingDetails];
+          
+          processedData.forEach((importedItem: any) => {
+            const existingIndex = combinedDetails.findIndex(
+              (existing: any) => existing.sanphamId === importedItem.sanphamId
+            );
+            
+            if (existingIndex >= 0) {
+              // Update existing item
+              combinedDetails[existingIndex] = {
+                ...combinedDetails[existingIndex],
+                ...importedItem,
+                // Recalculate chenhlech
+                chenhlech: this.calculateChenhLech(
+                  importedItem.sltonhethong || combinedDetails[existingIndex].sltonhethong || 0,
+                  importedItem.sltonthucte || 0,
+                  importedItem.slhuy || 0
+                )
+              };
+            } else {
+              // Add new item
+              combinedDetails.push(importedItem);
+            }
+          });
+          
+          return {
+            ...v,
+            details: combinedDetails
+          };
+        });
+
+        // Update dataSource for table display
+        this.dataSource.update(ds => {
+          ds.data = [...this.DetailChotkho().details];
+          ds.sort = this.sort;
+          return ds;
+        });
+
+        // Update ListFilter for consistency
+        this.ListFilter = this.DetailChotkho().details || [];
+
+        // Reset file input
+        event.target.value = '';
+
+        this._snackBar.open(
+          `Import thành công ${processedData.length} sản phẩm từ Excel`,
+          'Đóng',
+          {
+            duration: 4000,
+            panelClass: ['snackbar-success']
+          }
+        );
+
+        console.log('Excel import completed:', {
+          importedItems: processedData.length,
+          totalDetails: this.DetailChotkho().details?.length || 0
+        });
+
+      } catch (error) {
+        console.error('Error importing Excel:', error);
+        this._snackBar.open(
+          `Lỗi khi import Excel: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          'Đóng',
+          {
+            duration: 5000,
+            panelClass: ['snackbar-error']
+          }
+        );
+      }
+    }
+
+    private async readExcelFile(file: File): Promise<any[]> {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        
+        reader.onload = async (e: any) => {
+          try {
+            const XLSX = await import('xlsx');
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            
+            // Get first sheet
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            
+            // Convert to JSON
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+              header: 1,
+              defval: '',
+              raw: false
+            });
+            
+            resolve(jsonData);
+          } catch (error) {
+            reject(new Error('Không thể đọc file Excel. Vui lòng kiểm tra định dạng file.'));
+          }
+        };
+        
+        reader.onerror = () => {
+          reject(new Error('Lỗi khi đọc file'));
+        };
+        
+        reader.readAsArrayBuffer(file);
+      });
+    }
+
+    private async processExcelData(rawData: any[]): Promise<any[]> {
+      try {
+        if (!rawData || rawData.length < 2) {
+          throw new Error('File Excel phải có ít nhất 2 dòng (header + data)');
+        }
+
+        // Get header row and find column indices
+        const headers = rawData[0].map((h: any) => 
+          removeVietnameseAccents(String(h).toLowerCase().trim())
+        );
+        
+        const columnIndices = {
+          masp: this.findColumnIndex(headers, ['masp', 'ma sp', 'ma san pham', 'product code', 'ma hang']),
+          sltonthucte: this.findColumnIndex(headers, ['sltonthucte', 'slton', 'ton', 'kiem ke', 'sl ton thuc te', 'so luong ton thuc te', 'actual stock']),
+          slhuy: this.findColumnIndex(headers, ['slhuy', 'huy', 'sl huy', 'so luong huy', 'damaged quantity'])
+        };
+
+        // Validate required columns
+        if (columnIndices.masp === -1) {
+          throw new Error('Không tìm thấy cột "masp" trong file Excel');
+        }
+
+        const processedData: any[] = [];
+        const notFoundProducts: string[] = [];
+
+        // Process data rows (skip header)
+        for (let i = 1; i < rawData.length; i++) {
+          const row = rawData[i];
+          if (!row || row.length === 0) continue;
+
+          const masp = String(row[columnIndices.masp] || '').trim();
+          if (!masp) continue;
+
+          // Find product in server data by masp
+          const serverProduct = this.ListSanpham.find((p: any) => 
+            p.masp?.toLowerCase().trim() === masp.toLowerCase().trim()
+          );
+
+          if (!serverProduct) {
+            notFoundProducts.push(masp);
+            continue;
+          }
+
+          // Extract quantities from Excel - Default to system stock if empty or invalid
+          const rawSlton = columnIndices.sltonthucte !== -1 ? row[columnIndices.sltonthucte] : undefined;
+          const rawSlhuy = columnIndices.slhuy !== -1 ? row[columnIndices.slhuy] : undefined;
+          
+          // Use server data for sltonhethong (system stock)
+          const sltonhethong = serverProduct.sltonhethong || 0;
+
+          // Determine sltonthucte: if valid in Excel use it, otherwise use system stock (min 0)
+          const sltonthucte = this.isValidNumber(rawSlton) 
+            ? this.parseNumber(rawSlton) 
+            : Math.max(0, sltonhethong);
+
+          const slhuy = this.isValidNumber(rawSlhuy) 
+            ? this.parseNumber(rawSlhuy) 
+            : 0;
+
+
+          // Calculate chenhlech
+          const chenhlech = this.calculateChenhLech(sltonhethong, sltonthucte, slhuy);
+
+          // Create detail item combining Excel data with server data
+          const detailItem = {
+            id: undefined, // New item
+            sanphamId: serverProduct.id,
+            sanpham: {
+              id: serverProduct.id,
+              masp: serverProduct.masp,
+              title: serverProduct.title,
+              dvt: serverProduct.dvt,
+              dongia: serverProduct.dongia
+            },
+            sltonhethong: sltonhethong,
+            sltonthucte: sltonthucte,
+            slhuy: slhuy,
+            chenhlech: chenhlech,
+            ghichu: `Import từ Excel - ${new Date().toLocaleString()}`,
+            isActive: true,
+            // Fields for table display
+            title: serverProduct.title,
+            masp: serverProduct.masp,
+            dvt: serverProduct.dvt
+          };
+
+          processedData.push(detailItem);
+        }
+
+        // Show warning for products not found
+        if (notFoundProducts.length > 0) {
+          console.warn('Products not found in system:', notFoundProducts);
+          this._snackBar.open(
+            `Cảnh báo: ${notFoundProducts.length} sản phẩm không tìm thấy trong hệ thống`,
+            'Xem chi tiết',
+            {
+              duration: 5000,
+              panelClass: ['snackbar-warning']
+            }
+          ).onAction().subscribe(() => {
+            console.log('Not found products:', notFoundProducts.join(', '));
+          });
+        }
+
+        return processedData;
+
+      } catch (error) {
+        console.error('Error processing Excel data:', error);
+        throw error;
+      }
+    }
+
+    private isValidNumber(value: any): boolean {
+      if (value === undefined || value === null || value === '' || String(value).trim() === '') return false;
+      const stringValue = String(value).replace(/,/g, '').replace(/\s/g, '').trim();
+      const parsed = parseFloat(stringValue);
+      return !isNaN(parsed);
+    }
+
+    private findColumnIndex(headers: string[], possibleNames: string[]): number {
+      for (const name of possibleNames) {
+        const normalizedName = removeVietnameseAccents(name.toLowerCase().trim());
+        const index = headers.findIndex(header => header.includes(normalizedName));
+        if (index !== -1) return index;
+      }
+      return -1;
+    }
+
+    private parseNumber(value: any): number {
+      if (value === undefined || value === null || value === '' || String(value).trim() === '') return 0;
+      
+      // Convert to string and remove commas, spaces, and handle potential non-numeric junk
+      const stringValue = String(value).replace(/,/g, '').replace(/\s/g, '').trim();
+      
+      // Parse as float and return integer (Ensure non-negative and handle NaN)
+      const parsed = parseFloat(stringValue);
+      if (isNaN(parsed)) return 0;
+      
+      return Math.max(0, Math.floor(parsed));
+    }
+
+    private calculateChenhLech(sltonhethong: number, sltonthucte: number, slhuy: number): number {
+      return (sltonhethong || 0) - (sltonthucte || 0);
+    }
+
+    async ExportExample() {
+      try {
+        const XLSX = await import('xlsx');
+        let XLSXStyle: any;
+        try {
+          XLSXStyle = await import('xlsx-js-style');
+        } catch (e) {
+          console.warn('xlsx-js-style not available, using standard XLSX');
+        }
+
+        // Load sample products if not already loaded
+        if (this.ListSanpham.length === 0) {
+          await this.loadNewSanphamList();
+        }
+
+        // Create example data structure
+        const exampleData = this.createExampleData();
+        
+        // Create workbook and worksheet
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.aoa_to_sheet(exampleData);
+
+        // Set column widths for better display
+        const columnWidths = [
+          { wch: 15 }, // masp
+          { wch: 35 }, // title (for reference)
+          { wch: 10 }, // dvt (for reference)
+          { wch: 20 }, // sltonhethong (for reference)
+          { wch: 15 }, // sltonthucte
+          { wch: 15 }, // slhuy
+          { wch: 50 }  // notes
+        ];
+        worksheet['!cols'] = columnWidths;
+
+        // Style header row (row 1)
+        const headerCells = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1'];
+        headerCells.forEach(cell => {
+          if (worksheet[cell]) {
+            worksheet[cell].s = {
+              font: { bold: true, color: { rgb: "FFFFFF" }, sz: 12 },
+              fill: { fgColor: { rgb: "4472C4" } },
+              alignment: { horizontal: "center", vertical: "center" },
+              border: {
+                top: { style: 'thin' },
+                bottom: { style: 'thin' },
+                left: { style: 'thin' },
+                right: { style: 'thin' }
+              }
+            };
+          }
+        });
+
+        // Style instruction section (rows 2-14)
+        for (let row = 2; row <= 14; row++) {
+          const cellA = `A${row}`;
+          if (worksheet[cellA]) {
+            worksheet[cellA].s = {
+              font: { color: { rgb: "0066CC" }, sz: 10, bold: row === 2 || row === 13 },
+              fill: { fgColor: { rgb: "F0F8FF" } },
+              alignment: { horizontal: "left", vertical: "center" }
+            };
+          }
+        }
+
+        // Style data rows (starting from row 15)
+        const dataStartRow = 15;
+        const sampleDataRows = Math.min(10, this.ListSanpham.length || 10);
+        
+        for (let row = dataStartRow; row < dataStartRow + sampleDataRows; row++) {
+          // Style required columns (A: masp, E: sltonthucte, F: slhuy)
+          ['A', 'E', 'F'].forEach(col => {
+            const cell = `${col}${row}`;
+            if (worksheet[cell]) {
+              worksheet[cell].s = {
+                fill: { fgColor: { rgb: "FFFFCC" } }, // Light yellow for editable fields
+                border: {
+                  top: { style: 'thin' },
+                  bottom: { style: 'thin' },
+                  left: { style: 'thin' },
+                  right: { style: 'thin' }
+                },
+                alignment: { horizontal: "center", vertical: "center" }
+              };
+            }
+          });
+          
+          // Style reference columns (B, C, D, G)
+          ['B', 'C', 'D', 'G'].forEach(col => {
+            const cell = `${col}${row}`;
+            if (worksheet[cell]) {
+              worksheet[cell].s = {
+                fill: { fgColor: { rgb: "F5F5F5" } }, // Light gray for reference only
+                font: { color: { rgb: "666666" } },
+                border: {
+                  top: { style: 'thin' },
+                  bottom: { style: 'thin' },
+                  left: { style: 'thin' },
+                  right: { style: 'thin' }
+                },
+                alignment: { horizontal: "left", vertical: "center" }
+              };
+            }
+          });
+        }
+
+        // Add the worksheet to workbook
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Mẫu Import Chốt Kho');
+
+        // Generate filename with current date
+        const now = new Date();
+        const dateStr = now.getFullYear() + 
+          String(now.getMonth() + 1).padStart(2, '0') + 
+          String(now.getDate()).padStart(2, '0');
+        const timeStr = String(now.getHours()).padStart(2, '0') + 
+          String(now.getMinutes()).padStart(2, '0');
+        const filename = `Mau_Import_ChotkKho_${dateStr}_${timeStr}.xlsx`;
+
+        // Write and download the file using XLSXStyle for better formatting
+        try {
+          if (XLSXStyle && XLSXStyle.writeFile) {
+            XLSXStyle.writeFile(workbook, filename);
+          } else {
+            XLSX.writeFile(workbook, filename);
+          }
+        } catch (styleError) {
+          // Fallback to regular XLSX if styling fails
+          console.warn('Styled export failed, using regular export:', styleError);
+          XLSX.writeFile(workbook, filename);
+        }
+
+        this._snackBar.open(
+          `Đã tải xuống file mẫu: ${filename}`,
+          'Đóng',
+          {
+            duration: 4000,
+            panelClass: ['snackbar-success']
+          }
+        );
+
+        console.log('Excel template exported successfully:', filename);
+
+      } catch (error) {
+        console.error('Error exporting Excel template:', error);
+        this._snackBar.open(
+          `Lỗi khi tạo file mẫu: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          'Đóng',
+          {
+            duration: 5000,
+            panelClass: ['snackbar-error']
+          }
+        );
+      }
+    }
+
+    private createExampleData(): any[][] {
+      const headers = [
+        'masp',
+        'title (Tham khảo - không import)',
+        'dvt (Tham khảo - không import)',
+        'sltonhethong (Tham khảo - từ hệ thống)',
+        'sltonthucte',
+        'slhuy',
+        'Ghi chú hướng dẫn'
+      ];
+
+      // Create example rows with real product data if available
+      const exampleRows: any[][] = [];
+      
+      if (this.ListSanpham.length > 0) {
+        // Use first 10 products as examples
+        const sampleProducts = this.ListSanpham.slice(0, Math.min(10, this.ListSanpham.length));
+        
+        sampleProducts.forEach((product, index) => {
+          const sltonhethong = product.sltonhethong || Math.floor(Math.random() * 100) + 1;
+          const sltonthucte = Math.floor(sltonhethong * (0.8 + Math.random() * 0.4)); // 80-120% of system stock
+          const slhuy = Math.floor(Math.random() * 5); // Random damaged quantity 0-5
+          
+          exampleRows.push([
+            product.masp || `SP${String(index + 1).padStart(3, '0')}`,
+            product.title || `Sản phẩm mẫu ${index + 1}`,
+            product.dvt || 'Cái',
+            sltonhethong,
+            sltonthucte,
+            slhuy,
+            index === 0 ? 'Cột này chỉ để hướng dẫn, không được import' : ''
+          ]);
+        });
+      } else {
+        // Create sample data if no products loaded
+        for (let i = 1; i <= 10; i++) {
+          const sltonhethong = Math.floor(Math.random() * 100) + 1;
+          const sltonthucte = Math.floor(sltonhethong * (0.8 + Math.random() * 0.4));
+          const slhuy = Math.floor(Math.random() * 5);
+          
+          exampleRows.push([
+            `SP${String(i).padStart(3, '0')}`,
+            `Sản phẩm mẫu ${i}`,
+            'Cái',
+            sltonhethong,
+            sltonthucte,
+            slhuy,
+            i === 1 ? 'Cột này chỉ để hướng dẫn, không được import' : ''
+          ]);
+        }
+      }
+
+      // Add instruction rows
+      const instructionRows = [
+        [],
+        ['HƯỚNG DẪN SỬ DỤNG:'],
+        ['1. Chỉ cần điền dữ liệu vào các cột: masp, sltonthucte, slhuy'],
+        ['2. Cột "masp" là BẮT BUỘC - phải khớp với mã sản phẩm trong hệ thống'],
+        ['3. Cột "sltonthucte" là số lượng tồn thực tế (mặc định 0 nếu để trống)'],
+        ['4. Cột "slhuy" là số lượng hủy (mặc định 0 nếu để trống)'],
+        ['5. Cột "sltonhethong" sẽ được lấy từ hệ thống tự động'],
+        ['6. Chênh lệch = sltonhethong - sltonthucte - slhuy (tự động tính)'],
+        ['7. Các cột khác chỉ để tham khảo, không được import'],
+        ['8. Xóa các dòng hướng dẫn này trước khi import'],
+        [],
+        ['DỮ LIỆU MẪU (Bắt đầu từ dòng tiếp theo):']
+      ];
+
+      return [
+        headers,
+        ...instructionRows,
+        ...exampleRows
+      ];
+    }
+
+    setActiveTab(tab: number) {
+      this.activeTab.set(tab);
+    }
+
+    openTimeline(row: any) {
+      this._dialog.open(ProductTimelineDialogComponent, {
+        width: '900px',
+        maxWidth: '95vw',
+        maxHeight: '92vh',
+        data: {
+          sanphamId: row.sanphamId || row.id || row.sanpham?.id,
+          masp: row.masp || row.sanpham?.masp,
+          title: row.title || row.sanpham?.title,
+          dvt: row.dvt || row.sanpham?.dvt
+        }
+      });
+    }
+
+    goToDetail(order: any) {
+      const url = order.type === 'dathang' 
+        ? `/admin/dathang/${order.id}` 
+        : `/admin/phieugiaohang/${order.id}`;
+      
+      if (typeof window !== 'undefined') {
+        window.open(url, '_blank');
+      }
+    }
+
+    getPendingOrdersForProduct(row: any): any[] {
+      const orders = this.pendingOrders();
+      const productId = row.sanphamId || row.id || row.sanpham?.id;
+      const list: any[] = [];
+      orders.forEach(order => {
+        const match = order.sanpham.find((sp: any) => sp.idSP === productId);
+        if (match) {
+          list.push({
+            id: order.id,
+            code: order.madncc || 'ĐN-' + order.id.split('-')[0],
+            soluong: match.sldat,
+            type: 'dathang'
+          });
+        }
+      });
+      return list;
+    }
+  }

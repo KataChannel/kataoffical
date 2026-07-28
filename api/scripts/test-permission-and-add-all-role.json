@@ -1,0 +1,37 @@
+[
+    {
+        "name": "phieugiaohang.sldat",
+        "description": "Permission for phieugiaohang.sldat",
+        "group": "custom"
+    },
+    {
+        "name": "phieugiaohang.slgiao",
+        "description": "Permission for phieugiaohang.slgiao",
+        "group": "custom"
+    },
+    {
+        "name": "phieugiaohang.slnhan",
+        "description": "Permission for new_permission",
+        "group": "custom"
+    },
+    {
+        "name": "dathang.sldat",
+        "description": "Permission for dathang.sldat",
+        "group": "custom"
+    },
+    {
+        "name": "dathang.slgiao",
+        "description": "Permission for dathang.slgiao",
+        "group": "custom"
+    },
+    {
+        "name": "dathang.slnhan",
+        "description": "Permission for dathang.slnhan",
+        "group": "custom"
+    },
+    {
+        "name": "dathang.gianhap",
+        "description": "Permission for dathang.gianhap",
+        "group": "custom"
+    }
+]

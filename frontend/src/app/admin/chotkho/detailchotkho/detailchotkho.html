@@ -1,0 +1,403 @@
+<div class="flex flex-row justify-between items-center space-x-2 p-2">
+  <button mat-icon-button color="primary" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <div class="font-bold">{{ DetailChotkho()?.title || 'Không có dữ liệu' }}</div>
+  <div class="flex flex-row space-x-2 items-center">
+    <!-- <mat-slide-toggle [(ngModel)]="DetailChotkho().isActive" [disabled]="!isEdit()">{{DetailChotkho().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle> -->
+    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleChotkhoAction()" [disabled]="isSaving()">
+      <mat-icon *ngIf="!isSaving()">save</mat-icon>
+      <mat-spinner diameter="24" *ngIf="isSaving()"></mat-spinner>
+    </button>
+    <!-- <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
+      <mat-icon>edit</mat-icon>
+    </button> -->
+  </div>
+</div>
+
+<div class="relative flex flex-col w-full p-4 overflow-auto">
+  <ng-container *ngIf="isDelete()">
+    <div class="flex flex-col space-y-4 items-center justify-center">
+      <div class="font-bold text-2xl">Bạn chắc chắn muốn xoá không?</div>
+      <div class="flex flex-row space-x-2 items-center justify-center">
+        <button mat-flat-button color="primary" (click)="DeleteData()">Đồng Ý</button>
+        <button mat-flat-button color="warn" (click)="toggleDelete()">Huỷ Bỏ</button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isDelete()">
+    <!-- Master Information -->
+    <div class="bg-white p-6 rounded-lg border mb-4" *ngIf="DetailChotkho()">
+      <h3 class="text-lg font-semibold mb-4 text-slate-800 flex items-center gap-2">
+        <!-- <mat-icon class="text-primary">info</mat-icon> -->
+        Thông tin chốt kho [Hệ thống đã cập nhật]
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Tiêu Đề</mat-label>
+          <input matInput [(ngModel)]="DetailChotkho().title" [disabled]="!isEdit()"
+            placeholder="Vui lòng nhập tiêu đề" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Ngày Chốt</mat-label>
+          <input matInput [matDatepicker]="picker" [(ngModel)]="DetailChotkho().ngaychot" [disabled]="!isEdit()"
+            placeholder="Chọn ngày chốt">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Kho Hàng</mat-label>
+          <mat-select [(ngModel)]="DetailChotkho().khoId" [disabled]="!isEdit() || DetailChotkho().id"
+            (selectionChange)="onWarehouseChange($event.value)">
+            <mat-option *ngFor="let kho of ListKho()" [value]="kho.id">
+              {{ kho.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="md:col-span-3">
+          <mat-label>Ghi Chú</mat-label>
+          <textarea matInput [(ngModel)]="DetailChotkho().ghichu" [disabled]="!isEdit()"
+            placeholder="Vui lòng nhập ghi chú" rows="2"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Quick Reconcile Section -->
+    <div class="bg-amber-50 p-4 rounded-lg mb-4 border border-amber-200" *ngIf="isEdit() && pendingOrders().length > 0">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <mat-icon class="text-amber-600">assignment_turned_in</mat-icon>
+          <h4 class="text-amber-800 font-bold m-0 uppercase text-sm tracking-wider">Xác nhận đơn hàng "Quên" (Xử lý bù
+            chênh lệch)</h4>
+        </div>
+        <button mat-stroked-button color="primary" size="small" (click)="autoSelectRelevantOrders()">
+          <mat-icon>auto_awesome</mat-icon> Tự chọn liên quan
+        </button>
+      </div>
+
+      <p class="text-xs text-amber-700 mb-4 italic">
+        * Các đơn hàng bạn chọn dưới đây sẽ được tự động chuyển sang trạng thái "Đã nhận" khi bạn lưu phiên chốt kho
+        này.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div *ngFor="let order of pendingOrders()" (click)="toggleOrderSelection(order.id)"
+          class="p-3 rounded-lg border-2 cursor-pointer transition-all flex items-start gap-3 bg-white"
+          [ngClass]="selectedOrderIds().includes(order.id) ? 'border-blue-500 shadow-sm' : 'border-slate-100 hover:border-slate-200'">
+          <mat-icon [color]="selectedOrderIds().includes(order.id) ? 'primary' : ''" class="mt-0.5">
+            {{ selectedOrderIds().includes(order.id) ? 'check_box' : 'check_box_outline_blank' }}
+          </mat-icon>
+          <div class="flex-1">
+            <div class="text-[12px] font-bold text-slate-900">{{ order.madncc }}</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">{{ order.nhacungcap?.name }}</div>
+            <div class="flex flex-wrap gap-1 mt-1.5">
+              <span *ngFor="let sp of order.sanpham"
+                class="px-1.5 py-0.5 bg-slate-100 text-[9px] rounded text-slate-600 font-medium">
+                {{ sp.sanpham?.title }}: {{ sp.sldat }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail Items -->
+    <div class="bg-white p-4 rounded-lg border" *ngIf="DetailChotkho()">
+      <div *ngIf="isEdit()" class="w-full flex flex-col overflow-y-auto mb-4">
+        @defer () {
+        <div
+          class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
+          <div class="w-full flex lg:flex-row flex-col gap-2 items-center">
+
+            <button mat-flat-button color="primary" [disabled]="!isEdit()" [matMenuTriggerFor]="menu"
+              #menuTrigger="matMenuTrigger">
+              <mat-icon>inventory</mat-icon>
+              {{ListFilter.length}} Sản Phẩm Đã Chọn
+            </button>
+            <mat-menu #menu="matMenu">
+              <div (click)="$event.stopPropagation()" class="cursor-pointer flex flex-col space-y-4 p-3">
+                <div class="bg-blue-50 p-2 rounded-lg">
+                  <div class="text-sm font-medium text-blue-800">Tình trạng sản phẩm:</div>
+                  <div class="text-xs text-blue-600">
+                    • {{ListFilter.length}} sản phẩm đã chọn
+                    • {{ListSanpham.length - ListFilter.length}} sản phẩm khả dụng
+                    • {{ListSanpham.length}} tổng sản phẩm
+                  </div>
+                </div>
+                <div class="relative w-full">
+                  <input type="text" placeholder="Tìm Kiếm..." (keyup)="doFilterSanpham($event)" #searchInput
+                    class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                  <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <span class="material-symbols-outlined text-gray-500">search</span>
+                  </div>
+                </div>
+                <div class="flex flex-row space-x-2 items-center justify-between">
+                  <div class="flex flex-row space-x-2 items-center">
+                    <span class="text-xs text-blue-600 underline" (click)="ChosenAll(ListSanpham)">Chọn Tất Cả
+                      ({{ListSanpham.length - ListFilter.length}} sản phẩm khả dụng)</span>
+                    <span class="text-xs text-red-600 underline" (click)="EmptyFiter()">Xoá Tất Cả</span>
+                  </div>
+
+                  <span class="text-xs text-green-600 underline" (click)="ResetFilter()">Làm Mới</span>
+                </div>
+                <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
+                  <div *ngFor="let item of getFilteredSanpham(); trackBy:trackByFn" (click)="ChosenItem(item)"
+                    class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100 cursor-pointer">
+                    <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-green-600">check_box</span>
+                    <span *ngIf="!CheckItem(item)"
+                      class="material-symbols-outlined text-gray-400">check_box_outline_blank</span>
+                    <div class="flex flex-col flex-1">
+                      <span class="font-medium">{{item.title || 'Chưa Có Tên'}}</span>
+                      <span class="text-xs text-gray-500">Mã: {{item.masp}} - ĐVT: {{item.dvt}}</span>
+                    </div>
+                  </div>
+                  <div *ngIf="ListSanpham.length === 0" class="text-center text-gray-500 p-4">
+                    Không có sản phẩm khả dụng
+                  </div>
+                </div>
+                <div class="flex flex-row space-x-2 items-end justify-end">
+                  <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
+                  <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)">Áp Dụng</button>
+                </div>
+              </div>
+            </mat-menu>
+            <div class="flex flex-row gap-2 justify-items-center">
+              <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
+                <mat-icon>file_upload</mat-icon>
+              </button>
+              <input multiple class="hidden" (change)="ImportExcel($event)" type="file" #uploadfile>
+
+              <button matTooltip="Tải xuống file mẫu Excel" (click)="ExportExample()" color="primary" mat-icon-button>
+                <mat-icon>file_download</mat-icon>
+              </button>
+
+              <button [disabled]="!isEdit()" matTooltip="Làm Trống Giỏ Hàng" (click)="EmptyCart()" color="warn"
+                mat-icon-button>
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Sleek Modern Tabs Switcher (6 Tabs) -->
+      <div class="flex border-b border-slate-200 mb-4 overflow-x-auto no-scrollbar shrink-0 gap-0.5">
+        <button (click)="setActiveTab(0)" 
+                [class]="'pb-2 px-3 text-[11px] font-black transition-all flex items-center gap-1.5 border-b-2 tracking-tight whitespace-nowrap ' + 
+                         (activeTab() === 0 ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300')">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; line-height: 14px;">list</mat-icon>
+          TẤT CẢ ({{ allItems().length }})
+        </button>
+        <button (click)="setActiveTab(1)" 
+                [class]="'pb-2 px-3 text-[11px] font-black transition-all flex items-center gap-1.5 border-b-2 tracking-tight whitespace-nowrap ' + 
+                         (activeTab() === 1 ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300')">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; line-height: 14px;">trending_down</mat-icon>
+          TỒN ÂM ({{ negativeStockList().length }})
+        </button>
+        <button (click)="setActiveTab(2)" 
+                [class]="'pb-2 px-3 text-[11px] font-black transition-all flex items-center gap-1.5 border-b-2 tracking-tight whitespace-nowrap ' + 
+                         (activeTab() === 2 ? 'border-amber-500 text-amber-600' : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300')">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; line-height: 14px;">update</mat-icon>
+          TRỄ & LẶP ĐẾM ({{ lateAndDoubleCountingList().length }})
+        </button>
+        <button (click)="setActiveTab(3)" 
+                [class]="'pb-2 px-3 text-[11px] font-black transition-all flex items-center gap-1.5 border-b-2 tracking-tight whitespace-nowrap ' + 
+                         (activeTab() === 3 ? 'border-rose-500 text-rose-600' : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300')">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; line-height: 14px;">warning</mat-icon>
+          CHÊNH LỆCH ({{ largeDiscrepancyList().length }})
+        </button>
+        <button (click)="setActiveTab(4)" 
+                [class]="'pb-2 px-3 text-[11px] font-black transition-all flex items-center gap-1.5 border-b-2 tracking-tight whitespace-nowrap ' + 
+                         (activeTab() === 4 ? 'border-slate-600 text-slate-700' : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300')">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; line-height: 14px;">feedback</mat-icon>
+          BỎ SÓT ({{ missingStockList().length }})
+        </button>
+        <button (click)="setActiveTab(5)" 
+                [class]="'pb-2 px-3 text-[11px] font-black transition-all flex items-center gap-1.5 border-b-2 tracking-tight whitespace-nowrap ' + 
+                         (activeTab() === 5 ? 'border-green-600 text-green-600' : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300')">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; line-height: 14px;">check_circle</mat-icon>
+          KHỚP SỐ ({{ matchedStockList().length }})
+        </button>
+      </div>
+
+      <!-- Banners for each Tab -->
+      <div class="mb-4" *ngIf="activeTab() > 0">
+        <div *ngIf="activeTab() === 1" class="flex items-start gap-2.5 p-3 rounded-lg border bg-rose-50 border-rose-100 text-rose-800 text-[11px] font-medium leading-relaxed">
+          <mat-icon class="text-rose-500 scale-90 shrink-0" style="width: 16px; height: 16px; font-size: 16px">info</mat-icon>
+          <div>
+            <span class="font-black">🔴 Nguyên nhân:</span> Do bán hàng vật lý đi trước khi xác nhận nhận hàng từ Nhà cung cấp trên phần mềm.
+            <br>
+            <span class="font-black">👉 Hướng xử lý:</span> Cần đối soát lại chứng từ nhập kho để làm thủ tục nhập kho bù chênh lệch.
+          </div>
+        </div>
+
+        <div *ngIf="activeTab() === 2" class="flex items-start gap-2.5 p-3 rounded-lg border bg-amber-50 border-amber-100 text-amber-800 text-[11px] font-medium leading-relaxed">
+          <mat-icon class="text-amber-500 scale-90 shrink-0" style="width: 16px; height: 16px; font-size: 16px">info</mat-icon>
+          <div>
+            <span class="font-black">🟡 Nguyên nhân:</span> Tồn kho sổ sách lệch và có đơn hàng mua/bán đang "trung chuyển" quá 24h chưa hoàn tất. Có rủi ro nhân viên đếm lặp cả hàng đang về.
+            <br>
+            <span class="font-black">👉 Hướng xử lý:</span> Kiểm tra hàng hóa vật lý thực tế đã nhập/xuất kho chưa để cập nhật trạng thái đơn tương ứng, tránh đếm lặp gây sai lệch kép.
+          </div>
+        </div>
+
+        <div *ngIf="activeTab() === 3" class="flex items-start gap-2.5 p-3 rounded-lg border bg-rose-50 border-rose-100 text-rose-800 text-[11px] font-medium leading-relaxed">
+          <mat-icon class="text-rose-500 scale-90 shrink-0" style="width: 16px; height: 16px; font-size: 16px">info</mat-icon>
+          <div>
+            <span class="font-black">⚠️ Nguyên nhân:</span> Chênh lệch số liệu kiểm kê và sổ sách (do hao hụt lớn hoặc gõ nhầm số khi kiểm đếm).
+            <br>
+            <span class="font-black">👉 Hướng xử lý:</span> Đọc ghi chú đối soát hoặc thực hiện kiểm đếm (đếm lại) thực tế sản phẩm này một lần nữa để xác nhận nếu cần.
+          </div>
+        </div>
+
+        <div *ngIf="activeTab() === 4" class="flex items-start gap-2.5 p-3 rounded-lg border bg-slate-100 border-slate-200 text-slate-800 text-[11px] font-medium leading-relaxed">
+          <mat-icon class="text-slate-500 scale-90 shrink-0" style="width: 16px; height: 16px; font-size: 16px">info</mat-icon>
+          <div>
+            <span class="font-black">⚠️ Cảnh báo mất tồn:</span> Các sản phẩm này có tồn trên hệ thống nhưng không có mặt trong file Excel kiểm kho. Hệ thống đã tự động reset tồn về 0 khi chốt kho!
+          </div>
+        </div>
+
+        <div *ngIf="activeTab() === 5" class="flex items-start gap-2.5 p-3 rounded-lg border bg-green-50 border-green-100 text-green-850 text-[11px] font-medium leading-relaxed">
+          <mat-icon class="text-green-500 scale-90 shrink-0" style="width: 16px; height: 16px; font-size: 16px">check_circle</mat-icon>
+          <div>
+            <span class="font-black">✅ Trạng thái:</span> Số liệu thực tế đếm được từ Excel trùng khớp hoàn toàn với số tồn tính toán trên hệ thống. Không phát hiện sai lệch.
+          </div>
+        </div>
+      </div>
+
+      <!-- Search toolbar always visible -->
+      <div class="w-full flex items-center justify-between mb-4">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="max-w-md w-full">
+          <mat-label>Tìm kiếm sản phẩm trong danh sách...</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Nhập tên sản phẩm hoặc mã SP..." />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Details Table -->
+      <div class="w-full overflow-auto">
+        <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource()" matSort>
+          @for (column of displayedColumns; track column) {
+          <ng-container [matColumnDef]="column">
+            <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
+              <span class="line-clamp-4 me-4">
+                {{ ColumnName[column] }}
+                <br *ngIf="ColumnDesc[column]">
+                <small class="text-[10px] lowercase font-normal opacity-60 italic" *ngIf="ColumnDesc[column]">
+                  ({{ ColumnDesc[column] }})
+                </small>
+              </span>
+            </th>
+            <td mat-cell *matCellDef="let row; let idx = index">
+              @switch (column) {
+              @case ('STT') {
+              <span class="max-w-10 flex flex-row items-center justify-center gap-1">
+                <span>{{ idx + 1 }}</span>
+                <button *ngIf="isEdit()" mat-icon-button color="warn" (click)="RemoveSanpham(row)">
+                  <mat-icon style="font-size: 16px; width: 16px; height: 16px; line-height: 16px;">delete</mat-icon>
+                </button>
+              </span>
+              }
+              @case ('sltonthucte') {
+              <div *ngIf="isEdit()" [contentEditable]="true"
+                (blur)="updateValue($event, idx, row, 'sltonthucte', 'number')"
+                (keydown.enter)="updateValue($event, idx, row, 'sltonthucte', 'number')"
+                class="sltonthucte-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none cursor-text">
+                {{ row[column] || 0 | number:'1.0-3' }}
+              </div>
+              <span *ngIf="!isEdit()" class="max-w-20 line-clamp-4">
+                {{ row[column] | number:'1.0-3' }}
+              </span>
+              }
+              @case ('slhuy') {
+              <div *ngIf="isEdit() && _UserService.hasPermission('slhuyedit')" [contentEditable]="true"
+                (blur)="updateValue($event, idx, row, 'slhuy', 'number')"
+                (keydown.enter)="updateValue($event, idx, row, 'slhuy', 'number')"
+                class="slhuy-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none cursor-text">
+                {{ row[column] || 0 | number:'1.0-3' }}
+              </div>
+              <span *ngIf="!isEdit() || !_UserService.hasPermission('slhuyedit')" class="max-w-20 line-clamp-4">
+                {{ row[column] | number:'1.0-3' }}
+              </span>
+              }
+              @case ('chenhlech') {
+              <span class="max-w-20 line-clamp-4"
+                [class]="row[column] > 0 ? 'text-green-600' : (row[column] < 0 ? 'text-red-600' : 'text-yellow-600')">
+                {{ row[column] | number:'1.0-3' }}
+              </span>
+              }
+              @case ('title') {
+              <div class="flex flex-col gap-0.5 max-w-sm">
+                <span class="text-slate-800 text-sm font-semibold">{{ row.title || row.sanpham?.title }}</span>
+                <span class="text-[10px] text-slate-400 font-medium leading-none">{{ row.masp || row.sanpham?.masp }} - {{ row.dvt || row.sanpham?.dvt }}</span>
+                
+                <!-- Action Buttons: Timeline and Pending Orders (similar to warning dialog) -->
+                <div class="flex flex-wrap gap-1 mt-1.5 shrink-0" *ngIf="!isEdit()">
+                  <button (click)="openTimeline(row); $event.stopPropagation()" class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/60 hover:bg-slate-200 hover:text-slate-850 text-[9px] font-black cursor-pointer transition-all shadow-sm">
+                    <mat-icon style="font-size: 11px; width: 11px; height: 11px" class="text-slate-500 scale-90 !m-0">history</mat-icon>
+                    Lịch sử
+                  </button>
+                  
+                  <ng-container *ngFor="let order of getPendingOrdersForProduct(row); trackBy: trackByFn">
+                    <button (click)="goToDetail(order); $event.stopPropagation()" 
+                            [class]="'flex items-center gap-0.5 px-1.5 py-0.5 rounded border text-[9px] font-black cursor-pointer transition-all shadow-sm ' + 
+                                     (order.type === 'dathang' ? 'bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100' : 'bg-orange-50 text-orange-700 border-orange-100 hover:bg-orange-100')">
+                      <mat-icon style="font-size: 11px; width: 11px; height: 11px" 
+                                [class]="order.type === 'dathang' ? 'text-blue-500' : 'text-orange-500'" class="!m-0">
+                        {{ order.type === 'dathang' ? 'shopping_cart' : 'local_shipping' }}
+                      </mat-icon>
+                      {{ order.code }} ({{ order.soluong | number:'1.0-2' }} kg)
+                    </button>
+                  </ng-container>
+                </div>
+              </div>
+              }
+              @case ('masp') {
+              <span class="max-w-40 line-clamp-4">
+                {{ row.masp || row.sanpham?.masp }}
+              </span>
+              }
+              @case ('dvt') {
+              <span class="max-w-40 line-clamp-4">
+                {{ row.dvt || row.sanpham?.dvt }}
+              </span>
+              }
+               @case ('sltonhethong') {
+              <span class="max-w-20 line-clamp-4">
+                {{ row[column] | number:'1.0-3' }}
+              </span>
+              }
+              @case ('ghichu') {
+              <div *ngIf="isEdit()" [contentEditable]="true"
+                (blur)="updateValue($event, idx, row, 'ghichu', 'string')"
+                (keydown.enter)="updateValue($event, idx, row, 'ghichu', 'string')"
+                class="ghichu-input p-2 min-w-40 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none cursor-text">
+                {{ row[column] || '' }}
+              </div>
+              <span *ngIf="!isEdit()" class="max-w-40 line-clamp-4">
+                {{ row[column] || '' }}
+              </span>
+              }
+              @default {
+              <span class="max-w-40 line-clamp-4">
+                {{ row[column] }}
+              </span>
+              }
+              }
+            </td>
+          </ng-container>
+          }
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell p-4" colspan="9">Không tìm thấy dữ liệu</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+</div>

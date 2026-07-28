@@ -1,0 +1,479 @@
+// ==========================================
+// shadcn UI Inspired Styles for NhanVien Form
+// ==========================================
+
+// CSS Variables (shadcn-like design tokens)
+:host {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(240 10% 3.9%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(240 10% 3.9%);
+  --primary: hsl(240 5.9% 10%);
+  --primary-foreground: hsl(0 0% 98%);
+  --secondary: hsl(240 4.8% 95.9%);
+  --secondary-foreground: hsl(240 5.9% 10%);
+  --muted: hsl(240 4.8% 95.9%);
+  --muted-foreground: hsl(240 3.8% 46.1%);
+  --accent: hsl(240 4.8% 95.9%);
+  --accent-foreground: hsl(240 5.9% 10%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --border: hsl(240 5.9% 90%);
+  --input: hsl(240 5.9% 90%);
+  --ring: hsl(240 5.9% 10%);
+  --radius: 0.5rem;
+}
+
+.form-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+}
+
+// ==========================================
+// Header Section
+// ==========================================
+.form-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.back-button {
+  margin-top: 0.25rem;
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  border-radius: var(--radius) !important;
+  
+  &:hover {
+    background: var(--accent) !important;
+  }
+  
+  mat-icon {
+    font-size: 1.25rem !important;
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+    color: var(--muted-foreground) !important;
+  }
+}
+
+.header-content {
+  flex: 1;
+}
+
+.page-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--foreground);
+  margin: 0 0 0.25rem 0;
+}
+
+.page-description {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+// ==========================================
+// Form Card
+// ==========================================
+.form-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0;
+  overflow: hidden;
+}
+
+// ==========================================
+// Loading State
+// ==========================================
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+  gap: 1rem;
+  
+  p {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    margin: 0;
+  }
+}
+
+// ==========================================
+// Tabs (shadcn style)
+// ==========================================
+::ng-deep .mat-mdc-tab-group {
+  .mat-mdc-tab-header {
+    border-bottom: 1px solid var(--border);
+    background: var(--muted);
+  }
+  
+  .mat-mdc-tab-labels {
+    padding: 0 1rem;
+  }
+  
+  .mat-mdc-tab {
+    min-width: auto;
+    padding: 0 1rem;
+    height: 3rem;
+    opacity: 1;
+    
+    .mdc-tab__text-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      letter-spacing: 0;
+      
+      mat-icon {
+        font-size: 1.125rem;
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+    }
+    
+    &.mdc-tab--active .mdc-tab__text-label {
+      color: var(--foreground);
+    }
+  }
+  
+  .mdc-tab-indicator__content--underline {
+    border-color: var(--foreground) !important;
+    border-width: 2px !important;
+  }
+  
+  .mat-mdc-tab-body-wrapper {
+    padding: 0;
+  }
+}
+
+// ==========================================
+// Tab Content
+// ==========================================
+.tab-content {
+  padding: 1.5rem;
+  min-height: 350px;
+}
+
+.section-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  
+  &:not(:first-child) {
+    margin-top: 1.5rem;
+  }
+}
+
+// ==========================================
+// Form Fields
+// ==========================================
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.form-field-full {
+  flex: 1;
+  min-width: 100%;
+}
+
+.form-field-half {
+  flex: 1;
+  min-width: calc(50% - 0.5rem);
+}
+
+.form-field-third {
+  flex: 1;
+  min-width: calc(33.333% - 0.67rem);
+}
+
+.form-field-quarter {
+  flex: 1;
+  min-width: calc(25% - 0.75rem);
+}
+
+// shadcn-style form fields
+::ng-deep mat-form-field {
+  width: 100%;
+  
+  .mat-mdc-text-field-wrapper {
+    background: var(--background) !important;
+    border-radius: var(--radius) !important;
+  }
+  
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: var(--input) !important;
+  }
+  
+  &:hover .mdc-notched-outline__leading,
+  &:hover .mdc-notched-outline__notch,
+  &:hover .mdc-notched-outline__trailing {
+    border-color: hsl(240 5.9% 70%) !important;
+  }
+  
+  &.mat-focused .mdc-notched-outline__leading,
+  &.mat-focused .mdc-notched-outline__notch,
+  &.mat-focused .mdc-notched-outline__trailing {
+    border-color: var(--ring) !important;
+    border-width: 2px !important;
+  }
+  
+  .mat-mdc-form-field-infix {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    min-height: auto !important;
+  }
+  
+  input,
+  textarea,
+  .mat-mdc-select-trigger {
+    font-size: 0.875rem !important;
+    color: var(--foreground) !important;
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  
+  .mat-mdc-floating-label {
+    font-size: 0.875rem !important;
+    color: var(--muted-foreground) !important;
+  }
+  
+  .mat-mdc-form-field-hint {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+  
+  .mat-mdc-form-field-error {
+    font-size: 0.75rem;
+  }
+  
+  // Suffix styling
+  [matSuffix] {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    margin-right: 0.5rem;
+  }
+  
+  // Datepicker toggle
+  .mat-datepicker-toggle {
+    color: var(--muted-foreground);
+    
+    .mat-mdc-icon-button {
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+    }
+  }
+}
+
+// Error state
+::ng-deep mat-form-field.mat-form-field-invalid {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: var(--destructive) !important;
+  }
+}
+
+// ==========================================
+// Checkbox
+// ==========================================
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0;
+}
+
+.checkbox-field {
+  ::ng-deep .mdc-checkbox {
+    --mdc-checkbox-selected-checkmark-color: var(--primary-foreground);
+    --mdc-checkbox-selected-focus-icon-color: var(--primary);
+    --mdc-checkbox-selected-hover-icon-color: var(--primary);
+    --mdc-checkbox-selected-icon-color: var(--primary);
+    --mdc-checkbox-selected-pressed-icon-color: var(--primary);
+    --mdc-checkbox-unselected-focus-icon-color: var(--input);
+    --mdc-checkbox-unselected-hover-icon-color: var(--muted-foreground);
+    --mdc-checkbox-unselected-icon-color: var(--input);
+    --mdc-checkbox-unselected-pressed-icon-color: var(--muted-foreground);
+  }
+  
+  ::ng-deep .mdc-label {
+    font-size: 0.875rem;
+    color: var(--foreground);
+  }
+}
+
+// ==========================================
+// Salary Summary Card
+// ==========================================
+.salary-summary {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: var(--muted);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  
+  .summary-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted-foreground);
+    margin-bottom: 0.25rem;
+  }
+  
+  .summary-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--foreground);
+    letter-spacing: -0.025em;
+  }
+}
+
+// ==========================================
+// Form Actions
+// ==========================================
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--muted);
+}
+
+.btn-secondary {
+  border-radius: var(--radius) !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  padding: 0 1rem !important;
+  height: 2.5rem !important;
+  color: var(--secondary-foreground) !important;
+  
+  &:hover {
+    background: var(--accent) !important;
+  }
+}
+
+.btn-primary {
+  border-radius: var(--radius) !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  padding: 0 1.25rem !important;
+  height: 2.5rem !important;
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  
+  &:hover:not([disabled]) {
+    background: hsl(240 5.9% 20%) !important;
+  }
+  
+  &[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  mat-spinner {
+    --mdc-circular-progress-active-indicator-color: var(--primary-foreground);
+  }
+}
+
+// ==========================================
+// Responsive Design
+// ==========================================
+@media (max-width: 768px) {
+  .form-container {
+    padding: 1rem;
+  }
+  
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .form-field-half,
+  .form-field-third,
+  .form-field-quarter {
+    min-width: 100%;
+  }
+  
+  .tab-content {
+    padding: 1rem;
+    min-height: 300px;
+  }
+  
+  ::ng-deep .mat-mdc-tab {
+    padding: 0 0.75rem !important;
+    
+    .mdc-tab__text-label {
+      font-size: 0.75rem;
+      
+      span {
+        display: none;
+      }
+      
+      mat-icon {
+        margin: 0;
+      }
+    }
+  }
+  
+  .salary-summary {
+    .summary-value {
+      font-size: 1.5rem;
+    }
+  }
+  
+  .form-actions {
+    flex-direction: column-reverse;
+    
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .form-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .back-button {
+    margin-top: 0;
+  }
+}

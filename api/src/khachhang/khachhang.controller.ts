@@ -1,0 +1,104 @@
+import { Controller, Get, Post, Body, Param, Patch, Delete, Query, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { KhachhangService } from './khachhang.service';
+import { Audit } from '../auditlog/audit.decorator';
+import { AuditAction } from '@prisma/client';
+import { Cache, CacheInvalidate } from '../common/cache.interceptor';
+import { SmartCache } from '../common/smart-cache.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
+@Controller('khachhang')
+export class KhachhangController {
+  constructor(private readonly khachhangService: KhachhangService) {}
+  @Get('lastupdated')
+  @Cache(300, 'khachhang') // Cache for 5 minutes
+  async getLastUpdated() {
+    try {
+      return await this.khachhangService.getLastUpdated();
+    } catch (error) {
+      throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+ }
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  @Audit({entity: 'Create Khachhang', action: AuditAction.CREATE, includeResponse: true})
+  @SmartCache({
+    invalidate: ['khachhang'],
+    get: { ttl: 1800, keyPrefix: 'khachhang' },
+    updateCache: true
+  })
+  create(@Body() createKhachhangDto: any) {
+    return this.khachhangService.create(createKhachhangDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('import')
+  @Audit({entity: 'Import Khachhang',action: AuditAction.IMPORT,includeResponse: true})
+  @CacheInvalidate(['khachhang'])
+  import(@Body() data: any) {
+    return this.khachhangService.import(data);
+  }
+  @Post('findby')
+  async findby(@Body() param: any) {
+    const result = await this.khachhangService.findby(param);
+    return result;
+  }
+  @Post('searchfield')
+  async searchfield(@Body() searchParams: Record<string, any>) {
+    return this.khachhangService.searchfield(searchParams);
+  }
+  // @Get()
+  // findAll() {
+  //   return this.khachhangService.findAll();
+  // }
+  @Get('forselect')
+  @Cache(1800, 'khachhang') // Cache for 30 minutes
+  async findAllForSelect() {
+    try {
+      return await this.khachhangService.findAllForSelect();
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to fetch khachhangs',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } 
+  }
+  @Get()
+  @Cache(1800, 'khachhang') // Cache for 30 minutes
+  async findAll(@Query() query: any) {
+    try {
+      return await this.khachhangService.findAll(query);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to fetch khachhangs',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } 
+  }
+
+  @Get(':id')
+  @Cache(1800, 'khachhang') // Cache for 30 minutes
+  findOne(@Param('id') id: string) {
+    return this.khachhangService.findOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  @Audit({entity: 'Update Khachhang', action: AuditAction.UPDATE, includeResponse: true})
+  @SmartCache({
+    invalidate: ['khachhang'],
+    get: { ttl: 1800, keyPrefix: 'khachhang' },
+    updateCache: true
+  })
+  update(@Param('id') id: string, @Body() updateKhachhangDto: any) {
+    return this.khachhangService.update(id, updateKhachhangDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  @Audit({entity: 'Delete Khachhang', action: AuditAction.DELETE, includeResponse: true})
+  @CacheInvalidate(['khachhang'])
+  remove(@Param('id') id: string) {
+    return this.khachhangService.remove(id);
+  }
+}

@@ -1,0 +1,14 @@
+import { Module } from '@nestjs/common';
+  import { NhacungcapService } from './nhacungcap.service';
+  import { NhacungcapController } from './nhacungcap.controller';
+import { PrismaModule } from 'prisma/prisma.module';
+import { ImportdataModule } from '../importdata/importdata.module';
+import { SharedModule } from '../shared/shared.module';
+import { AuthModule } from '../auth/auth.module';
+  @Module({
+    imports: [PrismaModule, ImportdataModule, SharedModule, AuthModule],
+    controllers: [NhacungcapController],
+    providers: [NhacungcapService],
+    exports:[NhacungcapService]
+  })
+  export class NhacungcapModule {}

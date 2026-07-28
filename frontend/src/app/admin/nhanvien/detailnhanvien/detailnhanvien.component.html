@@ -1,0 +1,347 @@
+<div class="detail-container">
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="60"></mat-spinner>
+      <p>Đang tải thông tin nhân viên...</p>
+    </div>
+  } @else if (error()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-content">
+          <mat-icon>error_outline</mat-icon>
+          <h2>{{ error() }}</h2>
+          <button mat-raised-button color="primary" (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Quay lại danh sách
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  } @else if (nhanvien()) {
+    <!-- Header with actions -->
+    <div class="page-header">
+      <div class="header-left">
+        <button mat-icon-button (click)="goBack()" class="back-button">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div class="header-info">
+          <h1>{{ nhanvien()!.hoTen }}</h1>
+          <p class="subtitle">{{ nhanvien()!.maNV }}</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        @if (nhanvien()!.userId) {
+          <button mat-stroked-button color="warn" (click)="unlinkUser()">
+            <mat-icon>link_off</mat-icon>
+            Hủy liên kết
+          </button>
+        } @else {
+          <button mat-stroked-button (click)="linkUser()">
+            <mat-icon>link</mat-icon>
+            Liên kết tài khoản
+          </button>
+        }
+        <button mat-raised-button color="primary" (click)="editNhanvien()">
+          <mat-icon>edit</mat-icon>
+          Chỉnh sửa
+        </button>
+        <button mat-raised-button color="warn" (click)="confirmDelete()">
+          <mat-icon>delete</mat-icon>
+          Xóa
+        </button>
+      </div>
+    </div>
+
+    <!-- Status chip -->
+    <div class="status-section">
+      <mat-chip-set>
+        <mat-chip [style.background-color]="getTrangThaiColor(nhanvien()!.trangThai)">
+          <mat-icon>info</mat-icon>
+          {{ getTrangThaiLabel(nhanvien()!.trangThai) }}
+        </mat-chip>
+        @if (nhanvien()!.isActive) {
+          <mat-chip class="active-chip">
+            <mat-icon>check_circle</mat-icon>
+            Đang hoạt động
+          </mat-chip>
+        } @else {
+          <mat-chip class="inactive-chip">
+            <mat-icon>cancel</mat-icon>
+            Không hoạt động
+          </mat-chip>
+        }
+      </mat-chip-set>
+    </div>
+
+    <!-- Statistics cards -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>cake</mat-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-label">Tuổi</div>
+            <div class="stat-value">
+              @if (calculateAge(nhanvien()!.ngaySinh)) {
+                {{ calculateAge(nhanvien()!.ngaySinh) }} tuổi
+              } @else {
+                N/A
+              }
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon work">
+            <mat-icon>work_history</mat-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-label">Thời gian làm việc</div>
+            <div class="stat-value">{{ calculateWorkDuration(nhanvien()!.ngayVaoLam) }}</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon salary">
+            <mat-icon>payments</mat-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-label">Tổng lương</div>
+            <div class="stat-value">{{ formatCurrency(getTotalSalary(nhanvien()!)) }} VNĐ</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon department">
+            <mat-icon>business</mat-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-label">Phòng ban</div>
+            <div class="stat-value">
+              @if (nhanvien()!.phongban?.ten) {
+                {{ nhanvien()!.phongban?.ten }}
+              } @else {
+                Chưa có
+              }
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Information sections -->
+    <div class="info-grid">
+      <!-- Thông tin cơ bản -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>person</mat-icon>
+            Thông tin cơ bản
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row">
+            <div class="info-label">Mã nhân viên:</div>
+            <div class="info-value">{{ nhanvien()!.maNV }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Họ và tên:</div>
+            <div class="info-value">{{ nhanvien()!.hoTen }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Giới tính:</div>
+            <div class="info-value">{{ getGioiTinhLabel(nhanvien()!.gioiTinh) }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Ngày sinh:</div>
+            <div class="info-value">{{ formatDate(nhanvien()!.ngaySinh) }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">CMND/CCCD:</div>
+            <div class="info-value">{{ nhanvien()!.cmnd || 'N/A' }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Số điện thoại:</div>
+            <div class="info-value">{{ nhanvien()!.soDienThoai || 'N/A' }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Email:</div>
+            <div class="info-value">{{ nhanvien()!.email || 'N/A' }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Quê quán:</div>
+            <div class="info-value">{{ nhanvien()!.queQuan || 'N/A' }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Địa chỉ hiện tại:</div>
+            <div class="info-value">{{ nhanvien()!.diaChiHienTai || 'N/A' }}</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Thông tin công việc -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>work</mat-icon>
+            Thông tin công việc
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row">
+            <div class="info-label">Phòng ban:</div>
+            <div class="info-value">
+              @if (nhanvien()!.phongban?.ten) {
+                {{ nhanvien()!.phongban?.ten }}
+              } @else {
+                Chưa có
+              }
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Chức vụ:</div>
+            <div class="info-value">{{ nhanvien()!.chucVu || 'N/A' }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Vị trí:</div>
+            <div class="info-value">{{ nhanvien()!.viTri || 'N/A' }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Ngày vào làm:</div>
+            <div class="info-value">{{ formatDate(nhanvien()!.ngayVaoLam) }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Trạng thái:</div>
+            <div class="info-value">
+              <mat-chip [style.background-color]="getTrangThaiColor(nhanvien()!.trangThai)">
+                {{ getTrangThaiLabel(nhanvien()!.trangThai) }}
+              </mat-chip>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Tài khoản liên kết:</div>
+            <div class="info-value">
+              @if (nhanvien()!.userId) {
+                <mat-chip class="linked-chip">
+                  <mat-icon>check_circle</mat-icon>
+                  Đã liên kết
+                </mat-chip>
+              } @else {
+                <mat-chip class="unlinked-chip">
+                  <mat-icon>cancel</mat-icon>
+                  Chưa liên kết
+                </mat-chip>
+              }
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Thông tin lương -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>attach_money</mat-icon>
+            Thông tin lương
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row">
+            <div class="info-label">Lương cơ bản:</div>
+            <div class="info-value salary-value">{{ formatCurrency(nhanvien()!.luongCoBan) }} VNĐ</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Phụ cấp:</div>
+            <div class="info-value salary-value">{{ formatCurrency(nhanvien()!.phuCap) }} VNĐ</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Hệ số lương:</div>
+            <div class="info-value">{{ nhanvien()!.heSoLuong || 1 }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row total-salary">
+            <div class="info-label">Tổng lương:</div>
+            <div class="info-value salary-value">{{ formatCurrency(getTotalSalary(nhanvien()!)) }} VNĐ</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Thông tin ngân hàng -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>account_balance</mat-icon>
+            Thông tin ngân hàng
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row">
+            <div class="info-label">Số tài khoản:</div>
+            <div class="info-value">{{ nhanvien()!.soTaiKhoan || 'N/A' }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Ngân hàng:</div>
+            <div class="info-value">{{ nhanvien()!.nganHang || 'N/A' }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">Chi nhánh:</div>
+            <div class="info-value">{{ nhanvien()!.chiNhanh || 'N/A' }}</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Ghi chú -->
+    @if (nhanvien()!.ghiChu) {
+      <mat-card class="note-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>note</mat-icon>
+            Ghi chú
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ nhanvien()!.ghiChu }}</p>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Metadata -->
+    <mat-card class="metadata-card">
+      <mat-card-content>
+        <div class="metadata-row">
+          <mat-icon>access_time</mat-icon>
+          <span>Tạo lúc: {{ formatDate(nhanvien()!.createdAt) }}</span>
+        </div>
+        <div class="metadata-row">
+          <mat-icon>update</mat-icon>
+          <span>Cập nhật lần cuối: {{ formatDate(nhanvien()!.updatedAt) }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

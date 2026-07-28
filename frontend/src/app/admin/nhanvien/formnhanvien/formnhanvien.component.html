@@ -1,0 +1,378 @@
+<div class="form-container">
+  <!-- Header -->
+  <div class="form-header">
+    <button mat-icon-button class="back-button" (click)="goBack()" type="button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="header-content">
+      <h1 class="page-title">{{ mode === 'create' ? 'Thêm nhân viên mới' : 'Chỉnh sửa nhân viên' }}</h1>
+      <p class="page-description">{{ mode === 'create' ? 'Điền thông tin để tạo nhân viên mới' : 'Cập nhật thông tin nhân viên' }}</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="form-card">
+    @if (loading()) {
+      <div class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+    } @else {
+      <form [formGroup]="nhanvienForm" (ngSubmit)="onSubmit()">
+        <mat-tab-group animationDuration="200ms">
+          <!-- Tab 1: Thông tin cơ bản -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon>person</mat-icon>
+              <span>Thông tin cơ bản</span>
+            </ng-template>
+            <div class="tab-content">
+              <div class="section-title">Thông tin cá nhân</div>
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-third">
+                  <mat-label>Mã nhân viên</mat-label>
+                  <input matInput formControlName="maNV" placeholder="VD: NV001">
+                  @if (nhanvienForm.get('maNV')?.hasError('required') && nhanvienForm.get('maNV')?.touched) {
+                    <mat-error>Mã nhân viên là bắt buộc</mat-error>
+                  }
+                  @if (nhanvienForm.get('maNV')?.hasError('maxlength')) {
+                    <mat-error>Mã nhân viên không được vượt quá 20 ký tự</mat-error>
+                  }
+                  <mat-hint>Mã định danh duy nhất</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-third">
+                  <mat-label>Mã làm việc</mat-label>
+                  <input matInput formControlName="maLamViec" placeholder="VD: MLV001">
+                  @if (nhanvienForm.get('maLamViec')?.hasError('maxlength')) {
+                    <mat-error>Mã làm việc không được vượt quá 50 ký tự</mat-error>
+                  }
+                  <mat-hint>Mã định danh làm việc</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-third">
+                  <mat-label>Họ và tên</mat-label>
+                  <input matInput formControlName="hoTen" placeholder="VD: Nguyễn Văn A">
+                  @if (nhanvienForm.get('hoTen')?.hasError('required') && nhanvienForm.get('hoTen')?.touched) {
+                    <mat-error>Họ và tên là bắt buộc</mat-error>
+                  }
+                  @if (nhanvienForm.get('hoTen')?.hasError('maxlength')) {
+                    <mat-error>Họ và tên không được vượt quá 200 ký tự</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-third">
+                  <mat-label>Giới tính</mat-label>
+                  <mat-select formControlName="gioiTinh">
+                    @for (option of gioiTinhOptions; track option.value) {
+                      <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-third">
+                  <mat-label>Ngày sinh</mat-label>
+                  <input matInput [matDatepicker]="pickerNgaySinh" formControlName="ngaySinh" placeholder="dd/mm/yyyy">
+                  <mat-datepicker-toggle matSuffix [for]="pickerNgaySinh"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerNgaySinh></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-third">
+                  <mat-label>CMND/CCCD</mat-label>
+                  <input matInput formControlName="cmnd" placeholder="VD: 012345678901">
+                  @if (nhanvienForm.get('cmnd')?.hasError('maxlength')) {
+                    <mat-error>Số CMND/CCCD không được vượt quá 20 ký tự</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="section-title">Thông tin liên hệ</div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-half">
+                  <mat-label>Số điện thoại</mat-label>
+                  <input matInput formControlName="soDienThoai" placeholder="VD: 0901234567">
+                  @if (nhanvienForm.get('soDienThoai')?.hasError('pattern')) {
+                    <mat-error>Số điện thoại không hợp lệ</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-half">
+                  <mat-label>Email</mat-label>
+                  <input matInput formControlName="email" placeholder="VD: email@company.com" type="email">
+                  @if (nhanvienForm.get('email')?.hasError('email')) {
+                    <mat-error>Email không hợp lệ</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="section-title">Địa chỉ</div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-half">
+                  <mat-label>Quê quán</mat-label>
+                  <input matInput formControlName="queQuan" placeholder="VD: Hà Nội">
+                  @if (nhanvienForm.get('queQuan')?.hasError('maxlength')) {
+                    <mat-error>Quê quán không được vượt quá 500 ký tự</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-half">
+                  <mat-label>Địa chỉ hiện tại</mat-label>
+                  <input matInput formControlName="diaChiHienTai" placeholder="VD: 123 Đường ABC, Quận XYZ">
+                  @if (nhanvienForm.get('diaChiHienTai')?.hasError('maxlength')) {
+                    <mat-error>Địa chỉ không được vượt quá 500 ký tự</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Tab 2: Công việc -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon>work</mat-icon>
+              <span>Công việc</span>
+            </ng-template>
+            <div class="tab-content">
+              <div class="section-title">Thông tin công việc</div>
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-half">
+                  <mat-label>Phòng ban</mat-label>
+                  <mat-select formControlName="phongbanId">
+                    <mat-option [value]="null">Chọn phòng ban</mat-option>
+                    @for (phongban of phongbans(); track phongban.id) {
+                      <mat-option [value]="phongban.id">{{ phongban.ten }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-half">
+                  <mat-label>Trạng thái</mat-label>
+                  <mat-select formControlName="trangThai">
+                    @for (option of trangThaiOptions; track option.value) {
+                      <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                    }
+                  </mat-select>
+                  @if (nhanvienForm.get('trangThai')?.hasError('required') && nhanvienForm.get('trangThai')?.touched) {
+                    <mat-error>Trạng thái là bắt buộc</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-half">
+                  <mat-label>Chức vụ</mat-label>
+                  <input matInput formControlName="chucVu" placeholder="VD: Nhân viên">
+                  @if (nhanvienForm.get('chucVu')?.hasError('maxlength')) {
+                    <mat-error>Chức vụ không được vượt quá 100 ký tự</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-half">
+                  <mat-label>Vị trí</mat-label>
+                  <input matInput formControlName="viTri" placeholder="VD: Kế toán">
+                  @if (nhanvienForm.get('viTri')?.hasError('maxlength')) {
+                    <mat-error>Vị trí không được vượt quá 100 ký tự</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-half">
+                  <mat-label>Ngày vào làm</mat-label>
+                  <input matInput [matDatepicker]="pickerNgayVaoLam" formControlName="ngayVaoLam" placeholder="dd/mm/yyyy">
+                  <mat-datepicker-toggle matSuffix [for]="pickerNgayVaoLam"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerNgayVaoLam></mat-datepicker>
+                </mat-form-field>
+
+                <div class="form-field-half checkbox-wrapper">
+                  <mat-checkbox formControlName="isActive" class="checkbox-field">
+                    Đang hoạt động
+                  </mat-checkbox>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Tab 3: Lương -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon>payments</mat-icon>
+              <span>Lương & Phụ cấp</span>
+            </ng-template>
+            <div class="tab-content">
+              <div class="section-title">Thông tin lương</div>
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Lương cơ bản</mat-label>
+                  <input matInput formControlName="luongCoBan" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('luongCoBan')?.hasError('min')) {
+                    <mat-error>Lương cơ bản phải >= 0</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Hiệu suất công việc</mat-label>
+                  <input matInput formControlName="hieuSuatCongViec" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('hieuSuatCongViec')?.hasError('min')) {
+                    <mat-error>Hiệu suất công việc phải >= 0</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Phụ cấp xăng</mat-label>
+                  <input matInput formControlName="phuCapXang" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('phuCapXang')?.hasError('min')) {
+                    <mat-error>Phụ cấp xăng phải >= 0</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Phụ cấp ĐT</mat-label>
+                  <input matInput formControlName="phuCapDienThoai" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('phuCapDienThoai')?.hasError('min')) {
+                    <mat-error>Phụ cấp điện thoại phải >= 0</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Hỗ trợ chuyên cần</mat-label>
+                  <input matInput formControlName="hoTroChuyenCan" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('hoTroChuyenCan')?.hasError('min')) {
+                    <mat-error>Hỗ trợ chuyên cần phải >= 0</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Tiền ăn giữa ca</mat-label>
+                  <input matInput formControlName="tienAnGiuaCa" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('tienAnGiuaCa')?.hasError('min')) {
+                    <mat-error>Tiền ăn giữa ca phải >= 0</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Thưởng kinh doanh</mat-label>
+                  <input matInput formControlName="thuongKinhDoanh" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('thuongKinhDoanh')?.hasError('min')) {
+                    <mat-error>Thưởng kinh doanh phải >= 0</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-quarter">
+                  <mat-label>Phụ cấp khác</mat-label>
+                  <input matInput formControlName="phuCapKhac" type="number" placeholder="0">
+                  <span matSuffix>VND</span>
+                  @if (nhanvienForm.get('phuCapKhac')?.hasError('min')) {
+                    <mat-error>Phụ cấp khác phải >= 0</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="salary-summary">
+                <div class="summary-label">Tổng lương dự kiến</div>
+                <div class="summary-value">
+                  {{ (
+                    (nhanvienForm.get('luongCoBan')?.value || 0) + 
+                    (nhanvienForm.get('hieuSuatCongViec')?.value || 0) +
+                    (nhanvienForm.get('phuCapXang')?.value || 0) +
+                    (nhanvienForm.get('phuCapDienThoai')?.value || 0) +
+                    (nhanvienForm.get('hoTroChuyenCan')?.value || 0) +
+                    (nhanvienForm.get('tienAnGiuaCa')?.value || 0) +
+                    (nhanvienForm.get('thuongKinhDoanh')?.value || 0) +
+                    (nhanvienForm.get('phuCapKhac')?.value || 0)
+                  ) | number:'1.0-0' }} VNĐ
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Tab 4: Ngân hàng -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon>account_balance</mat-icon>
+              <span>Ngân hàng</span>
+            </ng-template>
+            <div class="tab-content">
+              <div class="section-title">Thông tin tài khoản ngân hàng</div>
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-full">
+                  <mat-label>Số tài khoản</mat-label>
+                  <input matInput formControlName="soTaiKhoan" placeholder="VD: 1234567890">
+                  @if (nhanvienForm.get('soTaiKhoan')?.hasError('maxlength')) {
+                    <mat-error>Số tài khoản không được vượt quá 50 ký tự</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-half">
+                  <mat-label>Ngân hàng</mat-label>
+                  <input matInput formControlName="nganHang" placeholder="VD: Vietcombank">
+                  @if (nhanvienForm.get('nganHang')?.hasError('maxlength')) {
+                    <mat-error>Tên ngân hàng không được vượt quá 100 ký tự</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-half">
+                  <mat-label>Chi nhánh</mat-label>
+                  <input matInput formControlName="chiNhanh" placeholder="VD: Chi nhánh Hà Nội">
+                  @if (nhanvienForm.get('chiNhanh')?.hasError('maxlength')) {
+                    <mat-error>Chi nhánh không được vượt quá 200 ký tự</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Tab 5: Ghi chú -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon>note</mat-icon>
+              <span>Ghi chú</span>
+            </ng-template>
+            <div class="tab-content">
+              <div class="section-title">Ghi chú thêm</div>
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-full">
+                  <mat-label>Ghi chú</mat-label>
+                  <textarea matInput formControlName="ghiChu" rows="6" placeholder="Nhập ghi chú về nhân viên..."></textarea>
+                  @if (nhanvienForm.get('ghiChu')?.hasError('maxlength')) {
+                    <mat-error>Ghi chú không được vượt quá 1000 ký tự</mat-error>
+                  }
+                  <mat-hint align="end">{{ nhanvienForm.get('ghiChu')?.value?.length || 0 }}/1000</mat-hint>
+                </mat-form-field>
+              </div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+
+        <div class="form-actions">
+          <button mat-button type="button" class="btn-secondary" (click)="goBack()" [disabled]="submitting()">
+            Hủy bỏ
+          </button>
+          <button mat-flat-button color="primary" type="submit" class="btn-primary" [disabled]="submitting()">
+            @if (submitting()) {
+              <mat-spinner diameter="18"></mat-spinner>
+              <span>Đang xử lý...</span>
+            } @else {
+              {{ mode === 'create' ? 'Tạo nhân viên' : 'Lưu thay đổi' }}
+            }
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

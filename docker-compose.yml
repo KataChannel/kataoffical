@@ -1,0 +1,157 @@
+
+# 📝 Định nghĩa log rotation chung cho tất cả các service
+x-logging: &default-logging
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  postgres:
+    <<: *default-logging
+    image: postgres:15
+    container_name: rausach-postgres
+    restart: always
+    shm_size: '256mb' # 🚀 Nâng shm_size để thực hiện VACUUM ANALYZE cho bảng lớn
+    environment:
+      POSTGRES_USER: AWois79wFA1bxMK
+      POSTGRES_PASSWORD: 7bhNHJcSEbWln9v
+      POSTGRES_DB: rausachfinal
+    ports:
+      - "55432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+
+  pgadmin:
+    <<: *default-logging
+    image: dpage/pgadmin4
+    container_name: rausach-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@rausachtrangia.com
+      PGADMIN_DEFAULT_PASSWORD: 7bhNHJcSEbWln9v
+    ports:
+      - "55050:80"
+    depends_on:
+      - postgres
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  redis:
+    <<: *default-logging
+    image: redis:latest
+    container_name: rausach-redis
+    restart: always
+    ports:
+      - "56379:6379"
+    volumes:
+      - redis_data:/data
+    command: [ "redis-server", "--appendonly", "yes" ]
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  berausach:
+    <<: *default-logging
+    build: ./api
+    container_name: rausach-backend
+    restart: always
+    ports:
+      - "53331:3331"
+    environment:
+      # 🌐 Chuyển sang kết nối nội bộ (postgres:5432) thay vì IP Public
+      - DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@postgres:5432/rausachfinal?schema=public&connection_limit=25&pool_timeout=60&connect_timeout=20
+      - GOOGLE_CLIENT_ID=897974685698-efprsqffgop935h5d5l2lidle1go9i17.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
+      - FACEBOOK_CLIENT_ID=your-facebook-client-id
+      - FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
+      - ZALO_APP_ID=your-zalo-app-id
+      - ZALO_APP_SECRET=your-zalo-app-secret
+      - BASE_URL=https://tg.rausachtrangia.com
+      - SERVER_URL=https://apitg.rausachtrangia.com
+      - PORT=3331
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MINIO_ENDPOINT=rausach-minio
+      - MINIO_PORT=9000
+      - MINIO_USE_SSL=false
+      - MINIO_ACCESS_KEY=RC4hWSS4V6QIcfl
+      - MINIO_SECRET_KEY=LEOZHZwjaasTTKk
+      - MINIO_ROOT_USER=RC4hWSS4V6QIcfl
+      - MINIO_ROOT_PASSWORD=LEOZHZwjaasTTKk
+      - MINIO_BUCKET_NAME=uploads
+      - MINIO_BUCKET=uploads
+      - MINIO_REGION=us-east-1
+      - MINIO_PUBLIC_URL=http://storage.rausachtrangia.com:59000
+      - GOOGLE_API_KEY=AIzaSyAcLy3dOt27BgxkDSAY7fRm0jbwlzPo-80
+      - TELEGRAM_BOT_TOKEN=8899335906:AAHL8MBUlAzRs0POsI1TeNathGUCBu3poMU
+      - TELEGRAM_CHAT_ID=-1003898067417
+    depends_on:
+      - postgres
+      - redis
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+
+  ferausach:
+    <<: *default-logging
+    build: ./frontend
+    container_name: rausach-frontend
+    restart: always
+    ports:
+      - "54301:4301"
+    environment:
+      - NODE_ENV=production
+      - NODE_OPTIONS=--max-old-space-size=1536
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+
+  rausach-minio:
+    <<: *default-logging
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
+    container_name: rausach-minio
+    command: server /data --console-address ":9090"
+    ports:
+      - "59000:9000"
+      - "59090:9090"
+    environment:
+      MINIO_ROOT_USER: RC4hWSS4V6QIcfl
+      MINIO_ROOT_PASSWORD: LEOZHZwjaasTTKk
+      MINIO_REGION: us-east-1
+    volumes:
+      - minio_rausach:/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+
+volumes:
+  pg_data:
+  redis_data:
+  uploads_data:
+    driver: local
+  minio_rausach:

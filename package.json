@@ -1,0 +1,33 @@
+{
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "axios": "^1.12.2",
+    "class-validator": "^0.14.1"
+  },
+  "scripts": {
+    "build": "cd api && npx bun run build && cd ../frontend && bun run build",
+    "dev": "bash run_dev.sh",
+    "autorun": "./autorun.sh",
+    "db:backup": "cd api && npx ts-node prisma/backup.ts",
+    "db:restore": "cd api && npx ts-node prisma/restore.ts",
+    "db:restore:audit": "cd api && npx ts-node prisma/restore.ts --fix-audit-log",
+    "db:update": "cd api && npx ts-node prisma/update.ts",
+    "db:updatevat": "cd api && npx ts-node prisma/updatevat.ts",
+    "db:updatevatsanpham": "cd api && npx ts-node prisma/updatevatsanpham.ts",
+    "db:updatebanggiadonhang": "cd api && npx ts-node prisma/updatebanggiadonhang.ts",
+    "db:updatetonkho": "cd api && npx ts-node prisma/updatetonkho.ts",
+    "db:updateoffvat": "cd api && npx ts-node prisma/updateoffvat.ts",
+    "db:updatekhachhang": "cd api && npx ts-node prisma/updatekhachhang.ts",
+    "db:seed": "cd api && npx ts-node prisma/seed.ts",
+    "db:delete-audit": "cd api && npx ts-node scripts/delete-audit-before-date.ts",
+    "db:updatedongbosanphamtonkho": "cd api && npx ts-node prisma/updatedongbosanphamtonkho.ts",
+    "db:generate": "cd api && npx prisma generate",
+    "db:migrate": "cd api && npx bun prisma migrate dev --name tenfile",
+    "db:reset": "cd api && npx bun prisma migrate reset",
+    "db:push": "cd api && npx bun prisma db push",
+    "db:studio": "cd api && npx bun prisma studio"
+  },
+  "devDependencies": {
+    "xlsx": "^0.18.5"
+  }
+}

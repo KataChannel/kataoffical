@@ -1,0 +1,494 @@
+<div class="flex flex-row justify-between items-center space-x-2 p-2">
+  <button mat-icon-button color="primary" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <!-- Cập nhật input title ở header -->
+    <div class="flex items-center space-x-2">
+      <span class="font-bold text-slate-800">{{ DetailPhieugiaohang()?.madonhang || 'Không có dữ liệu' }}</span>
+      
+      <!-- Interactive Status Badge -->
+
+      <button color="primary" mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>info</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <div class="flex flex-col">
+          <a class="p-4 hover:bg-slate-100" target="_blank" href="admin/khachhang/{{DetailPhieugiaohang()?.khachhang?.id}}">{{DetailPhieugiaohang()?.khachhang?.name}} - {{DetailPhieugiaohang()?.khachhang?.makh}}</a>
+           <a class="p-4 hover:bg-slate-100" target="_blank" href="admin/banggia/{{DetailPhieugiaohang()?.banggia?.id}}">(Đơn Hàng) {{DetailPhieugiaohang()?.banggia?.mabanggia}} - {{DetailPhieugiaohang()?.banggia?.title}}</a>
+           <a class="p-4 hover:bg-slate-100" target="_blank" href="admin/banggia/{{DetailPhieugiaohang()?.khachhang?.banggia?.id}}">(Khách hàng) {{DetailPhieugiaohang()?.khachhang?.banggia?.mabanggia}} - {{DetailPhieugiaohang()?.khachhang?.banggia?.title}}</a>
+        </div>
+      </mat-menu>
+    </div>
+  <div class="flex flex-row space-x-2 items-center">
+    <!-- <button *ngIf="DetailPhieugiaohang().status!=='danhan'" mat-flat-button color="primary"
+      [disabled]="DetailPhieugiaohang().status=='dagiao'" (click)="GiaoDonhang()"> Đã Giao</button> -->
+     
+      <button [matMenuTriggerFor]="statusMenu" 
+              class="status-badge"
+              [ngClass]="getStatusStyle(DetailPhieugiaohang()?.status)">
+        <span class="status-dot"></span>
+        {{ getStatusLabel(DetailPhieugiaohang()?.status) }}
+        <mat-icon class="!text-[10px] !ml-1 !h-2.5 !w-2.5">expand_more</mat-icon>
+      </button>
+
+      <mat-menu #statusMenu="matMenu" class="shadcn-menu">
+        <button mat-menu-item (click)="changeStatus('dadat')">
+          <mat-icon class="text-blue-500">pending</mat-icon>
+          <span>Đã Đặt</span>
+        </button>
+        <button mat-menu-item (click)="changeStatus('choxuly')">
+          <mat-icon class="text-orange-500">hourglass_empty</mat-icon>
+          <span>Chờ Xử Lý</span>
+        </button>
+        <button mat-menu-item (click)="changeStatus('dagiao')">
+          <mat-icon class="text-amber-500">local_shipping</mat-icon>
+          <span>Đã Giao</span>
+        </button>
+        <button mat-menu-item (click)="changeStatus('danhan')">
+          <mat-icon class="text-green-500">check_circle</mat-icon>
+          <span>Đã Nhận</span>
+        </button>
+        <button mat-menu-item (click)="changeStatus('hoanthanh')">
+          <mat-icon class="text-teal-500">verified</mat-icon>
+          <span>Hoàn Thành</span>
+        </button>
+        <button mat-menu-item (click)="changeStatus('khonggiao')">
+          <mat-icon class="text-slate-500">block</mat-icon>
+          <span>Không Giao</span>
+        </button>
+        <button mat-menu-item (click)="changeStatus('huy')">
+          <mat-icon class="text-red-500">cancel</mat-icon>
+          <span>Đã Hủy</span>
+        </button>
+      </mat-menu>
+      
+      <!-- Primary Action Buttons (NY/Shadcn Style) -->
+      @if (DetailPhieugiaohang().status === 'dagiao' || DetailPhieugiaohang().status === 'danhan' || 
+          (['dadat', 'choxuly'].includes(DetailPhieugiaohang().status) && isAccountant())) {
+        <button class="btn-new-york btn-primary ml-2" [disabled]="isUpdating() || isLoading()" (click)="Hoanthanhhang()">
+          <span class="status-dot" *ngIf="!isUpdating()"></span>
+          <mat-spinner diameter="14" *ngIf="isUpdating()"></mat-spinner>
+          <span>{{ isUpdating() ? 'Đang xử lý...' : 'Hoàn thành' }}</span>
+        </button>
+      } @else if (DetailPhieugiaohang().status === 'dadat' || DetailPhieugiaohang().status === 'choxuly') {
+        <button class="btn-new-york btn-amber ml-2" [disabled]="isUpdating() || isLoading()" (click)="GiaoDonhang()">
+          <mat-icon class="!text-[14px] !h-3.5 !w-3.5">local_shipping</mat-icon>
+          <span>{{ isUpdating() ? 'Đang xử lý...' : 'Giao hàng' }}</span>
+        </button>
+      }
+
+    <!-- <button mat-icon-button color="primary" (click)="CoppyDon()">
+      <mat-icon>content_copy</mat-icon>
+    </button> -->
+    <button mat-icon-button color="primary" 
+            [disabled]="isLoading() || isSaving() || isUpdating()" 
+            (click)="printContent()">
+      <mat-icon>print</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" 
+            *ngIf="isEdit()" 
+            [disabled]="isSaving() || isLoading()" 
+            (click)="handlePhieugiaohangAction()">
+      @if (isSaving()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        <mat-icon>save</mat-icon>
+      }
+    </button>
+    <button mat-icon-button color="primary" (click)="toggleEdit()">
+      <mat-icon>{{ isEdit() ? 'visibility' : 'edit' }}</mat-icon>
+    </button>
+    <!-- } -->
+  </div>
+</div>
+
+<div class="relative flex flex-col w-full p-4 overflow-auto">
+  <!-- Loading overlay for the entire detail view -->
+  @if (isLoading()) {
+  <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+    <div class="flex flex-col items-center space-y-4">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span class="text-sm text-gray-600">Đang tải dữ liệu phiếu giao hàng...</span>
+    </div>
+  </div>
+  }
+
+  <ng-container *ngIf="isDelete()">
+    <div class="flex flex-col space-y-4 items-center justify-center">
+      <div class="font-bold text-2xl">Bạn chắc chắn muốn xoá không?</div>
+      <div class="flex flex-row space-x-2 items-center justify-center">
+        <button mat-flat-button color="primary" (click)="DeleteData()">Đồng Ý</button>
+        <button mat-flat-button color="warn" (click)="toggleDelete()">Huỷ Bỏ</button>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!isDelete()">
+    <div id="printContent" class="font-times min-w-[800px] flex flex-col space-y-6 items-center p-2 rounded-lg">
+      <div class="w-full flex flex-col items-center justify-center">
+        <div *ngIf="!isEdit()" class="w-full flex flex-row space-x-2 items-center justify-between">
+          <img src="/images/logo-dark.svg" class="h-14 mx-auto">
+          <div class="w-2/3 flex flex-col">
+            <div class="font-bold text-[18px]">CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA</div>
+            <div class="font-bold">Hợp Tác Xã Nông Nghiệp Công Nghệ Cao Trần Gia Farm</div>
+            <div>Địa chỉ HTX: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An</div>
+            <div>Văn Phòng: Tầng 3, An Phú Plaza, 117-119 Lý Chính Thắng, P. Võ Thị Sáu, Q. 3, TPHCM</div>
+            <div>Kho sơ chế: 22 - 30 Kha Vạn Cân, P. Hiệp Bình Chánh, TP. Thủ Đức, TPHCM</div>
+            <div>Kho Đà Lạt: 61 Lạc Long Quân, TT. Liên Nghĩa, Huyện Đức Trọng, Tỉnh Lâm Đồng</div>
+            <div>Website: http://rausachtrangia.com - Hotline: 0868614214 – 0902458081</div>
+          </div>
+          <img src="/images/qrcodedonhang.svg" class="h-32 ml-auto p-4">
+        </div>
+        <div class="font-bold text-[18px] uppercase">BẢNG KÊ GIAO HÀNG NGÀY
+          {{DetailPhieugiaohang().ngaygiao|date:'dd/MM/yyyy'}}</div>
+        <div class="font-bold text-[18px] uppercase {{DetailPhieugiaohang()?.khachhangId?'':'text-red-700 italic'}}">
+          {{DetailPhieugiaohang()?.khachhang?.name||"Chưa Chọn Khách Hàng"}}</div>
+        <div *ngIf="isEdit() && DetailPhieugiaohang()?.khachhang?.ghichu" class="p-2 rounded-lg border text-red-600"
+          [innerHTML]="DetailPhieugiaohang().khachhang.ghichu"></div>
+
+        <div class="w-full flex flex-row items-center mb-2">
+          <div class="w-full flex flex-col space-y-1 divide-y divide-gray-300">
+            <div class="w-full flex items-start"><strong>Địa Chỉ : </strong>
+              {{DetailPhieugiaohang()?.khachhang?.diachi}}</div>
+            <div class="w-full flex items-start"><strong>Ghi Chú : </strong> {{DetailPhieugiaohang()?.ghichu}}</div>
+            <div class="w-full flex items-start"><strong>Số Điện Thoại : </strong>
+              {{DetailPhieugiaohang()?.khachhang?.sdt}}</div>
+            <div class="w-full flex items-start">
+              <strong>Tổng khối lượng - Đơn Vị Tính : 
+                {{GetDVT(DetailPhieugiaohang())}}
+                ({{DetailPhieugiaohang().loadpoint|number:'1.0-2' }})
+              </strong>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="isEdit()" class="w-full flex flex-col overflow-y-auto">
+          @defer () {
+          <div class="w-full overflow-auto">
+            <!-- Filter input -->
+            <div class="flex flex-row space-x-2 items-center">
+                <mat-slide-toggle [(ngModel)]="DetailPhieugiaohang().isshowvat" 
+                                [ngModelOptions]="{standalone: true}" 
+                                [disabled]="isLoading() || isUpdating()"
+                                (toggleChange)="onChangeVat()">
+                <span class="font-medium">VAT</span>
+                </mat-slide-toggle>
+              
+              <div class="relative w-full py-2">
+                <input type="text" placeholder="Tìm Kiếm..." 
+                       (keyup)="applyFilter($event)"
+                       [disabled]="isLoading() || isLoadingProducts()"
+                  class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  @if (isLoadingProducts()) {
+                    <mat-spinner diameter="20"></mat-spinner>
+                  } @else {
+                    <span class="material-symbols-outlined text-gray-500">search</span>
+                  }
+                </div>
+              </div>
+
+            </div>
+            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
+              @for (column of displayedColumns; track column) {
+              <ng-container [matColumnDef]="column">
+                <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
+                  <span class="max-w-40 line-clamp-4">
+                    {{ ColumnName[column] }}
+                  </span>
+                </th>
+                <td mat-cell *matCellDef="let row; let idx = index">
+                  @switch (column) {
+                  @case ('STT') {
+                  <span class="max-w-20 line-clamp-4 flex flex-row items-center">
+                    <span>{{ idx + 1 }} </span>
+                    <button mat-icon-button color="warn"
+                      (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
+                  </span>
+                  }
+                  @case ('sldat') {
+                  @if (canEditSldat()) {
+                    <input type="text" (focus)="onInputFocus($event)"
+                      (blur)="updateBlurValue($event,idx, row, 'sldat','number')"
+                      (keydown.enter)="updateValue($event,idx, row, 'sldat','number')"
+                      (keydown)="validateKeyInput($event, 'number')"
+                      class="sldat-input p-2 min-w-28 bg-slate-200 border border-transparent focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200 w-full"
+                      [attr.data-index]="idx" [attr.data-id]="row.id"
+                      [value]="row[column] || 0">
+                  } @else {
+                    <div class="text-end p-2 min-w-28 bg-gray-100 rounded-lg text-gray-600">
+                      {{ row[column]||0|number:'1.0-2' }}
+                    </div>
+                  }
+                  }
+                  @case ('giaban') {
+                  <div class="text-end">
+                    {{ row[column]||0|number:'1.0-2' }}
+                  </div>
+                  }
+                  @case ('ttgiao') {
+                  <div class="text-end">
+                    {{ row[column]||0|number:'1.0-2' }}
+                  </div>
+                  }
+                  @case ('slgiao') {
+                  @if (canEditSlgiao()) {
+                    <!-- @if(DetailPhieugiaohang().status!='dagiao') { -->
+                    <input type="text" (focus)="onInputFocus($event)"
+                      (blur)="updateBlurValue($event,idx, row, 'slgiao','number')"
+                      (keydown.enter)="updateValue($event,idx, row, 'slgiao','number')"
+                      (keydown)="validateKeyInput($event, 'number')"
+                      class="slgiao-input p-2 min-w-28 bg-slate-200 border border-transparent focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200 w-full"
+                      [attr.data-index]="idx" [attr.data-id]="row.id"
+                      [value]="row[column] || 0">
+                    <!-- } -->
+                  } @else {
+                    <div class="text-end p-2 min-w-28 bg-gray-100 rounded-lg text-gray-600">
+                      {{ row[column]||0|number:'1.0-2' }}
+                    </div>
+                  }
+                  }
+                  @case ('slnhan') {
+                  @if (canEditSlnhan()) {
+                    <input type="text" (focus)="onInputFocus($event)"
+                      (blur)="onSlnhanBlur($event,idx, row)"
+                      (keydown.enter)="onSlnhanEnter($event,idx, row)"
+                      (keydown)="validateKeyInput($event, 'number')"
+                      class="slnhan-input p-2 min-w-28 bg-slate-200 border border-transparent focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200 w-full"
+                      [attr.data-index]="idx" [attr.data-id]="row.id"
+                      [value]="row[column] || 0">
+                  } @else {
+                    <div class="text-end p-2 min-w-28 bg-gray-100 rounded-lg text-gray-600">
+                      {{ row[column]||0|number:'1.0-2' }}
+                    </div>
+                  }
+                  }
+                  @case ('ghichu') {
+                  <input type="text" (focus)="onInputFocus($event)"
+                    (blur)="updateBlurValue($event,idx, row, 'ghichu','string')"
+                    (keydown.enter)="updateValue($event,idx, row, 'ghichu','string')"
+                    (keydown)="validateKeyInput($event, 'string')"
+                    class="ghichu-input p-2 min-w-28 bg-slate-200 border border-transparent focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200 w-full"
+                    [attr.data-index]="idx" [attr.data-id]="row.id"
+                    [value]="row[column] || ''">
+                  }
+                  @default {
+                  <span class="max-w-40 line-clamp-4">
+                    {{ row[column] }}
+                  </span>
+                  }
+                  }
+                </td>
+              </ng-container>
+              }
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell p-4" [attr.colspan]="displayedColumns.length">Không tìm thấy</td>
+              </tr>
+            </table>
+            <!-- <mat-paginator #paginator="matPaginator" [pageSizeOptions]="[50, 100]"></mat-paginator> -->
+          </div>
+          }
+        </div>
+
+        <table *ngIf="!isEdit()" class="w-full border-collapse border mt-4">
+          <thead>
+            <tr class="border">
+              <th class="border px-2 max-w-10 text-center">STT</th>
+              <th class="border px-2 text-center">Tên sản phẩm</th>
+              <th class="border px-2 text-center">ĐVT</th>
+              <th class="border px-2 text-center max-w-10 whitespace-nowrap">SL</th>
+              <th class="border px-2 text-center max-w-15 whitespace-nowrap"
+                *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Đơn giá</th>
+              <th class="border px-2 text-center max-w-15 whitespace-nowrap"
+                *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
+              <th class="border px-2 text-center max-w-15 whitespace-nowrap">SL Nhận</th>
+              <th class="border px-2 text-center">Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of dataSource.data; track item.id; let idx = $index) {
+            <tr class="border">
+              <td class="border px-2 text-center max-w-10">{{idx+1}}</td>
+              <td class="border px-2">{{DetailPhieugiaohang()?.khachhang?.istitle2?item.title2:item.title}}</td>
+              <td class="border px-2 text-center">{{item.dvt}}</td>
+              <td class="border px-2 text-end max-w-10">{{item.slgiao|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end max-w-15" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
+                {{item.giaban|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end max-w-15" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
+                {{item.ttgiao|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end max-w-15">{{DetailPhieugiaohang()?.status=== 'danhan'?
+                (item.slnhan|number:'1.0-2':''):''}}</td>
+              <td class="border px-2">{{item.ghichu}}</td>
+            </tr>
+            }
+            <tr class="border">
+              <td colspan="3" class="border px-2 text-start">Tổng:</td>
+              <td class="border px-2 text-end font-bold">
+                {{TinhTong(DetailPhieugiaohang().sanpham,'slgiao')|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia"></td>
+              <td class="border px-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
+                {{TinhTong(DetailPhieugiaohang().sanpham,'ttgiao')|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end font-bold">{{DetailPhieugiaohang()?.status=== 'danhan'?
+                (TinhTong(DetailPhieugiaohang().sanpham,'slnhan')|number:'1.0-2'):''}}</td>
+              <td class="border px-2 text-end"></td>
+            </tr>
+           @if(DetailPhieugiaohang().isshowvat){
+            <tr class="border">
+              <td colspan="5" class="border px-2 text-start">Vat:</td>
+              <td class="border px-2 text-end font-bold">{{DetailPhieugiaohang()?.tongvat|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end"></td>
+              <td class="border px-2 text-end"></td>
+            </tr>
+           <tr class="border">
+              <td colspan="5" class="border px-2 text-start">Tổng Tiền:</td>
+              <td class="border px-2 text-end font-bold">{{DetailPhieugiaohang()?.tongtien|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end"></td>
+              <td class="border px-2 text-end"></td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        <!-- <div class="w-full text-end font-bold p-2">Ngày In:</div> -->
+        <div class="w-full flex justify-between items-center text-center mt-6 p-2 px-16">
+          <p><strong>Người vận chuyển</strong></p>
+          <p><strong>Người nhận hàng</strong></p>
+          <p><strong>Người lập</strong></p>
+        </div>
+        <!-- <div class="w-full flex justify-between items-center text-center !mt-20 p-2">
+        <p><strong>Nguyễn Văn A</strong></p>
+        <p><strong>Nguyễn Thị B</strong></p>
+        <p><strong>Lê Văn C</strong></p>
+        <p><strong>Ngô Thị D</strong></p>
+      </div> -->
+
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #confirmRemoveDialog>
+  <mat-dialog-content class="!relative !flex flex-col space-y-6 items-center justify-center p-6">
+    <div class="flex flex-row space-x-3 items-center">
+      <mat-icon class="text-amber-500 text-3xl">warning</mat-icon>
+      <div class="text-lg font-medium">Xác nhận xóa sản phẩm</div>
+    </div>
+    
+    <div class="text-center">
+      <div class="text-gray-700">Bạn có chắc chắn muốn xóa sản phẩm</div>
+      <div class="font-bold text-blue-600 mt-2" *ngIf="itemToRemove">
+        "{{ itemToRemove?.title || 'Không có tên' }}"
+      </div>
+      <div class="text-gray-700 mt-2">khỏi phiếu giao hàng này?</div>
+    </div>
+    
+    <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+      <div class="text-sm text-yellow-800">
+        <mat-icon class="text-yellow-600 text-sm mr-1">info</mat-icon>
+        Hành động này sẽ xóa sản phẩm khỏi phiếu giao hàng hiện tại và có thể được hoàn tác bằng cách thêm lại sản phẩm.
+      </div>
+    </div>
+    
+    <div class="flex flex-row space-x-3 items-center justify-center">
+      <button mat-flat-button color="warn" mat-dialog-close="confirm">
+        <mat-icon>delete</mat-icon>
+        Xóa sản phẩm
+      </button>
+      <button mat-flat-button mat-dialog-close="cancel">
+        <mat-icon>cancel</mat-icon>
+        Hủy bỏ
+      </button>
+    </div>
+  </mat-dialog-content>
+</ng-template>
+
+<ng-template #confirmReceivedDialog>
+  <div class="p-6 rounded-2xl bg-white flex flex-col space-y-5 max-w-[650px] w-full">
+    <!-- Header -->
+    <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
+      <div class="bg-amber-50 p-2.5 rounded-lg text-amber-600 flex items-center justify-center">
+        <mat-icon class="scale-110">warning</mat-icon>
+      </div>
+      <div>
+        <h3 class="text-base font-bold m-0 tracking-tight text-slate-900">Xác nhận lệch số lượng thực nhận</h3>
+        <p class="text-xs text-slate-500 m-0 mt-0.5">
+          Danh sách sản phẩm có số lượng nhận thiếu hụt. Vui lòng chọn số lượng Trả kho hoặc Hủy.
+        </p>
+      </div>
+    </div>
+
+    <!-- Product Discrepancies List -->
+    <div class="max-h-[320px] overflow-y-auto border border-slate-100 rounded-xl">
+      <table class="min-w-full divide-y divide-slate-100 text-sm">
+        <thead class="bg-slate-50 sticky top-0 z-10">
+          <tr>
+            <th scope="col" class="px-3 py-2 text-left text-xs font-semibold text-slate-500">Sản phẩm</th>
+            <th scope="col" class="px-2 py-2 text-center text-xs font-semibold text-slate-500">Số giao</th>
+            <th scope="col" class="px-2 py-2 text-center text-xs font-semibold text-slate-500">Thực nhận</th>
+            <th scope="col" class="px-2 py-2 text-center text-xs font-semibold text-slate-500">Thiếu hụt</th>
+            <th scope="col" class="px-3 py-2 text-left text-xs font-semibold text-slate-500 min-w-[120px]">Trả kho</th>
+            <th scope="col" class="px-3 py-2 text-left text-xs font-semibold text-slate-500 min-w-[120px]">Hủy (Hao hụt)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 bg-white">
+          @for (item of dialogDiscrepancies(); track item.id) {
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="px-3 py-2.5">
+                <div class="font-medium text-slate-900 max-w-[150px] truncate" [title]="item.title">
+                  {{ item.title }}
+                </div>
+                <div class="text-[11px] text-slate-400">ĐVT: {{ item.dvt }}</div>
+              </td>
+              <td class="px-2 py-2.5 text-center font-semibold text-slate-600">
+                {{ item.slgiao }}
+              </td>
+              <td class="px-2 py-2.5 text-center font-semibold text-blue-600">
+                {{ item.slnhan }}
+              </td>
+              <td class="px-2 py-2.5 text-center font-bold text-rose-600">
+                {{ item.shortageQty }}
+              </td>
+              <td class="px-3 py-1.5">
+                <div class="relative">
+                  <input type="number" 
+                         [(ngModel)]="item.slnhapkho" 
+                         (ngModelChange)="onDialogItemSlnhapkhoChange(item)"
+                         [max]="item.shortageQty"
+                         min="0"
+                         step="0.01"
+                         class="w-full pl-2 pr-6 py-1 border border-slate-200 rounded-lg text-xs bg-slate-50 focus:bg-white focus:border-blue-500 focus:outline-none transition-all font-semibold font-mono">
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-slate-400 text-[9px] font-bold">
+                    {{ item.dvt }}
+                  </div>
+                </div>
+              </td>
+              <td class="px-3 py-1.5">
+                <div class="relative">
+                  <input type="number" 
+                         [(ngModel)]="item.slhuy" 
+                         (ngModelChange)="onDialogItemSlhuyChange(item)"
+                         [max]="item.shortageQty"
+                         min="0"
+                         step="0.01"
+                         class="w-full pl-2 pr-6 py-1 border border-slate-200 rounded-lg text-xs bg-slate-50 focus:bg-white focus:border-rose-500 focus:outline-none transition-all font-semibold text-rose-700 font-mono">
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-rose-400 text-[9px] font-bold">
+                    {{ item.dvt }}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
+      <button mat-flat-button mat-dialog-close="cancel" class="!bg-slate-100 !text-slate-700 hover:!bg-slate-200 font-semibold text-xs py-2 px-4 rounded-lg">
+        Hủy bỏ
+      </button>
+      <button mat-flat-button mat-dialog-close="confirm" class="!bg-blue-600 !text-white hover:!bg-blue-700 font-semibold text-xs py-2 px-5 rounded-lg shadow-md hover:shadow-blue-500/25">
+        Xác nhận & Lưu
+      </button>
+    </div>
+  </div>
+</ng-template>

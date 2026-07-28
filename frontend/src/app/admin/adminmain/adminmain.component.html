@@ -1,0 +1,255 @@
+<mat-drawer-container class="!w-screen !h-screen" autosize>
+  <mat-drawer #drawer class="" mode="side" position="start">
+    <div class="relative h-full flex flex-col space-y-2 !bg-[#0B9444] !text-white">
+      <div class="relative flex flex-col space-y-2 p-2">
+        <img [src]="Config.Logoimage" class="h-20 object-contain rounded-lg bg-white p-2" alt="Logo">
+      </div>
+      <div class="relative flex flex-col space-y-2 h-full overflow-auto p-2">
+          <div class="relative w-full">
+              <input type="text"
+                  placeholder="Tìm Kiếm..."
+                  #search (input)="searchFunction($event)"
+                  class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <span class="material-symbols-outlined text-gray-500">search</span>
+              </div>
+          </div>
+        <app-treemenu [ListMenu]="FilterListMenu"></app-treemenu>
+      </div>
+      <div class="relative w-full justify-between flex flex-row space-x-2 items-center p-2">
+        <div class="flex flex-row space-x-2">
+          <img [src]="User?.Avatar" alt="Avatar" class="max-w-14 max-h-14 object-cover rounded-full">
+          <div class="flex flex-col">
+            <div class="font-bold">{{User?.Hoten}}</div>
+            <div class="italic text-xs">{{User?.Vitri}}</div>
+            <div class="italic text-xs">{{User?.email}}</div>    
+          </div>
+        </div>
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <a [routerLink]="['/admin/profile']" mat-menu-item>
+            <mat-icon>account_circle</mat-icon>
+            <span>Profile</span>
+          </a>
+          <a [routerLink]="['/admin/account']" mat-menu-item>
+            <mat-icon>account_circle</mat-icon>
+            <span>Account</span>
+          </a>
+          <button mat-menu-item>
+            <mat-icon>settings</mat-icon>
+            <span>Settings</span>
+          </button>
+          <button mat-menu-item  (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+  </mat-drawer>
+
+  <div class="relative flex flex-col w-full h-full primary">
+    <div class="relative flex flex-row justify-between items-center p-1 bg-[#57A345] text-white overflow-hidden">
+      <!-- Left: Menu & Search Icon (Mobile/Tablet < XL) -->
+      <div class="flex flex-row items-center flex-shrink-0">
+        <button mat-icon-button (click)="drawer.toggle()" class="!text-white flex-shrink-0">
+          <mat-icon>menu</mat-icon>
+        </button>
+        
+        <!-- Search Button Icon (Hidden on Desktop XL) -->
+        <button mat-icon-button (click)="openSearchDialog()" class="xl:hidden !text-white flex-shrink-0">
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
+
+      <!-- Right: Search Bar (Desktop only), DB Name, and Action Icons -->
+      <div class="flex flex-row items-center justify-end flex-1 min-w-0">
+        
+        <!-- Search Bar (Desktop only > 1280px) -->
+        <div (click)="openSearchDialog()" class="hidden xl:flex relative flex-1 max-w-[280px] items-center search-input-container mx-2 overflow-hidden">
+          <input type="text" placeholder="Tìm Kiếm..."
+            class="block w-full pl-10 pr-4 py-1.5 text-gray-700 bg-white/95 border border-transparent rounded-lg focus:outline-none text-xs truncate"
+            readonly>
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <span class="material-symbols-outlined text-gray-500 !text-xl">search</span>
+          </div>
+        </div>
+
+        <!-- DB Name - Only shown on extra large screens -->
+        <div *ngIf="dbName" class="hidden xl:flex items-center px-3 py-1 bg-white/10 rounded-md border border-white/20 mr-2 backdrop-blur-sm flex-shrink-0">
+          <mat-icon class="!w-4 !h-4 text-[16px] mr-1.5 text-white/90">storage</mat-icon>
+          <span class="text-white text-[10px] font-bold tracking-widest uppercase truncate max-w-[100px]">{{dbName}}</span>
+        </div>
+        
+        <!-- Action Buttons Group - Forced to stay on one line and never shrink -->
+        <div class="flex flex-row items-center flex-nowrap flex-shrink-0">
+          <button mat-icon-button (click)="ClearCache()" class="!text-white" matTooltip="Xóa Cache">
+            <mat-icon class="!text-[22px]">cached</mat-icon>
+          </button>
+          
+          <button mat-icon-button (click)="drawer1.toggle();isQuytrinh=true" class="!text-white" matTooltip="Quy trình">
+            <mat-icon class="!text-[22px]">dashboard</mat-icon>
+          </button>
+          
+          <button mat-icon-button (click)="drawer1.toggle();isQuytrinh=false" class="!text-white" matTooltip="Thông báo">
+            <mat-icon [matBadge]="unreadCount" matBadgeColor="warn" [matBadgeHidden]="unreadCount === 0" class="!text-[22px]">notifications</mat-icon>
+          </button>
+          
+          <a mat-icon-button [routerLink]="['/admin/support']" class="!text-white hidden xs:inline-flex" matTooltip="Hỗ trợ">
+            <mat-icon class="!text-[22px]">chat</mat-icon>
+          </a>
+          
+          <button mat-icon-button [matMenuTriggerFor]="menu1" class="!text-white">
+            <mat-icon class="!text-[26px]">account_circle</mat-icon>
+          </button>
+        </div>
+        
+        <mat-menu #menu1="matMenu">
+          <div class="flex flex-row space-x-2 items-center p-4">
+            <img [src]="User?.Avatar" alt="Avatar" class="max-w-14 max-h-14 object-cover rounded-full">
+            <div class="flex flex-col">
+              <div class="font-bold border-b pb-1 mb-1">{{User?.Hoten}}</div>
+              <div class="italic text-xs text-gray-500">{{User?.Vitri}}</div>
+              <div class="italic text-xs text-gray-500">{{User?.email}}</div>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+          <a [routerLink]="['/admin/profile']" mat-menu-item>
+            <mat-icon>person</mat-icon>
+            <span>Thông Tin</span>
+          </a>
+          <button mat-menu-item (click)="logout()" class="text-red-500">
+            <mat-icon class="text-red-500">logout</mat-icon>
+            <span>Đăng Xuất</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+    
+    <router-outlet></router-outlet>
+  </div>
+
+
+  <mat-drawer #drawer1 class="!w-screen lg:!w-1/2" mode="over" position="end">
+    <div class="relative h-full flex flex-col space-y-2 p-2" *ngIf="isQuytrinh">
+      <div class="flex flex-row space-x-2 items-center">
+          <button mat-icon-button (click)="drawer1.toggle()">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <span class="font-bold">Quy Trình</span>
+       </div>
+       <div class="relative flex w-full overflow-auto">
+        <mat-list class="w-full">
+          <mat-list-item *ngFor="let item of listQuytrinh" (click)="openQuytrinhDialog(item)" class="cursor-pointer hover:bg-gray-100 rounded-lg mb-2 border border-gray-100">
+            <mat-icon matListItemIcon class="!text-[#0B9444]">{{ item.icon }}</mat-icon>
+            <div matListItemTitle class="font-bold text-[#0B9444]">{{ item.title }}</div>
+            <div matListItemLine class="text-xs text-gray-500">{{ item.description }}</div>
+            <button mat-icon-button matListItemMeta>
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </mat-list-item>
+        </mat-list>
+       </div>
+    </div>
+
+    <!-- Notification Container inside Drawer -->
+    <div class="relative h-full flex flex-col p-4 notification-drawer" *ngIf="!isQuytrinh">
+      <div class="flex flex-row items-center justify-between border-b border-gray-100 pb-3 mb-2">
+        <div class="flex flex-row items-center">
+          <button mat-icon-button (click)="drawer1.toggle()" class="mr-1">
+            <mat-icon class="!text-gray-600">arrow_back</mat-icon>
+          </button>
+          <div class="flex flex-col">
+            <span class="font-bold text-lg text-gray-800 leading-tight">Thông Báo</span>
+            <span class="text-[11px] text-gray-400 font-medium" *ngIf="unreadCount > 0">{{ unreadCount }} chưa đọc</span>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- Compact Search inside header -->
+          <div class="relative hidden sm:flex items-center">
+            <input type="text" 
+                   [(ngModel)]="notificationSearchTerm" 
+                   (input)="onNotificationSearch()"
+                   placeholder="Tìm kiếm..." 
+                   class="w-32 hover:w-48 focus:w-48 pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-100 rounded-full text-sm outline-none transition-all focus:bg-white focus:border-[#0B9444]/30 focus:ring-2 focus:ring-[#0B9444]/5">
+            <mat-icon class="absolute left-2.5 !text-gray-400 !text-[18px] !w-[18px] !h-[18px]">search</mat-icon>
+          </div>
+
+          <!-- Toggle Subscribed status -->
+          <div class="flex items-center px-2 py-1 bg-gray-50 rounded-full border border-gray-100" [matTooltip]="isSubscribed ? 'Đang nhận thông báo đẩy' : 'Bật thông báo đẩy'">
+            <mat-icon class="!text-[16px] !w-4 !h-4 mr-1 transition-colors" [ngClass]="isSubscribed ? 'text-[#0B9444]' : 'text-gray-400'">
+              {{ isSubscribed ? 'notifications_active' : 'notifications_off' }}
+            </mat-icon>
+            <mat-slide-toggle color="primary" [checked]="isSubscribed" (change)="toggleNotifications($event)" class="scale-75 origin-right">
+            </mat-slide-toggle>
+          </div>
+
+          <!-- Toggle Telegram status -->
+          <div class="flex items-center px-2 py-1 bg-gray-50 rounded-full border border-gray-100" [matTooltip]="isTelegramEnabled ? 'Đang nhận thông báo Telegram' : 'Bật thông báo Telegram'">
+            <mat-icon class="!text-[16px] !w-4 !h-4 mr-1 transition-colors" [ngClass]="isTelegramEnabled ? 'text-blue-500' : 'text-gray-400'">
+              send
+            </mat-icon>
+            <mat-slide-toggle color="accent" [checked]="isTelegramEnabled" (change)="toggleTelegramNotifications($event)" class="scale-75 origin-right">
+            </mat-slide-toggle>
+          </div>
+
+          <button mat-icon-button class="!text-orange-500" (click)="testPushNotification()" matTooltip="Gửi test push">
+            <mat-icon>send</mat-icon>
+          </button>
+
+          <button *ngIf="notifications.length > 0" mat-icon-button class="!text-[#0B9444]" (click)="markAllAsRead()" matTooltip="Đánh dấu tất cả đã đọc">
+            <mat-icon>done_all</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Search (Visible on small screens) -->
+      <div class="sm:hidden mb-4 relative mt-1">
+        <input type="text" 
+               [(ngModel)]="notificationSearchTerm" 
+               (input)="onNotificationSearch()"
+               placeholder="Tìm kiếm thông báo..." 
+               class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-sm outline-none">
+        <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-gray-400">search</mat-icon>
+      </div>
+
+      <div class="relative flex flex-col w-full h-full overflow-y-auto space-y-3 pb-8">
+        <div *ngIf="notifications.length === 0" class="flex flex-col items-center justify-center p-8 text-gray-400 mt-10">
+          <mat-icon class="!w-16 !h-16 !text-[64px] mb-4 text-gray-300">notifications_none</mat-icon>
+          <p class="text-base">Bạn không có thông báo nào.</p>
+        </div>
+
+        <div *ngFor="let n of notifications" 
+             class="relative group p-4 rounded-xl border cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all flex flex-col"
+             [ngClass]="{'bg-white border-green-100 ring-1 ring-green-50/50': !n.isRead, 'bg-gray-50/30 border-gray-100': n.isRead}"
+             (click)="markAsRead(n)">
+          
+          <div class="flex justify-between items-start mb-2 gap-2">
+            <div class="font-semibold text-[15px] flex items-center" [ngClass]="{'text-[#0B9444]': !n.isRead, 'text-gray-600': n.isRead}">
+              <div *ngIf="!n.isRead" class="w-2 h-2 rounded-full bg-[#0B9444] mr-2 animate-pulse"></div>
+              {{ n.title }}
+            </div>
+            
+            <button mat-icon-button class="!w-7 !h-7 !min-w-7 flex items-center justify-center text-gray-300 hover:bg-red-50 hover:text-red-500 transition-colors rounded-full opacity-0 group-hover:opacity-100" 
+                    (click)="deleteNotification(n.id); $event.stopPropagation()"
+                    matTooltip="Xóa">
+              <mat-icon class="!text-[18px]">delete_outline</mat-icon>
+            </button>
+          </div>
+          
+          <div class="text-[14px] leading-relaxed mt-1 whitespace-pre-wrap flex-grow" [ngClass]="{'text-gray-900 font-medium': !n.isRead, 'text-gray-500': n.isRead}">
+            {{ n.message }}
+          </div>
+          
+          <div class="text-[11px] text-gray-400 mt-3 flex items-center pt-2 border-t border-gray-50 group-hover:border-gray-100">
+             <mat-icon class="!w-3.5 !h-3.5 !text-[14px] mr-1 text-gray-300">schedule</mat-icon>
+             {{ n.createdAt | date:'dd/MM/yyyy HH:mm' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-drawer>
+</mat-drawer-container>

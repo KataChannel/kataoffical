@@ -1,0 +1,3244 @@
+import {
+  Component,
+  effect,
+  inject,
+  TemplateRef,
+  ViewChild,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { Router, RouterOutlet } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { CommonModule } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormsModule } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenu, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import {
+  readExcelFile,
+  readExcelFileNoWorker,
+  readExcelFileNoWorkerArray,
+  writeExcelFile,
+  writeExcelFileSheets,
+} from '../../../shared/utils/exceldrive.utils';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {
+  trigger,
+  state,
+  style,
+  transition,
+  animate,
+} from '@angular/animations';
+import { SanphamService } from '../../sanpham/sanpham.service';
+import { GraphqlService } from '../../../shared/services/graphql.service';
+import { GenId } from '../../../shared/utils/shared.utils';
+import { TimezoneService } from '../../../shared/services/timezone.service';
+import { DathangService } from '../dathang.service';
+import { DonhangService } from '../../donhang/donhang.service';
+import { DateHelpers } from '../../../shared/utils/date-helpers';
+import { PhieukhoService } from '../../phieukho/phieukho.service';
+import { ChotkhoService } from '../../chotkho/chotkho.service';
+import { MatExpansionModule } from '@angular/material/expansion';
+import {
+  NestedDataDialogComponent,
+  NestedDataDialogData,
+} from './nested-data-dialog/nested-data-dialog.component';
+import moment from 'moment';
+import { StockWarningDialogComponent, StockWarningItem, StockWarningData } from './stock-warning-dialog.component';
+import { ReconciliationDialogComponent } from '../../chotkho/reconciliation-dialog/reconciliation-dialog.component';
+import { MagicConfirmDialogComponent } from './magic-confirm-dialog.component';
+import { firstValueFrom } from 'rxjs';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MagicProgressDialogComponent } from './magic-progress-dialog.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+
+@Component({
+  selector: 'app-nhucaudathang',
+  templateUrl: './nhucaudathang.component.html',
+  styleUrls: [
+    './nhucaudathang.component.scss',
+    './nhucaudathang.component.css',
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition(
+        'expanded <=> collapsed',
+        animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')
+      ),
+    ]),
+  ],
+  imports: [
+    MatFormFieldModule,
+    MatInputModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatMenuModule,
+    MatSidenavModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    CommonModule,
+    FormsModule,
+    MatTooltipModule,
+    MatDialogModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSlideToggleModule,
+    MatExpansionModule,
+    MatProgressSpinnerModule,
+    MatCheckboxModule,
+    MatProgressBarModule,
+  ],
+})
+export class NhucaudathangComponent {
+  displayedColumns: string[] = [
+    'expand', // Add expansion column
+    'title',
+    'masp',
+    'dvt',
+    'mancc',
+    'name',
+    // 'slchonhap',
+    'ghichu',
+    'xSLDat',
+    // 'SLDat',
+    'goiy',
+    // 'slchogiao',
+    // 'SLGiao',
+    'khachdat',
+    'khachhuy',
+    'slton',
+    'sltontt',
+    'slsnapshot',
+    'chenhlech',
+    'tongkho',
+    'kho1',
+    'kho2',
+    'kho3',
+    'kho4',
+    'kho5',
+    'kho6',
+    'haohut',
+    'slhaohut',
+  ];
+  ColumnName: any = {
+    expand: '', // No header for expansion column
+    title: 'Tên Sản Phẩm',
+    masp: 'Mã Sản Phẩm',
+    dvt: 'ĐVT',
+    mancc: 'Mã NCC',
+    name: 'Tên Nhà Cung Cấp',
+    ghichu: 'Ghi Chú',
+    // slchonhap: 'SL Đặt (Chờ Nhập)',
+    xSLDat: 'SL Đặt (Nhà CC)',
+    // SLDat: 'SL Đã Đặt',
+    goiy: 'SL Cần Đặt (Gợi Ý)',
+    // slchogiao: 'SL Bán (Chờ Giao)',
+    // SLGiao: 'SL Giao (Khách)',
+    khachdat: 'TỔNG ĐẶT (KHÁCH)',
+    khachgiao: 'TỔNG BÁN (GIAO)',
+    khachhuy: 'SỐ LƯỢNG HỦY',
+    slton: 'Tồn Hệ Thống',
+    sltontt: 'Tồn Chốt Kho (Thực Tế)',
+    slsnapshot: 'SỐ LƯỢNG CHỐT KHO (SNAPSHOT)',
+    chenhlech: 'Chênh Lệch',
+    tongkho: 'TỔNG TỒN (CÁC KHO)',
+    kho1: 'TG-LONG AN',
+    kho2: 'Bổ Sung',
+    kho3: 'TG-ĐÀ LẠT',
+    kho4: 'KHO TỔNG - HCM',
+    kho5: 'SG1',
+    kho6: 'SG2',
+    haohut: 'Tỉ Lệ Hao Hụt',
+    slhaohut: 'SL Hao Hụt',
+  };
+  ColumnSubtitle: any = {
+    khachdat: 'Đơn chưa giao',
+    khachgiao: 'Đã giao xong',
+    slton: 'Sổ sách hiện tại',
+    sltontt: 'Kiểm kê thực tế',
+    chenhlech: 'Lệch Sổ - Thực',
+    tongkho: 'Thực tế + Hàng đang về',
+    goiy: 'SL nên đặt thêm NCC',
+    haohut: '% dự kiến hỏng',
+    slhaohut: 'Lượng hàng bù hỏng',
+    xSLDat: 'Sửa số lượng đặt',
+    kho1: 'Hàng đang về từ Long An',
+    kho2: 'Hàng đang về từ Bổ Sung',
+    kho3: 'Hàng đang về từ Đà Lạt',
+    kho4: 'Hàng đang về từ Kho Tổng',
+    kho5: 'Hàng đang về từ SG1',
+    kho6: 'Hàng đang về từ SG2',
+  };
+  // ColumnName: any = {
+  //   title: 'Tên Sản Phẩm',
+  //   masp: 'Mã Sản Phẩm',
+  //   mancc: 'Mã NCC',
+  //   name: 'Tên Nhà Cung Cấp',
+  //   makho: 'Mã Kho',
+  //   namekho: 'Tên Kho',
+  //   slton: 'Tồn Kho',
+  //   slchogiao: 'Chờ Giao',
+  //   slchonhap: 'Chờ Nhập',
+  //   SLDat: 'SL Đặt (Nhà CC)',
+  //   SLGiao: 'SL Giao (Khách)',
+  //   goiy: 'Gợi Ý',
+  // };
+  FilterColumns: any[] = JSON.parse(
+    localStorage.getItem('NhucauColFilter') || '[]'
+  );
+  Columns: any[] = [];
+
+  // Pagination
+  totalItems = 0;
+  pageSize = 50;
+  currentPage = 1;
+  totalPages = 1;
+  currentSort: { active: string; direction: string } = { active: '', direction: '' };
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
+
+  private _SanphamService = inject(SanphamService);
+  private _breakpointObserver = inject(BreakpointObserver);
+  private _GraphqlService = inject(GraphqlService);
+  private _router = inject(Router);
+  private _dialog = inject(MatDialog);
+  private _timezoneService = inject(TimezoneService);
+  private _DathangService = inject(DathangService);
+  private _DonhangService = inject(DonhangService);
+  private _PhieukhoService = inject(PhieukhoService);
+  private _ChotkhoService = inject(ChotkhoService);
+  _snackBar = inject(MatSnackBar);
+
+  Listsanpham: any = this._SanphamService.ListSanpham;
+  TonghopsFinal: any[] = [];
+  TonghopsExportFinal: any[] = [];
+  EditList: any = [];
+  dataSource = new MatTableDataSource<any>();
+  ListFilter: any[] = [];
+  ListDathang: any[] = [];
+  isSubmit = false;
+  quickFilter: string = 'all';
+  globalFilterValue: string = '';
+
+  // Nested table properties
+  expandedElementId: string | null = null;
+  dathangDataMap: Map<string, any[]> = new Map();
+  donhangDataMap: Map<string, any[]> = new Map();
+  phieukhoDataMap: Map<string, any[]> = new Map();
+  loadingDathang: Set<string> = new Set();
+  loadingDonhang: Set<string> = new Set();
+  loadingPhieukho: Set<string> = new Set();
+
+  // Loading states
+  isLoading = false;
+  isExportingExcel = false;
+  isImportingExcel = false;
+  isUpdatingStock = false;
+  isRefreshing = false;
+  loadingMessage = '';
+  progressPercentage = 0;
+
+  selection = new SelectionModel<any>(true, []);
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.filteredData.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  toggleAllRows() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+      return;
+    }
+
+    this.selection.select(...this.dataSource.filteredData);
+  }
+
+  async bulkMagicButton(): Promise<void> {
+    const selectedItems = this.selection.selected;
+
+    if (selectedItems.length === 0) {
+      this._snackBar.open('Vui lòng chọn ít nhất một sản phẩm để tối ưu!', '', { duration: 3000 });
+      return;
+    }
+
+    const dialogRef = this._dialog.open(MagicProgressDialogComponent, {
+      width: '450px',
+      disableClose: true,
+      data: { items: selectedItems }
+    });
+
+    const result = await firstValueFrom(dialogRef.afterClosed());
+
+    if (result && result.completedCount > 0) {
+      this._snackBar.open(`✅ Đã xử lý tối ưu thành công ${result.completedCount} sản phẩm!`, '', {
+        duration: 4000,
+        panelClass: ['snackbar-success']
+      });
+      this.selection.clear();
+      await this.loadDonhangWithRelations(true);
+    }
+  }
+
+  // Date range properties
+  batdau: Date = new Date(); // Start date
+  ketthuc: Date = new Date(); // End date
+  isDateRangeEnabled: boolean = false;
+  hasUnappliedDateChanges: boolean = false; // Track if there are changes not yet applied
+
+  // Inline edit properties
+  editingRows: Map<string, any> = new Map(); // Track editing state for each row
+  tempStorage: Map<string, any> = new Map(); // Store temporary edits
+  STORAGE_KEY = 'nhucau_temp_edits'; // LocalStorage key for temporary edits
+
+  constructor() {
+    effect(() => {
+      const currentData =
+        this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+      this.dataSource.data = currentData;
+      this.totalItems = currentData.length;
+      this.calculateTotalPages();
+    });
+  }
+
+  async ngOnInit(): Promise<void> {
+    // ✅ Initialize date range to today
+    const today = new Date();
+    this.batdau = new Date(today);
+    this.ketthuc = new Date(today);
+
+    // Load temporary edits from localStorage
+    this.loadTempEditsFromStorage();
+
+    this.updateDisplayData();
+    this.loadDonhangWithRelations();
+    await this._SanphamService.getNhucau();
+    this.dataSource = new MatTableDataSource(this.Listsanpham());
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+
+    // Custom sorting for specific columns
+    this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+      switch (property) {
+        case 'slton':
+        case 'slchogiao':
+        case 'slchonhap':
+        case 'SLDat':
+        case 'SLGiao':
+        case 'kho1':
+        case 'kho2':
+        case 'kho3':
+        case 'kho4':
+        case 'kho5':
+        case 'kho6':
+        case 'haohut':
+        case 'slhaohut':
+          return Number(item[property]) || 0;
+        case 'goiy':
+          return parseFloat(this.GetGoiy(item));
+        case 'title':
+        case 'masp':
+        case 'dvt':
+        case 'mancc':
+        case 'name':
+        case 'makho':
+        case 'namekho':
+          return item[property]?.toLowerCase() || '';
+        default:
+          return item[property]?.toString().toLowerCase() || '';
+      }
+    };
+
+    this.initializeColumns();
+    this.setupDrawer();
+  }
+
+  GetGoiy(item: any) {
+    const suggestion = Number(item.khachdat) + Number(item.slhaohut || 0) + Number(item.khachgiao) - Number(item.tongkho);
+    return suggestion.toFixed(3);
+  }
+
+  GetAbs(val: any) {
+    return Math.abs(Number(val)) || 0;
+  }
+
+  GetSLHaohut(item: any) {
+    if (item.khachdat > 0) {
+      const wastageAmount = (item.khachdat * (item.haohut || 0)) / 100;
+      return wastageAmount.toFixed(3);
+    } else {
+      return 0;
+    }
+  }
+
+  // ✅ Kiểm tra đơn hàng NCC bị "treo" quá 48h (Zombie Orders)
+  checkStaleOrder(row: any, khoValueKey: string | null = null): { isStale: boolean, days: number, oldestDate: Date | null } {
+    if (!row.Dathangs || row.Dathangs.length === 0) return { isStale: false, days: 0, oldestDate: null };
+
+    let relevantOrders = row.Dathangs;
+    if (khoValueKey) {
+      const khoMetadata = this.KhoMetadata.find(k => k.value === khoValueKey);
+      if (khoMetadata) {
+        relevantOrders = row.Dathangs.filter((dh: any) => dh.makho === khoMetadata.makho);
+      }
+    }
+
+    if (relevantOrders.length === 0) return { isStale: false, days: 0, oldestDate: null };
+
+    const now = new Date();
+    let oldestDate: Date | null = null;
+
+    relevantOrders.forEach((dh: any) => {
+      const orderDate = new Date(dh.ngaynhan);
+      if (!oldestDate || orderDate < oldestDate) oldestDate = orderDate;
+    });
+
+    if (!oldestDate) return { isStale: false, days: 0, oldestDate: null };
+
+    const oldest: Date = oldestDate;
+    const diffTime = Math.abs(now.getTime() - oldest.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return {
+      isStale: diffDays >= 2, // Cảnh báo nếu quá 2 ngày
+      days: diffDays,
+      oldestDate: oldestDate
+    };
+  }
+
+  /**
+   * ✅ Phát hiện các bất thường trong tồn kho khi chốt kho
+   * Giúp cảnh báo nhân viên nếu nhập sai số lượng (quá lớn, quá nhỏ, lệch đơn vị)
+   */
+  detectStockAnomalies(masp: string, title: string, sltonMoi: number, sltonCu: number): StockWarningItem | null {
+    const chenhLech = Math.abs(sltonMoi - sltonCu);
+    const loaiDieuChinh = sltonMoi > sltonCu ? 'tang' : 'giam';
+    const phanTramThayDoi = sltonCu > 0 ? (chenhLech / sltonCu) * 100 : 0;
+    
+    // Ngưỡng cảnh báo: Chỉ quan tâm nếu chênh lệch > 30kg hoặc > 50%
+    if (chenhLech <= 30 && (phanTramThayDoi <= 50 || chenhLech <= 5)) {
+      return null;
+    }
+
+    let mucDoNghiemTrong: 'cao' | 'trung_binh' | 'thap' = 'thap';
+    let lyDoCanhBao = '';
+
+    // 1. Cảnh báo mức ĐỎ (Rất nghiêm trọng)
+    if (chenhLech > 100 || (phanTramThayDoi > 200 && chenhLech > 10)) {
+      mucDoNghiemTrong = 'cao';
+      lyDoCanhBao = `SỰ THAY ĐỔI CỰC LỚN: ${loaiDieuChinh === 'tang' ? 'Tăng' : 'Giảm'} ${chenhLech.toFixed(1)}kg (${phanTramThayDoi.toFixed(0)}%). Vui lòng kiểm tra lại đơn vị tính hoặc số lượng nhập liệu.`;
+    } 
+    // 2. Cảnh báo mức VÀNG (Đáng ngờ)
+    else if (chenhLech > 30 || (phanTramThayDoi > 50 && chenhLech > 5)) {
+      mucDoNghiemTrong = 'trung_binh';
+      lyDoCanhBao = `Thay đổi đáng kể: ${loaiDieuChinh === 'tang' ? 'Tăng' : 'Giảm'} ${chenhLech.toFixed(1)}kg. Chênh lệch ${phanTramThayDoi.toFixed(0)}% so với số cũ.`;
+    }
+    // 3. Cảnh báo mức XANH (Sai lệch nhỏ hơn)
+    else {
+      mucDoNghiemTrong = 'thap';
+      lyDoCanhBao = `Sai lệch: ${chenhLech.toFixed(1)}kg.`;
+    }
+
+    return {
+      masp,
+      title,
+      sltonCu,
+      sltonMoi,
+      chenhLech,
+      loaiDieuChinh,
+      mucDoNghiemTrong,
+      lyDoCanhBao
+    };
+  }
+
+  KhoMetadata = [
+    { value: 'kho1', name: 'TG-LONG AN', makho: 'TG-LA' },
+    { value: 'kho2', name: 'Bổ Sung', makho: 'TG-BS' },
+    { value: 'kho3', name: 'TG-ĐÀ LẠT', makho: 'TG-ĐL' },
+    { value: 'kho4', name: 'KHO TỔNG - HCM', makho: 'TG-HCM' },
+    { value: 'kho5', name: 'SG1', makho: 'TG-SG1' },
+    { value: 'kho6', name: 'SG2', makho: 'TG-SG2' },
+  ];
+
+
+  async loadDonhangWithRelations(forceRefresh: boolean = false) {
+    try {
+      this.isLoading = true;
+      this.loadingMessage = 'Đang tải dữ liệu đơn hàng...';
+      this.progressPercentage = 0;
+
+      // ✅ Sử dụng TimezoneService để xử lý date range đúng cách
+      let startDate: string;
+      let endDate: string;
+
+      if (this.isDateRangeEnabled && this.batdau && this.ketthuc) {
+        const dateRange = this._timezoneService.getAPIDateRange(
+          this.batdau,
+          this.ketthuc
+        );
+        startDate = dateRange.Batdau;
+        endDate = dateRange.Ketthuc;
+      } else {
+        const today = new Date();
+        const todayRange = this._timezoneService.getAPIDateRange(today, today);
+        startDate = todayRange.Batdau;
+        endDate = todayRange.Ketthuc;
+      }
+
+      this.progressPercentage = 20;
+      this.loadingMessage = 'Đang xử lý dữ liệu...';
+
+      // ⚡ OPTIMIZED: Single server-side aggregation replaces 4 heavy queries
+      // BEFORE: 4 queries fetching ~570,000 rows (Donhang 481k + Dathang 55k rows)
+      // AFTER:  1 query returning ~1,022 pre-aggregated rows → giảm 99% data transfer
+      const response = await this._GraphqlService.getNhuCauDatHang(startDate, endDate, forceRefresh);
+      const SanphamsTranfer = response?.data || [];
+
+      this.progressPercentage = 75;
+      this.loadingMessage = 'Đang tổng hợp dữ liệu...';
+
+      // Fetch kho list (nhỏ, tải nhanh)
+      const Khos = await this._GraphqlService.findAll('kho', {
+        enableParallelFetch: false,
+        aggressiveCache: true,
+        batchSize: 100,
+        take: 100,
+        select: { id: true, name: true, makho: true },
+      });
+
+      this.TonghopsFinal = this.transformFinalData(SanphamsTranfer, Khos.data);
+
+      this.TonghopsFinal.forEach((item) => {
+        // ✅ CÔNG THỨC TỒN CHUẨN (RELIABLE STOCK):
+        const lastCountTime = item.updatedAt ? new Date(item.updatedAt).getTime() : 0;
+
+        // 1. Tính lượng hàng NHẬP MỚI sau thời điểm chốt kho gần nhất
+        const receivedAfterCount = (item.Dathangs || [])
+          .filter((dh: any) => dh.status === 'danhan' && dh.updatedAt && new Date(dh.updatedAt).getTime() > lastCountTime)
+          .reduce((sum: number, dh: any) => sum + (Number(dh.slnhan) || 0), 0);
+
+        // 2. Tính lượng hàng XUẤT MỚI (Giao khách) sau thời điểm chốt kho gần nhất
+        const deliveredAfterCount = (item.Donhangs || [])
+          .filter((dh: any) => (dh.status === 'dagiao' || dh.status === 'danhan' || dh.status === 'hoanthanh') &&
+            dh.updatedAt && new Date(dh.updatedAt).getTime() > lastCountTime)
+          .reduce((sum: number, dh: any) => sum + (Number(dh.slnhan) || 0), 0);
+
+        // 3. Hàng đang về từ NCC (chưa nhận)
+        const incomingStock = (
+          (Number(item.kho1) || 0) +
+          (Number(item.kho2) || 0) +
+          (Number(item.kho3) || 0) +
+          (Number(item.kho4) || 0) +
+          (Number(item.kho5) || 0) +
+          (Number(item.kho6) || 0)
+        );
+
+        item.receivedAfterCount = receivedAfterCount;
+        item.deliveredAfterCount = deliveredAfterCount;
+        item.incomingStock = incomingStock;
+
+        // Công thức hội tụ: Tồn chốt + Biến động sau chốt + Hàng sắp về
+        item.tongkho = parseFloat((Number(item.sltontt || 0) + receivedAfterCount - deliveredAfterCount + incomingStock).toFixed(3));
+
+        item.slhaohut = this.GetSLHaohut(item);
+        item.goiy = this.GetGoiy(item);
+
+        // Default xSLDat to 0 for inputs, keeping SLDat for reference
+        if (!this.tempStorage.has(item.id)) {
+          item.xSLDat = 0;
+        }
+      });
+
+      // Sort by goiy from large to small
+      this.TonghopsFinal.sort((a, b) => parseFloat(b.goiy) - parseFloat(a.goiy));
+
+      const tranferTonghop = (await this.convertData(SanphamsTranfer)).flat();
+      this.TonghopsExportFinal = this.convertKhoData(tranferTonghop);
+      this.progressPercentage = 90;
+      this.loadingMessage = 'Hoàn tất...';
+
+      this.dataSource.data = this.TonghopsFinal;
+      this.totalItems = this.TonghopsFinal.length;
+      this.calculateTotalPages();
+      this.updateDisplayData();
+
+      this.progressPercentage = 100;
+
+      setTimeout(() => {
+        this.isLoading = false;
+        this.loadingMessage = '';
+        this.progressPercentage = 0;
+      }, 500);
+    } catch (error) {
+      console.error('Error loading data:', error);
+      this.isLoading = false;
+      this.loadingMessage = '';
+      this.progressPercentage = 0;
+
+      this._snackBar.open('Lỗi khi tải dữ liệu', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+  async refresh() {
+    this.isRefreshing = true;
+    this.loadingMessage = 'Đang làm mới dữ liệu...';
+
+    try {
+      // Clear expanded state when refreshing data
+      this.expandedElementId = null;
+      await this._SanphamService.getAllSanpham();
+      await this.loadDonhangWithRelations();
+
+      this._snackBar.open('Làm mới dữ liệu thành công', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      this._snackBar.open('Lỗi khi làm mới dữ liệu', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isRefreshing = false;
+      this.loadingMessage = '';
+    }
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  private initializeColumns(): void {
+    const initialKeys = Object.keys(this.ColumnName);
+    this.Columns = initialKeys.map((key) => ({
+      key,
+      value: this.ColumnName[key],
+      isShow: true,
+    }));
+
+    this.FilterColumns = this.FilterColumns.filter(col => initialKeys.includes(col.key));
+
+    if (this.FilterColumns.length === 0) {
+      this.FilterColumns = this.Columns;
+    } else {
+      localStorage.setItem(
+        'NhucauColFilter',
+        JSON.stringify(this.FilterColumns)
+      );
+    }
+    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
+      (item) => item.key
+    );
+    this.ColumnName = this.FilterColumns.reduce((obj, item) => {
+      if (item.isShow) obj[item.key] = item.value;
+      return obj;
+    }, {} as Record<string, string>);
+  }
+
+  private setupDrawer(): void {
+    this._breakpointObserver
+      .observe([Breakpoints.Handset])
+      .subscribe((result) => {
+        if (result.matches) {
+          this.drawer.mode = 'over';
+        } else {
+          this.drawer.mode = 'side';
+        }
+      });
+  }
+
+  toggleColumn(item: any): void {
+    const column = this.FilterColumns.find((v) => v.key === item.key);
+    if (column) {
+      column.isShow = !column.isShow;
+      this.updateDisplayedColumns();
+    }
+  }
+
+  @Debounce(300)
+  doFilterHederColumn(event: any, column: any): void {
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    this.dataSource.filteredData = currentData.filter((v: any) =>
+      v[column]
+        ?.toString()
+        .toLowerCase()
+        .includes(event.target.value.toLowerCase())
+    );
+  }
+
+  @Debounce(300)
+  applyAdvancedColumnFilter(event: any, column: any): void {
+    const filterValue = event.target.value.toLowerCase();
+    if (!filterValue) {
+      this.getCurrentFilteredData(column);
+      return;
+    }
+
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    const filteredItems = currentData.filter((item: any) =>
+      item[column]?.toString().toLowerCase().includes(filterValue)
+    );
+
+    // Update temporary filter for this column
+    this.dataSource.filteredData = filteredItems;
+  }
+
+  ChosenItem(item: any, column: any) {
+    const CheckItem = this.dataSource.filteredData.filter(
+      (v: any) => v[column] === item[column]
+    );
+    const CheckItem1 = this.ListFilter.filter(
+      (v: any) => v[column] === item[column]
+    );
+    if (CheckItem1.length > 0) {
+      this.ListFilter = this.ListFilter.filter(
+        (v) => v[column] !== item[column]
+      );
+    } else {
+      this.ListFilter = [...this.ListFilter, ...CheckItem];
+    }
+  }
+
+  ChosenAll(list: any) {
+    list.forEach((v: any) => {
+      const CheckItem = this.ListFilter.find((v1) => v1.id === v.id);
+      if (CheckItem) {
+        this.ListFilter = this.ListFilter.filter((v1) => v1.id !== v.id);
+      } else {
+        this.ListFilter.push(v);
+      }
+    });
+  }
+
+  ResetFilter() {
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    this.ListFilter = currentData;
+    this.dataSource.data = currentData;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  EmptyFiter() {
+    this.ListFilter = [];
+  }
+
+  CheckItem(item: any) {
+    return this.ListFilter.find((v) => v.masp === item.masp || v.id === item.id)
+      ? true
+      : false;
+  }
+
+  ApplyFilterColum(menu: MatMenuTrigger) {
+    this.currentPage = 1;
+    this.updateDisplayData();
+    menu.closeMenu();
+  }
+
+  private updateDisplayedColumns(): void {
+    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
+      (item) => item.key
+    );
+    this.ColumnName = this.FilterColumns.reduce((obj, item) => {
+      if (item.isShow) obj[item.key] = item.value;
+      return obj;
+    }, {} as Record<string, string>);
+    localStorage.setItem('NhucauColFilter', JSON.stringify(this.FilterColumns));
+  }
+
+  doFilterColumns(event: any): void {
+    const query = event.target.value.toLowerCase();
+    this.FilterColumns = this.Columns.filter((v) =>
+      v.value.toLowerCase().includes(query)
+    );
+  }
+
+  AddToEdit(item: any): void {
+    const existingItem = this.EditList.find(
+      (v: any) => v.masp === item.masp || v.id === item.id
+    );
+    if (existingItem) {
+      this.EditList = this.EditList.filter(
+        (v: any) => v.masp !== item.masp && v.id !== item.id
+      );
+    } else {
+      this.EditList.push(item);
+    }
+  }
+
+  ChoseAllEdit(): void {
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    this.EditList = currentData;
+  }
+
+  CheckItemInEdit(item: any): boolean {
+    return this.EditList.some(
+      (v: any) => v.masp === item.masp || v.id === item.id
+    );
+  }
+
+  onListDathangChange(event: any) {
+    this.isSubmit = event.isSubmit;
+    this.ListDathang = event.ListDathang;
+  }
+
+  async ImporExcel(event: any) {
+    const data = await readExcelFileNoWorker(event);
+    const transformedData = data.map((v: any) => ({
+      title: v.title?.trim() || '',
+      masp: v.masp?.trim() || '',
+      giagoc: Number(v.giagoc) || 0,
+      dvt: v.dvt?.trim() || '',
+      soluong: Number(v.soluong) || 0,
+      soluongkho: Number(v.soluongkho) || 0,
+      haohut: Number(v.haohut) || 0,
+      ghichu: v.ghichu?.trim() || '',
+    }));
+
+    const uniqueData = Array.from(
+      new Map(transformedData.map((item: any) => [item.masp, item])).values()
+    );
+
+    const existingSanpham = this._SanphamService.ListSanpham();
+
+    await Promise.all(
+      uniqueData.map(async (v: any) => {
+        const existingItem = existingSanpham.find(
+          (v1: any) => v1.masp === v.masp
+        );
+        if (existingItem) {
+          const updatedItem = { ...existingItem, ...v };
+          await this._SanphamService.updateSanpham(updatedItem);
+        } else {
+          await this._SanphamService.CreateSanpham(v);
+        }
+      })
+    );
+
+    await Promise.all(
+      existingSanpham
+        .filter((sp) => !uniqueData.some((item: any) => item.masp === sp.masp))
+        .map((sp) =>
+          this._SanphamService.updateSanpham({ ...sp, isActive: false })
+        )
+    );
+
+    this._snackBar.open('Cập Nhật Thành Công', '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+  }
+
+  async ExportExcel(data: any, title: any) {
+    try {
+      this.isExportingExcel = true;
+      const toNum = (v: any) => {
+        if (v === null || v === undefined) return 0;
+        const n = Number(v);
+        return isNaN(n) ? 0 : parseFloat(n.toFixed(3));
+      };
+
+      const dulieu = this.TonghopsFinal.map((v: any) => ({
+        title: v.title || '',
+        masp: v.masp || '',
+        dvt: v.dvt || '',
+        ghichu: v.ghichu || '',
+        haohut: toNum(v.haohut),
+        xSLDat: toNum(v.xSLDat),
+        // SLDat: v.SLDat || 0,
+        // SLGiao: toNum(v.SLGiao),
+        slton: parseFloat(((toNum(v.tongkho) || 0) - (toNum(v.khachgiao) || 0)).toFixed(3)),
+        sltontt: toNum(v.sltontt),
+        slsnapshot: toNum(v.slsnapshot),
+        chenhlech: parseFloat((((toNum(v.tongkho) || 0) - (toNum(v.khachgiao) || 0)) - toNum(v.sltontt)).toFixed(3)),
+        ngaynhan: v.ngaynhan ? moment(v.ngaynhan).format('YYYY-MM-DD') : '',
+        mancc: v.mancc || '',
+        name: v.name || '',
+        goiy: toNum(v.goiy),
+        khachdat: toNum(v.khachdat),
+        khachgiao: toNum(v.khachgiao),
+        khachhuy: toNum(v.khachhuy),
+        tongkho: toNum(v.tongkho),
+        kho1: toNum(v.kho1),
+        kho2: toNum(v.kho2),
+        kho3: toNum(v.kho3),
+        kho4: toNum(v.kho4),
+        kho5: toNum(v.kho5),
+        kho6: toNum(v.kho6),
+        slhaohut: toNum(v.slhaohut),
+      }));
+      const mapping: any = {
+        ngaynhan: 'NGÀY',
+        mancc: 'MÃ NCC',
+        name: 'TÊN NHÀ CUNG CẤP',
+        masp: 'MÃ SẢN PHẨM',
+        title: 'TÊN SẢN PHẨM',
+        dvt: 'ĐVT',
+        xSLDat: 'SL ĐẶT (NHÀ CC)',
+        goiy: 'SL CẦN ĐẶT (GỢI Ý)',
+        ghichu: 'GHI CHÚ',
+        // SLDat: 'SL Đã Đặt',
+        khachdat: 'TỔNG ĐẶT (KHÁCH)',
+        khachgiao: 'TỔNG BÁN (GIAO)',
+        khachhuy: 'SỐ LƯỢNG HỦY',
+        // SLGiao: 'SL GIAO (KHÁCH)',
+        slton: 'TỒN HỆ THỐNG',
+        tongkho: 'TỔNG TỒN (CÁC KHO)',
+        sltontt: 'TỒN CHỐT KHO (THỰC TẾ)',
+        slsnapshot: 'SỐ LƯỢNG CHỐT KHO (SNAPSHOT)',
+        chenhlech: 'CHÊNH LỆCH',
+        kho1: 'TG-LONG AN',
+        kho2: 'BỔ SUNG',
+        kho3: 'TG-ĐÀ LẠT',
+        kho4: 'KHO TỔNG - HCM',
+        kho5: 'SG1',
+        kho6: 'SG2',
+        haohut: 'TỈ LỆ HAO HỤT (%)',
+        slhaohut: 'SL HAO HỤT',
+      };
+
+      const dulieu2 = this.TonghopsExportFinal.map((v: any) => ({
+        title: v.title || '',
+        masp: v.masp || '',
+        dvt: v.dvt || '',
+        haohut: toNum(v.haohut),
+        sldat: toNum(v.sldat),
+        SLDat: toNum(v.SLDat),
+        SLGiao: toNum(v.SLGiao),
+        slton: parseFloat(((toNum(v.tongkho) || 0) - (toNum(v.khachgiao) || 0)).toFixed(3)),
+        sltontt: toNum(v.sltontt),
+        chenhlech: parseFloat((((toNum(v.tongkho) || 0) - (toNum(v.khachgiao) || 0)) - toNum(v.sltontt)).toFixed(3)),
+        mancc: v.mancc || '',
+        name: v.name || '',
+        ngaynhan: v.ngaynhan ? moment(v.ngaynhan).format('YYYY-MM-DD') : '',
+        goiy: toNum(v.goiy),
+        kho1: toNum(v.kho1),
+        kho2: toNum(v.kho2),
+        kho3: toNum(v.kho3),
+        kho4: toNum(v.kho4),
+        kho5: toNum(v.kho5),
+        kho6: toNum(v.kho6),
+        slhaohut: toNum(v.slhaohut),
+      }));
+
+      const mapping2: any = {
+        ngaynhan: 'Ngày Nhận',
+        title: 'Tên Sản Phẩm',
+        masp: 'Mã Sản Phẩm',
+        dvt: 'ĐVT',
+        mancc: 'Mã NCC',
+        name: 'Tên Nhà Cung Cấp',
+        sldat: 'SL Đặt (Nhà CC)',
+        SLDat: 'Tổng Đặt',
+        goiy: 'SL Cần Đặt (Gợi Ý)',
+        SLGiao: 'TỔNG BÁN (GIAO)',
+        slton: 'Tồn Hệ Thống',
+        sltontt: 'Tồn Chốt Kho (Thực Tế)',
+        chenhlech: 'Chênh Lệch',
+        kho1: 'TG-LONG AN',
+        kho2: 'Bổ Sung',
+        kho3: 'TG-ĐÀ LẠT',
+        kho4: 'KHO TỔNG - HCM',
+        kho5: 'SG1',
+        kho6: 'SG2',
+        haohut: 'Tỉ Lệ Hao Hụt (%)',
+        slhaohut: 'SL Hao Hụt',
+      };
+
+      // const result1 = dulieu.sort((a: any, b: any) => parseFloat(b.goiy) - parseFloat(a.goiy));
+      const result2 = dulieu2.sort((a: any, b: any) => parseFloat(b.masp) - parseFloat(a.masp));
+      // Chuẩn bị dữ liệu cho 2 sheets
+      const sheetsData = {
+        sheet1: {
+          data: dulieu,
+          headers: Object.values(mapping) as string[],
+          mapping: mapping,
+        },
+        sheet2: {
+          data: result2,
+          headers: Object.values(mapping2) as string[],
+          mapping: mapping2,
+        },
+      };
+
+      // Export file Excel với multiple sheets
+      writeExcelFileSheets(sheetsData, title);
+
+      this._snackBar.open('Export Excel thành công!', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      console.error('Error exporting Excel:', error);
+      this._snackBar.open('Lỗi khi export Excel', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isExportingExcel = false;
+    }
+  }
+
+  // Cập nhật tồn kho từ file Excel
+  // ================================================================
+  // CẢNH BÁO BẤT THƯỜNG CHỐT KHO
+  // ================================================================
+
+
+  async Capnhattonkho() {
+    this.isUpdatingStock = true;
+
+    // Tạo input file element động
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.xlsx,.xls,.csv';
+    fileInput.style.display = 'none';
+
+    fileInput.onchange = async (event: any) => {
+      try {
+        const file = event.target.files[0];
+        if (!file) {
+          this._snackBar.open('Không có file được chọn', 'Đóng', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+          this.isUpdatingStock = false;
+          return;
+        }
+
+        // Hiển thị loading
+        this._snackBar.open('Đang xử lý file Excel...', '', {
+          duration: 0,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-info'],
+        });
+
+        // Đọc file Excel (không sử dụng worker)
+        const excelData = await readExcelFileNoWorkerArray(event);
+
+        if (!excelData || excelData.length === 0) {
+          this._snackBar.dismiss();
+          this._snackBar.open('File Excel trống hoặc không hợp lệ', 'Đóng', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+          return;
+        }
+
+        // Validate và transform dữ liệu
+        const validData: Array<{ masp: string; slton: number; slhuy: number }> = [];
+        const errors: string[] = [];
+        console.log(excelData);
+
+        excelData.forEach((row: any, index: number) => {
+          const masp = row.masp?.toString().trim() || row.ITEMCODE?.toString().trim();
+          let slton = parseFloat(row.slton || row.QUANTITY || '0');
+          let slhuy = parseFloat(row.slhuy || '0');
+
+          // Validate required fields
+          if (!masp) {
+            errors.push(`Dòng ${index + 1}: Thiếu mã sản phẩm`);
+            return;
+          }
+
+          // Xử lý slton: nếu NaN, null, undefined hoặc <= 0 thì set về 0
+          if (isNaN(slton) || slton == null || slton <= 0) {
+            slton = 0;
+            console.log(
+              `Dòng ${index + 1} - ${masp}: slton được set về 0 (giá trị gốc: ${row.slton
+              })`
+            );
+          }
+          
+          if (isNaN(slhuy) || slhuy == null || slhuy < 0) {
+            slhuy = 0;
+          }
+
+          validData.push({ masp, slton, slhuy });
+        });
+
+        if (errors.length > 0) {
+          this._snackBar.dismiss();
+          this._snackBar.open(
+            `Có ${errors.length} lỗi trong file. Xem console để biết chi tiết.`,
+            'Đóng',
+            {
+              duration: 5000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-error'],
+            }
+          );
+          console.error('Validation errors:', errors);
+          return;
+        }
+
+        // Get all existing TonKho and Sanpham data
+        const [tonkhoResponse, sanphamResponse] = await Promise.all([
+          this._GraphqlService.findAll('tonkho', {
+            take: 999999,
+            select: {
+              id: true,
+              sanphamId: true,
+              slton: true,
+              sltontt: true,
+              slchogiao: true,
+              slchonhap: true,
+              sanpham: {
+                select: {
+                  id: true,
+                  masp: true,
+                  title: true,
+                  dvt: true,
+                  Dathangsanpham: {
+                    where: { dathang: { status: { in: ['dadat', 'dagiao'] } } },
+                    orderBy: { dathang: { createdAt: 'asc' } },
+                    take: 20,
+                    select: {
+                      dathang: {
+                        select: { id: true, madncc: true, createdAt: true }
+                      }
+                    }
+                  },
+                  Donhangsanpham: {
+                    where: { donhang: { status: { in: ['dadat', 'dagiao'] } } },
+                    orderBy: { donhang: { createdAt: 'asc' } },
+                    take: 20,
+                    select: {
+                      donhang: {
+                        select: { id: true, madonhang: true, createdAt: true }
+                      }
+                    }
+                  }
+                },
+              },
+            },
+          }),
+          this._GraphqlService.findAll('sanpham', {
+            take: 999999,
+            select: {
+              id: true,
+              masp: true,
+              title: true,
+              dvt: true,
+            },
+          }),
+        ]);
+
+        const allTonkho = tonkhoResponse.data || [];
+        const allSanpham = sanphamResponse.data || [];
+
+        // Create maps for quick lookup
+        const tonkhoMap = new Map(
+          allTonkho.map((tk: any) => [tk.sanpham?.masp, tk])
+        );
+        const sanphamMap = new Map(allSanpham.map((sp: any) => [sp.masp, sp]));
+
+        const processErrors: string[] = [];
+        const validDataMap = new Map(validData.map(item => [item.masp, { slton: item.slton, slhuy: item.slhuy }]));
+
+        const phieuNhapDetails: any[] = [];
+        const phieuXuatDetails: any[] = [];
+        // ✅ FIX: Gộp tất cả sản phẩm thay đổi vào 1 danh sách duy nhất với giá trị tuyệt đối
+        const allChangedDetails: any[] = [];
+        let unchangedCount = 0;
+
+        // ================================================================
+        // BƯỚC MỚI: Phát hiện bất thường
+        // ================================================================
+        const danhSachCanhBao: StockWarningItem[] = [];
+
+        for (const [masp, parsedData] of validDataMap.entries()) {
+          const slton = parsedData.slton;
+          const slhuy = parsedData.slhuy;
+          
+          const tonkho = tonkhoMap.get(masp);
+          const sanpham = sanphamMap.get(masp);
+
+          if (!sanpham) {
+            processErrors.push(`Không tìm thấy sản phẩm với mã: ${masp}`);
+            continue;
+          }
+
+          const currentSltontt = Number(tonkho ? (tonkho.sltontt || 0) : 0);
+
+          if (slton > currentSltontt) {
+            phieuNhapDetails.push({
+              sanphamId: sanpham.id,
+              soluong: slton - currentSltontt,
+            });
+          } else if (slton < currentSltontt) {
+            phieuXuatDetails.push({
+              sanphamId: sanpham.id,
+              soluong: currentSltontt - slton,
+            });
+          } else {
+            unchangedCount++;
+          }
+
+          // ✅ FIX: Luôn thêm vào danh sách thay đổi với giá trị tuyệt đối (kể cả unchanged để sync)
+          if (slton !== currentSltontt || slhuy > 0) {
+            allChangedDetails.push({
+              sanphamId: sanpham.id,
+              sltonhethong: currentSltontt, // Giá trị cũ
+              sltonthucte: slton, // Giá trị mới (từ Excel)
+              slhuy: slhuy,
+              ghichu: slton > currentSltontt ? 'Điều chỉnh tăng từ Excel' : (slton < currentSltontt ? 'Điều chỉnh giảm từ Excel' : 'Cập nhật từ Excel'),
+            });
+          }
+
+          // Kiểm tra bất thường chênh lệch (chỉ khi có thay đổi số)
+          if (slton !== currentSltontt) {
+            const warning = this.detectStockAnomalies(
+              masp,
+              sanpham.title || masp,
+              slton,
+              currentSltontt
+            );
+            if (warning) {
+              danhSachCanhBao.push(warning);
+            }
+          }
+
+          // ✅ CẢNH BÁO HÀNG TRUNG CHUYỂN: Kiểm tra độc lập (ngay cả khi khách nhập số khớp với kho hiện tại)
+          const slchonhap = Number(tonkho?.slchonhap || 0);
+          const slchogiao = Number(tonkho?.slchogiao || 0);
+          
+          if (slchonhap > 0 || slchogiao > 0) {
+            // Kiểm tra rủi ro "Đếm lặp hàng đang về vào hàng tồn kho"
+            if (slchonhap > 0 && slton !== currentSltontt && slton >= (currentSltontt + slchonhap * 0.8)) {
+              danhSachCanhBao.push({
+                masp,
+                title: sanpham.title || sanpham.masp,
+                sltonCu: currentSltontt,
+                sltonMoi: slton,
+                chenhLech: slton - currentSltontt,
+                loaiDieuChinh: 'tang',
+                mucDoNghiemTrong: 'cao',
+                lyDoCanhBao: `CẢNH BÁO ĐẾM LẶP: Đã chốt tăng ${slton - currentSltontt} kg trong khi có ${slchonhap} kg 'Hàng đang về' chưa xác nhận 'Đã nhận'. Rủi ro đếm lộn hàng trung chuyển!`,
+                slchonhap: slchonhap,
+                slchogiao: slchogiao
+              });
+            } else {
+              // Cảnh báo thông thường về việc chốt kho lên lô hàng có phát sinh giao dịch bị treo
+              let warningMess = `Sản phẩm này đang có `;
+              if (slchonhap > 0) warningMess += `${slchonhap} kg 'Hàng đang về' `;
+              if (slchonhap > 0 && slchogiao > 0) warningMess += `và `;
+              if (slchogiao > 0) warningMess += `${slchogiao} kg 'Đơn đang đi' `;
+              warningMess += `chưa hoàn tất. Vui lòng kiểm tra kỹ số thực tế.`;
+
+              // 🚩 Tính toán độ trễ chứng từ (T+1)
+              const dList = tonkho?.sanpham?.Dathangsanpham || tonkho?.sanpham?.dathangsanpham || [];
+              const donList = tonkho?.sanpham?.Donhangsanpham || tonkho?.sanpham?.donhangsanpham || [];
+              const dathangOldest = dList[0]?.dathang?.createdAt;
+              const donhangOldest = donList[0]?.donhang?.createdAt;
+              const oldestDate = dathangOldest || donhangOldest;
+              const isLate = oldestDate ? (new Date().getTime() - new Date(oldestDate).getTime()) > (24 * 60 * 60 * 1000) : false;
+
+              const pendingList: any[] = [];
+              if (dList?.length) {
+                dList.forEach((item: any) => {
+                  if (item.dathang) pendingList.push({ id: item.dathang.id, code: item.dathang.madncc || 'ĐN-' + item.dathang.id.split('-')[0], date: new Date(item.dathang.createdAt), type: 'dathang' });
+                });
+              }
+              if (donList?.length) {
+                donList.forEach((item: any) => {
+                  if (item.donhang) pendingList.push({ id: item.donhang.id, code: item.donhang.madonhang || 'DH-' + item.donhang.id.split('-')[0], date: new Date(item.donhang.createdAt), type: 'donhang' });
+                });
+              }
+
+              danhSachCanhBao.push({
+                masp,
+                title: sanpham.title || sanpham.masp,
+                sltonCu: currentSltontt,
+                sltonMoi: slton,
+                chenhLech: Math.abs(slton - currentSltontt),
+                loaiDieuChinh: 'khong_doi', 
+                mucDoNghiemTrong: isLate ? 'cao' : 'trung_binh', 
+                lyDoCanhBao: isLate ? `🚩 CẢNH BÁO TRỄ CHỨNG TỪ: ${warningMess} (Đơn cũ nhất từ ${new Date(oldestDate).toLocaleDateString('vi-VN')})` : warningMess,
+                isLate: isLate,
+                oldestPendingDate: oldestDate ? new Date(oldestDate) : null,
+                slchonhap: slchonhap,
+                slchogiao: slchogiao,
+                pendingList: pendingList
+              });
+            }
+          }
+        }
+
+        this._snackBar.dismiss();
+
+        // ================================================================
+        // BƯỚC MỚI: Hiển thị dialog xác nhận trước khi lưu
+        // ================================================================
+        const spBinhThuong = (phieuNhapDetails.length + phieuXuatDetails.length) - danhSachCanhBao.length;
+
+        const dialogData: StockWarningData = {
+          title: '⚠️ Xác Nhận Cập Nhật Chốt Kho',
+          tongSanPham: validDataMap.size,
+          spBinhThuong: Math.max(0, spBinhThuong),
+          spKhongThayDoi: unchangedCount,
+          danhSachCanhBao,
+          danhSachNhap: phieuNhapDetails,
+          danhSachXuat: phieuXuatDetails,
+          danhSachExcel: validData.map(item => {
+            const sp = sanphamMap.get(item.masp);
+            return { sanphamId: sp ? sp.id : '', soluong: Number(item.slton || 0) };
+          }).filter(item => item.sanphamId),
+        };
+
+        const dialogRef = this._dialog.open(StockWarningDialogComponent, {
+          width: '90vw',
+          height: '90vh',
+          maxWidth: '1600px', // Prevent too wide on giant screens
+          disableClose: true,
+          data: dialogData
+        });
+
+        const confirmed = await dialogRef.afterClosed().toPromise();
+
+        if (!confirmed) {
+          this._snackBar.open('Đã hủy cập nhật chốt kho.', 'Đóng', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-info'],
+          });
+          this.isUpdatingStock = false;
+          return;
+        }
+
+        // --- BƯỚC 1: LƯU DỰ LIỆU CHỐT KHO THEO FILE TRƯỚC ---
+        this._snackBar.open('Đang lưu dữ liệu chốt kho...', '', {
+          duration: 0,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-info'],
+        });
+
+        let ckResult: any = null;
+        if (allChangedDetails.length > 0) {
+          const defaultKhoId = '4cc01811-61f5-4bdc-83de-a493764e9258'; // KHO TỔNG - HCM (fallback)
+
+          ckResult = await this._ChotkhoService.createChotkhoWithDetails({
+            ngaychot: DateHelpers.now(),
+            title: `ĐIỀU CHỈNH CHỐT KHO TỰ ĐỘNG [EXCEL]`,
+            khoId: defaultKhoId,
+            ghichu: `Chốt kho từ Excel (${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm) lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY')}`,
+            details: allChangedDetails
+          });
+
+          if (!ckResult || ckResult === false) {
+            throw new Error("Tạo chốt kho thất bại từ API. Vui lòng kiểm tra lại log hệ thống.");
+          }
+        }
+        this._snackBar.dismiss();
+
+        // --- BƯỚC 2: SAU KHI CHỐT KHO THEO FILE, HIỂN THỊ DIALOG ĐỐI SOÁT THEO SỐ MỚI ĐÓ ---
+        // Lấy chi tiết chốt kho từ backend trả về và lọc chỉ các sản phẩm thực tế có trong Excel để hiển thị đối soát nếu lệch
+        const discrepantItems = (ckResult.details || []).filter((item: any) => {
+          const sp = allSanpham.find((s: any) => s.id === item.sanphamId);
+          if (!sp || !validDataMap.has(sp.masp)) return false;
+
+          const diff = Number(item.sltonhethong) - Number(item.sltonthucte) - Number(item.slhuy);
+          return Math.abs(diff) > 0.001;
+        });
+
+        if (discrepantItems.length > 0 && ckResult && ckResult.id) {
+          const dialogItems = discrepantItems.map((item: any) => {
+            const tk = allTonkho.find((t: any) => t.sanphamId === item.sanphamId);
+            const sp = allSanpham.find((s: any) => s.id === item.sanphamId);
+            const sltonhethong = Number(item.sltonhethong) || 0;
+            const sltonthucte = Number(item.sltonthucte) || 0;
+            const slhuy = Number(item.slhuy) || 0;
+            const chenhlech = sltonhethong - sltonthucte - slhuy;
+            return {
+              sanphamId: item.sanphamId,
+              masp: sp?.masp || tk?.sanpham?.masp || '',
+              title: sp?.title || tk?.sanpham?.title || '',
+              dvt: sp?.dvt || tk?.sanpham?.dvt || '',
+              sltonhethong: sltonhethong,
+              sltonthucte: sltonthucte,
+              slhuy: slhuy,
+              chenhlech: chenhlech,
+              slDieuChinh: sltonthucte,
+              ghichuDieuChinh: ''
+            };
+          });
+
+          const reconDialogRef = this._dialog.open(ReconciliationDialogComponent, {
+            data: { items: dialogItems },
+            width: '900px',
+            disableClose: true
+          });
+
+          const reconResult = await reconDialogRef.afterClosed().toPromise();
+          if (reconResult) {
+            const finalDetailsToSave = (ckResult.details || []).map((detailItem: any) => {
+              const adjustedItem = reconResult.find((item: any) => item.sanphamId === detailItem.sanphamId);
+              if (adjustedItem) {
+                return {
+                  sanphamId: detailItem.sanphamId,
+                  sltonhethong: Number(detailItem.sltonhethong) || 0,
+                  sltonthucte: adjustedItem.slDieuChinh,
+                  slhuy: adjustedItem.slhuy,
+                  ghichu: adjustedItem.ghichuDieuChinh || detailItem.ghichu || '',
+                };
+              }
+              return {
+                sanphamId: detailItem.sanphamId,
+                sltonhethong: Number(detailItem.sltonhethong) || 0,
+                sltonthucte: Number(detailItem.sltonthucte) || 0,
+                slhuy: Number(detailItem.slhuy) || 0,
+                ghichu: detailItem.ghichu || '',
+              };
+            });
+
+            this._snackBar.open('Đang cập nhật số liệu đối soát mới...', '', {
+              duration: 0,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-info'],
+            });
+
+            await this._ChotkhoService.updateChotkhoWithDetails(ckResult.id, {
+              ...ckResult,
+              details: finalDetailsToSave
+            });
+            this._snackBar.dismiss();
+          }
+        }
+
+        this._snackBar.dismiss();
+
+        if (processErrors.length > 0) {
+          console.error('Process errors:', processErrors);
+          this._snackBar.open(
+            `Hoàn thành với ${processErrors.length} lỗi. ${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm, ${unchangedCount} giữ nguyên. Xem console.`,
+            'Đóng',
+            {
+              duration: 5000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-warning'],
+            }
+          );
+        } else {
+          this._snackBar.open(
+            `✅ Cập nhật TonKho thành công: ${phieuNhapDetails.length} tăng, ${phieuXuatDetails.length} giảm, ${unchangedCount} giữ nguyên.`,
+            'Đóng',
+            {
+              duration: 4000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-success'],
+            }
+          );
+        }
+
+        // Reload data to reflect changes
+        this.ngOnInit();
+      } catch (error: any) {
+        this._snackBar.dismiss();
+        this._snackBar.open(`Lỗi xử lý file: ${error.message}`, 'Đóng', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+        console.error('Error processing Excel file:', error);
+      } finally {
+        this.isUpdatingStock = false;
+      }
+    };
+
+    // Trigger file selection
+    fileInput.oncancel = () => {
+      this.isUpdatingStock = false;
+    };
+
+    document.body.appendChild(fileInput);
+    fileInput.click();
+    document.body.removeChild(fileInput);
+  }
+
+  // Tải file Excel mẫu để cập nhật tồn kho
+
+
+  convertKhoData(inputData: any) {
+    const warehouses = [
+      { name: 'kho1', label: 'TG-LONG AN' },
+      { name: 'kho2', label: 'Bổ Sung' },
+      { name: 'kho3', label: 'TG-ĐÀ LẠT' },
+      { name: 'kho4', label: 'KHO TỔNG - HCM' },
+      { name: 'kho5', label: 'SG1' },
+      { name: 'kho6', label: 'SG2' },
+    ];
+
+    return inputData.map((item: any) => {
+      // Create a new object with all original fields
+      const newItem = { ...item };
+
+      // Initialize all warehouse fields with 0 (number, not string!)
+      warehouses.forEach((warehouse) => {
+        newItem[warehouse.name] = 0;
+      });
+
+      // Find the matching warehouse by label and set the value
+      const matchingWarehouse = warehouses.find(
+        (warehouse) => warehouse.label === item.namekho
+      );
+
+      if (matchingWarehouse) {
+        newItem[matchingWarehouse.name] = Number(item.sldat) || 0;
+      }
+      return newItem;
+    });
+  }
+
+  transformFinalData(data1: any[], ListKho: any[]) {
+    ListKho = [
+      {
+        id: 'a118c322-ddca-444e-9e41-40602d955e93',
+        value: 'kho5',
+        name: 'SG1',
+        makho: 'TG-SG1',
+      },
+      {
+        id: '3344758e-c0bc-4562-9390-d58fc5717d03',
+        value: 'kho6',
+        name: 'SG2',
+        makho: 'TG-SG2',
+      },
+      {
+        id: '75933b1d-2906-4591-8a46-30db60ce9258',
+        value: 'kho2',
+        name: 'Bổ Sung',
+        makho: 'TG-BS',
+      },
+      {
+        id: '4cc01811-61f5-4bdc-83de-a493764e9258',
+        value: 'kho4',
+        name: 'KHO TỔNG - HCM',
+        makho: 'TG-HCM',
+      },
+      {
+        id: '929d94e9-9b05-4820-aadb-0c48b991c96c',
+        value: 'kho1',
+        name: 'TG-LONG AN',
+        makho: 'TG-LA',
+      },
+      {
+        id: 'a24363f8-2218-4f80-b2f9-0641ace1b245',
+        value: 'kho3',
+        name: 'TG-ĐÀ LẠT',
+        makho: 'TG-ĐL',
+      },
+    ];
+    return data1.map((item) => {
+      // Start with the base item, removing Dathangs
+      const { Dathangs, Donhangs, ...baseItem } = item;
+
+      // Initialize all kho values to 0
+      const khoValues: any = {};
+      ListKho.forEach((kho: any) => {
+        khoValues[kho.value] = 0;
+      });
+
+      // Add ngaynhan from first Dathang if exists
+      const ngaynhan =
+        Dathangs && Dathangs.length > 0 ? Dathangs[0].ngaynhan : null;
+
+      // Sum sldat (incoming) by makho - only count if NOT received/cancelled
+      if (Dathangs) {
+        Dathangs.forEach((dathang: any) => {
+          const matchingKho = ListKho.find(
+            (kho: any) => kho.makho === dathang.makho
+          );
+          if (matchingKho) {
+            // ⚡ CHỈ TÍNH HÀNG ĐANG VỀ (Chưa nhận)
+            if (dathang.status === 'dadat' || dathang.status === 'dagiao') {
+              khoValues[matchingKho.value] += dathang.sldat;
+            }
+          }
+        });
+      }
+
+      // ⚠️ QUAN TRỌNG: Enum StatusDonhang trong database chỉ có: dadat, dagiao, danhan, huy, hoanthanh
+      // khachdat = Đơn đã đặt, chưa xử lý giao -> cần chuẩn bị hàng
+      const khachdat = Donhangs.filter((v: any) => v.status === 'dadat').reduce(
+        (acc: number, curr: any) => {
+          return Number((acc + Number(curr.sldat || 0)).toFixed(3)) || 0;
+        },
+        0
+      );
+      // console.log('Donhangs', Donhangs);
+
+      // khachgiao = Đơn đã giao + đã nhận + hoàn thành -> đã xong
+      // ✅ FIX: Dùng slnhan (số thực nhận) thay vì sldat (số đặt) cho đơn đã giao
+      // Khớp với logic backend (SQL: CASE WHEN slnhan > 0 THEN slnhan ELSE sldat END)
+      const khachgiao = Donhangs.filter(
+        (v: any) => v.status === 'dagiao' || v.status === 'danhan' || v.status === 'hoanthanh'
+      ).reduce((acc: number, curr: any) => {
+        const slThucGiao = Number(curr.slnhan || 0) > 0 ? Number(curr.slnhan) : Number(curr.sldat || 0);
+        return Number((acc + slThucGiao).toFixed(2)) || 0;
+      }, 0);
+
+      return {
+        khachdat,
+        khachgiao: baseItem.khachgiao || khachgiao, // Ưu tiên giá trị server-side đã aggregate
+        ...baseItem,
+        Dathangs, // Giữ lại để tính toán Reliable Stock sau này
+        Donhangs, // Giữ lại để tính toán Reliable Stock sau này
+        ...(ngaynhan && { ngaynhan }),
+        ...khoValues,
+      };
+    });
+  }
+
+  transformFinalDataTachDathang(data1: any[], ListKho: any[]) {
+    ListKho = [
+      {
+        id: 'a118c322-ddca-444e-9e41-40602d955e93',
+        value: 'kho5',
+        name: 'SG1',
+        makho: 'TG-SG1',
+      },
+      {
+        id: '3344758e-c0bc-4562-9390-d58fc5717d03',
+        value: 'kho6',
+        name: 'SG2',
+        makho: 'TG-SG2',
+      },
+      {
+        id: '75933b1d-2906-4591-8a46-30db60ce9258',
+        value: 'kho2',
+        name: 'Bổ Sung',
+        makho: 'TG-BS',
+      },
+      {
+        id: '4cc01811-61f5-4bdc-83de-a493764e9258',
+        value: 'kho4',
+        name: 'KHO TỔNG - HCM',
+        makho: 'TG-HCM',
+      },
+      {
+        id: '929d94e9-9b05-4820-aadb-0c48b991c96c',
+        value: 'kho1',
+        name: 'TG-LONG AN',
+        makho: 'TG-LA',
+      },
+      {
+        id: 'a24363f8-2218-4f80-b2f9-0641ace1b245',
+        value: 'kho3',
+        name: 'TG-ĐÀ LẠT',
+        makho: 'TG-ĐL',
+      },
+    ];
+    return data1.map((item) => {
+      // Start with the base item, removing Dathangs
+      const { Dathangs, Donhangs, ...baseItem } = item;
+
+      // Initialize all kho values to 0
+      const khoValues: any = {};
+      ListKho.forEach((kho: any) => {
+        khoValues[kho.value] = 0;
+      });
+
+      // Add ngaynhan from first Dathang if exists
+      const ngaynhan =
+        Dathangs && Dathangs.length > 0 ? Dathangs[0].ngaynhan : null;
+
+      // Sum sldat by makho
+      if (Dathangs) {
+        Dathangs.forEach((dathang: any) => {
+          const matchingKho = ListKho.find(
+            (kho: any) => kho.makho === dathang.makho
+          );
+          if (matchingKho) {
+            khoValues[matchingKho.value] += dathang.sldat;
+          }
+        });
+      }
+
+      return {
+        ...baseItem,
+        ...(ngaynhan && { ngaynhan }),
+        ...khoValues,
+        Dathangs,
+      };
+    });
+  }
+
+  async convertData(inputData: any) {
+    const Khos = await this._GraphqlService.findAll('kho', {
+      enableParallelFetch: true,
+      batchSize: 1000,
+      take: 999999,
+      aggressiveCache: true,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        makho: true,
+      },
+    });
+
+    const warehouses = Khos.data;
+    return inputData.map((item: any) => {
+      const result = [...this.transformItemData(warehouses, item)];
+      return result;
+    });
+  }
+
+  transformItemData(warehouses: any[], item: any): any[] {
+    const result: any[] = [];
+    // Get warehouse lookup map for faster access
+    const warehouseMap: { [key: string]: string } = {};
+    warehouses.forEach((warehouse: any) => {
+      warehouseMap[warehouse.makho] = warehouse.name;
+    });
+    // Process each order in Dathangs array
+    item.Dathangs.forEach((order: any) => {
+      const transformedItem = {
+        id: item.id,
+        title: item.title,
+        masp: item.masp,
+        dvt: item.dvt,
+        haohut: item.haohut,
+        slhaohut: item.slhaohut,
+        SLDat: item.SLDat,
+        SLGiao: item.SLGiao,
+        sltontt: item.sltontt,
+        slton: item.slton,
+        tongkho: item.tongkho,
+        khachgiao: item.khachgiao,
+        slchogiao: item.slchogiao,
+        slchonhap: item.slchonhap,
+        mancc: order.mancc,
+        name: order.name,
+        ngaynhan: order.ngaynhan,
+        sldat: order.sldat,
+        makho: order.makho,
+        namekho: warehouseMap[order.makho] || order.namekho,
+        goiy: item.goiy,
+      };
+      result.push(transformedItem);
+    });
+    return result;
+  }
+
+  trackByFn(index: number, item: any): any {
+    return item.masp || item.id;
+  }
+
+  calculateTotalPages() {
+    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+  }
+
+  onPageSizeChange(size: number, menuTrigger: MatMenuTrigger) {
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    if (size > currentData.length) {
+      this.pageSize = currentData.length;
+      this._snackBar.open(`Số lượng tối đa ${currentData.length}`, '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } else {
+      this.pageSize = size;
+    }
+    this.currentPage = 1;
+    this.calculateTotalPages();
+    this.updateDisplayData();
+
+    menuTrigger.closeMenu();
+  }
+
+  onPreviousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updateDisplayData();
+    }
+  }
+
+  onNextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updateDisplayData();
+    }
+  }
+
+  updateDisplayData() {
+    let currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+
+    // 1. Column Filter (ListFilter)
+    if (this.ListFilter && this.ListFilter.length > 0 && this.ListFilter.length < (this.TonghopsFinal.length || this.Listsanpham().length)) {
+      currentData = currentData.filter((v: any) =>
+        this.ListFilter.some((v1: any) => v1.masp === v.masp || v1.id === v.id)
+      );
+    }
+
+    // 2. Quick Filter
+    if (this.quickFilter && this.quickFilter !== 'all') {
+      switch (this.quickFilter) {
+        case 'lowStock':
+          currentData = currentData.filter((item: any) => (item.slton || 0) <= 10);
+          break;
+        case 'needOrder':
+          currentData = currentData.filter((item: any) => {
+            const suggestion = parseFloat(this.GetGoiy(item));
+            return suggestion > 0;
+          });
+          break;
+        case 'pendingDelivery':
+          currentData = currentData.filter((item: any) => (item.slchogiao || 0) > 0);
+          break;
+      }
+    }
+
+    // 3. Global Filter (Search Box)
+    if (this.dataSource.filter) {
+      currentData = this.applyGlobalFilterToData(currentData, this.dataSource.filter);
+    }
+
+    // 4. Global Sorting
+    if (this.currentSort.active && this.currentSort.direction !== '') {
+      currentData = this.applySortingToData(currentData, this.currentSort);
+    }
+
+    // Update pagination stats
+    this.totalItems = currentData.length;
+    this.calculateTotalPages();
+
+    // Reset to first page if current page exceeds new total pages
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = 1;
+    }
+
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    const pageData = currentData.slice(startIndex, endIndex);
+    this.dataSource.data = pageData;
+  }
+
+  private applySortingToData(data: any[], sort: { active: string; direction: string }): any[] {
+    return data.sort((a: any, b: any) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'title':
+        case 'masp':
+        case 'mancc':
+        case 'name':
+        case 'dvt':
+          return this.compareStrings(a[sort.active] || '', b[sort.active] || '', isAsc);
+        case 'slton':
+        case 'sltontt':
+        case 'tongkho':
+        case 'khachdat':
+        case 'khachgiao':
+        case 'slchogiao':
+        case 'slchonhap':
+        case 'SLDat':
+        case 'SLGiao':
+        case 'kho1':
+        case 'kho2':
+        case 'kho3':
+        case 'kho4':
+        case 'kho5':
+        case 'kho6':
+          return this.compareNumbers(
+            Number(a[sort.active]) || 0,
+            Number(b[sort.active]) || 0,
+            isAsc
+          );
+        case 'goiy':
+          return this.compareNumbers(
+            parseFloat(this.GetGoiy(a)),
+            parseFloat(this.GetGoiy(b)),
+            isAsc
+          );
+        default:
+          return 0;
+      }
+    });
+  }
+
+  getCurrentFilteredData(column: string): any[] {
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+
+    // Get unique values for the column
+    const uniqueValues = new Map();
+    currentData.forEach((item: any) => {
+      const key = item[column];
+      if (!uniqueValues.has(key)) {
+        uniqueValues.set(key, item);
+      }
+    });
+
+    return Array.from(uniqueValues.values());
+  }
+
+  parseFloat(value: string): number {
+    return parseFloat(value) || 0;
+  }
+
+  applyQuickFilter(filterType: string) {
+    this.quickFilter = filterType;
+    this.currentPage = 1;
+    this.updateDisplayData();
+  }
+  applyGlobalFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.globalFilterValue = filterValue;
+    this.currentPage = 1;
+    this.updateDisplayData();
+  }
+  // applyGlobalFilter(event: Event) {
+  //   const filterValue = (event.target as HTMLInputElement).value;
+  //   this.globalFilterValue = filterValue;
+
+  //   let filteredData =
+  //     this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+
+  //   // Apply quick filter first
+  //   if (this.quickFilter !== 'all') {
+  //     this.applyQuickFilter(this.quickFilter);
+  //     return; // applyQuickFilter will handle global filter too
+  //   }
+
+  //   // Apply global filter
+  //   if (filterValue) {
+  //     filteredData = this.applyGlobalFilterToData(filteredData, filterValue);
+  //   }
+
+  //   this.dataSource.data = filteredData;
+  //   this.totalItems = filteredData.length;
+  //   this.calculateTotalPages();
+  //   this.currentPage = 1;
+  //   this.updateDisplayData();
+  // }
+
+  private applyGlobalFilterToData(data: any[], filterValue: string): any[] {
+    const searchTerm = filterValue.trim().toLowerCase();
+    return data.filter(
+      (item: any) =>
+        item.title?.toLowerCase().includes(searchTerm) ||
+        item.masp?.toLowerCase().includes(searchTerm) ||
+        item.name?.toLowerCase().includes(searchTerm) ||
+        item.mancc?.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  // Enhanced sorting methods
+  sortData(sort: any) {
+    this.currentSort = { active: sort.active, direction: sort.direction };
+    this.updateDisplayData();
+  }
+
+  private compareStrings(a: string, b: string, isAsc: boolean): number {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  private compareNumbers(a: number, b: number, isAsc: boolean): number {
+    return (a - b) * (isAsc ? 1 : -1);
+  }
+
+  // Clear all filters
+  clearAllFilters() {
+    this.quickFilter = 'all';
+    this.globalFilterValue = '';
+    this.dataSource.filter = '';
+    this.ListFilter = [];
+    this.currentPage = 1;
+    this.updateDisplayData();
+
+    // Clear search inputs
+    const searchInputs = document.querySelectorAll('input[type="text"]');
+    searchInputs.forEach((input: any) => {
+      if (input.placeholder.includes('Tìm kiếm')) {
+        input.value = '';
+      }
+    });
+  }
+
+  /**
+   * Toggle date range filter functionality
+   */
+  toggleDateRangeFilter(): void {
+    this.isDateRangeEnabled = !this.isDateRangeEnabled;
+    this.hasUnappliedDateChanges = false;
+
+    if (this.isDateRangeEnabled) {
+      // ✅ Set default date range to today when enabling
+      const today = new Date();
+      this.batdau = new Date(today);
+      this.ketthuc = new Date(today);
+      this.loadDonhangWithRelations();
+    } else {
+      // When disabled, reload data without date filter
+      this.loadDonhangWithRelations();
+    }
+  }
+
+  /**
+   * Apply date range filter - called by user action
+   */
+  applyDateFilter(dateMenuTrigger: MatMenuTrigger): void {
+    // ✅ Enable date range filtering if not already enabled
+    if (!this.isDateRangeEnabled) {
+      this.isDateRangeEnabled = true;
+    }
+
+    // ✅ Validate date range
+    if (!this.batdau || !this.ketthuc) {
+      this._snackBar.open('Vui lòng chọn khoảng thời gian hợp lệ', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+      return;
+    }
+
+    // ✅ Ensure start date is not after end date
+    if (this.batdau > this.ketthuc) {
+      this._snackBar.open('Ngày bắt đầu không thể sau ngày kết thúc', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+      return;
+    }
+
+    // ✅ Apply the filter
+    this.hasUnappliedDateChanges = false;
+    this.loadDonhangWithRelations();
+
+    this._snackBar.open('Đã áp dụng bộ lọc ngày', '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+
+    // Close the date menu
+    dateMenuTrigger.closeMenu();
+  }
+
+  /**
+   * Handle start date change
+   */
+  onStartDateChange(event: any): void {
+    this.batdau = event.value;
+    if (this.batdau > this.ketthuc) {
+      this.ketthuc = new Date(this.batdau);
+    }
+    // Mark that there are unapplied changes
+    this.hasUnappliedDateChanges = true;
+  }
+
+  /**
+   * Handle end date change
+   */
+  onEndDateChange(event: any): void {
+    this.ketthuc = event.value;
+    if (this.ketthuc < this.batdau) {
+      this.batdau = new Date(this.ketthuc);
+    }
+    // Mark that there are unapplied changes
+    this.hasUnappliedDateChanges = true;
+  }
+
+  /**
+   * Set date range to today
+   */
+  setToday(dateMenuTrigger: MatMenuTrigger): void {
+    const today = new Date();
+    this.batdau = new Date(today);
+    this.ketthuc = new Date(today);
+    // Auto apply when using quick buttons
+    this.applyDateFilter(dateMenuTrigger);
+  }
+
+  /**
+   * Set date range to this week
+   */
+  setThisWeek(dateMenuTrigger: MatMenuTrigger): void {
+    const today = new Date();
+    // ✅ Fix: Calculate week dates properly
+    const firstDayOfWeek = new Date(today);
+    firstDayOfWeek.setDate(today.getDate() - today.getDay());
+
+    const lastDayOfWeek = new Date(firstDayOfWeek);
+    lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+
+    this.batdau = new Date(firstDayOfWeek);
+    this.ketthuc = new Date(lastDayOfWeek);
+
+    // Auto apply when using quick buttons
+    this.applyDateFilter(dateMenuTrigger);
+  }
+
+  /**
+   * Set date range to this month
+   */
+  setThisMonth(dateMenuTrigger: MatMenuTrigger): void {
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDayOfMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      0
+    );
+
+    this.batdau = new Date(firstDayOfMonth);
+    this.ketthuc = new Date(lastDayOfMonth);
+    // Auto apply when using quick buttons
+    this.applyDateFilter(dateMenuTrigger);
+  }
+
+  /**
+   * Clear date filter and reload all data
+   */
+  clearDateFilter(): void {
+    this.isDateRangeEnabled = false;
+    this.hasUnappliedDateChanges = false;
+
+    // ✅ Reset dates to today
+    const today = new Date();
+    this.batdau = new Date(today);
+    this.ketthuc = new Date(today);
+
+    this.loadDonhangWithRelations();
+
+    this._snackBar.open('Đã xóa bộ lọc ngày', '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+  }
+
+  /**
+   * Format ngày từ UTC database để hiển thị local time
+   * @param utcDate UTC date từ database
+   * @param format Format muốn hiển thị (default: DD/MM/YYYY)
+   * @returns Formatted string theo timezone local
+   */
+  formatDateForDisplay(utcDate: any, format: string = 'DD/MM/YYYY'): string {
+    if (!utcDate) return '---';
+    return this._timezoneService.formatForDisplay(utcDate, format);
+  }
+
+  /**
+   * Chuyển đổi date input từ form sang UTC để gửi API
+   * @param formDate Date từ form input
+   * @returns UTC ISO string
+   */
+  convertFormDateToUTC(formDate: any): string {
+    return this._timezoneService.formDateToUTC(formDate);
+  }
+
+  /**
+   * Parse ngày tháng từ input user
+   * @param userInput Input từ user
+   * @param format Format của input
+   * @returns UTC ISO string để lưu database
+   */
+  parseUserDateInput(userInput: string, format: string = 'YYYY-MM-DD'): string {
+    try {
+      return this._timezoneService.parseUserInputToUTC(userInput, format);
+    } catch (error) {
+      console.error('Invalid date format:', error);
+      return '';
+    }
+  }
+
+  // ====== NESTED TABLE METHODS ======
+
+  /**
+   * Toggle expanded state for a row and load nested data if needed
+   */
+  toggleExpanded(element: any): void {
+    this.openNestedDataDialog(element);
+  }
+
+  /**
+   * Open dialog to show nested data
+   */
+  async openNestedDataDialog(element: any): Promise<void> {
+    // Prepare dialog data
+    const dialogData: NestedDataDialogData = {
+      product: element,
+      dathangData: [],
+      donhangData: [],
+      phieukhoData: [], // Thêm lịch sử phiếu kho
+      loading: true,
+    };
+
+    // Open the dialog
+    const dialogRef = this._dialog.open(NestedDataDialogComponent, {
+      width: '95vw',
+      maxWidth: '1200px',
+      height: '90vh',
+      maxHeight: '90vh',
+      data: dialogData,
+      disableClose: false,
+      autoFocus: false,
+      panelClass: ['nested-data-dialog-panel'],
+    });
+
+    try {
+      // Load nested data after dialog opens
+      await this.loadNestedData(element);
+
+      // Update dialog data
+      dialogData.dathangData = this.getDathangData(element.masp);
+      dialogData.donhangData = this.getDonhangData(element.masp);
+      dialogData.phieukhoData = this.getPhieukhoData(element.masp); // Lấy dữ liệu phiếu kho
+      dialogData.loading = false;
+
+      // Trigger change detection in dialog component
+      if (dialogData.triggerChangeDetection) {
+        dialogData.triggerChangeDetection();
+      }
+    } catch (error) {
+      console.error('Error loading nested data:', error);
+      dialogData.loading = false;
+
+      // Trigger change detection even on error
+      if (dialogData.triggerChangeDetection) {
+        dialogData.triggerChangeDetection();
+      }
+
+      // Show error message to user
+      this._snackBar.open('Lỗi khi tải dữ liệu. Vui lòng thử lại.', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+  /**
+   * Load nested data for both dathang and donhang
+   */
+  async loadNestedData(element: any): Promise<void> {
+    const masp = element.masp || element.id;
+    if (!masp) {
+      console.warn('Cannot load nested data: masp is missing', element);
+      return;
+    }
+
+    // Load dathang, donhang and phieukho data in parallel
+    await Promise.all([
+      this.loadDathangData(masp),
+      this.loadDonhangData(masp),
+      this.loadPhieukhoData(masp)
+    ]);
+  }
+
+  /**
+   * Load dathang data for a specific product using GraphQL
+   */
+  async loadDathangData(masp: string): Promise<void> {
+    if (this.dathangDataMap.has(masp) || this.loadingDathang.has(masp)) {
+      return; // Data already loaded or loading
+    }
+
+    this.loadingDathang.add(masp);
+
+    try {
+      let startDate: string;
+      let endDate: string;
+
+      if (this.isDateRangeEnabled && this.batdau && this.ketthuc) {
+        // ✅ Sử dụng getAPIDateRange để đảm bảo consistent timezone handling
+        const dateRange = this._timezoneService.getAPIDateRange(
+          this.batdau,
+          this.ketthuc
+        );
+        startDate = dateRange.Batdau;
+        endDate = dateRange.Ketthuc;
+      } else {
+        // Default to today if no date range is set
+        const today = new Date();
+        const todayRange = this._timezoneService.getAPIDateRange(today, today);
+        startDate = todayRange.Batdau;
+        endDate = todayRange.Ketthuc;
+      }
+      // Use GraphQL to find dathang data by product code
+      const dathangResult = await this._GraphqlService.findAll('dathang', {
+        enableParallelFetch: true,
+        batchSize: 500,
+        take: 999999,
+        aggressiveCache: true,
+        orderBy: { createdAt: 'desc' },
+        where: {
+          sanpham: {
+            some: {
+              sanpham: {
+                masp: {
+                  equals: masp,
+                },
+              },
+            },
+          },
+          ngaynhan: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        select: {
+          id: true,
+          madncc: true,
+          ngaynhan: true,
+          createdAt: true,
+          updatedAt: true,
+          status: true,
+          nhacungcap: {
+            select: {
+              id: true,
+              name: true,
+              mancc: true,
+              diachi: true,
+              sdt: true,
+            },
+          },
+          sanpham: {
+            where: {
+              sanpham: {
+                masp: {
+                  equals: masp,
+                },
+              },
+            },
+            select: {
+              id: true,
+              sldat: true,
+              slgiao: true,
+              slnhan: true,
+              ttgiao: true,
+              sanpham: {
+                select: {
+                  id: true,
+                  title: true,
+                  masp: true,
+                  dvt: true,
+                },
+              },
+            },
+          },
+          kho: {
+            select: {
+              id: true,
+              name: true,
+              makho: true,
+              diachi: true,
+            },
+          },
+        },
+      });
+
+      // Transform the data to match the expected format
+      const transformedData = dathangResult.data.flatMap((dathang: any) =>
+        dathang.sanpham.map((sp: any) => ({
+          id: dathang.id,
+          madncc: dathang.madncc,
+          ngaynhan: dathang.ngaynhan,
+          createdAt: dathang.createdAt,
+          updatedAt: dathang.updatedAt,
+          status: dathang.status,
+
+          // Product information
+          sanphamId: sp.sanpham.id,
+          title: sp.sanpham.title,
+          masp: sp.sanpham.masp,
+          dvt: sp.sanpham.dvt,
+
+          // Quantities and pricing
+          sldat: Number(sp.sldat) || 0,
+          slgiao: Number(sp.slgiao) || 0,
+          slnhan: Number(sp.slnhan) || 0,
+          giaban: Number(sp.giaban) || 0,
+          ttgiao: Number(sp.ttgiao) || 0,
+          // Supplier information
+          nhacungcap: dathang.nhacungcap,
+          mancc: dathang.nhacungcap?.mancc || '',
+          name: dathang.nhacungcap?.name || '',
+
+          // Warehouse information
+          // Type identifier
+          type: 'dathang',
+        }))
+      );
+      this.dathangDataMap.set(masp, transformedData);
+    } catch (error) {
+      console.error('Error loading dathang data:', error);
+      this.dathangDataMap.set(masp, []);
+
+      // Show error to user
+      this._snackBar.open(`Lỗi tải dữ liệu đặt hàng cho ${masp}`, '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.loadingDathang.delete(masp);
+    }
+  }
+
+  /**
+   * Load donhang data for a specific product using GraphQL
+   */
+  async loadDonhangData(masp: string): Promise<void> {
+    if (this.donhangDataMap.has(masp) || this.loadingDonhang.has(masp)) {
+      return; // Data already loaded or loading
+    }
+
+    this.loadingDonhang.add(masp);
+
+    try {
+      let startDate: string;
+      let endDate: string;
+
+      if (this.isDateRangeEnabled && this.batdau && this.ketthuc) {
+        // ✅ Sử dụng getAPIDateRange để đảm bảo consistent timezone handling
+        const dateRange = this._timezoneService.getAPIDateRange(
+          this.batdau,
+          this.ketthuc
+        );
+        startDate = dateRange.Batdau;
+        endDate = dateRange.Ketthuc;
+      } else {
+        // Default to today if no date range is set
+        const today = new Date();
+        const todayRange = this._timezoneService.getAPIDateRange(today, today);
+        startDate = todayRange.Batdau;
+        endDate = todayRange.Ketthuc;
+      }
+      // Use GraphQL to find donhang data by product code
+      const donhangResult = await this._GraphqlService.findAll('donhang', {
+        enableParallelFetch: true,
+        batchSize: 500,
+        take: 999999,
+        aggressiveCache: true,
+        orderBy: { createdAt: 'desc' },
+        where: {
+          sanpham: {
+            some: {
+              sanpham: {
+                masp: {
+                  equals: masp,
+                },
+              },
+            },
+          },
+          ngaygiao: {
+            lte: endDate,
+          },
+          status: {
+            in: ['dadat', 'dagiao']
+          }
+        },
+        select: {
+          id: true,
+          madonhang: true,
+          ngaygiao: true,
+          createdAt: true,
+          updatedAt: true,
+          status: true,
+          khachhang: {
+            select: {
+              id: true,
+              name: true,
+              sdt: true,
+              diachi: true,
+              makh: true,
+            },
+          },
+          sanpham: {
+            where: {
+              sanpham: {
+                masp: {
+                  equals: masp,
+                },
+              },
+            },
+            select: {
+              id: true,
+              sldat: true,
+              slgiao: true,
+              slnhan: true,
+              giaban: true,
+              ttgiao: true,
+              sanpham: {
+                select: {
+                  id: true,
+                  title: true,
+                  masp: true,
+                  dvt: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Transform the data to match the expected format
+      const transformedData = donhangResult.data.flatMap((donhang: any) =>
+        donhang.sanpham.map((sp: any) => ({
+          id: donhang.id,
+          madonhang: donhang.madonhang,
+          ngaygiao: donhang.ngaygiao,
+          createdAt: donhang.createdAt,
+          updatedAt: donhang.updatedAt,
+          status: donhang.status,
+
+          // Product information
+          sanphamId: sp.sanpham.id,
+          title: sp.sanpham.title,
+          masp: sp.sanpham.masp,
+          dvt: sp.sanpham.dvt,
+
+          // Quantities and pricing
+          sldat: Number(sp.sldat) || 0,
+          slgiao: Number(sp.slgiao) || 0,
+          slnhan: Number(sp.slnhan) || 0,
+          giaban: Number(sp.giaban) || 0,
+          ttgiao: Number(sp.ttgiao) || 0,
+
+          // Customer information
+          khachhang: donhang.khachhang,
+          makh: donhang.khachhang?.makh || '',
+          name: donhang.khachhang?.name || '',
+          // Type identifier
+          type: 'donhang',
+        }))
+      );
+
+      this.donhangDataMap.set(masp, transformedData);
+    } catch (error) {
+      console.error('Error loading donhang data:', error);
+      this.donhangDataMap.set(masp, []);
+
+      // Show error to user
+      this._snackBar.open(`Lỗi tải dữ liệu đơn hàng cho ${masp}`, '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.loadingDonhang.delete(masp);
+    }
+  }
+  /**
+   * Load phieukho (inventory transaction) data for a specific product using GraphQL
+   * Shows ALL history to allow tracking cumulative stock debt
+   */
+  async loadPhieukhoData(masp: string): Promise<void> {
+    if (this.phieukhoDataMap.has(masp) || this.loadingPhieukho.has(masp)) {
+      return;
+    }
+
+    this.loadingPhieukho.add(masp);
+
+    try {
+      // For phieukho, we load ALL history to explain the cumulative slton (-250)
+      const phieukhoResult = await this._GraphqlService.findAll('phieukho', {
+        enableParallelFetch: true,
+        batchSize: 500,
+        take: 999999,
+        aggressiveCache: true,
+        orderBy: { ngay: 'desc' },
+        where: {
+          sanpham: {
+            some: {
+              sanpham: {
+                masp: { equals: masp },
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+          maphieu: true,
+          ngay: true,
+          type: true,
+          title: true,
+          ghichu: true,
+          isChotkho: true,
+          sanpham: {
+            where: {
+              sanpham: {
+                masp: { equals: masp },
+              },
+            },
+            select: {
+              soluong: true,
+              ghichu: true,
+            },
+          },
+        },
+      });
+
+      const transformedData = phieukhoResult.data.map((pk: any) => ({
+        id: pk.id,
+        maphieu: pk.maphieu,
+        ngay: pk.ngay,
+        type: pk.type,
+        title: pk.title,
+        ghichu: pk.ghichu,
+        isChotkho: pk.isChotkho,
+        soluong: pk.sanpham[0]?.soluong || 0,
+        itemGhichu: pk.sanpham[0]?.ghichu || '',
+      }));
+
+      this.phieukhoDataMap.set(masp, transformedData);
+    } catch (error) {
+      console.error('Error loading phieukho data:', error);
+      this.phieukhoDataMap.set(masp, []);
+    } finally {
+      this.loadingPhieukho.delete(masp);
+    }
+  }
+
+  /**
+   * Get phieukho data for a specific product
+   */
+  getPhieukhoData(masp: string): any[] {
+    return this.phieukhoDataMap.get(masp) || [];
+  }
+
+  /**
+   * Get total count of all nested records (dathang, donhang, phieukho)
+   */
+  getTotalNestedDataCount(masp: string): number {
+    return (
+      (this.dathangDataMap.get(masp)?.length || 0) +
+      (this.donhangDataMap.get(masp)?.length || 0) +
+      (this.phieukhoDataMap.get(masp)?.length || 0)
+    );
+  }
+
+  /**
+   * Get dathang data for a specific product
+   */
+  getDathangData(masp: string): any[] {
+    return this.dathangDataMap.get(masp) || [];
+  }
+
+  /**
+   * Get donhang data for a specific product
+   */
+  getDonhangData(masp: string): any[] {
+    return this.donhangDataMap.get(masp) || [];
+  }
+
+  /**
+   * Check if dathang data is loading for a specific product
+   */
+  isDathangLoading(masp: string): boolean {
+    return this.loadingDathang.has(masp);
+  }
+
+  /**
+   * Check if donhang data is loading for a specific product
+   */
+  isDonhangLoading(masp: string): boolean {
+    return this.loadingDonhang.has(masp);
+  }
+
+  /**
+   * Clear cached nested data (useful for refresh)
+   */
+  clearNestedData(): void {
+    this.dathangDataMap.clear();
+    this.donhangDataMap.clear();
+    this.phieukhoDataMap.clear();
+    this.loadingDathang.clear();
+    this.loadingDonhang.clear();
+    this.loadingPhieukho.clear(); // Added this line
+    this.expandedElementId = null;
+    // Note: Dialogs are closed automatically when user dismisses them
+  }
+
+  /**
+   * Check if a row is expanded (for expanded detail row)
+   */
+  isExpanded = (index: number, row: any) => {
+    const elementId = row.id || row.masp;
+    return elementId === this.expandedElementId;
+  };
+
+  /**
+   * Check if element is expanded by ID - Legacy method for compatibility
+   */
+  isElementExpanded(element: any): boolean {
+    return false; // Always return false since we're using overlay now
+  }
+
+  /**
+   * Expand element by ID - Now opens dialog
+   */
+  expandById(id: string, masp?: string): void {
+    const element = this.dataSource.data.find(
+      (item) => (item.id || item.masp) === id || item.masp === masp
+    );
+    if (element) {
+      this.openNestedDataDialog(element);
+    }
+  }
+
+  /**
+   * Collapse expanded element
+   */
+  collapseExpanded(): void {
+    this.expandedElementId = null;
+    // Note: Dialogs are closed automatically when user dismisses them
+  }
+
+  /**
+   * Check if any data is currently loading for a product
+   */
+  isAnyDataLoading(masp: string): boolean {
+    return this.isDathangLoading(masp) || this.isDonhangLoading(masp);
+  }
+
+
+
+  /**
+   * Check if nested data exists for a product
+   */
+  hasNestedData(masp: string): boolean {
+    return this.getTotalNestedDataCount(masp) > 0;
+  }
+
+  /**
+   * Get loading state summary for debugging
+   */
+  getLoadingStateSummary(): any {
+    return {
+      expandedElementId: this.expandedElementId,
+      loadingDathang: Array.from(this.loadingDathang),
+      loadingDonhang: Array.from(this.loadingDonhang),
+      cachedDathang: Array.from(this.dathangDataMap.keys()),
+      cachedDonhang: Array.from(this.donhangDataMap.keys()),
+    };
+  }
+
+  // ====== INLINE EDIT METHODS ======
+
+  /**
+   * Load temporary edits from localStorage
+   */
+  loadTempEditsFromStorage(): void {
+    try {
+      const storedData = localStorage.getItem(this.STORAGE_KEY);
+      if (storedData) {
+        const parsedData = JSON.parse(storedData);
+        this.tempStorage = new Map(Object.entries(parsedData));
+      }
+    } catch (error) {
+      console.error('Error loading temp edits from storage:', error);
+      this.tempStorage = new Map();
+    }
+  }
+
+  /**
+   * Save temporary edits to localStorage
+   */
+  saveTempEditsToStorage(): void {
+    try {
+      const dataToStore = Object.fromEntries(this.tempStorage);
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(dataToStore));
+    } catch (error) {
+      console.error('Error saving temp edits to storage:', error);
+    }
+  }
+
+  /**
+   * Start editing a row
+   */
+  startEdit(row: any, field: string): void {
+    const key = this.getRowKey(row);
+    if (!this.editingRows.has(key)) {
+      this.editingRows.set(key, {});
+    }
+    this.editingRows.get(key)[field] = true;
+  }
+
+  /**
+   * Stop editing a row
+   */
+  stopEdit(row: any, field: string): void {
+    const key = this.getRowKey(row);
+    if (this.editingRows.has(key)) {
+      delete this.editingRows.get(key)[field];
+      if (Object.keys(this.editingRows.get(key)).length === 0) {
+        this.editingRows.delete(key);
+      }
+    }
+  }
+
+  /**
+   * Check if a field is being edited
+   */
+  isEditing(row: any, field: string): boolean {
+    const key = this.getRowKey(row);
+    return this.editingRows.has(key) && this.editingRows.get(key)[field] === true;
+  }
+
+  /**
+   * Save field value to temporary storage
+   */
+  saveFieldValue(row: any, field: string, value: any): void {
+    const key = this.getRowKey(row);
+
+    if (!this.tempStorage.has(key)) {
+      this.tempStorage.set(key, {
+        masp: row.masp,
+        title: row.title,
+        changes: {}
+      });
+    }
+
+    const tempData = this.tempStorage.get(key);
+    tempData.changes[field] = value;
+    tempData.lastModified = new Date().toISOString();
+
+    this.saveTempEditsToStorage();
+    this.stopEdit(row, field);
+
+    this._snackBar.open(`Đã lưu tạm ${field}`, '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-info'],
+    });
+  }
+
+  /**
+   * Get value from temp storage or original row
+   */
+  getFieldValue(row: any, field: string): any {
+    const key = this.getRowKey(row);
+    if (this.tempStorage.has(key) && this.tempStorage.get(key).changes[field] !== undefined) {
+      return this.tempStorage.get(key).changes[field];
+    }
+    return row[field] || '';
+  }
+
+  /**
+   * Check if field has temporary changes
+   */
+  hasFieldChanged(row: any, field: string): boolean {
+    const key = this.getRowKey(row);
+    return this.tempStorage.has(key) &&
+      this.tempStorage.get(key).changes[field] !== undefined;
+  }
+
+  /**
+   * Get row key for tracking
+   */
+  getRowKey(row: any): string {
+    return row.masp || row.id || '';
+  }
+
+  /**
+   * Get count of items with temporary changes
+   */
+  getTempChangesCount(): number {
+    return this.tempStorage.size;
+  }
+
+  /**
+   * Export temp data to Excel
+   */
+  async exportTempChanges(): Promise<void> {
+    if (this.tempStorage.size === 0) {
+      this._snackBar.open('Không có dữ liệu tạm thời để xuất', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    try {
+      const tempData = Array.from(this.tempStorage.values()).map((item: any) => ({
+        masp: item.masp || '',
+        title: item.title || '',
+        ghichu_moi: item.changes.ghichu || '',
+        xSLDat_moi: item.changes.xSLDat || '',
+        lastModified: item.lastModified || '',
+      }));
+
+      const mapping = {
+        masp: 'Mã Sản Phẩm',
+        title: 'Tên Sản Phẩm',
+        ghichu_moi: 'Ghi Chú Mới',
+        xSLDat_moi: 'SL Đặt (NCC) Mới',
+        lastModified: 'Thời Gian Sửa',
+      };
+
+      // Use existing writeExcelFile function
+      (window as any).writeExcelFile(
+        tempData,
+        'DuLieuTamThoi_' + new Date().toISOString().split('T')[0],
+        Object.values(mapping),
+        mapping
+      );
+
+      this._snackBar.open('Xuất dữ liệu tạm thời thành công!', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+
+    } catch (error) {
+      console.error('Error exporting temp changes:', error);
+      this._snackBar.open('Lỗi khi xuất dữ liệu tạm thời', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+  /**
+   * Phương án Tối ưu: Tự động hoàn tất các đơn hàng đang về và Snapshot tồn thực tế
+   * (The Best Solution: Auto-receive pending POs and reconcile)
+   */
+  async autoReceiveAndSnapshot(row: any): Promise<void> {
+    const incomingStock = Number(row.incomingStock || 0);
+
+    // Create descriptive message
+    const msg = incomingStock > 0
+      ? `Xác nhận khớp lệnh nhập ${incomingStock} kg và đồng bộ tồn kho?`
+      : `Sản phẩm này hiện KHÔNG có hàng đang về. Bạn có muốn thực hiện ĐỒNG BỘ lại sổ sách với thực tế để xóa chênh lệch không?`;
+
+    // ✅ CHUYỂN CONFIRM SANG DIALOG CAO CẤP
+    const dialogRef = this._dialog.open(MagicConfirmDialogComponent, {
+      width: '450px',
+      data: {
+        masp: row.masp,
+        title: row.title,
+        incomingStock: incomingStock,
+        customMessage: msg
+      }
+    });
+
+    const confirmed = await firstValueFrom(dialogRef.afterClosed());
+
+    if (!confirmed) return;
+
+    try {
+      this._snackBar.open('🚀 Đang xử lý khớp lệnh thông minh...', '', {
+        duration: 3000,
+        panelClass: ['snackbar-info']
+      });
+
+      const result = await this._DathangService.confirmReceiptByProduct(row.id);
+
+      if (result.success !== false) {
+        const successMsg = incomingStock > 0
+          ? `✅ Khớp lệnh thành công! Đã nhập thực ${incomingStock} kg và đồng bộ tồn kho.`
+          : `✅ Đã đồng bộ tồn kho thực tế và xóa chênh lệch thành công cho sản phẩm!`;
+
+        this._snackBar.open(successMsg, '', {
+          duration: 4000,
+          panelClass: ['snackbar-success']
+        });
+
+        // Reload dữ liệu và bypass cache để thấy ngay kết quả mới
+        await this.loadDonhangWithRelations(true);
+      } else {
+        throw new Error(result.message || 'Lỗi từ máy chủ');
+      }
+    } catch (error: any) {
+      console.error('Error in autoReceiveAndSnapshot:', error);
+      this._snackBar.open(`❌ Thất bại: ${error.message}`, '', {
+        duration: 4000,
+        panelClass: ['snackbar-error']
+      });
+    }
+  }
+
+  /**
+   * Apply temp changes to main data and clear storage
+   */
+  async applyTempChanges(): Promise<void> {
+    if (this.tempStorage.size === 0) {
+      this._snackBar.open('Không có thay đổi tạm thời để áp dụng', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    try {
+      const tempCount = this.tempStorage.size;
+
+      // Apply changes to dataSource.data (synchronize with tempStorage)
+      const currentData = [...this.dataSource.data];
+
+      for (const [key, tempData] of this.tempStorage.entries()) {
+        const rowIndex = currentData.findIndex((item: any) => this.getRowKey(item) === key);
+        if (rowIndex !== -1) {
+          const row = currentData[rowIndex];
+
+          // ✅ LƯU GHI CHÚ NHU CẦU LÊN DATABASE (STICKY NOTE)
+          if (tempData.changes['ghichu'] !== undefined) {
+             await this._GraphqlService.saveNhucauNote(row.id, tempData.changes['ghichu']);
+          }
+
+          // Apply changes to the row in dataSource
+          Object.assign(row, tempData.changes);
+        }
+      }
+
+      // Update data source with synchronized data
+      this.dataSource.data = currentData;
+
+      // Clear temp storage after successful sync
+      this.tempStorage.clear();
+      this.editingRows.clear();
+      // localStorage.removeItem(this.STORAGE_KEY);
+
+      this._snackBar.open(`Đã áp dụng ${tempCount} thay đổi vào dữ liệu chính!`, '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+
+    } catch (error) {
+      console.error('Error applying temp changes:', error);
+      this._snackBar.open('Lỗi khi áp dụng thay đổi', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+  /**
+   * Clear all temporary storage and restore original data
+   */
+  clearTempStorage(): void {
+    if (this.tempStorage.size === 0) {
+      this._snackBar.open('Không có dữ liệu tạm thời để xóa', '', {
+        duration: 1500,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-info'],
+      });
+      return;
+    }
+
+    const tempCount = this.tempStorage.size;
+
+    // Clear temp storage
+    this.tempStorage.clear();
+    this.editingRows.clear();
+    localStorage.removeItem(this.STORAGE_KEY);
+
+    // Restore dataSource.data to original data (remove temp changes)
+    const originalData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    this.dataSource.data = [...originalData];
+
+    this._snackBar.open(`Đã xóa ${tempCount} thay đổi tạm thời và khôi phục dữ liệu gốc`, '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-info'],
+    });
+  }
+
+  /**
+   * Handle Enter key for inline editing (General fields like ghichu, xSLDat)
+   */
+  onFieldKeyDown(event: KeyboardEvent, row: any, field: string): void {
+    if (event.key === 'Enter') {
+      const target = event.target as HTMLInputElement;
+      this.saveFieldValue(row, field, target.value);
+    } else if (event.key === 'Escape') {
+      this.stopEdit(row, field);
+    }
+  }
+
+  /**
+   * Handle blur for inline editing (General fields)
+   */
+  onFieldBlur(event: FocusEvent, row: any, field: string): void {
+    const target = event.target as HTMLInputElement;
+    this.saveFieldValue(row, field, target.value);
+  }
+
+  /**
+   * Handle physical stock update - direct saving
+   */
+  onPhysicalStockKeyDown(event: KeyboardEvent, row: any): void {
+    if (event.key === 'Enter') {
+      const target = event.target as HTMLInputElement;
+      this.savePhysicalStock(row, target.value);
+    } else if (event.key === 'Escape') {
+      this.stopEdit(row, 'sltontt');
+    }
+  }
+
+  onPhysicalStockBlur(event: FocusEvent, row: any): void {
+    const target = event.target as HTMLInputElement;
+    this.savePhysicalStock(row, target.value);
+  }
+
+  async savePhysicalStock(row: any, newValue: any): Promise<void> {
+    const slton = parseFloat(newValue);
+    const currentSltontt = Number(row.sltontt || 0);
+
+    // Stop editing immediately
+    this.stopEdit(row, 'sltontt');
+
+    // If value hasn't changed, do nothing
+    if (isNaN(slton) || slton === currentSltontt) {
+      return;
+    }
+
+    // ✅ CHẶN NHẬP SỐ ÂM TỪ GIAO DIỆN
+    if (slton < 0) {
+      this._snackBar.open(`⚠️ Lỗi: Tồn thực tế không được là số âm (${slton}). Hệ thống đã từ chối cập nhật.`, 'Đã hiểu', {
+        duration: 4000,
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    try {
+      this.isLoading = true;
+      this.loadingMessage = `Đang cập nhật tồn kho cho ${row.title}...`;
+
+      const delta = slton - currentSltontt;
+      const type = delta > 0 ? 'nhap' : 'xuat';
+      const absDelta = Math.abs(delta);
+
+      await this._PhieukhoService.CreatePhieukho({
+        title: `ĐIỀU CHỈNH CHỐT KHO TRỰC TIẾP (Ô DỮ LIỆU)`,
+        type: type,
+        isChotkho: true,
+        sanpham: [
+          {
+            sanphamId: row.id,
+            soluong: absDelta,
+          },
+        ],
+        ghichu: `Điều chỉnh ${type === 'nhap' ? 'tăng' : 'giảm'} ${absDelta} cho sản phẩm ${row.masp} (Tồn mới: ${slton}) trực tiếp từ bảng nhu cầu.`,
+        ngay: DateHelpers.now(),
+      });
+
+      this._snackBar.open(`✅ Đã cập nhật tồn thực tế cho ${row.masp}: ${slton}`, '', {
+        duration: 3000,
+        panelClass: ['snackbar-success'],
+      });
+
+      // Reload data immediately to reflect changes
+      await this.loadDonhangWithRelations(true);
+    } catch (error: any) {
+      console.error('Error saving physical stock:', error);
+      this._snackBar.open(`❌ Lỗi: ${error.message || 'Không thể cập nhật tồn kho'}`, 'Đóng', {
+        duration: 5000,
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading = false;
+      this.loadingMessage = '';
+    }
+  }
+}
+
+// Debounce decorator để tối ưu hiệu suất
+function Debounce(delay: number = 300) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    let timeoutId: any;
+
+    descriptor.value = function (...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        originalMethod.apply(this, args);
+      }, delay);
+    };
+
+    return descriptor;
+  };
+}

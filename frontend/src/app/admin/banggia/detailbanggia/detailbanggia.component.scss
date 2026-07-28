@@ -1,0 +1,62 @@
+/* Search field styling */
+.search-field {
+  min-width: 250px;
+  max-width: 400px;
+}
+
+.search-field .mat-mdc-form-field-flex {
+  background-color: white;
+}
+
+/* Highlight search results */
+::ng-deep .mat-mdc-table {
+  .mat-mdc-row:hover {
+    background-color: #f5f5f5;
+    transition: background-color 0.2s ease;
+  }
+}
+
+/* Loading spinner for price update */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Optimize table rendering */
+::ng-deep .mat-mdc-table {
+  /* Enable hardware acceleration */
+  transform: translateZ(0);
+  will-change: scroll-position;
+  
+  /* Optimize text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Pagination optimization */
+::ng-deep .mat-mdc-paginator {
+  background-color: white;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* Editable cell highlight */
+.giaban-input {
+  cursor: text;
+  transition: all 0.2s ease;
+}
+
+.giaban-input:hover {
+  background-color: #e3f2fd !important;
+}
+
+.giaban-input:focus {
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.3);
+}

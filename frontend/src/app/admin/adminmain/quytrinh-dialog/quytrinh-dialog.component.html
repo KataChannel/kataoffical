@@ -1,0 +1,6 @@
+<div class="dialog-container">
+  <iframe *ngIf="safeUrl" [src]="safeUrl" allow="fullscreen"></iframe>
+  <button mat-icon-button (click)="onClose()" class="close-btn-overlay">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>

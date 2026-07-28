@@ -1,0 +1,704 @@
+<mat-drawer-container class="w-full h-full" autosize>
+  <!-- Loading overlay cho toàn bộ component -->
+  <div *ngIf="isLoading" class="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+    <div class="flex flex-col items-center space-y-4">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <span class="text-lg text-gray-700">Đang tải dữ liệu...</span>
+    </div>
+  </div>
+
+  <mat-drawer #drawer class="flex flex-col !w-full h-full" [position]="'end'" mode="over">
+    <router-outlet></router-outlet>
+  </mat-drawer>
+  <div class="flex flex-col space-y-2 h-screen-12 w-full p-2" [class.opacity-50]="isLoading">
+    <div class="w-full grid gap-2 items-center">
+      <div class="w-full flex flex-row space-x-2 items-center">
+        <mat-form-field class="w-full" [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+          <mat-label>Bắt Đầu</mat-label>
+          <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau"
+            [(ngModel)]="SearchParams.Batdau" [ngModelOptions]="{ standalone: true }" />
+          <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau"></mat-datepicker-toggle>
+          <mat-datepicker #pickerBatdau></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field class="w-full" [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+          <mat-label>Kết Thúc</mat-label>
+          <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerKetthuc"
+            [(ngModel)]="SearchParams.Ketthuc" [ngModelOptions]="{ standalone: true }" />
+          <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
+          <mat-datepicker #pickerKetthuc></mat-datepicker>
+        </mat-form-field>   
+        <span (click)="ToggleAll()" class="lg:flex hidden cursor-pointer whitespace-nowrap p-2 rounded-lg bg-slate-200">
+          {{CountItem}} Bản Ghi
+        </span>
+        <span class="lg:flex hidden cursor-pointer whitespace-nowrap p-2 rounded-lg bg-slate-200">
+          {{editDonhang.length}} Đã Chọn
+        </span>
+      <button (click)="openPreviewExport(dialogPreviewExport)" matTooltip="Xem Mẫu" mat-icon-button color="primary">
+          <mat-icon>preview</mat-icon>
+        </button>
+        
+        <!-- Export dropdown menu with both options -->
+        <button matTooltip="Xuất file Excel" [matMenuTriggerFor]="exportMenu" color="primary"
+          mat-icon-button class="relative">
+          <div *ngIf="isExporting" class="absolute inset-0 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+          </div>
+          <mat-icon [class.opacity-0]="isExporting">file_download</mat-icon>
+        </button>
+        
+        <mat-menu #exportMenu="matMenu">
+          <button mat-menu-item (click)="ExportExcel(editDonhang, 'Congno')">
+            <mat-icon>cloud_download</mat-icon>
+            <span>Xuất từ Server (Nhanh)</span>
+          </button>
+          <button mat-menu-item (click)="ExportExcelTableFormat(editDonhang, 'Congno')">
+            <mat-icon>table_view</mat-icon>
+            <span>Xuất định dạng bảng (Chi tiết)</span>
+          </button>
+          <button mat-menu-item (click)="ExportExcelTwoSheets(editDonhang, 'Congno')">
+            <mat-icon>library_books</mat-icon>
+            <span>Xuất định dạng 2 sheet (Tổng hợp + Chi tiết)</span>
+          </button>
+        </mat-menu>
+        <button matTooltip="Tìm kiếm" (click)="doSearch()" [disabled]="isSearching" color="primary" mat-icon-button
+          class="relative">
+          <div *ngIf="isSearching" class="absolute inset-0 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+          </div>
+          <mat-icon [class.opacity-0]="isSearching">search</mat-icon>
+        </button>
+        <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu"
+          aria-label="Example icon-button with a menu">
+          <mat-icon>tune</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <div class="p-4">
+            <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+              <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput
+                placeholder="Tìm Kiếm" />
+              <mat-icon matPrefix>search</mat-icon>
+            </mat-form-field>
+          </div>
+          <div class="flex flex-col max-h-80 overflow-auto">
+            @for (item of FilterColumns; track item.key) {
+            <button mat-menu-item (click)="toggleColumn(item); $event.stopPropagation()">
+              <mat-icon>{{
+                item.isShow ? "check_box" : "check_box_outline_blank"
+                }}</mat-icon>
+              <span>{{ item.value }}</span>
+            </button>
+            }
+          </div>
+        </mat-menu>
+
+         <button (click)="isShowKH=!isShowKH" matTooltip="Ẩn hiện Tool Khách Hàng" mat-icon-button color="primary">
+          <mat-icon>{{isShowKH ? 'visibility' : 'visibility_off'}}</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" 
+                (click)="DongboVat()" 
+                [disabled]="isLoading || editDonhang.length === 0"
+                matTooltip="Đồng bộ giá từ bảng giá cho tất cả đơn hàng đã chọn">
+            <mat-icon>currency_exchange</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    @if(isShowKH){
+    <div class="w-full grid lg:grid-cols-2 gap-2 items-center">
+              <!-- Multi-customer group selection with chips autocomplete -->
+        <div class="flex flex-col space-y-2 w-full">
+          <div class="font-bold">Nhóm Khách Hàng </div>
+          <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+            <mat-chip-set aria-label="Chọn nhóm khách hàng">
+              @for (nhomKH of SelectedNhomKhachhang; track nhomKH) {
+                <mat-chip (removed)="removeSelectedNhomkhachhang(nhomKH)" [removable]="true">
+                  <span>{{ typeof nhomKH === 'string' ? nhomKH : nhomKH.name }}</span>
+                  <button matChipRemove [attr.aria-label]="'Xóa ' + (typeof nhomKH === 'string' ? nhomKH : nhomKH.name)">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              }
+            </mat-chip-set>
+            <input 
+              #nhomKHInput
+              placeholder="{{SelectedNhomKhachhang.length === 0 ? 'Tìm và chọn nhiều nhóm khách hàng' : 'Thêm nhóm khách hàng'}}"
+              [matAutocomplete]="autoNhom"
+              (keyup)="doFilterNhomKhachhang($event)"
+              matInput>
+            <mat-autocomplete 
+              #autoNhom="matAutocomplete" 
+              (optionSelected)="onNhomKhachhangSelected($event)" 
+              class="max-w-none"
+              panelWidth="auto">
+              @for (option of filterListNhomKhachhang; track option) {
+                <mat-option [value]="typeof option === 'string' ? option : option.name" class="!whitespace-normal !h-auto !py-2">
+                  <span class="text-sm">{{ typeof option === 'string' ? option : option.name }}</span>
+                  @if (typeof option !== 'string' && option.description) {
+                    <small class="text-xs text-gray-500 block">{{ option.description }}</small>
+                  }
+                </mat-option>
+              }
+            </mat-autocomplete>
+            
+            @if (SelectedNhomKhachhang.length > 0) {
+            <button matTooltip="Xóa tất cả nhóm khách hàng đã chọn" (click)="clearAllSelectedNhomKhachhang()" 
+              color="warn" mat-icon-button matSuffix>
+              <mat-icon>close</mat-icon>
+            </button>
+            }
+
+          <!-- @if (SelectedNhomKhachhang.length > 0) {
+          <div class="flex flex-wrap gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <span class="text-sm font-medium text-blue-800 flex items-center mr-2">
+              <mat-icon class="mr-1 text-blue-600" style="font-size: 18px;">people</mat-icon>
+              Đã chọn {{SelectedNhomKhachhang.length}} khách hàng:
+            </span>
+
+            @for (customer of SelectedNhomKhachhang; track customer.id) {
+            <mat-chip-set>
+              <mat-chip class="bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
+                <span class="text-xs font-medium">{{ customer.name }}</span>
+                <button matChipRemove (click)="removeSelectedCustomer(customer)" class="ml-1 hover:text-red-600">
+                  <mat-icon class="text-xs">cancel</mat-icon>
+                </button>
+              </mat-chip>
+            </mat-chip-set>
+            }
+          </div>
+          } -->
+          </mat-form-field>
+        </div>
+
+        <!-- Multi-customer selection with chips autocomplete -->
+        <div class="flex flex-col space-y-2 w-full">
+          <div class="font-bold">Khách Hàng </div>
+          <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+            <mat-chip-set aria-label="Chọn khách hàng">
+              @for (customer of SelectedKhachhang; track customer) {
+                <mat-chip (removed)="removeSelectedCustomer(customer)" [removable]="true">
+                  <span>{{ typeof customer === 'string' ? customer : customer.name }}</span>
+                  <button matChipRemove [attr.aria-label]="'Xóa ' + (typeof customer === 'string' ? customer : customer.name)">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              }
+            </mat-chip-set>
+            <input 
+              #customerInput
+              placeholder="{{SelectedKhachhang.length === 0 ? 'Tìm và chọn nhiều khách hàng' : 'Thêm khách hàng'}}"
+              [matAutocomplete]="auto"
+              (keyup)="doFilterKhachhang($event)"
+              matInput>
+            <mat-autocomplete 
+              #auto="matAutocomplete" 
+              (optionSelected)="onCustomerSelected($event)" 
+              class="max-w-none"
+              panelWidth="auto">
+              @for (option of filterListKhachhang; track option) {
+                <mat-option [value]="typeof option === 'string' ? option : option.name" class="!whitespace-normal !h-auto !py-2">
+                  <span class="text-sm">{{ typeof option === 'string' ? option : option.name }}</span>
+                  @if (typeof option !== 'string' && option.makh) {
+                    <small class="text-xs text-gray-500 block">Mã KH: {{ option.makh }}</small>
+                  }
+                </mat-option>
+              }
+            </mat-autocomplete>
+            
+            @if (SelectedKhachhang.length > 0) {
+            <button matTooltip="Xóa tất cả khách hàng đã chọn" (click)="clearAllSelectedCustomers()" 
+              color="warn" mat-icon-button matSuffix>
+              <mat-icon>close</mat-icon>
+            </button>
+            }
+          </mat-form-field>
+                    <!-- Selected customers display with chips -->
+          <!-- @if (SelectedKhachhang.length > 0) {
+          <div class="flex flex-wrap gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <span class="text-sm font-medium text-blue-800 flex items-center mr-2">
+              <mat-icon class="mr-1 text-blue-600" style="font-size: 18px;">people</mat-icon>
+              Đã chọn {{SelectedKhachhang.length}} khách hàng:
+            </span>
+            @for (customer of SelectedKhachhang; track customer.id) {
+            <mat-chip-set>
+              <mat-chip class="bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
+                <span class="text-xs font-medium">{{ customer.name }}</span>
+                <button matChipRemove (click)="removeSelectedCustomer(customer)" class="ml-1 hover:text-red-600">
+                  <mat-icon class="text-xs">cancel</mat-icon>
+                </button>
+              </mat-chip>
+            </mat-chip-set>
+            }
+          </div>
+          } -->
+        </div>
+
+
+
+    </div>
+    }
+
+
+
+    <!-- Table với loading state -->
+    <div class="w-full overflow-auto relative">
+      <!-- Loading indicator cho table -->
+      <div *ngIf="isLoading && dataSource.data.length === 0"
+        class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 z-10">
+        <div class="flex flex-col items-center space-y-4">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <span class="text-gray-600">Đang tải dữ liệu...</span>
+        </div>
+      </div>
+
+      <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
+        @for (column of displayedColumns; track column) {
+        <ng-container [matColumnDef]="column">
+          <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
+            <span class="max-w-40 line-clamp-4 me-4">
+              {{ ColumnName[column] }}
+            </span>
+            <span class="z-10 material-symbols-outlined text-gray-500" [matMenuTriggerFor]="menu"
+              #menuTrigger="matMenuTrigger">
+              filter_alt
+            </span>
+            <mat-menu #menu="matMenu">
+              <div (click)="$event.stopPropagation()" class="cursor-pointer flex flex-col space-y-4 p-3">
+                <div class="relative w-full">
+                  <input type="text" placeholder="Tìm Kiếm..." (keyup)="doFilterHederColumn($event, column)"
+                    class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
+                  <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <span class="material-symbols-outlined text-gray-500">search</span>
+                  </div>
+                </div>
+                <div class="flex flex-row space-x-2 items-center justify-between">
+                  <div class="flex flex-row space-x-2 items-center">
+                    <span class="text-xs text-blue-600 underline" (click)="
+                        ChosenAll(
+                          FilterHederColumn(dataSource.filteredData, column)
+                        )
+                      ">Chọn Tất Cả
+                      {{
+                      FilterHederColumn(dataSource.filteredData, column)
+                      .length || 0
+                      }}</span>
+                    <span class="text-xs text-blue-600 underline" (click)="EmptyFiter()">Xoá</span>
+                  </div>
+
+                  <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
+                </div>
+                <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
+                  <div *ngFor="
+                      let item of FilterHederColumn(
+                        dataSource.filteredData,
+                        column
+                      );
+                      trackBy: trackByFn
+                    " (click)="ChosenItem(item, column)"
+                    class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
+                    <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>
+                    @switch (column) { @case ('createdAt') {
+                    <span>{{ item[column] | date : "dd/MM/yyyy" }}</span>
+                    } @case ('updatedAt') {
+                    <span>{{ item[column] | date : "dd/MM/yyyy" }}</span>
+                    } @case ('ngaygiao') {
+                    <span>{{ item[column] | date : "dd/MM/yyyy" }}</span>
+                    } @case ('haohut') {
+                    <span>{{ item[column] }}%</span>
+                    } @default {
+                    <span> {{ item[column] || "Trống" }}</span>
+                    } }
+                  </div>
+                </div>
+                <div class="flex flex-row space-x-2 items-end justify-end">
+                  <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">
+                    Đóng
+                  </button>
+                  <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)">
+                    Áp Dụng
+                  </button>
+                </div>
+              </div>
+            </mat-menu>
+          </th>
+          <td mat-cell *matCellDef="let row; let idx = index">
+            @switch (column) { @case ('STT') {
+            <span class="max-w-40 line-clamp-4 flex items-center" (click)="toggleDonhang(row)">
+              {{ idx + 1 }}
+              <span *ngIf="CheckItemInDonhang(row)" class="material-symbols-outlined">check_box</span>
+            </span>
+            } @case ('madonhang') {
+            <span class="max-w-40 line-clamp-4 font-bold text-blue-700">
+              {{ row[column] }}
+            </span>
+            } @case ('createdAt') {
+            <span class="max-w-40 line-clamp-4 text-xs">
+              {{ row[column] | date : "HH:mm:ss dd/MM/yyyy" }}
+            </span>
+            } @case ('ngaygiao') {
+            <span class="max-w-40 line-clamp-4">
+              {{ row[column] | date : "dd/MM/yyyy" }}
+            </span>
+            } @case ('khachhang') {
+            <span class="max-w-40 line-clamp-4">
+              {{ row[column].name }}
+            </span>
+            } 
+            @case ('dvt') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ row[column] }}
+            </span>
+            } 
+            @case ('soluong') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ row[column] | number : "1.0-3" }}
+            </span>
+            } 
+            @case ('tong') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ row[column] | number : "1.0-3" }}
+            </span>
+            } 
+            @case ('tongvat') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ row[column] | number : "1.0-3" }}
+            </span>
+            } 
+            @case ('tongtien') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ row[column] | number : "1.0-3" }}
+            </span>
+            } 
+             @case ('isActive') {
+            <span class="max-w-40 line-clamp-4">
+              @if (row[column]) {
+              <mat-icon class="text-green-500">check_circle</mat-icon>
+              } @else {
+              <mat-icon class="text-red-500">cancel</mat-icon>
+              }
+            </span>
+            } @case ('status') {
+            <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
+                'text-blue-500': row[column] === 'dadat',
+                'text-yellow-500': row[column] === 'dagiao',
+                'text-green-500': row[column] === 'danhan',
+                'text-purple-500': row[column] === 'hoanthanh',
+                'text-red-500': row[column] === 'huy'
+              }">
+              {{ Trangthaidon[row[column]] }}
+            </span>
+            } @case ('updatedAt') {
+            <span class="max-w-40 line-clamp-4 text-xs">
+              {{ row[column] | date : "HH:mm:ss dd/MM/yyyy" }}
+            </span>
+            } @default {
+            <span class="max-w-40 line-clamp-4">
+              {{ row[column] }}
+            </span>
+            } }
+          </td>
+        </ng-container>
+        }
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="toggleDonhang(row)" class="hover:bg-slate-100 {{
+            CheckItemInDonhang(row) ? '!bg-slate-200' : ''
+          }}"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell p-4" [attr.colspan]="displayedColumns.length">
+            <div *ngIf="!isLoading" class="text-center py-8">
+              <div class="text-gray-500 mb-2">
+                <mat-icon class="text-4xl">search_off</mat-icon>
+              </div>
+              <span class="text-gray-500">Không tìm thấy dữ liệu</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <!-- <mat-paginator [pageSizeOptions]="[10]"></mat-paginator> -->
+  </div>
+</mat-drawer-container>
+
+<ng-template #dialogCreateTemplate>
+  <h2 mat-dialog-title>
+    Công Nợ
+    <button mat-icon-button color="primary" (click)="printContent()">
+      <mat-icon>print</mat-icon>
+    </button>
+  </h2>
+  <mat-dialog-content>
+    <div class="lg:min-w-[400px] w-full h-full flex flex-col space-y-8 items-center p-4">
+      <div class="w-full overflow-x-auto">
+        <table id="printContent" class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
+                NGÀY GIAO
+              </th>
+              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
+                MÃ KHÁCH HÀNG
+              </th>
+              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
+                TÊN KHÁCH HÀNG
+              </th>
+              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
+                MÃ ĐƠN HÀNG
+              </th>
+              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
+                TỔNG TIỀN
+              </th>
+              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
+                MÃ HÀNG
+              </th>
+              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
+                TÊN HÀNG
+              </th>
+              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
+                ĐVT
+              </th>
+              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
+                SỐ LƯỢNG
+              </th>
+              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
+                ĐƠN GIÁ
+              </th>
+              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">
+                THÀNH TIỀN
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let item of editDonhang; let i = index">
+              <tr *ngFor="let item1 of item.sanpham; let j = index">
+                <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length"
+                  class="p-2 border border-gray-300 align-middle text-center">
+                  {{ item.ngaygiao | date : "dd/MM/yyyy" }}
+                </td>
+                <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length"
+                  class="p-2 border border-gray-300 align-middle text-center">
+                  {{ item.makh }}
+                </td>
+                <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length"
+                  class="p-2 border border-gray-300 align-middle text-center">
+                  {{ item.name }}
+                </td>
+                <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length"
+                  class="p-2 border border-gray-300 align-middle text-center">
+                  {{ item.madonhang }}
+                </td>
+                <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length"
+                  class="p-2 border border-gray-300 align-middle text-center">
+                  {{ TinhTong(item.sanpham, "ttgiao") | number : "1.0-0" }}
+                </td>
+                <td class="p-2 border border-gray-300 text-center">
+                  {{ item1.masp }}
+                </td>
+                <td class="p-2 border border-gray-300">{{ item1.title }}</td>
+                <td class="p-2 border border-gray-300 text-center">
+                  {{ item1.dvt }}
+                </td>
+                <td class="p-2 border border-gray-300 text-right">
+                  {{ item1.soluong | number : "1.1-3" }}
+                </td>
+                <td class="p-2 border border-gray-300 text-right">
+                  {{ item1.giaban | number : "1.0-0" }}
+                </td>
+                <td class="p-2 border border-gray-300 text-right">
+                  {{ item1.ttgiao | number : "1.0-0" }}
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions [align]="'end'">
+    <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
+  </mat-dialog-actions>
+</ng-template>
+
+
+<ng-template #dialogPreviewExport>
+  <h2 mat-dialog-title>Xem Trước Mẫu Excel</h2>
+<mat-dialog-content class="mat-typography">
+    <div class="w-full overflow-x-auto">
+      <table id="exporttable" class="text-xs border-collapse border border-gray-300">
+        <thead>
+        <tr>
+        <th colspan="4" class="text-start p-2 border"><img src="/images/logo.svg" class="h-20 mx-auto"></th>
+        <th colspan="7" class="text-start p-2  flex flex-col gap-2">
+          <span class="text-md font-bold">CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA</span>
+          <span>HTX: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An</span>
+          <span>VP: Tòa nhà An Phú Plaza, 117-119 Lý Chính Thắng, P.7. Q.3,</span>
+          <span>TP.HCM Kho sơ chế: 30 Kha Vạn Cân, P. Hiệp Bình Chánh,</span>
+          <span>TP.Thủ Đức, TP.HCM Kho Đà Lạt: 69 Trần Thủ Độ,</span>
+          <span>TT Liên Nghĩa, Huyện Đức Trọng, Tỉnh Lâm Đồng.</span>
+          <span>Website: rausachtrangia.com - Hotline: 090.245.8081</span>
+        </th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+        <th colspan="11" class="text-md font-bold text-start p-2 border">CHI TIẾT ĐỐI CHIẾU CÔNG NỢ</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+        <th colspan="11" class="text-start p-2 border">
+          Từ Ngày {{SearchParams.Batdau |date:'dd/MM/yyyy'}} : - Đến Ngày : {{SearchParams.Ketthuc|date:'dd/MM/yyyy'}}
+        </th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+           <th colspan="11" class="text-start p-2 border">Tên Khách Hàng : {{exampleExport[0]?.tenkh}}</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+        <th colspan="11" class="text-start p-2 border">Địa Chỉ : {{exampleExport[0]?.diachi}}</th>
+          </tr>
+        </thead>
+        <tbody>
+         <tr>
+        <th colspan="4" class="text-start p-2 border ">Người Liên hệ : {{exampleExport[0]?.lienhe}}</th>
+        <th colspan="7" class="text-start p-2 border">Email : {{exampleExport[0]?.email}}</th>
+          </tr>
+        </tbody>
+
+        <thead>
+          <tr class="text-start">
+        <th colspan="11" class="p-8"></th>
+          </tr>
+        </thead>
+        
+        <thead>
+          <tr class="bg-gray-300">
+        <th class="p-2 border border-gray-300 text-center font-bold">NGÀY GIAO</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">MÃ KHÁCH HÀNG</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">TÊN KHÁCH HÀNG</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">MÃ ĐƠN HÀNG</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">MÃ HÀNG</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">TÊN HÀNG</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">ĐVT</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">SỐ LƯỢNG</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">ĐƠN GIÁ</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">THÀNH TIỀN</th>
+        <th class="p-2 border border-gray-300 text-center font-bold">GHI CHÚ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of exampleExport; let i = index" class="hover:bg-gray-50">
+        <td class="p-2 border border-gray-300 text-center">
+          {{ item.ngaygiao | date : "dd/MM/yyyy" }}
+        </td>
+        <td class="p-2 border border-gray-300 text-center">
+          {{ item.makh }}
+        </td>
+        <td class="p-2 border border-gray-300">
+          {{ item.tenkh }}
+        </td>
+        <td class="p-2 border border-gray-300 text-center">
+          {{ item.madonhang }}
+        </td>
+        <td class="p-2 border border-gray-300 text-center">
+          {{ item.masp }}
+        </td>
+        <td class="p-2 border border-gray-300">
+          {{ item.tensp }}
+        </td>
+        <td class="p-2 border border-gray-300 text-center">
+          {{ item.dvt }}
+        </td>
+        <td class="p-2 border border-gray-300 text-right">
+          {{ item.slnhan | number : "1.1-3" }}
+        </td>
+        <td class="p-2 border border-gray-300 text-right">
+          {{ item.giaban | number : "1.0-0" }}
+        </td>
+        <td class="p-2 border border-gray-300 text-right">
+          {{ item.ttnhan | number : "1.0-0" }}
+        </td>
+        <td class="p-2 border border-gray-300 text-right">
+          {{ item.ghichu }}
+        </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Đóng</button>
+</mat-dialog-actions>
+</ng-template>
+
+<!-- Dialog xác nhận đồng bộ giá và VAT -->
+<ng-template #ConfirmDongboDialog>
+    <div mat-dialog-title class="flex items-center space-x-2">
+        <mat-icon color="primary">currency_exchange</mat-icon>
+        <span class="font-semibold text-xl">Xác nhận đồng bộ giá và VAT</span>
+    </div>
+    
+    <mat-dialog-content class="mat-typography">
+        <div class="flex flex-col space-y-4 py-4">
+            <div class="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                <mat-icon class="text-blue-600 mt-1">info</mat-icon>
+                <div class="flex-1">
+                    <h4 class="font-semibold text-blue-800 mb-2">Thông tin đồng bộ</h4>
+                    <p class="text-sm text-blue-700">
+                        Đồng bộ giá và VAT cho <strong class="font-semibold">{{editDonhang.length}} đơn hàng</strong> được chọn
+                    </p>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <h4 class="font-semibold text-gray-800">Thao tác sẽ thực hiện:</h4>
+                <ul class="space-y-2 text-sm text-gray-700">
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Cập nhật giá bán từ bảng giá tương ứng</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Tính lại tổng tiền của đơn hàng</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Tính lại VAT dựa trên tổng tiền và tỷ lệ VAT</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Cập nhật trường tongvat cho tất cả đơn hàng</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Lưu thay đổi vào cơ sở dữ liệu</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="flex items-start space-x-3 p-4 bg-amber-50 rounded-lg border-l-4 border-amber-400">
+                <mat-icon class="text-amber-600 mt-1">warning</mat-icon>
+                <div class="flex-1">
+                    <h4 class="font-semibold text-amber-800 mb-2">Lưu ý quan trọng</h4>
+                    <p class="text-sm text-amber-700">
+                        Thao tác này sẽ thay đổi dữ liệu hiện tại và không thể hoàn tác. 
+                        Vui lòng đảm bảo bạn đã kiểm tra kỹ trước khi thực hiện.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions align="end" class="border-t pt-4">
+        <button mat-button mat-dialog-close>Hủy</button>
+        <button mat-flat-button color="primary" [mat-dialog-close]="'true'" class="ml-2">
+            <mat-icon class="mr-1">currency_exchange</mat-icon>
+            Xác nhận đồng bộ
+        </button>
+    </mat-dialog-actions>
+</ng-template>
+
+
+

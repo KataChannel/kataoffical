@@ -1,0 +1,254 @@
+<div class="bulk-price-update-container">
+  <!-- Header -->
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>upload</mat-icon>
+        Cập Nhật Giá Hàng Loạt
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p class="description">
+        Cập nhật giá cho nhiều sản phẩm cùng lúc bằng cách nhập Excel hoặc thêm thủ công
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Configuration Form -->
+  <mat-card class="config-card">
+    <mat-card-content>
+      <form [formGroup]="updateForm">
+        <div class="form-row">
+          <!-- Select Banggia -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Bảng giá</mat-label>
+            <mat-select formControlName="banggiaId" required>
+              <mat-option *ngFor="let banggia of banggiaList()" [value]="banggia.id">
+                {{ banggia.title }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>list</mat-icon>
+          </mat-form-field>
+
+          <!-- Update Type -->
+          <mat-form-field appearance="outline">
+            <mat-label>Loại cập nhật</mat-label>
+            <mat-select formControlName="updateType">
+              <mat-option value="manual">Thủ công</mat-option>
+              <mat-option value="percent">Theo %</mat-option>
+              <mat-option value="fixed">Số tiền cố định</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Percent Change (conditional) -->
+          <mat-form-field appearance="outline" *ngIf="updateForm.value.updateType === 'percent'">
+            <mat-label>Thay đổi (%)</mat-label>
+            <input matInput type="number" formControlName="percentChange">
+            <span matSuffix>%</span>
+          </mat-form-field>
+
+          <!-- Fixed Amount (conditional) -->
+          <mat-form-field appearance="outline" *ngIf="updateForm.value.updateType === 'fixed'">
+            <mat-label>Số tiền</mat-label>
+            <input matInput type="number" formControlName="fixedAmount">
+            <span matSuffix>đ</span>
+          </mat-form-field>
+
+          <!-- Reason -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Lý do thay đổi</mat-label>
+            <input matInput formControlName="reason" required>
+            <mat-icon matPrefix>edit</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" (click)="downloadTemplate()">
+            <mat-icon>download</mat-icon>
+            Tải mẫu Excel
+          </button>
+
+          <button mat-raised-button color="accent" (click)="fileInput.click()">
+            <mat-icon>upload_file</mat-icon>
+            Nhập từ Excel
+          </button>
+          <input #fileInput type="file" accept=".xlsx,.xls" (change)="onFileSelected($event)" style="display: none;">
+
+          <button mat-raised-button (click)="addManualRow()">
+            <mat-icon>add</mat-icon>
+            Thêm thủ công
+          </button>
+
+          <button mat-raised-button 
+                  *ngIf="updateForm.value.updateType !== 'manual'"
+                  (click)="applyBulkChange()"
+                  [disabled]="priceUpdates().length === 0">
+            <mat-icon>calculate</mat-icon>
+            Áp dụng thay đổi
+          </button>
+
+          <button mat-raised-button color="warn" (click)="clearAll()" [disabled]="priceUpdates().length === 0">
+            <mat-icon>clear</mat-icon>
+            Xóa tất cả
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Summary -->
+  <mat-card class="summary-card" *ngIf="priceUpdates().length > 0">
+    <mat-card-content>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <mat-icon color="primary">inventory</mat-icon>
+          <div class="summary-value">{{ summary().total }}</div>
+          <div class="summary-label">Tổng sản phẩm</div>
+        </div>
+        <div class="summary-item success">
+          <mat-icon color="accent">check_circle</mat-icon>
+          <div class="summary-value">{{ summary().success }}</div>
+          <div class="summary-label">Thành công</div>
+        </div>
+        <div class="summary-item failed">
+          <mat-icon color="warn">error</mat-icon>
+          <div class="summary-value">{{ summary().failed }}</div>
+          <div class="summary-label">Thất bại</div>
+        </div>
+        <div class="summary-item change">
+          <mat-icon [class.positive]="summary().totalChange >= 0" [class.negative]="summary().totalChange < 0">
+            {{ summary().totalChange >= 0 ? 'trending_up' : 'trending_down' }}
+          </mat-icon>
+          <div class="summary-value" [class.positive]="summary().totalChange >= 0" [class.negative]="summary().totalChange < 0">
+            {{ formatCurrency(summary().totalChange) }}
+          </div>
+          <div class="summary-label">Tổng thay đổi</div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Price Updates Table -->
+  <mat-card class="table-card" *ngIf="priceUpdates().length > 0">
+    <mat-card-content>
+      <div class="table-header">
+        <h3>Danh sách cập nhật ({{ priceUpdates().length }} sản phẩm)</h3>
+        <div class="preview-actions">
+          <button mat-button (click)="previewChanges()" [disabled]="previewing()">
+            <mat-icon>visibility</mat-icon>
+            Xem trước
+          </button>
+          <button mat-raised-button color="primary" (click)="applyChanges()" [disabled]="processing()">
+            <mat-spinner *ngIf="processing()" diameter="20"></mat-spinner>
+            <mat-icon *ngIf="!processing()">save</mat-icon>
+            {{ processing() ? 'Đang xử lý...' : 'Áp dụng thay đổi' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="priceUpdates()" class="price-table">
+          <!-- Product Name -->
+          <ng-container matColumnDef="sanphamTitle">
+            <th mat-header-cell *matHeaderCellDef>Sản phẩm</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="product-cell">
+                <strong>{{ row.sanphamTitle }}</strong>
+                <small>{{ row.sanphamId }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Current Price -->
+          <ng-container matColumnDef="currentPrice">
+            <th mat-header-cell *matHeaderCellDef>Giá hiện tại</th>
+            <td mat-cell *matCellDef="let row">
+              {{ formatCurrency(row.currentPrice) }}
+            </td>
+          </ng-container>
+
+          <!-- New Price -->
+          <ng-container matColumnDef="newPrice">
+            <th mat-header-cell *matHeaderCellDef>Giá mới</th>
+            <td mat-cell *matCellDef="let row">
+              <strong [class.price-increase]="row.change > 0" [class.price-decrease]="row.change < 0">
+                {{ formatCurrency(row.newPrice) }}
+              </strong>
+            </td>
+          </ng-container>
+
+          <!-- Change Amount -->
+          <ng-container matColumnDef="change">
+            <th mat-header-cell *matHeaderCellDef>Chênh lệch</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="change-badge" [class.positive]="row.change > 0" [class.negative]="row.change < 0">
+                {{ row.change > 0 ? '+' : '' }}{{ formatCurrency(row.change) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Change Percent -->
+          <ng-container matColumnDef="changePercent">
+            <th mat-header-cell *matHeaderCellDef>%</th>
+            <td mat-cell *matCellDef="let row">
+              <mat-chip [class.increase-chip]="row.changePercent > 0" [class.decrease-chip]="row.changePercent < 0">
+                <mat-icon>{{ row.changePercent > 0 ? 'trending_up' : row.changePercent < 0 ? 'trending_down' : 'remove' }}</mat-icon>
+                {{ row.changePercent > 0 ? '+' : '' }}{{ row.changePercent.toFixed(1) }}%
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Reason -->
+          <ng-container matColumnDef="reason">
+            <th mat-header-cell *matHeaderCellDef>Lý do</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="reason-text">{{ row.reason }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Status -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Trạng thái</th>
+            <td mat-cell *matCellDef="let row">
+              <mat-chip *ngIf="row.status === 'pending'" class="status-pending">
+                <mat-icon>schedule</mat-icon>
+                Chờ xử lý
+              </mat-chip>
+              <mat-chip *ngIf="row.status === 'success'" class="status-success">
+                <mat-icon>check_circle</mat-icon>
+                Thành công
+              </mat-chip>
+              <mat-chip *ngIf="row.status === 'error'" class="status-error" [matTooltip]="row.error || ''">
+                <mat-icon>error</mat-icon>
+                Thất bại
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+            <td mat-cell *matCellDef="let row; let i = index">
+              <button mat-icon-button color="warn" (click)="removeRow(i)" [disabled]="processing()">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Empty State -->
+  <mat-card class="empty-state" *ngIf="priceUpdates().length === 0">
+    <mat-card-content>
+      <mat-icon>inbox</mat-icon>
+      <h3>Chưa có dữ liệu</h3>
+      <p>Nhập file Excel hoặc thêm sản phẩm thủ công để bắt đầu</p>
+    </mat-card-content>
+  </mat-card>
+</div>

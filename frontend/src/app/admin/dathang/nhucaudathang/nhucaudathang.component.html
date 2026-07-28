@@ -1,0 +1,676 @@
+<div class="flex flex-col space-y-2 h-screen w-full p-2 bg-gray-50">
+        <div class="border p-1 cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center bg-white rounded-lg">
+            <div class="w-full flex flex-wrap space-x-2 items-center">               
+                <div class="relative">
+                    <input type="text" placeholder="Tìm kiếm sản phẩm, mã sản phẩm..." (keyup)="applyGlobalFilter($event)" 
+                        class="block pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <span class="material-symbols-outlined text-gray-500">search</span>
+                    </div>
+                </div>
+
+                
+                <!-- Temp Storage Management Buttons -->
+                <div class="flex space-x-2 items-center">
+                    <!-- <button matTooltip="Xuất dữ liệu tạm thời" 
+                            mat-stroked-button 
+                            color="primary" 
+                            (click)="exportTempChanges()"
+                            [disabled]="getTempChangesCount() === 0"
+                            class="text-sm">
+                        <mat-icon>download</mat-icon>
+                        Xuất tạm ({{ getTempChangesCount() }})
+                    </button>
+                     -->
+                    <button matTooltip="Áp dụng thay đổi tạm thời" 
+                            mat-raised-button 
+                            color="accent" 
+                            (click)="applyTempChanges()"
+                            [disabled]="getTempChangesCount() === 0"
+                            class="text-sm">
+                        <mat-icon>check</mat-icon>
+                        Áp dụng ({{ getTempChangesCount() }})
+                    </button>
+                    
+                    <button matTooltip="Xóa dữ liệu tạm thời" 
+                            mat-stroked-button 
+                            color="warn" 
+                            (click)="clearTempStorage()"
+                            [disabled]="getTempChangesCount() === 0"
+                            class="text-sm">
+                        <mat-icon>delete</mat-icon>
+                        Xóa tạm
+                    </button>
+                </div>
+                
+                <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                    <mat-icon>tune</mat-icon>
+                </button>
+                
+                <!-- Date Range Filter -->
+                <button matTooltip="Lọc theo ngày" mat-icon-button color="primary" [matMenuTriggerFor]="dateMenu" #dateMenuTrigger="matMenuTrigger" aria-label="Date filter menu">
+                    <mat-icon [class.text-blue-600]="isDateRangeEnabled">date_range</mat-icon>
+                </button>
+                <mat-menu #dateMenu="matMenu" class="date-filter-menu">
+                    <div class="p-4" (click)="$event.stopPropagation()">
+                        <div class="flex flex-col space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="font-semibold">Lọc theo khoảng thời gian</span>
+                            </div>
+                                <div class="flex flex-col space-y-3">
+                                    <!-- Start Date -->
+                                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                        <mat-label>Từ ngày</mat-label>
+                                        <input matInput 
+                                               [matDatepicker]="startPicker" 
+                                               [(ngModel)]="batdau"
+                                               (dateChange)="onStartDateChange($event)"
+                                               readonly
+                                               placeholder="Chọn ngày bắt đầu">
+                                        <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+                                        <mat-datepicker #startPicker></mat-datepicker>
+                                    </mat-form-field>
+                                    
+                                    <!-- End Date -->
+                                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                        <mat-label>Đến ngày</mat-label>
+                                        <input matInput 
+                                               [matDatepicker]="endPicker" 
+                                               [(ngModel)]="ketthuc"
+                                               (dateChange)="onEndDateChange($event)"
+                                               readonly
+                                               placeholder="Chọn ngày kết thúc">
+                                        <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+                                        <mat-datepicker #endPicker></mat-datepicker>
+                                    </mat-form-field>
+                                    
+                                    <!-- Quick Date Buttons -->
+                                    <div class="flex flex-wrap gap-2">
+                                        <button mat-stroked-button color="primary" (click)="setToday(dateMenuTrigger)" class="text-xs">
+                                            Hôm nay
+                                        </button>
+                                        <button mat-stroked-button color="primary" (click)="setThisWeek(dateMenuTrigger)" class="text-xs">
+                                            Tuần này
+                                        </button>
+                                        <button mat-stroked-button color="primary" (click)="setThisMonth(dateMenuTrigger)" class="text-xs">
+                                            Tháng này
+                                        </button>
+                                        <button mat-stroked-button color="warn" (click)="clearDateFilter()" class="text-xs">
+                                            Xóa lọc
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Apply Filter Button -->
+                                    <div class="flex justify-center">
+                                        <button mat-raised-button 
+                                                [color]="hasUnappliedDateChanges ? 'warn' : 'primary'" 
+                                                (click)="applyDateFilter(dateMenuTrigger)" 
+                                                class="w-full">
+                                            <mat-icon>{{ hasUnappliedDateChanges ? 'pending' : 'filter_alt' }}</mat-icon>
+                                            {{ hasUnappliedDateChanges ? 'Có thay đổi - Áp dụng' : 'Áp dụng lọc' }}
+                                        </button>
+                                    </div>
+                                    
+                                    @if (hasUnappliedDateChanges) {
+                                        <div class="text-xs text-orange-600 bg-orange-50 p-2 rounded text-center">
+                                            ⚠️ Có thay đổi ngày chưa được áp dụng
+                                        </div>
+                                    }
+                                    
+                                    <!-- Date Range Display -->
+                                    <div class="text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                                        <strong>Khoảng thời gian:</strong><br>
+                                        {{ formatDateForDisplay(batdau, 'DD/MM/YYYY') }} - {{ formatDateForDisplay(ketthuc, 'DD/MM/YYYY') }}
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </mat-menu>
+                <mat-menu #menu="matMenu">
+                    <div class="p-4">
+                        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                            <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput placeholder="Tìm Kiếm" />
+                            <mat-icon matPrefix>search</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col max-h-80 overflow-auto">
+                        @for (item of FilterColumns; track item.key) {
+                        <button mat-menu-item (click)="toggleColumn(item);$event.stopPropagation()">
+                            <mat-icon>{{item.isShow ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
+                            <span>{{item.value}}</span>
+                        </button>
+                        }
+                    </div>
+                </mat-menu>
+                <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(TonghopsExportFinal,'Tonghop')" [disabled]="isExportingExcel" color="primary" mat-icon-button>
+                    @if (isExportingExcel) {
+                        <mat-spinner diameter="20"></mat-spinner>
+                    } @else {
+                        <mat-icon>file_download</mat-icon>
+                    }
+                </button>
+                
+                <button matTooltip="Làm mới dữ liệu" (click)="refresh()" [disabled]="isLoading || isRefreshing" color="primary" mat-icon-button>
+                    <mat-icon>refresh</mat-icon>
+                </button>
+                <!-- <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
+                    <mat-icon>file_upload</mat-icon>
+                </button> -->
+                <input class="hidden" (change)="ImporExcel($event)" type="file" #uploadfile>
+                <!-- <button matTooltip="Tọi dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
+                    <mat-icon>cloud_download</mat-icon>
+                </button> -->
+                <span (click)="pageSize = this.TonghopsFinal.length;updateDisplayData()" class="flex whitespace-nowrap p-2 rounded-lg bg-slate-200">
+                    {{this.TonghopsFinal.length > 0 ? this.TonghopsFinal.length : this.Listsanpham().length}} Sản Phẩm
+                    @if (isDateRangeEnabled) {
+                        <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                            📅 {{ formatDateForDisplay(batdau, 'DD/MM') }} - {{ formatDateForDisplay(ketthuc, 'DD/MM') }}
+                        </span>
+                    }
+                </span>
+            </div>
+        </div>
+        
+        <!-- Loading Overlay removed as per user request -->
+
+        
+        <div class="border rounded-lg w-full h-full overflow-auto">
+            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
+                @for (column of displayedColumns; track column) {
+                <ng-container [matColumnDef]="column">
+                    <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
+                        @switch (column) {
+                            @case ('expand') {
+                                <span></span>
+                            }
+                            @default {
+                                <div class="flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <span class="max-w-32 line-clamp-2 me-2">
+                                            {{ ColumnName[column] }}
+                                        </span>
+                                        @if (ColumnSubtitle[column]) {
+                                            <span class="text-[9px] text-gray-400 font-normal leading-tight max-w-32 whitespace-nowrap">{{ ColumnSubtitle[column] }}</span>
+                                        }
+                                    </div>
+                                    <span class="z-10 material-symbols-outlined text-gray-500 cursor-pointer" 
+                                          [matMenuTriggerFor]="filterMenu"  #menuTrigger="matMenuTrigger" matTooltip="Filter {{ColumnName[column]}}">
+                                        filter_alt
+                                    </span>
+                                </div>
+                                <mat-menu #filterMenu="matMenu" class="filter-menu">
+                                    <div (click)="$event.stopPropagation()" class="cursor-pointer flex flex-col space-y-4 p-3">                                        
+                                        <div class="relative w-full">
+                                            <input type="text"
+                                                placeholder="Tìm kiếm {{ColumnName[column]}}..." 
+                                                (keyup)="doFilterHederColumn($event,column)"
+                                                class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <span class="material-symbols-outlined text-gray-500">search</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-row space-x-2 items-center justify-between">
+                                            <div class="flex flex-row space-x-2 items-center">
+                                                <span class="text-xs text-blue-600 underline cursor-pointer" 
+                                                      (click)="ChosenAll(getCurrentFilteredData(column))">
+                                                    Chọn Tất Cả ({{getCurrentFilteredData(column).length||0}})
+                                                </span>
+                                                <span class="text-xs text-blue-600 underline cursor-pointer" (click)="EmptyFiter()">Xoá</span>
+                                            </div>
+                                            <span class="text-xs text-blue-600 underline cursor-pointer" (click)="ResetFilter()">Reset</span>
+                                        </div>
+                                        <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
+                                            <div *ngFor="let item of getCurrentFilteredData(column); trackBy:trackByFn" 
+                                                 (click)="ChosenItem(item,column)" 
+                                                 class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100 cursor-pointer">
+                                                <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>
+                                                <span *ngIf="!CheckItem(item)" class="w-6"></span>
+                                                <span>{{item[column]||'Trống'}}</span>                                 
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-row space-x-2 items-end justify-end">
+                                            <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)">Áp Dụng</button>
+                                        </div>
+                                    </div>
+                                </mat-menu>
+                            }
+                        }
+                    </th>
+                    <td mat-cell *matCellDef="let row; let idx = index" class="cursor-pointer">
+                        @switch (column) {
+                            @case ('expand') {
+                                <div class="flex items-center space-x-2">
+                                    <button mat-icon-button color="primary"
+                                            (click)="toggleExpanded(row); $event.stopPropagation()" 
+                                            [attr.aria-label]="'Xem chi tiết'"
+                                            [matTooltip]="'Xem đặt hàng & đơn hàng'"
+                                            class="transition-all duration-300 ease-in-out hover:scale-110 relative">
+                                        <mat-icon 
+                                            class="transition-transform duration-300 ease-in-out text-blue-600">
+                                            visibility
+                                        </mat-icon>
+
+                                    </button>
+                                    <!-- Data count indicator -->
+                                    @if (hasNestedData(row.masp)) {
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
+                                            {{ getTotalNestedDataCount(row.masp) }}
+                                        </span>
+                                    }
+                                </div>
+                            }
+                            @case ('STT') {
+                                <span class="max-w-16 line-clamp-1">
+                                    {{ idx + 1 }}
+                                </span>
+                            }
+                            @case ('title') {
+                                <div class="flex items-center space-x-2">
+                                    <!-- Status Indicators (Labels from Image 2) -->
+                                    <div class="flex -space-x-1">
+                                        @if ((row['tongkho'] || 0) - (row['khachgiao'] || 0) < 0) {
+                                            <div class="w-2.5 h-2.5 rounded-full bg-red-500 border border-white shadow-sm" matTooltip="Hết hàng / Nợ"></div>
+                                        }
+                                        @if (checkStaleOrder(row).isStale || ((row['tongkho'] || 0) - (row['khachgiao'] || 0) !== (row['sltontt'] || 0))) {
+                                            <div class="w-2.5 h-2.5 rounded-full bg-orange-400 border border-white shadow-sm" matTooltip="Treo hàng / Lệch"></div>
+                                        }
+                                        @if (row['incomingStock'] > 0) {
+                                            <div class="w-2.5 h-2.5 rounded-full bg-blue-600 border border-white shadow-sm" matTooltip="Đang về (NCC)"></div>
+                                        }
+                                        @if (row['goiy'] > 0) {
+                                            <div class="w-2.5 h-2.5 rounded-full bg-purple-600 border border-white shadow-sm" matTooltip="Gợi ý cần mua"></div>
+                                        }
+                                    </div>
+                                    <span class="max-w-48 line-clamp-2 font-medium" [matTooltip]="row[column]">
+                                        {{ row[column] }}
+                                    </span>
+                                </div>
+                            }
+                            @case ('masp') {
+                                <span class="max-w-32 line-clamp-1 font-mono text-sm">
+                                    {{ row[column] }}
+                                </span>
+                            }
+                            @case ('slton') {
+                                <div class="flex flex-col items-end min-w-[70px]">
+                                    @let tt = (row['tongkho'] || 0) - (row['khachgiao'] || 0);
+                                    
+                                    <!-- Số Đúng Thực tế (Phiên) và Icon -->
+                                    <div class="flex items-center space-x-1.5">
+                                        <span class="font-semibold text-[14px] tabular-nums" 
+                                              [class.text-red-600]="tt < 0" 
+                                              [class.text-gray-900]="tt >= 0">
+                                            {{ tt | number:'1.0-2' }}
+                                        </span>
+                                        
+                                        @if (row[column] !== tt && row[column] < 0) {
+                                            <mat-icon class="text-red-500 !text-[14px] !w-[14px] !h-[14px] leading-none">warning</mat-icon>
+                                        } @else if (row[column] !== tt) {
+                                            <mat-icon class="text-orange-400 !text-[14px] !w-[14px] !h-[14px] leading-none">info</mat-icon>
+                                        }
+                                    </div>
+
+                                </div>
+                            }
+                            @case ('slchogiao') {
+                                <span class="max-w-20 line-clamp-1 text-end text-orange-600 font-semibold">
+                                    {{ row[column]|number:'1.0-2' }}
+                                </span>
+                            }
+                            @case ('slchonhap') {
+                                <span class="max-w-20 line-clamp-1 text-end text-blue-600 font-semibold">
+                                    {{ row[column]|number:'1.0-2' }}
+                                </span>
+                            }
+                            @case ('SLDat') {
+                                <span class="max-w-20 line-clamp-1 text-end text-purple-600 font-semibold">
+                                    {{ row[column]|number:'1.0-2' }}
+                                </span>
+                            }
+                            @case ('SLGiao') {
+                                <span class="max-w-20 line-clamp-1 text-end text-indigo-600 font-semibold">
+                                    {{ row[column]|number:'1.0-2' }}
+                                </span>
+                            }
+                            <!-- @case ('goiy') {
+                                <span class="max-w-20 line-clamp-1 text-end font-bold" 
+                                      [class.text-red-600]="(parseFloat(GetGoiy(row)) > 0)"
+                                      [class.text-gray-400]="(parseFloat(GetGoiy(row)) == 0)">
+                                    {{ GetGoiy(row) }}
+                                </span>
+                            } -->
+                           @case ('goiy') {
+                                 @if(row[column] > 0) {
+                                  <div class="flex flex-col">
+                                      <span class="text-red-600 font-bold" matTooltip="Cần nhập thêm hàng">{{row[column]|number:'1.0-2'}}</span>
+                                      <span class="text-[9px] text-gray-400 whitespace-nowrap">{{row['khachdat']|number:'1.0-2'}}+{{row['khachgiao']|number:'1.0-2'}}-{{row['tongkho']|number:'1.0-2'}}</span>
+                                  </div>
+                              } @else if(row[column] < -100) {
+                                  <div class="flex flex-col">
+                                      <div class="flex items-center space-x-1 text-orange-600 font-bold" matTooltip="Cảnh báo: Tồn kho quá cao so với nhu cầu">
+                                          <mat-icon class="text-sm w-4 h-4">warning</mat-icon>
+                                          <span>({{GetAbs(row[column])|number:'1.0-2'}})</span>
+                                      </div>
+                                      <span class="text-[9px] text-orange-400 whitespace-nowrap">Dư {{GetAbs(row[column])|number:'1.0-2'}}</span>
+                                  </div>
+                              } @else if(row[column] < 0) {
+                                  <div class="flex flex-col">
+                                      <span class="text-green-600 font-bold">({{GetAbs(row[column])|number:'1.0-2'}})</span>
+                                      <span class="text-[9px] text-green-500">Đủ hàng</span>
+                                  </div>
+                              } @else {
+                                  <span class="text-gray-400 font-bold">{{GetAbs(row[column])|number:'1.0-2'}}</span>
+                              }
+                           }
+                            @case ('sltontt') {
+                                <div class="max-w-24 relative" (click)="$event.stopPropagation()">
+                                    @if (isEditing(row, 'sltontt')) {
+                                        <input 
+                                            type="number" 
+                                            [value]="row[column]"
+                                            (keydown)="onPhysicalStockKeyDown($event, row)"
+                                            (blur)="onPhysicalStockBlur($event, row)"
+                                            class="w-full px-2 py-1 border border-green-400 rounded focus:outline-none focus:ring-2 focus:ring-green-400 text-right font-bold"
+                                            placeholder="0"
+                                            step="0.01"
+                                            autofocus>
+                                    } @else {
+                                        <div 
+                                            (click)="startEdit(row, 'sltontt')" 
+                                            class="cursor-text px-2 py-1 min-h-[40px] rounded hover:bg-green-50 border border-transparent hover:border-green-300 transition-all flex flex-col items-end"
+                                            matTooltip="Click để cập nhật Tồn Thực Tế ngay lập tức (Ghi nhận trực tiếp)">
+                                            <span class="font-bold text-gray-800 text-lg">{{ row[column]|number:'1.0-2' }}</span>
+                                            @if (row['updatedAt']) {
+                                                <span class="text-[9px] text-gray-500 whitespace-nowrap">
+                                                    🕒 {{ formatDateForDisplay(row['updatedAt'], 'HH:mm DD/MM/YY') }}
+                                                </span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            @case ('slsnapshot') {
+                                <div class="flex flex-col items-end min-w-[80px]">
+                                    <span class="font-semibold text-blue-600 text-[14px] tabular-nums">
+                                        {{ row[column] | number:'1.0-2' }}
+                                    </span>
+                                    <span class="text-[9px] text-blue-400 whitespace-nowrap">Số trước chốt (Trace Log)</span>
+                                </div>
+                            }
+                            @case ('chenhlech') {
+                                @let cl = ((row['tongkho'] || 0) - (row['khachgiao'] || 0)) - (row['sltontt'] || 0);
+                                <div class="flex flex-col items-end">
+                                    @if (cl > 0) {
+                                        <span class="font-bold text-blue-600">+{{ cl|number:'1.0-2' }}</span>
+                                        <span class="text-[9px] text-blue-400">HT cao hơn</span>
+                                    } @else if (cl < 0) {
+                                        <span class="font-bold text-red-600">{{ cl|number:'1.0-2' }}</span>
+                                        <span class="text-[9px] text-red-400">HT thấp hơn</span>
+                                    } @else {
+                                        <span class="font-bold text-gray-400">0</span>
+                                        <span class="text-[9px] text-gray-400">Khớp</span>
+                                    }
+                                </div>
+                            }
+                            @case ('createdAt') {
+                                <span class="max-w-28 line-clamp-1 text-sm">
+                                    {{ formatDateForDisplay(row[column], 'DD/MM/YYYY') }}
+                                </span>
+                            }
+                            @case ('updatedAt') {
+                                <span class="max-w-28 line-clamp-1 text-sm">
+                                    {{ formatDateForDisplay(row[column], 'DD/MM/YYYY') }}
+                                </span>
+                            }
+                            @case ('ngaynhan') {
+                                <span class="max-w-28 line-clamp-1 text-sm">
+                                    {{ formatDateForDisplay(row[column], 'DD/MM/YYYY') }}
+                                </span>
+                            }
+                            @case ('isActive') {
+                                <span class="max-w-16 line-clamp-1 text-center">
+                                    @if (row[column]) {
+                                        <mat-icon class="text-green-500">check_circle</mat-icon>
+                                    } @else {
+                                        <mat-icon class="text-red-500">cancel</mat-icon>
+                                    }
+                                </span>
+                            }
+                            @case ('ghichu') {
+                                <div class="max-w-48 relative" (click)="$event.stopPropagation()">
+                                    @if (isEditing(row, 'ghichu')) {
+                                        <input 
+                                            type="text" 
+                                            [value]="getFieldValue(row, 'ghichu')"
+                                            (keydown)="onFieldKeyDown($event, row, 'ghichu')"
+                                            (blur)="onFieldBlur($event, row, 'ghichu')"
+                                            class="w-full px-2 py-1 border border-blue-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            placeholder="Nhập ghi chú..."
+                                            autofocus>
+                                    } @else {
+                                        <div 
+                                            (click)="startEdit(row, 'ghichu')" 
+                                            class="cursor-text px-2 py-1 min-h-[28px] rounded hover:bg-gray-100 border border-transparent hover:border-gray-300 transition-all"
+                                            [class.bg-yellow-50]="hasFieldChanged(row, 'ghichu')"
+                                            [class.border-yellow-400]="hasFieldChanged(row, 'ghichu')"
+                                            [matTooltip]="getFieldValue(row, 'ghichu') || 'Click để chỉnh sửa'">
+                                            <span class="line-clamp-2">
+                                                {{ getFieldValue(row, 'ghichu') || '---' }}
+                                            </span>
+                                            @if (hasFieldChanged(row, 'ghichu')) {
+                                                <mat-icon class="text-orange-500 text-sm absolute -top-1 -right-1">edit</mat-icon>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            @case ('xSLDat') {
+                                <div class="max-w-24 relative" (click)="$event.stopPropagation()">
+                                    @if (isEditing(row, 'xSLDat')) {
+                                        <input 
+                                            type="number" 
+                                            [value]="getFieldValue(row, 'xSLDat')"
+                                            (keydown)="onFieldKeyDown($event, row, 'xSLDat')"
+                                            (blur)="onFieldBlur($event, row, 'xSLDat')"
+                                            class="w-full px-2 py-1 border border-blue-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 text-right"
+                                            placeholder="0"
+                                            min="0"
+                                            autofocus>
+                                    } @else {
+                                        <div 
+                                            (click)="startEdit(row, 'xSLDat')" 
+                                            class="cursor-text px-2 py-1 min-h-[28px] rounded hover:bg-gray-100 border border-transparent hover:border-gray-300 transition-all text-right font-semibold"
+                                            [class.bg-yellow-50]="hasFieldChanged(row, 'xSLDat')"
+                                            [class.border-yellow-400]="hasFieldChanged(row, 'xSLDat')"
+                                            [class.text-purple-600]="getFieldValue(row, 'xSLDat') > 0"
+                                            matTooltip="Click để chỉnh sửa SL đặt">
+                                            <div class="flex flex-col items-end">
+                                                <span>{{ getFieldValue(row, 'xSLDat') || 0 | number:'1.0-2' }}</span>
+                                                <span class="text-[9px] text-gray-500 font-normal whitespace-nowrap leading-none mt-1">HT: {{ row['SLDat'] || 0 | number:'1.0-2' }}</span>
+                                            </div>
+                                            @if (hasFieldChanged(row, 'xSLDat')) {
+                                                <mat-icon class="text-orange-500 text-sm absolute -top-1 -right-1">edit</mat-icon>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            @case ('khachdat') {
+                                <div class="flex flex-col items-end">
+                                    <span class="max-w-20 line-clamp-1 text-end text-blue-700 font-semibold">
+                                        {{ row[column]|number:'1.0-2' }}
+                                    </span>
+                                    <span class="text-[9px] text-gray-400">đơn chưa giao</span>
+                                </div>
+                            }
+                            @case ('khachgiao') {
+                                <div class="flex flex-col items-end">
+                                    <span class="max-w-20 line-clamp-1 text-end text-teal-600 font-semibold">
+                                        {{ row[column]|number:'1.0-2' }}
+                                    </span>
+                                    <span class="text-[9px] text-gray-400">đã giao</span>
+                                </div>
+                            }
+                            @case ('tongkho') {
+                                <div class="flex flex-col items-end group relative" [matTooltip]="'CT: ' + (row['sltontt']|number:'1.0-2') + ' (chốt) + ' + (row['receivedAfterCount']|number:'1.0-2') + ' (nhập mới) - ' + (row['deliveredAfterCount']|number:'1.0-2') + ' (đã giao) + ' + (row['incomingStock']|number:'1.0-2') + ' (đang về)'">
+                                     <span class="max-w-20 line-clamp-1 text-end font-bold" 
+                                           [class.text-blue-700]="row['receivedAfterCount'] > 0"
+                                           [class.text-gray-800]="row['receivedAfterCount'] === 0">
+                                         {{ row[column]|number:'1.0-2' }}
+                                     </span>
+                                     <div class="flex items-center gap-1 mt-1 justify-end">
+                                         <span class="text-[9px] text-gray-400 whitespace-nowrap">
+                                             {{row['sltontt']|number:'1.0-2'}} + Biến động
+                                         </span>
+                                     </div>
+                                 </div>
+                             }
+                            @case ('haohut') {
+                                <div class="flex flex-col items-end">
+                                    <span class="max-w-20 line-clamp-1 text-end text-amber-600 font-semibold">
+                                        {{ row[column] }}%
+                                    </span>
+                                    <span class="text-[9px] text-gray-400">tỉ lệ hỏng</span>
+                                </div>
+                            }
+                            @case ('slhaohut') {
+                                <div class="flex flex-col items-end">
+                                    <span class="max-w-20 line-clamp-1 text-end text-amber-600 font-semibold">
+                                        {{ row[column]|number:'1.0-2' }}
+                                    </span>
+                                    @if (row[column] > 0) {
+                                        <span class="text-[9px] text-gray-400 whitespace-nowrap">
+                                            {{row['khachdat']|number:'1.0-2'}}×{{row['haohut']}}%
+                                        </span>
+                                    }
+                                </div>
+                            }
+                            <!-- ✅ Hiển thị các kho nhánh với cảnh báo hàng "treo" -->
+                            @case ('kho1') {
+                                <ng-container *ngTemplateOutlet="khoTemplate; context: { $implicit: row, column: column }"></ng-container>
+                            }
+                            @case ('kho2') {
+                                <ng-container *ngTemplateOutlet="khoTemplate; context: { $implicit: row, column: column }"></ng-container>
+                            }
+                            @case ('kho3') {
+                                <ng-container *ngTemplateOutlet="khoTemplate; context: { $implicit: row, column: column }"></ng-container>
+                            }
+                            @case ('kho4') {
+                                <ng-container *ngTemplateOutlet="khoTemplate; context: { $implicit: row, column: column }"></ng-container>
+                            }
+                            @case ('kho5') {
+                                <ng-container *ngTemplateOutlet="khoTemplate; context: { $implicit: row, column: column }"></ng-container>
+                            }
+                            @case ('kho6') {
+                                <ng-container *ngTemplateOutlet="khoTemplate; context: { $implicit: row, column: column }"></ng-container>
+                            }
+                            @default {
+                                <span class="max-w-32 line-clamp-2" [matTooltip]="row[column]">
+                                    {{ row[column] }}
+                                </span>
+                            }
+                        }
+                    </td>
+                </ng-container>
+                }
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="bg-gray-50"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+                    class="hover:bg-slate-100 transition-colors duration-200" 
+                    [class.bg-slate-200]="CheckItemInEdit(row)" 
+                    (click)="AddToEdit(row)"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell p-8 text-center text-gray-500" [attr.colspan]="displayedColumns.length">
+                        <div class="flex flex-col items-center space-y-2">
+                            <mat-icon class="text-4xl text-gray-300">search_off</mat-icon>
+                            <span>Không tìm thấy dữ liệu</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="cursor-pointer border rounded-lg px-3 p-1 flex flex-row space-x-2 items-center justify-between">
+            <div class="w-full flex lg:p-0 p-2 lg:flex-row lg:space-x-2 lg:items-center lg:justify-between flex-col justify-center">
+                <span class="w-full text-center">Đang Xem <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> - <strong>{{ currentPage * pageSize > totalItems ? totalItems : currentPage * pageSize }}</strong> trong số {{ totalItems }} mục, {{ currentPage }}/{{totalPages}} Trang</span>                 
+               <div class="w-full flex flex-row space-x-2 items-center lg:justify-end justify-center">             
+                <span class="font-bold text-blue-600" [matMenuTriggerFor]="menuHienthi" #menuTrigger="matMenuTrigger">Hiện Thị : {{pageSize}} mục</span>  
+                    <mat-menu #menuHienthi="matMenu" >
+                         <div class="w-full flex flex-col space-y-2 p-4" (click)="$event.stopPropagation()">
+                            <span>Số Lượng</span>
+                            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                <input matInput [(ngModel)]="pageSize"  [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Số Lượng" />
+                            </mat-form-field>
+                            <button mat-flat-button color="primary" (click)="onPageSizeChange(pageSize,menuTrigger)">Áp Dụng</button> 
+                         </div>   
+                    </mat-menu>          
+                <div class="pagination-controls">
+                  <button mat-icon-button color="primary" [disabled]="currentPage === 1" (click)="onPreviousPage()">
+                    <mat-icon>keyboard_arrow_left</mat-icon>
+                  </button>
+                  <button mat-icon-button color="primary" [disabled]="currentPage === totalPages" (click)="onNextPage()">
+                    <mat-icon>keyboard_arrow_right</mat-icon>
+                  </button>
+                  <button mat-icon-button color="primary" (click)="refresh()" [disabled]="isLoading" matTooltip="Làm mới dữ liệu">
+                    <mat-icon>refresh</mat-icon>
+                </button>
+                <div class="px-2 py-1 bg-gray-100 rounded text-sm font-semibold text-gray-700">
+                    {{ totalItems }} Sản Phẩm
+                </div>
+                </div>
+             </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Overlay for Nested Data - Removed, now using MatDialog -->
+
+<!-- Delete Dialog Template -->
+<ng-template #DeleteDialog>
+    <mat-dialog-content>
+        <div class="flex flex-col space-y-8 items-center justify-center">
+            <div class="font-bold">Xác Nhận</div>
+            <div>Bạn chắc chắn muốn xoá không?</div>
+            <div class="flex flex-row space-x-2 items-center justify-center">
+                <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
+                <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
+            </div>
+        </div>
+    </mat-dialog-content>
+  </ng-template>
+
+<!-- <ng-template #TaodonDialog>
+    <mat-dialog-content class="!max-h-[90vh] !h-[90vh] !w-[90vw]">
+        <div class="h-full w-full flex flex-col space-y-8 items-center">
+            <div class="flex font-bold">Đặt hàng nhà cung cấp</div>
+            <div class="flex h-full w-full overflow-auto">
+                <app-tablenhucaudathanh [ListFindNCC]="ListFindNCC" [EditList]="EditList" [ListDathang]="ListDathang" (ListDathangChange)="onListDathangChange($event)"></app-tablenhucaudathanh>
+            </div>
+            <div class="flex flex-row space-x-2 items-center justify-center">
+                <button *ngIf="!isSubmit" mat-flat-button color="primary" (click)="CheckSubmit()">Kiểm Tra</button>
+                <button *ngIf="isSubmit" mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
+                <button *ngIf="isSubmit" mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
+            </div>
+        </div>
+    </mat-dialog-content>
+  </ng-template> -->
+
+<!-- Kho Template for reuse across kho1-kho6 cases -->
+<ng-template #khoTemplate let-row let-column="column">
+    <div class="flex flex-col items-end min-w-[60px]" [matTooltip]="ColumnSubtitle[column]">
+        @let stale = checkStaleOrder(row, column);
+        <div class="flex items-center space-x-1">
+            <span class="font-semibold tabular-nums" [class.text-blue-600]="row[column] > 0">
+                {{ row[column]|number:'1.0-2' }}
+            </span>
+            @if (row[column] > 0 && stale.isStale) {
+                <mat-icon class="text-orange-400 !text-[12px] !w-[12px] !h-[12px] animate-pulse" 
+                          [matTooltip]="'Cảnh báo: Hàng treo quá ' + stale.days + ' ngày (từ ' + formatDateForDisplay(stale.oldestDate) + '). Kiểm tra nhân viên chưa xác nhận đã nhận!'">
+                    history
+                </mat-icon>
+            }
+        </div>
+        @if (row[column] > 0) {
+            <span class="text-[9px] text-gray-400">tổng ở kho</span>
+        }
+    </div>
+</ng-template>

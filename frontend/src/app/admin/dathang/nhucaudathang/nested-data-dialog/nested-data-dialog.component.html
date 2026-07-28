@@ -1,0 +1,223 @@
+<div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white">
+  <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-4">
+    <div class="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-gray-50 border border-gray-200 shadow-sm">
+      <mat-icon class="text-gray-600">inventory_2</mat-icon>
+    </div>
+    <div>
+      <h3 class="text-lg font-semibold tracking-tight text-gray-900 m-0">{{ data.product?.title || 'Chi tiết sản phẩm' }}</h3>
+      <p class="text-sm text-gray-500 m-0 mt-0.5">
+        Mã SP: <span class="font-mono bg-gray-50 text-gray-800 px-1.5 py-0.5 rounded-md border border-gray-200">{{ data.product?.masp || 'N/A' }}</span>
+      </p>
+    </div>
+  </div>
+  <button mat-icon-button (click)="closeDialog()" 
+          class="text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors shrink-0"
+          matTooltip="Đóng">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content class="mat-typography !p-6 bg-gray-50/50">
+  @if (data.loading) {
+    <div class="flex flex-col items-center justify-center py-24">
+      <mat-spinner diameter="40" class="mb-4 text-gray-300"></mat-spinner>
+      <p class="text-gray-500 text-sm font-medium animate-pulse">Đang tải dữ liệu...</p>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      
+      <!-- Biến động kho (Lũy kế) -->
+      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-full">
+        <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-white">
+          <div class="flex items-center space-x-2.5">
+            <mat-icon class="text-gray-400 text-[20px] w-[20px] h-[20px]">history</mat-icon>
+            <h4 class="font-semibold text-gray-900 text-sm !m-0 tracking-tight">Lịch sử Lũy Kế</h4>
+          </div>
+          <span class="bg-gray-50 text-gray-600 px-2 py-0.5 rounded-md text-xs font-semibold border border-gray-200 shadow-sm">
+            {{ data.phieukhoData.length }}
+          </span>
+        </div>
+        
+        <div class="p-0 flex-grow overflow-y-auto max-h-[500px]">
+          @if (data.phieukhoData.length === 0) {
+            <div class="text-center py-16 flex flex-col items-center">
+              <mat-icon class="text-4xl text-gray-200 mb-3">history_toggle_off</mat-icon>
+              <p class="text-gray-500 text-sm font-medium tracking-tight">Chưa có lịch sử</p>
+            </div>
+          } @else {
+            <table class="w-full text-sm">
+              <thead class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 border-b border-gray-100 shadow-sm">
+                <tr>
+                  <th class="text-left px-5 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Phiếu / Loại</th>
+                  <th class="text-left px-5 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Ngày/Giờ</th>
+                  <th class="text-right px-5 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">SL</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100/60">
+                @for (pk of data.phieukhoData; track pk.id || $index) {
+                  <tr class="hover:bg-gray-50/80 transition-colors group">
+                    <td class="px-5 py-3.5 align-top">
+                      <div class="flex flex-col items-start gap-1.5">
+                        <span class="font-mono text-[11px] text-gray-600 font-medium">{{ pk.maphieu }}</span>
+                        <span class="px-1.5 py-0.5 w-fit rounded-md text-[10px] font-medium border"
+                              [ngClass]="getPhieukhoTypeClass(pk)">
+                          {{ getPhieukhoTypeText(pk) }}
+                        </span>
+                        @if (pk.ghichu || pk.itemGhichu) {
+                          <span class="text-[11px] text-gray-400 leading-snug max-w-[140px] italic">
+                            {{ pk.ghichu || pk.itemGhichu }}
+                          </span>
+                        }
+                      </div>
+                    </td>
+                    <td class="px-5 py-3.5 text-[11px] font-medium text-gray-500 align-top pt-[18px]">
+                      {{ formatDateForDisplay(pk.ngay, 'DD/MM HH:mm') }}
+                    </td>
+                    <td class="px-5 py-3.5 text-right align-top pt-[16px]">
+                      <span class="font-semibold text-sm tabular-nums" 
+                            [class.text-blue-600]="pk.type === 'nhap'"
+                            [class.text-red-500]="pk.type === 'xuat'">
+                        {{ pk.type === 'nhap' ? '+' : '-' }}{{ pk.soluong | number:'1.0-2' }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      </div>
+
+      <!-- Đặt Hàng -->
+      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-full">
+        <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-white">
+          <div class="flex items-center space-x-2.5">
+            <mat-icon class="text-gray-400 text-[20px] w-[20px] h-[20px]">shopping_cart</mat-icon>
+            <h4 class="font-semibold text-gray-900 text-sm !m-0 tracking-tight">Mua Hàng (NCC)</h4>
+          </div>
+          <span class="bg-gray-50 text-gray-600 px-2 py-0.5 rounded-md text-xs font-semibold border border-gray-200 shadow-sm">
+            {{ data.dathangData.length }}
+          </span>
+        </div>
+        
+        <div class="p-0 flex-grow overflow-y-auto max-h-[500px]">
+          @if (data.dathangData.length === 0) {
+            <div class="text-center py-16 flex flex-col items-center">
+              <mat-icon class="text-4xl text-gray-200 mb-3">shopping_basket</mat-icon>
+              <p class="text-gray-500 text-sm font-medium tracking-tight">Chưa có mua hàng</p>
+            </div>
+          } @else {
+            <table class="w-full text-sm">
+              <thead class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 border-b border-gray-100 shadow-sm">
+                <tr>
+                  <th class="text-left px-5 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Mã / Ngày</th>
+                  <th class="text-right px-5 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Đặt / Nhận</th>
+                  <th class="text-center px-5 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Trạng Thái</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100/60">
+                @for (dathang of data.dathangData; track dathang.id || $index) {
+                  <tr class="hover:bg-blue-50/80 transition-colors cursor-pointer group" (click)="goToDathang(dathang)" matTooltip="Click để xem chi tiết đơn mua">
+                    <td class="px-5 py-3.5 align-top">
+                      <div class="flex flex-col gap-1">
+                        <span class="font-mono text-[11px] text-blue-600 font-medium group-hover:underline">{{ dathang.madncc || '... ' }}</span>
+                        <span class="text-[10px] text-gray-400 font-medium mt-0.5">{{ formatDateForDisplay(dathang.ngaydat || dathang.createdAt, 'DD/MM/YYYY') }}</span>
+                      </div>
+                    </td>
+                    <td class="px-5 py-3.5 text-right align-top">
+                      <div class="flex flex-col gap-1 inline-flex p-1 px-2 border rounded border-gray-100 shadow-sm">
+                        <div class="flex justify-between gap-4">
+                           <span class="text-[10px] text-gray-400 font-medium">Đặt:</span>
+                           <span class="text-[12px] font-medium text-gray-600 tabular-nums">{{ (dathang.sldat || 0) | number:'1.0-2' }}</span>
+                        </div>
+                        <div class="flex justify-between gap-4 border-t border-gray-100 pt-1">
+                           <span class="text-[10px] text-gray-400 font-medium">Nhận:</span>
+                           <span class="text-[12px] font-semibold text-gray-900 tabular-nums">{{ (dathang.slnhan || 0) | number:'1.0-2' }}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-5 py-3.5 text-center align-top pt-5">
+                      <span class="px-2 py-0.5 rounded-md text-[10px] font-medium tracking-tight border shadow-sm"
+                            [ngClass]="getDathangStatusClass(dathang.status)">
+                        {{ getStatusText(dathang.status) }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      </div>
+
+      <!-- Đơn Hàng -->
+      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-full">
+        <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-white">
+          <div class="flex items-center space-x-2.5">
+            <mat-icon class="text-gray-400 text-[20px] w-[20px] h-[20px]">local_shipping</mat-icon>
+            <h4 class="font-semibold text-gray-900 text-sm !m-0 tracking-tight">Bán Hàng (Khách)</h4>
+          </div>
+          <span class="bg-gray-50 text-gray-600 px-2 py-0.5 rounded-md text-xs font-semibold border border-gray-200 shadow-sm">
+            {{ data.donhangData.length }}
+          </span>
+        </div>
+        
+        <div class="p-0 flex-grow overflow-y-auto max-h-[500px]">
+          @if (data.donhangData.length === 0) {
+            <div class="text-center py-16 flex flex-col items-center">
+              <mat-icon class="text-4xl text-gray-200 mb-3">assignment_return</mat-icon>
+              <p class="text-gray-500 text-sm font-medium tracking-tight">Chưa có bán hàng</p>
+            </div>
+          } @else {
+            <table class="w-full text-sm">
+              <thead class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 border-b border-gray-100 shadow-sm">
+                <tr>
+                  <th class="text-left px-5 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Mã / Ngày</th>
+                  <th class="text-right px-5 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Đặt / Giao</th>
+                  <th class="text-center px-5 py-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Trạng Thái</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100/60">
+                @for (donhang of data.donhangData; track donhang.id || $index) {
+                  <tr class="hover:bg-blue-50/80 transition-colors cursor-pointer group" (click)="goToDonhang(donhang)" matTooltip="Click để xem chi tiết đơn bán">
+                    <td class="px-5 py-3.5 align-top">
+                      <div class="flex flex-col gap-1">
+                        <span class="font-mono text-[11px] text-blue-600 font-medium group-hover:underline">{{ donhang.madonhang || '...' }}</span>
+                        <span class="text-[10px] text-gray-400 font-medium mt-0.5">{{ formatDateForDisplay(donhang.ngaygiao, 'DD/MM/YYYY') }}</span>
+                      </div>
+                    </td>
+                    <td class="px-5 py-3.5 text-right align-top">
+                      <div class="flex flex-col gap-1 inline-flex p-1 px-2 border rounded border-gray-100 shadow-sm">
+                        <div class="flex justify-between gap-4">
+                           <span class="text-[10px] text-gray-400 font-medium">Đặt:</span>
+                           <span class="text-[12px] font-medium text-gray-600 tabular-nums">{{ (donhang.sldat || 0) | number:'1.0-2' }}</span>
+                        </div>
+                        <div class="flex justify-between gap-4 border-t border-gray-100 pt-1">
+                           <span class="text-[10px] text-gray-400 font-medium">Giao:</span>
+                           <span class="text-[12px] font-semibold text-gray-900 tabular-nums">{{ (donhang.slgiao || 0) | number:'1.0-2' }}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-5 py-3.5 text-center align-top pt-5">
+                      <span class="px-2 py-0.5 rounded-md text-[10px] font-medium tracking-tight border shadow-sm"
+                            [ngClass]="getDonhangStatusClass(donhang.status)">
+                        {{ getStatusText(donhang.status) }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      </div>
+
+    </div>
+  }
+</mat-dialog-content>
+
+<div class="px-6 py-4 border-t border-gray-100 bg-white flex justify-end">
+  <button mat-dialog-close class="rounded-md px-6 py-2 bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 outline-none">
+    Đóng
+  </button>
+</div>

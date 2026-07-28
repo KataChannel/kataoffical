@@ -1,0 +1,966 @@
+<mat-drawer-container class="w-full h-full" autosize>
+    <mat-drawer #drawer class="flex flex-col !w-full h-full" [position]="'end'" mode="over">
+        <router-outlet></router-outlet>
+    </mat-drawer>
+    <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
+
+        <div
+            class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
+            <div class="flex flex-row flex-wrap space-x-2 items-center">
+                <div class="relative w-full">
+                    <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
+                        class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
+                        >
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        @if (isLoading()) {
+                        <mat-icon class="text-blue-500 animate-spin">autorenew</mat-icon>
+                        }
+                        @else {
+                        <span class="material-symbols-outlined text-gray-500">search</span>
+                        }
+                    </div>
+                </div>
+                <button class="flex flex-row items-center btn-primary" matTooltip="Thêm mới" (click)="create()"
+                    mat-flat-button [disabled]="isLoading()">
+                    <mat-icon>add_circle</mat-icon>
+                    <span class="whitespace-nowrap">Tạo Mới</span>
+                </button>
+                <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu"
+                    aria-label="Example icon-button with a menu">
+                    <mat-icon>tune</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <div class="p-4">
+                        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                            <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput
+                                placeholder="Tìm Kiếm" />
+                            <mat-icon matPrefix>search</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col max-h-80 overflow-auto">
+                        @for (item of FilterColumns; track item.key) {
+                        <button mat-menu-item (click)="toggleColumn(item);$event.stopPropagation()">
+                            <mat-icon>{{item.isShow ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
+                            <span>{{item.value}}</span>
+                        </button>
+                        }
+                    </div>
+                </mat-menu>
+                <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
+                    <mat-icon>file_upload</mat-icon>
+                </button>
+                <input multiple class="hidden" (change)="ImporExcel($event)" type="file" #uploadfile>
+                <div class="flex flex-row flex-wrap gap-2 items-center whitespace-nowrap overflow-x-auto pb-1 max-w-[calc(100vw-450px)]">
+                    <div (click)="resetStatusFilter()" 
+                         class="status-badge status-secondary !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+                         matTooltip="Hiển thị tất cả đơn hàng">
+                        <span class="status-dot"></span>
+                        Tất cả: {{Listdonhang().length}}
+                    </div>
+                    
+                    <div (click)="filterByStatus('choxuly')" 
+                         class="status-badge status-choxuly !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+                         matTooltip="Đơn hàng chờ xử lý">
+                        <span class="status-dot"></span>
+                        Chờ xử lý: {{countByStatus('choxuly')}}
+                    </div>
+
+                    <div (click)="filterByStatus('dadat')" 
+                         class="status-badge status-dadat !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+                         matTooltip="Đơn hàng mới">
+                        <span class="status-dot"></span>
+                        Mới: {{countByStatus('dadat')}}
+                    </div>
+
+                    <div (click)="filterByStatus('dagiao')" 
+                         class="status-badge status-dagiao !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+                         matTooltip="Đơn hàng đang giao">
+                        <span class="status-dot"></span>
+                        Đang giao: {{countByStatus('dagiao')}}
+                    </div>
+
+                    <div (click)="filterByStatus('danhan')" 
+                         class="status-badge status-danhan !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+                         matTooltip="Đơn hàng đã nhận">
+                        <span class="status-dot"></span>
+                        Đã nhận: {{countByStatus('danhan')}}
+                    </div>
+
+                    <div (click)="filterByStatus('hoanthanh')" 
+                         class="status-badge status-hoanthanh !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+                         matTooltip="Đơn hàng đã hoàn thành">
+                        <span class="status-dot"></span>
+                        Hoàn thành: {{countByStatus('hoanthanh')}}
+                    </div>
+
+                    <div (click)="filterByStatus('huy')" 
+                         class="status-badge status-huy !cursor-pointer hover:brightness-95 transition-all shadow-sm"
+                         matTooltip="Đơn hàng đã hủy">
+                        <span class="status-dot"></span>
+                        Đã hủy: {{countByStatus('huy')}}
+                    </div>
+                </div>
+
+                <button mat-icon-button color="primary" 
+                        (click)="DongboVat()" 
+                        [disabled]="isLoading() || Listdonhang().length === 0"
+                        matTooltip="Đồng bộ giá từ bảng giá cho tất cả đơn hàng">
+                    <mat-icon>currency_exchange</mat-icon>
+                </button>
+
+                <!-- <button mat-button color="primary" 
+                        (click)="DongboVat()" 
+                        [disabled]="isLoading() || Listdonhang().length === 0"
+                        matTooltip="Đồng bộ VAT cho tất cả đơn hàng">
+                        VAT
+                </button> -->
+                <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
+                    class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button [disabled]="isLoading()">
+                    @if (isLoading()) {
+                    <mat-icon class="animate-spin">autorenew</mat-icon>
+                    }
+                    @else {
+                    <mat-icon>delete</mat-icon>
+                    }
+                    <span class="whitespace-nowrap">Xoá</span>
+                </button>
+            </div>
+        </div>
+        <div class="w-full flex lg:flex-row flex-col items-center gap-2">
+            <mat-button-toggle-group 
+                    [(ngModel)]="SearchParams.Type" 
+                    [ngModelOptions]="{standalone: true}"
+                    [disabled]="isLoading()"
+                    (change)="onTypeChange($event.value)">
+                    <mat-button-toggle value="all" [disabled]="isLoading()">
+                        All
+                    </mat-button-toggle>
+                    <mat-button-toggle value="khachsi" [disabled]="isLoading()">
+                        Sỉ
+                    </mat-button-toggle>
+                    <mat-button-toggle value="khachle" [disabled]="isLoading()">
+                        Lẻ
+                    </mat-button-toggle>
+            </mat-button-toggle-group>
+
+            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+                <mat-label>Bắt Đầu</mat-label>
+                <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau"
+                    [(ngModel)]="SearchParams.Batdau" [ngModelOptions]="{standalone: true}">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau"></mat-datepicker-toggle>
+                <mat-datepicker #pickerBatdau></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+                <mat-label>Kết Thúc</mat-label>
+                <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerKetthuc"
+                    [(ngModel)]="SearchParams.Ketthuc" [ngModelOptions]="{standalone: true}">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
+                <mat-datepicker #pickerKetthuc></mat-datepicker>
+            </mat-form-field>
+            
+            <!-- Nút Tìm Kiếm -->
+            <button 
+                mat-icon-button 
+                color="primary" 
+                (click)="searchData()"
+                [disabled]="isLoading()"
+                class="!h-12"
+                matTooltip="Nhấn để tải dữ liệu đơn hàng">
+                @if (isLoading()) {
+                    <mat-icon class="animate-spin">autorenew</mat-icon>
+                }
+                @else {
+                    <mat-icon>search</mat-icon>
+                }
+            </button>
+        </div>
+        <!-- <div class="flex flex-row space-x-2">
+            <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button>
+            <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Phiếu Chia</button>
+          </div> -->
+        <div class="w-full overflow-auto relative">
+            <!-- Empty State - Chưa tìm kiếm -->
+            @if (!isLoading() && Listdonhang().length === 0) {
+            <div class="flex flex-col items-center justify-center p-12 bg-gray-50 rounded-lg">
+                <mat-icon class="!text-6xl !w-24 !h-24 text-gray-400 mb-4">search</mat-icon>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Chưa có dữ liệu</h3>
+                <p class="text-gray-500 text-center mb-4">
+                    Vui lòng chọn điều kiện tìm kiếm (ngày, loại khách hàng)<br>
+                    và nhấn nút <strong class="text-blue-600">Tìm Kiếm</strong> để tải dữ liệu đơn hàng
+                </p>
+                <button mat-flat-button color="primary" (click)="searchData()">
+                    <mat-icon>search</mat-icon>
+                    <span class="ml-2">Tìm Kiếm Ngay</span>
+                </button>
+            </div>
+            }
+            
+            <!-- Loading Overlay -->
+            @if (isLoading()) {
+            <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50 rounded-lg">
+                <div class="flex flex-col items-center space-y-3 p-6 bg-white rounded-lg shadow-lg">
+                    <mat-spinner diameter="40" color="primary"></mat-spinner>
+                    <span class="text-sm text-gray-600 font-medium">Đang tải dữ liệu...</span>
+                </div>
+            </div>
+            }
+             <!-- Table Content -->
+            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
+                @for (column of displayedColumns; track column) {
+                <ng-container [matColumnDef]="column">
+                    <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
+                        <span class="max-w-40 line-clamp-4 me-4">
+                            {{ ColumnName[column] }}
+                        </span>
+                        <span class="z-10 material-symbols-outlined text-gray-500" [matMenuTriggerFor]="menu"
+                            #menuTrigger="matMenuTrigger">
+                            filter_alt
+                        </span>
+                        <mat-menu #menu="matMenu">
+                            <div (click)="$event.stopPropagation()" class="cursor-pointer flex flex-col space-y-4 p-3">
+                                <div class="relative w-full">
+                                    <input type="text" placeholder="Tìm Kiếm..."
+                                        (keyup)="doFilterHederColumn($event,column)"
+                                        class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <span class="material-symbols-outlined text-gray-500">search</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-row space-x-2 items-center justify-between">
+                                    <div class="flex flex-row space-x-2 items-center">
+                                        <span class="text-xs text-blue-600 underline"
+                                            (click)="ChosenAll(FilterHederColumn(dataSource.filteredData,column))">Chọn
+                                            Tất Cả
+                                            {{FilterHederColumn(dataSource.filteredData,column).length||0}}</span>
+                                        <span class="text-xs text-blue-600 underline" (click)="EmptyFiter()">Xoá</span>
+                                    </div>
+
+                                    <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
+                                </div>
+                                <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
+                                    <div *ngFor="let item of FilterHederColumn(dataSource.filteredData,column); trackBy:trackByFn"
+                                        (click)="ChosenItem(item,column)"
+                                        class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
+                                        <span *ngIf="CheckItem(item)"
+                                            class="material-symbols-outlined text-blue-600">check</span>
+                                        @switch (column) {
+                                        @case ('createdAt') {
+                                        <span>{{item[column]|date:'dd/MM/yyyy'}}</span>
+                                        }
+                                        @case ('updatedAt') {
+                                        <span>{{item[column]|date:'dd/MM/yyyy'}}</span>
+                                        }
+                                        @case ('haohut') {
+                                        <span>{{item[column]}}%</span>
+                                        }
+                                        @default {
+                                        <span> {{item[column]||'Trống'}}</span>
+                                        }
+                                        }
+
+
+                                    </div>
+                                </div>
+                                <div class="flex flex-row space-x-2 items-end justify-end">
+                                    <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
+                                    <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)">Áp
+                                        Dụng</button>
+                                </div>
+                            </div>
+                        </mat-menu>
+                    </th>
+                    <td mat-cell *matCellDef="let row; let idx = index">
+                        @switch (column) {                        @case ('STT') {
+                        <span class="max-w-40 line-clamp-4 flex items-center">
+                            {{ idx + 1 }}
+                        </span>
+                        }
+                        @case ('madonhang') {
+                        <div class="flex items-center gap-1">
+                            <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
+                                {{ row[column] }}
+                            </span>
+                            <mat-icon 
+                                class="!text-sm !w-4 !h-4 text-gray-400 hover:text-blue-500 cursor-pointer" 
+                                [matTooltip]="getBanggiaTooltip(row)"
+                                matTooltipClass="whitespace-pre-line"
+                                (click)="$event.stopPropagation()">
+                                info_outline
+                            </mat-icon>
+                        </div>
+                        }
+                        @case ('createdAt') {
+                        <span class="max-w-40 line-clamp-4 text-xs">
+                            {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
+                        </span>
+                        }
+                        @case ('ngaygiao') {
+                        <span class="max-w-40 line-clamp-4 text-xs">
+                            {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
+                        </span>
+                        }
+                        @case ('khachhang') {
+                        <span class="max-w-40 line-clamp-4">
+                            {{ row[column].name}}
+                        </span>
+                        }
+                        <!-- @case ('sanpham') {
+                        <span class="max-w-40 line-clamp-4">
+                            {{ row[column].length }}
+                        </span>
+                        } -->
+                        @case ('status') {
+                        <div class="status-badge" [ngClass]="getStatusStyle(row[column])">
+                            <span class="status-dot"></span>
+                            {{ Trangthaidon[row[column]] || row[column] }}
+                        </div>
+                        }
+                        @case ('isActive') {
+                        <span class="max-w-40 line-clamp-4">
+                            @if (row[column]) {
+                            <mat-icon class="text-green-500">check_circle</mat-icon>
+                            }
+                            @else {
+                            <mat-icon class="text-red-500">cancel</mat-icon>
+                            }
+                        </span>
+                        }
+                        @case ('updatedAt') {
+                        <span class="max-w-40 line-clamp-4 text-xs">
+                            {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
+                        </span>
+                        }
+                        @case ('actions') {
+                        <div class="flex items-center gap-2" (click)="$event.stopPropagation()">
+                            <button 
+                                mat-icon-button
+                                color="warn"
+                                [disabled]="!cancelOrderService.canCancelOrder(row)"
+                                [matTooltip]="cancelOrderService.getCancelButtonTooltip(row)"
+                                (click)="handleCancelOrder(row)"
+                                class="text-red-600">
+                                <mat-icon>cancel</mat-icon>
+                            </button>
+                        </div>
+                        }
+                        @case ('lydohuy') {
+                        <span class="max-w-40 line-clamp-4" [ngClass]="{
+                          'text-red-600': row.status === 'huy' || row.status === 'dahuy'
+                        }">
+                            {{ row.lydohuy || '-' }}
+                        </span>
+                        }
+                        @default {
+                        <span class="max-w-40 line-clamp-4">
+                            {{ row[column] }}
+                        </span>
+                        }
+                        }
+                    </td>
+                </ng-container>
+                }
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="AddToEdit(row)"
+                    class="hover:bg-slate-100 {{CheckItemInEdit(row)?'!bg-slate-200':''}}"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
+                </tr>
+            </table>
+
+            <!-- <app-sharepagination [pageSize]="pageSize()" [page]="page()" [total]="total()" [pageCount]="pageCount()"
+                (emitChange)="onPageChange($event)">
+            </app-sharepagination> -->
+        </div>
+    </div>
+</mat-drawer-container>
+
+<ng-template #dialogImportExcelCu>
+    <h2 mat-dialog-title class="flex items-center justify-between">
+        <span>Import Đơn Hàng từ Excel</span>
+        <span class="text-sm font-normal text-gray-600">
+            {{ statusDetails.length }} đơn hàng - {{ getConfirmedOrdersCount() }} đã xác nhận
+        </span>
+    </h2>
+    
+    <mat-dialog-content class="mat-typography">
+        <div class="w-[90vw] h-full flex flex-col">
+            
+            <!-- Global Controls -->
+            <div class="border-b p-4 bg-gray-50">
+                <div class="flex flex-wrap gap-4 items-center">
+                    <!-- Global Date Control -->
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="min-w-[200px]">
+                        <mat-label>Ngày giao (Tất cả)</mat-label>
+                        <input matInput 
+                               [matDatepicker]="globalDatePicker"
+                               (dateChange)="DoChonNgaygiao($event,'All')">
+                        <mat-datepicker-toggle matIconSuffix [for]="globalDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker #globalDatePicker></mat-datepicker>
+                    </mat-form-field>
+
+                    <!-- Global Confirmation Toggle -->
+                    <button mat-flat-button 
+                            color="primary" 
+                            (click)="toggleAllOrderConfirmation()">
+                        <mat-icon>{{ getConfirmedOrdersCount() === getProcessedOrdersCount() ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+                        {{ getConfirmedOrdersCount() === getProcessedOrdersCount() ? 'Bỏ chọn tất cả' : 'Chọn tất cả' }}
+                    </button>                    <!-- Expand All Toggle -->
+                    <button mat-stroked-button 
+                            color="accent" 
+                            (click)="toggleAllOrdersExpansion()">
+                        <mat-icon>{{ allOrdersExpanded() ? 'unfold_less' : 'unfold_more' }}</mat-icon>
+                        {{ allOrdersExpanded() ? 'Thu gọn tất cả' : 'Mở rộng tất cả' }}
+                    </button>
+
+                    <!-- Auto-select Customers Button -->
+                    <button mat-flat-button 
+                            color="accent" 
+                            (click)="autoSelectCustomersFromFilename()"
+                            matTooltip="Tự động chọn khách hàng dựa trên tên file">
+                        <mat-icon>auto_fix_high</mat-icon>
+                        Tự động chọn KH
+                    </button>
+                </div>
+            </div>
+
+            <!-- Orders List -->
+            <div class="flex-1 overflow-auto p-4">
+                <div class="grid gap-4">
+                    @for (detail of statusDetails; track detail.fileName; let i = $index) {
+                        @if (detail.status === 'Processed') {
+                        <div class="border rounded-lg p-4" [ngClass]="detail.configOptions?.confirmed ? 'border-green-500 bg-green-50' : 'border-gray-300'">
+                            
+                            <!-- Order Header -->
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <mat-checkbox 
+                                        [checked]="detail.configOptions?.confirmed || false"
+                                        (change)="toggleOrderConfirmation(i)">
+                                    </mat-checkbox>
+                                    <div>
+                                        <h3 class="font-semibold text-lg">{{ detail.tenkhongdau || 'Khách hàng chưa xác định' }}</h3>
+                                        <p class="text-sm text-gray-600">
+                                            File: {{ detail.fileName }} | 
+                                            Trạng thái: <span class="text-green-600 font-semibold">{{ detail.status }}</span>
+                                        </p>
+                                        @if (getOrderProducts(detail).length > 0) {
+                                        <p class="text-xs text-blue-600 mt-1">
+                                            {{ getOrderProducts(detail).length }} sản phẩm | 
+                                            Tổng SL: {{ getTotalQuantity(detail) }}
+                                        </p>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <!-- Expand/Collapse button -->
+                                    <button mat-icon-button 
+                                            (click)="toggleOrderExpansion(i)"
+                                            matTooltip="Xem chi tiết sản phẩm">
+                                        <mat-icon>{{ detail.expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+                                    </button>
+                                    <button mat-icon-button 
+                                            color="warn" 
+                                            (click)="removeItemImport(detail)"
+                                            matTooltip="Xóa đơn hàng này">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Order Controls -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">                                <!-- Customer Selection -->
+                                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                    <mat-label>Khách hàng</mat-label>
+                                    <mat-select (selectionChange)="SelectKhachhang(detail,$event)" 
+                                               [value]="getSelectedCustomer(detail)?.id">
+                                        <div class="w-full flex flex-col">
+                                            <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
+                                                <input matInput (input)="DoFindKhachhang($event,i)" placeholder="Tìm kiếm khách hàng" />
+                                            </mat-form-field>
+                                            <div class="overflow-y-auto max-h-44">
+                                                @for (item of FilterKhachhang[i]; track item.id) {
+                                                <mat-option [value]="item.id" class="!whitespace-normal !h-auto !py-2">
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium">{{ item.name }}</span>
+                                                        <span class="text-sm text-gray-500">Mã: {{ item.makh }}</span>
+                                                    </div>
+                                                </mat-option>
+                                                }
+                                            </div>
+                                        </div>
+                                    </mat-select>
+                                    @if (getSelectedCustomer(detail)) {
+                                    <mat-hint class="flex items-center gap-1">
+                                        @if (detail.autoSelected) {
+                                        <mat-icon class="text-green-600 !text-sm">auto_fix_high</mat-icon>
+                                        <span class="text-green-600 text-xs">Tự động: </span>
+                                        }
+                                        <span class="text-xs">{{ getSelectedCustomer(detail).name }}</span>
+                                    </mat-hint>
+                                    }
+                                </mat-form-field>
+
+                                <!-- Delivery Date -->
+                                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                    <mat-label>Ngày giao</mat-label>
+                                    <input matInput 
+                                           [matDatepicker]="orderDatePicker"
+                                           [ngModel]="detail.ngaygiao"
+                                           (dateChange)="DoChonNgaygiao($event,detail)">
+                                    <mat-datepicker-toggle matIconSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #orderDatePicker></mat-datepicker>
+                                </mat-form-field>
+                            </div>
+
+                            <!-- Products Details (Expandable) -->
+                            @if (detail.expanded) {
+                            <div class="mt-4 border-t pt-4">
+                                <h4 class="font-medium text-gray-800 mb-3">Chi tiết sản phẩm</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full text-sm">
+                                        <thead class="bg-gray-100">
+                                            <tr>
+                                                <th class="px-3 py-2 text-left font-medium text-gray-700">STT</th>
+                                                <th class="px-3 py-2 text-left font-medium text-gray-700">Mã SP</th>
+                                                <th class="px-3 py-2 text-left font-medium text-gray-700">Tên sản phẩm</th>
+                                                <th class="px-3 py-2 text-left font-medium text-gray-700">ĐVT</th>
+                                                <th class="px-3 py-2 text-left font-medium text-gray-700">SL Giao</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200">
+                                            @for (product of getOrderProducts(detail); track $index; let j = $index) {
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-3 py-2">{{ j + 1 }}</td>
+                                                <td class="px-3 py-2 font-mono text-xs">{{ product.masp || 'N/A' }}</td>
+                                                <td class="px-3 py-2">{{ product.title || product.name || 'N/A' }}</td>
+                                                <td class="px-3 py-2">{{ product.dvt || '' }}</td>
+                                                <td class="px-3 py-2 font-semibold text-blue-600">{{ product.slgiao || product.soluong || 0 }}</td>
+                                            </tr>
+                                            }
+                                            @empty {
+                                            <tr>
+                                                <td colspan="7" class="px-3 py-4 text-center text-gray-500">Không có sản phẩm</td>
+                                            </tr>
+                                            }
+                                        </tbody>
+                                        <tfoot class="bg-gray-50">
+                                            <tr class="font-semibold">
+                                                <td colspan="4" class="px-3 py-2 text-right">Tổng cộng:</td>
+                                                <td class="px-3 py-2 text-blue-600">{{ getTotalQuantity(detail) }}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            }
+
+                            <!-- Order Summary -->
+                            <div class="bg-gray-50 rounded p-3 mt-4">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                    <div>
+                                        <span class="text-gray-600">File:</span>
+                                        <div class="font-medium">{{ detail.fileName }}</div>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-600">Sản phẩm:</span>
+                                        <div class="font-medium text-blue-600">{{ getOrderProducts(detail).length }}</div>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-600">Tổng SL:</span>
+                                        <div class="font-medium text-green-600">{{ getTotalQuantity(detail)|number:'1.0-2' }}</div>
+                                    </div>
+                                </div>
+                                @if (detail.message) {
+                                <div class="mt-2 pt-2 border-t border-gray-200">
+                                    <span class="text-gray-600">Ghi chú:</span>
+                                    <div class="text-sm">{{ detail.message }}</div>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        }
+                    }
+                </div>
+
+                <!-- Empty State -->
+                @if (getProcessedOrdersCount() === 0) {
+                <div class="text-center py-8">
+                    <div class="text-gray-500 text-lg mb-2">Không có đơn hàng để import</div>
+                    <div class="text-gray-400">Vui lòng chọn file Excel hợp lệ</div>
+                </div>
+                }
+            </div>
+        </div>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions class="border-t p-4" [align]="'end'">
+        <div class="flex flex-col w-full gap-3">
+            <!-- Summary Statistics -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div class="text-center p-2 bg-blue-50 rounded">
+                    <div class="font-semibold text-blue-600">{{ getProcessedOrdersCount() }}</div>
+                    <div class="text-gray-600">Tổng đơn hàng</div>
+                </div>
+                <div class="text-center p-2 bg-green-50 rounded">
+                    <div class="font-semibold text-green-600">{{ getConfirmedOrdersCount() }}</div>
+                    <div class="text-gray-600">Đã chọn</div>
+                </div>
+                <div class="text-center p-2 bg-purple-50 rounded">
+                    <div class="font-semibold text-purple-600">{{ getTotalProducts()|number:'1.0-2' }}</div>
+                    <div class="text-gray-600">Tổng SP</div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-between">
+                <div class="text-sm text-gray-600">
+                    Đã chọn {{ getConfirmedOrdersCount() }} / {{ getProcessedOrdersCount() }} đơn hàng
+                </div>
+                <div class="flex gap-2">
+                    <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
+                    <button mat-flat-button 
+                            color="primary" 
+                            [disabled]="getConfirmedOrdersCount() === 0 || isLoading()"
+                            (click)="ImportConfirmedDonhang()">
+                        @if (isLoading()) {
+                        <mat-icon class="animate-spin mr-2">autorenew</mat-icon>
+                        }
+                        Import {{ getConfirmedOrdersCount() }} đơn hàng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-actions>
+
+
+</ng-template>
+
+
+<ng-template #DeleteDialog>
+    <mat-dialog-content>
+        <div class="flex flex-col space-y-4 items-center justify-center min-w-[300px]">
+            <div class="font-bold text-lg">Xác Nhận</div>
+            <div class="text-center">Bạn chắc chắn muốn xoá các đơn sau không?</div>
+            <div class="flex flex-col w-full max-h-40 overflow-y-auto bg-gray-50 p-3 rounded border border-gray-200 gap-1">
+                @for (item of EditList; track item.id) {
+                <div class="text-center font-medium text-blue-600">{{item.madonhang}}</div>
+                }
+            </div>
+            <div class="flex flex-row space-x-2 items-center justify-center pt-2">
+                <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
+                <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
+            </div>
+        </div>
+    </mat-dialog-content>
+</ng-template>
+
+<ng-template #ConfirmDongboDialog>
+    <div mat-dialog-title class="flex items-center space-x-2">
+        <mat-icon color="primary">currency_exchange</mat-icon>
+        <span class="font-semibold text-xl">Xác nhận đồng bộ giá và VAT</span>
+    </div>
+    
+    <mat-dialog-content class="mat-typography">
+        <div class="flex flex-col space-y-4 py-4">
+            <!-- Info header -->
+            <div class="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                <mat-icon class="text-blue-600 mt-1">info</mat-icon>
+                <div class="flex-1">
+                    <h4 class="font-semibold text-blue-800 mb-2">Thông tin đồng bộ</h4>
+                    <p class="text-sm text-blue-700">
+                        Đồng bộ giá và VAT cho <strong class="font-semibold">{{EditList.length}} đơn hàng</strong> được chọn
+                    </p>
+                </div>
+            </div>
+
+            <!-- Preview Loading -->
+            @if (isPreviewLoading()) {
+            <div class="flex items-center justify-center p-6">
+                <mat-spinner diameter="32" class="mr-3"></mat-spinner>
+                <span class="text-gray-600">Đang tải thông tin giá...</span>
+            </div>
+            }
+
+            <!-- Preview Data -->
+            @if (dongboPreviewData?.previews?.length > 0) {
+            <div class="space-y-4 max-h-[50vh] overflow-auto">
+                @for (preview of dongboPreviewData.previews; track preview.donhangId) {
+                <div class="border rounded-lg overflow-hidden">
+                    <!-- Order header -->
+                    <div class="bg-gray-50 p-3 border-b">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-blue-700">{{preview.madonhang}}</span>
+                                <span class="text-sm text-gray-600">- {{preview.khachhang}}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs">
+                                @if (preview.banggiaOnDon) {
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full">
+                                    📋 BG Đơn: {{preview.banggiaOnDon.mabanggia}}
+                                </span>
+                                }
+                                @if (preview.banggiaOnKH) {
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                                    👤 BG KH: {{preview.banggiaOnKH.mabanggia}}
+                                </span>
+                                }
+                                <span class="px-2 py-1 rounded-full font-semibold" 
+                                    [ngClass]="preview.banggiaOnDon && preview.banggiaOnKH && preview.banggiaOnDon.mabanggia !== preview.banggiaOnKH.mabanggia ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-700'">
+                                    → Dùng: {{preview.banggiaUsed.mabanggia}} ({{preview.banggiaUsed.source}})
+                                </span>
+                            </div>
+                        </div>
+                        @if (preview.banggiaOnDon && preview.banggiaOnKH && preview.banggiaOnDon.mabanggia !== preview.banggiaOnKH.mabanggia) {
+                        <div class="mt-2 text-xs text-amber-700 bg-amber-50 p-2 rounded flex items-center gap-1">
+                            <mat-icon class="!text-sm !w-4 !h-4">warning</mat-icon>
+                            BG trên đơn ({{preview.banggiaOnDon.mabanggia}}) khác với BG khách hàng ({{preview.banggiaOnKH.mabanggia}}). Sẽ ưu tiên dùng BG trên đơn.
+                        </div>
+                        }
+                    </div>
+                    
+                    <!-- Products table -->
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-3 py-2 text-left font-medium text-gray-600">Sản phẩm</th>
+                                <th class="px-3 py-2 text-left font-medium text-gray-600">Mã SP</th>
+                                <th class="px-3 py-2 text-right font-medium text-gray-600">Giá cũ</th>
+                                <th class="px-3 py-2 text-center font-medium text-gray-600"></th>
+                                <th class="px-3 py-2 text-right font-medium text-gray-600">Giá mới</th>
+                                <th class="px-3 py-2 text-left font-medium text-gray-600">Nguồn</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @for (p of preview.products; track p.masp) {
+                            <tr [ngClass]="p.changed ? 'bg-yellow-50' : ''" class="hover:bg-gray-50">
+                                <td class="px-3 py-2 max-w-[200px] truncate">{{p.title}}</td>
+                                <td class="px-3 py-2 font-mono text-xs">{{p.masp}}</td>
+                                <td class="px-3 py-2 text-right" [ngClass]="p.changed ? 'text-red-600 line-through' : 'text-gray-600'">
+                                    {{p.oldPrice | number:'1.0-0'}}
+                                </td>
+                                <td class="px-3 py-2 text-center">
+                                    @if (p.changed) {
+                                    <mat-icon class="!text-sm !w-4 !h-4 text-amber-500">arrow_forward</mat-icon>
+                                    } @else {
+                                    <mat-icon class="!text-sm !w-4 !h-4 text-green-500">check</mat-icon>
+                                    }
+                                </td>
+                                <td class="px-3 py-2 text-right font-semibold" [ngClass]="p.changed ? 'text-green-700' : 'text-gray-600'">
+                                    {{p.newPrice | number:'1.0-0'}}
+                                </td>
+                                <td class="px-3 py-2 text-xs text-gray-500">{{p.giaSource}}</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    @if (!preview.hasChanges) {
+                    <div class="p-2 bg-green-50 text-center text-xs text-green-700">
+                        ✅ Giá không thay đổi
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+            }
+            
+            <!-- Warning -->
+            <div class="flex items-start space-x-3 p-4 bg-amber-50 rounded-lg border-l-4 border-amber-400">
+                <mat-icon class="text-amber-600 mt-1">warning</mat-icon>
+                <div class="flex-1">
+                    <h4 class="font-semibold text-amber-800 mb-2">Lưu ý quan trọng</h4>
+                    <p class="text-sm text-amber-700">
+                        Thao tác này sẽ thay đổi dữ liệu hiện tại và không thể hoàn tác. 
+                        Vui lòng đảm bảo bạn đã kiểm tra kỹ trước khi thực hiện.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions class="border-t px-6 py-4" align="end">
+        <button mat-button mat-dialog-close="false" class="mr-2">
+            <mat-icon class="mr-1">cancel</mat-icon>
+            Hủy bỏ
+        </button>
+        <button mat-flat-button color="primary" mat-dialog-close="true" [disabled]="isPreviewLoading()">
+            <mat-icon class="mr-1">currency_exchange</mat-icon>
+            Xác nhận đồng bộ
+        </button>
+    </mat-dialog-actions>
+</ng-template>
+
+<ng-template #ConfirmDuplicateDialog>
+    <div mat-dialog-title class="flex items-center space-x-2">
+        <mat-icon color="warn">content_copy</mat-icon>
+        <span class="font-semibold text-xl">Phát hiện đơn hàng trùng lặp</span>
+    </div>
+    
+    <mat-dialog-content class="mat-typography">
+        <div class="flex flex-col space-y-4 py-4">
+            <div class="flex items-start space-x-3 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                <mat-icon class="text-yellow-600 mt-1">warning</mat-icon>
+                <div class="flex-1">
+                    <h4 class="font-semibold text-yellow-800 mb-2">Cảnh báo trùng lặp</h4>
+                    <p class="text-sm text-yellow-700" [innerHTML]="duplicateDialogData?.message"></p>
+                </div>
+            </div>
+            
+            <div class="space-y-3" *ngIf="duplicateDialogData?.duplicates?.length">
+                <h4 class="font-semibold text-gray-800">Chi tiết đơn hàng trùng lặp:</h4>
+                <div class="max-h-60 overflow-y-auto border rounded-lg">
+                    <div *ngFor="let dup of duplicateDialogData.duplicates; let i = index" 
+                         class="p-3 border-b last:border-b-0 bg-gray-50">
+                        <div class="flex items-start space-x-2">
+                            <span class="font-semibold text-sm text-gray-600">{{i + 1}}.</span>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">{{dup.customerName}}</p>
+                                <p class="text-sm text-gray-600">
+                                    Ngày giao: <span class="font-medium">{{formatDate(dup.deliveryDate)}}</span>
+                                </p>
+                                <p class="text-sm text-gray-600">
+                                    Có <span class="font-medium text-blue-600">{{dup.existingOrderCount}}</span> đơn hàng hiện tại, 
+                                    đơn mới có <span class="font-medium text-green-600">{{dup.newProductCount}}</span> sản phẩm
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <h4 class="font-semibold text-gray-800">Lựa chọn xử lý:</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="flex items-start space-x-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                        <mat-icon class="text-green-600 mt-1">add_circle</mat-icon>
+                        <div class="flex-1">
+                            <h5 class="font-medium text-green-800">Tạo thêm đơn hàng mới</h5>
+                            <p class="text-sm text-green-700">Tạo đơn hàng mới với cùng khách hàng và ngày giao</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                        <mat-icon class="text-red-600 mt-1">cancel</mat-icon>
+                        <div class="flex-1">
+                            <h5 class="font-medium text-red-800">Bỏ qua đơn hàng trùng</h5>
+                            <p class="text-sm text-red-700">Không tạo đơn hàng mới cho các khách hàng trùng lặp</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions class="border-t px-6 py-4" align="end">
+        <button mat-button mat-dialog-close="skip" class="mr-2">
+            <mat-icon class="mr-1">cancel</mat-icon>
+            Bỏ qua trùng lặp
+        </button>
+        <button mat-flat-button color="primary" mat-dialog-close="proceed">
+            <mat-icon class="mr-1">add_circle</mat-icon>
+            Tạo thêm đơn hàng mới
+        </button>
+    </mat-dialog-actions>
+</ng-template>
+
+<!-- ✅ Dialog hiển thị thông tin gộp sản phẩm trùng -->
+<ng-template #DuplicateMergeDialog>
+    <div mat-dialog-title class="flex items-center space-x-2 bg-blue-50 p-4 rounded-t-lg">
+        <mat-icon class="text-blue-600">merge_type</mat-icon>
+        <span class="font-semibold text-xl text-blue-800">Đã gộp sản phẩm trùng lặp</span>
+    </div>
+    
+    <mat-dialog-content class="mat-typography">
+        <div class="flex flex-col space-y-4 py-4 px-2">
+            <!-- Summary section -->
+            <div class="flex items-center space-x-3 p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
+                <mat-icon class="text-green-600 text-3xl">check_circle</mat-icon>
+                <div class="flex-1">
+                    <h4 class="font-bold text-green-800 text-lg">Gộp thành công!</h4>
+                    <p class="text-sm text-green-700 mt-1">
+                        Đã gộp <span class="font-bold text-lg">{{duplicateMergeData?.totalCount}}</span> sản phẩm trùng lặp 
+                        trong <span class="font-bold">{{duplicateMergeData?.details?.length}}</span> đơn hàng
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Detailed merge information -->
+            <div class="space-y-3" *ngIf="duplicateMergeData?.details?.length">
+                <h4 class="font-semibold text-gray-800 flex items-center space-x-2">
+                    <mat-icon class="text-gray-600">inventory_2</mat-icon>
+                    <span>Chi tiết sản phẩm đã gộp:</span>
+                </h4>
+                
+                <div class="max-h-96 overflow-y-auto border rounded-lg bg-white">
+                    <div *ngFor="let detail of duplicateMergeData?.details; let orderIndex = index" 
+                         class="border-b last:border-b-0">
+                        <!-- Order header -->
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-3 sticky top-0 z-10">
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+                                    {{orderIndex + 1}}
+                                </span>
+                                <mat-icon class="text-blue-600">shopping_cart</mat-icon>
+                                <span class="font-bold text-blue-800">{{detail.orderName}}</span>
+                                <span class="ml-auto bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                    {{detail.duplicates.length}} sản phẩm trùng
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Product duplicates -->
+                        <div class="divide-y divide-gray-100">
+                            <div *ngFor="let dup of detail.duplicates; let i = index" 
+                                 class="p-3 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                                            <mat-icon class="text-orange-600">inventory</mat-icon>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="font-mono text-sm font-bold text-gray-800">{{dup.productCode}}</span>
+                                            <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
+                                                {{dup.count}} lần trùng
+                                            </span>
+                                        </div>
+                                        <div class="mt-1 flex items-center space-x-2 text-sm">
+                                            <div class="flex items-center space-x-1 text-gray-500">
+                                                <mat-icon class="text-xs">trending_flat</mat-icon>
+                                                <span>Trước:</span>
+                                                <span class="font-medium">{{dup.count}} dòng</span>
+                                            </div>
+                                            <mat-icon class="text-green-600 text-sm">arrow_forward</mat-icon>
+                                            <div class="flex items-center space-x-1 text-green-600">
+                                                <mat-icon class="text-xs">done</mat-icon>
+                                                <span>Sau:</span>
+                                                <span class="font-bold">1 dòng (SL: {{dup.mergedQty}})</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Info note -->
+            <div class="flex items-start space-x-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <mat-icon class="text-blue-600 mt-0.5 text-sm">info</mat-icon>
+                <p class="text-sm text-blue-800">
+                    <span class="font-semibold">Lưu ý:</span> Các sản phẩm trùng đã được tự động gộp theo mã sản phẩm, 
+                    số lượng được cộng dồn và ghi chú được kết hợp lại.
+                </p>
+            </div>
+        </div>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions class="border-t px-6 py-4 bg-gray-50" align="end">
+        <button mat-flat-button color="primary" mat-dialog-close class="px-6">
+            <mat-icon class="mr-1">check</mat-icon>
+            Đã hiểu, tiếp tục
+        </button>
+    </mat-dialog-actions>
+</ng-template>

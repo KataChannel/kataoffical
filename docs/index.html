@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kế Hoạch Triển Khai - Thu Chi & Hóa Đơn Điện Tử</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+            --primary: 222.2 47.4% 11.2%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96.1%;
+            --secondary-foreground: 222.2 47.4% 11.2%;
+            --muted: 210 40% 96.1%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96.1%;
+            --accent-foreground: 222.2 47.4% 11.2%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 222.2 84% 4.9%;
+            --radius: 0.5rem;
+            
+            /* Custom colors */
+            --success: 142.1 76.2% 36.3%;
+            --success-foreground: 355.7 100% 97.3%;
+            --warning: 45.4 93.4% 47.5%;
+            --warning-foreground: 26 83.3% 14.1%;
+            --info: 221.2 83.2% 53.3%;
+            --info-foreground: 210 40% 98%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            border-color: hsl(var(--border));
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: hsl(var(--muted));
+            color: hsl(var(--foreground));
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: hsl(var(--card));
+            border-radius: var(--radius);
+            border: 1px solid hsl(var(--border));
+        }
+
+        header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: hsl(var(--foreground));
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        header p {
+            font-size: 0.875rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        header p strong {
+            color: hsl(var(--foreground));
+            font-weight: 600;
+        }
+
+        /* Cards */
+        .card {
+            background: hsl(var(--card));
+            border-radius: var(--radius);
+            border: 1px solid hsl(var(--border));
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid hsl(var(--border));
+            background: hsl(var(--muted) / 0.5);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title .icon {
+            font-size: 1.125rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Tables */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        thead {
+            background: hsl(var(--muted) / 0.5);
+        }
+
+        th {
+            font-weight: 500;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            color: hsl(var(--muted-foreground));
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid hsl(var(--border));
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid hsl(var(--border));
+            vertical-align: middle;
+            color: hsl(var(--foreground));
+        }
+
+        tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        tbody tr:hover {
+            background: hsl(var(--muted) / 0.3);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tfoot td {
+            font-weight: 600;
+            background: hsl(var(--muted) / 0.5);
+            border-top: 1px solid hsl(var(--border));
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.125rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            line-height: 1.25rem;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+
+        .badge-default {
+            background: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+        }
+
+        .badge-primary {
+            background: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+        }
+
+        .badge-success {
+            background: hsl(142.1 76.2% 36.3% / 0.1);
+            color: hsl(var(--success));
+            border: 1px solid hsl(var(--success) / 0.2);
+        }
+
+        .badge-warning {
+            background: hsl(45.4 93.4% 47.5% / 0.1);
+            color: hsl(38 92% 40%);
+            border: 1px solid hsl(var(--warning) / 0.2);
+        }
+
+        .badge-destructive {
+            background: hsl(var(--destructive) / 0.1);
+            color: hsl(var(--destructive));
+            border: 1px solid hsl(var(--destructive) / 0.2);
+        }
+
+        .badge-outline {
+            background: transparent;
+            border: 1px solid hsl(var(--border));
+            color: hsl(var(--foreground));
+        }
+
+        /* Progress Bar */
+        .progress {
+            height: 0.5rem;
+            background: hsl(var(--muted));
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-bar.success {
+            background: hsl(var(--success));
+        }
+
+        .progress-bar.warning {
+            background: hsl(var(--warning));
+        }
+
+        .progress-bar.destructive {
+            background: hsl(var(--destructive));
+        }
+
+        .progress-bar.info {
+            background: hsl(var(--info));
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.375rem;
+        }
+
+        .progress-label span {
+            font-size: 0.75rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .progress-label strong {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: hsl(var(--muted) / 0.5);
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            border-color: hsl(var(--primary) / 0.3);
+            background: hsl(var(--muted));
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: hsl(var(--foreground));
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: hsl(var(--muted-foreground));
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-card.primary .stat-value {
+            color: hsl(var(--info));
+        }
+
+        .stat-card.success .stat-value {
+            color: hsl(var(--success));
+        }
+
+        .stat-card.warning .stat-value {
+            color: hsl(38 92% 40%);
+        }
+
+        /* Deliverable Row */
+        .deliverable-row {
+            background: hsl(var(--info) / 0.05) !important;
+        }
+
+        .deliverable-row td {
+            color: hsl(var(--info));
+            font-weight: 500;
+            border-bottom: 2px solid hsl(var(--info) / 0.2);
+        }
+
+        .deliverable-row.success {
+            background: hsl(var(--success) / 0.05) !important;
+        }
+
+        .deliverable-row.success td {
+            color: hsl(var(--success));
+            border-bottom: 2px solid hsl(var(--success) / 0.2);
+        }
+
+        /* Status Icons */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+        }
+
+        .status-pending {
+            background: hsl(var(--muted));
+            color: hsl(var(--muted-foreground));
+        }
+
+        .status-done {
+            background: hsl(var(--success) / 0.1);
+            color: hsl(var(--success));
+        }
+
+        .status-progress {
+            background: hsl(var(--info) / 0.1);
+            color: hsl(var(--info));
+        }
+
+        /* Milestone Indicator */
+        .milestone {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .milestone-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: hsl(var(--muted-foreground));
+        }
+
+        .milestone-dot.active {
+            background: hsl(var(--success));
+            box-shadow: 0 0 0 3px hsl(var(--success) / 0.2);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: hsl(var(--muted-foreground));
+            font-size: 0.875rem;
+        }
+
+        footer p {
+            margin-bottom: 0.25rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            th, td {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8125rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Kế Hoạch Triển Khai - Thu Chi & Hóa Đơn Điện Tử</h1>
+            <p>Tổng thời gian: <strong>12 ngày làm việc</strong> (~2.5 tuần) • Cập nhật: 23/12/2025</p>
+        </header>
+
+        <!-- 1. TỔNG HỢP DELIVERABLES -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <span class="icon">📊</span>
+                    1. Tổng Hợp Deliverables
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 80px;">Ngày</th>
+                                <th>Deliverable</th>
+                                <th class="text-center" style="width: 100px;">Tasks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-center"><span class="badge badge-outline">1</span></td>
+                                <td>Database schema hoàn chỉnh</td>
+                                <td class="text-center">4</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge badge-outline">2</span></td>
+                                <td>Module PhieuThuChi backend</td>
+                                <td class="text-center">4</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge badge-outline">3</span></td>
+                                <td>Module ThanhToan + HoaDon backend</td>
+                                <td class="text-center">4</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge badge-outline">4</span></td>
+                                <td>Hệ thống xác nhận 2 chiều</td>
+                                <td class="text-center">4</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge badge-outline">5</span></td>
+                                <td>Module PhieuThuChi frontend</td>
+                                <td class="text-center">4</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge badge-outline">6</span></td>
+                                <td>Module ThanhToan + HoaDon frontend</td>
+                                <td class="text-center">4</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge badge-outline">7</span></td>
+                                <td>Trang xác nhận public</td>
+                                <td class="text-center">4</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge badge-outline">8</span></td>
+                                <td>Báo cáo + Dashboard</td>
+                                <td class="text-center">4</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge badge-outline">9-10</span></td>
+                                <td>Testing backend</td>
+                                <td class="text-center">4</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge badge-outline">11</span></td>
+                                <td>Testing frontend + UAT</td>
+                                <td class="text-center">3</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><span class="badge badge-success">12</span></td>
+                                <td><strong>Production deploy</strong></td>
+                                <td class="text-center">4</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="text-center"><strong>Tổng</strong></td>
+                                <td><strong>11 Deliverables</strong></td>
+                                <td class="text-center"><strong>43</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-value">43</div>
+                        <div class="stat-label">Tổng Tasks</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Ngày làm việc</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value">11</div>
+                        <div class="stat-label">Deliverables</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. HIỆN TRẠNG -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <span class="icon">📈</span>
+                    2. Hiện Trạng Dự Án
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nhóm tính năng</th>
+                                <th style="width: 280px;">Tiến độ</th>
+                                <th>Còn thiếu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Đơn hàng / Đặt hàng</strong></td>
+                                <td>
+                                    <div class="progress-label">
+                                        <span>Tiến độ</span>
+                                        <strong>85%</strong>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar success" style="width: 85%;"></div>
+                                    </div>
+                                </td>
+                                <td>Thanh toán, Xuất HĐ, Xác nhận 2 chiều</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Thu chi / Dòng tiền</strong></td>
+                                <td>
+                                    <div class="progress-label">
+                                        <span>Tiến độ</span>
+                                        <strong>10%</strong>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar destructive" style="width: 10%;"></div>
+                                    </div>
+                                </td>
+                                <td>PhieuThuChi, Sổ quỹ, BC dòng tiền</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hóa đơn / Công nợ</strong></td>
+                                <td>
+                                    <div class="progress-label">
+                                        <span>Tiến độ</span>
+                                        <strong>40%</strong>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar warning" style="width: 40%;"></div>
+                                    </div>
+                                </td>
+                                <td>HĐ điện tử, Tách bạch HĐ</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: hsl(var(--destructive));">45%</div>
+                        <div class="stat-label">Tổng hoàn thành hiện tại</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. MỤC TIÊU % HOÀN THÀNH -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <span class="icon">🎯</span>
+                    3. Mục Tiêu % Hoàn Thành
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 120px;">Milestone</th>
+                                <th class="text-center">Đơn hàng</th>
+                                <th class="text-center">Thu chi</th>
+                                <th class="text-center">HĐ/Công nợ</th>
+                                <th class="text-center">Tổng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="milestone">
+                                        <span class="milestone-dot active"></span>
+                                        <span class="badge badge-warning">Hiện tại</span>
+                                    </div>
+                                </td>
+                                <td class="text-center">85%</td>
+                                <td class="text-center">10%</td>
+                                <td class="text-center">40%</td>
+                                <td class="text-center"><strong style="color: hsl(var(--destructive));">45%</strong></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="milestone">
+                                        <span class="milestone-dot"></span>
+                                        <span class="badge badge-default">Ngày 4</span>
+                                    </div>
+                                </td>
+                                <td class="text-center">90%</td>
+                                <td class="text-center">70%</td>
+                                <td class="text-center">60%</td>
+                                <td class="text-center"><strong style="color: hsl(38 92% 40%);">73%</strong></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="milestone">
+                                        <span class="milestone-dot"></span>
+                                        <span class="badge badge-default">Ngày 8</span>
+                                    </div>
+                                </td>
+                                <td class="text-center">95%</td>
+                                <td class="text-center">90%</td>
+                                <td class="text-center">85%</td>
+                                <td class="text-center"><strong style="color: hsl(var(--info));">90%</strong></td>
+                            </tr>
+                            <tr style="background: hsl(var(--success) / 0.05);">
+                                <td>
+                                    <div class="milestone">
+                                        <span class="milestone-dot"></span>
+                                        <span class="badge badge-success">Ngày 12</span>
+                                    </div>
+                                </td>
+                                <td class="text-center"><strong>100%</strong></td>
+                                <td class="text-center"><strong>100%</strong></td>
+                                <td class="text-center"><strong>100%</strong></td>
+                                <td class="text-center"><strong style="color: hsl(var(--success)); font-size: 1.125rem;">100%</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. TIMELINE CHI TIẾT -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <span class="icon">📅</span>
+                    4. Timeline Chi Tiết (12 Ngày Làm Việc)
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 50px;">#</th>
+                                <th class="text-center" style="width: 60px;">Ngày</th>
+                                <th>Task</th>
+                                <th>Output</th>
+                                <th class="text-center" style="width: 70px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Ngày 1 -->
+                            <tr>
+                                <td class="text-center">1</td>
+                                <td class="text-center"><strong>1</strong></td>
+                                <td>Viết schema.prisma đầy đủ</td>
+                                <td>PhieuThuChi, ThanhToan, HoaDonDienTu, ThongBaoKH</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">2</td>
+                                <td class="text-center"><strong>1</strong></td>
+                                <td>Thêm fields vào Donhang, Donhangsanpham</td>
+                                <td>xacNhan, confirmToken, xuatHoaDon</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">3</td>
+                                <td class="text-center"><strong>1</strong></td>
+                                <td>Prisma migrate + generate</td>
+                                <td>Database updated</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">4</td>
+                                <td class="text-center"><strong>1</strong></td>
+                                <td>Review schema, fix conflicts</td>
+                                <td>Schema verified</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr class="deliverable-row">
+                                <td colspan="3"><strong>📍 Deliverable Ngày 1</strong></td>
+                                <td colspan="2">✅ Database schema hoàn chỉnh</td>
+                            </tr>
+
+                            <!-- Ngày 2 -->
+                            <tr>
+                                <td class="text-center">5</td>
+                                <td class="text-center"><strong>2</strong></td>
+                                <td>phieuthuci.module.ts, phieuthuci.service.ts</td>
+                                <td>CRUD service</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">6</td>
+                                <td class="text-center"><strong>2</strong></td>
+                                <td>phieuthuci.controller.ts + DTOs</td>
+                                <td>REST endpoints</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">7</td>
+                                <td class="text-center"><strong>2</strong></td>
+                                <td>phieuthuci.resolver.ts</td>
+                                <td>GraphQL mutations/queries</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">8</td>
+                                <td class="text-center"><strong>2</strong></td>
+                                <td>Sinh mã phiếu tự động, validation</td>
+                                <td>Business logic</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr class="deliverable-row">
+                                <td colspan="3"><strong>📍 Deliverable Ngày 2</strong></td>
+                                <td colspan="2">✅ Module PhieuThuChi backend</td>
+                            </tr>
+
+                            <!-- Ngày 3 -->
+                            <tr>
+                                <td class="text-center">9</td>
+                                <td class="text-center"><strong>3</strong></td>
+                                <td>thanhtoan.module + service + controller</td>
+                                <td>Module ThanhToan</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">10</td>
+                                <td class="text-center"><strong>3</strong></td>
+                                <td>Tích hợp với Donhang, tính công nợ</td>
+                                <td>Business logic</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">11</td>
+                                <td class="text-center"><strong>3</strong></td>
+                                <td>hoadon.module + service (tự quản lý)</td>
+                                <td>Module HoaDon nội bộ</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">12</td>
+                                <td class="text-center"><strong>3</strong></td>
+                                <td>Extend optimized-congno.service (tách bạch)</td>
+                                <td>Công nợ có HĐ/không HĐ</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr class="deliverable-row">
+                                <td colspan="3"><strong>📍 Deliverable Ngày 3</strong></td>
+                                <td colspan="2">✅ 2 modules backend + công nợ nâng cấp</td>
+                            </tr>
+
+                            <!-- Ngày 4 -->
+                            <tr>
+                                <td class="text-center">13</td>
+                                <td class="text-center"><strong>4</strong></td>
+                                <td>confirmation.service.ts</td>
+                                <td>Token generation, validation</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">14</td>
+                                <td class="text-center"><strong>4</strong></td>
+                                <td>confirmation.controller.ts (public)</td>
+                                <td>/confirm/:token endpoint</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">15</td>
+                                <td class="text-center"><strong>4</strong></td>
+                                <td>WebSocket gateway cho realtime</td>
+                                <td>Socket events</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">16</td>
+                                <td class="text-center"><strong>4</strong></td>
+                                <td>Email notification (optional, Nodemailer)</td>
+                                <td>Email gửi link xác nhận</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr class="deliverable-row">
+                                <td colspan="3"><strong>📍 Deliverable Ngày 4</strong></td>
+                                <td colspan="2">✅ Hệ thống xác nhận 2 chiều</td>
+                            </tr>
+
+                            <!-- Ngày 5 -->
+                            <tr>
+                                <td class="text-center">17</td>
+                                <td class="text-center"><strong>5</strong></td>
+                                <td>list-phieuthuci.component</td>
+                                <td>Danh sách + filter</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">18</td>
+                                <td class="text-center"><strong>5</strong></td>
+                                <td>detail-phieuthuci.component</td>
+                                <td>Form tạo/sửa</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">19</td>
+                                <td class="text-center"><strong>5</strong></td>
+                                <td>phieuthuci.service.ts + GraphQL</td>
+                                <td>API integration</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">20</td>
+                                <td class="text-center"><strong>5</strong></td>
+                                <td>Routing, menu integration</td>
+                                <td>Navigation</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr class="deliverable-row">
+                                <td colspan="3"><strong>📍 Deliverable Ngày 5</strong></td>
+                                <td colspan="2">✅ Module PhieuThuChi frontend</td>
+                            </tr>
+
+                            <!-- Ngày 6 -->
+                            <tr>
+                                <td class="text-center">21</td>
+                                <td class="text-center"><strong>6</strong></td>
+                                <td>list-thanhtoan.component</td>
+                                <td>Danh sách thanh toán</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">22</td>
+                                <td class="text-center"><strong>6</strong></td>
+                                <td>thanhtoan-donhang.component</td>
+                                <td>Thanh toán tách bạch UI</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">23</td>
+                                <td class="text-center"><strong>6</strong></td>
+                                <td>list-hoadon.component</td>
+                                <td>Quản lý HĐ điện tử nội bộ</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">24</td>
+                                <td class="text-center"><strong>6</strong></td>
+                                <td>Button "Xuất HĐ" trong đơn hàng</td>
+                                <td>Integration</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr class="deliverable-row">
+                                <td colspan="3"><strong>📍 Deliverable Ngày 6</strong></td>
+                                <td colspan="2">✅ 2 modules frontend</td>
+                            </tr>
+
+                            <!-- Ngày 7 -->
+                            <tr>
+                                <td class="text-center">25</td>
+                                <td class="text-center"><strong>7</strong></td>
+                                <td>confirm-order.component (standalone)</td>
+                                <td>Trang public</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">26</td>
+                                <td class="text-center"><strong>7</strong></td>
+                                <td>UI hiển thị đơn hàng, SP, giá</td>
+                                <td>Read-only view</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">27</td>
+                                <td class="text-center"><strong>7</strong></td>
+                                <td>Actions: Xác nhận/Từ chối/Ghi chú</td>
+                                <td>Interactive buttons</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">28</td>
+                                <td class="text-center"><strong>7</strong></td>
+                                <td>Mobile responsive, UX polish</td>
+                                <td>Mobile-friendly</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr class="deliverable-row">
+                                <td colspan="3"><strong>📍 Deliverable Ngày 7</strong></td>
+                                <td colspan="2">✅ Trang xác nhận /confirm/:token</td>
+                            </tr>
+
+                            <!-- Ngày 8 -->
+                            <tr>
+                                <td class="text-center">29</td>
+                                <td class="text-center"><strong>8</strong></td>
+                                <td>baocao-dongtien.service.ts</td>
+                                <td>Thu/Chi/Tồn query</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">30</td>
+                                <td class="text-center"><strong>8</strong></td>
+                                <td>baocao-dongtien.component</td>
+                                <td>UI báo cáo</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">31</td>
+                                <td class="text-center"><strong>8</strong></td>
+                                <td>Dashboard widget - đơn chờ xác nhận</td>
+                                <td>Widget</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">32</td>
+                                <td class="text-center"><strong>8</strong></td>
+                                <td>Dashboard widget - công nợ</td>
+                                <td>Widget</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr class="deliverable-row">
+                                <td colspan="3"><strong>📍 Deliverable Ngày 8</strong></td>
+                                <td colspan="2">✅ Báo cáo + Dashboard widgets</td>
+                            </tr>
+
+                            <!-- Ngày 9-10 -->
+                            <tr>
+                                <td class="text-center">33</td>
+                                <td class="text-center"><strong>9</strong></td>
+                                <td>Unit tests: services</td>
+                                <td>Jest tests</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">34</td>
+                                <td class="text-center"><strong>9</strong></td>
+                                <td>Integration tests: APIs</td>
+                                <td>Supertest</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">35</td>
+                                <td class="text-center"><strong>10</strong></td>
+                                <td>Test flows: Tạo phiếu → Duyệt → Báo cáo</td>
+                                <td>E2E backend</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">36</td>
+                                <td class="text-center"><strong>10</strong></td>
+                                <td>Test flows: Đơn hàng → Xác nhận → Thanh toán</td>
+                                <td>E2E backend</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr class="deliverable-row">
+                                <td colspan="3"><strong>📍 Deliverable Ngày 9-10</strong></td>
+                                <td colspan="2">✅ Test coverage > 70%</td>
+                            </tr>
+
+                            <!-- Ngày 11 -->
+                            <tr>
+                                <td class="text-center">37</td>
+                                <td class="text-center"><strong>11</strong></td>
+                                <td>Test UI components</td>
+                                <td>Cypress/Playwright</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">38</td>
+                                <td class="text-center"><strong>11</strong></td>
+                                <td>UAT với user thực</td>
+                                <td>Feedback</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">39</td>
+                                <td class="text-center"><strong>11</strong></td>
+                                <td>Bug fixes từ UAT</td>
+                                <td>Hotfixes</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr class="deliverable-row">
+                                <td colspan="3"><strong>📍 Deliverable Ngày 11</strong></td>
+                                <td colspan="2">✅ UAT passed</td>
+                            </tr>
+
+                            <!-- Ngày 12 -->
+                            <tr>
+                                <td class="text-center">40</td>
+                                <td class="text-center"><strong>12</strong></td>
+                                <td>Fix remaining bugs</td>
+                                <td>Clean code</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">41</td>
+                                <td class="text-center"><strong>12</strong></td>
+                                <td>Performance optimization</td>
+                                <td>Optimized</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">42</td>
+                                <td class="text-center"><strong>12</strong></td>
+                                <td>Documentation update</td>
+                                <td>README, API docs</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">43</td>
+                                <td class="text-center"><strong>12</strong></td>
+                                <td>Deploy to staging/production</td>
+                                <td>Live</td>
+                                <td class="text-center"><span class="status status-pending">○</span></td>
+                            </tr>
+                            <tr class="deliverable-row success">
+                                <td colspan="3"><strong>📍 Deliverable Ngày 12</strong></td>
+                                <td colspan="2"><strong>✅ PRODUCTION READY</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>📋 Kế Hoạch Triển Khai Thu Chi & Hóa Đơn Điện Tử</p>
+            <p>Rau Sạch Trần Gia • Cập nhật: 23/12/2025</p>
+        </footer>
+    </div>
+</body>
+</html>

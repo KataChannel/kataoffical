@@ -1,0 +1,47 @@
+import { Module } from '@nestjs/common';
+import { PrismaModule } from '../../prisma/prisma.module';
+import { AuthModule } from '../auth/auth.module';
+import { RedisModule } from '../redis/redis.module';
+import { UniversalResolver } from './universal.resolver';
+import { UniversalService } from './universal.service';
+import { EnhancedUniversalResolver } from './enhanced-universal.resolver';
+import { EnhancedUniversalService } from './enhanced-universal.service';
+import { DataLoaderService } from './dataloader.service';
+import { FieldSelectionService } from './field-selection.service';
+import { GraphQLPerformanceService } from './performance.service';
+import { DashboardResolver } from '../dashboard/dashboard.resolver';
+import { NhuCauDatHangResolver } from './nhucaudathang.resolver';
+
+@Module({
+  imports: [
+    PrismaModule,
+    AuthModule,
+    RedisModule, // ✅ Add RedisModule for caching
+  ],
+  providers: [
+    // Original universal services (keep for backward compatibility)
+    UniversalResolver, 
+    UniversalService,
+    
+    // Enhanced GraphQL services with dynamic field selection
+    EnhancedUniversalResolver,
+    EnhancedUniversalService,
+    DataLoaderService,
+    FieldSelectionService,
+    GraphQLPerformanceService,
+    
+    // Dashboard resolver
+    DashboardResolver,
+
+    // ⚡ Optimized resolver for Nhu Cau Dat Hang (replaces 4 heavy queries)
+    NhuCauDatHangResolver,
+  ],
+  exports: [
+    UniversalService,
+    EnhancedUniversalService,
+    DataLoaderService,
+    FieldSelectionService,
+    GraphQLPerformanceService,
+  ],
+})
+export class GraphQLUniversalModule {}

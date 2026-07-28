@@ -1,0 +1,255 @@
+# ===================================
+# NHOMKHACHHANG GRAPHQL CRUD OPERATIONS
+# Test these queries/mutations in GraphQL Playground
+# ===================================
+
+# 1. GET ALL NHOM KHACH HANG (với phân trang và filter)
+query GetNhomkhachhang {
+  getNhomkhachhang(
+    filter: {
+      search: "VIP"
+    }
+    pagination: {
+      page: 1
+      limit: 10
+    }
+    sort: {
+      field: "createdAt"
+      direction: desc
+    }
+  ) {
+    data {
+      id
+      name
+      description
+      createdAt
+      updatedAt
+      khachhang {
+        id
+        name
+        tenkh
+        diachi
+        sdt
+        email
+        isActive
+      }
+    }
+    total
+    page
+    limit
+    totalPages
+    hasNextPage
+    hasPreviousPage
+  }
+}
+
+# 2. GET NHOM KHACH HANG BY ID
+query GetNhomkhachhangById {
+  getNhomkhachhangById(id: "YOUR_NHOM_ID_HERE") {
+    id
+    name
+    description
+    createdAt
+    updatedAt
+    khachhang {
+      id
+      name
+      tenkh
+      diachi
+      sdt
+      email
+      isActive
+    }
+  }
+}
+
+# 3. CREATE NHOM KHACH HANG
+mutation CreateNhomkhachhang {
+  createNhomkhachhang(
+    input: {
+      name: "Khách hàng VIP"
+      description: "Nhóm khách hàng VIP có ưu đãi đặc biệt"
+    }
+  ) {
+    success
+    message
+    data {
+      id
+      name
+      description
+      createdAt
+      updatedAt
+    }
+  }
+}
+
+# 4. UPDATE NHOM KHACH HANG
+mutation UpdateNhomkhachhang {
+  updateNhomkhachhang(
+    id: "YOUR_NHOM_ID_HERE"
+    input: {
+      name: "Khách hàng VIP Premium"
+      description: "Nhóm khách hàng VIP Premium với ưu đãi cao nhất"
+    }
+  ) {
+    success
+    message
+    data {
+      id
+      name
+      description
+      updatedAt
+    }
+  }
+}
+
+# 5. DELETE NHOM KHACH HANG
+mutation DeleteNhomkhachhang {
+  deleteNhomkhachhang(id: "YOUR_NHOM_ID_HERE") {
+    success
+    message
+  }
+}
+
+# 6. ADD KHACH HANG TO NHOM
+mutation AddKhachhangToNhom {
+  addKhachhangToNhom(
+    input: {
+      nhomId: "YOUR_NHOM_ID_HERE"
+      khachhangIds: ["KHACHHANG_ID_1", "KHACHHANG_ID_2"]
+    }
+  ) {
+    success
+    message
+    data {
+      id
+      name
+      khachhang {
+        id
+        name
+        tenkh
+        email
+      }
+    }
+  }
+}
+
+# 7. REMOVE KHACH HANG FROM NHOM
+mutation RemoveKhachhangFromNhom {
+  removeKhachhangFromNhom(
+    input: {
+      nhomId: "YOUR_NHOM_ID_HERE"
+      khachhangIds: ["KHACHHANG_ID_1"]
+    }
+  ) {
+    success
+    message
+    data {
+      id
+      name
+      khachhang {
+        id
+        name
+        tenkh
+        email
+      }
+    }
+  }
+}
+
+# 8. GET ALL NHOM KHACH HANG SIMPLE (for dropdown)
+query GetAllNhomkhachhangSimple {
+  getAllNhomkhachhangSimple {
+    id
+    name
+    description
+  }
+}
+
+# ===================================
+# USING UNIVERSAL RESOLVER (Alternative)
+# ===================================
+
+# Universal Query - Get all nhomkhachhang
+query UniversalGetNhomkhachhang {
+  findMany(
+    modelName: "nhomkhachhang"
+    where: {}
+    orderBy: { createdAt: "desc" }
+    skip: 0
+    take: 10
+    include: {
+      khachhang: {
+        select: {
+          id: true
+          name: true
+          tenkh: true
+          diachi: true
+          sdt: true
+          email: true
+          isActive: true
+        }
+      }
+    }
+  ) {
+    data
+    total
+    page
+    pageSize
+    totalPages
+    hasNextPage
+    hasPreviousPage
+  }
+}
+
+# Universal Query - Get nhomkhachhang by ID
+query UniversalGetNhomkhachhangById {
+  findUnique(
+    modelName: "nhomkhachhang"
+    where: { id: "YOUR_NHOM_ID_HERE" }
+    include: {
+      khachhang: {
+        select: {
+          id: true
+          name: true
+          tenkh: true
+          diachi: true
+          sdt: true
+          email: true
+          isActive: true
+        }
+      }
+    }
+  )
+}
+
+# Universal Mutation - Create nhomkhachhang
+mutation UniversalCreateNhomkhachhang {
+  createRecord(
+    modelName: "nhomkhachhang"
+    data: {
+      name: "Nhóm khách hàng mới"
+      description: "Mô tả nhóm khách hàng"
+    }
+  )
+}
+
+# Universal Mutation - Update nhomkhachhang
+mutation UniversalUpdateNhomkhachhang {
+  updateRecord(
+    modelName: "nhomkhachhang"
+    where: { id: "YOUR_NHOM_ID_HERE" }
+    data: {
+      name: "Tên nhóm đã cập nhật"
+      description: "Mô tả đã cập nhật"
+    }
+  )
+}
+
+# Universal Mutation - Delete nhomkhachhang
+mutation UniversalDeleteNhomkhachhang {
+  deleteRecord(
+    modelName: "nhomkhachhang"
+    where: { id: "YOUR_NHOM_ID_HERE" }
+  )
+}
