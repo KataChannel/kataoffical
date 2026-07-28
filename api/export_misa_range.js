@@ -7,7 +7,7 @@ const moment = require('moment-timezone');
 const prisma = new PrismaClient();
 
 const startDateStr = process.argv[2] || '2026-01-01';
-const endDateStr = process.argv[3] || '2026-07-19';
+const endDateStr = process.argv[3] || moment().tz('Asia/Ho_Chi_Minh').format('YYYY-MM-DD');
 
 async function main() {
     console.log(`=== STARTING RANGE MISA EXPORT FROM ${startDateStr} TO ${endDateStr} ===`);
@@ -43,7 +43,7 @@ async function main() {
         const orders = await prisma.donhang.findMany({
             where: {
                 ngaygiao: { gte: startOfDay, lte: endOfDay },
-                status: 'danhan'
+                status: { in: ['danhan', 'hoanthanh'] }
             },
             include: {
                 khachhang: true,
@@ -59,7 +59,7 @@ async function main() {
         const purchases = await prisma.dathang.findMany({
             where: {
                 ngaynhan: { gte: startOfDay, lte: endOfDay },
-                status: 'danhan'
+                status: { in: ['danhan', 'hoanthanh'] }
             },
             include: {
                 nhacungcap: true,
@@ -71,9 +71,11 @@ async function main() {
             orderBy: { madncc: 'asc' }
         });
 
-        // Build Sales Rows
-        const salesRows = [];
+        // Build Sales Rows grouped by order
+        const salesOrderGroups = [];
+        let totalSalesRowsCount = 0;
         for (const order of orders) {
+            const orderRows = [];
             const formattedDateStr = moment(order.ngaygiao).tz('Asia/Ho_Chi_Minh').format('DD/MM/YYYY');
             const kh = order.khachhang || {};
 
@@ -149,13 +151,19 @@ async function main() {
                 row[59] = "";
                 row[60] = "";
 
-                salesRows.push(row);
+                orderRows.push(row);
+            }
+            if (orderRows.length > 0) {
+                salesOrderGroups.push(orderRows);
+                totalSalesRowsCount += orderRows.length;
             }
         }
 
-        // Build Purchase Rows
-        const purchaseRows = [];
+        // Build Purchase Rows grouped by purchase order
+        const purchaseOrderGroups = [];
+        let totalPurchaseRowsCount = 0;
         for (const purchase of purchases) {
+            const orderRows = [];
             const formattedDateStr = moment(purchase.ngaynhan).tz('Asia/Ho_Chi_Minh').format('DD/MM/YYYY');
             const ncc = purchase.nhacungcap || {};
             const isShowVat = ncc.isshowvat !== false;
@@ -172,7 +180,7 @@ async function main() {
                 const row = Array(63).fill(null);
                 row[0] = "Mua hàng trong nước nhập kho";
                 row[1] = "Chưa thanh toán";
-                row[2] = ""; // Cột "Nhận kèm hóa đơn" để trống theo yêu cầu kế toán
+                row[2] = "";
                 row[3] = formattedDateStr;
                 row[4] = formattedDateStr;
                 row[5] = purchase.madncc;
@@ -234,23 +242,27 @@ async function main() {
                 row[61] = "";
                 row[62] = "Không";
 
-                purchaseRows.push(row);
+                orderRows.push(row);
+            }
+            if (orderRows.length > 0) {
+                purchaseOrderGroups.push(orderRows);
+                totalPurchaseRowsCount += orderRows.length;
             }
         }
 
         // Only create directory if there is data for sales or purchases
-        if (salesRows.length > 0 || purchaseRows.length > 0) {
+        if (salesOrderGroups.length > 0 || purchaseOrderGroups.length > 0) {
             const dayOutputDir = path.join(baseOutputDir, dateFormattedISO);
             if (!fs.existsSync(dayOutputDir)) {
                 fs.mkdirSync(dayOutputDir, { recursive: true });
             }
 
             // Export Sales files
-            if (salesRows.length > 0) {
+            if (salesOrderGroups.length > 0) {
                 const generated = writeChunksFromBuffer(
                     deliveryBuffer,
                     'Phieu giao hang',
-                    salesRows,
+                    salesOrderGroups,
                     'Ban hang trong nuoc',
                     dateFormattedFilename,
                     dayOutputDir
@@ -259,11 +271,11 @@ async function main() {
             }
 
             // Export Purchase files
-            if (purchaseRows.length > 0) {
+            if (purchaseOrderGroups.length > 0) {
                 const generated = writeChunksFromBuffer(
                     purchaseBuffer,
                     'Mua hang nha cung cap',
-                    purchaseRows,
+                    purchaseOrderGroups,
                     'Mua hang trong nuoc ',
                     dateFormattedFilename,
                     dayOutputDir
@@ -272,7 +284,7 @@ async function main() {
             }
 
             totalDaysProcessed++;
-            console.log(`[${dateFormattedISO}] Sales rows: ${salesRows.length}, Purchase rows: ${purchaseRows.length} -> Exported to dulieuxuat/${dateFormattedISO}/`);
+            console.log(`[${dateFormattedISO}] Sales rows: ${totalSalesRowsCount}, Purchase rows: ${totalPurchaseRowsCount} -> Exported to dulieuxuat/${dateFormattedISO}/`);
         }
 
         currentDate.add(1, 'day');
@@ -284,15 +296,28 @@ async function main() {
     console.log(`Total Purchase files generated: ${totalPurchaseFilesGenerated}`);
 }
 
-function writeChunksFromBuffer(templateBuffer, outputBaseName, dataRows, sheetName, dateStr, outputFolder) {
+function writeChunksFromBuffer(templateBuffer, outputBaseName, orderGroups, sheetName, dateStr, outputFolder) {
     const CHUNK_SIZE = 500;
-    const totalRows = dataRows.length;
-    const numChunks = Math.ceil(totalRows / CHUNK_SIZE);
+
+    // Group orderGroups into chunks without splitting any single order
+    const chunks = [];
+    let currentChunk = [];
+
+    for (const group of orderGroups) {
+        if (currentChunk.length > 0 && (currentChunk.length + group.length > CHUNK_SIZE)) {
+            chunks.push(currentChunk);
+            currentChunk = [];
+        }
+        currentChunk.push(...group);
+    }
+    if (currentChunk.length > 0) {
+        chunks.push(currentChunk);
+    }
+
+    const numChunks = chunks.length;
 
     for (let part = 1; part <= numChunks; part++) {
-        const startIdx = (part - 1) * CHUNK_SIZE;
-        const endIdx = Math.min(startIdx + CHUNK_SIZE, totalRows);
-        const chunkData = dataRows.slice(startIdx, endIdx);
+        const chunkData = chunks[part - 1];
 
         // Read template from buffer
         const workbook = XLSX.read(templateBuffer, { type: 'buffer' });
