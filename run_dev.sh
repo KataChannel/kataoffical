@@ -15,26 +15,25 @@ fi
 LAN_IP=$(hostname -I | awk '{print $1}')
 [ -z "$LAN_IP" ] && LAN_IP="localhost"
 
-echo "🚀 MENU QUẢN LÝ DỰ ÁN"
+echo "🚀 MENU QUẢN LÝ DỰ ÁN RAUSACHCOPHAN (PORT 49xxx)"
 echo "🌐 Database: ${MASKED_DB_URL}"
 echo "📍 LAN IP: ${LAN_IP}"
 echo "-----------------------------------"
 echo "1. Chạy Dev (Localhost - 127.0.0.1)"
 echo "2. Chạy Dev (Mạng LAN - ${LAN_IP})"
-echo "3. Backup dữ liệu từ VPS"
-echo "4. Nhân bản Database (Copy từ rausachfinal -> testdata)"
+echo "3. Backup dữ liệu từ VPS (rausachcophan)"
+echo "4. Nhân bản Database (Copy từ rausachfinal -> rausachcophan)"
 echo "5. Phục hồi dữ liệu lên Local Docker"
 echo "6. ⚡ Tối ưu hóa Tất cả Sản phẩm"
 echo "7. 🧹 Dọn dẹp Database"
 echo "8. 🔧 Sửa lỗi 'too many open files'"
-echo "9. 🧪 Triển khai Sandbox (Cổng 53333/54303)"
-echo "10. 🚀 Triển khai An toàn (Build Local -> Server)"
+echo "9. 🚀 Triển khai An toàn lên Server rausachcophan (49xxx)"
+echo "10. 🚀 Triển khai An toàn lên Server rausachcophan (49xxx)"
 echo "11. ⏫ Cập nhật Schema Database (Push)"
-echo "12. 🔄 Phục hồi dữ liệu từ Local lên VPS (rausachfinal)"
-echo "13. 🔄 Phục hồi dữ liệu từ Local lên VPS (testdata)"
+echo "12. 🔄 Phục hồi dữ liệu từ Local lên VPS (rausachcophan)"
 echo "0. Thoát"
 echo "-----------------------------------"
-read -p "Vui lòng chọn chức năng (0-13): " choice
+read -p "Vui lòng chọn chức năng (0-12): " choice
 
 case $choice in
     1)
@@ -69,13 +68,8 @@ case $choice in
         fi
         exit 0
         ;;
-    9)
-        echo "=> 🧪 Khởi chạy trình triển khai Sandbox (BE: 53333, FE: 54303)..."
-        bash scripts/deploy_safe_local.sh
-        exit 0
-        ;;
-    10)
-        echo "=> 🚀 Đang triển khai An toàn (Build Local -> Server)..."
+    9|10)
+        echo "=> 🚀 Đang triển khai An toàn Rausachcophan (Port 49xxx)..."
         bash scripts/deploy_safe_local.sh
         exit 0
         ;;
@@ -85,13 +79,8 @@ case $choice in
         exit 0
         ;;
     12)
-        echo "=> 🔄 Khởi chạy trình Phục hồi dữ liệu từ Local lên VPS (rausachfinal)..."
-        bash scripts/restore_to_vps.sh rausachfinal
-        exit 0
-        ;;
-    13)
-        echo "=> 🔄 Khởi chạy trình Phục hồi dữ liệu từ Local lên VPS (testdata)..."
-        bash scripts/restore_to_vps.sh testdata
+        echo "=> 🔄 Khởi chạy trình Phục hồi dữ liệu từ Local lên VPS (rausachcophan)..."
+        bash scripts/restore_to_vps.sh rausachcophan
         exit 0
         ;;
     0)

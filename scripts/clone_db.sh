@@ -5,7 +5,7 @@ SERVER="root@116.118.49.243"
 DB_USER="AWois79wFA1bxMK"
 DB_PASS="7bhNHJcSEbWln9v"
 DB_SOURCE="rausachfinal"
-DB_TARGET="testdata"
+DB_TARGET="rausachcophan"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 # Dump file sẽ nằm TRONG container
 DUMP_FILE="/tmp/clone_${DB_SOURCE}_${TIMESTAMP}.sql"
@@ -16,16 +16,12 @@ echo " Từ (Source): $DB_SOURCE"
 echo " Sang (Target): $DB_TARGET"
 echo "======================================================"
 
-ssh $SERVER << INTERNALSCRIPT
+ssh -i /home/kata/.ssh/rausachfinal -o StrictHostKeyChecking=no $SERVER << INTERNALSCRIPT
     # Bắt lỗi không làm ảnh hưởng kịch bản
     set -e 
     
-    # 0. Tìm container Postgres (có thể tên thay đổi)
-    CONTAINER=\$(docker ps --format '{{.Names}}\t{{.Ports}}' | grep 55432 | awk '{print \$1}')
-    if [ -z "\$CONTAINER" ]; then
-        echo "❌ KHÔNG TÌM THẤY CONTAINER POSTGRES TRÊN CỔNG 55432!"
-        exit 1
-    fi
+    # 0. Tìm container Postgres rausachcophan-postgres
+    CONTAINER="rausachcophan-postgres"
     echo "=> Đã tìm thấy container: \$CONTAINER"
 
     # 1. Export database gốc ($DB_SOURCE) ra file SQL
