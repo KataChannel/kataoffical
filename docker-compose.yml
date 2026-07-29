@@ -8,53 +8,53 @@ x-logging: &default-logging
       max-file: "3"
 
 services:
-  postgres:
+  rausachcophan-postgres:
     <<: *default-logging
     image: postgres:15
-    container_name: rausach-postgres
+    container_name: rausachcophan-postgres
     restart: always
     shm_size: '256mb' # 🚀 Nâng shm_size để thực hiện VACUUM ANALYZE cho bảng lớn
     environment:
       POSTGRES_USER: AWois79wFA1bxMK
       POSTGRES_PASSWORD: 7bhNHJcSEbWln9v
-      POSTGRES_DB: rausachfinal
+      POSTGRES_DB: rausachcophan
     ports:
-      - "55432:5432"
+      - "49432:5432"
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - rausachcophan_pg_data:/var/lib/postgresql/data
     deploy:
       resources:
         limits:
           cpus: '1.0'
           memory: 2G
 
-  pgadmin:
+  rausachcophan-pgadmin:
     <<: *default-logging
     image: dpage/pgadmin4
-    container_name: rausach-pgadmin
+    container_name: rausachcophan-pgadmin
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@rausachtrangia.com
       PGADMIN_DEFAULT_PASSWORD: 7bhNHJcSEbWln9v
     ports:
-      - "55050:80"
+      - "49050:80"
     depends_on:
-      - postgres
+      - rausachcophan-postgres
     deploy:
       resources:
         limits:
           cpus: '0.5'
           memory: 512M
 
-  redis:
+  rausachcophan-redis:
     <<: *default-logging
     image: redis:latest
-    container_name: rausach-redis
+    container_name: rausachcophan-redis
     restart: always
     ports:
-      - "56379:6379"
+      - "49637:6379"
     volumes:
-      - redis_data:/data
+      - rausachcophan_redis_data:/data
     command: [ "redis-server", "--appendonly", "yes" ]
     deploy:
       resources:
@@ -65,41 +65,41 @@ services:
   berausach:
     <<: *default-logging
     build: ./api
-    container_name: rausach-backend
+    container_name: rausachcophan-backend
     restart: always
     ports:
-      - "53331:3331"
+      - "49331:3331"
     environment:
-      # 🌐 Chuyển sang kết nối nội bộ (postgres:5432) thay vì IP Public
-      - DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@postgres:5432/rausachfinal?schema=public&connection_limit=25&pool_timeout=60&connect_timeout=20
+      # 🌐 Chuyển sang kết nội nội bộ (rausachcophan-postgres:5432) thay vì IP Public
+      - DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@rausachcophan-postgres:5432/rausachcophan?schema=public&connection_limit=25&pool_timeout=60&connect_timeout=20
       - GOOGLE_CLIENT_ID=897974685698-efprsqffgop935h5d5l2lidle1go9i17.apps.googleusercontent.com
       - GOOGLE_CLIENT_SECRET=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
       - FACEBOOK_CLIENT_ID=your-facebook-client-id
       - FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
       - ZALO_APP_ID=your-zalo-app-id
       - ZALO_APP_SECRET=your-zalo-app-secret
-      - BASE_URL=https://tg.rausachtrangia.com
-      - SERVER_URL=https://apitg.rausachtrangia.com
+      - BASE_URL=https://cp.rausachtrangia.com
+      - SERVER_URL=https://apicp.rausachtrangia.com
       - PORT=3331
-      - REDIS_HOST=redis
+      - REDIS_HOST=rausachcophan-redis
       - REDIS_PORT=6379
-      - MINIO_ENDPOINT=rausach-minio
+      - MINIO_ENDPOINT=rausachcophan-minio
       - MINIO_PORT=9000
       - MINIO_USE_SSL=false
       - MINIO_ACCESS_KEY=RC4hWSS4V6QIcfl
       - MINIO_SECRET_KEY=LEOZHZwjaasTTKk
       - MINIO_ROOT_USER=RC4hWSS4V6QIcfl
       - MINIO_ROOT_PASSWORD=LEOZHZwjaasTTKk
-      - MINIO_BUCKET_NAME=uploads
-      - MINIO_BUCKET=uploads
+      - MINIO_BUCKET_NAME=rausachcophan-uploads
+      - MINIO_BUCKET=rausachcophan-uploads
       - MINIO_REGION=us-east-1
-      - MINIO_PUBLIC_URL=http://storage.rausachtrangia.com:59000
+      - MINIO_PUBLIC_URL=http://storage.rausachtrangia.com:49900
       - GOOGLE_API_KEY=AIzaSyAcLy3dOt27BgxkDSAY7fRm0jbwlzPo-80
       - TELEGRAM_BOT_TOKEN=8899335906:AAHL8MBUlAzRs0POsI1TeNathGUCBu3poMU
       - TELEGRAM_CHAT_ID=-1003898067417
     depends_on:
-      - postgres
-      - redis
+      - rausachcophan-postgres
+      - rausachcophan-redis
     deploy:
       resources:
         limits:
@@ -109,10 +109,10 @@ services:
   ferausach:
     <<: *default-logging
     build: ./frontend
-    container_name: rausach-frontend
+    container_name: rausachcophan-frontend
     restart: always
     ports:
-      - "54301:4301"
+      - "49401:4301"
     environment:
       - NODE_ENV=production
       - NODE_OPTIONS=--max-old-space-size=1536
@@ -122,20 +122,20 @@ services:
           cpus: '1.0'
           memory: 2G
 
-  rausach-minio:
+  rausachcophan-minio:
     <<: *default-logging
     image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
-    container_name: rausach-minio
+    container_name: rausachcophan-minio
     command: server /data --console-address ":9090"
     ports:
-      - "59000:9000"
-      - "59090:9090"
+      - "49900:9000"
+      - "49909:9090"
     environment:
       MINIO_ROOT_USER: RC4hWSS4V6QIcfl
       MINIO_ROOT_PASSWORD: LEOZHZwjaasTTKk
       MINIO_REGION: us-east-1
     volumes:
-      - minio_rausach:/data
+      - rausachcophan_minio_data:/data
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
       interval: 30s
@@ -150,8 +150,10 @@ services:
           memory: 1G
 
 volumes:
-  pg_data:
-  redis_data:
-  uploads_data:
+  rausachcophan_pg_data:
+  rausachcophan_redis_data:
+  rausachcophan_uploads_data:
     driver: local
-  minio_rausach:
+  rausachcophan_minio_data:
+
+
