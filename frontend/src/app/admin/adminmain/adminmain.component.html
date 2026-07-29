@@ -50,11 +50,11 @@
     </div>
   </mat-drawer>
 
-  <div class="relative flex flex-col w-full h-full primary">
-    <div class="relative flex flex-row justify-between items-center p-1 bg-[#57A345] text-white overflow-hidden">
+  <mat-drawer-content class="relative flex flex-col w-full h-full primary overflow-hidden">
+    <div class="relative flex flex-row justify-between items-center px-3 py-1.5 bg-[#57A345] text-white min-h-[52px] shadow-sm flex-shrink-0 z-10">
       <!-- Left: Menu & Search Icon (Mobile/Tablet < XL) -->
-      <div class="flex flex-row items-center flex-shrink-0">
-        <button mat-icon-button (click)="drawer.toggle()" class="!text-white flex-shrink-0">
+      <div class="flex flex-row items-center flex-shrink-0 space-x-1">
+        <button mat-icon-button (click)="drawer.toggle()" class="!text-white flex-shrink-0" matTooltip="Thu gọn / Mở menu">
           <mat-icon>menu</mat-icon>
         </button>
         
@@ -68,9 +68,9 @@
       <div class="flex flex-row items-center justify-end flex-1 min-w-0">
         
         <!-- Search Bar (Desktop only > 1280px) -->
-        <div (click)="openSearchDialog()" class="hidden xl:flex relative flex-1 max-w-[280px] items-center search-input-container mx-2 overflow-hidden">
+        <div (click)="openSearchDialog()" class="hidden xl:flex relative flex-1 max-w-[280px] items-center search-input-container mx-2 overflow-hidden cursor-pointer">
           <input type="text" placeholder="Tìm Kiếm..."
-            class="block w-full pl-10 pr-4 py-1.5 text-gray-700 bg-white/95 border border-transparent rounded-lg focus:outline-none text-xs truncate"
+            class="block w-full pl-10 pr-4 py-1.5 text-gray-700 bg-white/95 border border-transparent rounded-lg focus:outline-none text-xs truncate cursor-pointer"
             readonly>
           <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <span class="material-symbols-outlined text-gray-500 !text-xl">search</span>
@@ -78,13 +78,13 @@
         </div>
 
         <!-- DB Name - Only shown on extra large screens -->
-        <div *ngIf="dbName" class="hidden xl:flex items-center px-3 py-1 bg-white/10 rounded-md border border-white/20 mr-2 backdrop-blur-sm flex-shrink-0">
+        <div *ngIf="dbName" class="hidden xl:flex items-center px-3 py-1 bg-white/15 rounded-md border border-white/20 mr-2 backdrop-blur-sm flex-shrink-0">
           <mat-icon class="!w-4 !h-4 text-[16px] mr-1.5 text-white/90">storage</mat-icon>
-          <span class="text-white text-[10px] font-bold tracking-widest uppercase truncate max-w-[100px]">{{dbName}}</span>
+          <span class="text-white text-[10px] font-bold tracking-widest uppercase truncate max-w-[120px]">{{dbName}}</span>
         </div>
         
         <!-- Action Buttons Group - Forced to stay on one line and never shrink -->
-        <div class="flex flex-row items-center flex-nowrap flex-shrink-0">
+        <div class="flex flex-row items-center flex-nowrap flex-shrink-0 space-x-0.5">
           <button mat-icon-button (click)="ClearCache()" class="!text-white" matTooltip="Xóa Cache">
             <mat-icon class="!text-[22px]">cached</mat-icon>
           </button>
@@ -128,8 +128,10 @@
       </div>
     </div>
     
-    <router-outlet></router-outlet>
-  </div>
+    <div class="flex-1 overflow-auto relative">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-drawer-content>
 
 
   <mat-drawer #drawer1 class="!w-screen lg:!w-1/2" mode="over" position="end">
