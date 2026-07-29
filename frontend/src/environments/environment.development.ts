@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  APIURL: 'https://cpapi.rausachtrangia.com',
+  APIURL: 'http://localhost:3331',
   ImageURL: 'https://media.rausachtrangia.com/',
   app_id: '1416835846626859002',
   secret_key: 'HLBWj23hToA9fuiQvQY4',
