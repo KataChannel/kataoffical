@@ -1,0 +1,53 @@
+<div class="p-4 max-w-3xl">
+  <h2 class="text-xl font-semibold mb-1">Khai báo đầu kỳ (Go-live)</h2>
+  <p class="text-sm text-gray-600 mb-4">Thiết lập mốc bắt đầu dùng hệ thống + nạp số dư công nợ đầu kỳ và thời hạn/chu kỳ cho từng khách. Làm 1 lần khi go-live.</p>
+
+  <!-- Bước 1: Go-live -->
+  <div class="border rounded p-3 mb-4 bg-gray-50">
+    <div class="font-medium mb-2">① Ngày go-live</div>
+    <div class="flex flex-wrap items-end gap-2">
+      <div class="flex flex-col">
+        <label class="text-xs">Chọn ngày bắt đầu</label>
+        <input type="date" [(ngModel)]="goLiveInput" class="border rounded px-2 py-1 text-sm" />
+      </div>
+      <button mat-raised-button color="primary" [disabled]="isBusy()" (click)="luuGoLive()">
+        <mat-icon>save</mat-icon> Lưu go-live
+      </button>
+      @if (goLive()) { <span class="text-sm text-green-700">Đang áp dụng: <b>{{ goLive() }}</b></span> }
+      @else { <span class="text-sm text-red-600">Chưa đặt go-live — báo cáo công nợ sẽ cộng cả lịch sử (sai).</span> }
+    </div>
+    <div class="text-xs text-gray-500 mt-2">Nợ trước ngày này nằm trong <b>số dư đầu kỳ</b>; đơn từ ngày này trở đi mới tính phát sinh mới → tránh cộng trùng.</div>
+  </div>
+
+  <!-- Bước 2: Template -->
+  <div class="border rounded p-3 mb-4 bg-gray-50">
+    <div class="font-medium mb-2">② Tải file khai báo</div>
+    <p class="text-sm text-gray-600 mb-2">File đã liệt kê sẵn khách có phát sinh. Điền các cột vàng: <b>Số dư đầu kỳ</b> (chỉ khách còn nợ), <b>Thời hạn nợ</b> (ngày), <b>Chu kỳ chốt</b> (ngày), <b>Hạn mức nợ</b>. Bỏ trống = giữ nguyên.</p>
+    <button mat-stroked-button (click)="taiTemplate()"><mat-icon>download</mat-icon> Tải template Excel</button>
+  </div>
+
+  <!-- Bước 3: Import -->
+  <div class="border rounded p-3 mb-4 bg-gray-50">
+    <div class="font-medium mb-2">③ Nạp file đã điền</div>
+    <input type="file" accept=".xlsx,.xls" (change)="onUpload($event)" [disabled]="isBusy()" class="text-sm" />
+    @if (isBusy()) { <mat-spinner diameter="22" class="inline-block ml-2"></mat-spinner> }
+
+    @if (ketQua(); as kq) {
+      <div class="mt-3 text-sm border-t pt-2">
+        <div>✅ Cập nhật điều khoản: <b>{{ kq.capNhatKhach }}</b> khách · Số dư đầu kỳ: <b>{{ kq.dauKy }}</b> · Bỏ qua (trống): {{ kq.boQua }}</div>
+        @if (kq.loi?.length) {
+          <div class="mt-2 text-red-600">
+            <div class="font-medium">{{ kq.loi.length }} dòng lỗi (mã KH không khớp) — sửa rồi nạp lại:</div>
+            <ul class="list-disc ml-5 max-h-40 overflow-auto">
+              @for (l of kq.loi; track l) { <li>{{ l }}</li> }
+            </ul>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="text-xs text-gray-500">
+    Import chạy lại nhiều lần không nhân đôi (idempotent theo mã KH). Số dư đầu kỳ được ghi vào tài khoản 131 tại ngày go-live.
+  </div>
+</div>

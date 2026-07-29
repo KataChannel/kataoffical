@@ -55,6 +55,38 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'sync-data',
+        loadComponent: () =>
+          import('./admin/sync-data/sync-data.component').then(
+            (c) => c.SyncDataComponent
+          ),
+      },
+      {
+        path: 'ketoan/congno',
+        loadComponent: () =>
+          import('./admin/ketoan/congno-kh/congno-kh.component').then((c) => c.CongnoKhComponent),
+      },
+      {
+        path: 'ketoan/soquy',
+        loadComponent: () =>
+          import('./admin/ketoan/soquy/soquy.component').then((c) => c.SoquyComponent),
+      },
+      {
+        path: 'ketoan/chotcongno',
+        loadComponent: () =>
+          import('./admin/ketoan/chotcongno/chotcongno.component').then((c) => c.ChotcongnoComponent),
+      },
+      {
+        path: 'ketoan/quydoi',
+        loadComponent: () =>
+          import('./admin/ketoan/quydoi/quydoi.component').then((c) => c.QuydoiComponent),
+      },
+      {
+        path: 'ketoan/dauky',
+        loadComponent: () =>
+          import('./admin/ketoan/dauky/dauky.component').then((c) => c.DaukyComponent),
+      },
+      {
         path: 'dashboard',
         loadComponent: () =>
           import('./admin/dashboard/dashboard.component').then(

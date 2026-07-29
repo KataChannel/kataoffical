@@ -1,6 +1,6 @@
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-1.1.x"]
+  binaryTargets = ["native", "debian-openssl-1.1.x", "darwin"]
 }
 
 datasource postgres {
@@ -183,6 +183,7 @@ model Khachhang {
   hiengia       Boolean         @default(false)
   isActive      Boolean         @default(false)
   istitle2      Boolean         @default(false)
+  isTemplate2   Boolean         @default(false)
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   tenfile       String?
@@ -190,17 +191,45 @@ model Khachhang {
   banggiaId     String?
   isshowvat     Boolean         @default(true)
   machuyen      String?
+  
+  // New fields for CRM Upgrade
+  latitude      Float?
+  longitude     Float?
+  khuvuc        String?         // Khu vực giao hàng (Zone)
+  hanmucno      Float?          // Hạn mức nợ tối đa (Credit Limit)
+  thoihanno     Int?            // Số ngày hạn nợ (Payment Term in days)
+  chuKyChotCongNo Int?          // Chu kỳ chốt công nợ (số ngày) - mỗi KH deal khác nhau
+  
+  // Relations
   donhang       Donhang[]
   banggia       Banggia?        @relation("Banggiakhachhang", fields: [banggiaId], references: [id])
   nhomkhachhang Nhomkhachhang[] @relation("KhachhangNhom")
-
+  lienhekh      LienheKhachhang[] // Multiple Contacts
+  
   @@index([name])
+}
+
+model LienheKhachhang {
+  id          String    @id @default(uuid())
+  khachhangId String
+  hoten       String
+  sdt         String?
+  email       String?
+  vaitro      String?   // Người mua hàng, Kế toán, Người nhận hàng, Quản lý...
+  ghichu      String?
+  isHienTai   Boolean   @default(true) // Người liên hệ chính / đang hoạt động
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  khachhang   Khachhang @relation(fields: [khachhangId], references: [id], onDelete: Cascade)
+  
+  @@index([khachhangId])
 }
 
 model Nhomkhachhang {
   id          String      @id @default(uuid())
   name        String      @unique
   description String?
+  chotChung   Boolean     @default(false) // Kế toán: true = đối chiếu/chốt + thu CHUNG cả nhóm; false = từng khách
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   khachhang   Khachhang[] @relation("KhachhangNhom")
@@ -236,6 +265,12 @@ model Sanpham {
   updatedAt       DateTime          @updatedAt
   giaban          Decimal           @default(0) @postgres.Decimal(20, 3)
   vat             Decimal?          @default(0) @postgres.Decimal(20, 3)
+  // ---- Quy đổi giá vốn: biến thể (đích) tính giá vốn từ sản phẩm GỐC (nhập) ----
+  sanphamGocId    String?           // SP gốc (VD Thơm chín kg -> gốc Thơm xanh trái); null = SP nhập trực tiếp
+  sanphamGoc      Sanpham?          @relation("SanphamQuyDoi", fields: [sanphamGocId], references: [id])
+  bienThe         Sanpham[]         @relation("SanphamQuyDoi")
+  heSoQuyDoi      Decimal           @default(1) @postgres.Decimal(20, 6) // số lượng GỐC / 1 đơn vị ĐÍCH
+  haoHutQuyDoi    Decimal           @default(0) @postgres.Decimal(6, 4)  // % hao hụt khi sơ chế (0..1)
   banggia         Banggiasanpham[]
   chotkhodetail   Chotkhodetail[]   @relation("ChotkhodetailSanpham")
   Dathangsanpham  Dathangsanpham[]
@@ -261,7 +296,6 @@ model Donhang {
   isActive         Boolean          @default(false)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
-  ngayHoanThanhThucte DateTime?
   isshowvat        Boolean          @default(false)
   tongtien         Decimal          @default(0) @postgres.Decimal(20, 3)
   tongvat          Decimal          @default(0) @postgres.Decimal(20, 3)
@@ -269,12 +303,13 @@ model Donhang {
   vat              Decimal          @default(0.5) @postgres.Decimal(20, 3)
   lydohuy          String?
   phieuve          String?
-  nsthuve          String?
   giodi            String?
   giove            String?
   kynhan           String?
   nhanvienchiahang String?
   shipper          String?
+  nsthuve             String?
+  ngayHoanThanhThucte DateTime?
   banggia          Banggia?         @relation(fields: [banggiaId], references: [id])
   khachhang        Khachhang?       @relation(fields: [khachhangId], references: [id])
   khoId            String?
@@ -386,6 +421,9 @@ model Nhacungcap {
   updatedAt DateTime  @updatedAt
   isshowvat Boolean   @default(true)
   tenfile   String?
+  mst       String?   // Mã số thuế (VAT đầu vào / hoá đơn mua vào)
+  hanmucno  Float?    // Hạn mức nợ tối đa với NCC
+  thoihanno Int?      // Số ngày hạn thanh toán
   dathang   Dathang[]
   NhomNcc   NhomNcc[] @relation("NhacungcapNhom")
   Sanpham   Sanpham[] @relation("NhacungcapToSanpham")
@@ -398,6 +436,7 @@ model Dathang {
   madncc       String?          @unique
   ngaynhan     DateTime?
   ngaynhanEnd  DateTime?
+  ngayHoanThanhThucte DateTime?
   ghichu       String?
   nhacungcapId String?
   order        Int?
@@ -406,7 +445,6 @@ model Dathang {
   printCount   Int?             @default(0)
   createdAt    DateTime         @default(now())
   updatedAt    DateTime?        @updatedAt
-  ngayHoanThanhThucte DateTime?
   subtitle     String?
   khoId        String?
   lydohuy      String?
@@ -548,9 +586,6 @@ model Chotkho {
   khoId     String?
   ghichu    String?
   isActive  Boolean         @default(true)
-  isLocked  Boolean         @default(false)
-  lockedAt  DateTime?
-  lockedBy  String?
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
   codeId    String?         @unique
@@ -558,6 +593,9 @@ model Chotkho {
   order     Int?            @default(1)
   userId    String?
   ngaychot  DateTime        @default(now())
+  isLocked  Boolean         @default(false)
+  lockedAt  DateTime?
+  lockedBy  String?
   kho       Kho?            @relation(fields: [khoId], references: [id])
   user      User?           @relation(fields: [userId], references: [id])
   details   Chotkhodetail[] @relation("ChotkhoDetails")
@@ -592,6 +630,14 @@ model Chotkhodetail {
 
   @@index([sanphamId])
   @@index([ngaychot])
+}
+
+model SystemSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model FileManager {
@@ -973,12 +1019,227 @@ model NhucauPlanningNote {
   sanpham   Sanpham  @relation(fields: [sanphamId], references: [id], onDelete: Cascade)
 }
 
-model SystemSetting {
-  id        String   @id @default(uuid())
-  key       String   @unique
-  value     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// ================= KẾ TOÁN: Công nợ + Hạch toán chuẩn VN (TT133) =================
+
+
+// Danh mục hệ thống tài khoản (cốt lõi)
+model TaiKhoan {
+  id            String   @id @default(uuid())
+  so            String   @unique // "131","331","511","3331","111","112","133","156","632"
+  ten           String
+  loai          String // TAISAN | NOPHAITRA | DOANHTHU | CHIPHI
+  congNoChiTiet Boolean  @default(false) // 131/331 = theo dõi chi tiết đối tượng
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
+// Số dư công nợ đầu kỳ (import từ Excel lúc go-live)
+model CongNoDauKy {
+  id           String   @id @default(uuid())
+  doiTuongLoai String // "KH" | "NCC"
+  doiTuongKey  String   @unique // "KH:<khachhangId>" | "NCC:<nhacungcapId>" -> idempotent
+  khachhangId  String?
+  nhacungcapId String?
+  tk           String // "131" | "331"
+  soDuNo       Decimal  @default(0) @postgres.Decimal(20, 3)
+  soDuCo       Decimal  @default(0) @postgres.Decimal(20, 3)
+  ngayChot     DateTime
+  ghichu       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([khachhangId])
+  @@index([nhacungcapId])
+}
+
+enum LoaiThuChi {
+  THU
+  CHI
+}
+
+// Phiếu thu / phiếu chi (sổ quỹ)
+model PhieuThuChi {
+  id           String     @id @default(uuid())
+  maphieu      String     @unique // PT-... / PC-...
+  loai         LoaiThuChi
+  ngay         DateTime   @default(now())
+  sotien       Decimal    @postgres.Decimal(20, 3)
+  hinhthuc     String // TIENMAT | CHUYENKHOAN -> 111/112
+  nghiepvu     String // THU_KH | TRA_NCC | CHI_PHI | KHAC
+  khachhangId  String?
+  nhomId       String? // thu 1 cục cho cả nhóm (chốt chung)
+  nhacungcapId String?
+  donhangId    String?
+  ghichu       String?
+  userId       String?
+  butToanId    String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([loai, ngay])
+  @@index([khachhangId])
+  @@index([nhacungcapId])
+  @@index([donhangId])
+}
+
+// Sổ chi tiết công nợ (subledger) — snapshot số tiền tại thời điểm ghi
+model CongNoGiaoDich {
+  id           String    @id @default(uuid())
+  doiTuongLoai String // "KH" | "NCC"
+  khachhangId  String?
+  nhacungcapId String?
+  ngay         DateTime
+  chungTuLoai  String // GIAOHANG | HOADON | PHIEUTHU | PHIEUCHI | DAUKY | NHAPMUA
+  chungTuId    String?
+  soChungTu    String?
+  dienGiai     String?
+  psNo         Decimal   @default(0) @postgres.Decimal(20, 3)
+  psCo         Decimal   @default(0) @postgres.Decimal(20, 3)
+  hanThanhToan DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([doiTuongLoai, khachhangId, ngay])
+  @@index([doiTuongLoai, nhacungcapId, ngay])
+  @@index([chungTuLoai, chungTuId])
+}
+
+// Bút toán hạch toán kép
+model ButToan {
+  id        String           @id @default(uuid())
+  soCT      String           @unique
+  ngay      DateTime
+  dienGiai  String?
+  nguon     String // DONHANG | PHIEUTHU | PHIEUCHI | NHAPMUA | HOADON | DAUKY
+  nguonId   String?
+  chiTiet   ButToanChiTiet[]
+  createdAt DateTime         @default(now())
+
+  @@index([ngay])
+  @@index([nguon, nguonId])
+}
+
+model ButToanChiTiet {
+  id           String  @id @default(uuid())
+  butToanId    String
+  butToan      ButToan @relation(fields: [butToanId], references: [id], onDelete: Cascade)
+  tkNo         String?
+  tkCo         String?
+  soTien       Decimal @postgres.Decimal(20, 3)
+  khachhangId  String?
+  nhacungcapId String?
+
+  @@index([butToanId])
+  @@index([tkNo])
+  @@index([tkCo])
+}
+
+// Hoá đơn GTGT điện tử đầu ra
+model HoaDon {
+  id          String    @id @default(uuid())
+  donhangId   String?
+  khachhangId String?
+  kyHieu      String?
+  soHoaDon    String?
+  ngayHD      DateTime?
+  mst         String?
+  tienHang    Decimal   @default(0) @postgres.Decimal(20, 3)
+  tienThue    Decimal   @default(0) @postgres.Decimal(20, 3)
+  tongTien    Decimal   @default(0) @postgres.Decimal(20, 3)
+  thueSuat    Decimal   @default(0) @postgres.Decimal(5, 2)
+  trangThai   String    @default("NHAP") // NHAP | DA_PHAT_HANH | HUY
+  maCQT       String? // mã cơ quan thuế
+  linkTraCuu  String?
+  provider    String?
+  providerRef String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([donhangId])
+  @@index([khachhangId])
+  @@index([trangThai])
+}
+
+// Hoá đơn mua vào (để khấu trừ VAT đầu vào / kê khai)
+model HoaDonMuaVao {
+  id           String    @id @default(uuid())
+  nhacungcapId String?
+  dathangId    String?
+  soHoaDon     String?
+  ngayHD       DateTime?
+  mstNcc       String?
+  tienHang     Decimal   @default(0) @postgres.Decimal(20, 3)
+  tienThue     Decimal   @default(0) @postgres.Decimal(20, 3)
+  thueSuat     Decimal   @default(0) @postgres.Decimal(5, 2)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([nhacungcapId])
+}
+
+// Khoá sổ kế toán theo tháng
+model KhoaSoKeToan {
+  id        String   @id @default(uuid())
+  nam       Int
+  thang     Int
+  isLocked  Boolean  @default(true)
+  lockedAt  DateTime @default(now())
+  lockedBy  String
+  createdAt DateTime @default(now())
+
+  @@unique([nam, thang])
+}
+
+// Biên bản CHỐT / ĐỐI CHIẾU công nợ theo kỳ (từng khách).
+// Số 2 bên chốt (soChot) khác số hệ thống (soHeThong) do hao hụt/hư khi giao;
+// chênh lệch = giảm trừ doanh thu (Nợ 511 / Có 131). Sau chốt, khách trả theo soChot.
+model ChotCongNo {
+  id          String    @id @default(uuid())
+  soBienBan   String    @unique // BBCN-...
+  khachhangId String? // 1 khách/chi nhánh (chốt riêng)
+  nhomId      String? // hoặc cả nhóm khách hàng (chốt chung)
+  tuNgay      DateTime
+  denNgay     DateTime
+  soHeThong   Decimal   @default(0) @postgres.Decimal(20, 3) // Σ đơn danhan trong kỳ
+  soChot      Decimal   @default(0) @postgres.Decimal(20, 3) // số 2 bên thống nhất
+  chenhLech   Decimal   @default(0) @postgres.Decimal(20, 3) // soHeThong − soChot (giảm trừ)
+  lyDo        String?
+  trangThai   String    @default("NHAP") // NHAP | DA_CHOT | HUY
+  butToanId   String?
+  ngayChot    DateTime?
+  nguoiChot   String?
+  lyDoHuy     String? // lý do huỷ (khi trangThai=HUY)
+  ngayHuy     DateTime?
+  nguoiHuy    String?
+  chiTiet     ChotCongNoChiTiet[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([khachhangId, denNgay])
+  @@index([trangThai])
+}
+
+// Chi tiết đối chiếu theo TỪNG ĐƠN trong biên bản chốt (vòng Excel: xuất -> khách sửa -> nhập lại).
+model ChotCongNoChiTiet {
+  id         String     @id @default(uuid())
+  chotId     String
+  chot       ChotCongNo @relation(fields: [chotId], references: [id], onDelete: Cascade)
+  donhangId  String?
+  madonhang  String?
+  ngay       DateTime?
+  // Chi tiết theo TỪNG MÓN (dòng hàng) — đối chiếu khối lượng thực nhận + hao hụt
+  donhangsanphamId String?
+  sanphamId        String?
+  masp             String?
+  tenSp            String?
+  dvt              String?
+  soLuongHeThong   Decimal @default(0) @postgres.Decimal(20, 3) // SL hệ thống (slnhan)
+  donGia           Decimal @default(0) @postgres.Decimal(20, 3) // đơn giá bán
+  soLuongChot      Decimal @default(0) @postgres.Decimal(20, 3) // SL khách chốt (thực nhận)
+  soHeThong  Decimal    @default(0) @postgres.Decimal(20, 3) // thành tiền hệ thống = SL×đơn giá
+  soChot     Decimal    @default(0) @postgres.Decimal(20, 3) // thành tiền chốt = SL chốt×đơn giá
+  chenhLech  Decimal    @default(0) @postgres.Decimal(20, 3)
+  ghichu     String?
+
+  @@index([chotId])
+}
 

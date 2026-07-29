@@ -1,0 +1,295 @@
+<div class="p-4">
+  <h2 class="text-xl font-semibold mb-3">Chốt / Đối chiếu công nợ</h2>
+
+  <!-- NHẮC CHỐT -->
+  @if (NhacChot().length) {
+    <div class="border border-red-200 rounded p-3 mb-4 bg-red-50">
+      <div class="flex items-center gap-2 mb-2">
+        <mat-icon class="text-red-600">notifications_active</mat-icon>
+        <span class="font-semibold text-red-700">Nhắc chốt công nợ ({{ NhacChot().length }} khách cần chốt)</span>
+      </div>
+      <div class="overflow-auto max-h-56">
+        <table class="w-full text-sm">
+          <thead class="bg-white sticky top-0">
+            <tr><th class="text-left p-1">Mã KH</th><th class="text-left p-1">Tên</th><th class="text-center p-1">Chu kỳ</th><th class="text-left p-1">Hạn chốt</th><th class="text-right p-1">Còn (ngày)</th><th class="text-center p-1">Trạng thái</th><th></th></tr>
+          </thead>
+          <tbody>
+            @for (r of NhacChot(); track r.makh) {
+              <tr class="border-t hover:bg-white">
+                <td class="p-1">{{ r.makh }}</td>
+                <td class="p-1">{{ r.name }}</td>
+                <td class="p-1 text-center">{{ r.chuKy }}n</td>
+                <td class="p-1">{{ r.hanChot | date:'dd/MM/yyyy' }}</td>
+                <td class="p-1 text-right font-medium">{{ r.conLaiNgay }}</td>
+                <td class="p-1 text-center">
+                  <span class="px-2 py-0.5 rounded text-xs font-semibold" [class]="badgeClass(r.trangThai)">{{ nhanTrangThai(r.trangThai) }}</span>
+                </td>
+                <td class="p-1 text-center">
+                  <button mat-stroked-button color="primary" class="!text-xs" title="Nạp form chốt cho khách này" (click)="chonTuNhac(r)">
+                    <mat-icon>fact_check</mat-icon> Chốt
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- CÀI CHU KỲ CHỐT cho khách -->
+  <div class="flex flex-wrap items-end gap-2 mb-4 text-sm">
+    <span class="text-gray-600">Cài chu kỳ chốt:</span>
+    <input type="text" [(ngModel)]="chuKySearch" placeholder="Tìm khách..." class="border rounded px-2 py-1 w-40" />
+    <select [(ngModel)]="chuKyForm.khachhangId" class="border rounded px-2 py-1">
+      <option value="">-- chọn khách --</option>
+      @for (k of locKhach(chuKySearch); track k.id) { <option [value]="k.id">{{ k.makh }} - {{ k.name }}</option> }
+    </select>
+    <input type="number" [(ngModel)]="chuKyForm.soNgay" class="border rounded px-2 py-1 w-20" /> <span>ngày</span>
+    <button mat-stroked-button (click)="luuChuKy()"><mat-icon>save</mat-icon> Lưu chu kỳ</button>
+  </div>
+
+  <!-- Tạo biên bản -->
+  <div id="form-tao-bienban" class="border rounded p-3 mb-4 bg-gray-50 scroll-mt-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+      <div class="flex flex-col">
+        <label class="text-xs">Chốt theo</label>
+        <select [(ngModel)]="form.mode" (change)="onDoiMode()" class="border rounded px-2 py-1 text-sm">
+          <option value="khach">Khách lẻ / chi nhánh</option>
+          <option value="nhom">Nhóm khách hàng (chốt chung)</option>
+          <option value="nhieu">Nhiều khách (chung / tách sheet)</option>
+        </select>
+      </div>
+      @if (form.mode === 'khach') {
+        <div class="flex flex-col">
+          <label class="text-xs">Khách hàng <span class="text-gray-400">(chỉ khách sỉ)</span></label>
+          <input type="text" [(ngModel)]="khachSearch" placeholder="Gõ mã/tên để tìm..." class="border rounded px-2 py-1 text-sm mb-1" />
+          <select [(ngModel)]="form.khachhangId" class="border rounded px-2 py-1 text-sm">
+            <option value="">-- chọn khách --</option>
+            @for (k of locKhach(khachSearch); track k.id) { <option [value]="k.id">{{ k.makh }} - {{ k.name }}</option> }
+          </select>
+        </div>
+      } @else if (form.mode === 'nhom') {
+        <div class="flex flex-col">
+          <label class="text-xs">Nhóm khách hàng <span class="text-gray-400">(chọn để bung chi nhánh)</span></label>
+          <input type="text" [(ngModel)]="nhomSearch" placeholder="Gõ tên nhóm để tìm..." class="border rounded px-2 py-1 text-sm mb-1" />
+          <select [(ngModel)]="form.nhomId" (change)="onChonNhom()" class="border rounded px-2 py-1 text-sm">
+            <option value="">-- chọn nhóm --</option>
+            @for (n of locNhom(nhomSearch); track n.id) { <option [value]="n.id">{{ nhomLabel(n) }}</option> }
+          </select>
+        </div>
+      }
+      <div class="flex flex-col">
+        <label class="text-xs">Từ ngày</label>
+        <input type="date" [(ngModel)]="form.tuNgay" class="border rounded px-2 py-1 text-sm" />
+      </div>
+      <div class="flex flex-col">
+        <label class="text-xs">Đến ngày</label>
+        <input type="date" [(ngModel)]="form.denNgay" class="border rounded px-2 py-1 text-sm" />
+      </div>
+    </div>
+
+    @if (form.mode === 'nhieu' || form.mode === 'nhom') {
+      <!-- Chọn/bung nhiều khách + kiểu sheet -->
+      <div class="mt-3">
+        @if (form.mode === 'nhom') {
+          <div class="text-xs text-gray-600 mb-1 italic">Chi nhánh của nhóm đã bung ra dưới đây — bấm ✕ để bỏ CN không cần chốt, rồi chọn kiểu xuất.</div>
+        }
+        <label class="text-xs block mb-1">Thêm khách hàng <span class="text-gray-400">— chỉ khách sỉ (gõ tìm → chọn để thêm; khách lẻ đã ẩn)</span></label>
+        <div class="flex flex-wrap items-center gap-2 mb-2">
+          <input type="text" [(ngModel)]="khachSearch" placeholder="Gõ mã/tên để tìm..." class="border rounded px-2 py-1 text-sm w-56" />
+          <select [(ngModel)]="form.khachTam" (change)="themKhachChon()" class="border rounded px-2 py-1 text-sm min-w-0 flex-1 max-w-lg">
+            <option value="">-- chọn khách để thêm --</option>
+            @for (k of locKhach(khachSearch); track k.id) { <option [value]="k.id">{{ k.makh }} - {{ k.name }}</option> }
+          </select>
+          <button mat-stroked-button color="primary" class="!text-xs shrink-0" (click)="themKhachChon()"><mat-icon>add</mat-icon> Thêm</button>
+        </div>
+        <div class="text-xs mb-1">Đã chọn ({{ form.khachhangIds.length }} khách):</div>
+        @if (form.khachhangIds.length) {
+          <div class="flex flex-wrap gap-1 mb-2">
+            @for (id of form.khachhangIds; track id) {
+              <span class="inline-flex items-center gap-1 bg-blue-100 text-blue-800 rounded-full pl-2 pr-1 py-0.5 text-xs">
+                {{ tenKhachChon(id) }}
+                <button class="hover:text-red-600" (click)="xoaKhachChon(id)"><mat-icon class="!text-sm !w-4 !h-4">close</mat-icon></button>
+              </span>
+            }
+          </div>
+        } @else {
+          <div class="text-xs text-gray-400 mb-2 italic">Chưa chọn khách — gõ tìm ở ô trên rồi bấm +</div>
+        }
+        <div class="flex items-center gap-4 text-sm">
+          <span class="text-gray-600">Xuất:</span>
+          <label class="inline-flex items-center gap-1 cursor-pointer">
+            <input type="radio" name="sheetMode" value="tach" [(ngModel)]="form.sheetMode" /> Tách sheet <span class="text-xs text-gray-400">(mỗi khách 1 sheet)</span>
+          </label>
+          <label class="inline-flex items-center gap-1 cursor-pointer">
+            <input type="radio" name="sheetMode" value="chung" [(ngModel)]="form.sheetMode" /> Chung sheet <span class="text-xs text-gray-400">(gộp tất cả 1 sheet)</span>
+          </label>
+        </div>
+      </div>
+    }
+
+    <div class="mt-3">
+      <button mat-raised-button color="primary" [disabled]="isSaving()" (click)="taoBienBan()">
+        <mat-icon>fact_check</mat-icon> Tạo biên bản đối chiếu
+      </button>
+    </div>
+
+    <!-- Kết quả TÁCH SHEET: danh sách biên bản vừa tạo + xuất gộp -->
+    @if (bienBansTach().length) {
+      <div class="mt-3 border rounded p-3 bg-white">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-medium text-sm">Đã tạo {{ bienBansTach().length }} biên bản (tách sheet)</span>
+          <div class="flex gap-2">
+            <button mat-raised-button color="primary" class="!text-xs" (click)="xuatExcelTach()"><mat-icon>download</mat-icon> Xuất {{ bienBansTach().length }} sheet</button>
+            <button mat-stroked-button class="!text-xs" (click)="dongPanelTach()"><mat-icon>close</mat-icon> Đóng</button>
+          </div>
+        </div>
+        <div class="max-h-48 overflow-auto text-sm">
+          @for (bb of bienBansTach(); track bb.id) {
+            <div class="border-t py-1 flex items-center justify-between">
+              <span>{{ bb.soBienBan }} — {{ tenDoiTuong(bb) }}</span>
+              <span class="text-xs text-gray-500">{{ (bb.chiTiet?.length || 0) }} dòng · {{ bb.soHeThong | number:'1.0-0' }}đ</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Nhóm khách hàng: chỉ bật/tắt cờ "chốt chung". Tạo/sửa nhóm & thành viên ở màn Nhóm khách hàng. -->
+  <details class="border rounded p-3 mb-4">
+    <summary class="cursor-pointer font-medium text-sm">Cờ chốt chung theo nhóm ({{ nhomList().length }} nhóm)</summary>
+    <div class="mt-2 text-xs text-gray-500">
+      Tạo/sửa nhóm và gán khách ở màn <a routerLink="/admin/nhomkhachhang" class="text-blue-600 underline">Nhóm khách hàng</a>.
+      Ở đây chỉ bật cờ <b>chốt chung</b> (đối chiếu &amp; thu tiền chung cả nhóm).
+    </div>
+    @if (nhomList().length) {
+      <input type="text" [(ngModel)]="flagSearch" placeholder="Tìm nhóm..." class="border rounded px-2 py-1 text-sm mt-2 w-full max-w-xs" />
+      <div class="mt-2 text-sm max-h-72 overflow-auto">
+        @for (n of locFlagNhom(flagSearch); track n.id) {
+          <div class="border-t py-1 flex items-center justify-between gap-2">
+            <span>{{ n.name }} <span class="text-xs text-gray-500">({{ n.soThanhVien ?? 0 }} KH)</span></span>
+            <button mat-stroked-button class="!text-xs" [class.text-green-600]="n.chotChung" (click)="toggleChotChung(n)">
+              <mat-icon class="!text-base">{{ n.chotChung ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+              {{ n.chotChung ? 'Chốt chung' : 'Chốt riêng' }}
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </details>
+
+  <!-- Biên bản: đối chiếu theo từng đơn + vòng file Excel -->
+  @if (bienBan(); as bb) {
+    <div class="border-2 border-blue-300 rounded p-4 mb-4">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold text-blue-700">Biên bản {{ bb.soBienBan }} — {{ tenDoiTuong(bb) }} ({{ soDon() }} đơn · {{ bb.chiTiet?.length || 0 }} món)</h3>
+        <button mat-button (click)="huyBienBan()">Hủy</button>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4 mb-3">
+        <div><div class="text-xs text-gray-500">Số hệ thống</div><div class="text-lg font-semibold">{{ bb.soHeThong | number:'1.0-0' }}</div></div>
+        <div><div class="text-xs text-gray-500">Số chốt (Σ đơn)</div><div class="text-lg font-semibold text-blue-700">{{ tongSoChot() | number:'1.0-0' }}</div></div>
+        <div><div class="text-xs text-gray-500">Chênh lệch (giảm trừ)</div><div class="text-lg font-semibold text-red-600">{{ chenhLechTong() | number:'1.0-0' }}</div></div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        <button mat-stroked-button (click)="xuatExcel()"><mat-icon>download</mat-icon> Xuất Excel gửi khách</button>
+        <button mat-stroked-button (click)="fileInput.click()"><mat-icon>upload_file</mat-icon> Upload file khách sửa</button>
+        <input #fileInput type="file" accept=".xlsx,.xls" hidden (change)="onUploadFile($event)" />
+        <button mat-stroked-button color="primary" [disabled]="isSaving()" (click)="luuChiTiet()"><mat-icon>save</mat-icon> Lưu chi tiết</button>
+        <span class="flex-1"></span>
+        <input type="text" [(ngModel)]="lyDo" placeholder="Lý do chênh lệch..." class="border rounded px-2 py-1 text-sm w-56" />
+        <button mat-raised-button color="accent" [disabled]="isSaving()" (click)="chot()"><mat-icon>done_all</mat-icon> Chốt số</button>
+      </div>
+
+      <!-- Chi tiết theo TỪNG MÓN (ô SL chốt = khối lượng thực nhận, sửa được / nhập từ file) -->
+      <div class="overflow-auto max-h-80 border rounded">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-100 sticky top-0">
+            <tr>
+              <th class="text-left p-1">Mã đơn</th>
+              <th class="text-left p-1">Sản phẩm</th>
+              <th class="text-center p-1">ĐVT</th>
+              <th class="text-right p-1">SL hệ thống</th>
+              <th class="text-right p-1">Đơn giá</th>
+              <th class="text-right p-1">SL chốt (thực nhận)</th>
+              <th class="text-right p-1">Thành tiền chốt</th>
+              <th class="text-right p-1">Chênh lệch</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (ct of bb.chiTiet; track ct.id; let i = $index) {
+              <tr [class]="dauDon(bb.chiTiet, i) ? 'border-t-2 border-gray-300' : 'border-t border-gray-100'">
+                <td class="p-1 whitespace-nowrap font-medium text-gray-700">
+                  @if (dauDon(bb.chiTiet, i)) {
+                    {{ ct.madonhang }}<div class="text-xs text-gray-400 font-normal">{{ ct.ngay | date:'dd/MM/yyyy' }}</div>
+                  }
+                </td>
+                <td class="p-1">{{ ct.tenSp }}</td>
+                <td class="p-1 text-center">{{ ct.dvt }}</td>
+                <td class="p-1 text-right">{{ ct.soLuongHeThong | number:'1.0-3' }}</td>
+                <td class="p-1 text-right">{{ ct.donGia | number:'1.0-0' }}</td>
+                <td class="p-1 text-right"><input type="number" step="0.001" [(ngModel)]="ct.soLuongChot" class="border rounded px-1 py-0.5 w-20 text-right bg-yellow-50" /></td>
+                <td class="p-1 text-right font-medium">{{ thanhTienChot(ct) | number:'1.0-0' }}</td>
+                <td class="p-1 text-right text-red-600">{{ (ct.soHeThong - thanhTienChot(ct)) | number:'1.0-0' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs text-gray-500 mt-1">Quy trình: Xuất Excel → gửi khách điền cột <b>"SL chốt"</b> (khối lượng thực nhận từng món) → Upload file khách gửi lại → kiểm tra → Chốt số. Thành tiền &amp; chênh lệch tự tính theo đơn giá.</p>
+    </div>
+  }
+
+  <!-- Lịch sử biên bản chốt -->
+  <div class="flex flex-wrap items-center gap-2 mb-2">
+    <h3 class="font-semibold">Lịch sử chốt</h3>
+    <span class="text-xs text-gray-500">({{ chotFiltered().length }}/{{ ChotList().length }})</span>
+    <div class="flex-1"></div>
+    <input type="text" [(ngModel)]="filterText" placeholder="Tìm số BB / tên khách / nhóm..." class="border rounded px-2 py-1 text-sm w-56" />
+    <select [(ngModel)]="filterTrangThai" class="border rounded px-2 py-1 text-sm">
+      <option value="">-- Tất cả trạng thái --</option>
+      <option value="NHAP">Nháp</option>
+      <option value="DA_CHOT">Đã chốt</option>
+      <option value="HUY">Đã huỷ</option>
+    </select>
+  </div>
+  @if (isLoading()) { <div class="flex justify-center py-6"><mat-spinner diameter="32"></mat-spinner></div> }
+  <div class="overflow-auto">
+    <table mat-table [dataSource]="chotFiltered()" class="w-full border">
+      @for (col of cols; track col) {
+        <ng-container [matColumnDef]="col">
+          <th mat-header-cell *matHeaderCellDef class="!font-semibold"
+              [class.text-end]="col==='soHeThong'||col==='soChot'||col==='chenhLech'">{{ labels[col] }}</th>
+          <td mat-cell *matCellDef="let r" [class.text-end]="col==='soHeThong'||col==='soChot'||col==='chenhLech'"
+              [class.opacity-50]="r.trangThai==='HUY'">
+            @switch (col) {
+              @case ('khach') { {{ tenDoiTuong(r) }} }
+              @case ('ky') { {{ r.tuNgay | date:'dd/MM' }}–{{ r.denNgay | date:'dd/MM/yy' }} }
+              @case ('soHeThong') { {{ r.soHeThong | number:'1.0-0' }} }
+              @case ('soChot') { <b>{{ r.soChot | number:'1.0-0' }}</b> }
+              @case ('chenhLech') { <span class="text-red-600">{{ r.chenhLech | number:'1.0-0' }}</span> }
+              @case ('trangThai') {
+                <span class="font-semibold" [class]="classTrangThaiBB(r.trangThai)"
+                      [title]="r.trangThai==='HUY' ? (r.lyDoHuy || 'Đã huỷ') : ''">{{ nhanTrangThaiBB(r.trangThai) }}</span>
+              }
+              @case ('thaoTac') {
+                @if (r.trangThai==='NHAP') {
+                  <button mat-icon-button color="warn" title="Xoá biên bản nháp" (click)="xoaBienBanRow(r)"><mat-icon>delete</mat-icon></button>
+                } @else if (r.trangThai==='DA_CHOT') {
+                  <button mat-icon-button color="warn" title="Huỷ biên bản đã chốt (đảo bút toán)" (click)="huyBienBanRow(r)"><mat-icon>cancel</mat-icon></button>
+                }
+              }
+              @default { {{ r[col] }} }
+            }
+          </td>
+        </ng-container>
+      }
+      <tr mat-header-row *matHeaderRowDef="cols"></tr>
+      <tr mat-row *matRowDef="let row; columns: cols"></tr>
+      <tr *matNoDataRow><td class="p-4 text-center text-gray-500" [attr.colspan]="cols.length">Chưa có biên bản chốt nào</td></tr>
+    </table>
+  </div>
+</div>

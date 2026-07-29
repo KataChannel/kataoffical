@@ -1,0 +1,99 @@
+<div class="p-4">
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-xl font-semibold">Công nợ</h2>
+    <div class="flex items-center gap-2">
+      <a mat-stroked-button routerLink="/admin/ketoan/dauky"><mat-icon>tune</mat-icon> Khai báo đầu kỳ</a>
+      <label class="text-sm">Tính đến:</label>
+      <input type="date" [(ngModel)]="asOf" class="border rounded px-2 py-1 text-sm" />
+      <button mat-raised-button color="primary" (click)="reload()">
+        <mat-icon>refresh</mat-icon> Tải lại
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-10"><mat-spinner diameter="40"></mat-spinner></div>
+  }
+
+  <mat-tab-group>
+    <!-- TỔNG HỢP CÔNG NỢ KHÁCH HÀNG -->
+    <mat-tab label="Tổng hợp KH ({{ CongNoKH().length }})">
+      <div class="overflow-auto mt-2">
+        <table mat-table [dataSource]="CongNoKH()" class="w-full border">
+          @for (col of colTongHop; track col) {
+            <ng-container [matColumnDef]="col">
+              <th mat-header-cell *matHeaderCellDef class="!font-semibold"
+                  [class.text-end]="col==='soDuDauKy'||col==='phatSinhNo'||col==='phatSinhCo'||col==='soDuCuoiKy'">
+                {{ labels[col] }}
+              </th>
+              <td mat-cell *matCellDef="let r"
+                  [class.text-end]="col==='soDuDauKy'||col==='phatSinhNo'||col==='phatSinhCo'||col==='soDuCuoiKy'">
+                @switch (col) {
+                  @case ('soDuDauKy') { {{ r.soDuDauKy | number:'1.0-0' }} }
+                  @case ('phatSinhNo') { {{ r.phatSinhNo | number:'1.0-0' }} }
+                  @case ('phatSinhCo') { {{ r.phatSinhCo | number:'1.0-0' }} }
+                  @case ('soDuCuoiKy') { <b>{{ r.soDuCuoiKy | number:'1.0-0' }}</b> }
+                  @case ('canhBao') {
+                    @if (r.vuotHanMuc) { <span class="text-red-600 font-semibold">Vượt hạn mức</span> }
+                  }
+                  @default { {{ r[col] }} }
+                }
+              </td>
+            </ng-container>
+          }
+          <tr mat-header-row *matHeaderRowDef="colTongHop"></tr>
+          <tr mat-row *matRowDef="let row; columns: colTongHop"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- TUỔI NỢ -->
+    <mat-tab label="Tuổi nợ ({{ TuoiNo().length }})">
+      <div class="overflow-auto mt-2">
+        <table mat-table [dataSource]="TuoiNo()" class="w-full border">
+          @for (col of colTuoiNo; track col) {
+            <ng-container [matColumnDef]="col">
+              <th mat-header-cell *matHeaderCellDef class="!font-semibold"
+                  [class.text-end]="col!=='makh' && col!=='name'">{{ labels[col] }}</th>
+              <td mat-cell *matCellDef="let r"
+                  [class.text-end]="col!=='makh' && col!=='name'"
+                  [class.text-red-600]="col==='quaHan_tren60' && r.quaHan_tren60>0">
+                @switch (col) {
+                  @case ('makh') { {{ r.makh }} }
+                  @case ('name') { {{ r.name }} }
+                  @default { {{ r[col] | number:'1.0-0' }} }
+                }
+              </td>
+            </ng-container>
+          }
+          <tr mat-header-row *matHeaderRowDef="colTuoiNo"></tr>
+          <tr mat-row *matRowDef="let row; columns: colTuoiNo"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- CÔNG NỢ NCC -->
+    <mat-tab label="Công nợ NCC ({{ CongNoNCC().length }})">
+      <div class="overflow-auto mt-2">
+        <table mat-table [dataSource]="CongNoNCC()" class="w-full border">
+          @for (col of colNCC; track col) {
+            <ng-container [matColumnDef]="col">
+              <th mat-header-cell *matHeaderCellDef class="!font-semibold"
+                  [class.text-end]="col!=='mancc' && col!=='name'">{{ labels[col] }}</th>
+              <td mat-cell *matCellDef="let r" [class.text-end]="col!=='mancc' && col!=='name'">
+                @switch (col) {
+                  @case ('mancc') { {{ r.mancc }} }
+                  @case ('name') { {{ r.name }} }
+                  @case ('soDuCuoiKy') { <b>{{ r.soDuCuoiKy | number:'1.0-0' }}</b> }
+                  @default { {{ r[col] | number:'1.0-0' }} }
+                }
+              </td>
+            </ng-container>
+          }
+          <tr mat-header-row *matHeaderRowDef="colNCC"></tr>
+          <tr mat-row *matRowDef="let row; columns: colNCC"></tr>
+        </table>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

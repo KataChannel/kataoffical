@@ -28,6 +28,8 @@ import { SharedModule } from './shared/shared.module';
 import { ErrorlogsModule } from './errorlogs/errorlogs.module';
 import { CallbackModule } from './callback/callback.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { KetoanModule } from './ketoan/ketoan.module';
+import { SyncModule } from './sync/sync.module';
 import { UserguideModule } from './userguide/userguide.module';
 import { ImportdataModule } from './importdata/importdata.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -110,6 +112,8 @@ import { NotificationModule } from './notification/notification.module';
     PhongbanModule,
     NhanvienModule,
     NotificationModule,
+    KetoanModule,
+    SyncModule,
   ],
   controllers: [AppController],
   providers: [
