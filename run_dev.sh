@@ -22,7 +22,7 @@ echo "-----------------------------------"
 echo "1. Chạy Dev (Localhost - 127.0.0.1)"
 echo "2. Chạy Dev (Mạng LAN - ${LAN_IP})"
 echo "3. Backup dữ liệu từ VPS"
-echo "4. Nhân bản Database (Copy từ rausachfinal -> testdata)"
+echo "4. Nhân bản toàn bộ Database (Xóa & Copy từ rausachfinal -> testdata)"
 echo "5. Phục hồi dữ liệu lên Local Docker"
 echo "6. ⚡ Tối ưu hóa Tất cả Sản phẩm"
 echo "7. 🧹 Dọn dẹp Database"
@@ -32,9 +32,10 @@ echo "10. 🚀 Triển khai An toàn (Build Local -> Server)"
 echo "11. ⏫ Cập nhật Schema Database (Push)"
 echo "12. 🔄 Phục hồi dữ liệu từ Local lên VPS (rausachfinal)"
 echo "13. 🔄 Phục hồi dữ liệu từ Local lên VPS (testdata)"
+echo "14. 🔄 Đồng bộ dữ liệu MỚI từ rausachfinal -> testdata (Giữ nguyên schema testdata)"
 echo "0. Thoát"
 echo "-----------------------------------"
-read -p "Vui lòng chọn chức năng (0-13): " choice
+read -p "Vui lòng chọn chức năng (0-14): " choice
 
 case $choice in
     1)
@@ -92,6 +93,11 @@ case $choice in
     13)
         echo "=> 🔄 Khởi chạy trình Phục hồi dữ liệu từ Local lên VPS (testdata)..."
         bash scripts/restore_to_vps.sh testdata
+        exit 0
+        ;;
+    14)
+        echo "=> 🔄 Đang đồng bộ dữ liệu MỚI từ rausachfinal sang testdata (Giữ schema)..."
+        node scripts/sync_data_incremental.js
         exit 0
         ;;
     0)
