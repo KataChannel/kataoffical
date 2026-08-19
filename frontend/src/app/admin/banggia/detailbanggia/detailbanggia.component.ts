@@ -106,7 +106,7 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   filteredCount = computed(() => this.dataSource().filteredData?.length || 0);
   
   // Performance optimization properties
-  private pendingChanges = new Map<number, any>(); // Cache changes
+  private pendingChanges = new Map<string, any>(); // Cache changes by productId
   private debounceTimer: any = null;
   private batchUpdateTimer: any = null;
   private readonly DEBOUNCE_TIME = 300; // ms
@@ -235,17 +235,12 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     console.log('[INIT] ===== Component Initialization Started =====');
     
-    // Load danh sách song song
-    console.log('[INIT] Loading lists in parallel...');
-    await Promise.all([
-      this.LoadListKhachhang(),
-      this.LoadListSanpham()
-    ]);
-    console.log('[INIT] Lists loaded successfully');
-    
-    // Đánh dấu init xong - effect sẽ active từ đây
+    // Đánh dấu init ngay lập tức để effect xử lý load banggia tức thì mà không bị chặn
     this.isComponentInitialized.set(true);
-    console.log('[INIT] Component initialized - effect is now active');
+    console.log('[INIT] Component initialized - effect is now active immediately');
+
+    // Tải danh sách Khách hàng & Sản phẩm chạy nền (Non-blocking), không block giao diện
+    this.loadBackgroundLists();
     
     // Subscribe route params
     this.routeSubscription = this._route.paramMap.subscribe((params) => {
@@ -265,6 +260,19 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     });
     
     console.log('[INIT] ===== Component Initialization Completed =====');
+  }
+
+  private async loadBackgroundLists() {
+    try {
+      console.log('[INIT] Loading background lists (Khachhang, Sanpham)...');
+      await Promise.all([
+        this.LoadListKhachhang(),
+        this.LoadListSanpham()
+      ]);
+      console.log('[INIT] Background lists loaded successfully');
+    } catch (err) {
+      console.warn('[INIT] Error loading background lists:', err);
+    }
   }
   
   /**
@@ -458,8 +466,11 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       // Update trong untracked context
       untracked(() => {
         this._BanggiaService.DetailBanggia.update((banggia: any) => {
-          this.pendingChanges.forEach((changes, index) => {
-            Object.assign(banggia.sanpham[index], changes);
+          this.pendingChanges.forEach((changes, targetId) => {
+            const item = banggia.sanpham?.find((sp: any) => (sp.sanphamId || sp.id) === targetId || sp.id === targetId);
+            if (item) {
+              Object.assign(item, changes);
+            }
           });
           return banggia;
         });
@@ -582,8 +593,11 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     // Apply trong untracked context
     untracked(() => {
       this._BanggiaService.DetailBanggia.update((banggia: any) => {
-        this.pendingChanges.forEach((changes, index) => {
-          Object.assign(banggia.sanpham[index], changes);
+        this.pendingChanges.forEach((changes, targetId) => {
+          const item = banggia.sanpham?.find((sp: any) => (sp.sanphamId || sp.id) === targetId || sp.id === targetId);
+          if (item) {
+            Object.assign(item, changes);
+          }
         });
         return banggia;
       });
@@ -608,12 +622,12 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     console.log(`[BATCH] Updated ${changeCount} items - Manual save required`);
   }
 
-  private addPendingChange(index: number, field: string, value: any) {
-    if (!this.pendingChanges.has(index)) {
-      this.pendingChanges.set(index, {});
+  private addPendingChange(targetId: string, field: string, value: any) {
+    if (!this.pendingChanges.has(targetId)) {
+      this.pendingChanges.set(targetId, {});
     }
     
-    const existingChanges = this.pendingChanges.get(index);
+    const existingChanges = this.pendingChanges.get(targetId);
     existingChanges[field] = value;
     
     // Update UI state indicator - will be set to true after batch update
@@ -678,18 +692,20 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
         : (event.target as HTMLElement).innerText.trim();
     
     const keyboardEvent = event as KeyboardEvent;
-    if (keyboardEvent.key === 'Enter' && !keyboardEvent.shiftKey) {
+    if (keyboardEvent && keyboardEvent.key === 'Enter' && !keyboardEvent.shiftKey) {
       event.preventDefault();
       
       // Tối ưu: Cập nhật giá tức thì lên server khi nhấn Enter
-      if (index !== null && field === 'giaban' && element) {
+      if (field === 'giaban' && element) {
         this.updatePriceToServer(index, element, Number(newValue));
-        this.moveToNextInput(index);
+        if (index !== null) {
+          this.moveToNextInput(index);
+        }
       }
       return;
     }
     
-    if (type === 'number') {
+    if (keyboardEvent && type === 'number' && keyboardEvent.key) {
       const allowedKeys = [
         'Backspace',
         'Delete',
@@ -708,14 +724,18 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
     }
 
     // Optimized update logic
-    if (index !== null && field === 'giaban') {
+    const targetId = element?.sanphamId || element?.id;
+    if (field === 'giaban' && targetId) {
       // Update local state immediately for responsive UI
-      this.addPendingChange(index, field, newValue);
+      this.addPendingChange(targetId, field as string, newValue);
     } else {
       // For non-giaban fields, update immediately TRONG UNTRACKED
       this.updateDetailBanggiaUntracked((v: any) => {
-        if (index !== null) {
-          v.sanpham[index][field] = newValue;
+        if (targetId && v.sanpham) {
+          const item = v.sanpham.find((sp: any) => (sp.sanphamId || sp.id) === targetId || sp.id === targetId);
+          if (item) {
+            item[field] = newValue;
+          }
         } else {
           v[field] = newValue;
         }
@@ -732,10 +752,11 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
   /**
    * Cập nhật giá tức thì lên server khi nhấn Enter
    */
-  private async updatePriceToServer(index: number, element: any, newPrice: number) {
+  private async updatePriceToServer(index: number | null, element: any, newPrice: number) {
     const banggiaId = this.banggiaId();
     // FIX: element.id là ID của Banggiasanpham, cần dùng element.sanphamId
-    const sanphamId = element.sanphamId || element.id;
+    const targetId = element.sanphamId || element.id;
+    const sanphamId = targetId;
     const oldPrice = element.giaban || 0;
     
     console.log('[UPDATE-PRICE] Debug:', {
@@ -786,8 +807,11 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       
       // Update local state in untracked context
       this.updateDetailBanggiaUntracked((v: any) => {
-        if (v.sanpham && v.sanpham[index]) {
-          v.sanpham[index].giaban = newPrice;
+        if (v.sanpham) {
+          const item = v.sanpham.find((sp: any) => (sp.sanphamId || sp.id) === targetId || sp.id === targetId);
+          if (item) {
+            item.giaban = newPrice;
+          }
         }
         return v;
       });
@@ -807,7 +831,7 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       });
       
       // Remove from pending changes
-      this.pendingChanges.delete(index);
+      this.pendingChanges.delete(targetId);
       
       // Show success notification
       this._snackBar.open(
@@ -827,8 +851,11 @@ export class DetailBanggiaComponent implements AfterViewInit, OnDestroy {
       
       // Revert to old price on error
       this.updateDetailBanggiaUntracked((v: any) => {
-        if (v.sanpham && v.sanpham[index]) {
-          v.sanpham[index].giaban = oldPrice;
+        if (v.sanpham) {
+          const item = v.sanpham.find((sp: any) => (sp.sanphamId || sp.id) === targetId || sp.id === targetId);
+          if (item) {
+            item.giaban = oldPrice;
+          }
         }
         return v;
       });

@@ -1,6 +1,15 @@
 const path = require('path');
-const pgPath = path.resolve('./api/node_modules/pg');
-const { Client } = require(pgPath);
+let pgModule;
+try {
+  pgModule = require('pg');
+} catch (e) {
+  try {
+    pgModule = require(path.resolve('./api/node_modules/pg'));
+  } catch (e2) {
+    pgModule = require(path.resolve('../api/node_modules/pg'));
+  }
+}
+const { Client } = pgModule;
 
 async function runIncrementalSync() {
   const startTime = Date.now();
