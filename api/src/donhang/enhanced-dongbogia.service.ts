@@ -123,16 +123,16 @@ async dongbogiaEnhanced(listdonhang: any[]) {
                   let giaban = 0;
                   let giaSource = 'none';
 
-                  // Price priority logic with validation
+                  // Price priority logic with validation: primary banggia if > 0, fallback to default banggia BG04
                   if (giaSanpham && Number(giaSanpham.giaban) > 0) {
                     giaban = Number(giaSanpham.giaban);
                     giaSource = `price list ${donhang.banggia.mabanggia}`;
                   } else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
                     giaban = Number(giaSanphamDefault.giaban);
-                    giaSource = 'default price list';
+                    giaSource = 'default price list BG04';
                   } else {
                     console.warn(`⚠️ No valid price found for product ${donhangSanpham.sanpham?.title || donhangSanpham.idSP}`);
-                    continue; // Skip this product
+                    giaban = 0;
                   }
 
                   // Calculate updated values

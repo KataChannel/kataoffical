@@ -1,0 +1,73 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const client_1 = require("@prisma/client");
+const prisma = new client_1.PrismaClient({
+    datasources: {
+        postgres: {
+            url: 'postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:55432/rausachfinal?schema=public'
+        }
+    }
+});
+const khoId = '4cc01811-61f5-4bdc-83de-a493764e9258';
+const chotkhoId = '6feb6646-aab4-4151-a220-a71b0e142887';
+async function main() {
+    console.log('=== INSPECTING CÀ PHÁO (I100036) IN RAUSACHFINAL ===\n');
+    const sp = await prisma.sanpham.findFirst({
+        where: { masp: 'I100036' },
+        include: {
+            TonKho: true,
+            SanphamKho: { where: { khoId } }
+        }
+    });
+    if (!sp) {
+        console.log('❌ Product I100036 not found.');
+        await prisma.$disconnect();
+        return;
+    }
+    console.log(`Product: ${sp.title} (${sp.masp})`);
+    console.log(`  TonKho: slton=${sp.TonKho?.slton}, sltontt=${sp.TonKho?.sltontt}, slchonhap=${sp.TonKho?.slchonhap}`);
+    console.log(`  SanphamKho (HCM): soluong=${sp.SanphamKho[0]?.soluong}`);
+    const ckDetail = await prisma.chotkhodetail.findFirst({
+        where: {
+            chotkhoId: chotkhoId,
+            sanphamId: sp.id
+        }
+    });
+    if (ckDetail) {
+        console.log(`\nChotkho Detail for session ${chotkhoId}:`);
+        console.log(`  sltonhethong: ${ckDetail.sltonhethong}`);
+        console.log(`  sltonthucte:  ${ckDetail.sltonthucte}`);
+        console.log(`  chenhlech:    ${ckDetail.chenhlech}`);
+    }
+    else {
+        console.log(`\n❌ No Chotkho Detail found in session ${chotkhoId} for this product.`);
+    }
+    const po = await prisma.dathang.findFirst({
+        where: { madncc: 'TGNCC-XV00924' },
+        select: {
+            id: true,
+            madncc: true,
+            status: true,
+            sanpham: {
+                where: { idSP: sp.id },
+                select: {
+                    sldat: true,
+                    slnhan: true,
+                    slgiao: true
+                }
+            }
+        }
+    });
+    if (po) {
+        console.log(`\nPO: ${po.madncc} | status: ${po.status}`);
+        po.sanpham.forEach(item => {
+            console.log(`  - sldat: ${item.sldat}, slnhan: ${item.slnhan}, slgiao: ${item.slgiao}`);
+        });
+    }
+    else {
+        console.log('\n❌ PO TGNCC-XV00924 not found.');
+    }
+    await prisma.$disconnect();
+}
+main().catch(console.error);
+//# sourceMappingURL=check_caphao.js.map

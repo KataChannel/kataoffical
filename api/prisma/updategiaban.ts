@@ -88,29 +88,49 @@ async function updateDonhangGiaban(donhangId: string): Promise<void> {
       banggiaSanphamMap.set(bgs.sanphamId, parseFloat(bgs.giaban.toString()));
     });
 
+    // Lấy bảng giá mặc định để fallback
+    const banggiaDefault = await prisma.banggia.findUnique({
+      where: { id: '84a62698-5784-4ac3-b506-5e662d1511cb' },
+      include: { sanpham: true }
+    });
+    const defaultBanggiaMap = new Map<string, number>();
+    if (banggiaDefault) {
+      banggiaDefault.sanpham.forEach(bgs => {
+        defaultBanggiaMap.set(bgs.sanphamId, parseFloat(bgs.giaban.toString()));
+      });
+    }
+
     // Cập nhật giá cho từng sản phẩm trong đơn hàng
     for (const donhangsanpham of donhang.sanpham) {
       stats.totalSanpham++;
       
       const sanphamId = donhangsanpham.idSP;
       const currentGiaban = parseFloat(donhangsanpham.giaban.toString());
-      const bangGiaban = banggiaSanphamMap.get(sanphamId);
+      let targetPrice = banggiaSanphamMap.get(sanphamId);
 
-      if (bangGiaban !== undefined) {
-        if (Math.abs(currentGiaban - bangGiaban) > 0.01) { // So sánh với độ chính xác 0.01
+      // Nếu giá trong bảng giá khách = 0 hoặc không có, fallback sang BG04
+      if (targetPrice === undefined || targetPrice <= 0) {
+        const fallbackPrice = defaultBanggiaMap.get(sanphamId);
+        if (fallbackPrice !== undefined && fallbackPrice > 0) {
+          targetPrice = fallbackPrice;
+        }
+      }
+
+      if (targetPrice !== undefined && targetPrice > 0) {
+        if (Math.abs(currentGiaban - targetPrice) > 0.01) {
           const success = await updateDonhangsanphamGiaban(
             donhangsanpham.id,
-            bangGiaban
+            targetPrice
           );
           
           if (success) {
-            console.log(`Updated ${donhang.madonhang} - ${donhangsanpham.sanpham.masp}: ${currentGiaban} -> ${bangGiaban}`);
+            console.log(`Updated ${donhang.madonhang} - ${donhangsanpham.sanpham?.masp}: ${currentGiaban} -> ${targetPrice}`);
             stats.updatedSanpham++;
             hasUpdates = true;
           }
         }
       } else {
-        stats.warnings.push(`No price found for product ${donhangsanpham.sanpham.masp} in banggia ${donhang.khachhang.banggia.mabanggia}`);
+        stats.warnings.push(`No valid price found for product ${donhangsanpham.sanpham?.masp} in banggia ${donhang.khachhang.banggia.mabanggia} or default BG04`);
       }
     }
 

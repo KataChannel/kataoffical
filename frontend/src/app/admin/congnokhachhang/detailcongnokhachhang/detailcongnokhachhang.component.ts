@@ -35,6 +35,7 @@ import {
   import { SanphamService } from '../../sanpham/sanpham.service';
 import { DonhangService } from '../../donhang/donhang.service';
 import { ListcongnokhachhangComponent } from '../listcongnokhachhang/listcongnokhachhang.component';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
   @Component({
     imports: [
       MatFormFieldModule,
@@ -227,8 +228,18 @@ import { ListcongnokhachhangComponent } from '../listcongnokhachhang/listcongnok
       );
     }
     DoFindBanggia(event: any) {
-      const query = event.target.value.toLowerCase();
-      //  this.FilterBanggia = this.ListBanggia.filter(v => v.Title.toLowerCase().includes(query));
+      const value = event.target.value;
+      const list = this._BanggiaService.ListBanggia();
+      if (!value || value.trim().length === 0) {
+        this.filterBanggia = list;
+        return;
+      }
+      const cleanQuery = removeVietnameseAccents(value.trim().toLowerCase());
+      this.filterBanggia = list.filter(
+        (v: any) =>
+          removeVietnameseAccents((v.mabanggia || '').toLowerCase()).includes(cleanQuery) ||
+          removeVietnameseAccents((v.title || '').toLowerCase()).includes(cleanQuery)
+      );
     }
     UpdateBangia() {
       // const Banggia = this.ListBanggia.find(v => v.id === this.Detail.idBanggia)

@@ -20,6 +20,6 @@ export default {
     }
   },
   entryPointToBrowserMapping: {
-    '': ['main-B44BLQP2.js']
+    '': ['main-RDGLWIMI.js']
   }
 };

@@ -1177,7 +1177,7 @@ export class DonhangService {
 
           if (giaSanpham && Number(giaSanpham.giaban) > 0) {
             newPrice = Number(giaSanpham.giaban);
-            giaSource = `${banggiaUuTien.mabanggia}${donhang.banggia ? ' (đơn hàng)' : ' (khách hàng)'}`;
+            giaSource = `${banggiaUuTien.mabanggia} (${donhang.banggia ? 'đơn hàng' : 'khách hàng'})`;
           } else if (giaSanphamKH && Number(giaSanphamKH.giaban) > 0) {
             newPrice = Number(giaSanphamKH.giaban);
             giaSource = `${banggiaKhachhang?.mabanggia} (fallback KH)`;
@@ -1339,26 +1339,26 @@ export class DonhangService {
                 let giaban = 0;
                 let giaSource = 'none';
 
-                // Logic ưu tiên lấy giá: Đơn hàng > Khách hàng > Mặc định
+                // Logic ưu tiên lấy giá:
                 if (giaSanpham && Number(giaSanpham.giaban) > 0) {
-                  // Ưu tiên 1: Có giá từ bảng giá ưu tiên (trên đơn hàng hoặc khách hàng) và > 0
+                  // Ưu tiên 1: Lấy từ bảng giá ưu tiên (đơn hàng hoặc khách hàng) nếu > 0
                   giaban = Number(giaSanpham.giaban);
-                  giaSource = `bảng giá ${banggiaUuTien.mabanggia}${donhang.banggia ? ' (trên đơn hàng)' : ' (của khách hàng)'}`;
+                  giaSource = `bảng giá ${banggiaUuTien.mabanggia} (${donhang.banggia ? 'trên đơn hàng' : 'của khách hàng'})`;
                 } else if (giaSanphamKH && Number(giaSanphamKH.giaban) > 0) {
-                  // Ưu tiên 2: Fallback về bảng giá khách hàng (khi bảng giá đơn hàng không có SP này)
+                  // Ưu tiên 2: Fallback về bảng giá khách hàng nếu bảng giá đơn hàng bị 0đ
                   giaban = Number(giaSanphamKH.giaban);
                   giaSource = `bảng giá ${banggiaKhachhang?.mabanggia} (fallback từ khách hàng)`;
                 } else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
-                  // Ưu tiên 3: Lấy từ bảng giá mặc định
+                  // Ưu tiên 3: Fallback về bảng giá mặc định BG04 nếu bảng giá chỉ định bị 0đ
                   giaban = Number(giaSanphamDefault.giaban);
-                  giaSource = 'bảng giá mặc định (fallback)';
+                  giaSource = 'bảng giá BG04 mặc định (fallback)';
                 } else {
                   // Không tìm thấy giá hợp lệ ở đâu, trả về 0
                   giaban = 0;
                   giaSource = 'không tìm thấy giá hợp lệ trong tất cả bảng giá (trả về 0)';
                 }
 
-                if (giaban > 0) {
+                if (giaSource !== 'none') {
                   const sldat = Number(donhangSanpham.sldat) || 0;
                   const slgiao = Number(donhangSanpham.slgiao) || 0;
                   const slnhan = Number(donhangSanpham.slnhan) || 0;
@@ -1381,8 +1381,8 @@ export class DonhangService {
                   // Không phụ thuộc vào việc giá có thay đổi hay không
                   tongchua += ttnhan;
 
-                  // Kiểm tra có thay đổi giá không
-                  const hasGiaChange = oldGiaban !== giaban;
+                  // Kiểm tra có thay đổi giá hoặc thành tiền không
+                  const hasGiaChange = oldGiaban !== giaban || oldTtnhan !== ttnhan;
 
                   if (hasGiaChange) {
                     await prisma.donhangsanpham.update({
@@ -2341,17 +2341,20 @@ export class DonhangService {
         const giaSanpham = banggia?.sanpham.find(bgsp => bgsp.sanphamId === (sp.idSP || sp.id));
         const giaSanphamDefault = banggiaDefault?.sanpham.find(bgsp => bgsp.sanphamId === (sp.idSP || sp.id));
         
-        let giaban = parseFloat((sp.giaban || 0).toString());
+        const isBanggiaOnDon = Boolean(dto.banggiaId && dto.banggiaId !== khachhang.banggiaId);
         
-        if (giaSanpham) {
-          const giabanFromBanggia = parseFloat(giaSanpham.giaban.toString());
-          if (giabanFromBanggia === 0 && giaSanphamDefault) {
-            giaban = parseFloat(giaSanphamDefault.giaban.toString());
-          } else {
-            giaban = giabanFromBanggia;
-          }
-        } else if (giaSanphamDefault) {
-          giaban = parseFloat(giaSanphamDefault.giaban.toString());
+        const giabanFromBanggia = giaSanpham ? parseFloat(giaSanpham.giaban.toString()) : 0;
+        const giabanFromDefault = giaSanphamDefault ? parseFloat(giaSanphamDefault.giaban.toString()) : 0;
+
+        let giaban = 0;
+        if (giabanFromBanggia > 0) {
+          giaban = giabanFromBanggia;
+        } else if (giabanFromDefault > 0) {
+          giaban = giabanFromDefault;
+        } else if (sp.giaban !== undefined && parseFloat(sp.giaban.toString()) > 0) {
+          giaban = parseFloat(sp.giaban.toString());
+        } else {
+          giaban = 0;
         }
         
         const sldat = parseFloat((sp.sldat ?? 0).toString());

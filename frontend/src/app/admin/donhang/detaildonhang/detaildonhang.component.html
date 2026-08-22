@@ -99,7 +99,7 @@
               (selectionChange)="SelectKhachhang($event)">
               <div class="w-full flex flex-col">
                 <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
-                  <input matInput (input)="DoFindKhachhang($event)" placeholder="Tìm Kiếm"
+                  <input matInput (input)="DoFindKhachhang($event)" (keydown)="$event.stopPropagation()" placeholder="Tìm Kiếm"
                     [disabled]="isLoadingKhachhang()" />
                 </mat-form-field>
                 <div class="overflow-y-auto max-h-44" *ngIf="!isLoadingKhachhang()">
@@ -120,13 +120,16 @@
               (selectionChange)="SelectBanggia($event)">
               <div class="w-full flex flex-col">
                 <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
-                  <input matInput (input)="DoFindBanggia($event)" placeholder="Tìm Kiếm" />
+                  <input matInput (input)="DoFindBanggia($event)" (keydown)="$event.stopPropagation()" placeholder="Tìm Kiếm" />
                 </mat-form-field>
                 <div class="overflow-y-auto max-h-44">
                   @for (item of filterBanggia; track item.id) {
                   <mat-option [value]="item.id">
                     {{item.title}}
                   </mat-option>
+                  }
+                  @empty {
+                  <mat-option disabled>Không có dữ liệu</mat-option>
                   }
                 </div>
               </div>
