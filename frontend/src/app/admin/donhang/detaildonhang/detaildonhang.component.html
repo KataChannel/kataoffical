@@ -155,7 +155,7 @@
         <div class="w-full flex items-start"><strong>Ghi Chú : </strong> {{DetailDonhang()?.ghichu}}</div>
         <div class="w-full flex items-start"><strong>Số Điện Thoại : </strong> {{DetailDonhang()?.khachhang?.sdt}}</div>
         <div class="w-full flex items-start"><strong>Tổng khối lượng :
-            {{TinhTong(DetailDonhang().sanpham,'slgiao')|number:'1.0-2'}}</strong> </div>
+            {{TinhTong(DetailDonhang().sanpham,'slgiao')|number:'1.0-3'}}</strong> </div>
 
         <div *ngIf="isEdit()" class="w-full flex flex-col overflow-y-auto">
           @defer () {
@@ -308,20 +308,20 @@
               <td class="border p-2">{{item.title}}</td>
               <td class="border p-2 text-center">{{item.dvt}}</td>
               <td class="border p-2 text-center">{{item.giaban|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-10">{{item.sldat|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-">{{item.slgiao|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-10">{{item.slnhan|number:'1.0-2'}}</td>
+              <td class="border p-2 text-end max-w-10">{{item.sldat|number:'1.0-3'}}</td>
+              <td class="border p-2 text-end max-w-">{{item.slgiao|number:'1.0-3'}}</td>
+              <td class="border p-2 text-end max-w-10">{{item.slnhan|number:'1.0-3'}}</td>
               <td class="border p-2">{{item.ghichu}}</td>
             </tr>
             }
             <tr class="border">
               <td colspan="3" class="border p-2 text-start">Tổng:</td>
               <td class="border p-2 text-end font-bold"></td>
-              <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'sldat')|number:'1.0-2'}}
+              <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'sldat')|number:'1.0-3'}}
               </td>
-              <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'slgiao')|number:'1.0-2'}}
+              <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'slgiao')|number:'1.0-3'}}
               </td>
-              <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'slnhan')|number:'1.0-2'}}
+              <td class="border p-2 text-end font-bold">{{TinhTong(DetailDonhang().sanpham,'slnhan')|number:'1.0-3'}}
               </td>
               <td class="border p-2 text-end"></td>
             </tr>

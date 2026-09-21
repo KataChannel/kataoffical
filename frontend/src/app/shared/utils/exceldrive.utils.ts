@@ -369,8 +369,17 @@ export function readExcelFileNoWorkerArray(event: any, sheetName?: string): Prom
       const workbook = XLSX.read(data, { type: 'array' });
       let result: any;
       
-      if (sheetName && workbook.SheetNames.includes(sheetName)) {
-        result = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
+      let targetSheet = sheetName;
+      if (targetSheet && !workbook.SheetNames.includes(targetSheet)) {
+        if (targetSheet === 'Phiếu Chuyển' && workbook.SheetNames.includes('Phiếu Chuyến')) {
+          targetSheet = 'Phiếu Chuyến';
+        } else if (targetSheet === 'Phiếu Chuyến' && workbook.SheetNames.includes('Phiếu Chuyển')) {
+          targetSheet = 'Phiếu Chuyển';
+        }
+      }
+
+      if (targetSheet && workbook.SheetNames.includes(targetSheet)) {
+        result = XLSX.utils.sheet_to_json(workbook.Sheets[targetSheet], { defval: '' });
       } else {
         // Lấy sheet đầu tiên
         const firstSheetName = workbook.SheetNames[0];

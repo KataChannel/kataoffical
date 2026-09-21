@@ -215,7 +215,7 @@
                       [value]="row[column] || 0">
                   } @else {
                     <div class="text-end p-2 min-w-28 bg-gray-100 rounded-lg text-gray-600">
-                      {{ row[column]||0|number:'1.0-2' }}
+                      {{ row[column]||0|number:'1.0-3' }}
                     </div>
                   }
                   }
@@ -242,7 +242,7 @@
                     <!-- } -->
                   } @else {
                     <div class="text-end p-2 min-w-28 bg-gray-100 rounded-lg text-gray-600">
-                      {{ row[column]||0|number:'1.0-2' }}
+                      {{ row[column]||0|number:'1.0-3' }}
                     </div>
                   }
                   }
@@ -257,7 +257,7 @@
                       [value]="row[column] || 0">
                   } @else {
                     <div class="text-end p-2 min-w-28 bg-gray-100 rounded-lg text-gray-600">
-                      {{ row[column]||0|number:'1.0-2' }}
+                      {{ row[column]||0|number:'1.0-3' }}
                     </div>
                   }
                   }
@@ -311,25 +311,25 @@
               <td class="border px-2 text-center max-w-10">{{idx+1}}</td>
               <td class="border px-2">{{DetailPhieugiaohang()?.khachhang?.istitle2?item.title2:item.title}}</td>
               <td class="border px-2 text-center">{{item.dvt}}</td>
-              <td class="border px-2 text-end max-w-10">{{item.slgiao|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end max-w-10">{{item.slgiao|number:'1.0-3'}}</td>
               <td class="border px-2 text-end max-w-15" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
                 {{item.giaban|number:'1.0-2'}}</td>
               <td class="border px-2 text-end max-w-15" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
                 {{item.ttgiao|number:'1.0-2'}}</td>
               <td class="border px-2 text-end max-w-15">{{DetailPhieugiaohang()?.status=== 'danhan'?
-                (item.slnhan|number:'1.0-2':''):''}}</td>
+                (item.slnhan|number:'1.0-3':''):''}}</td>
               <td class="border px-2">{{item.ghichu}}</td>
             </tr>
             }
             <tr class="border">
               <td colspan="3" class="border px-2 text-start">Tổng:</td>
               <td class="border px-2 text-end font-bold">
-                {{TinhTong(DetailPhieugiaohang().sanpham,'slgiao')|number:'1.0-2'}}</td>
+                {{TinhTong(DetailPhieugiaohang().sanpham,'slgiao')|number:'1.0-3'}}</td>
               <td class="border px-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia"></td>
               <td class="border px-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
                 {{TinhTong(DetailPhieugiaohang().sanpham,'ttgiao')|number:'1.0-2'}}</td>
               <td class="border px-2 text-end font-bold">{{DetailPhieugiaohang()?.status=== 'danhan'?
-                (TinhTong(DetailPhieugiaohang().sanpham,'slnhan')|number:'1.0-2'):''}}</td>
+                (TinhTong(DetailPhieugiaohang().sanpham,'slnhan')|number:'1.0-3'):''}}</td>
               <td class="border px-2 text-end"></td>
             </tr>
            @if(DetailPhieugiaohang().isshowvat){

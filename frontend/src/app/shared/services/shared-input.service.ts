@@ -150,7 +150,11 @@ export class SharedInputService {
   /**
    * Parse decimal value with support for thousands separators and both comma/dot decimals
    */
-  parseDecimalValue(value: string | number): number {
+  /**
+   * Parse decimal value with support for thousands separators and both comma/dot decimals.
+   * Context-aware: quantity fields (sldat, slgiao, slnhan) always treat single dot/comma as decimal separator.
+   */
+  parseDecimalValue(value: string | number, fieldType?: string): number {
     if (!value && value !== 0) return 0;
     
     let str = value.toString().trim();
@@ -165,12 +169,48 @@ export class SharedInputService {
     str = str.replace(/[^\d.,]/g, '');
     if (!str) return 0;
 
-    // Check if it has both comma and dot
+    // 1. Quantity fields (sldat, slgiao, slnhan, soluong)
+    // In food/vegetable business, weights frequently have decimals up to 3 digits (e.g. 0.375 kg = 375g).
+    // Users NEVER enter thousands separators for row quantities.
+    // Therefore, any single dot or comma is ALWAYS a decimal separator.
+    const isQuantityField = ['sldat', 'slgiao', 'slnhan', 'soluong'].includes(fieldType || '');
+    if (isQuantityField) {
+      // Replace comma with dot
+      str = str.replace(/,/g, '.');
+      // If user accidentally typed multiple dots, keep only the first one
+      const firstDot = str.indexOf('.');
+      if (firstDot !== -1) {
+        str = str.substring(0, firstDot + 1) + str.substring(firstDot + 1).replace(/\./g, '');
+      }
+      const val = parseFloat(str);
+      const res = isNaN(val) ? 0 : val;
+      return isNegative ? -res : res;
+    }
+
+    // 2. Price/currency fields (giaban, gianhap, etc.)
+    // In VND, prices are integers with no decimals. Any dot/comma is a thousands separator.
+    const isPriceField = ['giaban', 'gianhap', 'ttgiao', 'ttnhan', 'ttdat', 'tongtien', 'tongvat'].includes(fieldType || '');
+    if (isPriceField) {
+      str = str.replace(/[.,]/g, '');
+      const val = parseFloat(str);
+      const res = isNaN(val) ? 0 : val;
+      return isNegative ? -res : res;
+    }
+
+    // 3. General / Fallback parsing:
+    // If the number starts with 0 (e.g. 0.375 or 0,375), it is ALWAYS a decimal, never a thousands separator!
+    if (/^0[.,]\d+$/.test(str)) {
+      str = str.replace(/,/g, '.');
+      const val = parseFloat(str);
+      const res = isNaN(val) ? 0 : val;
+      return isNegative ? -res : res;
+    }
+
+    // Check if it has both comma and dot (e.g. 1,234.56 or 1.234,56)
     const hasComma = str.includes(',');
     const hasDot = str.includes('.');
 
     if (hasComma && hasDot) {
-      // Find which one comes last
       const lastComma = str.lastIndexOf(',');
       const lastDot = str.lastIndexOf('.');
       
@@ -182,34 +222,21 @@ export class SharedInputService {
         str = str.replace(/\./g, '').replace(/,/g, '.');
       }
     } else if (hasComma) {
-      // Only comma exists
       const commaCount = (str.match(/,/g) || []).length;
       if (commaCount > 1) {
         // Multiple commas -> thousands separator (e.g. 1,000,000)
         str = str.replace(/,/g, '');
       } else {
-        const parts = str.split(',');
-        if (parts[1] && parts[1].length === 3) {
-          // Exactly 3 trailing digits is treated as thousands separator (e.g. 10,000)
-          str = str.replace(/,/g, '');
-        } else {
-          // Decimal separator (e.g. 10,5 or 10,50)
-          str = str.replace(/,/g, '.');
-        }
+        // Single comma: treat as decimal separator (e.g. 10,5 or 0,375 or 12,5)
+        str = str.replace(/,/g, '.');
       }
     } else if (hasDot) {
-      // Only dot exists
       const dotCount = (str.match(/\./g) || []).length;
       if (dotCount > 1) {
         // Multiple dots -> thousands separator (e.g. 1.000.000)
         str = str.replace(/\./g, '');
-      } else {
-        const parts = str.split('.');
-        if (parts[1] && parts[1].length === 3) {
-          // Exactly 3 trailing digits is treated as thousands separator (e.g. 10.000)
-          str = str.replace(/\./g, '');
-        }
       }
+      // Single dot: standard decimal in JavaScript, keep as is
     }
 
     const parsed = parseFloat(str);
@@ -319,9 +346,13 @@ export class SharedInputService {
     const target = event.target as HTMLElement;
     let newValue: any;
     
+    // Get field configuration
+    const fieldConfig = this.fieldMappings[componentType]?.[field];
+    const targetFieldType = fieldConfig?.fieldType || field;
+
     const rawValue = (target instanceof HTMLInputElement) ? target.value : target.innerText;
     if (type === 'number') {
-      newValue = this.parseDecimalValue(rawValue.trim());
+      newValue = this.parseDecimalValue(rawValue.trim(), targetFieldType);
     } else {
       newValue = rawValue.trim();
     }
@@ -330,8 +361,6 @@ export class SharedInputService {
     const keyboardEvent = event as KeyboardEvent;
     this.handleKeyboardEvent(keyboardEvent, type);
 
-    // Get field configuration
-    const fieldConfig = this.fieldMappings[componentType]?.[field];
     if (!fieldConfig) {
       // Fallback for unknown fields
       this.updateSimpleField(index, element, field, newValue, dataArray, updateFn);
@@ -381,15 +410,17 @@ export class SharedInputService {
     const target = event.target as HTMLElement;
     let newValue: any;
     
+    // Get field configuration
+    const fieldConfig = this.fieldMappings[componentType]?.[field];
+    const targetFieldType = fieldConfig?.fieldType || field;
+
     const rawValue = (target instanceof HTMLInputElement) ? target.value : target.innerText;
     if (type === 'number') {
-      newValue = this.parseDecimalValue(rawValue.trim());
+      newValue = this.parseDecimalValue(rawValue.trim(), targetFieldType);
     } else {
       newValue = rawValue.trim();
     }
 
-    // Get field configuration
-    const fieldConfig = this.fieldMappings[componentType]?.[field];
     if (!fieldConfig) {
       this.updateSimpleField(index, element, field, newValue, dataArray, updateFn);
       return;

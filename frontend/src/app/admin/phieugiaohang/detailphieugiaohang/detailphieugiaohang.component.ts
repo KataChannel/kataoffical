@@ -823,7 +823,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
   onSlnhanChanged(event: Event, index: number | null, element: any) {
     const target = event.target as HTMLElement;
     const rawValue = (target instanceof HTMLInputElement) ? target.value : target.innerText;
-    const enteredValue = this.sharedInputService.parseDecimalValue(rawValue.trim());
+    const enteredValue = this.sharedInputService.parseDecimalValue(rawValue.trim(), 'slnhan');
     const slgiao = Number(element.slgiao) || 0;
 
     this.DetailPhieugiaohang.update((v: any) => {

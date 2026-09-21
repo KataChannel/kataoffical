@@ -85,6 +85,7 @@ export class DonhangGraphqlService {
           khachhang: {
             select: {
               id: true,
+              makh: true,
               name: true,
               sdt: true,
               diachi: true,
@@ -616,13 +617,6 @@ export class DonhangGraphqlService {
         // Số Lượng = Tổng SL Đặt (Trừ hủy)
         const totalQty = activeProducts.reduce((sum: number, sp: any) => sum + ((Number(sp.sldat) || 0) - (Number(sp.slhuy) || 0)), 0);
         
-        // Số Lượng TT = Tổng SL Giao (Thực Tế bốc đi) - Ưu tiên slgiao, fallback (sldat - slhuy) nếu slgiao chưa nhập (null/undefined)
-        const totalQtyTT = activeProducts.reduce((sum: number, sp: any) => {
-          const netQty = (Number(sp.sldat) || 0) - (Number(sp.slhuy) || 0);
-          const slActual = (sp.slgiao !== undefined && sp.slgiao !== null && sp.slgiao !== '') ? Number(sp.slgiao) : netQty;
-          return sum + (slActual || 0);
-        }, 0);
-        
         // Trọng Tải = Tổng (loadpoint sản phẩm × (SL Đặt - SL Hủy))
         const totalLoadpoint = parseFloat(activeProducts.reduce((sum: number, sp: any) => sum + (Number(sp.sanpham?.loadpoint || 0) * ((Number(sp.sldat) || 0) - (Number(sp.slhuy) || 0))), 0).toFixed(3));
         
@@ -640,9 +634,9 @@ export class DonhangGraphqlService {
           'STT': index + 1,
           'Mã Đơn Hàng': order.madonhang || '',
           'Ngày Giao': order.ngaygiao ? moment(order.ngaygiao).format('HH:mm:ss DD/MM/YYYY') : `07:00:00 ${dateStr}`,
+          'Mã Khách Hàng': order.khachhang?.makh || '',
           'Tên Khách Hàng': order.khachhang?.name || '',
           'Số Lượng': totalQty,
-          'Số Lượng TT': totalQtyTT,
           'Trọng Tải': totalLoadpoint,
           'Mã Chuyến': order.khachhang?.machuyen || '',
           'Địa Chỉ': order.khachhang?.diachi || '',
@@ -812,12 +806,12 @@ export class DonhangGraphqlService {
         'Hàng ST': { data: hangSieuThiAOA },
         'TH Hang ST': { data: thHangSieuThiAOA },
         'Khách lẻ': { data: hangKhachLeAOA },
-        'Phiếu Chuyển': { data: phieuChuyenSheetData }
+        'Phiếu Chuyến': { data: phieuChuyenSheetData }
       };
       
       writeExcelFileSheets(sheets, fileName);
 
-      this._snackBar.open('Xuất Excel thành công (5 sheet)', '', {
+      this._snackBar.open('Xuất Excel thành công (6 sheet)', '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',

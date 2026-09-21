@@ -251,7 +251,8 @@ export class ListDonhangComponent {
           lydohuy: true,
           sanpham: {
             select: {
-              sanpham: { select: { masp: true } },
+              giaban: true,
+              sanpham: { select: { masp: true, title: true } },
             },
           },
           khachhang: {
@@ -289,23 +290,36 @@ export class ListDonhangComponent {
         },
       })
         
-      const donhangs = result.data.map((v: any) => ({
+      const donhangs = result.data.map((v: any) => {
+        const zeroPriceProducts = (v.sanpham || [])
+          .filter((sp: any) => {
+            const price = Number(sp.giaban) || 0;
+            const title = sp.sanpham?.title || '';
+            return price === 0 && !title.toLowerCase().startsWith('z_phí');
+          })
+          .map((sp: any) => sp.sanpham?.title || sp.sanpham?.masp || 'Sản phẩm');
+
+        return {
           id: v.id,
           madonhang: v.madonhang,
           name: v.khachhang?.name || '',
           sanpham: v.sanpham?.length,
+          rawSanpham: v.sanpham || [],
+          hasZeroPrice: zeroPriceProducts.length > 0,
+          zeroPriceProducts,
           ngaygiao: v.ngaygiao,
           ghichu: v.ghichu || '',
           status: v.status,
           createdAt: v.createdAt,
           updatedAt: v.updatedAt || v.createdAt,
-          tongtien:v.tongtien,
-          vat:v.vat,
-          tongvat:v.tongvat,
+          tongtien: v.tongtien,
+          vat: v.vat,
+          tongvat: v.tongvat,
           lydohuy: v.lydohuy || '',
           banggia: v.banggia || null,
           khachhang: v.khachhang || null,
-        }));
+        };
+      });
       this.Listdonhang.set(donhangs);
       if (donhangs) {
         this.dataSource = new MatTableDataSource(donhangs);
@@ -770,6 +784,18 @@ export class ListDonhangComponent {
       tooltip += `✅ Đồng bộ sẽ dùng: ${banggiaKH.mabanggia}`;
     }
     return tooltip;
+  }
+
+  /**
+   * Get tooltip for zero-price products warning
+   */
+  getZeroPriceTooltip(row: any): string {
+    if (!row.zeroPriceProducts || row.zeroPriceProducts.length === 0) {
+      return '⚠️ Đơn hàng có sản phẩm giá 0đ';
+    }
+    const items = row.zeroPriceProducts.slice(0, 5).join('\n• ');
+    const more = row.zeroPriceProducts.length > 5 ? `\n... và ${row.zeroPriceProducts.length - 5} sản phẩm khác` : '';
+    return `⚠️ Cảnh báo: Đơn hàng có sản phẩm giá 0đ:\n• ${items}${more}`;
   }
 
   /**

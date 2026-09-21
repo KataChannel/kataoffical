@@ -278,7 +278,7 @@
                         }
                         @case ('madonhang') {
                         <div class="flex items-center gap-1">
-                            <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
+                            <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600 cursor-pointer hover:underline">
                                 {{ row[column] }}
                             </span>
                             <mat-icon 
@@ -288,6 +288,15 @@
                                 (click)="$event.stopPropagation()">
                                 info_outline
                             </mat-icon>
+                            @if (row.hasZeroPrice) {
+                            <mat-icon 
+                                class="!text-sm !w-4 !h-4 text-amber-500 hover:text-amber-600 cursor-pointer" 
+                                [matTooltip]="getZeroPriceTooltip(row)"
+                                matTooltipClass="whitespace-pre-line"
+                                (click)="$event.stopPropagation(); goToDetail(row);">
+                                warning
+                            </mat-icon>
+                            }
                         </div>
                         }
                         @case ('createdAt') {
