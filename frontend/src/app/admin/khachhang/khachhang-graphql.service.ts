@@ -61,6 +61,7 @@ export class KhachhangGraphqlService {
         gionhanhang: true,
         loaikh: true,
         ghichu: true,
+        isPhieugiao2: true,
         isActive: true,
         createdAt: true,
         banggiaId: true,
@@ -214,6 +215,7 @@ export class KhachhangGraphqlService {
         isshowvat: dulieu.isshowvat,
         hiengia: dulieu.hiengia,
         istitle2: dulieu.istitle2,
+        isPhieugiao2: dulieu.isPhieugiao2 || false,
         banggiaId: dulieu.banggiaId || null
       };
 
@@ -245,8 +247,12 @@ export class KhachhangGraphqlService {
       this.khachhangId.set(newKhachhang.id);
       this.DetailKhachhang.set(newKhachhang);
       
-      // Refresh list
-      await this.getAllKhachhang();
+      // Cập nhật ngay lập tức vào danh sách (in-place)
+      this.ListKhachhang.update(list => [newKhachhang, ...list]);
+      this.total.update(t => t + 1);
+      
+      // Đồng bộ ngầm
+      this.getAllKhachhang().catch(e => console.warn('Background sync error:', e));
       
       this._snackBar.open('Tạo khách hàng thành công', '', {
         duration: 1000,
@@ -295,6 +301,7 @@ export class KhachhangGraphqlService {
         isshowvat: dulieu.isshowvat,
         hiengia: dulieu.hiengia,
         istitle2: dulieu.istitle2,
+        isPhieugiao2: dulieu.isPhieugiao2,
         banggiaId: dulieu.banggiaId
       };
 
@@ -330,11 +337,16 @@ export class KhachhangGraphqlService {
 
       this.DetailKhachhang.set(updatedKhachhang);
       
-      // Refresh list
-      await this.getAllKhachhang();
+      // Cập nhật ngay lập tức vào danh sách (in-place) để UI phản hồi tức thì
+      this.ListKhachhang.update(list => 
+        list.map(item => item.id === id ? { ...item, ...updatedKhachhang } : item)
+      );
+      
+      // Đồng bộ ngầm không block luồng người dùng
+      this.getAllKhachhang().catch(e => console.warn('Background sync error:', e));
       
       this._snackBar.open('Cập nhật khách hàng thành công', '', {
-        duration: 1000,
+        duration: 1500,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-success'],
@@ -344,7 +356,7 @@ export class KhachhangGraphqlService {
       console.error('Lỗi cập nhật khách hàng:', error);
       this.error.set('Không thể cập nhật khách hàng');
       this._snackBar.open('Lỗi cập nhật khách hàng', '', {
-        duration: 1000,
+        duration: 2000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
@@ -369,8 +381,12 @@ export class KhachhangGraphqlService {
         { isActive: false }
       );
 
-      // Refresh list
-      await this.getAllKhachhang();
+      // Cập nhật ngay lập tức vào danh sách (in-place)
+      this.ListKhachhang.update(list => list.filter(item => item.id !== id));
+      this.total.update(t => Math.max(0, t - 1));
+      
+      // Đồng bộ ngầm
+      this.getAllKhachhang().catch(e => console.warn('Background sync error:', e));
       
       this._snackBar.open('Xóa khách hàng thành công', '', {
         duration: 1000,

@@ -88,6 +88,9 @@ export class Khachhang {
   @Field()
   istitle2: boolean;
 
+  @Field({ defaultValue: false })
+  isPhieugiao2: boolean;
+
   @Field()
   isshowvat: boolean;
 
@@ -180,6 +183,9 @@ export class CreateKhachhangInput {
   @Field({ defaultValue: false })
   istitle2: boolean;
 
+  @Field({ defaultValue: false })
+  isPhieugiao2: boolean;
+
   @Field({ defaultValue: true })
   isshowvat: boolean;
 
@@ -251,6 +257,9 @@ export class UpdateKhachhangInput {
 
   @Field({ nullable: true })
   istitle2?: boolean;
+
+  @Field({ nullable: true })
+  isPhieugiao2?: boolean;
 
   @Field({ nullable: true })
   isshowvat?: boolean;

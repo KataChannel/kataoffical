@@ -238,4 +238,68 @@ export class AppService {
       hmac.update(input);
       return hmac.digest('hex').toLowerCase();
     }
+
+    async getPrintCompanyProfiles() {
+      const setting = await this.prisma.systemSetting.findUnique({
+        where: { key: 'PRINT_COMPANY_PROFILES' },
+      });
+      if (!setting || !setting.value) {
+        return this.getDefaultPrintCompanyProfiles();
+      }
+      try {
+        const parsed = JSON.parse(setting.value);
+        return {
+          company1: { ...this.getDefaultPrintCompanyProfiles().company1, ...(parsed.company1 || {}) },
+          company2: { ...this.getDefaultPrintCompanyProfiles().company2, ...(parsed.company2 || {}) }
+        };
+      } catch {
+        return this.getDefaultPrintCompanyProfiles();
+      }
+    }
+
+    async updatePrintCompanyProfiles(data: any) {
+      const current = await this.getPrintCompanyProfiles();
+      const updated = {
+        company1: { ...current.company1, ...(data.company1 || {}) },
+        company2: { ...current.company2, ...(data.company2 || {}) }
+      };
+      const value = JSON.stringify(updated);
+      await this.prisma.systemSetting.upsert({
+        where: { key: 'PRINT_COMPANY_PROFILES' },
+        update: { value },
+        create: { key: 'PRINT_COMPANY_PROFILES', value },
+      });
+      return updated;
+    }
+
+    getDefaultPrintCompanyProfiles() {
+      return {
+        company1: {
+          code: 'TNHH',
+          companyName: 'CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA',
+          subName: 'Hợp Tác Xã Nông Nghiệp Công Nghệ Cao Trần Gia Farm',
+          addressHtx: 'Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An',
+          addressOffice: 'Tầng 3, An Phú Plaza, 117-119 Lý Chính Thắng, P. Võ Thị Sáu, Q. 3, TPHCM',
+          addressKho1: '22 - 30 Kha Vạn Cân, P. Hiệp Bình Chánh, TP. Thủ Đức, TPHCM',
+          addressKho2: '61 Lạc Long Quân, TT. Liên Nghĩa, Huyện Đức Trọng, Tỉnh Lâm Đồng',
+          hotline: '0868614214 – 0902458081',
+          website: 'http://rausachtrangia.com',
+          logoUrl: '/images/logo-dark.svg',
+          qrUrl: '/images/qrcodedonhang.svg'
+        },
+        company2: {
+          code: 'COPHAN',
+          companyName: 'CÔNG TY CỔ PHẦN NÔNG SẢN THỰC PHẨM TRẦN GIA',
+          subName: '',
+          addressHtx: '',
+          addressOffice: 'Tầng 3, An Phú Plaza, 117-119 Lý Chính Thắng, P. Võ Thị Sáu, Q. 3, TPHCM',
+          addressKho1: '22 - 30 Kha Vạn Cân, P. Hiệp Bình Chánh, TP. Thủ Đức, TPHCM',
+          addressKho2: '61 Lạc Long Quân, TT. Liên Nghĩa, Huyện Đức Trọng, Tỉnh Lâm Đồng',
+          hotline: '0868614214 – 0902458081',
+          website: 'http://rausachtrangia.com',
+          logoUrl: '/images/logo-dark.svg',
+          qrUrl: '/images/qrcodedonhang.svg'
+        }
+      };
+    }
 }

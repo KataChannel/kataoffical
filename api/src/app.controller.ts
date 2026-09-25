@@ -38,4 +38,14 @@ export class AppController {
   async getDatabaseInfo() {
     return this.appService.getDatabaseInfo();
   }
+
+  @Get('settings/print-company-profiles')
+  async getPrintCompanyProfiles() {
+    return this.appService.getPrintCompanyProfiles();
+  }
+
+  @Post('settings/print-company-profiles')
+  async updatePrintCompanyProfiles(@Body() data: any) {
+    return this.appService.updatePrintCompanyProfiles(data);
+  }
 }

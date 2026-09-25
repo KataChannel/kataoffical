@@ -29,6 +29,7 @@ export declare class CancelOrderController {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            isPhieugiao2: boolean;
             tenfile: string | null;
             tenkh: string | null;
             machuyen: string | null;
@@ -203,6 +204,7 @@ export declare class CancelOrderController {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            isPhieugiao2: boolean;
             tenfile: string | null;
             tenkh: string | null;
             machuyen: string | null;

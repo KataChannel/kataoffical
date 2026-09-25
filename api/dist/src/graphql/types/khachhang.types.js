@@ -131,6 +131,10 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Khachhang.prototype, "istitle2", void 0);
 __decorate([
+    (0, graphql_1.Field)({ defaultValue: false }),
+    __metadata("design:type", Boolean)
+], Khachhang.prototype, "isPhieugiao2", void 0);
+__decorate([
     (0, graphql_1.Field)(),
     __metadata("design:type", Boolean)
 ], Khachhang.prototype, "isshowvat", void 0);
@@ -255,6 +259,10 @@ __decorate([
     __metadata("design:type", Boolean)
 ], CreateKhachhangInput.prototype, "istitle2", void 0);
 __decorate([
+    (0, graphql_1.Field)({ defaultValue: false }),
+    __metadata("design:type", Boolean)
+], CreateKhachhangInput.prototype, "isPhieugiao2", void 0);
+__decorate([
     (0, graphql_1.Field)({ defaultValue: true }),
     __metadata("design:type", Boolean)
 ], CreateKhachhangInput.prototype, "isshowvat", void 0);
@@ -352,6 +360,10 @@ __decorate([
     (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Boolean)
 ], UpdateKhachhangInput.prototype, "istitle2", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], UpdateKhachhangInput.prototype, "isPhieugiao2", void 0);
 __decorate([
     (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Boolean)

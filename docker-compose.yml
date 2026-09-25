@@ -22,6 +22,11 @@ services:
       - "55432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+    command: >
+      postgres
+      -c checkpoint_completion_target=0.9
+      -c checkpoint_timeout=15min
+      -c max_wal_size=2GB
     deploy:
       resources:
         limits:

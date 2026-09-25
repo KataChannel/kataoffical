@@ -45,6 +45,12 @@ let AppController = class AppController {
     async getDatabaseInfo() {
         return this.appService.getDatabaseInfo();
     }
+    async getPrintCompanyProfiles() {
+        return this.appService.getPrintCompanyProfiles();
+    }
+    async updatePrintCompanyProfiles(data) {
+        return this.appService.updatePrintCompanyProfiles(data);
+    }
 };
 exports.AppController = AppController;
 __decorate([
@@ -86,6 +92,19 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "getDatabaseInfo", null);
+__decorate([
+    (0, common_1.Get)('settings/print-company-profiles'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "getPrintCompanyProfiles", null);
+__decorate([
+    (0, common_1.Post)('settings/print-company-profiles'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "updatePrintCompanyProfiles", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService])

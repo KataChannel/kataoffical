@@ -221,7 +221,8 @@ export class DonhangGraphqlService {
               name: true,
               sdt: true,
               diachi: true,
-              email: true
+              email: true,
+              isPhieugiao2: true
             }
           },
           sanpham: {

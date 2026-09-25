@@ -30,6 +30,7 @@ export declare class Khachhang {
     hiengia: boolean;
     isActive: boolean;
     istitle2: boolean;
+    isPhieugiao2: boolean;
     isshowvat: boolean;
     banggiaId?: string;
     createdAt: Date;
@@ -62,6 +63,7 @@ export declare class CreateKhachhangInput {
     hiengia: boolean;
     isActive: boolean;
     istitle2: boolean;
+    isPhieugiao2: boolean;
     isshowvat: boolean;
     banggiaId?: string;
 }
@@ -87,6 +89,7 @@ export declare class UpdateKhachhangInput {
     hiengia?: boolean;
     isActive?: boolean;
     istitle2?: boolean;
+    isPhieugiao2?: boolean;
     isshowvat?: boolean;
     banggiaId?: string;
 }

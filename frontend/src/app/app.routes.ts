@@ -760,6 +760,18 @@ export const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'settings',
+        redirectTo: 'settings/company',
+        pathMatch: 'full',
+      },
+      {
+        path: 'settings/company',
+        loadComponent: () =>
+          import('./admin/settings/company-settings/company-settings.component').then(
+            (c) => c.CompanySettingsComponent
+          ),
+      },
     ],
   },
   {

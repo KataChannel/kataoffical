@@ -33,9 +33,10 @@ echo "11. ⏫ Cập nhật Schema Database (Push)"
 echo "12. 🔄 Phục hồi dữ liệu từ Local lên VPS (rausachfinal)"
 echo "13. 🔄 Phục hồi dữ liệu từ Local lên VPS (testdata)"
 echo "14. 🔄 Đồng bộ dữ liệu MỚI từ rausachfinal -> testdata (Giữ nguyên schema testdata)"
+echo "15. ⏪ Rollback nhanh VPS (Về bản stable trước đó)"
 echo "0. Thoát"
 echo "-----------------------------------"
-read -p "Vui lòng chọn chức năng (0-14): " choice
+read -p "Vui lòng chọn chức năng (0-15): " choice
 
 case $choice in
     1)
@@ -98,6 +99,11 @@ case $choice in
     14)
         echo "=> 🔄 Đang đồng bộ dữ liệu MỚI từ rausachfinal sang testdata (Giữ schema)..."
         node scripts/sync_data_incremental.js
+        exit 0
+        ;;
+    15)
+        echo "=> ⏪ Khởi chạy Rollback VPS về bản stable gần nhất..."
+        bash scripts/rollback_vps.sh
         exit 0
         ;;
     0)

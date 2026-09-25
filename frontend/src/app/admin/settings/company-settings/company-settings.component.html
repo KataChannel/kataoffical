@@ -1,0 +1,245 @@
+<div class="p-4 md:p-6 max-w-7xl mx-auto flex flex-col space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200">
+    <div>
+      <div class="flex items-center gap-2">
+        <div class="p-2 bg-emerald-100 text-emerald-700 rounded-xl">
+          <mat-icon class="!text-2xl !h-6 !w-6">settings_suggest</mat-icon>
+        </div>
+        <h1 class="text-xl md:text-2xl font-bold text-slate-800 m-0">Cài Đặt Thông Tin Doanh Nghiệp & Phiếu In</h1>
+      </div>
+      <p class="text-xs md:text-sm text-slate-500 mt-1 m-0">
+        Quản lý thông tin hiển thị trên tiêu đề phiếu giao hàng cho cả 2 mô hình (Công ty TNHH & Công ty Cổ Phần)
+      </p>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-2">
+      <button 
+        type="button"
+        mat-stroked-button 
+        (click)="resetToDefault()"
+        [disabled]="isSaving() || isLoading()"
+        class="!border-slate-300 !text-slate-700 hover:!bg-slate-50 text-xs font-semibold py-2 px-3 rounded-lg">
+        <mat-icon class="!text-base !h-4 !w-4 mr-1">restart_alt</mat-icon>
+        Khôi phục mẫu chuẩn
+      </button>
+
+      <button 
+        type="button"
+        mat-flat-button 
+        color="primary"
+        (click)="saveProfiles()"
+        [disabled]="isSaving() || isLoading()"
+        class="!bg-emerald-600 !text-white hover:!bg-emerald-700 text-xs font-semibold py-2 px-4 rounded-lg shadow-sm flex items-center gap-2">
+        <mat-spinner diameter="16" *ngIf="isSaving()"></mat-spinner>
+        <mat-icon class="!text-base !h-4 !w-4" *ngIf="!isSaving()">save</mat-icon>
+        <span>{{ isSaving() ? 'Đang lưu...' : 'Lưu Cấu Hình' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="py-12 flex flex-col items-center justify-center space-y-3">
+    <mat-spinner diameter="36"></mat-spinner>
+    <span class="text-sm text-slate-500">Đang tải cấu hình thông tin công ty...</span>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading()" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Form Side -->
+    <div class="lg:col-span-7 flex flex-col space-y-4">
+      <!-- Tabs -->
+      <div class="flex items-center p-1.5 bg-slate-100 rounded-2xl border border-slate-200">
+        <button 
+          type="button"
+          (click)="activeTab.set('company1')"
+          [ngClass]="activeTab() === 'company1' ? 'bg-white shadow-sm text-emerald-700 font-bold border border-slate-200' : 'text-slate-600 hover:text-slate-900'"
+          class="flex-1 py-2.5 px-3 text-xs md:text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+          <mat-icon class="!text-lg !h-5 !w-5">business</mat-icon>
+          <span>Công Ty 1 (Mặc Định - TNHH & HTX)</span>
+        </button>
+        <button 
+          type="button"
+          (click)="activeTab.set('company2')"
+          [ngClass]="activeTab() === 'company2' ? 'bg-white shadow-sm text-purple-700 font-bold border border-slate-200' : 'text-slate-600 hover:text-slate-900'"
+          class="flex-1 py-2.5 px-3 text-xs md:text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+          <mat-icon class="!text-lg !h-5 !w-5">apartment</mat-icon>
+          <span>Công Ty 2 (Công Ty Cổ Phần)</span>
+        </button>
+      </div>
+
+      <!-- Active Profile Form Card -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4" *ngIf="profiles()[activeTab()] as currentProfile">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Thông tin hiển thị: {{ activeTab() === 'company1' ? 'Mẫu Công ty TNHH' : 'Mẫu Công ty Cổ Phần' }}
+          </span>
+          <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                [ngClass]="activeTab() === 'company1' ? 'bg-emerald-50 text-emerald-700' : 'bg-purple-50 text-purple-700'">
+            {{ activeTab() === 'company1' ? 'Phiếu chuẩn' : 'Phiếu 2' }}
+          </span>
+        </div>
+
+        <!-- Tên Công Ty -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Tên Công Ty (Dòng 1 in đậm to)</label>
+          <input 
+            type="text" 
+            [(ngModel)]="currentProfile.companyName"
+            class="w-full px-3.5 py-2.5 text-xs md:text-sm font-bold text-slate-800 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+            placeholder="VD: CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA">
+        </div>
+
+        <!-- Tên HTX / Đơn vị phụ -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Hợp Tác Xã / Đơn Vị Trực Thuộc (Dòng 2)</label>
+          <input 
+            type="text" 
+            [(ngModel)]="currentProfile.subName"
+            class="w-full px-3.5 py-2 text-xs md:text-sm text-slate-800 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+            placeholder="VD: Hợp Tác Xã Nông Nghiệp Công Nghệ Cao Trần Gia Farm">
+        </div>
+
+        <!-- Địa chỉ HTX & VP -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Địa chỉ HTX</label>
+            <input 
+              type="text" 
+              [(ngModel)]="currentProfile.addressHtx"
+              class="w-full px-3.5 py-2 text-xs text-slate-800 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+              placeholder="Ấp Lộc Tiến, Xã Mỹ Lộc...">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Văn Phòng Đại Diện</label>
+            <input 
+              type="text" 
+              [(ngModel)]="currentProfile.addressOffice"
+              class="w-full px-3.5 py-2 text-xs text-slate-800 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+              placeholder="Tầng 3, An Phú Plaza...">
+          </div>
+        </div>
+
+        <!-- Kho bãi -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Kho Sơ Chế</label>
+            <input 
+              type="text" 
+              [(ngModel)]="currentProfile.addressKho1"
+              class="w-full px-3.5 py-2 text-xs text-slate-800 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+              placeholder="22 - 30 Kha Vạn Cân...">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Kho 2 / Kho Đà Lạt</label>
+            <input 
+              type="text" 
+              [(ngModel)]="currentProfile.addressKho2"
+              class="w-full px-3.5 py-2 text-xs text-slate-800 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+              placeholder="61 Lạc Long Quân...">
+          </div>
+        </div>
+
+        <!-- Hotline & Website -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Website</label>
+            <input 
+              type="text" 
+              [(ngModel)]="currentProfile.website"
+              class="w-full px-3.5 py-2 text-xs text-slate-800 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+              placeholder="http://rausachtrangia.com">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Hotline</label>
+            <input 
+              type="text" 
+              [(ngModel)]="currentProfile.hotline"
+              class="w-full px-3.5 py-2 text-xs text-slate-800 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+              placeholder="0868614214 – 0902458081">
+          </div>
+        </div>
+
+        <!-- Logo & QR Code URLs -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">
+              Đường dẫn Logo (URL tuyệt đối hoặc tương đối)
+            </label>
+            <input 
+              type="text" 
+              [(ngModel)]="currentProfile.logoUrl"
+              class="w-full px-3.5 py-2 text-xs text-slate-800 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-mono"
+              placeholder="/images/logo-dark.svg hoặc https://...">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">
+              Đường dẫn Mã QR (URL tuyệt đối hoặc tương đối)
+            </label>
+            <input 
+              type="text" 
+              [(ngModel)]="currentProfile.qrUrl"
+              class="w-full px-3.5 py-2 text-xs text-slate-800 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-mono"
+              placeholder="/images/qrcodedonhang.svg hoặc https://...">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Preview Side -->
+    <div class="lg:col-span-5 flex flex-col space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+          <mat-icon class="!text-sm !h-4 !w-4 text-emerald-600">visibility</mat-icon>
+          Xem trước mẫu phiếu in thực tế
+        </span>
+        <span class="text-[11px] text-slate-400">Tự động cập nhật theo nội dung nhập</span>
+      </div>
+
+      <!-- Preview Sheet (Paper Simulation) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 font-times text-slate-800 space-y-3" *ngIf="profiles()[activeTab()] as currentProfile">
+        <div class="border border-dashed border-slate-300 rounded-xl p-3 bg-slate-50/50">
+          <div class="flex flex-row space-x-2 items-center justify-between text-[11px] leading-tight">
+            <!-- Logo Preview -->
+            <img [src]="currentProfile.logoUrl || '/images/logo-dark.svg'" class="h-10 max-w-[70px] object-contain">
+            
+            <!-- Text Content -->
+            <div class="flex-1 flex flex-col pl-2">
+              <div class="font-bold text-[13px] text-slate-900 leading-tight">
+                {{ currentProfile.companyName || 'CHƯA NHẬP TÊN CÔNG TY' }}
+              </div>
+              <div class="font-bold text-[11px] text-slate-700" *ngIf="currentProfile.subName">
+                {{ currentProfile.subName }}
+              </div>
+              <div *ngIf="currentProfile.addressHtx">Địa chỉ HTX: {{ currentProfile.addressHtx }}</div>
+              <div *ngIf="currentProfile.addressOffice">Văn Phòng: {{ currentProfile.addressOffice }}</div>
+              <div *ngIf="currentProfile.addressKho1">Kho sơ chế: {{ currentProfile.addressKho1 }}</div>
+              <div *ngIf="currentProfile.addressKho2">Kho Đà Lạt: {{ currentProfile.addressKho2 }}</div>
+              <div class="text-[10px] text-slate-600">
+                <span *ngIf="currentProfile.website">Website: {{ currentProfile.website }}</span>
+                <span *ngIf="currentProfile.website && currentProfile.hotline"> - </span>
+                <span *ngIf="currentProfile.hotline">Hotline: {{ currentProfile.hotline }}</span>
+              </div>
+            </div>
+
+            <!-- QR Preview -->
+            <img [src]="currentProfile.qrUrl || '/images/qrcodedonhang.svg'" class="h-16 max-w-[70px] object-contain p-1">
+          </div>
+        </div>
+
+        <div class="text-center py-2 border-y border-slate-100">
+          <div class="font-bold text-xs uppercase text-slate-800">BẢNG KÊ GIAO HÀNG NGÀY (MÔ PHỎNG)</div>
+          <div class="text-[11px] text-slate-500 italic mt-0.5">Nội dung phiếu giao hàng bên dưới sẽ giữ nguyên theo đơn đặt hàng</div>
+        </div>
+
+        <div class="bg-amber-50 rounded-xl p-3 border border-amber-200 flex items-start gap-2">
+          <mat-icon class="!text-base !h-4 !w-4 text-amber-600 mt-0.5">lightbulb</mat-icon>
+          <div class="text-xs text-amber-800">
+            <strong>Ghi chú:</strong> Khách hàng nào được bật <em>"Sử dụng phiếu giao hàng 2"</em> sẽ tự động in theo thông tin của <strong>Công Ty 2</strong>, các khách hàng còn lại sẽ in theo <strong>Công Ty 1</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

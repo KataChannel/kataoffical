@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   effect,
   inject,
@@ -46,6 +47,7 @@ import { GraphqlService } from '../../../shared/services/graphql.service';
   ],
   templateUrl: './detailkhachhang.component.html',
   styleUrls: ['./detailkhachhang.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailKhachhangComponent {
   @ViewChild('createNhomkhachhangDialog') createNhomkhachhangDialogRef!: TemplateRef<any>;
@@ -60,6 +62,7 @@ export class DetailKhachhangComponent {
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   _dialog: MatDialog = inject(MatDialog);
+  private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   // GraphQL reactive signals
   DetailKhachhang: any = this._KhachhangService.DetailKhachhang;
@@ -70,6 +73,7 @@ export class DetailKhachhangComponent {
   filterItem: any = [];
   isEdit = signal(false);
   isDelete = signal(false);
+  isSaving = signal(false);
   khachhangId: any = this._KhachhangService.khachhangId;
   
   // Autocomplete properties
@@ -94,52 +98,73 @@ export class DetailKhachhangComponent {
     { value: 'khachle', title: 'Khách Lẻ', description: 'Khách hàng mua lẻ' }
   ];
   constructor() {
-    this._route.paramMap.subscribe((params) => {
+    this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
       this._KhachhangService.setKhachhangId(id);
-    });
-    effect(async () => {
-      const id = this._KhachhangService.khachhangId();
       if (!id) {
-        this._router.navigate(['/admin/khachhang']);
         this._ListkhachhangComponent.drawer.close();
+        return;
       }
       if (id === 'new') {
         this.DetailKhachhang.set({ loaikh: 'khachsi' });
         this.selectedNhomkhachhangIds.set([]);
+        this.isEdit.set(true);
         this._ListkhachhangComponent.drawer.open();
-        this.isEdit.update((value) => !value);
-        this._router.navigate(['/admin/khachhang', 'new']);
+        this._cdr.markForCheck();
       } else {
-        console.log('KhachhangId:', id);
-        if (id) {
-          await this._KhachhangService.getKhachhangById(id);
-          this.ListFilter = this._KhachhangService.DetailKhachhang().banggia;
-          // Load nhomkhachhang IDs from detail
-          const nhomIds = this.DetailKhachhang()?.nhomkhachhang?.map((n: any) => n.id) || [];
+        try {
+          const kh = await this._KhachhangService.getKhachhangById(id);
+          this.ListFilter = kh?.banggia || [];
+          const nhomIds = kh?.nhomkhachhang?.map((n: any) => n.id) || [];
           this.selectedNhomkhachhangIds.set(nhomIds);
+          if (kh?.banggiaId && this.filteredBanggia()?.length) {
+            const selected = this.filteredBanggia().find((item: any) => item.id === kh.banggiaId);
+            if (selected) this.selectedBanggia.set(selected);
+          }
+        } catch (e) {
+          console.error('Lỗi tải chi tiết khách hàng:', e);
         }
         this._ListkhachhangComponent.drawer.open();
-        this._router.navigate(['/admin/khachhang', id]);
+        this._cdr.markForCheck();
       }
     });
   }
+
   async ngOnInit() {
-    //  await this._KhachhangService.getKhachhangBy({id: this._KhachhangService.khachhangId(),isOne: true});
-    await this._BanggiaService.getAllBanggia();
-    await this.loadNhomkhachhang();
-    this.filterItem = this._BanggiaService.ListBanggia();
-    this.filteredBanggia.set(this._BanggiaService.ListBanggia());
-    
-    // Set selected banggia if exists
-    if (this.DetailKhachhang()?.banggiaId) {
-      const selected = this._BanggiaService.ListBanggia().find((item: any) => item.id === this.DetailKhachhang().banggiaId);
-      this.selectedBanggia.set(selected);
-    }
-    
-    console.log('DetailKhachhang:', this.DetailKhachhang());
+    await Promise.all([
+      this.loadBanggiaList(),
+      this.loadNhomkhachhang()
+    ]);
+    this._cdr.markForCheck();
   }
   
+  // Load Bảng Giá danh sách nhẹ (chỉ id, title, mabanggia cho autocomplete)
+  async loadBanggiaList() {
+    try {
+      const data = await this._GraphqlService.findMany('banggia', {
+        select: {
+          id: true,
+          title: true,
+          mabanggia: true
+        },
+        orderBy: { order: 'asc' },
+        take: 500
+      });
+      const list = data || [];
+      this.filterItem = list;
+      this.filteredBanggia.set(list);
+      
+      // Set selected banggia if exists
+      if (this.DetailKhachhang()?.banggiaId) {
+        const selected = list.find((item: any) => item.id === this.DetailKhachhang().banggiaId);
+        if (selected) this.selectedBanggia.set(selected);
+      }
+      this._cdr.markForCheck();
+    } catch (e) {
+      console.error('Lỗi tải danh sách bảng giá:', e);
+    }
+  }
+
   // Load all Nhomkhachhang
   async loadNhomkhachhang() {
     try {
@@ -153,6 +178,7 @@ export class DetailKhachhangComponent {
       });
       this.ListNhomkhachhang.set(result || []);
       this.filteredNhomkhachhang.set(result || []);
+      this._cdr.markForCheck();
     } catch (error) {
       console.error('Error loading nhomkhachhang:', error);
     }
@@ -242,12 +268,19 @@ export class DetailKhachhangComponent {
     return nhomId;
   }
   async handleKhachhangAction() {
-    if (this.khachhangId() === 'new') {
-      await this.createKhachhang();
-    } else {
-      await this.updateKhachhang();
+    if (this.isSaving()) return;
+    this.isSaving.set(true);
+    this._cdr.markForCheck();
+    try {
+      if (this.khachhangId() === 'new') {
+        await this.createKhachhang();
+      } else {
+        await this.updateKhachhang();
+      }
+    } finally {
+      this.isSaving.set(false);
+      this._cdr.markForCheck();
     }
-    // window.location.reload();
   }
   @Debounce(300)
   autoSubtitle() {
@@ -255,17 +288,13 @@ export class DetailKhachhangComponent {
       ...v,
       subtitle: removeVietnameseAccents(v.name || '')
     }));
+    this._cdr.markForCheck();
   }
   private async createKhachhang() {
     try {
       await this._KhachhangService.createKhachhang(this.DetailKhachhang());
-      this._snackBar.open('Tạo Mới Thành Công', '', {
-        duration: 1000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
-      this.isEdit.update((value) => !value);
+      this.isEdit.set(false);
+      this._cdr.markForCheck();
     } catch (error) {
       console.error('Lỗi khi tạo khachhang:', error);
     }
@@ -280,13 +309,8 @@ export class DetailKhachhangComponent {
           khachhangId,
           khachhangData
         );
-        this._snackBar.open('Cập Nhật Thành Công', '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-        this.isEdit.update((value) => !value);
+        this.isEdit.set(false);
+        this._cdr.markForCheck();
       }
     } catch (error) {
       console.error('Lỗi khi cập nhật khachhang:', error);
@@ -366,13 +390,12 @@ export class DetailKhachhangComponent {
       return `${selected.title} - ${selected.mabanggia}`;
     }
     
-    // Fallback: find by ID from DetailKhachhang
+    // Fallback: find by ID from DetailKhachhang without modifying signals during render
     if (this.DetailKhachhang()?.banggiaId) {
       const banggia = this._BanggiaService.ListBanggia().find((item: any) => 
         item.id === this.DetailKhachhang().banggiaId
       );
       if (banggia) {
-        this.selectedBanggia.set(banggia);
         return `${banggia.title} - ${banggia.mabanggia}`;
       }
     }
@@ -396,6 +419,13 @@ export class DetailKhachhangComponent {
     this.DetailKhachhang.update((v: any) => ({
       ...v,
       istitle2: event.checked
+    }));
+  }
+
+  updateIsPhieugiao2(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      isPhieugiao2: event.checked
     }));
   }
 

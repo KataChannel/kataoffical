@@ -190,18 +190,16 @@ else
       cd $PROJECT_DIR
       docker stop dry-run-test 2>/dev/null && docker rm dry-run-test 2>/dev/null
       git pull
-      # 🛠️ Tự động dọn dẹp các container lỗi hoặc cũ để tránh lỗi 'Conflict Name'
-      echo "🧹 Đang dọn dẹp các container xung đột..."
-      # Dừng và xóa các container có thể gây xung đột tên
-      docker rm -f rausach-backend rausach-frontend rausach-redis rausach-postgres rausach-minio 2>/dev/null || true
-      docker compose -p rausachfinal down --remove-orphans 2>/dev/null || true
+      # 🛠️ Đảm bảo các core services (DB, Redis, MinIO) luôn chạy ổn định
+      docker compose -p rausachfinal up -d postgres redis rausach-minio
+
+      echo "🚀 Đang khởi chạy Backend và Frontend bản mới (Không gián đoạn Database & Cache)..."
+      docker rm -f rausach-backend rausach-frontend 2>/dev/null || true
+      docker compose -p rausachfinal up -d --no-deps berausach ferausach
       
-      echo "🚀 Đang khởi chạy hệ thống chính thức..."
-      docker compose -p rausachfinal up -d --remove-orphans
-      
-      # 🧹 Dọn dẹp các image cũ để tiết kiệm dung lượng server
+      # 🧹 Dọn dẹp các image cũ không tên để tiết kiệm dung lượng server
       docker image prune -f
-      echo "🎉 DEPLOY THÀNH CÔNG! Hệ thống đã Online với bản mới nhất."
+      echo "🎉 DEPLOY THÀNH CÔNG! Hệ thống đã Online với bản mới nhất mà không gián đoạn DB."
 EOF
 fi
 

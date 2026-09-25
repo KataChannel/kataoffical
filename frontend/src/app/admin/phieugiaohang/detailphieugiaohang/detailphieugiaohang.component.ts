@@ -53,6 +53,35 @@ import { Title } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { environment } from '../../../../environments/environment.development';
+import { StorageService } from '../../../shared/utils/storage.service';
+
+const DEFAULT_COMPANY_PROFILES = {
+  company1: {
+    companyName: 'CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA',
+    subName: 'Hợp Tác Xã Nông Nghiệp Công Nghệ Cao Trần Gia Farm',
+    addressHtx: 'Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An',
+    addressOffice: 'Tầng 3, An Phú Plaza, 117-119 Lý Chính Thắng, P. Võ Thị Sáu, Q. 3, TPHCM',
+    addressKho1: '22 - 30 Kha Vạn Cân, P. Hiệp Bình Chánh, TP. Thủ Đức, TPHCM',
+    addressKho2: '61 Lạc Long Quân, TT. Liên Nghĩa, Huyện Đức Trọng, Tỉnh Lâm Đồng',
+    website: 'http://rausachtrangia.com',
+    hotline: '0868614214 – 0902458081',
+    logoUrl: '/images/logo-dark.svg',
+    qrUrl: '/images/qrcodedonhang.svg',
+  },
+  company2: {
+    companyName: 'CÔNG TY CỔ PHẦN NÔNG SẢN THỰC PHẨM TRẦN GIA',
+    subName: 'Hợp Tác Xã Nông Nghiệp Công Nghệ Cao Trần Gia Farm',
+    addressHtx: 'Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An',
+    addressOffice: 'Tầng 3, An Phú Plaza, 117-119 Lý Chính Thắng, P. Võ Thị Sáu, Q. 3, TPHCM',
+    addressKho1: '22 - 30 Kha Vạn Cân, P. Hiệp Bình Chánh, TP. Thủ Đức, TPHCM',
+    addressKho2: '61 Lạc Long Quân, TT. Liên Nghĩa, Huyện Đức Trọng, Tỉnh Lâm Đồng',
+    website: 'http://rausachtrangia.com',
+    hotline: '0868614214 – 0902458081',
+    logoUrl: '/images/logo-dark.svg',
+    qrUrl: '/images/qrcodedonhang.svg',
+  }
+};
 @Component({
   selector: 'app-detailphieugiaohang',
   imports: [
@@ -89,6 +118,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
   _dialog: MatDialog = inject(MatDialog);
   _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   _BanggiaService: BanggiaService = inject(BanggiaService);
+  private _storageService: StorageService = inject(StorageService);
   private titleService: Title = inject(Title);
     displayedColumns: string[] = [
     'STT',
@@ -111,7 +141,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
     sldat: 'SL Đặt',
     slgiao: 'SL Giao',
     giaban: 'Giá Bán',
-    ttgiao: 'TT Giao',
+    ttgiao: 'Thành Tiền',
     slnhan: 'Thực Nhận',
     ghichu: 'Ghi Chú'
   };
@@ -122,6 +152,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('confirmRemoveDialog') confirmRemoveDialog!: TemplateRef<any>;
   @ViewChild('confirmReceivedDialog') confirmReceivedDialog!: TemplateRef<any>;
+  companyProfiles = signal<any>(DEFAULT_COMPANY_PROFILES);
+
   DetailPhieugiaohang: any = this._PhieugiaohangService.DetailDonhang;
 
   // Dialog state properties for slnhan < slgiao dialog
@@ -291,10 +323,16 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
       this.isEdit.set(phieuGiaoHang.status !== 'hoanthanh');
       
       // Process sanpham data with proper typing
-      const processedSanpham = phieuGiaoHang?.sanpham?.map((item: any) => ({
-        ...item,
-        ttgiao: (Number(item.slgiao) || 0) * (Number(item.giaban) || 0)
-      })) || [];
+      const processedSanpham = phieuGiaoHang?.sanpham?.map((item: any) => {
+        const slgiao = Number(item.slgiao) || 0;
+        const slnhan = (item.slnhan !== undefined && item.slnhan !== null) ? Number(item.slnhan) : slgiao;
+        const giaban = Number(item.giaban) || 0;
+        return {
+          ...item,
+          ttgiao: slgiao * giaban,
+          ttnhan: slnhan * giaban
+        };
+      }) || [];
       
       // Sort by title A-Z
       processedSanpham.sort((a: any, b: any) => {
@@ -360,6 +398,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
  
  async ngOnInit() {
    await this._UserService.getProfile();
+   this.loadCompanyProfiles();
   console.log(this.profile());
     this.canEditSlnhan();
     const phieugiaohangId = this.phieugiaohangId();
@@ -491,17 +530,28 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
 
   private prepareUpdateData() {
     try {
+      const isReceived = ['danhan', 'hoanthanh'].includes(this.DetailPhieugiaohang()?.status);
+      const isshowvat = this.DetailPhieugiaohang()?.isshowvat;
       const sanphamWithCalculations = this.DetailPhieugiaohang().sanpham?.map((v: any) => {
         const slgiao = Number(v.slgiao) || 0;
+        const slnhan = (v.slnhan !== undefined && v.slnhan !== null) ? Number(v.slnhan) : slgiao;
         const giaban = Number(v.giaban) || 0;
+        const vat = Number(v.vat) || 0;
+        const ttgiao = slgiao * giaban;
+        const ttnhan = slnhan * giaban;
+        const ttsauvat = isshowvat ? ttnhan * (1 + vat) : ttnhan;
         return {
           ...v,
-          ttgiao: slgiao * giaban
+          ttgiao,
+          ttnhan,
+          ttsauvat
         };
       }) || [];
 
-      const tong = sanphamWithCalculations.reduce((sum: number, item: any) => 
-        sum + (item.ttgiao || 0), 0);
+      const tong = sanphamWithCalculations.reduce((sum: number, item: any) => {
+        const qty = isReceived ? (item.slnhan !== undefined && item.slnhan !== null ? Number(item.slnhan) : Number(item.slgiao) || 0) : (Number(item.slgiao) || 0);
+        return sum + (qty * (Number(item.giaban) || 0));
+      }, 0);
       const vat = Number(this.DetailPhieugiaohang().vat) || 0;
       const tongvat = tong * vat;
       const tongtien = tong * (1 + vat);
@@ -576,12 +626,15 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
     try {
       const sanpham = this.DetailPhieugiaohang().sanpham || [];
       const vat = Number(this.DetailPhieugiaohang().vat) || 0;
+      const isReceived = ['danhan', 'hoanthanh'].includes(this.DetailPhieugiaohang()?.status);
       
       // Use reduce with better performance
       const tong = sanpham.reduce((sum: number, item: any) => {
         const slgiao = Number(item.slgiao) || 0;
+        const slnhan = (item.slnhan !== undefined && item.slnhan !== null) ? Number(item.slnhan) : slgiao;
+        const qty = isReceived ? slnhan : slgiao;
         const giaban = Number(item.giaban) || 0;
-        return sum + (slgiao * giaban);
+        return sum + (qty * giaban);
       }, 0);
       
       const tongvat = tong * vat;
@@ -845,6 +898,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
       return v;
     });
 
+    this.UpdateTongTongTienVat();
     this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
     this._cdr.markForCheck();
   }
@@ -1019,9 +1073,20 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
   }
   TinhTong(items: any, fieldTong: any) {
     return (
-      items?.reduce((sum: any, item: any) => sum + (item[fieldTong] || 0), 0) ||
+      items?.reduce((sum: any, item: any) => sum + (Number(item[fieldTong]) || 0), 0) ||
       0
     );
+  }
+
+  getItemThanhTien(item: any): number {
+    const isReceived = ['danhan', 'hoanthanh'].includes(this.DetailPhieugiaohang()?.status);
+    const qty = isReceived ? (item.slnhan !== undefined && item.slnhan !== null ? Number(item.slnhan) : Number(item.slgiao) || 0) : (Number(item.slgiao) || 0);
+    return qty * (Number(item.giaban) || 0);
+  }
+
+  TinhTongThanhTien(): number {
+    const items = this.DetailPhieugiaohang()?.sanpham || [];
+    return items.reduce((sum: number, item: any) => sum + this.getItemThanhTien(item), 0);
   }
 
 
@@ -1104,32 +1169,29 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
   CheckVatDonhang(){
     console.log(this.DetailPhieugiaohang());
     if(this.DetailPhieugiaohang().isshowvat){
+      const isReceived = ['danhan', 'hoanthanh'].includes(this.DetailPhieugiaohang()?.status);
+      const tong = this.DetailPhieugiaohang().sanpham?.reduce((sum:any, item:any) => {
+        const slgiao = Number(item.slgiao) || 0;
+        const slnhan = (item.slnhan !== undefined && item.slnhan !== null) ? Number(item.slnhan) : slgiao;
+        const qty = isReceived ? slnhan : slgiao;
+        return sum + (qty * (Number(item.giaban) || 0));
+      }, 0) || 0;
+      const vatRate = Number(this.DetailPhieugiaohang().vat) || 0;
+      const tongtien = tong * (1 + vatRate);
+      const tongvat = tong * vatRate;
+      
+      console.log('VAT check:', { tong, tongtien, tongvat, orderTongtien: this.DetailPhieugiaohang().tongtien, orderTongvat: this.DetailPhieugiaohang().tongvat });
 
-    const tong = this.DetailPhieugiaohang().sanpham?.reduce((sum:any, item:any) => sum + (Number(item.slgiao) * Number(item.giaban)||0), 0) || 0;
-    const tongtien = tong*(1+Number(this.DetailPhieugiaohang().vat));
-    const tongvat = tong*this.DetailPhieugiaohang().vat;
-        console.log('VAT changed:', 1+this.DetailPhieugiaohang().vat);
-        
-        console.log('tong',tong);
-        console.log('tongtien',tongtien);
-        console.log('tongvat',tongvat);
-        console.log('this.DetailPhieugiaohang().tongtien',this.DetailPhieugiaohang().tongtien);
-        console.log('this.DetailPhieugiaohang().tongvat',this.DetailPhieugiaohang().tongvat);
-
-
-    if(Number(tongtien) !== Number(this.DetailPhieugiaohang().tongtien)){
-      return false;
-    }
-    if(Number(tongvat) !== Number(this.DetailPhieugiaohang().tongvat)){
-      return false;
+      if (Math.abs(Number(tongtien) - Number(this.DetailPhieugiaohang().tongtien)) > 1) {
+        return false;
+      }
+      if (Math.abs(Number(tongvat) - Number(this.DetailPhieugiaohang().tongvat)) > 1) {
+        return false;
+      }
+      return true;
     } else {
       return true;
     }
-    }
-    else {
-      return true;
-    }
-    
   }
 
   async printContent()
@@ -1273,4 +1335,31 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit, OnDe
     //   printWindow.document.close();
     // });
   }
+
+  async loadCompanyProfiles() {
+    try {
+      const res = await fetch(`${environment.APIURL}/settings/print-company-profiles`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.company1 && data?.company2) {
+          this.companyProfiles.set(data);
+          this._cdr.markForCheck();
+        }
+      }
+    } catch (e) {
+      console.warn('Could not load company profiles from server, using default:', e);
+    }
+  }
+
+  getCompanyProfile() {
+    const isP2 = this.isUsingCompany2();
+    const profiles = this.companyProfiles();
+    return isP2 ? (profiles?.company2 || DEFAULT_COMPANY_PROFILES.company2) : (profiles?.company1 || DEFAULT_COMPANY_PROFILES.company1);
+  }
+
+  isUsingCompany2(): boolean {
+    return !!this.DetailPhieugiaohang()?.khachhang?.isPhieugiao2;
+  }
+
+
 }

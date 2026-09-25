@@ -37,4 +37,12 @@ export declare class AppController {
         timestamp: string;
         database?: undefined;
     }>;
+    getPrintCompanyProfiles(): Promise<{
+        company1: any;
+        company2: any;
+    }>;
+    updatePrintCompanyProfiles(data: any): Promise<{
+        company1: any;
+        company2: any;
+    }>;
 }

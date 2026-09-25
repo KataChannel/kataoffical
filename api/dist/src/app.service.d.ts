@@ -44,4 +44,40 @@ export declare class AppService {
     private saveCallBack;
     private deleteCallBack;
     private generateSHA256HMAC;
+    getPrintCompanyProfiles(): Promise<{
+        company1: any;
+        company2: any;
+    }>;
+    updatePrintCompanyProfiles(data: any): Promise<{
+        company1: any;
+        company2: any;
+    }>;
+    getDefaultPrintCompanyProfiles(): {
+        company1: {
+            code: string;
+            companyName: string;
+            subName: string;
+            addressHtx: string;
+            addressOffice: string;
+            addressKho1: string;
+            addressKho2: string;
+            hotline: string;
+            website: string;
+            logoUrl: string;
+            qrUrl: string;
+        };
+        company2: {
+            code: string;
+            companyName: string;
+            subName: string;
+            addressHtx: string;
+            addressOffice: string;
+            addressKho1: string;
+            addressKho2: string;
+            hotline: string;
+            website: string;
+            logoUrl: string;
+            qrUrl: string;
+        };
+    };
 }

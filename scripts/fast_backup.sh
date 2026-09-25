@@ -24,7 +24,7 @@ ssh $SERVER << EOF
 
     # 1. Backup Database PostgreSQL
     echo "   -> Trích xuất database PostgreSQL (\$DB_CONTAINER)..."
-    docker exec \$DB_CONTAINER pg_dump -U AWois79wFA1bxMK -d rausachfinal -F c > /tmp/rausach_backup_$TIMESTAMP/rausachfinal_db.dump || echo "      Lỗi: Không tìm thấy PostgreSQL container hoặc sai tên DB"
+    docker exec \$DB_CONTAINER pg_dump -U AWois79wFA1bxMK -d rausachfinal -F c -Z 1 --no-owner --no-privileges > /tmp/rausach_backup_$TIMESTAMP/rausachfinal_db.dump || echo "      Lỗi: Không tìm thấy PostgreSQL container hoặc sai tên DB"
     
     # 2. Backup Redis
     echo "   -> Backup Redis dump.rdb (\$REDIS_CONTAINER)..."
@@ -43,10 +43,14 @@ ssh $SERVER << EOF
     # Lấy thông tin Docker
     docker ps > /tmp/rausach_backup_$TIMESTAMP/docker_ps.txt
 
-    # 5. Nén toàn bộ
-    echo "   -> Đang nén file..."
+    # 5. Nén toàn bộ (Sử dụng pigz đa luồng 4 cores tăng tốc)
+    echo "   -> Đang nén file (đa luồng đa lõi)..."
     cd /tmp
-    tar -czf rausach_backup_$TIMESTAMP.tar.gz rausach_backup_$TIMESTAMP 2>/dev/null
+    if command -v pigz >/dev/null 2>&1; then
+        tar -I "pigz -1" -cf rausach_backup_$TIMESTAMP.tar.gz rausach_backup_$TIMESTAMP 2>/dev/null
+    else
+        tar -czf rausach_backup_$TIMESTAMP.tar.gz rausach_backup_$TIMESTAMP 2>/dev/null
+    fi
     
     # Dọn dẹp thư mục tạm
     rm -rf /tmp/rausach_backup_$TIMESTAMP
