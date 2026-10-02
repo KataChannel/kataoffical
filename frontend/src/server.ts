@@ -57,6 +57,24 @@ app.use(
   }),
 );
 
+// Fallback alias for /images/qrcodemoi.jpg
+app.get('/images/qrcodemoi.jpg', (req, res) => {
+  res.redirect(301, '/images/qr-congty2.jpg');
+});
+
+// Guard static asset routes so missing files do NOT fallback to SSR HTML
+app.use(['/images', '/assets'], (req, res) => {
+  res.status(404).set('Cache-Control', 'no-store, no-cache, must-revalidate').send('Static file not found');
+});
+
+app.use((req, res, next) => {
+  if (/\.(jpe?g|png|gif|svg|webp|ico|css|js|map|woff2?|ttf|eot)$/i.test(req.path)) {
+    res.status(404).set('Cache-Control', 'no-store, no-cache, must-revalidate').send('File not found');
+    return;
+  }
+  next();
+});
+
 
 
 /**

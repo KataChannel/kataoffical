@@ -289,7 +289,7 @@ export class AppService {
         },
         company2: {
           code: 'COPHAN',
-          companyName: 'CÔNG TY CỔ PHẦN NÔNG SẢN THỰC PHẨM TRẦN GIA',
+          companyName: 'CÔNG TY CỔ PHẦN NÔNG NGHIỆP THỰC PHẨM TRẦN GIA',
           subName: '',
           addressHtx: '',
           addressOffice: 'Tầng 3, An Phú Plaza, 117-119 Lý Chính Thắng, P. Võ Thị Sáu, Q. 3, TPHCM',
@@ -298,7 +298,7 @@ export class AppService {
           hotline: '0868614214 – 0902458081',
           website: 'http://rausachtrangia.com',
           logoUrl: '/images/logo-dark.svg',
-          qrUrl: '/images/qrcodedonhang.svg'
+          qrUrl: '/images/qr-congty2.jpg'
         }
       };
     }

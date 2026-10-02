@@ -22,7 +22,7 @@ const DEFAULT_COMPANY_PROFILES = {
     qrUrl: '/images/qrcodedonhang.svg',
   },
   company2: {
-    companyName: 'CÔNG TY CỔ PHẦN NÔNG SẢN THỰC PHẨM TRẦN GIA',
+    companyName: 'CÔNG TY CỔ PHẦN NÔNG NGHIỆP THỰC PHẨM TRẦN GIA',
     subName: 'Hợp Tác Xã Nông Nghiệp Công Nghệ Cao Trần Gia Farm',
     addressHtx: 'Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An',
     addressOffice: 'Tầng 3, An Phú Plaza, 117-119 Lý Chính Thắng, P. Võ Thị Sáu, Q. 3, TPHCM',
@@ -31,7 +31,7 @@ const DEFAULT_COMPANY_PROFILES = {
     website: 'http://rausachtrangia.com',
     hotline: '0868614214 – 0902458081',
     logoUrl: '/images/logo-dark.svg',
-    qrUrl: '/images/qrcodedonhang.svg',
+    qrUrl: '/images/qr-congty2.jpg',
   },
 };
 
